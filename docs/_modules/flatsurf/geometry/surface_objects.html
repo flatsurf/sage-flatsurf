@@ -284,7 +284,6 @@
 <span class="c1">######################################################################</span>
 
 <span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
-<span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
 <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
 <span class="kn">from</span> <span class="nn">sage.plot.polygon</span> <span class="kn">import</span> <span class="n">polygon2d</span>
@@ -295,269 +294,479 @@
 <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
 
-<div class="viewcode-block" id="Singularity"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">[docs]</a><span class="k">class</span> <span class="nc">Singularity</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Singularity"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">[docs]</a><span class="k">def</span> <span class="nf">Singularity</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a combinatorial singularity on a surface.</span>
+<span class="sd">    Return the point of ``similarity_surface`` at the ``v``-th vertex of the</span>
+<span class="sd">    polygon ``label``.</span>
 
-<span class="sd">    Such a combinatorial singularity is an equivalence class of vertices of the polygons</span>
-<span class="sd">    making up the surface. This is the coarsest equivalence relation where two vertices</span>
-<span class="sd">    are equivalent if they are glued along an edge.</span>
+<span class="sd">    If the surface is infinite, the ``limit`` can be set. In this case the</span>
+<span class="sd">    construction of the singularity is successful if the sequence of vertices</span>
+<span class="sd">    hit by passing through edges closes up in ``limit`` or less steps.</span>
 
 <span class="sd">    EXAMPLES::</span>
 
 <span class="sd">        sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators</span>
 <span class="sd">        sage: s=TranslationSurfaceGenerators.veech_2n_gon(5)</span>
 <span class="sd">        sage: from flatsurf.geometry.surface_objects import Singularity</span>
-<span class="sd">        sage: sing=Singularity(s,0,1)</span>
+<span class="sd">        sage: sing=Singularity(s, 0, 1)</span>
+<span class="sd">        doctest:warning</span>
+<span class="sd">        ...</span>
+<span class="sd">        UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.</span>
 <span class="sd">        sage: print(sing)</span>
-<span class="sd">        singularity with vertex equivalence class frozenset(...)</span>
+<span class="sd">        Vertex 1 of polygon 0</span>
 <span class="sd">        sage: TestSuite(sing).run()</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Represents the singularity associated to the ``v``-th vertex of the</span>
-<span class="sd">        polygon with label ``label``.</span>
-
-<span class="sd">        If the surface is infinite, the limit can be set. In this case the</span>
-<span class="sd">        construction of the singularity is successful if the sequence of</span>
-<span class="sd">        vertices hit by passing through edges closes up in limit or less steps.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span> <span class="ow">and</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;need a limit when working with an infinite surface&quot;</span><span class="p">)</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-        <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="nb">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
-        <span class="k">while</span> <span class="n">start</span> <span class="o">!=</span> <span class="nb">next</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of vertices in singularities exceeds limit.&quot;</span><span class="p">)</span>
-            <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
-            <span class="nb">next</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">num_edges</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Singularity.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the SimilaritySurface where the singularity appears.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span></div>
-
-<div class="viewcode-block" id="Singularity.one_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.one_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">one_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a pair (l,v) from the equivalence class of this singularity.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="Singularity.vertex_set"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.vertex_set">[docs]</a>    <span class="k">def</span> <span class="nf">vertex_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the set of pairs (l,v) in the equivalence class of this singularity.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
-
-<div class="viewcode-block" id="Singularity.contains_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.contains_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">contains_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks if the pair ``(label, v)`` is in the equivalence class returning</span>
-<span class="sd">        true or false.</span>
-
-<span class="sd">        If v is None, then check if the pair ``label`` is in the equivalence class.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
-
-    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;singularity with vertex equivalence class &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return whether this singularity is indistinguishable from ``other``.</span>
-
-<span class="sd">        EXAMPLES::</span>
-
-<span class="sd">            sage: from flatsurf.geometry.similarity_surface_generators import TranslationSurfaceGenerators</span>
-<span class="sd">            sage: S = TranslationSurfaceGenerators.veech_2n_gon(5)</span>
-<span class="sd">            sage: singularity = S.singularity(0, 0)</span>
-
-<span class="sd">            sage: singularity == singularity</span>
-<span class="sd">            True</span>
-
-<span class="sd">        TESTS:</span>
-
-<span class="sd">        Verify that singularities can be compared to non-singularities (so they</span>
-<span class="sd">        can be put into sets and dicts with other objects)::</span>
-
-<span class="sd">            sage: singularity == 42</span>
-<span class="sd">            False</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">other</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Singularity</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_ss</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span>
-
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
-
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Hash only using the set of vertices (rather than including the surface)</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">)</span></div>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">similarity_surface</span><span class="o">.</span><span class="n">point</span><span class="p">(</span>
+        <span class="n">label</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SurfacePoint"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint">[docs]</a><span class="k">class</span> <span class="nc">SurfacePoint</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a point on a SimilaritySurface.</span>
+<span class="sd">    A point on ``surface``.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``surface`` -- a :class:`flatsurf.geometry.surface.Surface` or a</span>
+<span class="sd">      :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.</span>
+
+<span class="sd">    - ``label`` -- a polygon label for the polygon with respect to which the</span>
+<span class="sd">      ``point`` coordinates can be made sense of</span>
+
+<span class="sd">    - ``point`` -- coordinates of a point in the polygon ``label``</span>
+
+<span class="sd">    - ``ring`` -- a SageMath ring or ``None`` (default: ``None``); the</span>
+<span class="sd">      coordinate ring for ``point``</span>
+
+<span class="sd">    - ``limit`` -- an integer or ``None`` (default: ``None`` for an unlimited</span>
+<span class="sd">      number of steps); if this is a singularity of the surface, then this</span>
+<span class="sd">      limits the number of edges that are crossed to determine all the edges</span>
+<span class="sd">      adjacent to that singularity. An error is raised if the limit is</span>
+<span class="sd">      insufficient.</span>
 
 <span class="sd">    EXAMPLES::</span>
 
-<span class="sd">        sage: from flatsurf import *</span>
-<span class="sd">        sage: from flatsurf.geometry.surface_objects import SurfacePoint</span>
-<span class="sd">        sage: p = SymmetricGroup(2)(&#39;(1,2)&#39;)</span>
-<span class="sd">        sage: s = translation_surfaces.origami(p,p)</span>
-<span class="sd">        sage: SurfacePoint(s, 1, (1/2,1/2))</span>
-<span class="sd">        Surface point located at (1/2, 1/2) in polygon 1</span>
-<span class="sd">        sage: sp1 = SurfacePoint(s, 1, (1/2,0))</span>
-<span class="sd">        sage: sp1</span>
-<span class="sd">        Surface point with 2 coordinate representations</span>
-<span class="sd">        sage: sp2 = SurfacePoint(s, 2, (1/2,1))</span>
-<span class="sd">        sage: sp1 == sp2</span>
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">        sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">        sage: S = translation_surfaces.origami(permutation, permutation)</span>
+
+<span class="sd">    A point can have a single representation with coordinates when it is in</span>
+<span class="sd">    interior of a polygon::</span>
+
+<span class="sd">        sage: S.point(1, (1/2, 1/2))</span>
+<span class="sd">        Point (1/2, 1/2) of polygon 1</span>
+
+<span class="sd">    A point can have two representations when it is in interior of an edge::</span>
+
+<span class="sd">        sage: p = S.point(1, (1/2, 0))</span>
+<span class="sd">        sage: q = S.point(2, (1/2, 1))</span>
+<span class="sd">        sage: p == q</span>
 <span class="sd">        True</span>
-<span class="sd">        sage: hash(sp1) == hash(sp2)</span>
-<span class="sd">        True</span>
-<span class="sd">        sage: sp1.coordinates(2)</span>
-<span class="sd">        frozenset({(1/2, 1)})</span>
-<span class="sd">        sage: sp = SurfacePoint(s, 1, (0,0))</span>
-<span class="sd">        sage: sp</span>
-<span class="sd">        Surface point with 4 coordinate representations</span>
+<span class="sd">        sage: p.coordinates(2)</span>
+<span class="sd">        ((1/2, 1),)</span>
+
+<span class="sd">    A point can have even more representations when it is a vertex::</span>
+
+<span class="sd">        sage: S.point(1, (0, 0))</span>
+<span class="sd">        Vertex 0 of polygon 1</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span>
+
         <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span> <span class="o">=</span> <span class="n">ring</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="n">point</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)(</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">ring</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">ring</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points&#39; coordinates live in the base ring&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">polygon</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
+
+        <span class="n">point</span> <span class="o">=</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span> <span class="mi">2</span><span class="p">)(</span><span class="n">point</span><span class="p">)</span>
         <span class="n">point</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-        <span class="n">pos</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_inside</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;point must be positioned within the polygon with the given label&quot;</span><span class="p">)</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
 
-        <span class="c1"># This is the correct thing if point lies in the interior of the polygon with the given label.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="n">point</span><span class="p">}}</span>
-        <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">():</span>
-            <span class="n">label2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_edge</span><span class="p">())</span>
-            <span class="n">point2</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_edge</span><span class="p">())(</span><span class="n">point</span><span class="p">)</span>
-            <span class="n">point2</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">label2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label2</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">point2</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">point2</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">sing</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">singularity</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">(),</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sing</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
-                <span class="n">new_point</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                <span class="n">new_point</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_point</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">new_point</span><span class="p">}</span>
-        <span class="c1"># Freeze the sets.</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">point_set</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">position</span><span class="o">.</span><span class="n">is_inside</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;point must be positioned within the polygon with the given label&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">position</span><span class="o">.</span><span class="n">is_in_interior</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="o">=</span> <span class="p">{(</span><span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">)}</span>
+        <span class="k">elif</span> <span class="n">position</span><span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="o">=</span> <span class="p">{(</span><span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">)}</span>
+
+            <span class="n">cross_label</span><span class="p">,</span> <span class="n">cross_edge</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">position</span><span class="o">.</span><span class="n">get_edge</span><span class="p">())</span>
+            <span class="n">cross_point</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">position</span><span class="o">.</span><span class="n">get_edge</span><span class="p">())(</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">cross_point</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cross_label</span><span class="p">,</span> <span class="n">cross_point</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">position</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+            <span class="n">source_edge</span> <span class="o">=</span> <span class="n">position</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">source_edge</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">source_edge</span><span class="p">))</span>
+
+                <span class="c1"># Rotate to the next edge that is leaving at the vertex</span>
+                <span class="n">label</span><span class="p">,</span> <span class="n">source_edge</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">source_edge</span><span class="p">)</span>
+                <span class="n">source_edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">source_edge</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">limit</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">limit</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number of edges at singularity exceeds limit&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">vertex</span><span class="p">))</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vertex</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SurfacePoint.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface containing this point.</span>
+
+<span class="sd">        Depending on how this point was created, this can be either a</span>
+<span class="sd">        :class:`flatsurf.geometry.surface.Surface` or a</span>
+<span class="sd">        :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (1/2, 1/2))</span>
+<span class="sd">            sage: p.surface() is S</span>
+<span class="sd">            True</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
+
+<div class="viewcode-block" id="SurfacePoint.is_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">is_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this point is a singularity of the surface.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+
+<span class="sd">            sage: p.is_vertex()</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">position</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SurfacePoint.one_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">one_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a pair (l, v) from the equivalence class of this singularity.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+<span class="sd">            sage: p.one_vertex()  # random output: depends on the Python version</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead</span>
+<span class="sd">            (2, 1)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead&quot;</span>
+        <span class="p">)</span>
+        <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+        <span class="n">vertex</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">label</span><span class="p">,</span> <span class="n">vertex</span></div>
+
+<div class="viewcode-block" id="SurfacePoint.representatives"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representatives">[docs]</a>    <span class="k">def</span> <span class="nf">representatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the representatives of this point as pairs of polygon labels and</span>
+<span class="sd">        coordinates.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+<span class="sd">            sage: p.representatives()</span>
+<span class="sd">            frozenset({(1, (0, 0)), (1, (1, 1)), (2, (0, 1)), (2, (1, 0))})</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span></div>
+
+<div class="viewcode-block" id="SurfacePoint.representative"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representative">[docs]</a>    <span class="k">def</span> <span class="nf">representative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a representative of this point, i.e., the first of</span>
+<span class="sd">        :meth:`representatives`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+<span class="sd">            sage: p.representative()  # random output: depends on the Python version</span>
+<span class="sd">            (2, (1, 0))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">representatives</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="SurfacePoint.vertex_set"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set">[docs]</a>    <span class="k">def</span> <span class="nf">vertex_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of pairs (l, v) in the equivalence class of this singularity.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+<span class="sd">            sage: list(p.vertex_set())  # random output: ordering depends on the Python version</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead</span>
+<span class="sd">            [(2, 1), (1, 2), (1, 0), (2, 3)]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">label</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">get_vertex</span><span class="p">(),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">representatives</span><span class="p">()</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="SurfacePoint.contains_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">contains_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the pair ``(label, v)`` is in the equivalence class returning</span>
+<span class="sd">        true or false. If ``v`` is ``None``, the both the pair ``(label, v)``</span>
+<span class="sd">        is passed as a single parameter in ``label``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+<span class="sd">            sage: p.contains_vertex((1, 0))</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: contains_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use the == operator instead</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: p.contains_vertex(label=1, v=0)</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;contains_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use the == operator instead&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">label</span>
+
+        <span class="k">return</span> <span class="n">Singularity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">(),</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="SurfacePoint.num_coordinates"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">num_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of different coordinate representations of the point.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">            sage: permutation = SymmetricGroup(2)(&#39;(1, 2)&#39;)</span>
+<span class="sd">            sage: S = translation_surfaces.origami(permutation, permutation)</span>
+<span class="sd">            sage: p = S.point(1, (0, 0))</span>
+<span class="sd">            sage: p.num_coordinates()</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: num_coordinates() is deprecated and will be removed in a future version of sage-flatsurf; use len(representatives()) instead.</span>
+<span class="sd">            4</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_coordinates</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">point_set</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_num_coordinates</span> <span class="o">=</span> <span class="n">count</span>
-            <span class="k">return</span> <span class="n">count</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to return num_coordinates()&quot;</span><span class="p">)</span></div>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;num_coordinates() is deprecated and will be removed in a future version of sage-flatsurf; use len(representatives()) instead.&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfacePoint.labels"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.labels">[docs]</a>    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the list of labels of polygons containing the point in its closure.</span>
+<span class="sd">        Return the labels of polygons containing the point.</span>
 
-<span class="sd">        This will be a list of one label if the point is the the interior of a polygon,</span>
-<span class="sd">        at most two labels if it is on the interior of an edge, and can be lots of labels</span>
-<span class="sd">        if the point is a singularity.</span>
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+
+<span class="sd">        For a point in the interior of polygon, there is exactly one label::</span>
+
+<span class="sd">            sage: p = S.point(0, (1/2, 1/2))</span>
+<span class="sd">            sage: p.labels()</span>
+<span class="sd">            {0}</span>
+
+<span class="sd">        For a point in the interior of an edge of a polygon, there can be up to</span>
+<span class="sd">        two labels::</span>
+
+<span class="sd">            sage: p = S.point(0, (0, 1/2))</span>
+<span class="sd">            sage: p.labels()</span>
+<span class="sd">            {0, 2}</span>
+
+<span class="sd">        For a point at a vertex, there can be more labels::</span>
+
+<span class="sd">            sage: p = S.point(0, (0, 0))</span>
+<span class="sd">            sage: p.labels()</span>
+<span class="sd">            {0, 1, 2}</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfacePoint.coordinates"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a frozenset of coordinates for the closure of the point in the polygon</span>
-<span class="sd">        with the provided label.</span>
+<span class="sd">        Return coordinates for the point in the in the polygon ``label``.</span>
 
-<span class="sd">        The set will consist of one point if the point lies in the interior of a polygon,</span>
-<span class="sd">        will be two points if the point lies in the interior of two edges of the polygon</span>
-<span class="sd">        simultaneously and can be lots of points if the point is a singularity.</span>
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+
+<span class="sd">            sage: p = S.point(0, (0, 0))</span>
+<span class="sd">            sage: p.coordinates(0)  # random output: order depends on the Python version</span>
+<span class="sd">            ((0, 0), (1, 0), (0, 1), (1, 1))</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">coordinates</span> <span class="k">for</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="n">label</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SurfacePoint.graphical_surface_point"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.graphical_surface_point">[docs]</a>    <span class="k">def</span> <span class="nf">graphical_surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the GraphicalSurfacePoint built from this SurfacePoint.</span>
+<span class="sd">        Return a</span>
+<span class="sd">        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to</span>
+<span class="sd">        represent this point graphically.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: p = S.point(0, (1/2, 1/2))</span>
+<span class="sd">            sage: G = p.graphical_surface_point()</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface_point</span> <span class="kn">import</span> <span class="n">GraphicalSurfacePoint</span>
 
         <span class="k">return</span> <span class="n">GraphicalSurfacePoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="n">graphical_surface</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.plot"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="viewcode-block" id="SurfacePoint.plot"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Plot this point.</span>
+<span class="sd">        Return a plot of this point.</span>
 
-<span class="sd">        There may be one argument which provides a graphical surface.</span>
-<span class="sd">        All options are passed two the plotting method of GraphicalSurfacePoint.</span>
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: p = S.point(0, (0, 0))</span>
+<span class="sd">            sage: p.plot()</span>
+<span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
+
+<span class="sd">            sage: p = S.point(0, (0, 25/12))</span>
+<span class="sd">            sage: p.plot()</span>
+<span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SurfacePoint.plot() can take at most one argument.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface_point</span><span class="p">(</span><span class="n">graphical_surface</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-                <span class="o">**</span><span class="n">options</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface_point</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+        <span class="n">graphical_surface</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">graphical_surface</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface_point</span><span class="p">(</span><span class="n">graphical_surface</span><span class="o">=</span><span class="n">graphical_surface</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a printable representation of this point.</span>
+
 <span class="sd">        TESTS::</span>
 
 <span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
-<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])</span>
-<span class="sd">            sage: S.point(0, (1/2,1/2))</span>
-<span class="sd">            Surface point located at (1/2, 1/2) in polygon 0</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: S.point(0, (1/2, 1/2))</span>
+<span class="sd">            Point (1/2, 1/2) of polygon 0</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_coordinates</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;Surface point located at </span><span class="si">{}</span><span class="s2"> in polygon </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))),</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;Surface point with </span><span class="si">{}</span><span class="s2"> coordinate representations&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">num_coordinates</span><span class="p">()</span>
-            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
+                <span class="n">vertex</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;Vertex </span><span class="si">{}</span><span class="s2"> of polygon </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="s2">&quot;Point </span><span class="si">{}</span><span class="s2"> of polygon </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+        <span class="c1"># We pick a specific representative to make our lives easier when doctesting</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="n">render</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">representatives</span><span class="p">()</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -566,12 +775,12 @@
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
-<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1, 1/2, 1/3, 1/4])</span>
-<span class="sd">            sage: p = S.point(0, (1/2,1/2))</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: p = S.point(0, (1/2, 1/2))</span>
 <span class="sd">            sage: p == p</span>
 <span class="sd">            True</span>
 
-<span class="sd">            sage: q = S.point(0, (1/2,1/3))</span>
+<span class="sd">            sage: q = S.point(0, (1/2, 1/3))</span>
 <span class="sd">            sage: p == q</span>
 <span class="sd">            False</span>
 
@@ -587,18 +796,44 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SurfacePoint</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_surface</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_coordinate_dict</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_representatives</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coordinate_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">h</span> <span class="o">+=</span> <span class="mi">677</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="nb">hash</span><span class="p">(</span><span class="n">point_set</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">h</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a hash value of this point.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: p = S.point(0, (0, 0))</span>
+<span class="sd">            sage: q = S.point(4, (0, 0))</span>
+<span class="sd">            sage: hash(p) == hash(q)</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span></div>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this point is distinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import half_translation_surfaces</span>
+<span class="sd">            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])</span>
+<span class="sd">            sage: p = S.point(0, (1/2, 1/2))</span>
+<span class="sd">            sage: p != p</span>
+<span class="sd">            False</span>
+
+<span class="sd">            sage: q = S.point(0, (1/2, 1/3))</span>
+<span class="sd">            sage: p != q</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SaddleConnection"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection">[docs]</a><span class="k">class</span> <span class="nc">SaddleConnection</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
@@ -674,10 +909,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">surface</span>
 
         <span class="c1"># Sanitize the direction vector:</span>
-        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">=</span> <span class="n">V</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">==</span> <span class="n">V</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Direction must be nonzero.&quot;</span><span class="p">)</span>
@@ -698,17 +933,19 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">end_direction</span> <span class="o">=</span> <span class="n">end_direction</span> <span class="o">/</span> <span class="n">yabs</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">start_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">start_data</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">end_direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">.half_dilation_surface</span> <span class="kn">import</span> <span class="n">HalfDilationSurface</span>
             <span class="kn">from</span> <span class="nn">.dilation_surface</span> <span class="kn">import</span> <span class="n">DilationSurface</span>
 
             <span class="c1"># Attempt to infer the end_direction.</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">DilationSurface</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">DilationSurface</span><span class="p">):</span>
                 <span class="n">end_direction</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_direction</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">HalfDilationSurface</span><span class="p">)</span> <span class="ow">and</span> <span class="n">end_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">HalfDilationSurface</span><span class="p">)</span> <span class="ow">and</span> <span class="n">end_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">wedge_product</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">end_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
                     <span class="ow">and</span> <span class="n">wedge_product</span><span class="p">(</span>
@@ -726,9 +963,9 @@
             <span class="kn">from</span> <span class="nn">.half_translation_surface</span> <span class="kn">import</span> <span class="n">HalfTranslationSurface</span>
             <span class="kn">from</span> <span class="nn">.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
                 <span class="n">end_holonomy</span> <span class="o">=</span> <span class="o">-</span><span class="n">holonomy</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">HalfTranslationSurface</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">HalfTranslationSurface</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">end_direction</span><span class="p">:</span>
                     <span class="n">end_holonomy</span> <span class="o">=</span> <span class="n">holonomy</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -778,18 +1015,20 @@
 
             <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_edge</span><span class="p">():</span>
                 <span class="c1"># Special case (The below method causes error if the trajectory is just an edge.)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">start_data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span>
+                    <span class="n">start_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
-                <span class="n">sim</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
+                <span class="n">sim</span> <span class="o">=</span> <span class="n">SimilarityGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
                 <span class="n">itersegs</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">segments</span><span class="p">())</span>
                 <span class="nb">next</span><span class="p">(</span><span class="n">itersegs</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">itersegs</span><span class="p">:</span>
-                    <span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span>
+                    <span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span>
                         <span class="n">seg</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">(),</span> <span class="n">seg</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">position</span><span class="p">()</span><span class="o">.</span><span class="n">get_edge</span><span class="p">()</span>
                     <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span> <span class="o">=</span> <span class="p">(</span>
@@ -832,7 +1071,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SaddleConnection.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
 <div class="viewcode-block" id="SaddleConnection.direction"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.direction">[docs]</a>    <span class="k">def</span> <span class="nf">direction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -852,14 +1091,14 @@
 
 <div class="viewcode-block" id="SaddleConnection.start_data"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.start_data">[docs]</a>    <span class="k">def</span> <span class="nf">start_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the pair (l,v) representing the label and vertex of the corresponding polygon</span>
+<span class="sd">        Return the pair (l, v) representing the label and vertex of the corresponding polygon</span>
 <span class="sd">        where the saddle connection originates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span></div>
 
 <div class="viewcode-block" id="SaddleConnection.end_data"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_data">[docs]</a>    <span class="k">def</span> <span class="nf">end_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the pair (l,v) representing the label and vertex of the corresponding polygon</span>
+<span class="sd">        Return the pair (l, v) representing the label and vertex of the corresponding polygon</span>
 <span class="sd">        where the saddle connection terminates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span></div>
@@ -881,8 +1120,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.cone_surface</span> <span class="kn">import</span> <span class="n">ConeSurface</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;length of a saddle connection only makes sense for cone surfaces&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;length of a saddle connection only makes sense for cone surfaces&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span><span class="p">)</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span></div>
 
@@ -899,9 +1140,11 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a tangent vector to the saddle connection based at its start.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -913,7 +1156,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">warnings</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The cache keyword argument of trajectory() is ignored. Trajectories are always cached.&quot;</span><span class="p">)</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The cache keyword argument of trajectory() is ignored. Trajectories are always cached.&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_tangent_vector</span><span class="p">()</span>
         <span class="n">traj</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">straight_line_trajectory</span><span class="p">()</span>
@@ -936,9 +1182,9 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a tangent vector to the saddle connection based at its start.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">tangent_vector</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_direction</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -947,10 +1193,10 @@
 <span class="sd">        Return this saddle connection but with opposite orientation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">SaddleConnection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_direction</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span><span class="p">,</span>
@@ -1010,11 +1256,11 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SaddleConnection</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_surface</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_direction</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_start_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># Initial data should determine the saddle connection:</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -1023,13 +1269,13 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mi">41</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">)</span> <span class="o">-</span> <span class="mi">97</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">41</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">)</span> <span class="o">-</span> <span class="mi">97</span> <span class="o">*</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_test_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that this saddle connection actually exists on the surface.</span>
         <span class="n">SaddleConnection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_direction</span><span class="p">,</span>
@@ -1040,16 +1286,16 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Saddle connection in direction </span><span class="si">{}</span><span class="s2"> with start data </span><span class="si">{}</span><span class="s2"> and end data </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_test_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that inverting works properly.</span>
         <span class="n">SaddleConnection</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_direction</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_data</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span><span class="p">,</span>
@@ -1100,7 +1346,7 @@
 <span class="sd">        edges: a list</span>
 <span class="sd">            giving the sequence of edges the cylinder crosses until it closes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="n">s</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label0</span> <span class="o">=</span> <span class="n">label0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
         <span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;planar&quot;</span><span class="p">)</span>
@@ -1277,7 +1523,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Cylinder.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
 <div class="viewcode-block" id="Cylinder.initial_label"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.initial_label">[docs]</a>    <span class="k">def</span> <span class="nf">initial_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1316,7 +1562,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.cone_surface</span> <span class="kn">import</span> <span class="n">ConeSurface</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;area only makes sense for cone surfaces&quot;</span><span class="p">)</span>
         <span class="n">area</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">():</span>
@@ -1340,11 +1586,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;graphical_surface&quot;</span> <span class="ow">in</span> <span class="n">options</span> <span class="ow">and</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;graphical_surface&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">gs</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;graphical_surface&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">gs</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gs</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;graphical surface for the wrong surface&quot;</span><span class="p">)</span>
             <span class="k">del</span> <span class="n">options</span><span class="p">[</span><span class="s2">&quot;graphical_surface&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">gs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
+            <span class="n">gs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">Graphics</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">gs</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
@@ -1417,10 +1663,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.translation_surface</span> <span class="kn">import</span> <span class="n">TranslationSurface</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;holonomy currently only computable for translation surfaces&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">TranslationSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;holonomy currently only computable for translation surfaces&quot;</span>
+            <span class="p">)</span>
 
-        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">vector_space</span><span class="p">()</span>
         <span class="n">total</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary1</span><span class="p">:</span>
             <span class="n">total</span> <span class="o">+=</span> <span class="n">sc</span><span class="o">.</span><span class="n">holonomy</span><span class="p">()</span>
@@ -1445,8 +1693,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.cone_surface</span> <span class="kn">import</span> <span class="n">ConeSurface</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;circumference only makes sense for cone surfaces&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,</span> <span class="n">ConeSurface</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;circumference only makes sense for cone surfaces&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary1</span><span class="p">:</span>

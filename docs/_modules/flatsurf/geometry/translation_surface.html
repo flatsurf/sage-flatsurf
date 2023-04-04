@@ -401,7 +401,9 @@
             <span class="k">return</span> <span class="n">s</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;in place standardization only available for finite surfaces&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;in place standardization only available for finite surfaces&quot;</span>
+                <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">LazyStandardizedPolygonSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
@@ -594,6 +596,9 @@
 <span class="sd">            sage: a = field.gen()</span>
 <span class="sd">            sage: V = VectorSpace(field,2)</span>
 <span class="sd">            sage: deformation1 = {s.singularity(0,0):V((1,0))}</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.</span>
 <span class="sd">            sage: s1 = s.rel_deformation(deformation1).canonicalize()</span>
 <span class="sd">            sage: deformation2 = {s.singularity(0,0):V((a,0))}</span>
 <span class="sd">            sage: s2 = s.rel_deformation(deformation2).canonicalize()</span>
@@ -622,7 +627,8 @@
         <span class="n">deformed_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># list of polygon labels being deformed.</span>
 
         <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">representatives</span><span class="p">():</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
                 <span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vect</span>
                 <span class="n">deformed_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                 <span class="k">assert</span> <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
@@ -630,7 +636,6 @@
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">wedge_product</span><span class="p">,</span> <span class="n">ConvexPolygons</span>
 
         <span class="k">if</span> <span class="n">local</span><span class="p">:</span>
-
             <span class="n">ss</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">new_field</span><span class="o">=</span><span class="n">field</span><span class="p">)</span>
             <span class="n">us</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
 
@@ -658,9 +663,15 @@
                     <span class="n">c</span> <span class="o">=</span> <span class="n">A1</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">A2</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">c</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">field</span><span class="o">.</span><span class="n">one</span><span class="p">():</span>
                         <span class="k">if</span> <span class="n">A0</span> <span class="o">+</span> <span class="n">A1</span> <span class="o">*</span> <span class="n">c</span> <span class="o">+</span> <span class="n">A2</span> <span class="o">*</span> <span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at critical point before endpoint&quot;</span> <span class="o">%</span> <span class="n">label</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at critical point before endpoint&quot;</span>
+                                <span class="o">%</span> <span class="n">label</span>
+                            <span class="p">)</span>
                 <span class="k">if</span> <span class="n">A0</span> <span class="o">+</span> <span class="n">A1</span> <span class="o">+</span> <span class="n">A2</span> <span class="o">&lt;=</span> <span class="n">field</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at or before endpoint&quot;</span> <span class="o">%</span> <span class="n">label</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Triangle with label </span><span class="si">%r</span><span class="s2"> degenerates at or before endpoint&quot;</span>
+                        <span class="o">%</span> <span class="n">label</span>
+                    <span class="p">)</span>
                 <span class="c1"># Triangle does not degenerate.</span>
                 <span class="n">us</span><span class="o">.</span><span class="n">change_polygon</span><span class="p">(</span>
                     <span class="n">label</span><span class="p">,</span> <span class="n">P</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="n">a0</span> <span class="o">+</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b1</span><span class="p">])</span>
@@ -699,7 +710,12 @@
                 <span class="n">deformation2</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
                     <span class="n">found_start</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">representatives</span><span class="p">():</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
+                        <span class="p">)</span>
                         <span class="k">if</span> <span class="p">(</span>
                             <span class="n">wedge_product</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">nonzero</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
                             <span class="ow">and</span> <span class="n">wedge_product</span><span class="p">(</span>
@@ -848,6 +864,7 @@
 
         <span class="c1"># We are finite if and only if self._ss is a finite RationalConeSurface.</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.minimal_cover</span> <span class="kn">import</span> <span class="n">_is_finite</span>
+
         <span class="n">finite</span> <span class="o">=</span> <span class="n">_is_finite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="p">)</span>
 
         <span class="n">identity</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>

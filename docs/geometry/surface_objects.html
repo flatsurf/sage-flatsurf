@@ -294,7 +294,7 @@ meeting at 180 degree angles.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.area">
 <span class="sig-name descname"><span class="pre">area</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.area" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1053)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1299)</p>
 <p>Return the area of this cylinder if it is contained in a ConeSurface.</p>
 </dd></dl>
 
@@ -316,7 +316,7 @@ the surface is on the left.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.circumference">
 <span class="sig-name descname"><span class="pre">circumference</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.circumference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.circumference" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1179)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1427)</p>
 <p>In a cone surface, return the circumference, i.e., the length
 of a geodesic loop running around the cylinder. Since this may
 not lie in the field of definition of the surface, it is returned
@@ -334,7 +334,7 @@ it returns by closing.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.holonomy">
 <span class="sig-name descname"><span class="pre">holonomy</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.holonomy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.holonomy" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1153)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1399)</p>
 <p>In a translation surface, return one of the two holonomy vectors of the cylinder,
 which differ by a sign.</p>
 </dd></dl>
@@ -348,7 +348,7 @@ which differ by a sign.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Cylinder.labels">
 <span class="sig-name descname"><span class="pre">labels</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Cylinder.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Cylinder.labels" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1099)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 1345)</p>
 <p>Return the set of labels that this cylinder passes through.</p>
 </dd></dl>
 
@@ -415,7 +415,7 @@ moving from sc in the direction opposite its orientation.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SaddleConnection.end_data">
 <span class="sig-name descname"><span class="pre">end_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SaddleConnection.end_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SaddleConnection.end_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the pair (l,v) representing the label and vertex of the corresponding polygon
+<dd><p>Return the pair (l, v) representing the label and vertex of the corresponding polygon
 where the saddle connection terminates.</p>
 </dd></dl>
 
@@ -483,7 +483,7 @@ returned as an element of the Algebraic Real Field.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SaddleConnection.start_data">
 <span class="sig-name descname"><span class="pre">start_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SaddleConnection.start_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SaddleConnection.start_data" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the pair (l,v) representing the label and vertex of the corresponding polygon
+<dd><p>Return the pair (l, v) representing the label and vertex of the corresponding polygon
 where the saddle connection originates.</p>
 </dd></dl>
 
@@ -501,127 +501,311 @@ where the saddle connection originates.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SaddleConnection.trajectory">
 <span class="sig-name descname"><span class="pre">trajectory</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SaddleConnection.trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SaddleConnection.trajectory" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 649)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface_objects.py (starting at line 892)</p>
 <p>Return a straight line trajectory representing this saddle connection.
 Fails if the trajectory passes through more than limit polygons.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Singularity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface_objects.</span></span><span class="sig-name descname"><span class="pre">Singularity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Singularity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Singularity" title="Permalink to this definition">#</a></dt>
-<dd><p>Represents a combinatorial singularity on a surface.</p>
-<p>Such a combinatorial singularity is an equivalence class of vertices of the polygons
-making up the surface. This is the coarsest equivalence relation where two vertices
-are equivalent if they are glued along an edge.</p>
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface_objects.</span></span><span class="sig-name descname"><span class="pre">Singularity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Singularity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Singularity" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the point of <code class="docutils literal notranslate"><span class="pre">similarity_surface</span></code> at the <code class="docutils literal notranslate"><span class="pre">v</span></code>-th vertex of the
+polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+<p>If the surface is infinite, the <code class="docutils literal notranslate"><span class="pre">limit</span></code> can be set. In this case the
+construction of the singularity is successful if the sequence of vertices
+hit by passing through edges closes up in <code class="docutils literal notranslate"><span class="pre">limit</span></code> or less steps.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="kn">import</span> <span class="n">TranslationSurfaceGenerators</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">TranslationSurfaceGenerators</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">Singularity</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sing</span><span class="o">=</span><span class="n">Singularity</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">sing</span><span class="o">=</span><span class="n">Singularity</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Singularity</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">.</span> <span class="n">Use</span> <span class="n">surface</span><span class="o">.</span><span class="n">point</span><span class="p">()</span> <span class="n">instead</span><span class="o">.</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">sing</span><span class="p">)</span>
-<span class="n">singularity</span> <span class="k">with</span> <span class="n">vertex</span> <span class="n">equivalence</span> <span class="k">class</span> <span class="nc">frozenset</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">Vertex</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span> <span class="mi">0</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">sing</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Singularity.contains_vertex">
-<span class="sig-name descname"><span class="pre">contains_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Singularity.contains_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Singularity.contains_vertex" title="Permalink to this definition">#</a></dt>
-<dd><p>Checks if the pair <code class="docutils literal notranslate"><span class="pre">(label,</span> <span class="pre">v)</span></code> is in the equivalence class returning
-true or false.</p>
-<p>If v is None, then check if the pair <code class="docutils literal notranslate"><span class="pre">label</span></code> is in the equivalence class.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Singularity.one_vertex">
-<span class="sig-name descname"><span class="pre">one_vertex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Singularity.one_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Singularity.one_vertex" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a pair (l,v) from the equivalence class of this singularity.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Singularity.surface">
-<span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Singularity.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Singularity.surface" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the SimilaritySurface where the singularity appears.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.Singularity.vertex_set">
-<span class="sig-name descname"><span class="pre">vertex_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#Singularity.vertex_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.Singularity.vertex_set" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the set of pairs (l,v) in the equivalence class of this singularity.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.surface_objects.</span></span><span class="sig-name descname"><span class="pre">SurfacePoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint" title="Permalink to this definition">#</a></dt>
-<dd><p>Represents a point on a SimilaritySurface.</p>
+<dd><p>A point on <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">surface</span></code> – a <a class="reference internal" href="surface.html#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.surface.Surface</span></code></a> or a
+<a class="reference internal" href="similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface" title="flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.similarity_surface.SimilaritySurface</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code> – a polygon label for the polygon with respect to which the
+<code class="docutils literal notranslate"><span class="pre">point</span></code> coordinates can be made sense of</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code> – coordinates of a point in the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ring</span></code> – a SageMath ring or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code>); the
+coordinate ring for <code class="docutils literal notranslate"><span class="pre">point</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code> – an integer or <code class="docutils literal notranslate"><span class="pre">None</span></code> (default: <code class="docutils literal notranslate"><span class="pre">None</span></code> for an unlimited
+number of steps); if this is a singularity of the surface, then this
+limits the number of edges that are crossed to determine all the edges
+adjacent to that singularity. An error is raised if the limit is
+insufficient.</p></li>
+</ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_objects</span> <span class="kn">import</span> <span class="n">SurfacePoint</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1,2)&#39;</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">SurfacePoint</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
-<span class="n">Surface</span> <span class="n">point</span> <span class="n">located</span> <span class="n">at</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">polygon</span> <span class="mi">1</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp1</span> <span class="o">=</span> <span class="n">SurfacePoint</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp1</span>
-<span class="n">Surface</span> <span class="n">point</span> <span class="k">with</span> <span class="mi">2</span> <span class="n">coordinate</span> <span class="n">representations</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp2</span> <span class="o">=</span> <span class="n">SurfacePoint</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp1</span> <span class="o">==</span> <span class="n">sp2</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A point can have a single representation with coordinates when it is in
+interior of a polygon:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">Point</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="n">of</span> <span class="n">polygon</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>A point can have two representations when it is in interior of an edge:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">q</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">==</span> <span class="n">q</span>
 <span class="kc">True</span>
-<span class="n">sage</span><span class="p">:</span> <span class="nb">hash</span><span class="p">(</span><span class="n">sp1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="n">sp2</span><span class="p">)</span>
-<span class="kc">True</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp1</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">frozenset</span><span class="p">({(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)})</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp</span> <span class="o">=</span> <span class="n">SurfacePoint</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">sp</span>
-<span class="n">Surface</span> <span class="n">point</span> <span class="k">with</span> <span class="mi">4</span> <span class="n">coordinate</span> <span class="n">representations</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),)</span>
+</pre></div>
+</div>
+<p>A point can have even more representations when it is a vertex:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">Vertex</span> <span class="mi">0</span> <span class="n">of</span> <span class="n">polygon</span> <span class="mi">1</span>
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex">
+<span class="sig-name descname"><span class="pre">contains_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.contains_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks if the pair <code class="docutils literal notranslate"><span class="pre">(label,</span> <span class="pre">v)</span></code> is in the equivalence class returning
+true or false. If <code class="docutils literal notranslate"><span class="pre">v</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the both the pair <code class="docutils literal notranslate"><span class="pre">(label,</span> <span class="pre">v)</span></code>
+is passed as a single parameter in <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">contains_vertex</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">contains_vertex</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">the</span> <span class="o">==</span> <span class="n">operator</span> <span class="n">instead</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Singularity</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="o">.</span> <span class="n">Use</span> <span class="n">surface</span><span class="o">.</span><span class="n">point</span><span class="p">()</span> <span class="n">instead</span><span class="o">.</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">contains_vertex</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.coordinates">
 <span class="sig-name descname"><span class="pre">coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.coordinates" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a frozenset of coordinates for the closure of the point in the polygon
-with the provided label.</p>
-<p>The set will consist of one point if the point lies in the interior of a polygon,
-will be two points if the point lies in the interior of two edges of the polygon
-simultaneously and can be lots of points if the point is a singularity.</p>
+<dd><p>Return coordinates for the point in the in the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># random output: order depends on the Python version</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.graphical_surface_point">
 <span class="sig-name descname"><span class="pre">graphical_surface_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphical_surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.graphical_surface_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.graphical_surface_point" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the GraphicalSurfacePoint built from this SurfacePoint.</p>
+<dd><p>Return a
+<a class="reference internal" href="../graphical/surface_point.html#flatsurf.graphical.surface_point.GraphicalSurfacePoint" title="flatsurf.graphical.surface_point.GraphicalSurfacePoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.graphical.surface_point.GraphicalSurfacePoint</span></code></a> to
+represent this point graphically.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">half_translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">half_translation_surfaces</span><span class="o">.</span><span class="n">step_billiard</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">graphical_surface_point</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.is_vertex">
+<span class="sig-name descname"><span class="pre">is_vertex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.is_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this point is a singularity of the surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.labels">
 <span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.labels" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the list of labels of polygons containing the point in its closure.</p>
-<p>This will be a list of one label if the point is the the interior of a polygon,
-at most two labels if it is on the interior of an edge, and can be lots of labels
-if the point is a singularity.</p>
+<dd><p>Return the labels of polygons containing the point.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For a point in the interior of polygon, there is exactly one label:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For a point in the interior of an edge of a polygon, there can be up to
+two labels:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For a point at a vertex, there can be more labels:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates">
 <span class="sig-name descname"><span class="pre">num_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.num_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the number of different coordinate representations of the point.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">num_coordinates</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">num_coordinates</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="nb">len</span><span class="p">(</span><span class="n">representatives</span><span class="p">())</span> <span class="n">instead</span><span class="o">.</span>
+<span class="mi">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.one_vertex">
+<span class="sig-name descname"><span class="pre">one_vertex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.one_vertex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a pair (l, v) from the equivalence class of this singularity.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">one_vertex</span><span class="p">()</span>  <span class="c1"># random output: depends on the Python version</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">one_vertex</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">representative</span><span class="p">();</span> <span class="n">vertex</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span> <span class="n">instead</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.plot" title="Permalink to this definition">#</a></dt>
-<dd><p>Plot this point.</p>
-<p>There may be one argument which provides a graphical surface.
-All options are passed two the plotting method of GraphicalSurfacePoint.</p>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a plot of this point.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">half_translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">half_translation_surfaces</span><span class="o">.</span><span class="n">step_billiard</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">1</span> <span class="n">graphics</span> <span class="n">primitive</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="o">/</span><span class="mi">12</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">1</span> <span class="n">graphics</span> <span class="n">primitive</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.representative">
+<span class="sig-name descname"><span class="pre">representative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.representative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.representative" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a representative of this point, i.e., the first of
+<a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.representatives" title="flatsurf.geometry.surface_objects.SurfacePoint.representatives"><code class="xref py py-meth docutils literal notranslate"><span class="pre">representatives()</span></code></a>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>  <span class="c1"># random output: depends on the Python version</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.representatives">
+<span class="sig-name descname"><span class="pre">representatives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.representatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.representatives" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the representatives of this point as pairs of polygon labels and
+coordinates.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">representatives</span><span class="p">()</span>
+<span class="nb">frozenset</span><span class="p">({(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))})</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.surface">
 <span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.surface" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the surface containing this point.</p>
+<p>Depending on how this point was created, this can be either a
+<a class="reference internal" href="surface.html#flatsurf.geometry.surface.Surface" title="flatsurf.geometry.surface.Surface"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.surface.Surface</span></code></a> or a
+<a class="reference internal" href="similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface" title="flatsurf.geometry.similarity_surface.SimilaritySurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">flatsurf.geometry.similarity_surface.SimilaritySurface</span></code></a>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span> <span class="ow">is</span> <span class="n">S</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.surface_objects.SurfacePoint.vertex_set">
+<span class="sig-name descname"><span class="pre">vertex_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_objects.html#SurfacePoint.vertex_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the list of pairs (l, v) in the equivalence class of this singularity.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">permutation</span> <span class="o">=</span> <span class="n">SymmetricGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="s1">&#39;(1, 2)&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">origami</span><span class="p">(</span><span class="n">permutation</span><span class="p">,</span> <span class="n">permutation</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertex_set</span><span class="p">())</span>  <span class="c1"># random output: ordering depends on the Python version</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">vertex_set</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">representatives</span><span class="p">()</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">vertex</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span> <span class="n">instead</span>
+<span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -718,20 +902,20 @@ All options are passed two the plotting method of GraphicalSurfacePoint.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SaddleConnection.trajectory"><code class="docutils literal notranslate"><span class="pre">SaddleConnection.trajectory</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity"><code class="docutils literal notranslate"><span class="pre">Singularity</span></code></a><ul>
-<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity.contains_vertex"><code class="docutils literal notranslate"><span class="pre">Singularity.contains_vertex()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity.one_vertex"><code class="docutils literal notranslate"><span class="pre">Singularity.one_vertex()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity.surface"><code class="docutils literal notranslate"><span class="pre">Singularity.surface()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity.vertex_set"><code class="docutils literal notranslate"><span class="pre">Singularity.vertex_set()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.Singularity"><code class="docutils literal notranslate"><span class="pre">Singularity()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint"><code class="docutils literal notranslate"><span class="pre">SurfacePoint</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.contains_vertex()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.coordinates"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.coordinates()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.graphical_surface_point"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.graphical_surface_point()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.is_vertex()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.labels"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.labels()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.num_coordinates()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.one_vertex()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.plot"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.plot()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.representative"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.representative()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.representatives"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.representatives()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.surface"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.surface()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set"><code class="docutils literal notranslate"><span class="pre">SurfacePoint.vertex_set()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -994,9 +994,13 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">optimal_number_field</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;can only optimize_number_field for a finite surface&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;can only optimize_number_field for a finite surface&quot;</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">lazy</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;lazy copying is unavailable when optimize_number_field=True&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;lazy copying is unavailable when optimize_number_field=True&quot;</span>
+                <span class="p">)</span>
             <span class="n">coordinates_AA</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
@@ -1601,9 +1605,9 @@
 <span class="sd">        Represents the Singularity associated to the v-th vertex of the polygon</span>
 <span class="sd">        with label ``label``.</span>
 
-<span class="sd">        If the surface is infinite, the limit needs to be set. In this case the construction</span>
-<span class="sd">        of the singularity is successful if the sequence of vertices hit by passing through</span>
-<span class="sd">        edges closes up in limit or less steps.</span>
+<span class="sd">        If the surface is infinite, the limit can be set. In this case the</span>
+<span class="sd">        construction of the singularity is successful if the sequence of</span>
+<span class="sd">        vertices hit by passing through edges closes up in limit or less steps.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -1611,11 +1615,15 @@
 <span class="sd">            sage: s = translation_surfaces.square_torus()</span>
 <span class="sd">            sage: pc = s.minimal_cover(cover_type=&quot;planar&quot;)</span>
 <span class="sd">            sage: pc.singularity(pc.base_label(),0)</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.</span>
+<span class="sd">            Vertex 0 of polygon (0, (x, y) |-&gt; (x, y))</span>
+<span class="sd">            sage: pc.singularity(pc.base_label(),0,limit=1)</span>
 <span class="sd">            Traceback (most recent call last):</span>
 <span class="sd">            ...</span>
-<span class="sd">            ValueError: need a limit when working with an infinite surface</span>
-<span class="sd">            sage: pc.singularity(pc.base_label(),0,limit=4)</span>
-<span class="sd">            singularity with vertex equivalence class frozenset(...)</span>
+<span class="sd">            ValueError: number of edges at singularity exceeds limit</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span></div>
 
@@ -1631,8 +1639,8 @@
 
 <span class="sd">        - ``ring`` (optional) - a ring for the coordinates</span>
 
-<span class="sd">        - ``limit`` (optional) - undocumented (only necessary if the point corresponds</span>
-<span class="sd">          to a singularity in an infinite surface)</span>
+<span class="sd">        - ``limit`` (optional) - undocumented (only relevant if the point</span>
+<span class="sd">          corresponds to a singularity in an infinite surface)</span>
 
 <span class="sd">        EXAMPLES::</span>
 
@@ -1640,13 +1648,12 @@
 <span class="sd">            sage: s = translation_surfaces.square_torus()</span>
 <span class="sd">            sage: pc = s.minimal_cover(cover_type=&quot;planar&quot;)</span>
 <span class="sd">            sage: pc.surface_point(pc.base_label(),(0,0))</span>
-<span class="sd">            Traceback (most recent call last):</span>
-<span class="sd">            ...</span>
-<span class="sd">            ValueError: need a limit when working with an infinite surface</span>
-<span class="sd">            sage: pc.surface_point(pc.base_label(),(1,0),limit=4)</span>
-<span class="sd">            Surface point with 4 coordinate representations</span>
+<span class="sd">            Vertex 0 of polygon (0, (x, y) |-&gt; (x, y))</span>
 <span class="sd">            sage: z = pc.surface_point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)</span>
-<span class="sd">            sage: next(iter(z.coordinates(z.labels()[0]))).parent()</span>
+<span class="sd">            doctest:warning</span>
+<span class="sd">            ...</span>
+<span class="sd">            UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points&#39; coordinates live in the base ring</span>
+<span class="sd">            sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()</span>
 <span class="sd">            Vector space of dimension 2 over Algebraic Real Field</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">SurfacePoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span></div>
@@ -2088,7 +2095,7 @@
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;A limit must be set for infinite surfaces.&quot;</span><span class="p">)</span>
             <span class="n">limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">l1</span><span class="p">,</span> <span class="n">p1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">(</span><span class="n">polygons</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">c1</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">circumscribing_circle</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -2397,7 +2404,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span>
             <span class="k">if</span> <span class="n">initial_vertex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;when initial_label is not provided, then initial_vertex must not be provided either&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;when initial_label is not provided, then initial_vertex must not be provided either&quot;</span>
+                <span class="p">)</span>
             <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">saddle_connections</span><span class="p">(</span>
                     <span class="n">squared_length_bound</span><span class="p">,</span> <span class="n">initial_label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">sc_list</span><span class="o">=</span><span class="n">sc_list</span>
@@ -2578,7 +2587,7 @@
 <span class="sd">            sage: import flatsurf</span>
 <span class="sd">            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)</span>
 <span class="sd">            sage: S.plot()</span>
-<span class="sd">            Graphics object consisting of 21 graphics primitives</span>
+<span class="sd">            ...Graphics object consisting of 21 graphics primitives</span>
 
 <span class="sd">        Keywords are passed on to the underlying plotting routines, see</span>
 <span class="sd">        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::</span>

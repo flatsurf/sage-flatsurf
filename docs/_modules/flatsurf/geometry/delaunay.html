@@ -306,7 +306,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="n">similarity_surface</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Surface must be immutable.&quot;</span><span class="p">)</span>
 
@@ -504,7 +503,6 @@
                     <span class="c1"># now ppp is a triangle</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">_edge_needs_flip</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">):</span>
-
                         <span class="c1"># Perform the flip</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span>
                             <span class="n">ll</span><span class="p">,</span> <span class="n">ee</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_direction</span>

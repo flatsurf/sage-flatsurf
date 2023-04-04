@@ -1050,7 +1050,7 @@
 </li>
         <li><a href="geometry/polygon.html#flatsurf.geometry.polygon.ConvexPolygon.contains_point">contains_point() (flatsurf.geometry.polygon.ConvexPolygon method)</a>
 </li>
-        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.contains_vertex">contains_vertex() (flatsurf.geometry.surface_objects.Singularity method)</a>
+        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex">contains_vertex() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
         <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpaces.convex_hull">convex_hull() (flatsurf.geometry.hyperbolic.HyperbolicHalfSpaces static method)</a>
 
@@ -2026,7 +2026,11 @@
 </li>
         </ul></li>
         <li><a href="geometry/polygon.html#flatsurf.geometry.polygon.PolygonPosition.is_vertex">is_vertex() (flatsurf.geometry.polygon.PolygonPosition method)</a>
+
+        <ul>
+          <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex">(flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
+        </ul></li>
         <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic.is_vertical">is_vertical() (flatsurf.geometry.hyperbolic.HyperbolicGeodesic method)</a>
 </li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.is_visible">is_visible() (flatsurf.graphical.surface.GraphicalSurface method)</a>
@@ -2360,7 +2364,7 @@
         </ul></li>
         <li><a href="geometry/mappings.html#flatsurf.geometry.mappings.one_delaunay_flip_mapping">one_delaunay_flip_mapping() (in module flatsurf.geometry.mappings)</a>
 </li>
-        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.one_vertex">one_vertex() (flatsurf.geometry.surface_objects.Singularity method)</a>
+        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex">one_vertex() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
         <li><a href="geometry/l_infinity_delaunay_cells.html#flatsurf.geometry.l_infinity_delaunay_cells.opposite_condition">opposite_condition() (in module flatsurf.geometry.l_infinity_delaunay_cells)</a>
 </li>
@@ -2740,10 +2744,10 @@
         </ul></li>
         <li><a href="geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.rectangle">rectangle() (flatsurf.geometry.polygon.PolygonsConstructor method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/polygon.html#flatsurf.geometry.polygon.PolygonsConstructor.regular_ngon">regular_ngon() (flatsurf.geometry.polygon.PolygonsConstructor static method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.regular_octagon">regular_octagon() (flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators static method)</a>
 </li>
         <li><a href="geometry/mappings.html#flatsurf.geometry.mappings.ReindexMapping">ReindexMapping (class in flatsurf.geometry.mappings)</a>
@@ -2761,6 +2765,10 @@
         <li><a href="geometry/mappings.html#flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping.removed_label">removed_label() (flatsurf.geometry.mappings.SimilarityJoinPolygonsMapping method)</a>
 </li>
         <li><a href="geometry/similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface.reposition_polygons">reposition_polygons() (flatsurf.geometry.similarity_surface.SimilaritySurface method)</a>
+</li>
+        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representative">representative() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
+</li>
+        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representatives">representatives() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.reset_letters">reset_letters() (flatsurf.graphical.surface.GraphicalSurface method)</a>
 </li>
@@ -2858,9 +2866,9 @@
 </li>
         <li><a href="geometry/tangent_bundle.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentVector">SimilaritySurfaceTangentVector (class in flatsurf.geometry.tangent_bundle)</a>
 </li>
-        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">Singularity (class in flatsurf.geometry.surface_objects)</a>
-</li>
         <li><a href="geometry/similarity_surface.html#flatsurf.geometry.similarity_surface.SimilaritySurface.singularity">singularity() (flatsurf.geometry.similarity_surface.SimilaritySurface method)</a>
+</li>
+        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">Singularity() (in module flatsurf.geometry.surface_objects)</a>
 </li>
         <li><a href="geometry/polygon.html#flatsurf.geometry.polygon.EquiangularPolygons.slopes">slopes() (flatsurf.geometry.polygon.EquiangularPolygons method)</a>
 </li>
@@ -2958,8 +2966,6 @@
           <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.surface">(flatsurf.geometry.surface_objects.Cylinder method)</a>
 </li>
           <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.surface">(flatsurf.geometry.surface_objects.SaddleConnection method)</a>
-</li>
-          <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.surface">(flatsurf.geometry.surface_objects.Singularity method)</a>
 </li>
           <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.surface">(flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
@@ -3144,7 +3150,7 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity.vertex_set">vertex_set() (flatsurf.geometry.surface_objects.Singularity method)</a>
+        <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set">vertex_set() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
         <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry.vertical">vertical() (flatsurf.geometry.hyperbolic.HyperbolicGeometry method)</a>
 
