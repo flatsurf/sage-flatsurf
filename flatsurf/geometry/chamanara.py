@@ -124,7 +124,11 @@ class ChamanaraSurface(Surface):
 
         """
         if isinstance(other, ChamanaraSurface):
-            return self._p == other._p and self._base_ring == other._base_ring and self._base_label == other._base_label
+            return (
+                self._p == other._p
+                and self._base_ring == other._base_ring
+                and self._base_label == other._base_label
+            )
 
         return super().__eq__(other)
 

@@ -368,7 +368,11 @@ class GL2RImageSurface(Surface):
 
     def __eq__(self, other):
         if isinstance(other, GL2RImageSurface):
-            if self._s == other._s and self._m == other._m and self.base_ring() == other.base_ring():
+            if (
+                self._s == other._s
+                and self._m == other._m
+                and self.base_ring() == other.base_ring()
+            ):
                 return True
 
         return super().__eq__(self, other)

@@ -442,7 +442,12 @@ class TFractalSurface(Surface):
 
     def __eq__(self, other):
         if isinstance(other, TFractalSurface):
-            return self._w == other._w and self._h1 == other._h1 and self._r == other._r and self._h2 == other._h2
+            return (
+                self._w == other._w
+                and self._h1 == other._h1
+                and self._r == other._r
+                and self._h2 == other._h2
+            )
 
         return super().__eq__(other)
 
@@ -1595,6 +1600,7 @@ class TranslationSurfaceGenerators:
 
         def _position_function(self, n):
             from flatsurf.geometry.similarity import SimilarityGroup
+
             SG = SimilarityGroup(QQ)
             if n % 2 == 0:
                 return SG((n // 2, n // 2))
