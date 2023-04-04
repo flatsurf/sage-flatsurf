@@ -462,11 +462,11 @@ class SurfacePoint(SageObject):
             sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
             sage: p = S.point(0, (0, 0))
             sage: p.plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
             sage: p = S.point(0, (0, 25/12))
             sage: p.plot()
-            Graphics object consisting of 1 graphics primitive
+            ...Graphics object consisting of 1 graphics primitive
 
         """
         graphical_surface = None

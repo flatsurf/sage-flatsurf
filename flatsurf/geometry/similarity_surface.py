@@ -2328,7 +2328,7 @@ class SimilaritySurface(SageObject):
             sage: import flatsurf
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
             sage: S.plot()
-            Graphics object consisting of 21 graphics primitives
+            ...Graphics object consisting of 21 graphics primitives
 
         Keywords are passed on to the underlying plotting routines, see
         :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
