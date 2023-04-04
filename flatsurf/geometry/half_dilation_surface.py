@@ -47,7 +47,7 @@ class HalfDilationSurface(SimilaritySurface):
             The infinite staircase
             sage: m=Matrix([[1,2],[0,1]])
             sage: s2=m*s
-            sage: TestSuite(s2).run(skip='_test_pickling')
+            sage: TestSuite(s2).run()
             sage: s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
 
@@ -365,6 +365,13 @@ class GL2RImageSurface(Surface):
             pp, ee = self._s.opposite_edge(p, polygon.num_edges() - 1 - e)
             polygon2 = self._s.polygon(pp)
             return pp, polygon2.num_edges() - 1 - ee
+
+    def __eq__(self, other):
+        if isinstance(other, GL2RImageSurface):
+            if self._s == other._s and self._m == other._m and self.base_ring() == other.base_ring():
+                return True
+
+        return super().__eq__(self, other)
 
 
 class GL2RMapping(SurfaceMapping):
