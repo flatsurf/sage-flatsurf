@@ -4,13 +4,13 @@
 
 **Changed:**
 
-* The parameter ``limit`` for `SurfacePoint` and `Singularity` is now optional. If not given for infinite surfaces, the search will keep going until the object has been constructed.
+* The parameter ``limit`` for ``SurfacePoint`` and ``Singularity`` is now optional. If not given for infinite surfaces, the search will keep going until the object has been constructed.
 
-* Changed how points print. Instead of `Surface point with n coordinate representations`, points now print as one of these coordinate representations.
+* Changed how points print. Instead of ``Surface point with n coordinate representations``, points now print as one of these coordinate representations.
 
 **Deprecated:**
 
-* Deprecated `Singularity` and most of its methods in favor of the more generic `SurfacePoint`.
+* Deprecated ``Singularity`` and most of its methods in favor of the more generic ``SurfacePoint``.
 
 **Performance:**
 
