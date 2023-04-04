@@ -756,9 +756,11 @@ class GraphicalSurface:
                 continue
 
             if v is None:
-                points.add(surface.surface_point(
-                    label, coords, ring=ring, limit=singularity_limit
-                ))
+                points.add(
+                    surface.surface_point(
+                        label, coords, ring=ring, limit=singularity_limit
+                    )
+                )
             else:
                 direction = (~(gp.transformation().derivative())) * vector(v)
                 if pos.is_vertex():
@@ -766,26 +768,32 @@ class GraphicalSurface:
                     polygon = surface.polygon(label)
 
                     from flatsurf.geometry.polygon import wedge_product
+
                     if wedge_product(polygon.edge(vertex), direction) < 0:
                         continue
-                    if wedge_product(polygon.edge((vertex - 1) % polygon.num_edges()), direction) < 0:
+                    if (
+                        wedge_product(
+                            polygon.edge((vertex - 1) % polygon.num_edges()), direction
+                        )
+                        < 0
+                    ):
                         continue
 
-                points.add(surface.tangent_vector(
-                    label,
-                    coords,
-                    direction,
-                    ring=ring,
-                ))
+                points.add(
+                    surface.tangent_vector(
+                        label,
+                        coords,
+                        direction,
+                        ring=ring,
+                    )
+                )
             if not return_all:
                 return next(iter(points))
 
         if return_all:
             return points
         else:
-            raise ValueError(
-                "Point or vector is not in a visible graphical polygon."
-            )
+            raise ValueError("Point or vector is not in a visible graphical polygon.")
 
     def opposite_edge(self, p, e):
         r"""

@@ -735,9 +735,13 @@ class SimilaritySurface(SageObject):
             )
         if optimal_number_field is True:
             if not self.is_finite():
-                raise NotImplementedError("can only optimize_number_field for a finite surface")
+                raise NotImplementedError(
+                    "can only optimize_number_field for a finite surface"
+                )
             if lazy:
-                raise NotImplementedError("lazy copying is unavailable when optimize_number_field=True")
+                raise NotImplementedError(
+                    "lazy copying is unavailable when optimize_number_field=True"
+                )
             coordinates_AA = []
             for label, p in self.label_iterator(polygons=True):
                 for e in p.edges():
@@ -1832,7 +1836,7 @@ class SimilaritySurface(SageObject):
                 raise NotImplementedError("A limit must be set for infinite surfaces.")
             limit = self.num_polygons()
         count = 0
-        for (l1, p1) in self.label_iterator(polygons=True):
+        for l1, p1 in self.label_iterator(polygons=True):
             try:
                 c1 = p1.circumscribing_circle()
             except ValueError:
@@ -2141,7 +2145,9 @@ class SimilaritySurface(SageObject):
             if not self.is_finite():
                 raise NotImplementedError
             if initial_vertex is not None:
-                raise ValueError("when initial_label is not provided, then initial_vertex must not be provided either")
+                raise ValueError(
+                    "when initial_label is not provided, then initial_vertex must not be provided either"
+                )
             for label in self.label_iterator():
                 self.saddle_connections(
                     squared_length_bound, initial_label=label, sc_list=sc_list

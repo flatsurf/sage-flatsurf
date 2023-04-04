@@ -155,6 +155,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             it = self.label_iterator()
         else:
             from itertools import islice
+
             it = islice(self.label_iterator(), 30)
 
         for lab in it:

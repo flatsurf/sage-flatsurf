@@ -58,7 +58,6 @@ def cmp(x, y):
 
 
 class RelativeHomologyClass(ModuleElement):
-
     # Implementation notes:
     # self._d will be a dictionary mapping mapping pairs (label, edge) to the base_ring
     # By convention a pair will be in the dictionary only if its image is non-zero.

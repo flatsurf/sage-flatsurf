@@ -13,6 +13,7 @@ def _is_finite(surface):
         return False
 
     from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+
     if isinstance(surface, RationalConeSurface):
         return True
 
@@ -23,9 +24,11 @@ def _is_finite(surface):
 
         for e in range(polygon.num_edges()):
             from flatsurf.geometry.similarity_surface import SimilaritySurface
+
             m = SimilaritySurface.edge_matrix(surface, label, e)
 
             from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+
             if not is_cosine_sine_of_rational(m[0][0], m[0][1]):
                 return False
 

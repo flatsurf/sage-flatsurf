@@ -59,8 +59,13 @@ def Singularity(similarity_surface, label, v, limit=None):
 
     """
     import warnings
-    warnings.warn("Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.")
-    return similarity_surface.point(label, similarity_surface.polygon(label).vertex(v), limit=limit)
+
+    warnings.warn(
+        "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead."
+    )
+    return similarity_surface.point(
+        label, similarity_surface.polygon(label).vertex(v), limit=limit
+    )
 
 
 class SurfacePoint(SageObject):
@@ -123,18 +128,24 @@ class SurfacePoint(SageObject):
 
         if ring is not surface.base_ring():
             import warnings
-            warnings.warn("the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring")
+
+            warnings.warn(
+                "the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring"
+            )
 
         polygon = surface.polygon(label)
 
         from sage.modules.free_module import VectorSpace
+
         point = VectorSpace(ring, 2)(point)
         point.set_immutable()
 
         position = polygon.get_point_position(point)
 
         if not position.is_inside():
-            raise NotImplementedError("point must be positioned within the polygon with the given label")
+            raise NotImplementedError(
+                "point must be positioned within the polygon with the given label"
+            )
 
         if position.is_in_interior():
             self._representatives = {(label, point)}
@@ -162,7 +173,10 @@ class SurfacePoint(SageObject):
                     if limit < 0:
                         raise ValueError("number of edges at singularity exceeds limit")
 
-            self._representatives = {(label, surface.polygon(label).vertex(vertex)) for (label, vertex) in self._representatives}
+            self._representatives = {
+                (label, surface.polygon(label).vertex(vertex))
+                for (label, vertex) in self._representatives
+            }
         else:
             raise NotImplementedError
 
@@ -228,9 +242,14 @@ class SurfacePoint(SageObject):
 
         """
         import warnings
-        warnings.warn("one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead")
+
+        warnings.warn(
+            "one_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use (label, coordinates) = point.representative(); vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead"
+        )
         label, coordinates = self.representative()
-        vertex = self.surface().polygon(label).get_point_position(coordinates).get_vertex()
+        vertex = (
+            self.surface().polygon(label).get_point_position(coordinates).get_vertex()
+        )
         return label, vertex
 
     def representatives(self):
@@ -288,9 +307,21 @@ class SurfacePoint(SageObject):
 
         """
         import warnings
-        warnings.warn("vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead")
 
-        return [(label, self.surface().polygon(label).get_point_position(coordinates).get_vertex()) for label, coordinates in self.representatives()]
+        warnings.warn(
+            "vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead"
+        )
+
+        return [
+            (
+                label,
+                self.surface()
+                .polygon(label)
+                .get_point_position(coordinates)
+                .get_vertex(),
+            )
+            for label, coordinates in self.representatives()
+        ]
 
     def contains_vertex(self, label, v=None):
         r"""
@@ -318,7 +349,10 @@ class SurfacePoint(SageObject):
 
         """
         import warnings
-        warnings.warn("contains_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use the == operator instead")
+
+        warnings.warn(
+            "contains_vertex() is deprecated and will be removed in a future version of sage-flatsurf; use the == operator instead"
+        )
 
         if v is None:
             label, v = label
@@ -344,7 +378,10 @@ class SurfacePoint(SageObject):
 
         """
         import warnings
-        warnings.warn("num_coordinates() is deprecated and will be removed in a future version of sage-flatsurf; use len(representatives()) instead.")
+
+        warnings.warn(
+            "num_coordinates() is deprecated and will be removed in a future version of sage-flatsurf; use len(representatives()) instead."
+        )
 
         return len(self._representatives)
 
@@ -393,7 +430,9 @@ class SurfacePoint(SageObject):
             ((0, 0), (1, 0), (0, 1), (1, 1))
 
         """
-        return tuple(coordinates for (l, coordinates) in self._representatives if l == label)
+        return tuple(
+            coordinates for (l, coordinates) in self._representatives if l == label
+        )
 
     def graphical_surface_point(self, graphical_surface=None):
         r"""
@@ -434,7 +473,9 @@ class SurfacePoint(SageObject):
         if args:
             graphical_surface = args.pop()
 
-        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(*args, **kwargs)
+        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
+            *args, **kwargs
+        )
 
     def __repr__(self):
         r"""
@@ -451,7 +492,12 @@ class SurfacePoint(SageObject):
         label, coordinates = self.representative()
 
         if self.is_vertex():
-            vertex = self.surface().polygon(label).get_point_position(coordinates).get_vertex()
+            vertex = (
+                self.surface()
+                .polygon(label)
+                .get_point_position(coordinates)
+                .get_vertex()
+            )
             return "Vertex {} of polygon {}".format(vertex, label)
 
         return "Point {} of polygon {}".format(coordinates, label)
@@ -630,7 +676,9 @@ class SaddleConnection(SageObject):
             # Attempt to infer the end_direction.
             if isinstance(self._surface, DilationSurface):
                 end_direction = -self._direction
-            elif isinstance(self._surface, HalfDilationSurface) and end_data is not None:
+            elif (
+                isinstance(self._surface, HalfDilationSurface) and end_data is not None
+            ):
                 p = self._surface.polygon(end_data[0])
                 if (
                     wedge_product(p.edge(end_data[1]), self._direction) >= 0
@@ -701,7 +749,9 @@ class SaddleConnection(SageObject):
 
             if traj.segments()[0].is_edge():
                 # Special case (The below method causes error if the trajectory is just an edge.)
-                self._holonomy = self._surface.polygon(start_data[0]).edge(start_data[1])
+                self._holonomy = self._surface.polygon(start_data[0]).edge(
+                    start_data[1]
+                )
                 self._end_holonomy = self._surface.polygon(self._end_data[0]).edge(
                     self._end_data[1]
                 )
@@ -805,7 +855,9 @@ class SaddleConnection(SageObject):
         from .cone_surface import ConeSurface
 
         if not isinstance(self._surface, ConeSurface):
-            raise NotImplementedError("length of a saddle connection only makes sense for cone surfaces")
+            raise NotImplementedError(
+                "length of a saddle connection only makes sense for cone surfaces"
+            )
 
         return vector(AA, self._holonomy).norm()
 
@@ -824,7 +876,9 @@ class SaddleConnection(SageObject):
         """
         return self._surface.tangent_vector(
             self._surfacetart_data[0],
-            self._surface.polygon(self._surfacetart_data[0]).vertex(self._surfacetart_data[1]),
+            self._surface.polygon(self._surfacetart_data[0]).vertex(
+                self._surfacetart_data[1]
+            ),
             self._direction,
         )
 
@@ -836,7 +890,10 @@ class SaddleConnection(SageObject):
         """
         if cache is not None:
             import warnings
-            warnings.warn("The cache keyword argument of trajectory() is ignored. Trajectories are always cached.")
+
+            warnings.warn(
+                "The cache keyword argument of trajectory() is ignored. Trajectories are always cached."
+            )
 
         v = self.start_tangent_vector()
         traj = v.straight_line_trajectory()
@@ -1341,7 +1398,9 @@ class Cylinder(SageObject):
         from .translation_surface import TranslationSurface
 
         if not isinstance(self._surface, TranslationSurface):
-            raise NotImplementedError("holonomy currently only computable for translation surfaces")
+            raise NotImplementedError(
+                "holonomy currently only computable for translation surfaces"
+            )
 
         V = self._surface.vector_space()
         total = V.zero()
@@ -1369,7 +1428,9 @@ class Cylinder(SageObject):
         from .cone_surface import ConeSurface
 
         if not isinstance(self._surface, ConeSurface):
-            raise NotImplementedError("circumference only makes sense for cone surfaces")
+            raise NotImplementedError(
+                "circumference only makes sense for cone surfaces"
+            )
 
         total = 0
         for sc in self._boundary1:

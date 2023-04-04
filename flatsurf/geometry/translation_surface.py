@@ -142,7 +142,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             return s
         else:
             if in_place:
-                raise NotImplementedError("in place standardization only available for finite surfaces")
+                raise NotImplementedError(
+                    "in place standardization only available for finite surfaces"
+                )
 
             return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
@@ -375,7 +377,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         from flatsurf.geometry.polygon import wedge_product, ConvexPolygons
 
         if local:
-
             ss = s.copy(mutable=True, new_field=field)
             us = ss.underlying_surface()
 
@@ -403,9 +404,15 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     c = A1 / (-2 * A2)
                     if field.zero() < c and c < field.one():
                         if A0 + A1 * c + A2 * c**2 <= field.zero():
-                            raise ValueError("Triangle with label %r degenerates at critical point before endpoint" % label)
+                            raise ValueError(
+                                "Triangle with label %r degenerates at critical point before endpoint"
+                                % label
+                            )
                 if A0 + A1 + A2 <= field.zero():
-                    raise ValueError("Triangle with label %r degenerates at or before endpoint" % label)
+                    raise ValueError(
+                        "Triangle with label %r degenerates at or before endpoint"
+                        % label
+                    )
                 # Triangle does not degenerate.
                 us.change_polygon(
                     label, P(vertices=[vector_space.zero(), a0 + a1, b0 + b1])
@@ -445,7 +452,11 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 for singularity, vect in iteritems(deformation):
                     found_start = None
                     for label, coordinates in singularity.representatives():
-                        v = s.polygon(label).get_point_position(coordinates).get_vertex()
+                        v = (
+                            s.polygon(label)
+                            .get_point_position(coordinates)
+                            .get_vertex()
+                        )
                         if (
                             wedge_product(s.polygon(label).edge(v), nonzero) >= 0
                             and wedge_product(
@@ -594,6 +605,7 @@ class MinimalTranslationCover(Surface):
 
         # We are finite if and only if self._ss is a finite RationalConeSurface.
         from flatsurf.geometry.minimal_cover import _is_finite
+
         finite = _is_finite(self._ss)
 
         identity = identity_matrix(self._ss.base_ring(), 2)
