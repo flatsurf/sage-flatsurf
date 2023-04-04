@@ -72,7 +72,7 @@ class SurfacePoint(SageObject):
     - ``surface`` -- a :class:`flatsurf.geometry.surface.Surface` or a
       :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
 
-    - ``label`` -- a polygon label for the polygon with respect ot which the
+    - ``label`` -- a polygon label for the polygon with respect to which the
       ``point`` coordinates can be made sense of
 
     - ``point`` -- coordinates of a point in the polygon ``label``
