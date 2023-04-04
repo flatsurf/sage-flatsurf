@@ -426,7 +426,7 @@ class SurfacePoint(SageObject):
             sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
 
             sage: p = S.point(0, (0, 0))
-            sage: p.coordinates(0)
+            sage: p.coordinates(0)  # random output: order depends on the Python version
             ((0, 0), (1, 0), (0, 1), (1, 1))
 
         """
