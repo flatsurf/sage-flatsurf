@@ -1,1 +1,1 @@
-{"regressions": [["polygons.time_triangle({48, 26, 75})", "graphs/arch-x86_64/branch-master/cppyy_=2.0.0,_3/cpu-Standard_DS2_v2/cxx-compiler/gap-defaults/machine-Azure/matplotlib-base/os-Linux/pip+flipper/pyeantic-1.0.3/pyexactreal-2.2.1/pyflatsurf-3.9.3/python/ram-61830880/sagelib-9.4/scipy/surface-dynamics_=0.4.7/polygons.time_triangle.json", {}, 4, 11.775884459000054, 8.951024637499984, [[null, 1886, 9.177177290999964, 8.951024637499984], [null, 1893, 10.767417836000021, 8.951024637499984]]]]}
+{"regressions": []}
