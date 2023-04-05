@@ -391,7 +391,7 @@ class GL2RImageSurface(Surface):
             ):
                 return True
 
-        return super().__eq__(self, other)
+        return super().__eq__(other)
 
 
 class GL2RMapping(SurfaceMapping):
