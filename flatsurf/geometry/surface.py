@@ -2107,7 +2107,7 @@ class LabelWalker:
         return self._s
 
 
-class ExtraLabel(SageObject):
+class ExtraLabel:
     r"""
     Used to spit out new labels.
     """
