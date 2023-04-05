@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Some tools for 2x2 matrices and planar geometry.
 """
@@ -21,11 +20,8 @@ Some tools for 2x2 matrices and planar geometry.
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
-from __future__ import absolute_import, print_function, division
-
 from sage.rings.all import AA, QQbar, RR
 
-from sage.matrix.constructor import matrix, identity_matrix
 from sage.modules.free_module_element import vector
 
 

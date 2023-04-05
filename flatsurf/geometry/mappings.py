@@ -19,16 +19,8 @@ r"""Mappings between translation surfaces."""
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
 from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
-from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
-from flatsurf.geometry.similarity_surface import SimilaritySurface
-
-from sage.rings.infinity import Infinity
-from sage.structure.sage_object import SageObject
+from flatsurf.geometry.surface import Surface_dict
 
 
 class SurfaceMapping:
@@ -194,7 +186,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             vs.append(poly1.edge(i))
 
         inv_edge_map = {}
-        for key, value in iteritems(edge_map):
+        for key, value in edge_map.items():
             inv_edge_map[value] = (p1, key)
 
         if s.base_label() == p2:
@@ -382,7 +374,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             else:  # i>=v2
                 old_to_new_labels[i] = (p, i - v2 + 1)
         new_to_old_labels = {}
-        for i, pair in iteritems(old_to_new_labels):
+        for i, pair in old_to_new_labels.items():
             new_to_old_labels[pair] = i
 
         # This glues the split polygons together.

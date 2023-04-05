@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 The gothic locus
 
@@ -23,7 +22,6 @@ From the article McMullen-Mukamel-Wright (2017).
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
 pytest.importorskip("pyflatsurf")  # noqa

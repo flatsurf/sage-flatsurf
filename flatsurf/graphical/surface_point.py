@@ -8,13 +8,6 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
-from flatsurf.graphical.surface import GraphicalSurface
-
-# The real vector space:
-from flatsurf.geometry.surface_objects import SurfacePoint
 from sage.plot.point import point2d
 
 

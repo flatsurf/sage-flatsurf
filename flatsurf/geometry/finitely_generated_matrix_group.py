@@ -40,9 +40,6 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.rings.integer import Integer
 from sage.structure.parent import Parent
 from sage.groups.group import Group

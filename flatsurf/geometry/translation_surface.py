@@ -2,10 +2,6 @@ r"""
 Translation Surfaces.
 """
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
 from sage.matrix.constructor import identity_matrix
 
 from .surface import Surface
@@ -137,7 +133,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 # if the coordinates of the best vertex differs from the origin.
                 if not (best == 0 and best_pt.is_zero()):
                     cv[label] = best
-            for label, v in iteritems(cv):
+            for label, v in cv.items():
                 s.set_vertex_zero(label, v, in_place=True)
             return s
         else:
@@ -350,7 +346,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         s = self
         # Find a common field
         field = s.base_ring()
-        for singularity, v in iteritems(deformation):
+        for singularity, v in deformation.items():
             if v.parent().base_field() != field:
                 from sage.structure.element import get_coercion_model
 
@@ -367,7 +363,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         )  # dictionary associating the vertices.
         deformed_labels = set()  # list of polygon labels being deformed.
 
-        for singularity, vect in iteritems(deformation):
+        for singularity, vect in deformation.items():
             for label, coordinates in singularity.representatives():
                 v = self.polygon(label).get_point_position(coordinates).get_vertex()
                 vertex_deformation[(label, v)] = vect
@@ -423,7 +419,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             # We can only do this deformation if all the rel vector are parallel.
             # Check for this.
             nonzero = None
-            for singularity, vect in iteritems(deformation):
+            for singularity, vect in deformation.items():
                 vvect = vector_space(vect)
                 if vvect != vector_space.zero():
                     if nonzero is None:
@@ -449,7 +445,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     ss.apply_matrix(prod)
                 ss.delaunay_triangulation(direction=nonzero, in_place=True)
                 deformation2 = {}
-                for singularity, vect in iteritems(deformation):
+                for singularity, vect in deformation.items():
                     found_start = None
                     for label, coordinates in singularity.representatives():
                         v = (

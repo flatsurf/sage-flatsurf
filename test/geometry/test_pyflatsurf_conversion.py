@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Discriminant loci in H(1,1)
 """
@@ -21,7 +20,6 @@ Discriminant loci in H(1,1)
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
 pytest.importorskip("pyflatsurf")  # noqa
@@ -61,18 +59,18 @@ def test_origami2():
 @pytest.mark.parametrize("n", [3, 5, 7])
 def test_regular_n_gons(n):
     S = translation_surfaces.veech_double_n_gon(n)
-    T = to_pyflatsurf(S)
+    to_pyflatsurf(S)
 
 
 @pytest.mark.parametrize("g", [3, 4])
 def test_arnoux_yoccoz(g):
     A = translation_surfaces.arnoux_yoccoz(g)
-    B = to_pyflatsurf(A)
+    to_pyflatsurf(A)
 
 
 def test_ward3():
     W3 = translation_surfaces.ward(3)
-    X3 = to_pyflatsurf(W3)
+    to_pyflatsurf(W3)
 
     W17 = translation_surfaces.ward(17)
-    X17 = to_pyflatsurf(W17)
+    to_pyflatsurf(W17)

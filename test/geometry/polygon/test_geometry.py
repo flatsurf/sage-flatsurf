@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Test basic geometry methods used in polygon construction.
 """

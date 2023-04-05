@@ -1,12 +1,8 @@
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.groups.group import Group
 from sage.categories.groups import Groups
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.element import MultiplicativeGroupElement
 from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
-from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ
 
 from .translation_surface import AbstractOrigami
