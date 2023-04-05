@@ -157,15 +157,13 @@ class GraphicalSurface:
 
     def __init__(
         self,
-        similarity_surface,
+        surface,
         adjacencies=None,
         polygon_labels=True,
         edge_labels="gluings",
         default_position_function=None,
     ):
-        if not isinstance(similarity_surface, SimilaritySurface):
-            raise TypeError
-        self._ss = similarity_surface
+        self._ss = surface
         self._default_position_function = default_position_function
         self._polygons = {}
         self._visible = set([self._ss.base_label()])

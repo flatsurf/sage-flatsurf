@@ -58,6 +58,8 @@ class LazyTriangulatedSurface(Surface):
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
+        self._reference = similarity_surface
+
         # This surface will converge to the Delaunay Triangulation
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
 
@@ -93,6 +95,9 @@ class LazyTriangulatedSurface(Surface):
         else:
             return (pp, ee)
 
+    def _cache_key(self):
+        return (type(self), self._reference)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -108,7 +113,7 @@ class LazyTriangulatedSurface(Surface):
 
         """
         if isinstance(other, LazyTriangulatedSurface):
-            if self._s == other._s:
+            if self._reference == other._reference:
                 return True
 
         return super().__eq__(other)
@@ -172,6 +177,8 @@ class LazyDelaunayTriangulatedSurface(Surface):
         """
         if similarity_surface.underlying_surface().is_mutable():
             raise ValueError("Surface must be immutable.")
+
+        self._reference = similarity_surface
 
         # This surface will converge to the Delaunay Triangulation
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
@@ -330,6 +337,12 @@ class LazyDelaunayTriangulatedSurface(Surface):
         self._certified_labels.add(label)
         return True
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (type(self), self._reference, self._direction)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -345,7 +358,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
 
         """
         if isinstance(other, LazyDelaunayTriangulatedSurface):
-            if self._s == other._s and self._direction == other._direction:
+            if self._reference == other._reference and self._direction == other._direction:
                 return True
 
         return super().__eq__(other)
@@ -391,6 +404,8 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         """
         if similarity_surface.underlying_surface().is_mutable():
             raise ValueError("Surface must be immutable.")
+
+        self._reference = similarity_surface
 
         # This surface will converge to the Delaunay Decomposition
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
@@ -457,6 +472,12 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
                 "Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
             )
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (type(self), self._reference, self._direction)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -473,7 +494,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
 
         """
         if isinstance(other, LazyDelaunaySurface):
-            if self._s == other._s and self._direction == other._direction:
+            if self._reference == other._reference and self._direction == other._direction:
                 return True
 
         return super().__eq__(other)

@@ -200,7 +200,7 @@ class SurfacePoint(Element):
             sage: permutation = SymmetricGroup(2)('(1, 2)')
             sage: S = translation_surfaces.origami(permutation, permutation)
             sage: p = S.point(1, (1/2, 1/2))
-            sage: p.surface() is S
+            sage: p.surface() is S.underlying_surface()
             True
 
         """

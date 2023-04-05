@@ -103,6 +103,12 @@ class MinimalTranslationCover(Surface):
         bb = b * m[0][0] + a * m[1][0]
         return ((p2, aa, bb), e2)
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (MinimalTranslationCover, self._ss)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -278,6 +284,12 @@ class MinimalPlanarCover(Surface):
         me = self._ss.edge_transformation(pp, e)
         mm = m * ~me
         return ((p2, mm), e2)
+
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (MinimalPlanarCover, self._ss, self._base_label)
 
     def __eq__(self, other):
         r"""

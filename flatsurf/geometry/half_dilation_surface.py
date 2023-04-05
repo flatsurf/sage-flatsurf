@@ -369,6 +369,12 @@ class GL2RImageSurface(Surface):
             polygon2 = self._s.polygon(pp)
             return pp, polygon2.num_edges() - 1 - ee
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (GL2RImageSurface, self._s, self._m, self.base_ring())
+
     def __eq__(self, other):
         r"""
         Return whether this image is indistinguishable from ``other``.

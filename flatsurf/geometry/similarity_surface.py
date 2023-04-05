@@ -451,23 +451,7 @@ class SimilaritySurface(SageObject):
             sage: g((2,-2))
             (2, 0)
         """
-        G = SimilarityGroup(self.base_ring())
-        q = self.polygon(p)
-        a = q.vertex(e)
-        b = q.vertex(e + 1)
-        # This is the similarity carrying the origin to a and (1,0) to b:
-        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
-
-        pp, ee = self.opposite_edge(p, e)
-        qq = self.polygon(pp)
-        # Be careful here: opposite vertices are identified
-        aa = qq.vertex(ee + 1)
-        bb = qq.vertex(ee)
-        # This is the similarity carrying the origin to aa and (1,0) to bb:
-        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
-
-        # This is the similarity carrying (a,b) to (aa,bb):
-        return gg / g
+        return self.underlying_surface().edge_transformation(p, e)
 
     def set_vertex_zero(self, label, v, in_place=False):
         r"""
@@ -1387,7 +1371,7 @@ class SimilaritySurface(SageObject):
             sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
             Vector space of dimension 2 over Algebraic Real Field
         """
-        return SurfacePoint(self, label, point, ring=ring, limit=limit)
+        return self.underlying_surface().point(label, point, limit=limit, ring=ring)
 
     # TODO: deprecate
     surface_point = point
@@ -2488,17 +2472,17 @@ class SimilaritySurface(SageObject):
     def __ne__(self, other):
         return not self == other
 
+    def _cache_key(self):
+        return (type(self), self.underlying_surface())
+
     @cached_method
     def __hash__(self):
         r"""
         Hash compatible with equals.
         """
         if self._s.is_mutable():
-            raise ValueError("Attempting to hash with mutable underlying surface.")
-        # Compute the hash
-        h = 17 * hash(self.base_ring()) + 23 * hash(self.base_label())
-        for pair in self.label_iterator(polygons=True):
-            h = h + 7 * hash(pair)
-        for edgepair in self.edge_iterator(gluings=True):
-            h = h + 3 * hash(edgepair)
-        return h
+            raise TypeError("cannot has mutable surface")
+        if not self.is_finite():
+            raise TypeError("cannot hash infinite surface")
+
+        return hash((self.base_ring(), self.base_label(), tuple(self.label_iterator(polygons=True)), tuple(self.edge_iterator(gluings=True))))

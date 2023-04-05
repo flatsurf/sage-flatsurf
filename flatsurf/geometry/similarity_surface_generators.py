@@ -230,6 +230,12 @@ class EInfinitySurface(Surface):
             else:
                 return 1 - p, (e + 2) % 4
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (EInfinitySurface, self.base_ring(), self._l)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -450,6 +456,12 @@ class TFractalSurface(Surface):
             w = self._w
             h = self._h2
         return ConvexPolygons(self.base_ring())([(w, 0), (0, h), (-w, 0), (0, -h)])
+
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (TFractalSurface, self._w, self._h1, self._r, self._h2)
 
     def __eq__(self, other):
         if isinstance(other, TFractalSurface):
@@ -1620,6 +1632,15 @@ class TranslationSurfaceGenerators:
 
         def __repr__(self):
             return "The infinite staircase"
+
+        def _cache_key(self):
+            return (TranslationSurfaceGenerators._infiniteStaircase,)
+
+        def __hash__(self):
+            return super().__hash__()
+
+        def _cache_key(self):
+            return (type(TranslationSurfaceGenerators._InfiniteStaircase,))
 
         def __eq__(self, other):
             r"""

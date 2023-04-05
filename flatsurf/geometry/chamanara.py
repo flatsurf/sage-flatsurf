@@ -108,6 +108,12 @@ class ChamanaraSurface(Surface):
                 # p>=1
                 return p + 1, 1
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        return (ChamanaraSurface, self._p, self.base_ring(), self.base_label())
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -126,7 +132,7 @@ class ChamanaraSurface(Surface):
         if isinstance(other, ChamanaraSurface):
             return (
                 self._p == other._p
-                and self._base_ring == other._base_ring
+                and self.base_ring() == other.base_ring()
                 and self._base_label == other._base_label
             )
 

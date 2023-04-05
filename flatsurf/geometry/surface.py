@@ -679,9 +679,10 @@ class Surface(Parent):
         Hash compatible with equals.
         """
         if self.is_mutable():
-            raise ValueError("Attempting to hash mutable surface.")
+            raise TypeError("mutable surface is not hashable")
+
         if not self.is_finite():
-            raise ValueError("Attempting to hash infinite surface.")
+            raise TypeError("cannot hash this infinite surface")
 
         return hash(
             (
@@ -887,7 +888,11 @@ class Surface(Parent):
                 + str(label),
             )
 
-    def point(self, label, position):
+    def graphical_surface(self):
+        from flatsurf.graphical.surface import GraphicalSurface
+        return GraphicalSurface(self)
+
+    def point(self, label, position, limit=None, ring=None):
         r"""
         Return the :class:`flatsurf.geometry.surface_objects.SurfacePoint` of
         this surface at ``position`` in the polygon ``label``.
@@ -913,7 +918,27 @@ class Surface(Parent):
             Vertex 0 of polygon 0
 
         """
-        return self(label, position)
+        return self(label, position, limit=limit, ring=ring)
+
+    def edge_transformation(self, p, e):
+        from flatsurf.geometry.similarity import SimilarityGroup
+        G = SimilarityGroup(self.base_ring())
+        q = self.polygon(p)
+        a = q.vertex(e)
+        b = q.vertex(e + 1)
+        # This is the similarity carrying the origin to a and (1,0) to b:
+        g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
+
+        pp, ee = self.opposite_edge(p, e)
+        qq = self.polygon(pp)
+        # Be careful here: opposite vertices are identified
+        aa = qq.vertex(ee + 1)
+        bb = qq.vertex(ee)
+        # This is the similarity carrying the origin to aa and (1,0) to bb:
+        gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
+
+        # This is the similarity carrying (a,b) to (aa,bb):
+        return gg / g
 
     def _an_element_(self):
         r"""
@@ -1463,6 +1488,16 @@ class Surface_list(Surface):
                 cover.set_edge_pairing(p0, e, p1, ee)
         return cover
 
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        if self.is_mutable():
+            raise TypeError("cannot hash mutable surface")
+
+        # TODO
+        return (Surface_list, self.base_ring(), self.base_label(), tuple((polygon, tuple(sorted(adj))) for (polygon, adj) in self._p), self._reference_surface)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -1896,6 +1931,16 @@ class Surface_dict(Surface):
             except KeyError:
                 # Assume on faith we are removing a polygon in the base_surface.
                 self._p[label] = None
+
+    def __hash__(self):
+        return super().__hash__()
+
+    def _cache_key(self):
+        if self.is_mutable():
+            raise TypeError("cannot hash mutable surface")
+
+        # TODO
+        return (Surface_dict, self.base_ring(), self.base_label(), tuple(sorted((key, polygon, tuple(sorted(adj))) for (key, (polygon, adj)) in self._p.items())), self._reference_surface)
 
     def __eq__(self, other):
         r"""
