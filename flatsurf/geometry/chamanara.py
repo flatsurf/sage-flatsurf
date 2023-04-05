@@ -11,18 +11,26 @@ EXAMPLES::
     ...Graphics object consisting of 129 graphics primitives
 
 """
-# ****************************************************************************
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+# ********************************************************************
+#  This file is part of sage-flatsurf.
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
-# ****************************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
+#        Copyright (C) 2013-2019 W. Patrick Hooper
+#                      2013-2019 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ********************************************************************
 
 from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
@@ -42,14 +50,6 @@ def ChamanaraPolygon(alpha):
     from .polygon import polygons
 
     return polygons((1, 0), (-x, x), (0, -1), (x - 1, 1 - x))
-
-
-#    pc=PolygonCreator(field=field)
-#    pc.add_vertex((0,0))
-#    pc.add_vertex((1,0))
-#    pc.add_vertex((1-x,x))
-#    pc.add_vertex((1-x,x-1))
-#    return pc.get_polygon()
 
 
 class ChamanaraSurface(Surface):
@@ -78,7 +78,7 @@ class ChamanaraSurface(Surface):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C.polygon('a')
             Traceback (most recent call last):
@@ -108,6 +108,30 @@ class ChamanaraSurface(Surface):
                 # p>=1
                 return p + 1, 1
 
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.chamanara(1/2)
+            sage: C == C
+            True
+            sage: D = translation_surfaces.chamanara(1/3)
+            sage: C == D
+            False
+
+        """
+        if isinstance(other, ChamanaraSurface):
+            return (
+                self._p == other._p
+                and self._base_ring == other._base_ring
+                and self._base_label == other._base_label
+            )
+
+        return super().__eq__(other)
+
 
 def chamanara_half_dilation_surface(alpha, n=8):
     r"""
@@ -117,7 +141,7 @@ def chamanara_half_dilation_surface(alpha, n=8):
 
         sage: from flatsurf.geometry.chamanara import chamanara_half_dilation_surface
         sage: s = chamanara_half_dilation_surface(1/2)
-        sage: TestSuite(s).run(skip='_test_pickling')
+        sage: TestSuite(s).run()
     """
     s = HalfDilationSurface(ChamanaraSurface(alpha))
     adjacencies = [(0, 1)]
@@ -136,7 +160,7 @@ def chamanara_surface(alpha, n=8):
 
         sage: from flatsurf.geometry.chamanara import chamanara_surface
         sage: s = chamanara_surface(1/2)
-        sage: TestSuite(s).run(skip='_test_pickling')
+        sage: TestSuite(s).run()
     """
     s = chamanara_half_dilation_surface(alpha).minimal_cover(cover_type="translation")
     label = s.base_label()
