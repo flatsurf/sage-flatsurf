@@ -257,8 +257,7 @@
         </div>
         <article role="main">
           <h1>Source code for flatsurf.geometry.surface</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Data structures for surfaces built from polygons.</span>
 
 <span class="sd">All surfaces in sage-flatsurf are built from polygons whose sides are</span>
@@ -330,9 +329,6 @@
 <span class="c1">#  You should have received a copy of the GNU General Public License</span>
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ********************************************************************</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span>
-<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 
 <span class="kn">from</span> <span class="nn">sage.structure.sage_object</span> <span class="kn">import</span> <span class="n">SageObject</span>
@@ -394,7 +390,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">base_label</span><span class="p">,</span> <span class="n">finite</span><span class="p">,</span> <span class="n">mutable</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">base_label</span><span class="p">,</span> <span class="n">finite</span><span class="p">,</span> <span class="n">mutable</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">finite</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;finite must be either True or False&quot;</span><span class="p">)</span>
 
@@ -418,7 +414,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_finite</span> <span class="o">=</span> <span class="n">finite</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mutable</span> <span class="o">=</span> <span class="n">mutable</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="Surface.is_triangulated"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.is_triangulated">[docs]</a>    <span class="k">def</span> <span class="nf">is_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -615,6 +611,8 @@
 <span class="sd">            1</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;base label has not been set for this surface&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span></div>
 
 <div class="viewcode-block" id="Surface.is_finite"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.is_finite">[docs]</a>    <span class="k">def</span> <span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -721,7 +719,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__mutate</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">gluing_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">gluing_list</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">(</span><span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span></div>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_polygon</span><span class="p">(</span><span class="n">new_polygon</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label</span></div>
 
 <div class="viewcode-block" id="Surface.remove_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.remove_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">remove_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -930,7 +931,7 @@
 
         <span class="k">return</span> <span class="n">surface</span></div>
 
-    <span class="nd">@cached_method</span>
+<div class="viewcode-block" id="Surface.__hash__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.__hash__">[docs]</a>    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hash compatible with equals.</span>
@@ -947,9 +948,9 @@
                 <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()),</span>
                 <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">()),</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface.__eq__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
 
@@ -983,16 +984,24 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot compare infinite surfaces yet&quot;</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">())</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot compare these infinite surfaces yet&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1005,10 +1014,10 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
+<div class="viewcode-block" id="Surface.__ne__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface.__ne__">[docs]</a>    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span></div>
 
 <div class="viewcode-block" id="Surface._test_base_ring"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface._test_base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">_test_base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="c1"># Test that the base_label is associated to a polygon</span>
@@ -1242,7 +1251,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_list.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of pairs (polygon, gluings)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_removed_labels</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1297,7 +1306,7 @@
                 <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mutable</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Surface_list._validate_init_parameters"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._validate_init_parameters">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_validate_init_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_ring</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mutable</span><span class="p">,</span> <span class="n">finite</span><span class="p">):</span>
@@ -1559,6 +1568,7 @@
         <span class="k">if</span> <span class="n">gluing_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">change_polygon_gluings</span><span class="p">(</span><span class="n">new_label</span><span class="p">,</span> <span class="n">gluing_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_polygons</span> <span class="o">+=</span> <span class="mi">1</span>
+
         <span class="k">return</span> <span class="n">new_label</span></div>
 
 <div class="viewcode-block" id="Surface_list.num_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list.num_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1649,7 +1659,83 @@
                 <span class="n">p0</span> <span class="o">=</span> <span class="n">cover_labels</span><span class="p">[(</span><span class="n">lab</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
                 <span class="n">p1</span> <span class="o">=</span> <span class="n">cover_labels</span><span class="p">[(</span><span class="n">lab</span><span class="p">,</span> <span class="n">s</span><span class="p">(</span><span class="n">i</span><span class="p">))]</span>
                 <span class="n">cover</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cover</span></div></div>
+        <span class="k">return</span> <span class="n">cover</span></div>
+
+<div class="viewcode-block" id="Surface_list.__eq__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import Surface_list, polygons</span>
+<span class="sd">            sage: P=polygons.regular_ngon(5)</span>
+<span class="sd">            sage: S = Surface_list(base_ring=P.base_ring())</span>
+<span class="sd">            sage: T = Surface_list(base_ring=P.base_ring())</span>
+
+<span class="sd">            sage: S == T</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: S.add_polygon(P, label=3)</span>
+<span class="sd">            3</span>
+
+<span class="sd">            sage: S == T</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Surface_list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">equal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eq_reference_surface</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">equal</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">equal</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Surface_list._eq_reference_surface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_list._eq_reference_surface">[docs]</a>    <span class="k">def</span> <span class="nf">_eq_reference_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other`` by</span>
+<span class="sd">        comparing their reference surfaces.</span>
+
+<span class="sd">        Returns ``None``, when no conclusion could be reached.</span>
+
+<span class="sd">        This is a helper method for :meth:`__eq__`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_reference_surface</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_p</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="surface_list_from_polygons_and_gluings"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.surface_list_from_polygons_and_gluings">[docs]</a><span class="k">def</span> <span class="nf">surface_list_from_polygons_and_gluings</span><span class="p">(</span><span class="n">polygons</span><span class="p">,</span> <span class="n">gluings</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1666,7 +1752,7 @@
         <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># dict case:</span>
-        <span class="n">it</span> <span class="o">=</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">gluings</span><span class="p">)</span>
+        <span class="n">it</span> <span class="o">=</span> <span class="n">gluings</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
         <span class="c1"># list case:</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">gluings</span>
@@ -1727,7 +1813,7 @@
 <span class="sd">        sage: TestSuite(s).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Surface_dict.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1774,7 +1860,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">base_label</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mutable</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Surface_dict.polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2007,7 +2093,83 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="c1"># Assume on faith we are removing a polygon in the base_surface.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Surface_dict.__eq__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import Surface_dict, polygons</span>
+<span class="sd">            sage: P=polygons.regular_ngon(5)</span>
+<span class="sd">            sage: S = Surface_dict(base_ring=P.base_ring())</span>
+<span class="sd">            sage: T = Surface_dict(base_ring=P.base_ring())</span>
+
+<span class="sd">            sage: S == T</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: S.add_polygon(P, label=3)</span>
+<span class="sd">            3</span>
+
+<span class="sd">            sage: S == T</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Surface_dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">equal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eq_reference_surface</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">equal</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">equal</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Surface_dict._eq_reference_surface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_dict._eq_reference_surface">[docs]</a>    <span class="k">def</span> <span class="nf">_eq_reference_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other`` by</span>
+<span class="sd">        comparing their reference surfaces.</span>
+
+<span class="sd">        Returns ``None``, when no conclusion could be reached.</span>
+
+<span class="sd">        This is a helper method for :meth:`__eq__`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_surface</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">_reference_surface</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">polygon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_p</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_p</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">polygon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="BaseRingChangedSurface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface">[docs]</a><span class="k">class</span> <span class="nc">BaseRingChangedSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -2015,7 +2177,7 @@
 <span class="sd">    A surface with a different base_ring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseRingChangedSurface.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span> <span class="o">=</span> <span class="n">ring</span>
         <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">ConvexPolygons</span>
@@ -2023,7 +2185,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_P</span> <span class="o">=</span> <span class="n">ConvexPolygons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span><span class="p">)</span>
         <span class="n">Surface</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">is_finite</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseRingChangedSurface.polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface.polygon">[docs]</a>    <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">))</span></div>
@@ -2044,11 +2206,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="LabelWalker.LabelWalkerIterator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.LabelWalkerIterator">[docs]</a>    <span class="k">class</span> <span class="nc">LabelWalkerIterator</span><span class="p">:</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_walker</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelWalker.LabelWalkerIterator.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.LabelWalkerIterator.__init__">[docs]</a>        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_walker</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lw</span> <span class="o">=</span> <span class="n">label_walker</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-        <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelWalker.LabelWalkerIterator.__next__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.LabelWalkerIterator.__next__">[docs]</a>        <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lw</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lw</span><span class="o">.</span><span class="n">number_to_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+</span> <span class="mi">1</span>
@@ -2059,14 +2221,14 @@
                     <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="k">return</span> <span class="n">label</span>
-            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span></div>
 
         <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span>  <span class="c1"># for Python 2</span>
 
-        <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span></div>
+<div class="viewcode-block" id="LabelWalker.LabelWalkerIterator.__iter__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.LabelWalkerIterator.__iter__">[docs]</a>        <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span></div></div>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelWalker.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">=</span> <span class="n">surface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">()]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_label_dict</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span> <span class="mi">0</span><span class="p">}</span>
@@ -2075,7 +2237,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_label_edge_back</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">():</span> <span class="kc">None</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_walk</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">base_label</span><span class="p">(),</span> <span class="mi">0</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="LabelWalker.label_dictionary"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.label_dictionary">[docs]</a>    <span class="k">def</span> <span class="nf">label_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2107,8 +2269,8 @@
             <span class="s2">&quot;Unable to find label </span><span class="si">%s</span><span class="s2">. Are you sure the surface is connected?&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">label</span><span class="p">)</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">LabelWalker</span><span class="o">.</span><span class="n">LabelWalkerIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<div class="viewcode-block" id="LabelWalker.__iter__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">LabelWalker</span><span class="o">.</span><span class="n">LabelWalkerIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabelWalker.polygon_iterator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.polygon_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">polygon_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -2123,11 +2285,11 @@
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()):</span>
                 <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="n">e</span></div>
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelWalker.__len__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.__len__">[docs]</a>    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of labels found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LabelWalker.find_a_new_label"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelWalker.find_a_new_label">[docs]</a>    <span class="k">def</span> <span class="nf">find_a_new_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2200,13 +2362,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span></div></div>
 
 
-<div class="viewcode-block" id="ExtraLabel"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel">[docs]</a><span class="k">class</span> <span class="nc">ExtraLabel</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtraLabel"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel">[docs]</a><span class="k">class</span> <span class="nc">ExtraLabel</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to spit out new labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_next</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ExtraLabel.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a new label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2214,22 +2376,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ExtraLabel</span><span class="o">.</span><span class="n">_next</span><span class="p">)</span>
             <span class="n">ExtraLabel</span><span class="o">.</span><span class="n">_next</span> <span class="o">=</span> <span class="n">ExtraLabel</span><span class="o">.</span><span class="n">_next</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">value</span></div>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_label</span>
+<div class="viewcode-block" id="ExtraLabel.__eq__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_label</span></div>
 
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+<div class="viewcode-block" id="ExtraLabel.__ne__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel.__ne__">[docs]</a>    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="mi">23</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
+<div class="viewcode-block" id="ExtraLabel.__hash__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel.__hash__">[docs]</a>    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="mi">23</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;E&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span>
+<div class="viewcode-block" id="ExtraLabel.__str__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;E&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;ExtraLabel(&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
+<div class="viewcode-block" id="ExtraLabel.__repr__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.ExtraLabel.__repr__">[docs]</a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ExtraLabel(&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="LabelComparator"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator">[docs]</a><span class="k">class</span> <span class="nc">LabelComparator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -2241,11 +2403,11 @@
 <span class="sd">    For objects with the same hash, we store an arbitrary ordering.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelComparator.__init__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a label comparator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hash_collision_resolver</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hash_collision_resolver</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 <div class="viewcode-block" id="LabelComparator._get_resolver_index"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelComparator._get_resolver_index">[docs]</a>    <span class="k">def</span> <span class="nf">_get_resolver_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_hash</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>

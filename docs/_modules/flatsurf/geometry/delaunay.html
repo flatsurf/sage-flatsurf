@@ -258,24 +258,32 @@
         <article role="main">
           <h1>Source code for flatsurf.geometry.delaunay</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This file contains classes implementing Surface which are used useful for</span>
+<span class="sd">This file contains classes implementing Surface which are used for</span>
 <span class="sd">triangulating, Delaunay triangulating, and Delaunay decomposing infinite</span>
 <span class="sd">surfaces.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="c1"># ****************************************************************************</span>
-<span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix &lt;20100.delecroix@gmail.com&gt;</span>
-<span class="c1">#                     2013-2019 W. Patrick Hooper &lt;wphooper@gmail.com&gt;</span>
+<span class="c1"># ********************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
-<span class="c1">#  Distributed under the terms of the GNU General Public License (GPL)</span>
-<span class="c1">#  as published by the Free Software Foundation; either version 2 of</span>
-<span class="c1">#  the License, or (at your option) any later version.</span>
-<span class="c1">#                  https://www.gnu.org/licenses/</span>
-<span class="c1"># ****************************************************************************</span>
+<span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix</span>
+<span class="c1">#                     2013-2019 W. Patrick Hooper</span>
+<span class="c1">#                          2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ********************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
-
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface</span><span class="p">,</span> <span class="n">Surface_list</span>
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
 
 
 <div class="viewcode-block" id="LazyTriangulatedSurface"><a class="viewcode-back" href="../../../geometry/delaunay.html#flatsurf.geometry.delaunay.LazyTriangulatedSurface">[docs]</a><span class="k">class</span> <span class="nc">LazyTriangulatedSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -292,7 +300,7 @@
 <span class="sd">        sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=False))</span>
 <span class="sd">        sage: ss.polygon(0).num_edges()</span>
 <span class="sd">        3</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 
 <span class="sd">    Example with relabel=True::</span>
 
@@ -302,7 +310,7 @@
 <span class="sd">        sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=True))</span>
 <span class="sd">        sage: ss.polygon(0).num_edges()</span>
 <span class="sd">        3</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -342,7 +350,27 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span></div></div>
+            <span class="k">return</span> <span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">ee</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces, TranslationSurface</span>
+<span class="sd">            sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface</span>
+<span class="sd">            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: S = TranslationSurface(LazyTriangulatedSurface(S))</span>
+<span class="sd">            sage: S == S</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">LazyTriangulatedSurface</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LazyDelaunayTriangulatedSurface"><a class="viewcode-back" href="../../../geometry/delaunay.html#flatsurf.geometry.delaunay.LazyDelaunayTriangulatedSurface">[docs]</a><span class="k">class</span> <span class="nc">LazyDelaunayTriangulatedSurface</span><span class="p">(</span><span class="n">Surface</span><span class="p">):</span>
@@ -359,7 +387,7 @@
 <span class="sd">        sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=False))</span>
 <span class="sd">        sage: ss.polygon(0).num_edges()</span>
 <span class="sd">        3</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 <span class="sd">        sage: ss.is_delaunay_triangulated(limit=100)</span>
 <span class="sd">        True</span>
 
@@ -371,7 +399,7 @@
 <span class="sd">        sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=True))</span>
 <span class="sd">        sage: ss.polygon(0).num_edges()</span>
 <span class="sd">        3</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 <span class="sd">        sage: ss.is_delaunay_triangulated(limit=100)</span>
 <span class="sd">        True</span>
 
@@ -382,10 +410,10 @@
 <span class="sd">        sage: s=chamanara_surface(QQ(1/2))</span>
 <span class="sd">        sage: m=matrix([[2,1],[1,1]])**4</span>
 <span class="sd">        sage: ss=(m*s).delaunay_triangulation()</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 <span class="sd">        sage: ss.is_delaunay_triangulated(limit=100)</span>
 <span class="sd">        True</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_setup_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
@@ -559,7 +587,27 @@
                     <span class="c1"># We&#39;re done with this edge</span>
                     <span class="n">edge_certified</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_certified_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces, TranslationSurface</span>
+<span class="sd">            sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface</span>
+<span class="sd">            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: S = TranslationSurface(LazyDelaunayTriangulatedSurface(S))</span>
+<span class="sd">            sage: S == S</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">LazyDelaunayTriangulatedSurface</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_direction</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LazyDelaunaySurface"><a class="viewcode-back" href="../../../geometry/delaunay.html#flatsurf.geometry.delaunay.LazyDelaunaySurface">[docs]</a><span class="k">class</span> <span class="nc">LazyDelaunaySurface</span><span class="p">(</span><span class="n">LazyDelaunayTriangulatedSurface</span><span class="p">):</span>
@@ -573,8 +621,8 @@
 
 <span class="sd">    EXAMPLES::</span>
 
-<span class="sd">        sage: from flatsurf import*</span>
-<span class="sd">        sage: from flatsurf.geometry.delaunay import*</span>
+<span class="sd">        sage: from flatsurf import *</span>
+<span class="sd">        sage: from flatsurf.geometry.delaunay import *</span>
 <span class="sd">        sage: s=translation_surfaces.infinite_staircase()</span>
 <span class="sd">        sage: m=matrix([[2,1],[1,1]])</span>
 <span class="sd">        sage: ss=TranslationSurface(LazyDelaunaySurface(m*s,relabel=False))</span>
@@ -582,7 +630,7 @@
 <span class="sd">        Polygon: (0, 0), (1, 0), (1, 1), (0, 1)</span>
 <span class="sd">        sage: ss.is_delaunay_decomposed(limit=100)</span>
 <span class="sd">        True</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 
 <span class="sd">        sage: from flatsurf import *</span>
 <span class="sd">        sage: from flatsurf.geometry.chamanara import *</span>
@@ -592,7 +640,7 @@
 <span class="sd">        sage: ss=TranslationSurface(LazyDelaunaySurface(m*s))</span>
 <span class="sd">        sage: ss.is_delaunay_decomposed(limit=100)</span>
 <span class="sd">        True</span>
-<span class="sd">        sage: TestSuite(ss).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(ss).run()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity_surface</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -666,7 +714,28 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface.&quot;</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this surface is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces, TranslationSurface</span>
+<span class="sd">            sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface</span>
+<span class="sd">            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: m = matrix([[2, 1], [1, 1]])</span>
+<span class="sd">            sage: S = TranslationSurface(LazyDelaunaySurface(m*S))</span>
+<span class="sd">            sage: S == S</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">LazyDelaunaySurface</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_direction</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>

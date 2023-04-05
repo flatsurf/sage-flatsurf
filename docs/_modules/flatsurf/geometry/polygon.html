@@ -257,8 +257,7 @@
         </div>
         <article role="main">
           <h1>Source code for flatsurf.geometry.polygon</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Polygons embedded in the plane R^2.</span>
 
 <span class="sd">This file implements polygons with</span>
@@ -303,9 +302,6 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">######################################################################</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
-
 <span class="kn">import</span> <span class="nn">operator</span>
 
 <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="p">(</span>
@@ -315,14 +311,11 @@
     <span class="n">Sets</span><span class="p">,</span>
     <span class="n">Rings</span><span class="p">,</span>
     <span class="n">Fields</span><span class="p">,</span>
+    <span class="n">AA</span><span class="p">,</span>
     <span class="n">ZZ</span><span class="p">,</span>
     <span class="n">QQ</span><span class="p">,</span>
-    <span class="n">AA</span><span class="p">,</span>
-    <span class="n">RR</span><span class="p">,</span>
     <span class="n">RIF</span><span class="p">,</span>
-    <span class="n">QQbar</span><span class="p">,</span>
     <span class="n">matrix</span><span class="p">,</span>
-    <span class="n">polygen</span><span class="p">,</span>
     <span class="n">vector</span><span class="p">,</span>
     <span class="n">free_module_element</span><span class="p">,</span>
     <span class="n">NumberField</span><span class="p">,</span>
@@ -330,14 +323,12 @@
     <span class="n">lcm</span><span class="p">,</span>
     <span class="n">gcd</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_function</span>
 <span class="kn">from</span> <span class="nn">sage.misc.functional</span> <span class="kn">import</span> <span class="n">numerical_approx</span>
 <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span><span class="p">,</span> <span class="n">Vector</span>
 <span class="kn">from</span> <span class="nn">sage.structure.coerce</span> <span class="kn">import</span> <span class="n">py_scalar_parent</span>
 
 <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Element</span>
 <span class="kn">from</span> <span class="nn">sage.categories.action</span> <span class="kn">import</span> <span class="n">Action</span>
-<span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module</span> <span class="kn">import</span> <span class="n">VectorSpace</span>
 <span class="kn">from</span> <span class="nn">sage.structure.sequence</span> <span class="kn">import</span> <span class="n">Sequence</span>
 

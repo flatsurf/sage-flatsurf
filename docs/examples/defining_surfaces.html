@@ -1458,7 +1458,7 @@ More information including pitfalls are described in <a href="http://flipper.rea
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="s2">&quot;_test_pickling&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1487,7 +1487,28 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_underlying_surface() . . .
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>running ._test_pickling() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> fail
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
+  File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
+    test_method(tester=tester)
+  File &quot;sage/structure/sage_object.pyx&quot;, line 653, in sage.structure.sage_object.SageObject._test_pickling (build/cythonized/sage/structure/sage_object.c:5296)
+    tester.assertEqual(loads(dumps(self)), self)
+  File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/unittest/case.py&quot;, line 845, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/unittest/case.py&quot;, line 835, in _baseAssertEqual
+    if not first == second:
+  File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface.py&quot;, line 2481, in __eq__
+    return self.underlying_surface() == other.underlying_surface()
+  File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface.py&quot;, line 745, in __eq__
+    raise NotImplementedError(&quot;cannot compare these infinite surfaces yet&quot;)
+NotImplementedError: cannot compare these infinite surfaces yet
+------------------------------------------------------------
+running ._test_underlying_surface() . . .
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -1502,7 +1523,7 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
     File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
       test_method(tester=tester)
-    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface.py&quot;, line 766, in _test_base_label
+    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface.py&quot;, line 775, in _test_base_label
       tester.assertTrue(
     File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/unittest/case.py&quot;, line 687, in assertTrue
       raise self.failureException(msg)
@@ -1544,7 +1565,7 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> pass
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_polygons() . . .
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  running ._test_pickling() . . .
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> fail
@@ -1553,14 +1574,33 @@ More information including pitfalls are described in <a href="http://flipper.rea
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
     File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
       test_method(tester=tester)
-    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface.py&quot;, line 874, in _test_polygons
+    File &quot;sage/structure/sage_object.pyx&quot;, line 653, in sage.structure.sage_object.SageObject._test_pickling (build/cythonized/sage/structure/sage_object.c:5296)
+      tester.assertEqual(loads(dumps(self)), self)
+    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/unittest/case.py&quot;, line 845, in assertEqual
+      assertion_func(first, second, msg=msg)
+    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/unittest/case.py&quot;, line 835, in _baseAssertEqual
+      if not first == second:
+    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface.py&quot;, line 745, in __eq__
+      raise NotImplementedError(&quot;cannot compare these infinite surfaces yet&quot;)
+  NotImplementedError: cannot compare these infinite surfaces yet
+  ------------------------------------------------------------
+  running ._test_polygons() . . .
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> fail
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Traceback (most recent call last):
+    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/sage/misc/sage_unittest.py&quot;, line 297, in run
+      test_method(tester=tester)
+    File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/surface.py&quot;, line 883, in _test_polygons
       tester.assertTrue(
     File &quot;/usr/share/miniconda3/envs/test/lib/python3.10/unittest/case.py&quot;, line 687, in assertTrue
       raise self.failureException(msg)
   AssertionError: polygon(label) does not return a ConvexPolygon when label=1
   ------------------------------------------------------------
-  The following tests failed: _test_base_label, _test_polygons
-The following tests failed: _test_underlying_surface
+  The following tests failed: _test_base_label, _test_pickling, _test_polygons
+The following tests failed: _test_pickling, _test_underlying_surface
 </pre></div>
 </div>
 </div>

@@ -344,14 +344,14 @@ represent horizontal cylinders.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_black">
 <span class="sig-name descname"><span class="pre">get_black</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.get_black"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_black" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 154)
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 150)
 Get the weight of the black endpoint of edge n.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_white">
 <span class="sig-name descname"><span class="pre">get_white</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface.get_white"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_white" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 139)
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 135)
 Get the weight of the white endpoint of edge n.</p>
 </dd></dl>
 
@@ -587,7 +587,7 @@ are <code class="docutils literal notranslate"><span class="pre">w=h1=h2=1</span
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon_labels">
 <span class="sig-name descname"><span class="pre">polygon_labels</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TFractalSurface.polygon_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TFractalSurface.polygon_labels" title="Permalink to this definition">#</a></dt>
-<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 289)</p>
+<dd><p>File: /usr/share/miniconda3/envs/test/lib/python3.10/site-packages/flatsurf/geometry/similarity_surface_generators.py (starting at line 302)</p>
 </dd></dl>
 
 </dd></dl>
@@ -700,7 +700,7 @@ curves and totally geodesic subvarieties of moduli space” (2017):</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">chamanara</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">C</span>
 <span class="n">TranslationSurface</span> <span class="n">built</span> <span class="kn">from</span> <span class="nn">infinitely</span> <span class="n">many</span> <span class="n">polygons</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -723,7 +723,7 @@ represent horizontal cylinders.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">e_infinity_surface</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -778,7 +778,7 @@ represent horizontal cylinders.</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
 <span class="n">The</span> <span class="n">infinite</span> <span class="n">staircase</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -963,7 +963,7 @@ square.</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">tf</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">t_fractal</span><span class="p">()</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">tf</span>
 <span class="n">The</span> <span class="n">T</span><span class="o">-</span><span class="n">fractal</span> <span class="n">surface</span> <span class="k">with</span> <span class="n">parameters</span> <span class="n">w</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">h1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">h2</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="s1">&#39;_test_pickling&#39;</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>

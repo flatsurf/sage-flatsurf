@@ -266,9 +266,9 @@ readable format using XML.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.xml</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">=</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span><span class="o">=</span><span class="n">surface_from_xml_string</span><span class="p">(</span><span class="n">surface_to_xml_string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">ss</span><span class="o">==</span><span class="n">s</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span><span class="o">.</span><span class="n">underlying_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">surface_from_xml_string</span><span class="p">(</span><span class="n">surface_to_xml_string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span><span class="o">==</span><span class="n">s</span>
 <span class="kc">True</span>
 </pre></div>
 </div>

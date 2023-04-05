@@ -286,13 +286,6 @@
 <span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 <span class="c1"># ****************************************************************************</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
-<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
-
-<span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
-<span class="kn">from</span> <span class="nn">.polygon</span> <span class="kn">import</span> <span class="o">*</span>
-
 <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
 <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
 <span class="kn">from</span> <span class="nn">sage.modules.free_module_element</span> <span class="kn">import</span> <span class="n">vector</span>
@@ -422,6 +415,8 @@
         <span class="n">edge_labels</span><span class="o">=</span><span class="s2">&quot;gluings&quot;</span><span class="p">,</span>
         <span class="n">default_position_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface</span> <span class="kn">import</span> <span class="n">SimilaritySurface</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">SimilaritySurface</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span> <span class="o">=</span> <span class="n">similarity_surface</span>
@@ -620,7 +615,7 @@
         <span class="n">gs</span><span class="o">.</span><span class="n">zero_flag_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zero_flag_options</span><span class="p">)</span>
 
         <span class="c1"># Copy polygons and visible set.</span>
-        <span class="n">gs</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">gp</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">)}</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">gp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">gs</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visible</span><span class="p">)</span>
         <span class="n">gs</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span>
 
@@ -702,8 +697,6 @@
                             <span class="c1"># No reasonable way to display the polygon, so we do this hack:</span>
                             <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                             <span class="n">poly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-                            <span class="n">sxmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span>
-                            <span class="n">pxmin</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span>
                             <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="p">(</span>
                                 <span class="p">(</span>
                                     <span class="n">QQ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span> <span class="o">-</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
@@ -736,8 +729,6 @@
                             <span class="c1"># No reasonable way to display the polygon, so we do this hack:</span>
                             <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                             <span class="n">poly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-                            <span class="n">sxmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span>
-                            <span class="n">pxmin</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span>
                             <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="p">(</span>
                                 <span class="p">(</span>
                                     <span class="n">QQ</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">()</span> <span class="o">-</span> <span class="n">g</span><span class="o">.</span><span class="n">xmin</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
@@ -802,6 +793,8 @@
             <span class="n">t</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.graphical.polygon</span> <span class="kn">import</span> <span class="n">GraphicalPolygon</span>
+
             <span class="n">p</span> <span class="o">=</span> <span class="n">GraphicalPolygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">transformation</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
             <span class="k">return</span> <span class="n">p</span></div>

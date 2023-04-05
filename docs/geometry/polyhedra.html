@@ -362,7 +362,7 @@ sage: octahedron=Polyhedron(vertices=vertices)
 sage: surface,surface_to_octahedron = \
 ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
 sage: TestSuite(surface).run()
-sage: TestSuite(surface_to_octahedron).run(skip=&quot;_test_pickling&quot;)
+sage: TestSuite(surface_to_octahedron).run()
 sage: surface.num_polygons()
 8
 sage: surface.base_ring()

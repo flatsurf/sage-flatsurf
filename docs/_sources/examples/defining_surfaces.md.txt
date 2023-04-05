@@ -328,7 +328,7 @@ s = TranslationSurface(ParabolaSurface())
 ```
 
 ```{code-cell} ipython3
-TestSuite(s).run(verbose=True, skip="_test_pickling")
+TestSuite(s).run(verbose=True)
 ```
 
 A graphical surface controls the display of graphical data. For an infinite surface you need to configure the display manually.

@@ -261,10 +261,6 @@
 <span class="sd">Translation Surfaces.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
-<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">iteritems</span>
-
 <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
 
 <span class="kn">from</span> <span class="nn">.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
@@ -396,7 +392,7 @@
                 <span class="c1"># if the coordinates of the best vertex differs from the origin.</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">best</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">best_pt</span><span class="o">.</span><span class="n">is_zero</span><span class="p">()):</span>
                     <span class="n">cv</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">best</span>
-            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">cv</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">set_vertex_zero</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">s</span>
         <span class="k">else</span><span class="p">:</span>
@@ -609,7 +605,7 @@
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="c1"># Find a common field</span>
         <span class="n">field</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">deformation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_field</span><span class="p">()</span> <span class="o">!=</span> <span class="n">field</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
 
@@ -626,7 +622,7 @@
         <span class="p">)</span>  <span class="c1"># dictionary associating the vertices.</span>
         <span class="n">deformed_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># list of polygon labels being deformed.</span>
 
-        <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">deformation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">representatives</span><span class="p">():</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">()</span>
                 <span class="n">vertex_deformation</span><span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vect</span>
@@ -682,7 +678,7 @@
             <span class="c1"># We can only do this deformation if all the rel vector are parallel.</span>
             <span class="c1"># Check for this.</span>
             <span class="n">nonzero</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">deformation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">vvect</span> <span class="o">=</span> <span class="n">vector_space</span><span class="p">(</span><span class="n">vect</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">vvect</span> <span class="o">!=</span> <span class="n">vector_space</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">nonzero</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -708,7 +704,7 @@
                     <span class="n">ss</span><span class="o">.</span><span class="n">apply_matrix</span><span class="p">(</span><span class="n">prod</span><span class="p">)</span>
                 <span class="n">ss</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">deformation2</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">deformation</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">singularity</span><span class="p">,</span> <span class="n">vect</span> <span class="ow">in</span> <span class="n">deformation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">found_start</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="ow">in</span> <span class="n">singularity</span><span class="o">.</span><span class="n">representatives</span><span class="p">():</span>
                         <span class="n">v</span> <span class="o">=</span> <span class="p">(</span>

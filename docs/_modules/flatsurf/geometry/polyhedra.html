@@ -257,9 +257,26 @@
         </div>
         <article role="main">
           <h1>Source code for flatsurf.geometry.polyhedra</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="nb">zip</span>
-
+<span></span><span class="c1"># ********************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2017-2020 W. Patrick Hooper</span>
+<span class="c1">#                      2017-2020 Vincent Delecroix</span>
+<span class="c1">#                           2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ********************************************************************</span>
 <span class="kn">from</span> <span class="nn">sage.rings.integer_ring</span> <span class="kn">import</span> <span class="n">ZZ</span>
 <span class="kn">from</span> <span class="nn">sage.rings.rational_field</span> <span class="kn">import</span> <span class="n">QQ</span>
 <span class="kn">from</span> <span class="nn">sage.rings.number_field.number_field</span> <span class="kn">import</span> <span class="n">NumberField</span>
@@ -329,7 +346,51 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_md</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_md</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">point</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_md</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">vector</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to recognize type of passed object&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to recognize type of passed object&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this map is indistinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface</span>
+<span class="sd">            sage: vertices=[]</span>
+<span class="sd">            sage: for i in range(3):</span>
+<span class="sd">            ....:     temp=vector([1 if k==i else 0 for k in range(3)])</span>
+<span class="sd">            ....:     for j in range(-1,3,2):</span>
+<span class="sd">            ....:         vertices.append(j*temp)</span>
+<span class="sd">            sage: octahedron=Polyhedron(vertices=vertices)</span>
+<span class="sd">            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))</span>
+
+<span class="sd">            sage: surface_to_octahedron == surface_to_octahedron</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ConeSurfaceToPolyhedronMap</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_s</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_p</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_md</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_md</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this map is distinguishable from ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface</span>
+<span class="sd">            sage: vertices=[]</span>
+<span class="sd">            sage: for i in range(3):</span>
+<span class="sd">            ....:     temp=vector([1 if k==i else 0 for k in range(3)])</span>
+<span class="sd">            ....:     for j in range(-1,3,2):</span>
+<span class="sd">            ....:         vertices.append(j*temp)</span>
+<span class="sd">            sage: octahedron=Polyhedron(vertices=vertices)</span>
+<span class="sd">            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))</span>
+
+<span class="sd">            sage: surface_to_octahedron != surface_to_octahedron</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="polyhedron_to_cone_surface"><a class="viewcode-back" href="../../../geometry/polyhedra.html#flatsurf.geometry.polyhedra.polyhedron_to_cone_surface">[docs]</a><span class="k">def</span> <span class="nf">polyhedron_to_cone_surface</span><span class="p">(</span><span class="n">polyhedron</span><span class="p">,</span> <span class="n">use_AA</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="o">=</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">1</span><span class="p">)):</span>
@@ -360,7 +421,7 @@
 <span class="sd">        sage: surface,surface_to_octahedron = \</span>
 <span class="sd">        ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))</span>
 <span class="sd">        sage: TestSuite(surface).run()</span>
-<span class="sd">        sage: TestSuite(surface_to_octahedron).run(skip=&quot;_test_pickling&quot;)</span>
+<span class="sd">        sage: TestSuite(surface_to_octahedron).run()</span>
 <span class="sd">        sage: surface.num_polygons()</span>
 <span class="sd">        8</span>
 <span class="sd">        sage: surface.base_ring()</span>
