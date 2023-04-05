@@ -1885,8 +1885,8 @@ class Surface_dict(Surface):
         if self._reference_surface != other._reference_surface:
             return None
 
-        for label in self._p:
-            if self._p[label] is None:
+        for label, polygon in self._p.items():
+            if polygon is None:
                 if label not in other._p or other._p[label] is not None:
                     return None
                 continue
@@ -1896,8 +1896,8 @@ class Surface_dict(Surface):
             except ValueError:
                 return False
 
-        for label in other._p:
-            if other._p[label] is None:
+        for label, polygon in other._p.items():
+            if polygon is None:
                 if label not in self._p or self._p[label] is not None:
                     return None
                 continue
