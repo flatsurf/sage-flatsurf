@@ -1591,20 +1591,20 @@ class TranslationSurfaceGenerators:
     class _InfiniteStaircase(Origami):
         def __init__(self):
             super().__init__(
-                self._u,
-                self._r,
-                self._u,
-                self._r,
+                self._vertical,
+                self._horizontal,
+                self._vertical,
+                self._horizontal,
                 domain=ZZ,
                 base_label=ZZ(0),
             )
 
-        def _u(self, x):
+        def _vertical(self, x):
             if x % 2:
                 return x + 1
             return x - 1
 
-        def _r(self, x):
+        def _horizontal(self, x):
             if x % 2:
                 return x - 1
             return x + 1
