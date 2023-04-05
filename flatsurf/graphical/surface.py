@@ -157,6 +157,7 @@ class GraphicalSurface:
         default_position_function=None,
     ):
         from flatsurf.geometry.similarity_surface import SimilaritySurface
+
         if not isinstance(similarity_surface, SimilaritySurface):
             raise TypeError
         self._ss = similarity_surface
@@ -534,6 +535,7 @@ class GraphicalSurface:
             if self._default_position_function is not None:
                 t = self._default_position_function(label)
             from flatsurf.graphical.polygon import GraphicalPolygon
+
             p = GraphicalPolygon(self._ss.polygon(label), transformation=t)
             self._polygons[label] = p
             return p

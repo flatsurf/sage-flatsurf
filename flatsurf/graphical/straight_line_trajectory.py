@@ -8,6 +8,7 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
+
 class GraphicalSegmentInPolygon:
     def __init__(self, segment, graphical_surface):
         r"""
