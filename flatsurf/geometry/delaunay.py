@@ -94,6 +94,19 @@ class LazyTriangulatedSurface(Surface):
             return (pp, ee)
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S = TranslationSurface(LazyTriangulatedSurface(S)
+            sage: S == S
+            True
+
+        """
         if isinstance(other, LazyTriangulatedSurface):
             if self._s == other._s:
                 return True
@@ -318,8 +331,21 @@ class LazyDelaunayTriangulatedSurface(Surface):
         return True
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S = TranslationSurface(LazyDelaunayTriangulatedSurface(S))
+            sage: S == S
+            True
+
+        """
         if isinstance(other, LazyDelaunayTriangulatedSurface):
-            if self._s == other._s:
+            if self._s == other._s and self._direction == other._direction:
                 return True
 
         return super().__eq__(other)
@@ -432,8 +458,22 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             )
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: m = matrix([[2, 1], [1, 1]])
+            sage: S = TranslationSurface(LazyDelaunaySurface(m*S))
+            sage: S == S
+            True
+
+        """
         if isinstance(other, LazyDelaunaySurface):
-            if self._s == other._s:
+            if self._s == other._s and self._direction == other._direction:
                 return True
 
         return super().__eq__(other)
