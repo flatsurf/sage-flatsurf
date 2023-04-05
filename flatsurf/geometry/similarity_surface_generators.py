@@ -3,7 +3,7 @@
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ from .similarity_surface import SimilaritySurface
 from .half_translation_surface import HalfTranslationSurface
 from .cone_surface import ConeSurface
 from .rational_cone_surface import RationalConeSurface
+from .translation_surface import Origami
 
 
 ZZ_1 = ZZ(1)
@@ -228,6 +229,23 @@ class EInfinitySurface(Surface):
                 return -p, (e + 2) % 4
             else:
                 return 1 - p, (e + 2) % 4
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S == S
+            True
+
+        """
+        if isinstance(other, EInfinitySurface):
+            return self._l == other._l and self.base_ring() == other.base_ring()
+
+        return super().__eq__(other)
 
 
 class TFractalSurface(Surface):
@@ -432,6 +450,17 @@ class TFractalSurface(Surface):
             w = self._w
             h = self._h2
         return ConvexPolygons(self.base_ring())([(w, 0), (0, h), (-w, 0), (0, -h)])
+
+    def __eq__(self, other):
+        if isinstance(other, TFractalSurface):
+            return (
+                self._w == other._w
+                and self._h1 == other._h1
+                and self._r == other._r
+                and self._h2 == other._h2
+            )
+
+        return super().__eq__(other)
 
 
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
@@ -1549,33 +1578,65 @@ class TranslationSurfaceGenerators:
             sage: S = translation_surfaces.infinite_staircase()
             sage: S.underlying_surface()
             The infinite staircase
-            sage: TestSuite(S).run(skip='_test_pickling')
+            sage: TestSuite(S).run()
         """
-        from .translation_surface import Origami
 
-        o = Origami(
-            lambda x: x + 1 if x % 2 else x - 1,  # r  (edge 1)
-            lambda x: x - 1 if x % 2 else x + 1,  # u  (edge 2)
-            lambda x: x + 1 if x % 2 else x - 1,  # rr (edge 3)
-            lambda x: x - 1 if x % 2 else x + 1,  # uu (edge 0)
-            domain=ZZ,
-            base_label=ZZ(0),
-        )
-        o.rename("The infinite staircase")
+        o = TranslationSurfaceGenerators._InfiniteStaircase()
         s = TranslationSurface(o)
-        from flatsurf.geometry.similarity import SimilarityGroup
 
-        SG = SimilarityGroup(QQ)
+        gs = s.graphical_surface(default_position_function=o._position_function)
+        gs.make_all_visible(limit=10)
+        return s
 
-        def pos(n):
+    class _InfiniteStaircase(Origami):
+        def __init__(self):
+            super().__init__(
+                self._vertical,
+                self._horizontal,
+                self._vertical,
+                self._horizontal,
+                domain=ZZ,
+                base_label=ZZ(0),
+            )
+
+        def _vertical(self, x):
+            if x % 2:
+                return x + 1
+            return x - 1
+
+        def _horizontal(self, x):
+            if x % 2:
+                return x - 1
+            return x + 1
+
+        def _position_function(self, n):
+            from flatsurf.geometry.similarity import SimilarityGroup
+
+            SG = SimilarityGroup(QQ)
             if n % 2 == 0:
                 return SG((n // 2, n // 2))
             else:
                 return SG((n // 2, n // 2 + 1))
 
-        gs = s.graphical_surface(default_position_function=pos)
-        gs.make_all_visible(limit=10)
-        return s
+        def __repr__(self):
+            return "The infinite staircase"
+
+        def __eq__(self, other):
+            r"""
+            Return whether this surface is indistinguishable from ``other``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S == S
+                True
+
+            """
+            if isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase):
+                return True
+
+            return super().__eq__(other)
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
@@ -1588,7 +1649,7 @@ class TranslationSurfaceGenerators:
             sage: tf = translation_surfaces.t_fractal().underlying_surface()
             sage: tf
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
-            sage: TestSuite(tf).run(skip='_test_pickling')
+            sage: TestSuite(tf).run()
         """
         return tfractal_surface(w, r, h1, h2)
 
@@ -1613,7 +1674,7 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.e_infinity_surface()
-            sage: TestSuite(s).run(skip='_test_pickling')
+            sage: TestSuite(s).run()
         """
         return TranslationSurface(EInfinitySurface(lambda_squared, field))
 
@@ -1628,7 +1689,7 @@ class TranslationSurfaceGenerators:
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C
             TranslationSurface built from infinitely many polygons
-            sage: TestSuite(C).run(skip='_test_pickling')
+            sage: TestSuite(C).run()
         """
         from .chamanara import chamanara_surface
 

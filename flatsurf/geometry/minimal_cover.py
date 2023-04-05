@@ -103,6 +103,38 @@ class MinimalTranslationCover(Surface):
         bb = b * m[0][0] + a * m[1][0]
         return ((p2, aa, bb), e2)
 
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        Note that this is not implemented in most non-trivial cases.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: T = polygons.triangle(2, 13, 26)
+            sage: S = similarity_surfaces.billiard(T, rational=True)
+            sage: S = S.minimal_cover("translation")
+
+            sage: S == S
+            True
+
+        ::
+
+            sage: TT = polygons.triangle(2, 15, 26)
+            sage: SS = similarity_surfaces.billiard(TT, rational=True)
+            sage: SS = SS.minimal_cover("translation")
+
+            sage: S == SS
+            False
+
+        """
+        if isinstance(other, MinimalTranslationCover):
+            if self._ss == other._ss and self._base_label == other._base_label:
+                return True
+
+        return super().__eq__(other)
+
 
 class MinimalHalfTranslationCover(Surface):
     r"""
@@ -199,7 +231,7 @@ class MinimalPlanarCover(Surface):
         ...
         UserWarning: vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
         4
-        sage: TestSuite(s).run(skip="_test_pickling")
+        sage: TestSuite(s).run()
     """
 
     def __init__(self, similarity_surface, base_label=None):
@@ -246,3 +278,25 @@ class MinimalPlanarCover(Surface):
         me = self._ss.edge_transformation(pp, e)
         mm = m * ~me
         return ((p2, mm), e2)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        Note that this is not implemented in most non-trivial cases.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.square_torus()
+            sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
+            sage: pc = TranslationSurface(MinimalPlanarCover(s))
+            sage: pc == pc
+            True
+
+        """
+        if isinstance(other, MinimalPlanarCover):
+            if self._ss == other._ss and self._base_label == other._base_label:
+                return True
+
+        return super().__eq__(other)
