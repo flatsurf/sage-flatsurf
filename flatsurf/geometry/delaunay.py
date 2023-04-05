@@ -1,22 +1,30 @@
 r"""
-This file contains classes implementing Surface which are used useful for
+This file contains classes implementing Surface which are used for
 triangulating, Delaunay triangulating, and Delaunay decomposing infinite
 surfaces.
 """
-# ****************************************************************************
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+# ********************************************************************
+#  This file is part of sage-flatsurf.
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
-# ****************************************************************************
+#       Copyright (C) 2013-2019 Vincent Delecroix
+#                     2013-2019 W. Patrick Hooper
+#                          2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ********************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
-from flatsurf.geometry.surface import Surface, Surface_list
+from flatsurf.geometry.surface import Surface
 
 
 class LazyTriangulatedSurface(Surface):
@@ -33,7 +41,7 @@ class LazyTriangulatedSurface(Surface):
         sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=False))
         sage: ss.polygon(0).num_edges()
         3
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
 
     Example with relabel=True::
 
@@ -43,7 +51,7 @@ class LazyTriangulatedSurface(Surface):
         sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=True))
         sage: ss.polygon(0).num_edges()
         3
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
     """
 
     def __init__(self, similarity_surface, relabel=True):
@@ -85,6 +93,26 @@ class LazyTriangulatedSurface(Surface):
         else:
             return (pp, ee)
 
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S = TranslationSurface(LazyTriangulatedSurface(S))
+            sage: S == S
+            True
+
+        """
+        if isinstance(other, LazyTriangulatedSurface):
+            if self._s == other._s:
+                return True
+
+        return super().__eq__(other)
+
 
 class LazyDelaunayTriangulatedSurface(Surface):
     r"""
@@ -100,7 +128,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
         sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=False))
         sage: ss.polygon(0).num_edges()
         3
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
         sage: ss.is_delaunay_triangulated(limit=100)
         True
 
@@ -112,7 +140,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
         sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=True))
         sage: ss.polygon(0).num_edges()
         3
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
         sage: ss.is_delaunay_triangulated(limit=100)
         True
 
@@ -123,10 +151,10 @@ class LazyDelaunayTriangulatedSurface(Surface):
         sage: s=chamanara_surface(QQ(1/2))
         sage: m=matrix([[2,1],[1,1]])**4
         sage: ss=(m*s).delaunay_triangulation()
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
         sage: ss.is_delaunay_triangulated(limit=100)
         True
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
     """
 
     def _setup_direction(self, direction):
@@ -302,6 +330,26 @@ class LazyDelaunayTriangulatedSurface(Surface):
         self._certified_labels.add(label)
         return True
 
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S = TranslationSurface(LazyDelaunayTriangulatedSurface(S))
+            sage: S == S
+            True
+
+        """
+        if isinstance(other, LazyDelaunayTriangulatedSurface):
+            if self._s == other._s and self._direction == other._direction:
+                return True
+
+        return super().__eq__(other)
+
 
 class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
     # We just inherit to use some methods.
@@ -314,8 +362,8 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import*
-        sage: from flatsurf.geometry.delaunay import*
+        sage: from flatsurf import *
+        sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: m=matrix([[2,1],[1,1]])
         sage: ss=TranslationSurface(LazyDelaunaySurface(m*s,relabel=False))
@@ -323,7 +371,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
         sage: ss.is_delaunay_decomposed(limit=100)
         True
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
 
         sage: from flatsurf import *
         sage: from flatsurf.geometry.chamanara import *
@@ -333,7 +381,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         sage: ss=TranslationSurface(LazyDelaunaySurface(m*s))
         sage: ss.is_delaunay_decomposed(limit=100)
         True
-        sage: TestSuite(ss).run(skip="_test_pickling")
+        sage: TestSuite(ss).run()
     """
 
     def __init__(self, similarity_surface, direction=None, relabel=True):
@@ -408,3 +456,24 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             raise ValueError(
                 "Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
             )
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: m = matrix([[2, 1], [1, 1]])
+            sage: S = TranslationSurface(LazyDelaunaySurface(m*S))
+            sage: S == S
+            True
+
+        """
+        if isinstance(other, LazyDelaunaySurface):
+            if self._s == other._s and self._direction == other._direction:
+                return True
+
+        return super().__eq__(other)
