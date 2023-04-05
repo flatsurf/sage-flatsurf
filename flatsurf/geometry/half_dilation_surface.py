@@ -1,28 +1,31 @@
 # ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #                          2023 Julian Rüth <julian.rueth@fsfe.org>
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
 from six import iteritems
 
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
-from flatsurf.geometry.mappings import (
-    SurfaceMapping,
-    IdentityMapping,
-    SurfaceMappingComposition,
-)
-from flatsurf.geometry.polygon import ConvexPolygons
+from flatsurf.geometry.mappings import SurfaceMapping
 
-from sage.env import SAGE_VERSION
+from flatsurf.geometry.polygon import ConvexPolygons
 
 from sage.structure.element import is_Matrix
 
@@ -367,6 +370,19 @@ class GL2RImageSurface(Surface):
             return pp, polygon2.num_edges() - 1 - ee
 
     def __eq__(self, other):
+        r"""
+        Return whether this image is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: m = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = m * S
+            sage: S == S
+            True
+
+        """
         if isinstance(other, GL2RImageSurface):
             if (
                 self._s == other._s
