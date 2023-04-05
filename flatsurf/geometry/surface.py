@@ -1407,6 +1407,26 @@ class Surface_list(Surface):
         return cover
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Surface_list, polygons
+            sage: P=polygons.regular_ngon(5)
+            sage: S = Surface_list(base_ring=P.base_ring())
+            sage: T = Surface_list(base_ring=P.base_ring())
+
+            sage: S == T
+            True
+
+            sage: S.add_polygon(P, label=3)
+            3
+
+            sage: S == T
+            False
+
+        """
         if not isinstance(other, Surface_list):
             return False
 
@@ -1420,6 +1440,14 @@ class Surface_list(Surface):
         return super().__eq__(other)
 
     def _eq_reference_surface(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other`` by
+        comparing their reference surfaces.
+
+        Returns ``None``, when no conclusion could be reached.
+
+        This is a helper method for :meth:`__eq__`.
+        """
         if self._reference_surface != other._reference_surface:
             return None
 
@@ -1813,6 +1841,26 @@ class Surface_dict(Surface):
                 self._p[label] = None
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Surface_dict, polygons
+            sage: P=polygons.regular_ngon(5)
+            sage: S = Surface_dict(base_ring=P.base_ring())
+            sage: T = Surface_dict(base_ring=P.base_ring())
+
+            sage: S == T
+            True
+
+            sage: S.add_polygon(P, label=3)
+            3
+
+            sage: S == T
+            False
+
+        """
         if not isinstance(other, Surface_dict):
             return False
 
@@ -1826,6 +1874,14 @@ class Surface_dict(Surface):
         return super().__eq__(other)
 
     def _eq_reference_surface(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other`` by
+        comparing their reference surfaces.
+
+        Returns ``None``, when no conclusion could be reached.
+
+        This is a helper method for :meth:`__eq__`.
+        """
         if self._reference_surface != other._reference_surface:
             return None
 
