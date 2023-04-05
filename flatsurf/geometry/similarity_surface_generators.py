@@ -231,6 +231,17 @@ class EInfinitySurface(Surface):
                 return 1 - p, (e + 2) % 4
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S == S
+            True
+
+        """
         if isinstance(other, EInfinitySurface):
             return self._l == other._l and self.base_ring() == other.base_ring()
 
@@ -1611,6 +1622,17 @@ class TranslationSurfaceGenerators:
             return "The infinite staircase"
 
         def __eq__(self, other):
+            r"""
+            Return whether this surface is indistinguishable from ``other``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S == S
+                True
+
+            """
             if isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase):
                 return True
 
