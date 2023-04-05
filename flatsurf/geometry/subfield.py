@@ -32,7 +32,7 @@ References
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 from sage.misc.misc_c import prod
-from sage.rings.all import ZZ, QQ, AA, QQbar, NumberField, polygen
+from sage.rings.all import ZZ, QQ, AA, NumberField, polygen
 from sage.structure.element import parent
 from sage.modules.free_module import VectorSpace
 from sage.matrix.constructor import matrix

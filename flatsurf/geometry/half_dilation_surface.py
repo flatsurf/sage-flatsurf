@@ -19,8 +19,6 @@
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from six import iteritems
-
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping
@@ -134,7 +132,7 @@ class HalfDilationSurface(SimilaritySurface):
                             new_glue[(p1, n1 - 1 - e1)] = (p2, n2 - 1 - e2)
                     seen_labels.add(p1)
                 # Second pass: reassign gluings
-                for (p1, e1), (p2, e2) in iteritems(new_glue):
+                for (p1, e1), (p2, e2) in new_glue.items():
                     us.change_edge_gluing(p1, e1, p2, e2)
             return self
 

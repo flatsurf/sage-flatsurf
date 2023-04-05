@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Calta-McMullen Veech surfaces in H(2)
 """
@@ -25,7 +24,6 @@ import pytest
 
 pytest.importorskip("pyflatsurf")  # noqa
 
-from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
 

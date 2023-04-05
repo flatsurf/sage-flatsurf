@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Veech 2n-gons and double n-gons
 
@@ -28,12 +27,10 @@ commensurable moduli ("parabolic direction").
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
 pytest.importorskip("pyflatsurf")  # noqa
 
-import sage.all
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
 

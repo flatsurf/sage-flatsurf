@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Polygons embedded in the plane R^2.
 
@@ -44,9 +43,6 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 import operator
 
 from sage.all import (
@@ -56,14 +52,11 @@ from sage.all import (
     Sets,
     Rings,
     Fields,
+    AA,
     ZZ,
     QQ,
-    AA,
-    RR,
     RIF,
-    QQbar,
     matrix,
-    polygen,
     vector,
     free_module_element,
     NumberField,
@@ -71,14 +64,12 @@ from sage.all import (
     lcm,
     gcd,
 )
-from sage.misc.cachefunc import cached_function
 from sage.misc.functional import numerical_approx
 from sage.structure.element import get_coercion_model, Vector
 from sage.structure.coerce import py_scalar_parent
 
 from sage.structure.element import Element
 from sage.categories.action import Action
-from sage.modules.free_module_element import vector
 from sage.modules.free_module import VectorSpace
 from sage.structure.sequence import Sequence
 

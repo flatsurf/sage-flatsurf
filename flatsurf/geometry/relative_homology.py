@@ -30,10 +30,6 @@ modulo equivalences of two types:
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
 from sage.structure.element import ModuleElement
 from sage.modules.module import Module
 from sage.rings.integer_ring import ZZ
@@ -76,21 +72,21 @@ class RelativeHomologyClass(ModuleElement):
             return self.parent().zero()
         d = dict()
         r = self.parent().base_ring()
-        for k, v in iteritems(self._d):
+        for k, v in self._d.items():
             d[k] = r(c * v)
         return self.parent()._element_from_dict(d)
 
     def _add_(self, other):
         d = dict()
         r = self.parent().base_ring()
-        for k, v in iteritems(self._d):
+        for k, v in self._d.items():
             if k in other._d:
                 total = v + other._d[k]
                 if total != self.parent().base_ring().zero():
                     d[k] = r(total)
             else:
                 d[k] = r(v)
-        for k, v in iteritems(other._d):
+        for k, v in other._d.items():
             if k not in self._d:
                 d[k] = r(v)
         return self.parent()._element_from_dict(d)
@@ -101,9 +97,9 @@ class RelativeHomologyClass(ModuleElement):
     def __cmp__(self, other):
         # Construct a set of keys
         s = set()
-        for k, v in iteritems(self._d):
+        for k, v in self._d.items():
             s.add(k)
-        for k, v in iteritems(other._d):
+        for k, v in other._d.items():
             s.add(k)
         zero = self.parent().base_ring().zero()
         for k in s:
@@ -155,7 +151,7 @@ class RelativeHomology(Module):
     def _element_constructor_(self, x):
         if isinstance(x, RelativeHomologyClass):
             d = dict()
-            for k, v in iteritems(x._d):
+            for k, v in x._d.items():
                 v2 = self._base_ring(v)
                 if v2 != self._base_ring.zero():
                     d[k] = v2

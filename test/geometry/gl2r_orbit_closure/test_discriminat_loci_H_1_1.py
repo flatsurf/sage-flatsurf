@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Discriminant loci in H(1,1)
 """
@@ -21,7 +20,6 @@ Discriminant loci in H(1,1)
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
 pytest.importorskip("pyflatsurf")  # noqa
@@ -53,9 +51,6 @@ def test_D9_exact_real():
     from pyexactreal import ExactReals
 
     R = ExactReals(QQ)
-    x = polygen(QQ)
-    K = NumberField(x**3 - 2, "a", embedding=AA(2) ** QQ((1, 3)))
-    a = K.gen()
     S = translation_surfaces.mcmullen_genus2_prototype(
         2, 1, 0, -1, R.random_element([0.1, 0.2])
     )

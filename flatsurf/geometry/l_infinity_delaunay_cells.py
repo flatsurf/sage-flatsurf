@@ -6,9 +6,6 @@ marked triangulation. The marking corresponds to the position of the horizontal
 and vertical separatrices. Each triangle hence get one of the following types:
 bottom-left, bottom-right, top-left, top-right.
 """
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.misc.cachefunc import cached_method
 
 # the types of edges
