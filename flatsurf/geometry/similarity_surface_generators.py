@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -18,10 +17,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems, itervalues
-
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField, polygen
 from sage.modules.all import VectorSpace, vector
 from sage.structure.coerce import py_scalar_parent
@@ -1520,14 +1515,14 @@ class TranslationSurfaceGenerators:
 
         f = h.flat_structure()
 
-        x = next(itervalues(f.edge_vectors)).x
+        x = next(iter(f.edge_vectors.values())).x
         K = flipper_nf_to_sage(x.field)
         V = VectorSpace(K, 2)
         edge_vectors = {
             i: V(
                 (flipper_nf_element_to_sage(e.x, K), flipper_nf_element_to_sage(e.y, K))
             )
-            for i, e in iteritems(f.edge_vectors)
+            for i, e in f.edge_vectors.items()
         }
 
         to_polygon_number = {

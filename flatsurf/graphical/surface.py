@@ -27,13 +27,6 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
-from flatsurf.geometry.similarity_surface import SimilaritySurface
-from .polygon import *
-
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.modules.free_module_element import vector
@@ -359,7 +352,7 @@ class GraphicalSurface:
         gs.zero_flag_options = dict(self.zero_flag_options)
 
         # Copy polygons and visible set.
-        gs._polygons = {label: gp.copy() for label, gp in iteritems(self._polygons)}
+        gs._polygons = {label: gp.copy() for label, gp in self._polygons.items()}
         gs._visible = set(self._visible)
         gs._edge_labels = self._edge_labels
 
@@ -441,8 +434,6 @@ class GraphicalSurface:
                             # No reasonable way to display the polygon, so we do this hack:
                             g = self.graphical_polygon(label)
                             poly = self._ss.polygon(label)
-                            sxmax = self.xmax()
-                            pxmin = g.xmin()
                             t = T(
                                 (
                                     QQ(self.xmax() - g.xmin() + 1),
@@ -475,8 +466,6 @@ class GraphicalSurface:
                             # No reasonable way to display the polygon, so we do this hack:
                             g = self.graphical_polygon(label)
                             poly = self._ss.polygon(label)
-                            sxmax = self.xmax()
-                            pxmin = g.xmin()
                             t = T(
                                 (
                                     QQ(self.xmax() - g.xmin() + 1),
@@ -541,6 +530,8 @@ class GraphicalSurface:
             t = None
             if self._default_position_function is not None:
                 t = self._default_position_function(label)
+            from flatsurf.graphical.polygon import GraphicalPolygon
+
             p = GraphicalPolygon(self._ss.polygon(label), transformation=t)
             self._polygons[label] = p
             return p

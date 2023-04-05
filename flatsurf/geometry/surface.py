@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Data structures for surfaces built from polygons.
 
@@ -71,9 +70,6 @@ We can recover the underlying surface again::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range
-from six import iteritems
 from collections import deque
 
 from sage.structure.parent import Parent
@@ -1589,7 +1585,7 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
         s.add_polygon(p)
     try:
         # dict case:
-        it = iteritems(gluings)
+        it = gluings.items()
     except AttributeError:
         # list case:
         it = gluings

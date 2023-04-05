@@ -18,13 +18,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
+from collections import deque
 
-from collections import deque, defaultdict
-
-from .polygon import is_same_direction, line_intersection
+from .polygon import line_intersection
 from .surface_objects import SaddleConnection
 
 # Vincent question:
@@ -492,7 +488,7 @@ class AbstractStraightLineTrajectory:
         intersection_points = set()
         if include_segments:
             segments = {}
-        for label, seg_list_1 in iteritems(lab_to_seg1):
+        for label, seg_list_1 in lab_to_seg1.items():
             if label in lab_to_seg2:
                 seg_list_2 = lab_to_seg2[label]
                 for seg1 in seg_list_1:

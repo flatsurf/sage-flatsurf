@@ -8,13 +8,9 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace
 from sage.plot.polygon import polygon2d
-from sage.plot.graphics import Graphics
 from sage.plot.text import text
 from sage.plot.line import line2d
 from sage.plot.point import point2d

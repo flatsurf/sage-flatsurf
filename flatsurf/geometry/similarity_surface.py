@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Similarity surfaces.
 """
@@ -21,10 +20,6 @@ Similarity surfaces.
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range
-from six import iteritems
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
@@ -578,7 +573,7 @@ class SimilaritySurface(SageObject):
             domain = set()
             codomain = set()
             data = {}
-            for l1, l2 in iteritems(relabeling_map):
+            for l1, l2 in relabeling_map.items():
                 p = us.polygon(l1)
                 glue = []
                 for e in range(p.num_edges()):
@@ -1179,7 +1174,7 @@ class SimilaritySurface(SageObject):
         s = ss.underlying_surface()
 
         inv_edge_map = {}
-        for key, value in iteritems(edge_map):
+        for key, value in edge_map.items():
             inv_edge_map[value] = (p1, key)
 
         glue_list = []

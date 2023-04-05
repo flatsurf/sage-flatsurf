@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 GL(2,R)-orbit closure of translation surfaces
 
