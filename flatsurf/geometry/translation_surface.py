@@ -14,6 +14,10 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     A surface with a flat metric and conical singularities whose cone angles are a multiple of pi.
     """
 
+    def __init__(self, surface, category=None):
+        from flatsurf.geometry.categories import TranslationSurfaces
+        super().__init__(surface, category or TranslationSurfaces())
+
     def minimal_translation_cover(self):
         return self
 
@@ -49,24 +53,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         if e < 0 or e >= self.polygon(p).num_edges():
             raise ValueError
         return identity_matrix(self.base_ring(), 2)
-
-    def stratum(self):
-        r"""
-        Return the stratum this surface belongs to.
-
-        This uses the package ``surface-dynamics``
-        (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
-
-        EXAMPLES::
-
-            sage: import flatsurf.geometry.similarity_surface_generators as sfg
-            sage: sfg.translation_surfaces.octagon_and_squares().stratum()
-            H_3(4)
-        """
-        from surface_dynamics import AbelianStratum
-        from sage.rings.integer_ring import ZZ
-
-        return AbelianStratum([ZZ(a - 1) for a in self.angles()])
 
     def standardize_polygons(self, in_place=False):
         r"""

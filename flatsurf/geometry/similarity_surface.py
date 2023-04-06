@@ -24,7 +24,7 @@ Similarity surfaces.
 from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
 
-from sage.structure.sage_object import SageObject
+from sage.structure.parent import Parent
 
 from sage.rings.infinity import Infinity
 
@@ -44,7 +44,7 @@ ZZ_1 = ZZ.one()
 ZZ_2 = ZZ_1 + ZZ_1
 
 
-class SimilaritySurface(SageObject):
+class SimilaritySurface(Parent):
     r"""
     An oriented surface built from a set of polygons and edges identified with
     similarities (i.e. composition of homothety, rotations and translations).
@@ -137,8 +137,9 @@ class SimilaritySurface(SageObject):
 
     - ``is_finite(self)``: whether the surface is built from finitely many polygons
     """
+    Element = SurfacePoint
 
-    def __init__(self, surface):
+    def __init__(self, surface, category=None):
         r"""
         TESTS::
 
@@ -158,6 +159,23 @@ class SimilaritySurface(SageObject):
                     surface
                 )
             )
+
+        from flatsurf.geometry.categories import SimilaritySurfaces
+        Parent.__init__(self, base=surface.base_ring(), category=category or SimilaritySurfaces())
+
+    def _an_element_(self):
+        label = next(self.label_iterator())
+        polygon = self.polygon(label)
+
+        # We use a point that can be constructed without problems on an
+        # infinite surface.
+        if polygon.is_convex():
+            coordinates = polygon.centroid()
+        else:
+            # Sometimes, this is not implemented because it requires the edge
+            # transformation to be known, so we prefer the centroid.
+            coordinates = polygon.edge(0) / 2
+        return self(label, coordinates)
 
     @cached_method
     def _matrix_space(self):
@@ -234,44 +252,6 @@ class SimilaritySurface(SageObject):
 
     def is_triangulated(self, limit=None):
         return self._s.is_triangulated(limit=limit)
-
-    #
-    # generic methods
-    #
-
-    # def compute_surface_type_from_gluings(self,limit=None):
-    #    r"""
-    #    Compute the surface type by looking at the edge gluings.
-    #    If limit is defined, we try to guess the type by looking at limit many edges.
-    #    """
-    #    if limit is None:
-    #        if not self.is_finite():
-    #            raise ValueError("Need a limit when working with an infinite surface.")
-    #        it = self.edge_iterator()
-    #        label,edge = it.next()
-    #        # Use honest matrices!
-    #        m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-    #        surface_type = surface_type_from_matrix(m)
-    #        for label,edge in it:
-    #            # Use honest matrices!
-    #            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-    #            surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
-    #        return surface_type
-    #    else:
-    #        count=0
-    #        it = self.edge_iterator()
-    #        label,edge = it.next()
-    #        # Use honest matrices!
-    #        m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-    #        surface_type = surface_type_from_matrix(m)
-    #        for label,edge in it:
-    #            # Use honest matrices!
-    #            m = SimilaritySurface_generic.edge_matrix(self,label,edge)
-    #            surface_type = combine_surface_types(surface_type, surface_type_from_matrix(m))
-    #            count=count+1
-    #            if count >= limit:
-    #                return surface_type
-    #        return surface_type
 
     def walker(self):
         return self._s.walker()
@@ -387,7 +367,7 @@ class SimilaritySurface(SageObject):
         else:
             end = "s"
 
-        return "{} built from {} polygon{}".format(self.__class__.__name__, num, end)
+        return "{} built from {} polygon{}".format(self.__class__.__name__.replace("_with_category", ""), num, end)
 
     @cached_method
     def edge_matrix(self, p, e=None):

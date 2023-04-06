@@ -158,9 +158,9 @@ class Surface(Parent):
 
         self._cache = {}
 
-        from sage.all import Sets
+        from flatsurf.geometry.categories import TopologicalSurfaces
 
-        Parent.__init__(self, base=base_ring, category=category or Sets())
+        Parent.__init__(self, base=base_ring, category=category or TopologicalSurfaces())
 
     def is_triangulated(self, limit=None):
         r"""

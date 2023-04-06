@@ -22,6 +22,10 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """
 
+    def __init__(self, surface, category=None):
+        from flatsurf.geometry.categories import HalfTranslationSurfaces
+        super().__init__(surface, category or HalfTranslationSurfaces())
+
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
         Return the set of angles around the vertices of the surface.
@@ -120,23 +124,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                     angles.append(QQ((angle, 2)))
 
         return angles
-
-    def stratum(self):
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
-            sage: H = B.minimal_cover(cover_type="half-translation")
-            sage: H.stratum()
-            Q_1(3, -1^3)
-        """
-        angles = self.angles()
-        if all(x.denominator() == 1 for x in angles):
-            raise NotImplementedError
-        from surface_dynamics import QuadraticStratum
-
-        return QuadraticStratum(*[2 * a - 2 for a in angles])
 
     def _test_edge_matrix(self, **options):
         r"""
