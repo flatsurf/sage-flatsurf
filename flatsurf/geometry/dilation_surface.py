@@ -8,9 +8,6 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from flatsurf.geometry.half_dilation_surface import HalfDilationSurface
 
 

@@ -1,28 +1,29 @@
 # ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
 #                          2023 Julian Rüth <julian.rueth@fsfe.org>
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
 
 from flatsurf.geometry.surface import Surface
 from flatsurf.geometry.similarity_surface import SimilaritySurface
-from flatsurf.geometry.mappings import (
-    SurfaceMapping,
-    IdentityMapping,
-    SurfaceMappingComposition,
-)
-from flatsurf.geometry.polygon import ConvexPolygons
+from flatsurf.geometry.mappings import SurfaceMapping
 
-from sage.env import SAGE_VERSION
+from flatsurf.geometry.polygon import ConvexPolygons
 
 from sage.structure.element import is_Matrix
 
@@ -47,7 +48,7 @@ class HalfDilationSurface(SimilaritySurface):
             The infinite staircase
             sage: m=Matrix([[1,2],[0,1]])
             sage: s2=m*s
-            sage: TestSuite(s2).run(skip='_test_pickling')
+            sage: TestSuite(s2).run()
             sage: s2.polygon(0)
             Polygon: (0, 0), (1, 0), (3, 1), (2, 1)
 
@@ -81,7 +82,10 @@ class HalfDilationSurface(SimilaritySurface):
         If in_place=False, then a copy is made before the deformation.
         """
         if mapping is True:
-            assert in_place is False, "Can not modify in place and return a mapping."
+            if in_place:
+                raise NotImplementedError(
+                    "can not modify in place and return a mapping"
+                )
             return GL2RMapping(self, m)
         if not in_place:
             if self.is_finite():
@@ -98,14 +102,15 @@ class HalfDilationSurface(SimilaritySurface):
             from sage.matrix.constructor import Matrix
 
             m = Matrix(self.base_ring(), 2, 2, m)
-            assert (
-                m.det() != self.base_ring().zero()
-            ), "Can not deform by degenerate matrix."
-            assert (
-                self.is_finite()
-            ), "In place GL(2,R) action only works for finite surfaces."
+            if m.det() == self.base_ring().zero():
+                raise ValueError("can not deform by degenerate matrix")
+            if not self.is_finite():
+                raise NotImplementedError(
+                    "in-place GL(2,R) action only works for finite surfaces"
+                )
             us = self.underlying_surface()
-            assert us.is_mutable(), "In place changes only work for mutable surfaces."
+            if not us.is_mutable():
+                raise ValueError("in-place changes only work for mutable surfaces")
             for label in self.label_iterator():
                 us.change_polygon(label, m * self.polygon(label))
             if m.det() < self.base_ring().zero():
@@ -127,7 +132,7 @@ class HalfDilationSurface(SimilaritySurface):
                             new_glue[(p1, n1 - 1 - e1)] = (p2, n2 - 1 - e2)
                     seen_labels.add(p1)
                 # Second pass: reassign gluings
-                for (p1, e1), (p2, e2) in iteritems(new_glue):
+                for (p1, e1), (p2, e2) in new_glue.items():
                     us.change_edge_gluing(p1, e1, p2, e2)
             return self
 
@@ -269,8 +274,9 @@ class HalfDilationSurface(SimilaritySurface):
         if direction is None:
             base_ring = self.base_ring()
             direction = self.vector_space()((base_ring.zero(), base_ring.one()))
-        else:
-            assert not direction.is_zero()
+
+        if direction.is_zero():
+            raise ValueError("direction must be non-zero")
 
         triangles = set(s.label_iterator())
         if limit is None:
@@ -306,7 +312,6 @@ class GL2RImageSurface(Surface):
     """
 
     def __init__(self, surface, m, ring=None):
-
         if surface.is_mutable():
             if surface.is_finite():
                 self._s = surface.copy()
@@ -361,6 +366,30 @@ class GL2RImageSurface(Surface):
             pp, ee = self._s.opposite_edge(p, polygon.num_edges() - 1 - e)
             polygon2 = self._s.polygon(pp)
             return pp, polygon2.num_edges() - 1 - ee
+
+    def __eq__(self, other):
+        r"""
+        Return whether this image is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: m = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = m * S
+            sage: S == S
+            True
+
+        """
+        if isinstance(other, GL2RImageSurface):
+            if (
+                self._s == other._s
+                and self._m == other._m
+                and self.base_ring() == other.base_ring()
+            ):
+                return True
+
+        return super().__eq__(other)
 
 
 class GL2RMapping(SurfaceMapping):

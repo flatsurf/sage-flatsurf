@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Similarity surfaces.
 """
@@ -21,10 +20,6 @@ Similarity surfaces.
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range
-from six import iteritems
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.sage_unittest import TestSuite
@@ -181,20 +176,10 @@ class SimilaritySurface(SageObject):
         tester = self._tester(**options)
         tester.info("")
 
-        # TODO: this nested subsuite is very fragile since we have no
-        #       way of forwarding the doctests to be skipped... Since
-        #       for now, the unique usage of this is for pickling of
-        #       infinite surface we provide that manually
-        if not self._s.is_finite():
-            skip = ["_test_pickling"]
-        else:
-            skip = []
-
         TestSuite(self._s).run(
             verbose=tester._verbose,
             prefix=tester._prefix + "  ",
             raise_on_failure=is_sub_testsuite,
-            skip=skip,
         )
         tester.info(tester._prefix + " ", newline=False)
 
@@ -529,7 +514,8 @@ class SimilaritySurface(SageObject):
                 )
             p = us.polygon(label)
             n = p.num_edges()
-            assert 0 <= v and v < n
+            if not (0 <= v < n):
+                raise ValueError
             glue = []
             P = ConvexPolygons(us.base_ring())
             pp = P(edges=[p.edge((i + v) % n) for i in range(n)])
@@ -603,7 +589,7 @@ class SimilaritySurface(SageObject):
             domain = set()
             codomain = set()
             data = {}
-            for l1, l2 in iteritems(relabeling_map):
+            for l1, l2 in relabeling_map.items():
                 p = us.polygon(l1)
                 glue = []
                 for e in range(p.num_edges()):
@@ -702,14 +688,14 @@ class SimilaritySurface(SageObject):
 
             sage: from flatsurf import *
             sage: ss=translation_surfaces.ward(3)
-            sage: print(ss.is_mutable())
+            sage: ss.is_mutable()
             False
             sage: s=ss.copy(mutable=True)
-            sage: print(s.is_mutable())
+            sage: s.is_mutable()
             True
             sage: TestSuite(s).run()
-            sage: print(s==ss)
-            True
+            sage: s == ss
+            False
 
             sage: # Changing the base field
             sage: from flatsurf import *
@@ -733,12 +719,14 @@ class SimilaritySurface(SageObject):
                 "You can not set a new_field and also set optimal_number_field=True."
             )
         if optimal_number_field is True:
-            assert (
-                self.is_finite()
-            ), "Can only optimize_number_field for a finite surface."
-            assert (
-                not lazy
-            ), "Lazy copying is unavailable when optimize_number_field=True."
+            if not self.is_finite():
+                raise NotImplementedError(
+                    "can only optimize_number_field for a finite surface"
+                )
+            if lazy:
+                raise NotImplementedError(
+                    "lazy copying is unavailable when optimize_number_field=True"
+                )
             coordinates_AA = []
             for label, p in self.label_iterator(polygons=True):
                 for e in p.edges():
@@ -868,7 +856,7 @@ class SimilaritySurface(SageObject):
             sage: from flatsurf import *
 
             sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
-            sage: print(s.polygon(0))
+            sage: s.polygon(0)
             Polygon: (0, 0), (1, 0), (0, 1)
             sage: s.triangle_flip(0, 0, test=True)
             False
@@ -942,7 +930,8 @@ class SimilaritySurface(SageObject):
 
         if in_place:
             s = self
-            assert s.is_mutable(), "Surface must be mutable for in place triangle_flip."
+            if not s.is_mutable():
+                raise ValueError("surface must be mutable for in place triangle_flip")
         else:
             s = self.copy(mutable=True)
 
@@ -952,7 +941,6 @@ class SimilaritySurface(SageObject):
         l2, e2 = s.opposite_edge(l1, e1)
 
         sim = s.edge_transformation(l2, e2)
-        m = sim.derivative()
         p2 = s.polygon(l2)
         if not p2.num_edges() == 3:
             raise ValueError(
@@ -1002,13 +990,11 @@ class SimilaritySurface(SageObject):
         # i=0 if the new_triangle[0] should be labeled l1 and new_triangle[1] should be labeled l2.
         # i=1 indicates the opposite labeling.
         if new_sep[0] + 1 == q1:
-            # For debugging:
             assert (new_sep[1] + 3) % 4 == q2, (
                 "Bug: new_sep[1]=" + str(new_sep[1]) + " and q2=" + str(q2)
             )
             i = 0
         else:
-            # For debugging:
             assert (new_sep[1] + 3) % 4 == q1
             assert new_sep[0] + 1 == q2
             i = 1
@@ -1037,7 +1023,6 @@ class SimilaritySurface(SageObject):
         diagonal_glue_e1 = 2 - cycle1
         diagonal_glue_e2 = 2 - cycle2
 
-        # FOR CATCHING BUGS:
         assert p1.find_separatrix(direction=direction) == tri1.find_separatrix(
             direction=direction
         )
@@ -1062,7 +1047,6 @@ class SimilaritySurface(SageObject):
             old_e1 = 3 - e1 - v1  # Again this finds the edge which is neither e1 nor v1
         else:
             temp = (v1 + 2) % 3
-            # FOR CATCHING BUGS:
             assert p1.edge(temp) == tri1.edge(temp)
             # We don't have to worry about changing gluings on edge (v1+2)%3 of the triangles with label l1
             # We do have to worry about the following edge:
@@ -1083,7 +1067,6 @@ class SimilaritySurface(SageObject):
             old_e2 = 3 - e2 - v2  # Again this finds the edge which is neither e2 nor v2
         else:
             temp = (v2 + 2) % 3
-            # FOR CATCHING BUGS:
             assert p2.edge(temp) == tri2.edge(temp)
             # We don't have to worry about changing gluings on edge (v2+2)%3 of the triangles with label l2
             # We do have to worry about the following edge:
@@ -1154,11 +1137,11 @@ class SimilaritySurface(SageObject):
             sage: s=ss.copy(mutable=True)
             sage: s.join_polygons(0,0, in_place=True)
             TranslationSurface built from 2 polygons
-            sage: print(s.polygon(0))
+            sage: s.polygon(0)
             Polygon: (0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)
             sage: s.join_polygons(0,4, in_place=True)
             TranslationSurface built from 1 polygon
-            sage: print(s.polygon(0))
+            sage: s.polygon(0)
             Polygon: (0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)
         """
         poly1 = self.polygon(p1)
@@ -1207,7 +1190,7 @@ class SimilaritySurface(SageObject):
         s = ss.underlying_surface()
 
         inv_edge_map = {}
-        for key, value in iteritems(edge_map):
+        for key, value in edge_map.items():
             inv_edge_map[value] = (p1, key)
 
         glue_list = []
@@ -1348,9 +1331,9 @@ class SimilaritySurface(SageObject):
         Represents the Singularity associated to the v-th vertex of the polygon
         with label ``label``.
 
-        If the surface is infinite, the limit needs to be set. In this case the construction
-        of the singularity is successful if the sequence of vertices hit by passing through
-        edges closes up in limit or less steps.
+        If the surface is infinite, the limit can be set. In this case the
+        construction of the singularity is successful if the sequence of
+        vertices hit by passing through edges closes up in limit or less steps.
 
         EXAMPLES::
 
@@ -1358,11 +1341,15 @@ class SimilaritySurface(SageObject):
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: pc.singularity(pc.base_label(),0)
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
+            Vertex 0 of polygon (0, (x, y) |-> (x, y))
+            sage: pc.singularity(pc.base_label(),0,limit=1)
             Traceback (most recent call last):
             ...
-            ValueError: need a limit when working with an infinite surface
-            sage: pc.singularity(pc.base_label(),0,limit=4)
-            singularity with vertex equivalence class frozenset(...)
+            ValueError: number of edges at singularity exceeds limit
+
         """
         return Singularity(self, label, v, limit)
 
@@ -1378,8 +1365,8 @@ class SimilaritySurface(SageObject):
 
         - ``ring`` (optional) - a ring for the coordinates
 
-        - ``limit`` (optional) - undocumented (only necessary if the point corresponds
-          to a singularity in an infinite surface)
+        - ``limit`` (optional) - undocumented (only relevant if the point
+          corresponds to a singularity in an infinite surface)
 
         EXAMPLES::
 
@@ -1387,13 +1374,12 @@ class SimilaritySurface(SageObject):
             sage: s = translation_surfaces.square_torus()
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: pc.surface_point(pc.base_label(),(0,0))
-            Traceback (most recent call last):
-            ...
-            ValueError: need a limit when working with an infinite surface
-            sage: pc.surface_point(pc.base_label(),(1,0),limit=4)
-            Surface point with 4 coordinate representations
+            Vertex 0 of polygon (0, (x, y) |-> (x, y))
             sage: z = pc.surface_point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
-            sage: next(iter(z.coordinates(z.labels()[0]))).parent()
+            doctest:warning
+            ...
+            UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
+            sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
             Vector space of dimension 2 over Algebraic Real Field
         """
         return SurfacePoint(self, label, point, ring=ring, limit=limit)
@@ -1470,7 +1456,7 @@ class SimilaritySurface(SageObject):
             sage: ps = cs.minimal_cover(cover_type="planar")
             sage: ps
             TranslationSurface built from infinitely many polygons
-            sage: TestSuite(ps).run(skip="_test_pickling")
+            sage: TestSuite(ps).run()
 
             sage: from flatsurf import similarity_surfaces
             sage: S = similarity_surfaces.example()
@@ -1676,7 +1662,7 @@ class SimilaritySurface(SageObject):
             sage: ss=s.triangulate()
             sage: gs=ss.graphical_surface()
             sage: gs.make_all_visible()
-            sage: print(gs)
+            sage: gs
             Graphical version of Similarity Surface TranslationSurface built from 6 polygons
 
         A non-strictly convex example that caused trouble:
@@ -1835,7 +1821,7 @@ class SimilaritySurface(SageObject):
                 raise NotImplementedError("A limit must be set for infinite surfaces.")
             limit = self.num_polygons()
         count = 0
-        for (l1, p1) in self.label_iterator(polygons=True):
+        for l1, p1 in self.label_iterator(polygons=True):
             try:
                 c1 = p1.circumscribing_circle()
             except ValueError:
@@ -1899,7 +1885,7 @@ class SimilaritySurface(SageObject):
             0
             sage: ss.polygon(0)
             Polygon: (0, 0), (1, 1), (0, 1)
-            sage: TestSuite(ss).run(skip="_test_pickling")
+            sage: TestSuite(ss).run()
             sage: ss.is_delaunay_triangulated(limit=10)
             True
         """
@@ -1940,8 +1926,10 @@ class SimilaritySurface(SageObject):
         if direction is None:
             base_ring = self.base_ring()
             direction = self.vector_space()((base_ring.zero(), base_ring.one()))
-        else:
-            assert not direction.is_zero()
+
+        if direction.is_zero():
+            raise ValueError
+
         if s.is_finite() and limit is None:
             from collections import deque
 
@@ -2063,7 +2051,7 @@ class SimilaritySurface(SageObject):
             0
             sage: ss.polygon(0)
             Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
-            sage: TestSuite(ss).run(skip="_test_pickling")
+            sage: TestSuite(ss).run()
             sage: ss.is_delaunay_decomposed(limit=10)
             True
         """
@@ -2133,14 +2121,18 @@ class SimilaritySurface(SageObject):
             sage: len(sc_list)
             32
         """
-        assert squared_length_bound > 0
+        if squared_length_bound <= 0:
+            raise ValueError
+
         if sc_list is None:
             sc_list = []
         if initial_label is None:
-            assert self.is_finite()
-            assert (
-                initial_vertex is None
-            ), "If initial_label is not provided, then initial_vertex must not be provided either."
+            if not self.is_finite():
+                raise NotImplementedError
+            if initial_vertex is not None:
+                raise ValueError(
+                    "when initial_label is not provided, then initial_vertex must not be provided either"
+                )
             for label in self.label_iterator():
                 self.saddle_connections(
                     squared_length_bound, initial_label=label, sc_list=sc_list
@@ -2197,11 +2189,9 @@ class SimilaritySurface(SageObject):
                 chain.pop()
                 continue
             vert = verts.pop()
-            # print("Inspecting "+str(vert))
             p = self.polygon(label)
             # First check the vertex
             vert_position = sim(p.vertex(vert))
-            # print(wedge[1].n())
             if (
                 wedge_product(wedge[0], vert_position) > 0
                 and wedge_product(vert_position, wedge[1]) > 0
@@ -2321,7 +2311,7 @@ class SimilaritySurface(SageObject):
             sage: import flatsurf
             sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
             sage: S.plot()
-            Graphics object consisting of 21 graphics primitives
+            ...Graphics object consisting of 21 graphics primitives
 
         Keywords are passed on to the underlying plotting routines, see
         :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
@@ -2476,120 +2466,19 @@ class SimilaritySurface(SageObject):
                 plt += gp.plot_edge_label(e, el, **o)
         return plt
 
-    # I'm not sure we want to support this...
-    #
-    #    def minimize_monodromy_mapping(self):
-    #        r"""
-    #        Return a mapping from this surface to a similarity surface
-    #        with a minimal monodromy group.
-    #        Note that this may be slow for infinite surfaces.
-    #
-    #        EXAMPLES::
-    #            sage: from flatsurf.geometry.polygon import ConvexPolygons
-    #            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-    #            sage: octagon = ConvexPolygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-    #            sage: square = ConvexPolygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-    #            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
-    #            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
-    #            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
-    #            sage: print s
-    #            Rational cone surface built from 3 polygons
-    #            sage: m=s.minimize_monodromy_mapping()
-    #            sage: s2=m.codomain()
-    #            sage: print s2
-    #            Translation surface built from 3 polygons
-    #            sage: v=s.tangent_vector(2,(0,0),(1,0))
-    #            sage: print m.push_vector_forward(v)
-    #            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (-1/2*sqrt2, -1/2*sqrt2)
-    #            sage: w=s2.tangent_vector(2,(0,0),(0,-1))
-    #            sage: print m.pull_vector_back(w)
-    #            SimilaritySurfaceTangentVector in polygon 2 based at (0, 0) with vector (1/2*sqrt2, 1/2*sqrt2)
-    #        """
-    #        lw = self.walker()
-    #        class MatrixFunction:
-    #            def __init__(self, lw):
-    #                self._lw=lw
-    #                from sage.matrix.constructor import identity_matrix
-    #                self._d = {lw.surface().base_label():
-    #                    identity_matrix(lw.surface().base_ring(), n=2)}
-    #            def __call__(self, label):
-    #                try:
-    #                    return self._d[label]
-    #                except KeyError:
-    #                    e = self._lw.edge_back(label)
-    #                    label2,e2 = self._lw.surface().opposite_edge(label,e)
-    #                    m=self._lw.surface().edge_matrix(label,e) * self(label2)
-    #                    self._d[label]=m
-    #                    return m
-    #        mf = MatrixFunction(lw)
-    #        from flatsurf.geometry.mappings import (
-    #            MatrixListDeformedSurfaceMapping,
-    #            IdentityMapping)
-    #        mapping = MatrixListDeformedSurfaceMapping(self, mf)
-    #        surface_type = mapping.codomain().compute_surface_type_from_gluings(limit=100)
-    #        new_codomain = convert_to_type(mapping.codomain(),surface_type)
-    #        identity = IdentityMapping(mapping.codomain(), new_codomain)
-    #        return identity * mapping
-    #
-    #    def minimal_monodromy_surface(self):
-    #        r"""
-    #        Return an equivalent similarity surface with minimal monodromy.
-    #        Note that this may be slow for infinite surfaces.
-    #
-    #        EXAMPLES::
-    #            sage: from flatsurf.geometry.polygon import ConvexPolygons
-    #            sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-    #            sage: octagon = ConvexPolygons(K)([(1,0),(sqrt2/2, sqrt2/2),(0, 1),(-sqrt2/2, sqrt2/2),(-1,0),(-sqrt2/2, -sqrt2/2),(0, -1),(sqrt2/2, -sqrt2/2)])
-    #            sage: square = ConvexPolygons(K)([(1,0),(0,1),(-1,0),(0,-1)])
-    #            sage: gluings = [((0,i),(1+(i%2),i//2)) for i in range(8)]
-    #            sage: from flatsurf.geometry.surface import surface_from_polygons_and_gluings
-    #            sage: s=surface_from_polygons_and_gluings([octagon,square,square],gluings)
-    #            sage: print s
-    #            Rational cone surface built from 3 polygons
-    #            sage: s2=s.minimal_monodromy_surface()
-    #            sage: print s2
-    #            Translation surface built from 3 polygons
-    #        """
-    #        return self.minimize_monodromy_mapping().codomain()
-
     def __eq__(self, other):
         r"""
-        Implements a naive notion of equality where two finite surfaces are equal if:
-        - their base labels are equal,
-        - their polygons are equal and labeled and glued in the same way.
-        For infinite surfaces we use reference equality.
-        Raises a value error if the surfaces are defined over different rings.
+        Return whether this surface is indistinguishable from ``other`` as a
+        similarity surface.
+
         """
-        if not self.is_finite():
-            return self is other
         if self is other:
             return True
+
         if not isinstance(other, SimilaritySurface):
-            raise TypeError
-        if not other.is_finite():
-            raise ValueError("Can not compare infinite surfaces.")
-        if self.base_ring() != other.base_ring():
-            raise ValueError("Refusing to compare surfaces with different base rings.")
-        if not self.is_mutable() and not other.is_mutable():
-            hash1 = hash(self)
-            hash2 = hash(other)
-            if hash1 != hash2:
-                return False
-        if self.base_label() != other.base_label():
             return False
-        if self.num_polygons() != other.num_polygons():
-            return False
-        for label, polygon in self.label_iterator(polygons=True):
-            try:
-                polygon2 = other.polygon(label)
-            except ValueError:
-                return False
-            if polygon != polygon2:
-                return False
-            for edge in range(polygon.num_edges()):
-                if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
-                    return False
-        return True
+
+        return self.underlying_surface() == other.underlying_surface()
 
     def __ne__(self, other):
         return not self == other

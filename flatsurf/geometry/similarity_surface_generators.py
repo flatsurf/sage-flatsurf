@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020      Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,10 +17,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems, itervalues
-
 from sage.rings.all import ZZ, QQ, RIF, AA, NumberField, polygen
 from sage.modules.all import VectorSpace, vector
 from sage.structure.coerce import py_scalar_parent
@@ -38,6 +33,7 @@ from .similarity_surface import SimilaritySurface
 from .half_translation_surface import HalfTranslationSurface
 from .cone_surface import ConeSurface
 from .rational_cone_surface import RationalConeSurface
+from .translation_surface import Origami
 
 
 ZZ_1 = ZZ(1)
@@ -228,6 +224,23 @@ class EInfinitySurface(Surface):
                 return -p, (e + 2) % 4
             else:
                 return 1 - p, (e + 2) % 4
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S == S
+            True
+
+        """
+        if isinstance(other, EInfinitySurface):
+            return self._l == other._l and self.base_ring() == other.base_ring()
+
+        return super().__eq__(other)
 
 
 class TFractalSurface(Surface):
@@ -433,6 +446,17 @@ class TFractalSurface(Surface):
             h = self._h2
         return ConvexPolygons(self.base_ring())([(w, 0), (0, h), (-w, 0), (0, -h)])
 
+    def __eq__(self, other):
+        if isinstance(other, TFractalSurface):
+            return (
+                self._w == other._w
+                and self._h1 == other._h1
+                and self._r == other._r
+                and self._h2 == other._h2
+            )
+
+        return super().__eq__(other)
+
 
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
     return TranslationSurface(TFractalSurface(w, r, h1, h2))
@@ -597,7 +621,7 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(
                 polygons(edges=[V((-x, y)) for x, y in reversed(p.edges())])
             )
-        for (p1, e1, p2, e2) in internal_edges:
+        for p1, e1, p2, e2 in internal_edges:
             surface.set_edge_pairing(p1, e1, p2, e2)
             ne1 = surface.polygon(p1).num_edges()
             ne2 = surface.polygon(p2).num_edges()
@@ -778,7 +802,8 @@ class HalfTranslationSurfaceGenerators:
             sage: TestSuite(S).run()
         """
         n = len(h)
-        assert len(w) == n
+        if len(w) != n:
+            raise ValueError
         if n < 2:
             raise ValueError("w and h must have length at least 2")
         H = sum(h)
@@ -1033,7 +1058,6 @@ class TranslationSurfaceGenerators:
         t = ZZ(t)
         e = ZZ(e)
         g = w.gcd(h)
-        gg = g.gcd(t).gcd(e)
         if (
             w <= 0
             or h <= 0
@@ -1185,7 +1209,8 @@ class TranslationSurfaceGenerators:
             sage: s=translation_surfaces.ward(7)
             sage: TestSuite(s).run()
         """
-        assert n >= 3
+        if n < 3:
+            raise ValueError
         o = ZZ_2 * polygons.regular_ngon(2 * n)
         p1 = polygons(*[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
         p2 = polygons(*[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
@@ -1366,7 +1391,8 @@ class TranslationSurfaceGenerators:
             [ 0  0  2  0]
         """
         g = ZZ(genus)
-        assert g >= 3
+        if g < 3:
+            raise ValueError
         x = polygen(AA)
         p = sum([x**i for i in range(1, g + 1)]) - 1
         cp = AA.common_polynomial(p)
@@ -1477,14 +1503,14 @@ class TranslationSurfaceGenerators:
 
         f = h.flat_structure()
 
-        x = next(itervalues(f.edge_vectors)).x
+        x = next(iter(f.edge_vectors.values())).x
         K = flipper_nf_to_sage(x.field)
         V = VectorSpace(K, 2)
         edge_vectors = {
             i: V(
                 (flipper_nf_element_to_sage(e.x, K), flipper_nf_element_to_sage(e.y, K))
             )
-            for i, e in iteritems(f.edge_vectors)
+            for i, e in f.edge_vectors.items()
         }
 
         to_polygon_number = {
@@ -1547,33 +1573,65 @@ class TranslationSurfaceGenerators:
             sage: S = translation_surfaces.infinite_staircase()
             sage: S.underlying_surface()
             The infinite staircase
-            sage: TestSuite(S).run(skip='_test_pickling')
+            sage: TestSuite(S).run()
         """
-        from .translation_surface import Origami
 
-        o = Origami(
-            lambda x: x + 1 if x % 2 else x - 1,  # r  (edge 1)
-            lambda x: x - 1 if x % 2 else x + 1,  # u  (edge 2)
-            lambda x: x + 1 if x % 2 else x - 1,  # rr (edge 3)
-            lambda x: x - 1 if x % 2 else x + 1,  # uu (edge 0)
-            domain=ZZ,
-            base_label=ZZ(0),
-        )
-        o.rename("The infinite staircase")
+        o = TranslationSurfaceGenerators._InfiniteStaircase()
         s = TranslationSurface(o)
-        from flatsurf.geometry.similarity import SimilarityGroup
 
-        SG = SimilarityGroup(QQ)
+        gs = s.graphical_surface(default_position_function=o._position_function)
+        gs.make_all_visible(limit=10)
+        return s
 
-        def pos(n):
+    class _InfiniteStaircase(Origami):
+        def __init__(self):
+            super().__init__(
+                self._vertical,
+                self._horizontal,
+                self._vertical,
+                self._horizontal,
+                domain=ZZ,
+                base_label=ZZ(0),
+            )
+
+        def _vertical(self, x):
+            if x % 2:
+                return x + 1
+            return x - 1
+
+        def _horizontal(self, x):
+            if x % 2:
+                return x - 1
+            return x + 1
+
+        def _position_function(self, n):
+            from flatsurf.geometry.similarity import SimilarityGroup
+
+            SG = SimilarityGroup(QQ)
             if n % 2 == 0:
                 return SG((n // 2, n // 2))
             else:
                 return SG((n // 2, n // 2 + 1))
 
-        gs = s.graphical_surface(default_position_function=pos)
-        gs.make_all_visible(limit=10)
-        return s
+        def __repr__(self):
+            return "The infinite staircase"
+
+        def __eq__(self, other):
+            r"""
+            Return whether this surface is indistinguishable from ``other``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S == S
+                True
+
+            """
+            if isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase):
+                return True
+
+            return super().__eq__(other)
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
@@ -1586,7 +1644,7 @@ class TranslationSurfaceGenerators:
             sage: tf = translation_surfaces.t_fractal().underlying_surface()
             sage: tf
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
-            sage: TestSuite(tf).run(skip='_test_pickling')
+            sage: TestSuite(tf).run()
         """
         return tfractal_surface(w, r, h1, h2)
 
@@ -1611,7 +1669,7 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.e_infinity_surface()
-            sage: TestSuite(s).run(skip='_test_pickling')
+            sage: TestSuite(s).run()
         """
         return TranslationSurface(EInfinitySurface(lambda_squared, field))
 
@@ -1626,7 +1684,7 @@ class TranslationSurfaceGenerators:
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C
             TranslationSurface built from infinitely many polygons
-            sage: TestSuite(C).run(skip='_test_pickling')
+            sage: TestSuite(C).run()
         """
         from .chamanara import chamanara_surface
 

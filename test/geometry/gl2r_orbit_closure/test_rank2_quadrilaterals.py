@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Eskin-McMullen-Mukamel-Write quadrilaterals from the article
 "Billiards, quadrilaterals and moduli spaces"
@@ -25,7 +24,6 @@ the ambient rank 2 locus.
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
 import itertools
