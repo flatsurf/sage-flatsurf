@@ -18,13 +18,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
+from collections import deque
 
-from collections import deque, defaultdict
-
-from .polygon import is_same_direction, line_intersection
+from .polygon import line_intersection
 from .surface_objects import SaddleConnection
 
 # Vincent question:
@@ -467,9 +463,9 @@ class AbstractStraightLineTrajectory:
             sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):
             ....:     print(p)
             ....:     print(len(segs1), len(segs2))
-            Surface point with 2 coordinate representations
+            Point (1/2, 0) of polygon 0
             2 2
-            Surface point with 2 coordinate representations
+            Point (0, 1/2) of polygon 0
             2 2
         """
         # Partition the segments making up the trajectories by label.
@@ -492,7 +488,7 @@ class AbstractStraightLineTrajectory:
         intersection_points = set()
         if include_segments:
             segments = {}
-        for label, seg_list_1 in iteritems(lab_to_seg1):
+        for label, seg_list_1 in lab_to_seg1.items():
             if label in lab_to_seg2:
                 seg_list_2 = lab_to_seg2[label]
                 for seg1 in seg_list_1:
@@ -504,9 +500,11 @@ class AbstractStraightLineTrajectory:
                             seg2.start().point() + seg2.start().vector(),
                         )
                         if x is not None:
-                            pos = self.surface().polygon(
-                                seg1.polygon_label()
-                            ).get_point_position(x)
+                            pos = (
+                                self.surface()
+                                .polygon(seg1.polygon_label())
+                                .get_point_position(x)
+                            )
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):

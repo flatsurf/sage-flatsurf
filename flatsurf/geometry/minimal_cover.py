@@ -1,11 +1,36 @@
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.matrix.constructor import matrix
 
 from .surface import Surface
-from .half_translation_surface import HalfTranslationSurface
-from .dilation_surface import DilationSurface
+
+
+def _is_finite(surface):
+    r"""
+    Return whether ``surface`` is a finite rational cone surface.
+    """
+    if not surface.is_finite():
+        return False
+
+    from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+
+    if isinstance(surface, RationalConeSurface):
+        return True
+
+    surface = surface.reposition_polygons(relabel=True)
+
+    for label in surface.label_iterator():
+        polygon = surface.polygon(label)
+
+        for e in range(polygon.num_edges()):
+            from flatsurf.geometry.similarity_surface import SimilaritySurface
+
+            m = SimilaritySurface.edge_matrix(surface, label, e)
+
+            from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+
+            if not is_cosine_sine_of_rational(m[0][0], m[0][1]):
+                return False
+
+    return True
 
 
 class MinimalTranslationCover(Surface):
@@ -35,10 +60,10 @@ class MinimalTranslationCover(Surface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)  # long time (3s)
-        sage: S = similarity_surfaces.billiard(T, rational=True)  # long time (above)
-        sage: alarm(5); S = S.minimal_cover("translation"); cancel_alarm()  # long time (above)
-        sage: S  # long time (above)
+        sage: T = polygons.triangle(2, 13, 26)
+        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: S = S.minimal_cover("translation")
+        sage: S
         TranslationSurface built from 82 polygons
     """
 
@@ -54,19 +79,7 @@ class MinimalTranslationCover(Surface):
             self._ss = similarity_surface
 
         # We are finite if and only if self._ss is a finite RationalConeSurface.
-        if not self._ss.is_finite():
-            finite = False
-        else:
-            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-
-            finite = True
-            if not isinstance(self._ss, RationalConeSurface):
-                ss_copy = self._ss.reposition_polygons(relabel=True)
-                try:
-                    rcs = RationalConeSurface(ss_copy)
-                    rcs._test_edge_matrix()
-                except AssertionError:
-                    finite = False
+        finite = _is_finite(self._ss)
 
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
@@ -78,7 +91,6 @@ class MinimalTranslationCover(Surface):
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
-        p = self._ss.polygon(lab[0])
         return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
@@ -88,6 +100,38 @@ class MinimalTranslationCover(Surface):
         aa = a * m[0][0] - b * m[1][0]
         bb = b * m[0][0] + a * m[1][0]
         return ((p2, aa, bb), e2)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        Note that this is not implemented in most non-trivial cases.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: T = polygons.triangle(2, 13, 26)
+            sage: S = similarity_surfaces.billiard(T, rational=True)
+            sage: S = S.minimal_cover("translation")
+
+            sage: S == S
+            True
+
+        ::
+
+            sage: TT = polygons.triangle(2, 15, 26)
+            sage: SS = similarity_surfaces.billiard(TT, rational=True)
+            sage: SS = SS.minimal_cover("translation")
+
+            sage: S == SS
+            False
+
+        """
+        if isinstance(other, MinimalTranslationCover):
+            if self._ss == other._ss and self._base_label == other._base_label:
+                return True
+
+        return super().__eq__(other)
 
 
 class MinimalHalfTranslationCover(Surface):
@@ -117,10 +161,10 @@ class MinimalHalfTranslationCover(Surface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)  # long time (3s)
-        sage: S = similarity_surfaces.billiard(T, rational=True)  # long time (above)
-        sage: alarm(5); S = S.minimal_cover("half-translation"); cancel_alarm()  # long time (above)
-        sage: S  # long time (above)
+        sage: T = polygons.triangle(2, 13, 26)
+        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: S = S.minimal_cover("half-translation")
+        sage: S
         HalfTranslationSurface built from 82 polygons
     """
 
@@ -136,20 +180,7 @@ class MinimalHalfTranslationCover(Surface):
             self._ss = similarity_surface
 
         # We are finite if and only if self._ss is a finite RationalConeSurface.
-        if not self._ss.is_finite():
-            finite = False
-        else:
-            from flatsurf.geometry.rational_cone_surface import RationalConeSurface
-
-            finite = True
-            if not isinstance(self._ss, RationalConeSurface):
-                ss_copy = self._ss.reposition_polygons(relabel=True)
-                try:
-                    rcs = RationalConeSurface(ss_copy)
-                    rcs._test_edge_matrix()
-                except AssertionError:
-                    # print("Warning: Could be indicating infinite surface falsely.")
-                    finite = False
+        finite = _is_finite(self._ss)
 
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
@@ -161,7 +192,6 @@ class MinimalHalfTranslationCover(Surface):
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
-        p = self._ss.polygon(lab[0])
         return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
@@ -191,9 +221,15 @@ class MinimalPlanarCover(Surface):
         sage: pc.is_finite()
         False
         sage: sing = pc.singularity(pc.base_label(),0,limit=4)
+        doctest:warning
+        ...
+        UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
         sage: len(sing.vertex_set())
+        doctest:warning
+        ...
+        UserWarning: vertex_set() is deprecated and will be removed in a future version of sage-flatsurf; use representatives() and then vertex = surface.polygon(label).get_point_position(coordinates).get_vertex() instead
         4
-        sage: TestSuite(s).run(skip="_test_pickling")
+        sage: TestSuite(s).run()
     """
 
     def __init__(self, similarity_surface, base_label=None):
@@ -240,3 +276,25 @@ class MinimalPlanarCover(Surface):
         me = self._ss.edge_transformation(pp, e)
         mm = m * ~me
         return ((p2, mm), e2)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        Note that this is not implemented in most non-trivial cases.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.square_torus()
+            sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
+            sage: pc = TranslationSurface(MinimalPlanarCover(s))
+            sage: pc == pc
+            True
+
+        """
+        if isinstance(other, MinimalPlanarCover):
+            if self._ss == other._ss and self._base_label == other._base_label:
+                return True
+
+        return super().__eq__(other)

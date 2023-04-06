@@ -9,13 +9,7 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
-import itertools
-
 from .polygon import wedge_product
-from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from .rational_cone_surface import RationalConeSurface
 
@@ -155,6 +149,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
             it = self.label_iterator()
         else:
             from itertools import islice
+
             it = islice(self.label_iterator(), 30)
 
         for lab in it:

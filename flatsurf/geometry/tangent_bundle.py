@@ -18,9 +18,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range
-
 from .polygon import wedge_product, is_same_direction, is_opposite_direction
 
 # Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
@@ -79,7 +76,7 @@ class SimilaritySurfaceTangentVector:
         p = self.surface().polygon(polygon_label)
         pos = p.get_point_position(point)
         if vector == self._bundle.vector_space().zero():
-            raise ValueError("Provided vector is zero. (Temporarily not supported.)")
+            raise NotImplementedError("vector must be non-zero")
         if pos.is_in_interior():
             self._polygon_label = polygon_label
             self._point = point
@@ -394,7 +391,9 @@ class SimilaritySurfaceTangentVector:
             sage: v.clockwise_to((1,1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])
         """
-        assert w != self.surface().vector_space().zero(), "Vector w must be non-zero."
+        if w == self.surface().vector_space().zero():
+            raise ValueError("w must be non-zero")
+
         if self.is_based_at_singularity():
             s = self.surface()
             v1 = self.vector()
@@ -431,7 +430,9 @@ class SimilaritySurfaceTangentVector:
                     label, s.polygon(label).vertex(vertex), w
                 )
         else:
-            raise NotImplementedError("Rotating tangent vectors is only implemnted when at a singularity")
+            raise NotImplementedError(
+                "Rotating tangent vectors is only implemnted when at a singularity"
+            )
 
     def counterclockwise_to(self, w, code=False):
         r"""
@@ -466,7 +467,9 @@ class SimilaritySurfaceTangentVector:
             sage: v.counterclockwise_to((1,1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1), [7, 2, 5])
         """
-        assert w != self.surface().vector_space().zero(), "Vector w must be non-zero."
+        if w == self.surface().vector_space().zero():
+            raise ValueError("w must be non-zero")
+
         if self.is_based_at_singularity():
             s = self.surface()
             v1 = self.vector()
@@ -510,7 +513,9 @@ class SimilaritySurfaceTangentVector:
                     label, s.polygon(label).vertex(vertex), w
                 )
         else:
-            raise NotImplementedError("Rotating tangent vectors is only implemnted when at a singularity")
+            raise NotImplementedError(
+                "Rotating tangent vectors is only implemnted when at a singularity"
+            )
 
     def plot(self, **kwargs):
         r"""

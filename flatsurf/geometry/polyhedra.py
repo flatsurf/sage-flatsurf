@@ -1,6 +1,23 @@
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
+# ********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2017-2020 W. Patrick Hooper
+#                      2017-2020 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ********************************************************************
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.number_field.number_field import NumberField
@@ -72,6 +89,50 @@ class ConeSurfaceToPolyhedronMap(SageObject):
             )
         raise ValueError("Failed to recognize type of passed object")
 
+    def __eq__(self, other):
+        r"""
+        Return whether this map is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface
+            sage: vertices=[]
+            sage: for i in range(3):
+            ....:     temp=vector([1 if k==i else 0 for k in range(3)])
+            ....:     for j in range(-1,3,2):
+            ....:         vertices.append(j*temp)
+            sage: octahedron=Polyhedron(vertices=vertices)
+            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
+
+            sage: surface_to_octahedron == surface_to_octahedron
+            True
+
+        """
+        if not isinstance(other, ConeSurfaceToPolyhedronMap):
+            return False
+        return self._s == other._s and self._p == other._p and self._md == other._md
+
+    def __ne__(self, other):
+        r"""
+        Return whether this map is distinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface
+            sage: vertices=[]
+            sage: for i in range(3):
+            ....:     temp=vector([1 if k==i else 0 for k in range(3)])
+            ....:     for j in range(-1,3,2):
+            ....:         vertices.append(j*temp)
+            sage: octahedron=Polyhedron(vertices=vertices)
+            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
+
+            sage: surface_to_octahedron != surface_to_octahedron
+            False
+
+        """
+        return not (self == other)
+
 
 def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
     r"""Construct the Euclidean Cone Surface associated to the surface of a polyhedron and a map
@@ -101,7 +162,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         sage: surface,surface_to_octahedron = \
         ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
         sage: TestSuite(surface).run()
-        sage: TestSuite(surface_to_octahedron).run(skip="_test_pickling")
+        sage: TestSuite(surface_to_octahedron).run()
         sage: surface.num_polygons()
         8
         sage: surface.base_ring()
@@ -127,7 +188,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         sage: ZZ(total_length**2)
         42
     """
-    assert polyhedron.dim() == 3
+    if polyhedron.dim() != 3:
+        raise ValueError
+
     c = polyhedron.center()
     vertices = polyhedron.vertices()
     vertex_order = {}

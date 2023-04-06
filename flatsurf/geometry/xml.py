@@ -8,9 +8,9 @@ EXAMPLES::
 
     sage: from flatsurf import *
     sage: from flatsurf.geometry.xml import *
-    sage: s=translation_surfaces.square_torus().underlying_surface()
-    sage: ss=surface_from_xml_string(surface_to_xml_string(s))
-    sage: print(ss==s)
+    sage: s = translation_surfaces.square_torus().underlying_surface()
+    sage: ss = surface_from_xml_string(surface_to_xml_string(s))
+    sage: ss==s
     True
 """
 
@@ -258,6 +258,8 @@ def _surface_from_ElementTree(tree):
         raise ValueError('Failed to find tag named "base_label"')
     base_label = int(node.text)
     s.change_base_label(base_label)
+
+    s.set_immutable()
 
     # Return the surface:
     return s

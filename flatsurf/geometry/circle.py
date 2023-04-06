@@ -14,9 +14,6 @@ Delaunay decomposition for infinite surfaces.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
 

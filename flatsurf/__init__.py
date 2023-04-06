@@ -1,8 +1,6 @@
 r"""
 sage-flatsurf: Sagemath module for similitude surfaces
 """
-from __future__ import absolute_import, print_function
-
 from .version import version as __version__
 
 from .geometry.polygon import polygons, EquiangularPolygons, Polygons, ConvexPolygons
@@ -32,5 +30,3 @@ from .geometry.cohomology import SimplicialCohomology
 from .geometry.harmonic_differentials import HarmonicDifferentials
 
 from .geometry.hyperbolic import HyperbolicPlane
-
-del absolute_import, print_function

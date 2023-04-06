@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 GL(2,R)-orbit closure of translation surfaces
 
@@ -682,7 +681,7 @@ class GL2ROrbitClosure:
         n = self._surface.size()
         V = FreeModule(ZZ, n)
         B = []
-        for (f1, f2, f3) in self._surface.faces():
+        for f1, f2, f3 in self._surface.faces():
             i1 = f1.index()
             s1 = -1 if i1 % 2 else 1
             i2 = f2.index()
