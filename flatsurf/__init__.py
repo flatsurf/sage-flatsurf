@@ -25,4 +25,7 @@ from .geometry.translation_surface import TranslationSurface
 
 from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
+from .geometry.homology import SimplicialHomology
+from .geometry.cohomology import SimplicialCohomology
+
 from .geometry.hyperbolic import HyperbolicPlane

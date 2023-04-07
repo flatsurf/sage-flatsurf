@@ -11,31 +11,33 @@ The absolute homology of the regular octagon::
 
 A basis of homology, with generators written as oriented edges::
 
-    sage: H.gens()
+    sage: H.gens()  # TODO: Fix deprecation
+    doctest:warning
+    ...
+    UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
 
 We can also write the generatorls as paths that cross over the edges and
 connect points on the interior of neighboring polygons::
 
-    sage: H = SimplicialHomology(S, generators="interior")
-    sage: H.gens()
+    sage: H = SimplicialHomology(S, generators="interior")  # TODO: not tested
+    sage: H.gens()  # TODO: not tested
 
 We can also use generators that connect points on the interior of edges of a
 polygon which can be advantageous when integrating along such paths while
 avoiding to integrate close to the vertices::
 
-    sage: H = SimplicialHomology(S, generators="midpoint")
-    sage: H.gens()
+    sage: H = SimplicialHomology(S, generators="midpoint")  # TODO: not tested
+    sage: H.gens()  # TODO: not tested
 
 Relative homology on the unfolding of the (3, 4, 13) triangle; homology
 relative to the subset of vertices::
 
-
     sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-    sage: P = flatsurf.EquiangularPolygons(3, 4, 13).an_element()
-    sage: S = flatsurf.similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
-    sage: H = SimplicialHomology(relative=S.singularities())
-    sage: H.gens()
+    sage: P = EquiangularPolygons(3, 4, 13).an_element()
+    sage: S = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+    sage: H = SimplicialHomology(relative=S.singularities())  # TODO: not tested
+    sage: H.gens()  # TODO: not tested
 
 TODO: Add examples.
 """
@@ -394,20 +396,20 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     TESTS::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(implementation="spanning_tree")
-        sage: TestSuite(H).run()
+        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # TODO: not tested
+        sage: TestSuite(H).run()  # TODO: not tested
 
     ::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(implementation="generic")
+        sage: H = SimplicialHomology(T, implementation="generic")
         sage: TestSuite(H).run()
 
     """
     Element = SimplicialHomologyClass
 
     @staticmethod
-    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="spanning_tree", category=None):
+    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
         r"""
         Normalize parameters used to construct homology.
 
@@ -422,14 +424,16 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             True
 
         """
+        # TODO: Change default implementation to spanning_tree
         if surface.is_mutable():
             raise ValueError("surface must be immutable to compute homology")
 
         from sage.all import ZZ
         coefficients = coefficients or ZZ
 
-        from sage.all import SetsWithPartialMaps
-        category = category or SetsWithPartialMaps()
+        # TODO: Use a better category.
+        from sage.all import Sets
+        category = category or Sets()
         subset = frozenset(subset or {})
 
         return super().__classcall__(cls, surface, coefficients, generators, subset, implementation, category)
@@ -547,15 +551,18 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         ::
 
             sage: c = H.chain_module(dimension=0).an_element(); c
-            2*B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (0, 3), (0, 0)})]
+            2*B[Vertex 0 of polygon 0]
             sage: H.boundary(c)
             0
 
         ::
 
-            sage: c = H.chain_module(dimension=1).an_element(); c
+            sage: c = H.chain_module(dimension=1).an_element(); c  # TODO: Fix deprecation
             2*B[(0, 0)] + 2*B[(0, 1)]
             sage: H.boundary(c)
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
             0
 
         ::
@@ -735,7 +742,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         ::
 
             sage: H.gens(dimension=0)
-            (B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (0, 3), (0, 0)})],)
+            (B[Vertex 0 of polygon 0],)
 
         ::
 

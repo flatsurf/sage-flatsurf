@@ -47,7 +47,10 @@ class SimplicialCohomologyClass(Element):
             sage: T.set_immutable()
             sage: H = SimplicialCohomology(T)
 
-            sage: γ = H.homology().gens()[0]
+            sage: γ = H.homology().gens()[0]  # TODO: Fix deprecation
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
             sage: f = H({γ: 1.337})
             sage: f(γ)
             1.33700000000000

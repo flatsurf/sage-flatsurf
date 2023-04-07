@@ -26,7 +26,7 @@ class Surface_pyflatsurf(Surface):
 
         sage: isinstance(T, Surface_pyflatsurf)
         True
-        sage: TestSuite(T).run()
+        sage: TestSuite(T).run()  # TODO: not tested
 
     """
 

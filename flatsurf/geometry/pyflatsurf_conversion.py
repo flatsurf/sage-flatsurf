@@ -221,7 +221,7 @@ class Conversion:
             sage: p = SurfacePoint(S, 0, (0, 1/2))
             sage: q = conversion(p)
             sage: conversion.section(q)
-            Surface point located at (0, 1/2) in polygon 0
+            Point (0, 1/2) of polygon 0
 
         """
         raise NotImplementedError(f"{type(self).__name__} does not implement a section yet")
@@ -1310,7 +1310,7 @@ class FlatTriangulationConversion(Conversion):
             sage: p = SurfacePoint(S, 0, (0, 1/2))
             sage: q = conversion(p)
             sage: conversion._preimage_point(q)
-            Surface point located at (0, 1/2) in polygon 0
+            Point (0, 1/2) of polygon 0
 
         """
         face = q.face()
@@ -1446,9 +1446,9 @@ def to_sage_ring(x):
     """
     # TODO: Remove this method without deprecation. We are almost certain that nobody was using it.
     import warnings
-    warnings.warn("to_sage_ring() is deprecated and will be removed in a future version of sage-flaturf. Use RingConversion.from_pyflatsurf_element(x).section(x) instead.")
+    warnings.warn("to_sage_ring() is deprecated and will be removed in a future version of sage-flaturf. Use RingConversion.from_pyflatsurf_from_element(x).section(x) instead.")
 
-    return RingConversion.from_pyflatsurf_element(x).section(x)
+    return RingConversion.from_pyflatsurf_from_element(x).section(x)
 
     from flatsurf.features import cppyy_feature
 

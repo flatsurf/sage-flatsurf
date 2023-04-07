@@ -28,21 +28,21 @@ We can then map points through the deformation::
     sage: from flatsurf.geometry.surface_objects import SurfacePoint
     sage: p = SurfacePoint(S, 0, (0, 0))
     sage: p
-    Surface point with 8 coordinate representations
+    Vertex 0 of polygon 0
 
     sage: q = deformation(p)
     sage: q
-    Surface point with 16 coordinate representations
+    Vertex 0 of polygon (0, 0)
 
 A non-singular point::
 
     sage: p = SurfacePoint(S, 0, (1, 1))
     sage: p
-    Surface point located at (1, 1) in polygon 0
+    Point (1, 1) of polygon 0
 
     sage: q = deformation(p)
     sage: q
-    Surface point with 2 coordinate representations
+    Point (1, 1) of polygon (0, 5)
 
 """
 # ********************************************************************
@@ -246,7 +246,7 @@ class SubdivideEdgesDeformation(Deformation):
             sage: p = SurfacePoint(S, 0, (1, 1))
 
             sage: deformation._image_point(p)
-            Surface point located at (1, 1) in polygon 0
+            Point (1, 1) of polygon 0
 
         """
         from flatsurf.geometry.surface_objects import SurfacePoint
