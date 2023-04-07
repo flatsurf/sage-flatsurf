@@ -8,13 +8,6 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
-from flatsurf.graphical.surface import GraphicalSurface
-
-# The real vector space:
-from flatsurf.geometry.surface_objects import SurfacePoint
 from sage.plot.point import point2d
 
 
@@ -29,7 +22,8 @@ class GraphicalSurfacePoint:
         if graphical_surface is None:
             self._gs = surface_point.surface().graphical_surface()
         else:
-            assert surface_point.surface() == graphical_surface.get_surface()
+            if surface_point.surface() != graphical_surface.get_surface():
+                raise ValueError
             self._gs = graphical_surface
         self._sp = surface_point
 

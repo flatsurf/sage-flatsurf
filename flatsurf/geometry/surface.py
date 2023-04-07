@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Data structures for surfaces built from polygons.
 
@@ -71,12 +70,11 @@ We can recover the underlying surface again::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range
-from six import iteritems
 from collections import deque
 
 from sage.structure.sage_object import SageObject
+
+from sage.misc.cachefunc import cached_method
 
 
 class Surface_base(SageObject):
@@ -300,6 +298,23 @@ class Surface(Surface_base):
                 return False
         return True
 
+    def polygon(self, label):
+        r"""
+        Return the polygon with the provided label.
+
+        This method must be overridden in subclasses.
+        """
+        raise NotImplementedError
+
+    def opposite_edge(self, label, e):
+        r"""
+        Given the label ``label`` of a polygon and an edge ``e`` in that
+        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
+
+        This method must be overridden in subclasses.
+        """
+        raise NotImplementedError
+
     def _change_polygon(self, label, new_polygon, gluing_list=None):
         r"""
         Internal method used by change_polygon(). Should not be called directly.
@@ -332,6 +347,97 @@ class Surface(Surface_base):
         """
         raise NotImplementedError
 
+    def num_polygons(self):
+        r"""
+        Return the number of polygons making up the surface, or
+        sage.rings.infinity.Infinity if the surface is infinite.
+
+        This is a generic method. On a finite surface it will be linear time in
+        the edges the first time it is run, then constant time (assuming no
+        mutation occurs).
+
+        Subclasses should consider overriding this method for increased
+        performance.
+        """
+        if self.is_finite():
+            lw = self.walker()
+            lw.find_all_labels()
+            return len(lw)
+        else:
+            from sage.rings.infinity import Infinity
+
+            return Infinity
+
+    def label_iterator(self):
+        r"""
+        Iterator over all polygon labels.
+
+        Subclasses should consider overriding this method for increased
+        performance.
+        """
+        return iter(self.walker())
+
+    def label_polygon_iterator(self):
+        r"""
+        Iterate over pairs (label, polygon).
+
+        Subclasses should consider overriding this method for increased
+        performance.
+        """
+        for label in self.label_iterator():
+            yield label, self.polygon(label)
+
+    def num_edges(self):
+        r"""
+        Return the total number of edges of all polygons used.
+        """
+        if self.is_finite():
+            try:
+                return self._cache["num_edges"]
+            except KeyError:
+                num_edges = sum(
+                    p.num_edges() for label, p in self.label_polygon_iterator()
+                )
+                self._cache["num_edges"] = num_edges
+                return num_edges
+        else:
+            from sage.rings.infinity import Infinity
+
+            return Infinity
+
+    def area(self):
+        r"""
+        Return the area of this surface.
+        """
+        if self.is_finite():
+            try:
+                return self._cache["area"]
+            except KeyError:
+                area = sum(p.area() for label, p in self.label_polygon_iterator())
+                self._cache["area"] = area
+                return area
+        raise NotImplementedError(
+            "area is not implemented for surfaces built from an infinite number of polygons"
+        )
+
+    def edge_iterator(self):
+        r"""
+        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+        """
+        for label, polygon in self.label_polygon_iterator():
+            for edge in range(polygon.num_edges()):
+                yield label, edge
+
+    def edge_gluing_iterator(self):
+        r"""
+        Iterate over the ordered pairs of edges being glued.
+        """
+        for label_edge_pair in self.edge_iterator():
+            yield (
+                label_edge_pair,
+                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
+            )
+
     def base_ring(self):
         r"""
         The field on which the coordinates of ``self`` live.
@@ -358,6 +464,8 @@ class Surface(Surface_base):
             1
 
         """
+        if self._base_label is None:
+            raise Exception("base label has not been set for this surface")
         return self._base_label
 
     def is_finite(self):
@@ -393,7 +501,9 @@ class Surface(Surface_base):
         r"""
         Called before a mutation occurs. Do not call directly.
         """
-        assert self.is_mutable()
+        if not self.is_mutable():
+            raise Exception("surface must be mutable")
+
         # Remove the cache which will likely be invalidated.
         self._cache = {}
 
@@ -405,7 +515,8 @@ class Surface(Surface_base):
         of pairs of length equal to number of edges of the polygon).
         """
         self.__mutate()
-        assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
+        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
+            raise ValueError
         self._change_polygon(label, new_polygon, gluing_list)
 
     def set_edge_pairing(self, label1, edge1, label2, edge2):
@@ -459,8 +570,12 @@ class Surface(Surface_base):
         from the label provided).
         """
         self.__mutate()
-        assert gluing_list is None or new_polygon.num_edges() == len(gluing_list)
-        return self._add_polygon(new_polygon, gluing_list, label)
+        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
+            raise ValueError
+        label = self._add_polygon(new_polygon, gluing_list, label)
+        if self._base_label is None:
+            self.change_base_label(label)
+        return label
 
     def remove_polygon(self, label):
         r"""
@@ -555,7 +670,7 @@ class Surface(Surface_base):
 
         """
         labels = list(self.label_iterator())
-        polygons = [self.polygon(l) for l in labels]
+        polygons = [self.polygon(label) for label in labels]
 
         subdivisions = [p.subdivide() for p in polygons]
 
@@ -640,7 +755,7 @@ class Surface(Surface_base):
 
         """
         labels = list(self.label_iterator())
-        polygons = [self.polygon(l) for l in labels]
+        polygons = [self.polygon(label) for label in labels]
 
         subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
 
@@ -669,53 +784,78 @@ class Surface(Surface_base):
 
         return surface
 
+    @cached_method
     def __hash__(self):
         r"""
         Hash compatible with equals.
         """
-        if hasattr(self, "_hash"):
-            return self._hash
         if self.is_mutable():
             raise ValueError("Attempting to hash mutable surface.")
         if not self.is_finite():
             raise ValueError("Attempting to hash infinite surface.")
-        h = 73 + 17 * hash(self.base_ring()) + 23 * hash(self.base_label())
-        for pair in self.label_polygon_iterator():
-            h = h + 7 * hash(pair)
-        for edgepair in self.edge_gluing_iterator():
-            h = h + 3 * hash(edgepair)
-        self._hash = h
-        return h
+
+        return hash(
+            (
+                self.base_ring(),
+                self.base_label(),
+                tuple(self.label_polygon_iterator()),
+                tuple(self.edge_gluing_iterator()),
+            )
+        )
 
     def __eq__(self, other):
         r"""
-        Implements a naive notion of equality where two finite surfaces are equal if:
-        - their base rings are equal,
-        - their base labels are equal,
-        - their polygons are equal and labeled and glued in the same way.
-        For infinite surfaces we use reference equality.
-        Raises a value error if the surfaces are defined over different rings.
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.surface import Surface_dict
+            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+            sage: S = Surface_dict(QQ)
+            sage: P = ConvexPolygons(QQ)
+            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
+            0
+            sage: S == S
+            True
+
+            sage: T = Surface_dict(QQ)
+            sage: S == T
+            False
+
+        TESTS::
+
+            sage: S == 42
+            False
+
         """
         if self is other:
             return True
+
         if not isinstance(other, Surface):
-            raise TypeError
-        if not self.is_finite():
-            if other.is_finite():
-                return False
-            else:
-                raise ValueError("Can not compare infinite surfaces.")
+            return False
+
+        if self.is_finite() != other.is_finite():
+            return False
         if self.base_ring() != other.base_ring():
-            raise ValueError("Refusing to compare surfaces with different base rings.")
-        if not self.is_mutable() and not other.is_mutable():
-            hash1 = hash(self)
-            hash2 = hash(other)
-            if hash1 != hash2:
-                return False
+            return False
+        if self.is_mutable() != other.is_mutable():
+            return False
+        if self.num_polygons() == 0:
+            return other.num_polygons() == 0
+        if other.num_polygons() == 0:
+            return False
         if self.base_label() != other.base_label():
             return False
         if self.num_polygons() != other.num_polygons():
             return False
+
+        if self.polygon(self.base_label()) != other.polygon(self.base_label()):
+            return False
+
+        if not self.is_finite():
+            raise NotImplementedError("cannot compare these infinite surfaces yet")
+
         for label, polygon in self.label_polygon_iterator():
             try:
                 polygon2 = other.polygon(label)
@@ -726,6 +866,7 @@ class Surface(Surface_base):
             for edge in range(polygon.num_edges()):
                 if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
                     return False
+
         return True
 
     def __ne__(self, other):
@@ -1280,6 +1421,7 @@ class Surface_list(Surface):
         if gluing_list is not None:
             self.change_polygon_gluings(new_label, gluing_list)
         self._num_polygons += 1
+
         return new_label
 
     def num_polygons(self):
@@ -1372,6 +1514,82 @@ class Surface_list(Surface):
                 cover.set_edge_pairing(p0, e, p1, ee)
         return cover
 
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Surface_list, polygons
+            sage: P=polygons.regular_ngon(5)
+            sage: S = Surface_list(base_ring=P.base_ring())
+            sage: T = Surface_list(base_ring=P.base_ring())
+
+            sage: S == T
+            True
+
+            sage: S.add_polygon(P, label=3)
+            3
+
+            sage: S == T
+            False
+
+        """
+        if not isinstance(other, Surface_list):
+            return False
+
+        if self._reference_surface is not None:
+            equal = self._eq_reference_surface(other)
+            if equal is True:
+                return True
+            if equal is False:
+                return False
+
+        return super().__eq__(other)
+
+    def _eq_reference_surface(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other`` by
+        comparing their reference surfaces.
+
+        Returns ``None``, when no conclusion could be reached.
+
+        This is a helper method for :meth:`__eq__`.
+        """
+        if self._reference_surface != other._reference_surface:
+            return None
+
+        for label in range(len(self._p)):
+            if self._p[label] is None:
+                if label >= len(other._p) or other._p[label] is not None:
+                    return None
+                continue
+            try:
+                if self.polygon(label) != other.polygon(label):
+                    return False
+            except ValueError:
+                return False
+
+        for label in range(len(other._p)):
+            if other._p[label] is None:
+                if label >= len(self._p) or self._p[label] is not None:
+                    return None
+                continue
+            try:
+                if self.polygon(label) != other.polygon(label):
+                    return False
+            except ValueError:
+                return False
+
+        if self.base_ring() != other.base_ring():
+            return False
+        if self.is_mutable() != other.is_mutable():
+            return False
+        if self.base_label() != other.base_label():
+            return False
+
+        return True
+
 
 def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     r"""
@@ -1387,7 +1605,7 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
         s.add_polygon(p)
     try:
         # dict case:
-        it = iteritems(gluings)
+        it = gluings.items()
     except AttributeError:
         # list case:
         it = gluings
@@ -1730,6 +1948,82 @@ class Surface_dict(Surface):
                 # Assume on faith we are removing a polygon in the base_surface.
                 self._p[label] = None
 
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Surface_dict, polygons
+            sage: P=polygons.regular_ngon(5)
+            sage: S = Surface_dict(base_ring=P.base_ring())
+            sage: T = Surface_dict(base_ring=P.base_ring())
+
+            sage: S == T
+            True
+
+            sage: S.add_polygon(P, label=3)
+            3
+
+            sage: S == T
+            False
+
+        """
+        if not isinstance(other, Surface_dict):
+            return False
+
+        if self._reference_surface is not None:
+            equal = self._eq_reference_surface(other)
+            if equal is True:
+                return True
+            if equal is False:
+                return False
+
+        return super().__eq__(other)
+
+    def _eq_reference_surface(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other`` by
+        comparing their reference surfaces.
+
+        Returns ``None``, when no conclusion could be reached.
+
+        This is a helper method for :meth:`__eq__`.
+        """
+        if self._reference_surface != other._reference_surface:
+            return None
+
+        for label, polygon in self._p.items():
+            if polygon is None:
+                if label not in other._p or other._p[label] is not None:
+                    return None
+                continue
+            try:
+                if self.polygon(label) != other.polygon(label):
+                    return False
+            except ValueError:
+                return False
+
+        for label, polygon in other._p.items():
+            if polygon is None:
+                if label not in self._p or self._p[label] is not None:
+                    return None
+                continue
+            try:
+                if self.polygon(label) != other.polygon(label):
+                    return False
+            except ValueError:
+                return False
+
+        if self.base_ring() != other.base_ring():
+            return False
+        if self.is_mutable() != other.is_mutable():
+            return False
+        if self.base_label() != other.base_label():
+            return False
+
+        return True
+
 
 class BaseRingChangedSurface(Surface):
     r"""
@@ -1883,7 +2177,8 @@ class LabelWalker:
         return new_labels
 
     def find_all_labels(self):
-        assert self._s.is_finite()
+        if not self._s.is_finite():
+            raise NotImplementedError
         label = self.find_a_new_label()
         while label is not None:
             label = self.find_a_new_label()
@@ -1909,8 +2204,8 @@ class LabelWalker:
             if label in self._label_dict:
                 return self._label_dict[label]
             for i in range(limit):
-                l = self.find_a_new_label()
-                if label == l:
+                new_label = self.find_a_new_label()
+                if label == new_label:
                     return self._label_dict[label]
             raise ValueError(
                 "Failed to find label even after searching. limit=" + str(limit)
@@ -1920,7 +2215,7 @@ class LabelWalker:
         return self._s
 
 
-class ExtraLabel(SageObject):
+class ExtraLabel:
     r"""
     Used to spit out new labels.
     """

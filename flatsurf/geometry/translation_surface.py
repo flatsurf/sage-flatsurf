@@ -2,10 +2,6 @@ r"""
 Translation Surfaces.
 """
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
 from sage.matrix.constructor import identity_matrix
 from sage.misc.cachefunc import cached_method
 
@@ -82,23 +78,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
         return AbelianStratum([ZZ(a - 1) for a in self.angles()])
 
-    def _canonical_first_vertex(polygon):
-        r"""
-        Return the index of the vertex with smallest y-coordinate.
-        If two vertices have the same y-coordinate, then the one with least x-coordinate is returned.
-        """
-        best = 0
-        best_pt = polygon.vertex(best)
-        for v in range(1, polygon.num_edges()):
-            pt = polygon.vertex(v)
-            if pt[1] < best_pt[1]:
-                best = v
-                best_pt = pt
-        if best == 0:
-            if pt[1] == best_pt[1]:
-                return v
-        return best
-
     def standardize_polygons(self, in_place=False):
         r"""
         Replaces each polygon with a polygon with a new polygon which differs by translation
@@ -150,7 +129,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             translations = (
                 {}
             )  # translations bringing the canonical vertex to the origin.
-            for l, polygon in s.label_iterator(polygons=True):
+            for label, polygon in s.label_iterator(polygons=True):
                 best = 0
                 best_pt = polygon.vertex(best)
                 for v in range(1, polygon.num_edges()):
@@ -163,14 +142,16 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                 # We replace the polygon if the best vertex is not the zero vertex, or
                 # if the coordinates of the best vertex differs from the origin.
                 if not (best == 0 and best_pt.is_zero()):
-                    cv[l] = best
-            for l, v in iteritems(cv):
-                s.set_vertex_zero(l, v, in_place=True)
+                    cv[label] = best
+            for label, v in cv.items():
+                s.set_vertex_zero(label, v, in_place=True)
             return s
         else:
-            assert (
-                in_place is False
-            ), "In place standardization only available for finite surfaces."
+            if in_place:
+                raise NotImplementedError(
+                    "in place standardization only available for finite surfaces"
+                )
+
             return TranslationSurface(LazyStandardizedPolygonSurface(self))
 
     def cmp(self, s2, limit=None):
@@ -184,7 +165,8 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         """
         if self.is_finite():
             if s2.is_finite():
-                assert limit is None, "Limit only enabled for finite surfaces."
+                if limit is not None:
+                    raise ValueError("limit only enabled for finite surfaces")
 
                 # print("comparing number of polygons")
                 sign = self.num_polygons() - s2.num_polygons()
@@ -361,6 +343,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             sage: a = field.gen()
             sage: V = VectorSpace(field,2)
             sage: deformation1 = {s.singularity(0,0):V((1,0))}
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
             sage: s1 = s.rel_deformation(deformation1).canonicalize()
             sage: deformation2 = {s.singularity(0,0):V((a,0))}
             sage: s2 = s.rel_deformation(deformation2).canonicalize()
@@ -371,7 +356,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         s = self
         # Find a common field
         field = s.base_ring()
-        for singularity, v in iteritems(deformation):
+        for singularity, v in deformation.items():
             if v.parent().base_field() != field:
                 from sage.structure.element import get_coercion_model
 
@@ -388,9 +373,9 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         )  # dictionary associating the vertices.
         deformed_labels = set()  # list of polygon labels being deformed.
 
-        for singularity, vect in iteritems(deformation):
-            # assert s==singularity.surface()
-            for label, v in singularity.vertex_set():
+        for singularity, vect in deformation.items():
+            for label, coordinates in singularity.representatives():
+                v = self.polygon(label).get_point_position(coordinates).get_vertex()
                 vertex_deformation[(label, v)] = vect
                 deformed_labels.add(label)
                 assert s.polygon(label).num_edges() == 3
@@ -398,7 +383,6 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
         from flatsurf.geometry.polygon import wedge_product, ConvexPolygons
 
         if local:
-
             ss = s.copy(mutable=True, new_field=field)
             us = ss.underlying_surface()
 
@@ -425,13 +409,16 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     # Critical point of area function
                     c = A1 / (-2 * A2)
                     if field.zero() < c and c < field.one():
-                        assert A0 + A1 * c + A2 * c**2 > field.zero(), (
-                            "Triangle with label %r degenerates at critical point before endpoint"
-                            % label
-                        )
-                assert A0 + A1 + A2 > field.zero(), (
-                    "Triangle with label %r degenerates at or before endpoint" % label
-                )
+                        if A0 + A1 * c + A2 * c**2 <= field.zero():
+                            raise ValueError(
+                                "Triangle with label %r degenerates at critical point before endpoint"
+                                % label
+                            )
+                if A0 + A1 + A2 <= field.zero():
+                    raise ValueError(
+                        "Triangle with label %r degenerates at or before endpoint"
+                        % label
+                    )
                 # Triangle does not degenerate.
                 us.change_polygon(
                     label, P(vertices=[vector_space.zero(), a0 + a1, b0 + b1])
@@ -442,7 +429,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
             # We can only do this deformation if all the rel vector are parallel.
             # Check for this.
             nonzero = None
-            for singularity, vect in iteritems(deformation):
+            for singularity, vect in deformation.items():
                 vvect = vector_space(vect)
                 if vvect != vector_space.zero():
                     if nonzero is None:
@@ -468,9 +455,14 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     ss.apply_matrix(prod)
                 ss.delaunay_triangulation(direction=nonzero, in_place=True)
                 deformation2 = {}
-                for singularity, vect in iteritems(deformation):
+                for singularity, vect in deformation.items():
                     found_start = None
-                    for label, v in singularity.vertex_set():
+                    for label, coordinates in singularity.representatives():
+                        v = (
+                            s.polygon(label)
+                            .get_point_position(coordinates)
+                            .get_vertex()
+                        )
                         if (
                             wedge_product(s.polygon(label).edge(v), nonzero) >= 0
                             and wedge_product(
@@ -497,14 +489,15 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
                     assert found_start is not None
                 try:
                     sss = ss.rel_deformation(deformation2, local=True)
-                    sss.apply_matrix(mi * g ** (-k) * m)
-                    sss.delaunay_triangulation(direction=nonzero, in_place=True)
-                    return sss
-                except AssertionError as e:
-                    pass
-                k = k + 1
-                if limit is not None and k >= limit:
-                    assert False, "Exeeded limit iterations"
+                except ValueError:
+                    k += 1
+                    if limit is not None and k >= limit:
+                        raise Exception("exceeded limit iterations")
+                    continue
+
+                sss.apply_matrix(mi * g ** (-k) * m)
+                sss.delaunay_triangulation(direction=nonzero, in_place=True)
+                return sss
 
     def j_invariant(self):
         r"""
@@ -617,23 +610,13 @@ class MinimalTranslationCover(Surface):
             self._ss = similarity_surface
 
         # We are finite if and only if self._ss is a finite RationalConeSurface.
-        if not self._ss.is_finite():
-            finite = False
-        else:
-            try:
-                from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+        from flatsurf.geometry.minimal_cover import _is_finite
 
-                ss_copy = self._ss.reposition_polygons(relabel=True)
-                rcs = RationalConeSurface(ss_copy)
-                rcs._test_edge_matrix()
-                finite = True
-            except AssertionError:
-                # print("Warning: Could be indicating infinite surface falsely.")
-                finite = False
+        finite = _is_finite(self._ss)
 
-        I = identity_matrix(self._ss.base_ring(), 2)
-        I.set_immutable()
-        base_label = (self._ss.base_label(), I)
+        identity = identity_matrix(self._ss.base_ring(), 2)
+        identity.set_immutable()
+        base_label = (self._ss.base_label(), identity)
 
         Surface.__init__(
             self, self._ss.base_ring(), base_label, finite=finite, mutable=False
@@ -652,7 +635,6 @@ class MinimalTranslationCover(Surface):
         """
         if not isinstance(lab, tuple) or len(lab) != 2:
             raise ValueError("invalid label {!r}".format(lab))
-        p = self._ss.polygon(lab[0])
         return lab[1] * self._ss.polygon(lab[0])
 
     def opposite_edge(self, p, e):
@@ -820,17 +802,15 @@ class LazyStandardizedPolygonSurface(Surface):
             self.standardize(label)
             return self._s.polygon(label)
 
-    def opposite_edge(self, l, e):
+    def opposite_edge(self, label, e):
         r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``ll``, ``ee``) to which this edge is glued.
-
-        This method must be overridden in subclasses.
+        Given the label ``label`` of a polygon and an edge ``e`` in that
+        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
         """
-        if l not in self._labels:
-            self.standardize(l)
-        ll, ee = self._s.opposite_edge(l, e)
+        if label not in self._labels:
+            self.standardize(label)
+        ll, ee = self._s.opposite_edge(label, e)
         if ll in self._labels:
             return (ll, ee)
         self.standardize(ll)
-        return self._s.opposite_edge(l, e)
+        return self._s.opposite_edge(label, e)

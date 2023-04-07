@@ -1,5 +1,5 @@
 r"""
-This class contains methods useful for working with circles. 
+This class contains methods useful for working with circles.
 
 This will be used to build a LazyDelaunayTriangulation class which will compute the
 Delaunay decomposition for infinite surfaces.
@@ -13,9 +13,6 @@ Delaunay decomposition for infinite surfaces.
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
 
 from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector

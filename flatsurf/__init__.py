@@ -1,8 +1,6 @@
 r"""
 sage-flatsurf: Sagemath module for similitude surfaces
 """
-from __future__ import absolute_import, print_function
-
 from .version import version as __version__
 
 from .geometry.polygon import polygons, EquiangularPolygons, Polygons, ConvexPolygons
@@ -30,5 +28,3 @@ from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
 from .geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
 
 from .geometry.hyperbolic import HyperbolicPlane
-
-del absolute_import, print_function

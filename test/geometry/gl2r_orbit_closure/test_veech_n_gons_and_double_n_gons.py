@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Veech 2n-gons and double n-gons
 
@@ -28,30 +27,28 @@ commensurable moduli ("parabolic direction").
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
-pytest.importorskip("pyflatsurf")
+pytest.importorskip("pyflatsurf")  # noqa
 
-import sage.all
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
 
 @pytest.mark.parametrize("n,bound", [(4, 4), (5, 4), (6, 4), (7, 4), (8, 4)])
 def test_veech_2n_gon(n, bound):
     S = translation_surfaces.veech_2n_gon(n)
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(bound):
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(bound):
         assert d.parabolic()
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == O.absolute_dimension() == 2
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 2
 
 
 @pytest.mark.parametrize("n,bound", [(3, 4), (5, 4), (7, 4), (9, 4)])
 def test_veech_double_n_gon(n, bound):
     S = translation_surfaces.veech_double_n_gon(n)
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(bound):
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(bound):
         assert d.parabolic()
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == O.absolute_dimension() == 2
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 2

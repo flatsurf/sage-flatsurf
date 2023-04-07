@@ -18,13 +18,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
+from collections import deque
 
-from collections import deque, defaultdict
-
-from .polygon import is_same_direction, line_intersection
+from .polygon import line_intersection
 from .surface_objects import SaddleConnection
 
 # Vincent question:
@@ -216,14 +212,19 @@ class SegmentInPolygon:
 
 
 class AbstractStraightLineTrajectory:
-    r"""
-    You need to implement:
-
-    - ``def segment(self, i)``
-    - ``def segments(self)``
-    """
-
     def surface(self):
+        raise NotImplementedError
+
+    def combinatorial_length(self):
+        raise NotImplementedError
+
+    def segment(self, i):
+        raise NotImplementedError
+
+    def is_closed(self):
+        raise NotImplementedError
+
+    def segments(self):
         raise NotImplementedError
 
     def __repr__(self):
@@ -306,7 +307,7 @@ class AbstractStraightLineTrajectory:
             sage: cyl.edges()
             (2, 3, 3, 2, 4)
         """
-        # Note may not be defined.
+        # Note: may not be defined.
         if not self.is_closed():
             raise ValueError(
                 "Cylinder is only defined for closed straight-line trajectories."
@@ -315,7 +316,7 @@ class AbstractStraightLineTrajectory:
 
         coding = self.coding()
         label = coding[0][0]
-        edges = [e for l, e in coding[1:]]
+        edges = [e for _, e in coding[1:]]
         edges.append(self.surface().opposite_edge(coding[0][0], coding[0][1])[1])
         return Cylinder(self.surface(), label, edges)
 
@@ -462,9 +463,9 @@ class AbstractStraightLineTrajectory:
             sage: for p, (segs1, segs2) in traj1.intersections(traj2, include_segments=True):
             ....:     print(p)
             ....:     print(len(segs1), len(segs2))
-            Surface point with 2 coordinate representations
+            Point (1/2, 0) of polygon 0
             2 2
-            Surface point with 2 coordinate representations
+            Point (0, 1/2) of polygon 0
             2 2
         """
         # Partition the segments making up the trajectories by label.
@@ -487,7 +488,7 @@ class AbstractStraightLineTrajectory:
         intersection_points = set()
         if include_segments:
             segments = {}
-        for label, seg_list_1 in iteritems(lab_to_seg1):
+        for label, seg_list_1 in lab_to_seg1.items():
             if label in lab_to_seg2:
                 seg_list_2 = lab_to_seg2[label]
                 for seg1 in seg_list_1:
@@ -499,13 +500,15 @@ class AbstractStraightLineTrajectory:
                             seg2.start().point() + seg2.start().vector(),
                         )
                         if x is not None:
-                            pos = self._s.polygon(
-                                seg1.polygon_label()
-                            ).get_point_position(x)
+                            pos = (
+                                self.surface()
+                                .polygon(seg1.polygon_label())
+                                .get_point_position(x)
+                            )
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):
-                                new_point = self._s.surface_point(
+                                new_point = self.surface().surface_point(
                                     seg1.polygon_label(), x
                                 )
                                 if new_point not in intersection_points:

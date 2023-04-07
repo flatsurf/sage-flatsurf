@@ -495,7 +495,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         from sage.structure.parent import Parent
         from sage.all import SR
 
+        # pylint does not see the Cython parent() so we disable the import check.
+        # pylint: disable=c-extension-no-member
         parent = sage.structure.element.parent(x)
+        # pylint: enable=c-extension-no-member
+
         # Note that in old versions of SageMath (9.1 e.g.), I is not a number field element but a symbolic ring element.
         # The "parent is SR" part can probably removed at some point.
         if isinstance(parent, Parent) and parent in NumberFields() or parent is SR:
@@ -2003,7 +2007,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     # namely those that are between vertices that are not
                     # connected by an edge.
                     edges = subset.edges()
-                    for (a, b) in subset.vertices().pairs():
+                    for a, b in subset.vertices().pairs():
                         if a.segment(b) not in edges:
                             half_spaces.append(self.geodesic(a, b).right_half_space())
                 else:
@@ -2554,7 +2558,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 "preimage and image must be the same size to determine an isometry between them"
             )
 
-        for (x, y) in zip(preimage, image):
+        for x, y in zip(preimage, image):
             if x.dimension() != y.dimension():
                 raise ValueError(
                     "preimage and image must be of the same dimensions to determine an isometry between them"
@@ -2947,10 +2951,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 return None
 
             if preimage.start() in existings:
-                return self._isometry_untrivialize((preimage.end(), image.end()))
+                return self._isometry_untrivialize(
+                    preimage.end(), image.end(), defining
+                )
 
             if preimage.end() in existings:
-                return self._isometry_untrivialize((preimage.start(), image.start()))
+                return self._isometry_untrivialize(
+                    preimage.start(), image.start(), defining
+                )
 
             return (preimage, image)
 
@@ -3631,7 +3639,7 @@ class HyperbolicGeometry:
             return None
         return det
 
-    def change_ring(ring):
+    def change_ring(self, ring):
         r"""
         Return this geometry with the :meth:`base_ring` changed to ``ring``.
 
@@ -10439,7 +10447,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
                 if maybe_point is True:
                     maybe_point = segment
                 elif maybe_point != segment:
+                    # Unsurprisingly, pylint gets confused by maybe_point being
+                    # both a boolean and a point at times. The code should
+                    # probably be cleaned up. But here, it must be a point so
+                    # the call is save.
+                    # pylint: disable=no-member
                     assert not maybe_point.is_finite()
+                    # pylint: enable=no-member
                     assert not segment.is_finite()
 
                     maybe_point = False
@@ -10777,7 +10791,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexSet):
         if len(half_spaces) < 3:
             return half_spaces[0]
 
-        for (i, half_space) in enumerate(half_spaces):
+        for i, half_space in enumerate(half_spaces):
             following = half_spaces[(i + 1) % len(half_spaces)]
             configuration = half_space.boundary()._configuration(following.boundary())
 

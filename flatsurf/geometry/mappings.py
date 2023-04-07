@@ -19,16 +19,8 @@ r"""Mappings between translation surfaces."""
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
 from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
-from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
-from flatsurf.geometry.similarity_surface import SimilaritySurface
-
-from sage.rings.infinity import Infinity
-from sage.structure.sage_object import SageObject
+from flatsurf.geometry.surface import Surface_dict
 
 
 class SurfaceMapping:
@@ -130,83 +122,6 @@ class IdentityMapping(SurfaceMapping):
         )
 
 
-class MatrixListDeformedSurface(Surface):
-    r"""
-    Apply a different matrix to each polygon in the surface.
-    Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.
-
-    .. WARNING::
-
-        Note that only some methods are forwarding correctly to the underlying
-        surface ``_s``. Others are incorrectly mutating/querying this surface
-        object which should be stateless (but is not.)
-
-    """
-
-    def __init__(self, surface, matrix_function, ring=None):
-        self._s = surface
-        self._m = matrix_function
-        if ring is None:
-            self._base_ring = self._s.base_ring()
-        else:
-            self._base_ring = ring
-        self._P = ConvexPolygons(self._base_ring)
-        Surface.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
-
-    def base_label(self):
-        r"""
-        Return the label of a special chosen polygon in this surface.
-        """
-        return self._s.base_label()
-
-    def change_base_label(self, new_base_label):
-        r"""
-        Set the :meth:`base_label` to ``new_base_label``.
-        """
-        self._s.change_base_label(new_base_label)
-
-    def polygon(self, lab):
-        p = self._s.polygon(lab)
-        edges = [self._m(lab) * p.edge(e) for e in range(p.num_edges())]
-        return self._P(edges)
-
-    def opposite_edge(self, p, e):
-        return self._s.opposite_edge(p, e)
-
-    def is_finite(self):
-        return self._s.is_finite()
-
-
-class MatrixListDeformedSurfaceMapping(SurfaceMapping):
-    r"""
-    This mapping applies a possibly different linear matrix to each polygon.
-    The matrix is determined by the matrix_function which should be a python
-    object.
-    """
-
-    def __init__(self, s, matrix_function, ring=None):
-        codomain = MatrixListDeformedSurface(s, matrix_function, ring=ring)
-        self._m = matrix_function
-        SurfaceMapping.__init__(self, s, codomain)
-
-    def push_vector_forward(self, tangent_vector):
-        label = tangent_vector.polygon_label()
-        m = self._m(label)
-        return self.codomain().tangent_vector(
-            label, m * tangent_vector.point(), m * tangent_vector.vector()
-        )
-
-    def pull_vector_back(self, tangent_vector):
-        label = tangent_vector.polygon_label()
-        im = ~self._m(label)
-        return self.domain().tangent_vector(
-            label, im * tangent_vector.point(), im * tangent_vector.vector()
-        )
-
-
 class SimilarityJoinPolygonsMapping(SurfaceMapping):
     r"""
     Return a SurfaceMapping joining two polygons together along the edge provided to the constructor.
@@ -271,7 +186,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             vs.append(poly1.edge(i))
 
         inv_edge_map = {}
-        for key, value in iteritems(edge_map):
+        for key, value in edge_map.items():
             inv_edge_map[value] = (p1, key)
 
         if s.base_label() == p2:
@@ -459,7 +374,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             else:  # i>=v2
                 old_to_new_labels[i] = (p, i - v2 + 1)
         new_to_old_labels = {}
-        for i, pair in iteritems(old_to_new_labels):
+        for i, pair in old_to_new_labels.items():
             new_to_old_labels[pair] = i
 
         # This glues the split polygons together.
@@ -573,16 +488,19 @@ def subdivide_a_polygon(s):
     """
     from flatsurf.geometry.polygon import wedge_product
 
-    for l, poly in s.label_iterator(polygons=True):
+    for label, poly in s.label_iterator(polygons=True):
         n = poly.num_edges()
         if n > 3:
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
                 if wedge_product(e1, e2) != 0:
-                    return SplitPolygonsMapping(s, l, i, (i + 2) % n)
+                    return SplitPolygonsMapping(s, label, i, (i + 2) % n)
             raise ValueError(
-                "Unable to triangulate polygon with label " + str(l) + ": " + str(poly)
+                "Unable to triangulate polygon with label "
+                + str(label)
+                + ": "
+                + str(poly)
             )
     return None
 
@@ -607,7 +525,9 @@ def triangulation_mapping(s):
         Polygon: (0, 0), (0, -a - 1), (1, 0)
         Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)
     """
-    assert s.is_finite()
+    if not s.is_finite():
+        raise NotImplementedError
+
     m = subdivide_a_polygon(s)
     if m is None:
         return None
@@ -649,7 +569,9 @@ def delaunay_triangulation_mapping(s):
     r"""
     Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.
     """
-    assert s.is_finite()
+    if not s.is_finite():
+        raise NotImplementedError
+
     m = triangulation_mapping(s)
     if m is None:
         s1 = s
@@ -744,13 +666,13 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         cv = {}  # dictionary for canonical vertices
         translations = {}  # translations bringing the canonical vertex to the origin.
         s2 = Surface_dict(base_ring=ring)
-        for l, polygon in s.label_iterator(polygons=True):
-            cv[l] = cvcur = canonical_first_vertex(polygon)
+        for label, polygon in s.label_iterator(polygons=True):
+            cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
             for i in range(polygon.num_edges()):
                 newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
-            s2.add_polygon(P(newedges), label=l)
-            translations[l] = T(-polygon.vertex(cvcur))
+            s2.add_polygon(P(newedges), label=label)
+            translations[label] = T(-polygon.vertex(cvcur))
         for l1, polygon in s.label_iterator(polygons=True):
             for e1 in range(polygon.num_edges()):
                 l2, e2 = s.opposite_edge(l1, e1)
@@ -771,10 +693,10 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
-        l = tangent_vector.polygon_label()
+        label = tangent_vector.polygon_label()
         return self.codomain().tangent_vector(
-            l,
-            self._translations[l](tangent_vector.point()),
+            label,
+            self._translations[label](tangent_vector.point()),
             tangent_vector.vector(),
             ring=ring,
         )
@@ -782,10 +704,10 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
-        l = tangent_vector.polygon_label()
+        label = tangent_vector.polygon_label()
         return self.domain().tangent_vector(
-            l,
-            (~self._translations[l])(tangent_vector.point()),
+            label,
+            (~self._translations[label])(tangent_vector.point()),
             tangent_vector.vector(),
             ring=ring,
         )
@@ -804,23 +726,23 @@ class ReindexMapping(SurfaceMapping):
             raise ValueError("Currently only works with finite surfaces." "")
         f = {}  # map for labels going forward.
         b = {}  # map for labels going backward.
-        for l in s.label_iterator():
-            if l in relabler:
-                l2 = relabler[l]
-                f[l] = l2
+        for label in s.label_iterator():
+            if label in relabler:
+                l2 = relabler[label]
+                f[label] = l2
                 if l2 in b:
                     raise ValueError(
                         "Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change."
                     )
-                b[l2] = l
+                b[l2] = label
             else:
                 # If no key then don't change the label
-                f[l] = l
-                if l in b:
+                f[label] = label
+                if label in b:
                     raise ValueError(
                         "Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change."
                     )
-                b[l] = l
+                b[label] = label
 
         self._f = f
         self._b = b

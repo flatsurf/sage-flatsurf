@@ -1,7 +1,7 @@
 r"""
-This module contains a lazy implementation of a relative homology, 
+This module contains a lazy implementation of a relative homology,
 $H_1(S,\Sigma; R)$, where $S$ is a similarity surface, $\Sigma$ is the singularities
-or vertices, and $R$ is a ring. 
+or vertices, and $R$ is a ring.
 
 This implementation works for finite or infinite surfaces. For infinite surfaces,
 we define relative homology formally. It is simply $R^E$ where $E$ is the edge set
@@ -9,10 +9,26 @@ modulo equivalences of two types:
 1) If $e$ is an edge, and $e'$ is its opposite edge oriented counterclockwise from the polygon they bound then $e+e'=0$ in homology.
 2) The sum of edges around a polygon is zero.
 """
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2019 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 
 from sage.structure.element import ModuleElement
 from sage.modules.module import Module
@@ -21,8 +37,23 @@ from sage.rings.integer_ring import ZZ
 from .similarity_surface import SimilaritySurface
 
 
-class RelativeHomologyClass(ModuleElement):
+def cmp(x, y):
+    r"""
+    TESTS::
 
+        sage: from flatsurf.geometry.relative_homology import cmp
+        sage: cmp(0, 1)
+        -1
+        sage: cmp(0, 0)
+        0
+        sage: cmp(1, 0)
+        1
+
+    """
+    return bool(x > y) - bool(x < y)
+
+
+class RelativeHomologyClass(ModuleElement):
     # Implementation notes:
     # self._d will be a dictionary mapping mapping pairs (label, edge) to the base_ring
     # By convention a pair will be in the dictionary only if its image is non-zero.
@@ -41,21 +72,21 @@ class RelativeHomologyClass(ModuleElement):
             return self.parent().zero()
         d = dict()
         r = self.parent().base_ring()
-        for k, v in iteritems(self._d):
+        for k, v in self._d.items():
             d[k] = r(c * v)
         return self.parent()._element_from_dict(d)
 
     def _add_(self, other):
         d = dict()
         r = self.parent().base_ring()
-        for k, v in iteritems(self._d):
+        for k, v in self._d.items():
             if k in other._d:
                 total = v + other._d[k]
                 if total != self.parent().base_ring().zero():
                     d[k] = r(total)
             else:
                 d[k] = r(v)
-        for k, v in iteritems(other._d):
+        for k, v in other._d.items():
             if k not in self._d:
                 d[k] = r(v)
         return self.parent()._element_from_dict(d)
@@ -66,9 +97,9 @@ class RelativeHomologyClass(ModuleElement):
     def __cmp__(self, other):
         # Construct a set of keys
         s = set()
-        for k, v in iteritems(self._d):
+        for k, v in self._d.items():
             s.add(k)
-        for k, v in iteritems(other._d):
+        for k, v in other._d.items():
             s.add(k)
         zero = self.parent().base_ring().zero()
         for k in s:
@@ -118,9 +149,9 @@ class RelativeHomology(Module):
         return self.element_class(self, d)
 
     def _element_constructor_(self, x):
-        if instanceof(x, RelativeHomologyClass):
+        if isinstance(x, RelativeHomologyClass):
             d = dict()
-            for k, v in iteritems(x._d):
+            for k, v in x._d.items():
                 v2 = self._base_ring(v)
                 if v2 != self._base_ring.zero():
                     d[k] = v2

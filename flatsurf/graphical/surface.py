@@ -27,13 +27,6 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
-from flatsurf.geometry.similarity_surface import SimilaritySurface
-from .polygon import *
-
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.modules.free_module_element import vector
@@ -163,7 +156,10 @@ class GraphicalSurface:
         edge_labels="gluings",
         default_position_function=None,
     ):
-        assert isinstance(similarity_surface, SimilaritySurface)
+        from flatsurf.geometry.similarity_surface import SimilaritySurface
+
+        if not isinstance(similarity_surface, SimilaritySurface):
+            raise TypeError
         self._ss = similarity_surface
         self._default_position_function = default_position_function
         self._polygons = {}
@@ -360,7 +356,7 @@ class GraphicalSurface:
         gs.zero_flag_options = dict(self.zero_flag_options)
 
         # Copy polygons and visible set.
-        gs._polygons = {label: gp.copy() for label, gp in iteritems(self._polygons)}
+        gs._polygons = {label: gp.copy() for label, gp in self._polygons.items()}
         gs._visible = set(self._visible)
         gs._edge_labels = self._edge_labels
 
@@ -424,25 +420,24 @@ class GraphicalSurface:
         if adjacent is None:
             adjacent = self._default_position_function is None
         if limit is None:
-            assert self._ss.is_finite()
+            if not self._ss.is_finite():
+                raise NotImplementedError
             if adjacent:
-                for l, poly in self._ss.walker().label_polygon_iterator():
+                for label, poly in self._ss.walker().label_polygon_iterator():
                     for e in range(poly.num_edges()):
-                        l2, e2 = self._ss.opposite_edge(l, e)
+                        l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
-                            self.make_adjacent(l, e)
+                            self.make_adjacent(label, e)
             else:
                 from flatsurf.geometry.similarity import SimilarityGroup
 
                 T = SimilarityGroup(self._ss.base_ring())
-                for l in self._ss.label_iterator():
-                    if not self.is_visible(l):
+                for label in self._ss.label_iterator():
+                    if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(l)
-                            poly = self._ss.polygon(l)
-                            sxmax = self.xmax()
-                            pxmin = g.xmin()
+                            g = self.graphical_polygon(label)
+                            poly = self._ss.polygon(label)
                             t = T(
                                 (
                                     QQ(self.xmax() - g.xmin() + 1),
@@ -450,16 +445,17 @@ class GraphicalSurface:
                                 )
                             )
                             g.set_transformation(t)
-                        self.make_visible(l)
+                        self.make_visible(label)
         else:
-            assert limit > 0
+            if limit <= 0:
+                raise ValueError
             if adjacent:
                 i = 0
-                for l, poly in self._ss.walker().label_polygon_iterator():
+                for label, poly in self._ss.walker().label_polygon_iterator():
                     for e in range(poly.num_edges()):
-                        l2, e2 = self._ss.opposite_edge(l, e)
+                        l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
-                            self.make_adjacent(l, e)
+                            self.make_adjacent(label, e)
                             i = i + 1
                             if i >= limit:
                                 return
@@ -468,14 +464,12 @@ class GraphicalSurface:
 
                 T = SimilarityGroup(self._ss.base_ring())
                 i = 0
-                for l in self._ss.label_iterator():
-                    if not self.is_visible(l):
+                for label in self._ss.label_iterator():
+                    if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
-                            g = self.graphical_polygon(l)
-                            poly = self._ss.polygon(l)
-                            sxmax = self.xmax()
-                            pxmin = g.xmin()
+                            g = self.graphical_polygon(label)
+                            poly = self._ss.polygon(label)
                             t = T(
                                 (
                                     QQ(self.xmax() - g.xmin() + 1),
@@ -483,7 +477,7 @@ class GraphicalSurface:
                                 )
                             )
                             g.set_transformation(t)
-                        self.make_visible(l)
+                        self.make_visible(label)
                         i = i + 1
                         if i >= limit:
                             return
@@ -540,6 +534,8 @@ class GraphicalSurface:
             t = None
             if self._default_position_function is not None:
                 t = self._default_position_function(label)
+            from flatsurf.graphical.polygon import GraphicalPolygon
+
             p = GraphicalPolygon(self._ss.polygon(label), transformation=t)
             self._polygons[label] = p
             return p
@@ -695,7 +691,7 @@ class GraphicalSurface:
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((1,-2))
-            Surface point located at (1, 1/2) in polygon 1
+            Point (1, 1/2) of polygon 1
             sage: gs.to_surface((1,-2), v=(1,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
 
@@ -708,26 +704,27 @@ class GraphicalSurface:
             sage: pc = s.minimal_cover(cover_type="planar")
             sage: gs = pc.graphical_surface()
             sage: gs.to_surface((3,2), search_all=True, search_limit=20)
-            Traceback (most recent call last):
-            ...
-            ValueError: To obtain a singularity on an infinite surface, singularity_limit must be set.
+            Vertex 0 of polygon (0, (x, y) |-> (x + 3, y + 2))
             sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)
-            Surface point with 4 coordinate representations
+            Vertex 0 of polygon (0, (x, y) |-> (x + 3, y + 2))
             sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)
-            sage: next(iter(p.coordinates(p.labels()[0]))).parent()
+            doctest:warning
+            ...
+            UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
+            sage: next(iter(p.coordinates(next(iter(p.labels()))))).parent()
             Vector space of dimension 2 over Algebraic Real Field
             sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
             sage: v.bundle()
             Tangent bundle of TranslationSurface built from infinitely many polygons defined over Algebraic Real Field
+
         """
+        surface = self.get_surface()
+
         if label is None:
-            if return_all:
-                ret = set()
-            s = self.get_surface()
             if search_all:
                 if search_limit is None:
-                    if s.is_finite():
-                        it = s.label_iterator()
+                    if surface.is_finite():
+                        labels = surface.label_iterator()
                     else:
                         raise ValueError(
                             "If search_all=True and the surface is infinite, then a search_limit must be provided."
@@ -735,56 +732,61 @@ class GraphicalSurface:
                 else:
                     from itertools import islice
 
-                    it = islice(s.label_iterator(), search_limit)
+                    labels = islice(surface.label_iterator(), search_limit)
             else:
-                it = self.visible()
-            for label in it:
-                try:
-                    val = self.to_surface(
-                        point,
-                        v=v,
-                        label=label,
-                        ring=ring,
-                        singularity_limit=singularity_limit,
-                    )
-                    if return_all:
-                        ret.add(val)
-                    else:
-                        return val
-                except AssertionError:
-                    # Not in the polygon
-                    pass
-                except ValueError as e:
-                    if (
-                        e.args[0]
-                        == "need a limit when working with an infinite surface"
-                    ):
-                        raise ValueError(
-                            "To obtain a singularity on an infinite surface, "
-                            + "singularity_limit must be set."
-                        )
-                    # Otherwise it is not in the polygon.
-            if return_all:
-                return ret
-            else:
-                raise ValueError(
-                    "Point or vector is not in a visible graphical polygon."
-                )
+                labels = self.visible()
         else:
+            labels = [label]
+
+        points = set()
+
+        for label in labels:
             gp = self.graphical_polygon(label)
             coords = gp.transform_back(point)
-            s = self.get_surface()
+
+            pos = surface.polygon(label).get_point_position(coords)
+            if not pos.is_inside():
+                continue
+
             if v is None:
-                return s.surface_point(
-                    label, coords, ring=ring, limit=singularity_limit
+                points.add(
+                    surface.surface_point(
+                        label, coords, ring=ring, limit=singularity_limit
+                    )
                 )
             else:
-                return s.tangent_vector(
-                    label,
-                    coords,
-                    (~(gp.transformation().derivative())) * vector(v),
-                    ring=ring,
+                direction = (~(gp.transformation().derivative())) * vector(v)
+                if pos.is_vertex():
+                    vertex = pos.get_vertex()
+                    polygon = surface.polygon(label)
+
+                    from flatsurf.geometry.polygon import wedge_product
+
+                    if wedge_product(polygon.edge(vertex), direction) < 0:
+                        continue
+                    if (
+                        wedge_product(
+                            polygon.edge((vertex - 1) % polygon.num_edges()), direction
+                        )
+                        < 0
+                    ):
+                        continue
+
+                points.add(
+                    surface.tangent_vector(
+                        label,
+                        coords,
+                        direction,
+                        ring=ring,
+                    )
                 )
+            if not return_all:
+                return next(iter(points))
+
+        if return_all:
+            return points
+        else:
+            raise ValueError("Point or vector is not in a visible graphical polygon.")
 
     def opposite_edge(self, p, e):
         r"""

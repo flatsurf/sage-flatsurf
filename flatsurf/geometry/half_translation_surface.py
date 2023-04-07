@@ -1,6 +1,7 @@
 # ****************************************************************************
 #       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
 #                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#                          2023 Julian Rüth <julian.rueth@fsfe.org>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -8,13 +9,7 @@
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
-import itertools
-
 from .polygon import wedge_product
-from .surface import Surface
 from .half_dilation_surface import HalfDilationSurface
 from .rational_cone_surface import RationalConeSurface
 
@@ -153,6 +148,8 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         if self.is_finite():
             it = self.label_iterator()
         else:
+            from itertools import islice
+
             it = islice(self.label_iterator(), 30)
 
         for lab in it:

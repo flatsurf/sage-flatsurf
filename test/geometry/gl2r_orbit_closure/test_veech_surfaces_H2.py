@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Calta-McMullen Veech surfaces in H(2)
 """
@@ -21,12 +20,10 @@ Calta-McMullen Veech surfaces in H(2)
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-import sys
 import pytest
 
-pytest.importorskip("pyflatsurf")
+pytest.importorskip("pyflatsurf")  # noqa
 
-from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
 
@@ -46,8 +43,8 @@ from flatsurf import translation_surfaces, GL2ROrbitClosure
 )
 def test_H2(w, h, t, e):
     S = translation_surfaces.mcmullen_genus2_prototype(w, h, t, e)
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5, 50):
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(5, 50):
         assert d.parabolic()
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == O.absolute_dimension() == 2
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 2
