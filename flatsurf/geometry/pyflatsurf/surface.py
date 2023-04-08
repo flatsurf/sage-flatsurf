@@ -45,6 +45,7 @@ class Surface_pyflatsurf(Surface):
         )
 
     def pyflatsurf(self):
+        from flasturf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
         return self, Deformation_pyflatsurf(self, self)
 
     @classmethod
