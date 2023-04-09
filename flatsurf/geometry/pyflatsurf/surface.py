@@ -62,6 +62,7 @@ class Surface_pyflatsurf(Surface):
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: Surface_pyflatsurf._from_flatsurf(S)
+            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
 
         """
         if isinstance(surface, Surface_pyflatsurf):
@@ -72,3 +73,20 @@ class Surface_pyflatsurf(Surface):
         to_pyflatsurf = FlatTriangulationConversion.to_pyflatsurf(surface)
 
         return Surface_pyflatsurf(to_pyflatsurf.codomain())
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this surface, namely, print this
+        surface as pyflatsurf would.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().underlying_surface()
+
+            sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+            sage: Surface_pyflatsurf._from_flatsurf(S)
+            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
+
+        """
+        return repr(self._flat_triangulation)
