@@ -34,9 +34,9 @@ class Surface_pyflatsurf(Surface):
         self._flat_triangulation = flat_triangulation
 
         # TODO: We have to be smarter about the ring bridge here.
-        from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+        from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
-        base_ring = sage_ring(flat_triangulation)
+        base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
         base_label = map(int, next(iter(flat_triangulation.faces())))
 
