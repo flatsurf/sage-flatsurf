@@ -1383,7 +1383,7 @@ def to_pyflatsurf(S):
     import warnings
     warnings.warn("to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().underlying_surface()).codomain() instead.")
 
-    return FlatTriangulationConversion.to_pyflatsurf(S).codomain()
+    return FlatTriangulationConversion.to_pyflatsurf(S.underlying_surface()).codomain()
 
 
 def sage_ring(surface):
