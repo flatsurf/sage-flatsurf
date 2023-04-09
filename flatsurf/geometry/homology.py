@@ -476,6 +476,39 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         """
         return self._surface
 
+    def matrix(self, deformation, homology=None):
+        r"""
+        Return a square matrix representing the ``deformation`` on the
+        :meth:`surface` by writing the images of the generators of this
+        homology in terms of the images of the ``homology`` of the codomain of
+        ``deformation``.
+
+        INPUT:
+
+        - ``homology`` -- a :class:`SimplicialHomology` (default: ``None``); if
+          ``None``, the homology of the codomain is determined automatically.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+
+            sage: automorphism = T.apply_matrix_automorphism([[1, 1], [0, 1]])
+            sage: H.matrix(automorphism)
+
+        """
+        homology = homology or SimplicialHomology(deformation.codomain())
+
+        if deformation.domain() is not self.surface() or deformation.codomain() is not homology.surface():
+            raise ValueError("homologies are not compatible with the domain and codomain of this deformation")
+
+        images = [deformation(gen) for gen in self.gens()]
+
+        from sage.all import matrix
+        return matrix([[image.coefficient(gen) for image in images] for gen in homology.gens()])
+
     @cached_method
     def chain_module(self, dimension=1):
         r"""

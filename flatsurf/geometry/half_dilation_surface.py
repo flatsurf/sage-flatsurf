@@ -136,6 +136,25 @@ class HalfDilationSurface(SimilaritySurface):
                     us.change_edge_gluing(p1, e1, p2, e2)
             return self
 
+    def apply_matrix_automorphism(self, m):
+        r"""
+        Return the automorphism on this surface that is induced by the 2×2
+        matrix ``m``, an element of the Veech group.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: L.apply_matrix_automorphism(matrix([[1, 1, 0, 1]]))
+
+        """
+        to_pyflatsurf = self.underlying_surface()._pyflatsurf()
+        apply_matrix = to_pyflatsurf.codomain().apply_matrix(m)
+        polygonization = apply_matrix.codomain().delaunay_polygonize()
+        unpolygonization = self.delaunay_polygonize().section()
+        assert polygonization.codomain() == unpolygonization.domain()
+        return unpolygonization * polygonization * apply_matrix * to_pyflatsurf
+
     def _edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
         r"""
         Check whether the provided edge which bounds two triangles should be flipped
