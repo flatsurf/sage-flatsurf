@@ -145,15 +145,22 @@ class HalfDilationSurface(SimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-            sage: L.apply_matrix_automorphism(matrix([[1, 1, 0, 1]]))
+            sage: L.apply_matrix_automorphism(matrix([[1, 1], [0, 1]]))
 
         """
+        from sage.all import matrix
+        m = matrix(m)
+        if m.dimensions() != (2, 2):
+            raise ValueError("m must be a 2×2 matrix")
+
         to_pyflatsurf = self.underlying_surface().pyflatsurf()
         apply_matrix = to_pyflatsurf.codomain().apply_matrix(m)
-        polygonization = apply_matrix.codomain().delaunay_polygonize()
-        unpolygonization = self.delaunay_polygonize().section()
-        assert polygonization.codomain() == unpolygonization.domain()
-        return unpolygonization * polygonization * apply_matrix * to_pyflatsurf
+        # TODO: Should use delunay_decomposition() here. But libflatsurf does not have non-triangulated surfaces yet.
+        delaunay_triangulation = apply_matrix.codomain().delaunay_triangulate()
+        delaunay_untriangulation = self.delaunay_triangulate()
+        relabeling = delaunay_triangulation.codomain().isomorphism(delaunay_untriangulation.codomain())
+
+        return delaunay_untriangulation.section() * relabeling * delaunay_triangulation * apply_matrix * to_pyflatsurf
 
     def _edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
         r"""

@@ -280,7 +280,7 @@ class SubdivideEdgesDeformation(Deformation):
         return image
 
 
-class DelaunayDeformation(Deformation):
+class TrianglesFlipDeformation(Deformation):
     # TODO: docstring
     def __init__(self, domain, codomain, flip_sequence):
         # TODO: docstring

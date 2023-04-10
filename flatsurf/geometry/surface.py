@@ -290,6 +290,67 @@ class Surface(SageObject):
         from flatsurf.geometry.deformation import TriangulationDeformation
         return TriangulationDeformation(self, codomain, triangles)
 
+    def _delaunay_needs_flip(self, label, edge):
+        opposite_label, opposite_edge = self.opposite_edge(label, edge)
+        polygon = self.polygon(label)
+        opposite_polygon = self.polygon(opposite_label)
+        if polygon.num_edges() != 3 or opposite_polygon.num_edges() != 3:
+            raise ValueError("Edge must be adjacent to two triangles.")
+
+        from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+        similarity = similarity_from_vectors(polygon.edge(edge + 2), -polygon.edge(edge + 1)) * similarity_from_vectors(opposite_polygon.edge(opposite_edge + 2), -opposite_polygon.edge(opposite_edge + 1))
+        return similarity[1][0] < 0
+
+    def delaunay_triangulate(self):
+        r"""
+        Return a :class:`Deformation` to a Delaunay triangulated copy of this
+        surface (or this surface unchanged if it is already Delaunay
+        triangulated.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares().underlying_surface()
+
+            sage: S.is_triangulated()
+            False
+
+            sage: S = S.delaunay_triangulate().codomain()
+            sage: S.is_triangulated()
+            True
+
+        """
+        if not self.is_triangulated():
+            triangulation = self.triangulate()
+            return triangulation.codomain().delaunay_triangulate() * triangulation
+
+        domain = self
+        codomain = Surface_dict(surface=self, copy=True)
+
+        labels = set(codomain.label_iterator())
+        flip_sequence = []
+        while labels:
+            label = next(iter(labels))
+            for edge in range(3):
+                if codomain._delaunay_needs_flip(label, edge):
+                    flip_sequence.append((label, edge))
+                    opposite_label, opposite_edge = codomain.opposite_edge(label, edge)
+                    codomain.flip(label, edge)
+                    labels.add(opposite_label)
+                    break
+            else:
+                labels.remove(label)
+
+        if not flip_sequence:
+            from flatsurf.geometry.deformation import IdentityDeformation
+            return IdentityDeformation(self)
+
+        codomain.set_immutable()
+
+        from flatsurf.geometry.deformation import TrianglesFlipDeformation
+        return TrianglesFlipDeformation(domain, codomain, flip_sequence)
+
+
     def polygon(self, label):
         r"""
         Return the polygon with the provided label.

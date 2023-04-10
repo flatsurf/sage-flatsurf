@@ -1724,12 +1724,9 @@ class SimilaritySurface(SageObject):
 
     def _edge_needs_flip(self, p1, e1):
         r"""
-        Returns -1 if the the provided edge incident to two triangles which
-        should be flipped to get closer to the Delaunay decomposition.
-        Returns 0 if the quadrilateral formed by the triangles is inscribed
-        in a circle, and returns 1 otherwise.
+        Return whether the provided edge incident to two triangles which should
+        be flipped to get closer to the Delaunay decomposition.
 
-        A ValueError is raised if the edge is not indident to two triangles.
         """
         p2, e2 = self.opposite_edge(p1, e1)
         poly1 = self.polygon(p1)
@@ -1934,7 +1931,6 @@ class SimilaritySurface(SageObject):
             from collections import deque
 
             unchecked_labels = deque(label for label in s.label_iterator())
-            checked_labels = set()
             while unchecked_labels:
                 label = unchecked_labels.popleft()
                 flipped = False
@@ -1947,7 +1943,6 @@ class SimilaritySurface(SageObject):
                         # Move the opposite polygon to the list of labels we need to check.
                         if label2 != label:
                             try:
-                                checked_labels.remove(label2)
                                 unchecked_labels.append(label2)
                             except KeyError:
                                 # Occurs if label2 is not in checked_labels
@@ -1956,8 +1951,6 @@ class SimilaritySurface(SageObject):
                         break
                 if flipped:
                     unchecked_labels.append(label)
-                else:
-                    checked_labels.add(label)
             return s
         else:
             # Old method for infinite surfaces, or limits.
