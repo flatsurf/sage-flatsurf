@@ -1153,6 +1153,11 @@ class Surface(SageObject):
         # This is the similarity carrying (a,b) to (aa,bb):
         return gg / g
 
+    def point(self, label, position, limit=None):
+        # TODO: Use the implementation on category branch instead
+        from flatsurf.geometry.surface_objects import SurfacePoint
+        return SurfacePoint(self, label, position, limit=limit)
+
 
 class Surface_list(Surface):
     r"""

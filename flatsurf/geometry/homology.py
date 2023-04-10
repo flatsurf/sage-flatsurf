@@ -493,9 +493,9 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
-            sage: H = SimplicialHomology(T)
-
             sage: automorphism = T.apply_matrix_automorphism([[1, 1], [0, 1]])
+
+            sage: H = SimplicialHomology(T.underlying_surface())
             sage: H.matrix(automorphism)
 
         """
