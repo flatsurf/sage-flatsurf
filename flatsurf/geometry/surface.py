@@ -222,14 +222,14 @@ class Surface(SageObject):
                 edge0 = open_edges.pop()
                 edges.remove(edge0)
 
-                edge1 = max([edge for edge in edges if edge[0] == edge0[1]], key=lambda edge: (edge[1] - edge[0]) % N)
+                edge1 = max([edge for edge in edges if edge[0] == edge0[1]], key=lambda edge: (edge[1] - edge0[0] - 1) % N)
                 edges.remove(edge1)
                 if edge1 in open_edges:
                     open_edges.remove(edge1)
                 else:
                     open_edges.append((edge1[1], edge1[0]))
 
-                edge2 = min([edge for edge in edges if edge[0] == edge1[1]], key=lambda edge: (edge[1] - edge[0]) % N)
+                edge2 = max([edge for edge in edges if edge[0] == edge1[1]], key=lambda edge: (edge[1] - edge0[0] - 1) % N)
                 assert edge2[1] == edge0[0]
                 edges.remove(edge2)
                 if edge2 in open_edges:
@@ -241,14 +241,14 @@ class Surface(SageObject):
 
             return triangles
 
-        triangles = {label: triangulation(self.polygon(label)) for label in self.label_iterator()}
+        polygon_triangles = {label: triangulation(self.polygon(label)) for label in self.label_iterator()}
 
         codomain = Surface_dict(self.base_ring())
         codomain.change_base_label((self.base_label(), 0))
 
         # Build the codomain from its triangles.
         from flatsurf.geometry.polygon import polygons
-        for label, triangles in triangles.items():
+        for label, triangles in polygon_triangles.items():
             polygon = self.polygon(label)
             for i, (v0, v1, v2) in enumerate(triangles):
                 codomain.add_polygon(polygons(
@@ -270,7 +270,7 @@ class Surface(SageObject):
 
         def new_label_edge(old_label, old_edge):
             N = self.polygon(old_label).num_edges()
-            for i, (v0, v1, v2) in enumerate(triangles):
+            for i, (v0, v1, v2) in enumerate(polygon_triangles[old_label]):
                 if v0 == old_edge and v1 == (v0 + 1) % N:
                     return (old_label, i), 0
                 if v1 == old_edge and v2 == (v1 + 1) % N:
