@@ -20,7 +20,8 @@ from flatsurf.geometry.deformation import Deformation
 
 
 class Deformation_to_pyflatsurf(Deformation):
-    pass
+    def __init__(self, domain, codomain, pyflatsurf_conversion):
+        super().__init__(domain, codomain)
 
 
 class Deformation_from_pyflatsurf(Deformation):

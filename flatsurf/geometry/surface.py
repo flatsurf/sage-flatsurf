@@ -163,11 +163,10 @@ class Surface(SageObject):
 
             sage: import flatsurf
             sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)')).underlying_surface()
             sage: S.is_triangulated()
             False
-            sage: S.triangulate().is_triangulated()
-            True
+
         """
         it = self.label_iterator()
         if not self.is_finite():
@@ -183,6 +182,113 @@ class Surface(SageObject):
             if self.polygon(p).num_edges() != 3:
                 return False
         return True
+
+    def triangulate(self):
+        r"""
+        Return a :class:`Deformation` to a triangulated copy of this surface
+        (or this surface unchanged if it is already triangulated.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares().underlying_surface()
+
+            sage: S.is_triangulated()
+            False
+
+            sage: S = S.triangulate().codomain()
+            sage: S.is_triangulated()
+            True
+
+        """
+        if self.is_triangulated():
+            from flatsurf.geometry.deformation import IdentityDeformation
+            return IdentityDeformation(self)
+
+        if not self.is_finite():
+            raise NotImplementedError("cannot triangulate this infinite surface yet")
+
+        def triangulation(polygon):
+            triangles = []
+
+            N = polygon.num_edges()
+
+            open_edges = [(v, (v + 1) % N) for v in range(N)]
+
+            edges = polygon.triangulation()
+            edges = set(edges + [(edge[1], edge[0]) for edge in edges] + open_edges)
+
+            while open_edges:
+                edge0 = open_edges.pop()
+                edges.remove(edge0)
+
+                edge1 = max([edge for edge in edges if edge[0] == edge0[1]], key=lambda edge: (edge[1] - edge[0]) % N)
+                edges.remove(edge1)
+                if edge1 in open_edges:
+                    open_edges.remove(edge1)
+                else:
+                    open_edges.append((edge1[1], edge1[0]))
+
+                edge2 = min([edge for edge in edges if edge[0] == edge1[1]], key=lambda edge: (edge[1] - edge[0]) % N)
+                assert edge2[1] == edge0[0]
+                edges.remove(edge2)
+                if edge2 in open_edges:
+                    open_edges.remove(edge2)
+                else:
+                    open_edges.append((edge2[1], edge2[0]))
+
+                triangles.append((edge0[0], edge1[0], edge2[0]))
+
+            return triangles
+
+        triangles = {label: triangulation(self.polygon(label)) for label in self.label_iterator()}
+
+        codomain = Surface_dict(self.base_ring())
+        codomain.change_base_label((self.base_label(), 0))
+
+        # Build the codomain from its triangles.
+        from flatsurf.geometry.polygon import polygons
+        for label, triangles in triangles.items():
+            polygon = self.polygon(label)
+            for i, (v0, v1, v2) in enumerate(triangles):
+                codomain.add_polygon(polygons(
+                    polygon.vertex(v1) - polygon.vertex(v0),
+                    polygon.vertex(v2) - polygon.vertex(v1),
+                    polygon.vertex(v0) - polygon.vertex(v2)),
+                    label=(label, i))
+
+            # Glue the triangles of this polygon.
+            for p, (v0, v1, v2) in enumerate(triangles):
+                p = (label, p)
+                for q, (w0, w1, w2) in enumerate(triangles):
+                    q = (label, q)
+
+                    for i, edge0 in enumerate([(v0, v1), (v1, v2), (v2, v0)]):
+                        for j, edge1 in enumerate([(w1, w0), (w2, w1), (w0, w2)]):
+                            if edge0 == edge1:
+                                codomain.set_edge_pairing(p, i, q, j)
+
+        def new_label_edge(old_label, old_edge):
+            N = self.polygon(old_label).num_edges()
+            for i, (v0, v1, v2) in enumerate(triangles):
+                if v0 == old_edge and v1 == (v0 + 1) % N:
+                    return (old_label, i), 0
+                if v1 == old_edge and v2 == (v1 + 1) % N:
+                    return (old_label, i), 1
+                if v2 == old_edge and v0 == (v2 + 1) % N:
+                    return (old_label, i), 2
+            assert False
+
+        # Reglue the polygons as they were glued in the domain.
+        for (label0, edge0), (label1, edge1) in self.edge_gluing_iterator():
+            codomain.set_edge_pairing(
+                *new_label_edge(label0, edge0),
+                *new_label_edge(label1, edge1))
+
+        codomain.set_immutable()
+
+        from flatsurf.geometry.deformation import TriangulationDeformation
+        return TriangulationDeformation(self, codomain, triangles)
 
     def polygon(self, label):
         r"""
@@ -894,10 +1000,9 @@ class Surface(SageObject):
                 + str(label),
             )
 
-    def _pyflatsurf(self):
+    def pyflatsurf(self):
         r"""
-        Return a surface backed by libflatsurf that is isomorphic to this
-        surface and an isomorphism to that surface.
+        Return an isomorphism to a surface backed by libflatsurf. 
 
         EXAMPLES::
 
@@ -914,7 +1019,7 @@ class Surface(SageObject):
             sage: S.set_edge_pairing(0, 1, 1, 2)
             sage: S.set_edge_pairing(0, 2, 1, 0)
 
-            sage: S._pyflatsurf()  # optional: pyflatsurf
+            sage: S.pyflatsurf().codomain()  # optional: pyflatsurf
             FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """

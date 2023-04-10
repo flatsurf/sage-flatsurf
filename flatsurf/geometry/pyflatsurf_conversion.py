@@ -122,7 +122,7 @@ class Conversion:
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
             sage: FlatTriangulationConversion.from_pyflatsurf(conversion.codomain())
-            <flatsurf.geometry.surface.Surface_dict object at 0x...>
+            Conversion from ...
 
         """
         raise NotImplementedError("this converter does not implement conversion from pyflatsurf yet")
@@ -293,6 +293,8 @@ class RingConversion(Conversion):
 
         yield RingConversion_gmp
 
+        yield RingConversion_int
+
         if pyeantic_feature.is_present():
             yield RingConversion_eantic
 
@@ -322,16 +324,16 @@ class RingConversion(Conversion):
         raise NotImplementedError(f"{cls.__name__} does not implement _create_conversion() yet")
 
     @classmethod
-    def _deduce_codomain(cls, element):
+    def _deduce_codomain(cls, elements):
         r"""
-        Given an element from pyflatsurf, deduce which pyflatsurf ring it lives
+        Given elements from pyflatsurf, deduce which pyflatsurf ring it lives
         in.
 
-        Return ``None`` if this conversion cannot handle such an element.
+        Return ``None`` if no (single) conversion can handle these elements.
 
         INPUT:
 
-        - ``element`` -- any object that pyflatsurf understands
+        - ``elements`` -- any sequence of objects that pyflatsurf understands
 
         EXAMPLES::
 
@@ -339,7 +341,7 @@ class RingConversion(Conversion):
             sage: conversion = RingConversion.to_pyflatsurf(QuadraticField(2))
             sage: element = conversion.codomain().gen()
 
-            sage: RingConversion_eantic._deduce_codomain(element)
+            sage: RingConversion_eantic._deduce_codomain([element])
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
 
         """
@@ -413,17 +415,17 @@ class RingConversion(Conversion):
             True
 
         """
-        return cls.from_pyflatsurf_from_element(flat_triangulation.fromHalfEdge(1).x(), domain=domain)
+        return cls.from_pyflatsurf_from_elements([flat_triangulation.fromHalfEdge(he).x() for he in flat_triangulation.halfEdges()] + [flat_triangulation.fromHalfEdge(he).y() for he in flat_triangulation.halfEdges()], domain=domain)
 
     @classmethod
-    def from_pyflatsurf_from_element(cls, element, domain=None):
+    def from_pyflatsurf_from_elements(cls, elements, domain=None):
         r"""
         Return a :class:`RingConversion` that can map ``domain`` to the ring of
-        ``element``.
+        ``elements``.
 
         INPUT:
 
-        - ``element`` -- an element that libflatsurf/pyflatsurf understands
+        - ``elements`` -- a sequence of elements that libflatsurf/pyflatsurf understands
 
         - ``domain`` -- a SageMath ring, or ``None`` (default: ``None``); if
           ``None``, the ring is determined automatically.
@@ -434,18 +436,18 @@ class RingConversion(Conversion):
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
             sage: import gmpxxyy
-            sage: conversion = RingConversion.from_pyflatsurf_from_element(gmpxxyy.mpz())
+            sage: conversion = RingConversion.from_pyflatsurf_from_elements([gmpxxyy.mpz()])
 
         """
         for conversion_type in RingConversion._ring_conversions():
-            codomain = conversion_type._deduce_codomain(element)
+            codomain = conversion_type._deduce_codomain(elements)
             if codomain is None:
                 continue
             conversion = conversion_type._create_conversion(domain=domain, codomain=codomain)
             if conversion is not None:
                 return conversion
 
-        raise NotImplementedError(f"cannot determine a SageMath ring for a {type(element)} yet")
+        raise NotImplementedError(f"cannot determine a SageMath ring for {elements} yet")
 
     @classmethod
     def from_pyflatsurf(cls, codomain, domain=None):
@@ -485,7 +487,7 @@ class RingConversion_eantic(RingConversion):
 
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-        sage: conversion = RingConversion.to_pyflatsurf(domain = QuadraticField(2))
+        sage: conversion = RingConversion.to_pyflatsurf(domain=QuadraticField(2))
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_eantic
         sage: isinstance(conversion, RingConversion_eantic)
@@ -593,17 +595,18 @@ class RingConversion_eantic(RingConversion):
         return self.domain()(self._pyrenf()(y))
 
     @classmethod
-    def _deduce_codomain(cls, element):
+    def _deduce_codomain(cls, elements):
         r"""
-        Given an element from e-antic, deduce the e-antic ring it lives in.
+        Given elements from e-antic, deduce the e-antic ring they live in.
 
         This implements :meth:`RingConversion._deduce_codomain`.
 
-        Return ``None`` if this is not an e-antic element.
+        Return ``None`` if this is not an e-antic element or if no single
+        e-antic ring can handle them.
 
         INPUT:
 
-        - ``element`` -- an e-antic element or something else
+        - ``elements`` -- a sequence of e-antic elements or something else
 
         EXAMPLES::
 
@@ -611,16 +614,143 @@ class RingConversion_eantic(RingConversion):
             sage: conversion = RingConversion.to_pyflatsurf(QuadraticField(2))
             sage: element = conversion.codomain().gen()
 
-            sage: RingConversion_eantic._deduce_codomain(element)
+            sage: RingConversion_eantic._deduce_codomain([element])
+            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            sage: RingConversion_eantic._deduce_codomain([element, 2*element])
+            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+
+            sage: import cppyy
+            sage: RingConversion_eantic._deduce_codomain([element, cppyy.gbl.eantic.renf_elem_class()])
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
 
         """
         import pyeantic
 
-        if not isinstance(element, pyeantic.eantic.renf_elem_class):
+        ring = None
+
+        for element in elements:
+            if not isinstance(element, pyeantic.eantic.renf_elem_class):
+                return None
+
+            element_ring = unwrap_intrusive_ptr(element.parent())
+            if ring is None or ring.degree() == 1:
+                ring = element_ring
+            elif element_ring != ring and element_ring.degree() != 1:
+                return None
+
+        return ring
+
+
+class RingConversion_int(RingConversion):
+    r"""
+    Conversion between SageMath integers and machine long long integers.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+        sage: conversion = RingConversion.to_pyflatsurf(domain=int)
+
+        sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_int
+        sage: isinstance(conversion, RingConversion_int)
+        True
+
+    """
+
+    @classmethod
+    def _create_conversion(cls, domain=None, codomain=None):
+        r"""
+        Implements :meth:`RingConversion._create_conversion`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_int
+            sage: RingConversion_int._create_conversion(domain=int)
+            Conversion from <class 'int'> to long long
+
+        """
+        if domain is None and codomain is None:
+            raise ValueError("at least one of domain and codomain must be set")
+
+        import cppyy
+
+        longlong = getattr(cppyy.gbl, 'long long')
+
+        if domain in [None, int] and codomain in [None, longlong]:
+            return RingConversion_int(int, longlong)
+
+        return None
+
+    @classmethod
+    def _deduce_codomain(cls, elements):
+        r"""
+        Given long longs, return the long long type.
+
+        This implements :meth:`RingConversion._deduce_codomain`.
+
+        Return ``None`` if these are not long long element.
+
+        INPUT:
+
+        - ``element`` -- a long long or something else
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion, RingConversion_int
+            sage: conversion = RingConversion.to_pyflatsurf(int)
+            sage: element = conversion.codomain()(1R)
+
+            sage: RingConversion_int._deduce_codomain([element])
+            <class 'cppyy.gbl.long long'>
+
+        """
+        import cppyy
+
+        if not elements:
             return None
 
-        return unwrap_intrusive_ptr(element.parent())
+        longlong = getattr(cppyy.gbl, 'long long')
+
+        for element in elements:
+            if not isinstance(element, longlong):
+                return None
+
+        return longlong
+
+    def __call__(self, x):
+        r"""
+        Return the image of ``x`` under this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+            sage: domain = int
+            sage: conversion = RingConversion.to_pyflatsurf(int)
+            sage: conversion(1R)
+            1
+
+        """
+        if not isinstance(x, int):
+            raise ValueError("argument must be an int")
+
+        return self.codomain()(x)
+
+    def section(self, y):
+        r"""
+        Return the preimage of ``y`` under this conversion.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+            sage: domain = int
+            sage: conversion = RingConversion.to_pyflatsurf(domain)
+            sage: y = conversion(3R)
+            sage: conversion.section(y)
+            3
+
+        """
+        return self.domain()(str(y))
 
 
 class RingConversion_gmp(RingConversion):
@@ -631,7 +761,7 @@ class RingConversion_gmp(RingConversion):
 
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-        sage: conversion = RingConversion.to_pyflatsurf(domain = ZZ)
+        sage: conversion = RingConversion.to_pyflatsurf(domain=ZZ)
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_gmp
         sage: isinstance(conversion, RingConversion_gmp)
@@ -681,17 +811,17 @@ class RingConversion_gmp(RingConversion):
         return None
 
     @classmethod
-    def _deduce_codomain(cls, element):
+    def _deduce_codomain(cls, elements):
         r"""
-        Given an element from GMP, return the GMP ring it lives in.
+        Given elements from GMP, return the GMP ring they live in.
 
         This implements :meth:`RingConversion._deduce_codomain`.
 
-        Return ``None`` if this is not a GMP element.
+        Return ``None`` if there not (compatible) GMP elements.
 
         INPUT:
 
-        - ``element`` -- a GMP element or something else
+        - ``elements`` -- a sequence of GMP elements or something else
 
         EXAMPLES::
 
@@ -699,19 +829,27 @@ class RingConversion_gmp(RingConversion):
             sage: conversion = RingConversion.to_pyflatsurf(ZZ)
             sage: element = conversion.codomain()(1)
 
-            sage: RingConversion_gmp._deduce_codomain(element)
+            sage: RingConversion_gmp._deduce_codomain([element])
             <class cppyy.gbl.__gmp_expr<__mpz_struct[1],__mpz_struct[1]> at 0x...>
 
         """
         import cppyy
 
-        if isinstance(element, cppyy.gbl.mpz_class):
-            return cppyy.gbl.mpz_class
+        ring = None
+        for element in elements:
+            if isinstance(element, cppyy.gbl.mpz_class):
+                if ring is None or ring is cppyy.gbl.mpz_class:
+                    ring = cppyy.gbl.mpz_class
+                else:
+                    return None
 
-        if isinstance(element, cppyy.gbl.mpq_class):
-            return cppyy.gbl.mpq_class
+            if isinstance(element, cppyy.gbl.mpq_class):
+                if ring is None or ring is cppyy.gbl.mpq_class:
+                    ring = cppyy.gbl.mpq_class
+                else:
+                    return None
 
-        return None
+        return ring
 
     def __call__(self, x):
         r"""
@@ -743,11 +881,11 @@ class RingConversion_gmp(RingConversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-            sage: domain = QuadraticField(2)
+            sage: domain = QQ
             sage: conversion = RingConversion.to_pyflatsurf(domain)
-            sage: gen = conversion(domain.gen())
-            sage: conversion.section(gen)
-            a
+            sage: y = conversion(1/3)
+            sage: conversion.section(y)
+            1/3
 
         """
         return self.domain()(str(y))
@@ -1105,47 +1243,45 @@ class FlatTriangulationConversion(Conversion):
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
             sage: FlatTriangulationConversion.from_pyflatsurf(conversion.codomain())
-            <flatsurf.geometry.surface.Surface_dict object at 0x...>
+            Conversion from ...
 
         """
         pyflatsurf_feature.require()
 
-        if domain is not None:
-            return cls.to_pyflatsurf(domain=domain, codomain=codomain)
+        if domain is None:
+            ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(codomain)
 
-        ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(codomain)
+            from flatsurf.geometry.surface import Surface_dict
+            domain = Surface_dict(ring_conversion.domain())
 
-        from flatsurf.geometry.surface import Surface_dict
-        domain = Surface_dict(ring_conversion.domain())
+            from flatsurf.geometry.polygon import ConvexPolygons
+            polygons = ConvexPolygons(ring_conversion.domain())
 
-        from flatsurf.geometry.polygon import ConvexPolygons
-        polygons = ConvexPolygons(ring_conversion.domain())
+            half_edge_to_polygon_edge = {}
 
-        half_edge_to_polygon_edge = {}
+            from sage.all import VectorSpace
+            vector_conversion = VectorSpaceConversion.to_pyflatsurf(VectorSpace(ring_conversion.domain(), 2))
 
-        from sage.all import VectorSpace
-        vector_conversion = VectorSpaceConversion.to_pyflatsurf(VectorSpace(ring_conversion.domain(), 2))
+            for (a, b, c) in codomain.faces():
+                vectors = [codomain.fromHalfEdge(a), codomain.fromHalfEdge(b), codomain.fromHalfEdge(c)]
+                vectors = [vector_conversion.section(vector) for vector in vectors]
+                triangle = polygons(vectors)
 
-        for (a, b, c) in codomain.faces():
-            vectors = [codomain.fromHalfEdge(a), codomain.fromHalfEdge(b), codomain.fromHalfEdge(c)]
-            vectors = [vector_conversion.section(vector) for vector in vectors]
-            triangle = polygons(vectors)
+                label = (a.id(), b.id(), c.id())
 
-            label = (a.id(), b.id(), c.id())
+                domain.add_polygon(triangle, label=label)
 
-            domain.add_polygon(triangle, label=label)
+                half_edge_to_polygon_edge[a] = (label, 0)
+                half_edge_to_polygon_edge[b] = (label, 1)
+                half_edge_to_polygon_edge[c] = (label, 2)
 
-            half_edge_to_polygon_edge[a] = (label, 0)
-            half_edge_to_polygon_edge[b] = (label, 1)
-            half_edge_to_polygon_edge[c] = (label, 2)
+            for half_edge, (polygon, edge) in half_edge_to_polygon_edge.items():
+                opposite = half_edge_to_polygon_edge[-half_edge]
+                domain.change_edge_gluing(polygon, edge, *opposite)
 
-        for half_edge, (polygon, edge) in half_edge_to_polygon_edge.items():
-            opposite = half_edge_to_polygon_edge[-half_edge]
-            domain.change_edge_gluing(polygon, edge, *opposite)
+            domain.set_immutable()
 
-        domain.set_immutable()
-
-        return domain
+        return cls.to_pyflatsurf(domain=domain, codomain=codomain)
 
     @cached_method
     def ring_conversion(self):
@@ -1383,7 +1519,7 @@ def to_pyflatsurf(S):
     import warnings
     warnings.warn("to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().underlying_surface()).codomain() instead.")
 
-    return FlatTriangulationConversion.to_pyflatsurf(S.underlying_surface()).codomain()
+    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate().underlying_surface()).codomain()
 
 
 def sage_ring(surface):
@@ -1397,6 +1533,9 @@ def sage_ring(surface):
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, sage_ring # optional: pyflatsurf
         sage: S = to_pyflatsurf(translation_surfaces.veech_double_n_gon(5)) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: sage_ring(S) # optional: pyflatsurf
+        doctest:warning
+        ...
+        UserWarning: to_sage_ring() is deprecated and will be removed in a future version of sage-flaturf. Use RingConversion.from_pyflatsurf_from_elements([x]).section(x) instead.
         Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?
 
     """
@@ -1417,8 +1556,10 @@ def to_sage_ring(x):
     EXAMPLES::
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_sage_ring  # optional: pyflatsurf
-        sage: to_sage_ring(1R).parent()  # optional: pyflatsurf
-        Integer Ring
+        sage: import cppyy  # optional: pyflatsurf
+        sage: from sage.structure.element import parent  # optional: pyflatsurf
+        sage: parent(to_sage_ring(getattr(cppyy.gbl, 'long long')(1R)))  # optional: pyflatsurf
+        <class 'int'>
 
     GMP coordinate types::
 
@@ -1446,9 +1587,9 @@ def to_sage_ring(x):
     """
     # TODO: Remove this method without deprecation. We are almost certain that nobody was using it.
     import warnings
-    warnings.warn("to_sage_ring() is deprecated and will be removed in a future version of sage-flaturf. Use RingConversion.from_pyflatsurf_from_element(x).section(x) instead.")
+    warnings.warn("to_sage_ring() is deprecated and will be removed in a future version of sage-flaturf. Use RingConversion.from_pyflatsurf_from_elements([x]).section(x) instead.")
 
-    return RingConversion.from_pyflatsurf_from_element(x).section(x)
+    return RingConversion.from_pyflatsurf_from_elements([x]).section(x)
 
     from flatsurf.features import cppyy_feature
 
@@ -1511,6 +1652,9 @@ def from_pyflatsurf(T):
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
         sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
+        doctest:warning
+        ...
+        UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
         TranslationSurface built from 6 polygons
 
     TESTS:

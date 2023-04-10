@@ -18,7 +18,7 @@ class Surface_pyflatsurf(Surface):
         sage: S.set_edge_pairing(0, 1, 1, 2)
         sage: S.set_edge_pairing(0, 2, 1, 0)
 
-        sage: T, _ = S._pyflatsurf()  # random output due to deprecation warnings
+        sage: T = S.pyflatsurf().codomain()  # random output due to deprecation warnings
 
     TESTS::
 
@@ -45,15 +45,15 @@ class Surface_pyflatsurf(Surface):
         )
 
     def pyflatsurf(self):
-        from flasturf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
-        return self, Deformation_pyflatsurf(self, self)
+        from flatsurf.geometry.deformation import IdentityDeformation
+        return IdentityDeformation(self, self)
 
     @classmethod
     def _from_flatsurf(cls, surface):
         r"""
-        Return a :class:`Surface_pyflatsurf` built from ``surface``, i.e.,
-        represent ``surface`` in pyflatsurf wrapped as a :class:`Surface` for
-        sage-flatsurf.
+        Return an isomorphism to a :class:`Surface_pyflatsurf` built from
+        ``surface``, i.e., represent ``surface`` in pyflatsurf wrapped as a
+        :class:`Surface` for sage-flatsurf.
 
         EXAMPLES::
 
@@ -62,17 +62,26 @@ class Surface_pyflatsurf(Surface):
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: Surface_pyflatsurf._from_flatsurf(S)
-            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
+            Deformation from mutable domain to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
 
         """
         if isinstance(surface, Surface_pyflatsurf):
             return surface
 
+        if not surface.is_triangulated():
+            triangulation = surface.triangulate()
+            to_pyflatsurf = cls._from_flatsurf(triangulation.codomain())
+            return to_pyflatsurf * triangulation
+
         from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
 
         to_pyflatsurf = FlatTriangulationConversion.to_pyflatsurf(surface)
 
-        return Surface_pyflatsurf(to_pyflatsurf.codomain())
+        surface_pyflatsurf = Surface_pyflatsurf(to_pyflatsurf.codomain())
+
+        from flatsurf.geometry.pyflatsurf.deformation import Deformation_to_pyflatsurf
+
+        return Deformation_to_pyflatsurf(surface, surface_pyflatsurf, to_pyflatsurf)
 
     def __repr__(self):
         r"""
@@ -86,7 +95,7 @@ class Surface_pyflatsurf(Surface):
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: Surface_pyflatsurf._from_flatsurf(S)
-            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
+            Deformation from mutable domain to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
 
         """
         return repr(self._flat_triangulation)

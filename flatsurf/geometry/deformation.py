@@ -145,7 +145,7 @@ class Deformation:
 
     def __repr__(self):
         # TODO: docstring
-        return f"Deformation from {self.domain()} to {self.codomain()}"
+        return f"Deformation from {self.domain() if self._domain is not None else 'mutable domain'} to {self.codomain() if self._codomain is not None else 'mutable codomain'}"
 
 
 class IdentityDeformation(Deformation):
@@ -426,3 +426,24 @@ class TriangleFlipDeformation(Deformation):
                 return SurfacePoint(self.codomain(), recross_label, recross_position)
 
         raise NotImplementedError
+
+
+class TriangulationDeformation(Deformation):
+    def __init__(self, domain, codomain, triangles):
+        r"""
+        INPUT:
+
+        - ``domain`` -- a :class:`Surface`, the domain of this deformation
+
+        - ``codomain`` -- a :class:`Surface`, the triangulated codomain of this deformation
+
+        - ``triangles`` -- a dict mapping the labels of ``domain`` to sequences
+          of triples of (counterclockwise) vertex indices of the polygon with
+          that label
+
+        """
+        if not codomain.is_triangulated():
+            raise ValueError("codomain must be triangulated")
+
+        self._triangles = triangles
+        super().__init__(domain, codomain)

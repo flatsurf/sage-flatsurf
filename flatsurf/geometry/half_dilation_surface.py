@@ -148,7 +148,7 @@ class HalfDilationSurface(SimilaritySurface):
             sage: L.apply_matrix_automorphism(matrix([[1, 1, 0, 1]]))
 
         """
-        to_pyflatsurf = self.underlying_surface()._pyflatsurf()
+        to_pyflatsurf = self.underlying_surface().pyflatsurf()
         apply_matrix = to_pyflatsurf.codomain().apply_matrix(m)
         polygonization = apply_matrix.codomain().delaunay_polygonize()
         unpolygonization = self.delaunay_polygonize().section()
