@@ -49,4 +49,41 @@ class Deformation_from_pyflatsurf(Deformation):
 
 class Deformation_pyflatsurf(Deformation):
     def __init__(self, domain, codomain, pyflatsurf_deformation):
+        self._pyflatsurf_deformation = pyflatsurf_deformation
         super().__init__(domain, codomain)
+
+    def _image_edge(self, label, edge):
+        # TODO: We should probably mark this method as only being correct in homology.
+        half_edge = label[edge]
+
+        from pyflatsurf import flatsurf
+        saddle_connection = flatsurf.SaddleConnection[type(self.domain()._flat_triangulation)](self.domain()._flat_triangulation, flatsurf.HalfEdge(half_edge))
+        path = flatsurf.Path[type(self.domain()._flat_triangulation)](saddle_connection)
+
+        path = self._pyflatsurf_deformation(path)
+
+        if not path:
+            raise NotImplementedError("cannot map edge through this deformation in pyflatsurf yet")
+
+        path = path.value()
+
+        image = []
+        for step in path:
+            chain = step.chain()
+            for edge, coefficient in chain:
+                from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+                coefficient = RingConversion.from_pyflatsurf_from_elements([coefficient]).section(coefficient)
+
+                half_edge = edge.positive()
+                if coefficient < 0:
+                    half_edge = -half_edge
+                    coefficient *= -1
+
+                face = tuple(self.codomain()._flat_triangulation.face(half_edge))
+                label = type(self.codomain())._normalize_label(face)
+                edge = label.index(half_edge)
+
+                for repetition in range(coefficient):
+                    image.append((label, edge))
+
+        return image
