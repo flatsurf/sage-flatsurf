@@ -86,6 +86,22 @@ class SimplicialHomologyClass(Element):
 
         self._chain = chain
 
+    def _acted_upon_(self, c, self_on_left=None):
+        r"""
+        Return the coefficients of this element in terms of the generators of homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: 3 * H.gens()[0]
+            3*B[(0, 1)]
+
+        """
+        return self.parent()(c * self._chain)
+
     @cached_method
     def _homology(self):
         r"""
@@ -659,10 +675,26 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             for dimension in range(3)
         }, base_ring=self._coefficients, degree=-1)
 
+    def zero(self, dimension=1):
+        r"""
+        Return the zero element of homology in ``dimension``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H.zero()
+            0
+
+        """
+        return self(self.chain_module(dimension=dimension).zero())
+
     @cached_method
     def _homology(self, dimension=1):
         r"""
-        Return the a free module isomorphic to homology, a lift from that
+        Return the free module isomorphic to homology, a lift from that
         module to the chain module, and an inverse (modulo boundaries.)
 
         INPUT:
@@ -749,8 +781,42 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         return f"H₁({self._surface}; {self._coefficients})"
 
     def _element_constructor_(self, x):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+
+            sage: H(0)
+            0
+            sage: H(None)
+            0
+
+            sage: H((0, 0))
+            B[(0, 0)]
+            sage: H((0, 2))
+            -B[(0, 0)]
+
+            sage: H(H.chain_module(dimension=0).gens()[0])
+            B[Vertex 0 of polygon 0]
+            sage: H(H.chain_module(dimension=1).gens()[0])
+            B[(0, 1)]
+            sage: H(H.chain_module(dimension=2).gens()[0])
+            B[0]
+
+        """
         if x == 0 or x is None:
             return self.element_class(self, self.chain_module(1).zero())
+
+        if isinstance(x, tuple) and len(x) == 2:
+            sgn = 1
+            if x not in self.simplices():
+                x = self.surface().opposite_edge(*x)
+                sgn = -1
+            assert x in self.simplices()
+            return sgn * self.element_class(self, self.chain_module(1)(x))
 
         if x.parent() in (self.chain_module(0), self.chain_module(1), self.chain_module(2)):
             return self.element_class(self, x)

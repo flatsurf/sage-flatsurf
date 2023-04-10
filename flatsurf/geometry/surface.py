@@ -288,7 +288,7 @@ class Surface(SageObject):
         codomain.set_immutable()
 
         from flatsurf.geometry.deformation import TriangulationDeformation
-        return TriangulationDeformation(self, codomain, triangles)
+        return TriangulationDeformation(self, codomain, polygon_triangles)
 
     def isomorphism(self, other):
         # TODO: This should be renamed and mostly be implemented in Surface_pyflatsurf.
@@ -2143,6 +2143,9 @@ class Surface_dict(Surface):
                 return False
 
         return super().__eq__(other)
+
+    def __hash__(self):
+        return super().__hash__()
 
     def _eq_reference_surface(self, other):
         r"""

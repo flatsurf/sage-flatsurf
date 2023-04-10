@@ -119,7 +119,56 @@ class Deformation:
 
     def _image_homology(self, γ):
         # TODO: docstring
-        raise NotImplementedError(f"a {type(self)} cannot compute the image of a homology class yet")
+
+        from flatsurf.geometry.homology import SimplicialHomology
+        codomain_homology = SimplicialHomology(self.codomain())
+
+        from sage.all import vector
+        image = self._image_homology_matrix() * vector(γ._homology())
+
+        homology, to_chain, to_homology = codomain_homology._homology()
+
+        image = sum(coefficient * gen for (coefficient, gen) in zip(image, homology.gens()))
+
+        return codomain_homology(to_chain(image))
+
+    def _image_edge(self, label, edge):
+        raise NotImplementedError(f"a {type(self)} cannot compute the image of an edge yet")
+
+    @cached_method
+    def _image_homology_matrix(self):
+        # TODO: docstring
+        from flatsurf.geometry.homology import SimplicialHomology
+        domain_homology = SimplicialHomology(self.domain())
+        codomain_homology = SimplicialHomology(self.codomain())
+
+        domain_gens = domain_homology.gens()
+        codomain_gens = codomain_homology.gens()
+
+        from sage.all import matrix, ZZ
+        M = matrix(ZZ, len(codomain_gens), len(domain_gens), sparse=True)
+
+        for x, domain_gen in enumerate(domain_gens):
+            image = self._image_homology_gen(domain_gen)
+            for y, codomain_gen in enumerate(codomain_gens):
+                M[y, x] = image.coefficient(codomain_gen)
+
+        M.set_immutable()
+        return M
+
+    def _image_homology_gen(self, gen):
+        from flatsurf.geometry.homology import SimplicialHomology
+        codomain_homology = SimplicialHomology(self.codomain())
+
+        chain = gen._chain
+        image = codomain_homology.zero()
+        for label, edge in chain.support():
+            coefficient = chain[(label, edge)]
+            assert coefficient
+            for step in self._image_edge(label, edge):
+                image += coefficient * image.parent()(step)
+
+        return codomain_homology(image)
 
     def _image_cohomology(self, f):
         # TODO: docstring
@@ -265,27 +314,27 @@ class SubdivideEdgesDeformation(Deformation):
         label = next(iter(p.labels()))
         return SurfacePoint(self.codomain(), label, next(iter(p.coordinates(label))))
 
-    def _image_homology(self, γ):
-        # TODO: homology should allow to write this code more naturally somehow
-        # TODO: docstring
-        from flatsurf.geometry.homology import SimplicialHomology
+    # def _image_homology(self, γ):
+    #     # TODO: homology should allow to write this code more naturally somehow
+    #     # TODO: docstring
+    #     from flatsurf.geometry.homology import SimplicialHomology
 
-        H = SimplicialHomology(self.codomain())
-        C = H.chain_module(dimension=1)
+    #     H = SimplicialHomology(self.codomain())
+    #     C = H.chain_module(dimension=1)
 
-        image = H()
+    #     image = H()
 
-        for gen in γ.parent().gens():
-            for step in gen._path():
-                for p in range(self._parts):
-                    codomain_gen = (step[0], step[1] * self._parts + p)
-                    sgn = 1
-                    if codomain_gen not in H.simplices():
-                        sgn = -1
-                        codomain_gen = self.codomain().opposite_edge(*codomain_gen)
-                    image += sgn * γ.coefficient(gen) * H(C(codomain_gen))
+    #     for gen in γ.parent().gens():
+    #         for step in gen._path():
+    #             for p in range(self._parts):
+    #                 codomain_gen = (step[0], step[1] * self._parts + p)
+    #                 sgn = 1
+    #                 if codomain_gen not in H.simplices():
+    #                     sgn = -1
+    #                     codomain_gen = self.codomain().opposite_edge(*codomain_gen)
+    #                 image += sgn * γ.coefficient(gen) * H(C(codomain_gen))
 
-        return image
+    #     return image
 
 
 class TrianglesFlipDeformation(Deformation):
@@ -315,27 +364,13 @@ class TrianglesFlipDeformation(Deformation):
 
         return deformation
 
-    @cached_method
-    def _image_homology_gen(self, gen):
-        print("computing image of", gen)
-        return self._flip_deformation()(gen)
+    # @cached_method
+    # def _image_homology_gen(self, gen):
+    #     print("computing image of", gen)
+    #     return self._flip_deformation()(gen)
 
     def _image_point(self, p):
         return self._flip_deformation()(p)
-
-    def _image_homology(self, γ):
-        # TODO: docstring
-        from flatsurf.geometry.homology import SimplicialHomology
-        codomain_homology = SimplicialHomology(self.codomain())
-        domain_homology = SimplicialHomology(self.domain())
-
-        image = codomain_homology()
-
-        for gen in domain_homology.gens():
-            coefficient = γ.coefficient(gen)
-            image += coefficient * self._image_homology_gen(gen)
-
-        return image
 
 
 class TriangleFlipDeformation(Deformation):
@@ -345,67 +380,53 @@ class TriangleFlipDeformation(Deformation):
         super().__init__(domain, codomain)
         self._flip = flip
 
-    def _image_homology(self, γ):
-        # TODO: docstring
-        from flatsurf.geometry.homology import SimplicialHomology
-        codomain_homology = SimplicialHomology(self.codomain())
-        domain_homology = SimplicialHomology(self.domain())
+    # @cached_method
+    # def _image_homology_gen(self, gen):
+    #     # TODO: docstring
+    #     # TDOO: This is hack that won't work in general. (E.g., not for the square torus.)
+    #     from flatsurf.geometry.homology import SimplicialHomology
+    #     H_domain = SimplicialHomology(self.domain())
+    #     H_codomain = SimplicialHomology(self.codomain())
 
-        image = codomain_homology()
+    #     affected = {self._flip[0], self.domain().opposite_edge(*self._flip)[0]}
+    #     if len(affected) == 1:
+    #         # TODO: Add tests for this case.
+    #         raise NotImplementedError
 
-        for gen in domain_homology.gens():
-            coefficient = γ.coefficient(gen)
-            image += coefficient * self._image_homology_gen(gen)
+    #     def to_unaffected_codomain_chain(label, edge):
+    #         sgn = 1
 
-        return image
+    #         if label in affected:
+    #             sgn *= -1
+    #             (label, edge) = self.domain().opposite_edge(label, edge)
 
-    @cached_method
-    def _image_homology_gen(self, gen):
-        # TODO: docstring
-        # TDOO: This is hack that won't work in general. (E.g., not for the square torus.)
-        from flatsurf.geometry.homology import SimplicialHomology
-        H_domain = SimplicialHomology(self.domain())
-        H_codomain = SimplicialHomology(self.codomain())
+    #         if label in affected:
+    #             return -sgn * (to_unaffected_codomain_chain(label, (edge + 1) % 3) + to_unaffected_codomain_chain(label, (edge + 2) % 3))
 
-        affected = {self._flip[0], self.domain().opposite_edge(*self._flip)[0]}
-        if len(affected) == 1:
-            # TODO: Add tests for this case.
-            raise NotImplementedError
+    #         if (label, edge) not in H_codomain.simplices():
+    #             sgn *= -1
+    #             label, edge = self.codomain().opposite_edge(label, edge)
+    #             assert (label, edge) in H_codomain.simplices()
 
-        def to_unaffected_codomain_chain(label, edge):
-            sgn = 1
+    #         return sgn * H_codomain.chain_module()((label, edge))
 
-            if label in affected:
-                sgn *= -1
-                (label, edge) = self.domain().opposite_edge(label, edge)
+    #     def to_domain_chain(label, edge):
+    #         if (label, edge) not in H_domain.simplices():
+    #             return -H_domain.chain_module()(self.domain().opposite_edge(label, edge))
 
-            if label in affected:
-                return -sgn * (to_unaffected_codomain_chain(label, (edge + 1) % 3) + to_unaffected_codomain_chain(label, (edge + 2) % 3))
+    #         return H_domain.chain_module()((label, edge))
 
-            if (label, edge) not in H_codomain.simplices():
-                sgn *= -1
-                label, edge = self.codomain().opposite_edge(label, edge)
-                assert (label, edge) in H_codomain.simplices()
+    #     def to_codomain_chain(label, edge):
+    #         if (label, edge) not in H_codomain.simplices():
+    #             return -H_codomain.chain_module()(self.codomain().opposite_edge(label, edge))
 
-            return sgn * H_codomain.chain_module()((label, edge))
+    #         return H_codomain.chain_module()((label, edge))
 
-        def to_domain_chain(label, edge):
-            if (label, edge) not in H_domain.simplices():
-                return -H_domain.chain_module()(self.domain().opposite_edge(label, edge))
+    #     unaffected_chain = H_codomain.chain_module()()
+    #     for label, edge in gen._path():
+    #         unaffected_chain += to_unaffected_codomain_chain(label, edge)
 
-            return H_domain.chain_module()((label, edge))
-
-        def to_codomain_chain(label, edge):
-            if (label, edge) not in H_codomain.simplices():
-                return -H_codomain.chain_module()(self.codomain().opposite_edge(label, edge))
-
-            return H_codomain.chain_module()((label, edge))
-
-        unaffected_chain = H_codomain.chain_module()()
-        for label, edge in gen._path():
-            unaffected_chain += to_unaffected_codomain_chain(label, edge)
-
-        return H_codomain(unaffected_chain)
+    #     return H_codomain(unaffected_chain)
 
     def _image_point(self, p):
         # TODO: This is a dumb way to do this (and wrong for non-translation surfaces?)
@@ -455,3 +476,26 @@ class TriangulationDeformation(Deformation):
 
         self._triangles = triangles
         super().__init__(domain, codomain)
+
+    def _image_edge(self, label, edge):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares().underlying_surface()
+            sage: triangulation = S.triangulate()
+
+            sage: triangulation._image_edge(0, 0)
+            [((0, 5), 1)]
+
+        """
+        N = self.domain().polygon(label).num_edges()
+        for i, (v0, v1, v2) in enumerate(self._triangles[label]):
+            if v0 == edge and v1 == (v0 + 1) % N:
+                return [((label, i), 0)]
+            if v1 == edge and v2 == (v1 + 1) % N:
+                return [((label, i), 1)]
+            if v2 == edge and v0 == (v2 + 1) % N:
+                return [((label, i), 2)]
+
+        assert False
