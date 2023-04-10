@@ -94,6 +94,9 @@ class Deformation:
 
         return self._codomain
 
+    def section(self):
+        return SectionDeformation(self)
+
     def __call__(self, x):
         # TODO: docstring
         from flatsurf.geometry.surface_objects import SurfacePoint
@@ -155,6 +158,11 @@ class IdentityDeformation(Deformation):
 
     def __call__(self, x):
         return x
+
+
+class SectionDeformation(Deformation):
+    def __init__(self, deformation):
+        super().__init__(deformation.codomain(), deformation.domain())
 
 
 class CompositionDeformation(Deformation):

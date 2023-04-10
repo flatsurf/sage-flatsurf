@@ -290,6 +290,22 @@ class Surface(SageObject):
         from flatsurf.geometry.deformation import TriangulationDeformation
         return TriangulationDeformation(self, codomain, triangles)
 
+    def isomorphism(self, other):
+        # TODO: This should be renamed and mostly be implemented in Surface_pyflatsurf.
+        self_to_pyflatsurf = self.pyflatsurf()
+        other_to_pyflatsurf = other.pyflatsurf()
+
+        self_pyflatsurf = self_to_pyflatsurf.codomain()
+        other_pyflatsurf = other_to_pyflatsurf.codomain()
+
+        from pyflatsurf import flatsurf
+        isomorphism = self_pyflatsurf._flat_triangulation.isomorphism(other_pyflatsurf._flat_triangulation, flatsurf.ISOMORPHISM.DELAUNAY_CELLS)
+
+        from flatsurf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
+        isomorphism = Deformation_pyflatsurf(self_pyflatsurf, other_pyflatsurf, isomorphism)
+
+        return other_to_pyflatsurf.section() * isomorphism * self_to_pyflatsurf
+
     def _delaunay_needs_flip(self, label, edge):
         opposite_label, opposite_edge = self.opposite_edge(label, edge)
         polygon = self.polygon(label)
@@ -350,6 +366,9 @@ class Surface(SageObject):
         from flatsurf.geometry.deformation import TrianglesFlipDeformation
         return TrianglesFlipDeformation(domain, codomain, flip_sequence)
 
+    def flip(self, label, edge):
+        from flatsurf.geometry.similarity_surface import SimilaritySurface
+        return SimilaritySurface(self).triangle_flip(label, edge, in_place=True)
 
     def polygon(self, label):
         r"""
@@ -1682,6 +1701,9 @@ class Surface_list(Surface):
                 return False
 
         return super().__eq__(other)
+
+    def __hash__(self):
+        return super().__hash__()
 
     def _eq_reference_surface(self, other):
         r"""
