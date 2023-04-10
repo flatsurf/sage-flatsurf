@@ -29,4 +29,5 @@ class Deformation_from_pyflatsurf(Deformation):
 
 
 class Deformation_pyflatsurf(Deformation):
-    pass
+    def __init__(self, domain, codomain, pyflatsurf_deformation):
+        super().__init__(domain, codomain)

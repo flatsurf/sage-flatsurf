@@ -935,6 +935,34 @@ class VectorSpaceConversion(Conversion):
 
         return VectorSpaceConversion(domain, codomain)
 
+    @classmethod
+    def from_pyflatsurf_from_elements(cls, elements, domain=None):
+        r"""
+        Return a :class:`Conversion` that converts the pyflatsurf ``elements``
+        into vectors in ``domain``.
+
+        INPUT:
+
+        - ``domain`` -- a SageMath ``VectorSpace`` or ``None``; if ``None``, it
+          is determined automatically.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+            sage: codomain = VectorSpaceConversion.to_pyflatsurf(QQ^2).codomain()
+
+            sage: VectorSpaceConversion.from_pyflatsurf_from_elements([codomain()])
+            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::cppyy::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]> >
+
+        """
+        if domain is None:
+            ring_conversion = RingConversion.from_pyflatsurf_from_elements([element.x() for element in elements] + [element.y() for element in elements])
+
+            from sage.all import VectorSpace
+            domain = VectorSpace(ring_conversion.domain(), 2)
+
+        return VectorSpaceConversion.to_pyflatsurf(domain=domain)
+
     @cached_method
     def _vectors(self):
         r"""
