@@ -593,9 +593,6 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: c = H.chain_module(dimension=1).an_element(); c  # TODO: Fix deprecation
             2*B[(0, 0)] + 2*B[(0, 1)]
             sage: H.boundary(c)
-            doctest:warning
-            ...
-            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
             0
 
         ::
