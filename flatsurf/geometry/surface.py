@@ -300,6 +300,9 @@ class Surface(SageObject):
 
         from pyflatsurf import flatsurf
         isomorphism = self_pyflatsurf._flat_triangulation.isomorphism(other_pyflatsurf._flat_triangulation, flatsurf.ISOMORPHISM.DELAUNAY_CELLS)
+        if not isomorphism:
+            raise NotImplementedError("Failed to find an isomorphism of Delaunay cells between these surfaces")
+        isomorphism = isomorphism.value()
 
         from flatsurf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
         isomorphism = Deformation_pyflatsurf(self_pyflatsurf, other_pyflatsurf, isomorphism)

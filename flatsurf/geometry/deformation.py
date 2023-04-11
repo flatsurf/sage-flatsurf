@@ -208,10 +208,20 @@ class IdentityDeformation(Deformation):
     def __call__(self, x):
         return x
 
+    def _image_homology(self, γ):
+        return γ
+
+    def _image_edge(self, label, edge):
+        return [(label, edge)]
+
 
 class SectionDeformation(Deformation):
     def __init__(self, deformation):
+        self._deformation = deformation
         super().__init__(deformation.codomain(), deformation.domain())
+
+    def _image_homology_matrix(self):
+        return self._deformation._image_homology_matrix().inverse()
 
 
 class CompositionDeformation(Deformation):
@@ -226,6 +236,9 @@ class CompositionDeformation(Deformation):
     def __call__(self, x):
         # TODO: docstring
         return self._lhs(self._rhs(x))
+
+    def _image_homology_matrix(self):
+        return self._rhs._image_homology_matrix() * self._lhs._image_homology_matrix()
 
 
 class SubdivideDeformation(Deformation):
@@ -351,7 +364,7 @@ class TrianglesFlipDeformation(Deformation):
         for flip in self._flip_sequence:
             from flatsurf.geometry.surface import Surface_dict
             codomain = Surface_dict(surface=domains[-1], mutable=True)
-            codomain.triangle_flip(*flip, in_place=True)
+            codomain.flip(*flip)
             codomain.set_immutable()
             domains.append(codomain)
 
@@ -364,10 +377,8 @@ class TrianglesFlipDeformation(Deformation):
 
         return deformation
 
-    # @cached_method
-    # def _image_homology_gen(self, gen):
-    #     print("computing image of", gen)
-    #     return self._flip_deformation()(gen)
+    def _image_homology(self,  γ):
+        return self._flip_deformation()._image_homology(γ)
 
     def _image_point(self, p):
         return self._flip_deformation()(p)
@@ -380,53 +391,27 @@ class TriangleFlipDeformation(Deformation):
         super().__init__(domain, codomain)
         self._flip = flip
 
-    # @cached_method
-    # def _image_homology_gen(self, gen):
-    #     # TODO: docstring
-    #     # TDOO: This is hack that won't work in general. (E.g., not for the square torus.)
-    #     from flatsurf.geometry.homology import SimplicialHomology
-    #     H_domain = SimplicialHomology(self.domain())
-    #     H_codomain = SimplicialHomology(self.codomain())
+    def _image_edge(self, label, edge):
+        opposite_label, opposite_edge = self.domain().opposite_edge(label, edge)
 
-    #     affected = {self._flip[0], self.domain().opposite_edge(*self._flip)[0]}
-    #     if len(affected) == 1:
-    #         # TODO: Add tests for this case.
-    #         raise NotImplementedError
+        def find_in_codomain(vector):
+            candidates = [(l, e) for l in [label, opposite_label] for e in [0, 1, 2]]
+            candidates = [(l, e) for (l, e) in candidates if self.codomain().polygon(l).edge(e) == vector]
+            assert candidates
+            if len(candidates) > 1:
+                raise NotImplementedError("cannot break ties on such a non-translation surface yet")
 
-    #     def to_unaffected_codomain_chain(label, edge):
-    #         sgn = 1
+            return candidates[0]
 
-    #         if label in affected:
-    #             sgn *= -1
-    #             (label, edge) = self.domain().opposite_edge(label, edge)
+        if label == self._flip[0]:
+            if edge == self._flip[1]:
+                return self._image_edge(label, (edge + 1) % 3) + self._image_edge(label, (edge + 2) % 3)
 
-    #         if label in affected:
-    #             return -sgn * (to_unaffected_codomain_chain(label, (edge + 1) % 3) + to_unaffected_codomain_chain(label, (edge + 2) % 3))
+            return [find_in_codomain(self.domain().polygon(label).edge(edge))]
+        if label == opposite_label:
+            raise NotImplementedError
 
-    #         if (label, edge) not in H_codomain.simplices():
-    #             sgn *= -1
-    #             label, edge = self.codomain().opposite_edge(label, edge)
-    #             assert (label, edge) in H_codomain.simplices()
-
-    #         return sgn * H_codomain.chain_module()((label, edge))
-
-    #     def to_domain_chain(label, edge):
-    #         if (label, edge) not in H_domain.simplices():
-    #             return -H_domain.chain_module()(self.domain().opposite_edge(label, edge))
-
-    #         return H_domain.chain_module()((label, edge))
-
-    #     def to_codomain_chain(label, edge):
-    #         if (label, edge) not in H_codomain.simplices():
-    #             return -H_codomain.chain_module()(self.codomain().opposite_edge(label, edge))
-
-    #         return H_codomain.chain_module()((label, edge))
-
-    #     unaffected_chain = H_codomain.chain_module()()
-    #     for label, edge in gen._path():
-    #         unaffected_chain += to_unaffected_codomain_chain(label, edge)
-
-    #     return H_codomain(unaffected_chain)
+        return (label, edge)
 
     def _image_point(self, p):
         # TODO: This is a dumb way to do this (and wrong for non-translation surfaces?)
