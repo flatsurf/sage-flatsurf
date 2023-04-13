@@ -145,7 +145,7 @@ class HalfDilationSurface(SimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-            sage: automorphism = L.apply_matrix_automorphism(matrix([[1, 1], [0, 1]]))
+            sage: automorphism = L.apply_matrix_automorphism(matrix([[1, 2], [0, 1]]))
 
             sage: automorphism.domain() is L.underlying_surface()
             True

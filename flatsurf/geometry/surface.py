@@ -299,7 +299,9 @@ class Surface(SageObject):
         other_pyflatsurf = other_to_pyflatsurf.codomain()
 
         from pyflatsurf import flatsurf
-        isomorphism = self_pyflatsurf._flat_triangulation.isomorphism(other_pyflatsurf._flat_triangulation, flatsurf.ISOMORPHISM.DELAUNAY_CELLS)
+        # TODO: Use CELLS
+        # isomorphism = self_pyflatsurf._flat_triangulation.isomorphism(other_pyflatsurf._flat_triangulation, flatsurf.ISOMORPHISM.DELAUNAY_CELLS)
+        isomorphism = self_pyflatsurf._flat_triangulation.isomorphism(other_pyflatsurf._flat_triangulation, flatsurf.ISOMORPHISM.FACES)
         if not isomorphism:
             raise NotImplementedError("Failed to find an isomorphism of Delaunay cells between these surfaces")
         isomorphism = isomorphism.value()

@@ -513,11 +513,28 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
             sage: H = SimplicialHomology(T.underlying_surface())
             sage: H.matrix(automorphism)
+            doctest:warning
+            ...
+            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
+            [ 1 -2]
+            [ 1 -3]
+
+        ::
+
+            sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: automorphism = L.apply_matrix_automorphism([[1, 2], [0, 1]])
+
+            sage: H = SimplicialHomology(L.underlying_surface())
+            sage: H.matrix(automorphism)
+            [-1  0  0  0]
+            [-3  1  0  0]
+            [ 0  0  1  0]
+            [-1  0  0  1]
 
         """
         homology = homology or SimplicialHomology(deformation.codomain())
 
-        if deformation.domain() is not self.surface() or deformation.codomain() is not homology.surface():
+        if deformation.domain() != self.surface() or deformation.codomain() != homology.surface():
             raise ValueError("homologies are not compatible with the domain and codomain of this deformation")
 
         images = [deformation(gen) for gen in self.gens()]

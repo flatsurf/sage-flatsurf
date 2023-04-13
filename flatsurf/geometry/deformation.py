@@ -221,7 +221,8 @@ class SectionDeformation(Deformation):
         super().__init__(deformation.codomain(), deformation.domain())
 
     def _image_homology_matrix(self):
-        return self._deformation._image_homology_matrix().inverse()
+        M = self._deformation._image_homology_matrix()
+        return M.parent()(M.inverse())
 
 
 class CompositionDeformation(Deformation):
@@ -238,7 +239,7 @@ class CompositionDeformation(Deformation):
         return self._lhs(self._rhs(x))
 
     def _image_homology_matrix(self):
-        return self._rhs._image_homology_matrix() * self._lhs._image_homology_matrix()
+        return self._lhs._image_homology_matrix() * self._rhs._image_homology_matrix()
 
 
 class SubdivideDeformation(Deformation):
@@ -355,6 +356,7 @@ class TrianglesFlipDeformation(Deformation):
     def __init__(self, domain, codomain, flip_sequence):
         # TODO: docstring
         super().__init__(domain, codomain)
+        assert not self.domain().is_mutable()
         self._flip_sequence = flip_sequence
 
     @cached_method
@@ -368,6 +370,7 @@ class TrianglesFlipDeformation(Deformation):
             codomain.set_immutable()
             domains.append(codomain)
 
+        assert domains[-1] == self.codomain()
         domains.pop()
         domains.append(self.codomain())
 
@@ -392,10 +395,10 @@ class TriangleFlipDeformation(Deformation):
         self._flip = flip
 
     def _image_edge(self, label, edge):
-        opposite_label, opposite_edge = self.domain().opposite_edge(label, edge)
+        opposite_flip = self.domain().opposite_edge(*self._flip)
 
         def find_in_codomain(vector):
-            candidates = [(l, e) for l in [label, opposite_label] for e in [0, 1, 2]]
+            candidates = [(l, e) for l in [self._flip[0], opposite_flip[0]] for e in [0, 1, 2]]
             candidates = [(l, e) for (l, e) in candidates if self.codomain().polygon(l).edge(e) == vector]
             assert candidates
             if len(candidates) > 1:
@@ -408,10 +411,13 @@ class TriangleFlipDeformation(Deformation):
                 return self._image_edge(label, (edge + 1) % 3) + self._image_edge(label, (edge + 2) % 3)
 
             return [find_in_codomain(self.domain().polygon(label).edge(edge))]
-        if label == opposite_label:
-            raise NotImplementedError
+        if label == opposite_flip[0]:
+            if edge == opposite_flip[1]:
+                return self._image_edge(label, (edge + 1) % 3) + self._image_edge(label, (edge + 2) % 3)
 
-        return (label, edge)
+            return [find_in_codomain(self.domain().polygon(label).edge(edge))]
+
+        return [(label, edge)]
 
     def _image_point(self, p):
         # TODO: This is a dumb way to do this (and wrong for non-translation surfaces?)
