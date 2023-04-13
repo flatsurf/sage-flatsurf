@@ -1080,8 +1080,44 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
 
         When ``order = k``, return only the orbifold points with total angle ``2pi/k``.
         """
-        # TODO: implement by developing in a circle around vertex
-        pass
+        from itertools import chain
+        return chain(self._orbifold_points_vertex(order),
+                     self._orbifold_points_edge(order),
+                     self._orbifold_points_face(order))
+
+    def _orbifold_points_vertex(self, order=None):
+        # TODO: Cache cusps?
+        cusps = self.cusps()
+
+        for vertex in self.vertices():
+            if vertex in cusps:
+                continue
+            num_polygons_total = 0
+            start = vertex[0]
+            position = start
+            while True:
+                # take a step
+                idx_edge = list(face.edges()).index(edge) 
+                edge_turn = face.edges()[idx_edge - 1]
+                position = self._develop(edge_turn)
+                num_polygons_total += 1
+                if position == start:
+                    break
+            o = num_polygons_total / len(vertex)
+
+            from sage.all import ZZ
+            assert o in ZZ
+
+            if order != 1 and (order is None or order == o):
+                # TODO: make fancier, i.e. OrbifoldPoint
+                yield start[1].start()
+
+
+    def _orbifold_points_edge(self, order=None):
+        raise NotImplementedError
+
+    def _orbifold_points_face(self, order=None):
+        raise NotImplementedError
 
     def gens(self):
         r"""
