@@ -307,7 +307,11 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
                         tessellation_face, next(iter(tessellation_edges)).midpoint()
                     )
 
-        # TODO: Insert orbifold points in the interior of a polygon, i.e., the ones detected with isomorphism()
+        for tessellation_face in self._dual_graph.vertices(sort=False):
+            mod, _ = self._dual_graph.get_vertex(tessellation_face)
+
+            if mod is not None:
+                raise NotImplementedError("cannot insert orbifold points in faces yet")
 
     def _insert_orbifold_point(self, tessellation_face, point):
         r"""
@@ -1095,11 +1099,14 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             num_polygons_total = 0
             start = vertex[0]
             position = start
+            target_triangulation = None
             while True:
                 # take a step
-                idx_edge = list(face.edges()).index(edge) 
+                face, edge = position
+                idx_edge = list(face.edges()).index(edge)
                 edge_turn = face.edges()[idx_edge - 1]
-                position = self._develop(edge_turn)
+                cross_face, target_triangulation = self._develop(face, edge_turn, target_triangulation)
+                position = cross_face, -edge_turn
                 num_polygons_total += 1
                 if position == start:
                     break
@@ -1114,10 +1121,31 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
 
 
     def _orbifold_points_edge(self, order=None):
-        raise NotImplementedError
+        if order is not None and order != 2:
+            return
+
+        # TODO: This duplicates insert_orbifold_points.
+        for tessellation_face in self._dual_graph.vertices(sort=False):
+            for (
+                source_tessellation_face,
+                target_tessellation_face,
+                (tessellation_edges, isometry),
+            ) in list(
+                self._dual_graph.edges(tessellation_face, labels=True, sort=False)
+            ):
+                # crossing edge of the polygon cycles back to the very edge in the
+                # polygon, so there is an orbifold point on that edge.
+                # We patch the polygon by inserting a marked point.
+                if len(tessellation_edges) == 1:
+                    tessellation_edge = next(iter(tessellation_edges))
+                    yield tessellation_edge.midpoint()
 
     def _orbifold_points_face(self, order=None):
-        raise NotImplementedError
+        for tessellation_face in self._dual_graph.vertices(sort=False):
+            mod, _ = self._dual_graph.get_vertex(tessellation_face)
+            if mod is not None:
+                raise NotImplementedError
+                yield None
 
     def gens(self):
         r"""
