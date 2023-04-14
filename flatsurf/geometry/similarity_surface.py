@@ -160,7 +160,7 @@ class SimilaritySurface(Parent):
                 )
             )
 
-        from flatsurf.geometry.categories import SimilaritySurfaces
+        from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
         Parent.__init__(self, base=surface.base_ring(), category=category or SimilaritySurfaces())
 
     def _an_element_(self):

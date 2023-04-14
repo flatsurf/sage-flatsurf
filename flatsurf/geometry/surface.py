@@ -158,7 +158,7 @@ class Surface(Parent):
 
         self._cache = {}
 
-        from flatsurf.geometry.categories import TopologicalSurfaces
+        from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
 
         Parent.__init__(self, base=base_ring, category=category or TopologicalSurfaces())
 
