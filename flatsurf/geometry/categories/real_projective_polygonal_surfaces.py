@@ -10,7 +10,7 @@ category is automatically determined for surfaces.
 EXAMPLES::
 
     sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict().category()
+    sage: C = Surface_dict(QQ).category()
 
     sage: from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
     sage: C.is_subcategory(RealProjectivePolygonalSurfaces())
@@ -48,6 +48,7 @@ class RealProjectivePolygonalSurfaces(Category):
 
         sage: from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
         sage: RealProjectivePolygonalSurfaces()
+        Category of real projective polygonal surfaces
 
     """
 

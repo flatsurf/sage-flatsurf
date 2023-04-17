@@ -13,7 +13,7 @@ category is automatically determined for surfaces.
 EXAMPLES::
 
     sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict().category()
+    sage: C = Surface_dict(QQ).category()
 
     sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
     sage: C.is_subcategory(PolygonalSurfaces())
@@ -54,6 +54,7 @@ class PolygonalSurfaces(Category):
 
         sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
         sage: PolygonalSurfaces()
+        Category of polygonal surfaces
 
     """
 

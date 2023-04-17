@@ -12,7 +12,7 @@ category is automatically determined for surfaces.
 EXAMPLES::
 
     sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict().category()
+    sage: C = Surface_dict(QQ).category()
 
     sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
     sage: C.is_subcategory(TopologicalSurfaces())
@@ -57,6 +57,7 @@ class TopologicalSurfaces(Category):
 
         sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
         sage: TopologicalSurfaces()
+        Category of topological surfaces
 
     """
 
@@ -78,6 +79,20 @@ class TopologicalSurfaces(Category):
             True
 
         """
+
+    class SubcategoryMethods:
+        def Oriented(self):
+            r"""
+            Return the subcategory of surfaces that are oriented.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+                sage: TopologicalSurfaces().Oriented()
+                Category of oriented topological surfaces
+
+            """
+            return self._with_axiom("Oriented")
 
 
 all_axioms += ("Oriented",)

@@ -15,7 +15,7 @@ category is automatically determined for surfaces.
 EXAMPLES::
 
     sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict().category()
+    sage: C = Surface_dict(QQ).category()
 
     sage: from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
     sage: C.is_subcategory(SimilaritySurfaces())

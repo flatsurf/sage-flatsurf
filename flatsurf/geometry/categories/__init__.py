@@ -23,8 +23,10 @@ EXAMPLES::
 A single square is just a topological surface built from polygons::
 
     sage: from flatsurf import Surface_dict
-    sage: S = Surface_dict()
-    sage: S.add_polygon(square)
+    sage: S = Surface_dict(QQ)
+
+    sage: from flatsurf import polygons
+    sage: S.add_polygon(polygons.square())
     sage: S.category()
 
 It does not really make sense to ask which stratum this surface belongs to::
@@ -135,53 +137,3 @@ Since this is now a translation surface, we can ask for its stratum again::
 #     # TODO: This is ConeSurface().Rational()
 #     def super_categories(self):
 #         return [ConeSurfaces(), RationalSimilaritySurfaces()]
-# 
-# 
-# class HalfTranslationSurfaces(Category):
-#     # TODO: Documentation
-#     def super_categories(self):
-#         return [HalfDilationSurfaces(), RationalConeSurfaces()]
-# 
-#     class ParentMethods:
-#         def stratum(self):
-#             r"""
-#             EXAMPLES::
-# 
-#                 sage: from flatsurf import polygons, similarity_surfaces
-#                 sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
-#                 sage: H = B.minimal_cover(cover_type="half-translation")
-#                 sage: H.stratum()
-#                 Q_1(3, -1^3)
-#             """
-#             angles = self.angles()
-#             if all(x.denominator() == 1 for x in angles):
-#                 raise NotImplementedError
-#             from surface_dynamics import QuadraticStratum
-# 
-#             return QuadraticStratum(*[2 * a - 2 for a in angles])
-# 
-# 
-# class TranslationSurfaces(Category):
-#     # TODO: Documentation
-#     def super_categories(self):
-#         return [DilationSurfaces(), HalfTranslationSurfaces()]
-# 
-#     class ParentMethods:
-#         def stratum(self):
-#             r"""
-#             Return the stratum this surface belongs to.
-# 
-#             This uses the package ``surface-dynamics``
-#             (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
-# 
-#             EXAMPLES::
-# 
-#                 sage: import flatsurf.geometry.similarity_surface_generators as sfg
-#                 sage: sfg.translation_surfaces.octagon_and_squares().stratum()
-#                 H_3(4)
-#             """
-#             from surface_dynamics import AbelianStratum
-#             from sage.rings.integer_ring import ZZ
-# 
-#             return AbelianStratum([ZZ(a - 1) for a in self.angles()])
-# 
