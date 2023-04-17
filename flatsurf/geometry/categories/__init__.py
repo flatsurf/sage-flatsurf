@@ -74,16 +74,6 @@ Since this is now a translation surface, we can ask for its stratum again::
 # # * "Half"; PositivelyDilating (modulo grammar)
 # 
 # 
-# # or CWComplexSurface?
-# class PolygonalSurfaces(Category):
-#     r"""
-#     Surface given by gluings of some "authorized" family of polygons in some master space using a family of "authorized" (total) maps
-#     """
-#     # TODO: Documentation
-#     def super_categories(self):
-#         return [TopologicalSurfaces()]
-# 
-# 
 # class HyperbolicPolygonalSurfaces(Category):
 #     # TODO: Documentation
 #     # glued by isometries (because they have to preserve triangles)
@@ -101,23 +91,6 @@ Since this is now a translation surface, we can ask for its stratum again::
 #     # initial surface becomes many triangles and we want to be able
 #     # to navigate between the two versions of the same surface.
 #     pass
-# 
-# 
-# class RealProjectivePolygonalSurfaces(Category):
-#     # TODO: Documentation
-#     # Currently, only built from Euclidean polygons.
-#     # glued by projective transformations (because they have to preserve triangles)
-#     def super_categories(self):
-#         return [PolygonalSurfaces()]
-# 
-# 
-# class SimilaritySurfaces(Category):
-#     r"""
-#     Euclidean polygons glued with similarities along there edges
-#     """
-#     # TODO: Documentation
-#     def super_categories(self):
-#         return [EuclideanPolygonalSurfaces()]
 # 
 # 
 # class RationalSimilaritySurfaces(Category):

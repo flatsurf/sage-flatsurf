@@ -40,9 +40,6 @@ from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
 from .matrix_2x2 import similarity_from_vectors
 
-ZZ_1 = ZZ.one()
-ZZ_2 = ZZ_1 + ZZ_1
-
 
 class SimilaritySurface(Parent):
     r"""
@@ -55,73 +52,6 @@ class SimilaritySurface(Parent):
 
     The edges are labeled by a pair ``(polygon label, edge number)``.
 
-    EXAMPLES:
-
-    The easiest way to construct a similarity surface is to use the pre-built
-    constructions from
-    :class:`flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators`::
-
-        sage: from flatsurf import polygons, similarity_surfaces
-        sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-        sage: similarity_surfaces.self_glued_polygon(P)
-        HalfTranslationSurface built from 1 polygon
-
-    The second way is to build a surface (using e.g. :class:`flatsurf.geometry.surface.Surface_list`)
-    and then use this surface as an argument for class:`SimilaritySurface`)::
-
-        sage: from flatsurf.geometry.similarity_surface import SimilaritySurface
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
-        sage: Stop = Surface_list(QQ)
-        sage: Stop.add_polygon(P)
-        0
-        sage: Stop.add_polygon(2*P)
-        1
-        sage: Stop.add_polygon(3*P)
-        2
-        sage: Stop.set_edge_pairing(0, 1, 1, 3)
-        sage: Stop.set_edge_pairing(0, 0, 2, 2)
-        sage: Stop.set_edge_pairing(0, 2, 2, 0)
-        sage: Stop.set_edge_pairing(0, 3, 1, 1)
-        sage: Stop.set_edge_pairing(1, 2, 2, 1)
-        sage: Stop.set_edge_pairing(1, 0, 2, 3)
-        sage: S = SimilaritySurface(Stop)
-        sage: S
-        SimilaritySurface built from 3 polygons
-
-    To perform a sanity check on the obtained surface, you can run its test
-    suite::
-
-        sage: TestSuite(S).run()
-
-    In the following example, we build two broken surfaces and
-    check that the test suite fails as expected::
-
-        sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
-        sage: Stop = Surface_list(QQ)
-        sage: Stop.add_polygon(P)
-        0
-        sage: S = SimilaritySurface(Stop)
-        sage: TestSuite(S).run()
-        ...
-          AssertionError: edge (0, 0) is not glued
-          ------------------------------------------------------------
-          The following tests failed: _test_gluings
-        Failure in _test_underlying_surface
-        The following tests failed: _test_underlying_surface
-
-        sage: Stop.set_edge_pairing(0, 0, 0, 3)
-        sage: Stop.set_edge_pairing(0, 1, 0, 3)
-        sage: Stop.set_edge_pairing(0, 2, 0, 3)
-        sage: S = SimilaritySurface(Stop)
-        sage: TestSuite(S).run()
-        ...
-          AssertionError: edge gluing is not a pairing:
-          (0, 0) -> (0, 3) -> (0, 2)
-          ------------------------------------------------------------
-          The following tests failed: _test_gluings
-        Failure in _test_underlying_surface
-        The following tests failed: _test_underlying_surface
 
     Finally, you can also implement a similarity surface by inheriting from
     :class:`SimilaritySurface` and implement the methods:
@@ -1529,24 +1459,6 @@ class SimilaritySurface(Parent):
                 raise TypeError(
                     "Use the ring=??? option to construct tangent vectors in other field different from the base_ring()."
                 )
-            # Old version seemed to be to accepting of inputs (eg, from Symbolic Ring)
-            # R = p.base_ring()
-            # if R != v.base_ring():
-            #    from sage.structure.element import get_coercion_model
-            #    cm = get_coercion_model()
-            #    R = cm.common_parent(R, v.base_ring())
-            #    p = p.change_ring(R)
-            #    v = v.change_ring(R)
-
-            # R2 = self.base_ring()
-            # if R != R2:
-            #    if R2.has_coerce_map_from(R):
-            #        p = p.change_ring(R2)
-            #        v = v.change_ring(R2)
-            #        R = R2
-            #    elif not R.has_coerce_map_from(R2):
-            #        raise ValueError("not able to find a common ring for arguments")
-            # return self.tangent_bundle(R)(lab, p, v)
         else:
             return self.tangent_bundle(ring)(lab, p, v)
 

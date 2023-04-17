@@ -39,6 +39,7 @@ EXAMPLES::
 # ####################################################################
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
 from sage.categories.topological_spaces import TopologicalSpaces
 
 
@@ -61,3 +62,22 @@ class TopologicalSurfaces(Category):
 
     def super_categories(self):
         return [TopologicalSpaces()]
+
+    class Oriented(CategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces that can be oriented.
+
+        As of 2023, all surfaces in sage-flatsurf satisfy this axiom.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: S = similarity_surfaces.self_glued_polygon(P)
+            sage: 'Oriented' in S.category().axioms()
+            True
+
+        """
+
+
+all_axioms += ("Oriented",)
