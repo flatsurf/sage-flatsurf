@@ -158,9 +158,9 @@ class Surface(Parent):
 
         self._cache = {}
 
-        from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+        from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 
-        Parent.__init__(self, base=base_ring, category=category or TopologicalSurfaces())
+        Parent.__init__(self, base=base_ring, category=category or SimilaritySurfaces().Orientable())
 
     def is_triangulated(self, limit=None):
         r"""
@@ -370,6 +370,8 @@ class Surface(Parent):
         Mark this surface as immutable.
         """
         self._mutable = False
+
+        self._refine_category_(self.refined_category())
 
     def walker(self):
         r"""

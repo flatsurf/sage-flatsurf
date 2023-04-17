@@ -26,17 +26,22 @@ A single square is just a topological surface built from polygons::
     sage: S = Surface_dict(QQ)
 
     sage: from flatsurf import polygons
-    sage: S.add_polygon(polygons.square())
+    sage: S.add_polygon(polygons.square(), label=0)
+    0
     sage: S.category()
+    Category of oriented similarity surfaces
 
 It does not really make sense to ask which stratum this surface belongs to::
 
     sage: S.stratum()
-    AttributeError
+    Traceback (most recent call last):
+    ...
+    AttributeError: ... has no attribute 'stratum'
 
 Once we add gluings, this turns into a square torus.
 
-    sage: S.add_gluings()
+    sage: S.set_edge_pairing(0, 0, 0, 2)
+    sage: S.set_edge_pairing(0, 1, 0, 3)
 
 We signal to sage-flatsurf that we are done building this surface, and its
 category gets refined::
@@ -69,12 +74,8 @@ Since this is now a translation surface, we can ask for its stratum again::
 # ####################################################################
 
 # # Axioms
-# # * FiniteType, InfiniteType
-# # * WithoutBoundaries, WithBoundaries
-# # * Oriented
 # # * Rational (for similarity) (= finite linear part), Orbifold (for hyperbolic = angles are of the form 2 pi / n = quotient of upper half space)
 # # * "Half"; PositivelyDilating (modulo grammar)
-# 
 # 
 # class HyperbolicPolygonalSurfaces(Category):
 #     # TODO: Documentation
@@ -100,24 +101,6 @@ Since this is now a translation surface, we can ask for its stratum again::
 #     # TODO: This is SimilaritySurfaces().Rational()
 #     def super_categories(self):
 #         return [SimilaritySurfaces()]
-# 
-# 
-# # Rename to DilationSurfaces()
-# class HalfDilationSurfaces(Category):
-#     r"""
-#     Gluing with scalar matrices
-#     """
-#     # TODO: Documentation
-#     # TODO: This is similarity by any scalar.
-#     def super_categories(self):
-#         return [SimilaritySurfaces()]
-# 
-# 
-# # This will become DilationSurfaces & PositiveDilation
-# class DilationSurfaces(Category):
-#     # TODO: Documentation
-#     def super_categories(self):
-#         return [HalfDilationSurfaces()]
 # 
 # 
 # # EuclideanConeSurface?

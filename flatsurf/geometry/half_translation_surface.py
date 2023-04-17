@@ -24,7 +24,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
 
     def __init__(self, surface, category=None):
         from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
-        super().__init__(surface, category or HalfTranslationSurfaces().Oriented())
+        super().__init__(surface, category or HalfTranslationSurfaces().Orientable())
 
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""

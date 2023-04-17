@@ -55,6 +55,7 @@ class HalfTranslationSurfaces(Category):
 
         sage: from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
         sage: HalfTranslationSurfaces()
+        Category of half translation surfaces
 
     """
 
@@ -63,7 +64,7 @@ class HalfTranslationSurfaces(Category):
         # TODO: We can be more limited here, something like HalfDilationSurfaces() & RationalConeSurfaces()
         return [SimilaritySurfaces()]
 
-    class Oriented(CategoryWithAxiom):
+    class Orientable(CategoryWithAxiom):
         class ParentMethods:
             def stratum(self):
                 r"""

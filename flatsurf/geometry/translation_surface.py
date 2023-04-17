@@ -16,7 +16,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
     def __init__(self, surface, category=None):
         from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
-        super().__init__(surface, category or TranslationSurfaces().Oriented())
+        super().__init__(surface, category or TranslationSurfaces().Orientable())
 
     def minimal_translation_cover(self):
         return self

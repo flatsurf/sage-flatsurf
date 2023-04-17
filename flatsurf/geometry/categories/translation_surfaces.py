@@ -45,6 +45,7 @@ EXAMPLES::
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
+from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
 
 
 class TranslationSurfaces(Category):
@@ -56,17 +57,17 @@ class TranslationSurfaces(Category):
 
         sage: from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
         sage: TranslationSurfaces()
+        Category of translation surfaces
 
     """
+    _base_category_class_and_axiom = (HalfTranslationSurfaces, 'PositiveDilation')
 
     def super_categories(self):
-        # TODO: This is halftranslationsurfaces + an axiom (positively dilating).
-        # They satisfy the axiom of no self-gluing.
+        # TODO: They satisfy the axiom of no self-gluing.
 
-        from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
         return [HalfTranslationSurfaces()]
 
-    class Oriented(CategoryWithAxiom):
+    class Orientable(CategoryWithAxiom):
         class ParentMethods:
             def stratum(self):
                 r"""
@@ -85,4 +86,3 @@ class TranslationSurfaces(Category):
                 from sage.rings.integer_ring import ZZ
 
                 return AbelianStratum([ZZ(a - 1) for a in self.angles()])
-

@@ -38,7 +38,6 @@ from .polygon import ConvexPolygons, wedge_product
 from .surface import Surface, Surface_dict, Surface_list, LabelComparator
 from .surface_objects import Singularity, SaddleConnection, SurfacePoint
 from .circle import Circle
-from .matrix_2x2 import similarity_from_vectors
 
 
 class SimilaritySurface(Parent):
@@ -298,43 +297,6 @@ class SimilaritySurface(Parent):
             end = "s"
 
         return "{} built from {} polygon{}".format(self.__class__.__name__.replace("_with_category", ""), num, end)
-
-    @cached_method
-    def edge_matrix(self, p, e=None):
-        r"""
-        Returns the 2x2 matrix representing a similarity which when applied to the polygon with label `p`
-        makes it so the edge `e` can be glued to its opposite edge by translation.
-
-        If `e` is not provided, then `p` should be a pair consisting of a polygon label and an edge.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: s = SimilaritySurfaceGenerators.example()
-            sage: print(s.polygon(0))
-            Polygon: (0, 0), (2, -2), (2, 0)
-            sage: print(s.polygon(1))
-            Polygon: (0, 0), (2, 0), (1, 3)
-            sage: s.opposite_edge(0,0)
-            (1, 1)
-            sage: m = s.edge_matrix(0, 0)
-            sage: m
-            [   1  1/2]
-            [-1/2    1]
-            sage: m * vector((2,-2)) == -vector((-1, 3))
-            True
-        """
-        if e is None:
-            import warnings
-
-            warnings.warn("edge_matrix will now only take two arguments")
-            p, e = p
-        u = self.polygon(p).edge(e)
-        pp, ee = self.opposite_edge(p, e)
-        v = self.polygon(pp).edge(ee)
-
-        # be careful, because of the orientation, it is -v and not v
-        return similarity_from_vectors(u, -v, self._matrix_space())
 
     def edge_transformation(self, p, e):
         r"""

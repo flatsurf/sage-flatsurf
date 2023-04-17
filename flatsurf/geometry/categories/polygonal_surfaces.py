@@ -40,6 +40,8 @@ EXAMPLES::
 # ####################################################################
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
+from sage.misc.abstract_method import abstract_method
 
 
 class PolygonalSurfaces(Category):
@@ -61,3 +63,195 @@ class PolygonalSurfaces(Category):
     def super_categories(self):
         from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
         return [TopologicalSurfaces()]
+
+    class ParentMethods:
+        def refined_category(self):
+            r"""
+            Return the smallest subcategory that this surface is in by
+            consulting which edges are glued to each other.
+
+            Note that this does not take into account how the edges are glued
+            to each other exactly (i.e., by which similarity) since at this
+            level (i.e., without knowing about the space in which the polygons
+            live) the gluing is just described combinatorially.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Surface_dict
+                sage: S = Surface_dict(QQ)
+
+                sage: from flatsurf import polygons
+                sage: S.add_polygon(polygons.square(), label=0)
+                sage: S.refined_category()
+
+                sage: S.set_edge_pairing(0, 0, 0, 2)
+                sage: S.set_edge_pairing(0, 1, 0, 3)
+                sage: S.refined_category()
+
+            """
+            from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+            category = TopologicalSurfaces.ParentMethods.refined_category(self)
+
+            if self.is_finite():
+                category &= category.FiniteType()
+            else:
+                category &= category.InfiniteType()
+
+            return category
+
+        # TODO: Deprecate is_finite everywhere since it clashes with the
+        # notion of Sets(). Instead use is_finite_type().
+        @abstract_method
+        def is_finite(self):
+            r"""
+            Return whether this surface is constructed from finitely many polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_finite()
+                True
+
+            """
+
+        def is_with_boundary(self):
+            r"""
+            Return whether this surface has a boundary, i.e., unglued polygon edges.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_with_boundary()
+                False
+
+            """
+            if not self.is_finite():
+                raise NotImplementedError("cannot decide wether a surface has boundary for surfaces of infinite type")
+
+            for label in self.label_iterator():
+                for edge in range(self.polygon(label).num_edges()):
+                    cross = self.opposite_edge(label, edge)
+                    if cross is None:
+                        return True
+
+            return False
+
+        def is_compact(self):
+            r"""
+            Return whether this surface is compact.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_compact()
+                True
+
+            """
+            if not self.is_finite():
+                raise NotImplementedError("cannot decide whether this infinite type surface is compact")
+
+            return True
+
+        def is_connected(self):
+            r"""
+            Return whether this surface is connected.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_connected()
+                True
+
+            """
+            if not self.is_finite():
+                raise NotImplementedError("cannot decide whether this infinite type surface is connected")
+
+            # We use the customary union-find algorithm to identify the connected components.
+            union_find = {label: label for label in self.label_iterator()}
+
+            def find(label):
+                if union_find[label] == label:
+                    return label
+                parent = find(union_find[label])
+                union_find[label] = parent
+                return parent
+
+            for label in self.label_iterator():
+                for edge in range(self.polygon(label).num_edges()):
+                    cross = self.opposite_edge(label, edge)
+                    if cross is None:
+                        continue
+
+                    cross_label, cross_edge = cross
+
+                    x = find(label)
+                    y = find(cross_label)
+                    union_find[x] = y
+
+            return len(union_find.values()) > 1
+
+    class FiniteType(CategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces built from finitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: S = similarity_surfaces.self_glued_polygon(P)
+            sage: 'FiniteType' in S.category().axioms()
+            True
+
+        """
+        # TODO: Implement is_finite()
+
+    # TODO: Can we somehow force that a surface can only be finite XOR infinite type?
+    class InfiniteType(CategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces built from infinitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: 'InfiniteType' in S.category().axioms()
+            True
+
+        """
+        # TODO: Implement is_finite()
+
+    class SubcategoryMethods:
+        def FiniteType(self):
+            r"""
+            Return the subcategory of surfaces built from finitely many polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+                sage: PolygonalSurfaces().FiniteType()
+
+            """
+            return self._with_axiom("FiniteType")
+
+        def InfiniteType(self):
+            r"""
+            Return the subcategory of surfaces built from infinitely many polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+                sage: PolygonalSurfaces().InfiniteType()
+
+            """
+            return self._with_axiom("InfiniteType")
+
+
+all_axioms += ("FiniteType", "InfiniteType")
