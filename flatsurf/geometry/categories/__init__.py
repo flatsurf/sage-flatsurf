@@ -28,7 +28,7 @@ A single square is just a topological surface built from polygons::
     sage: from flatsurf import polygons
     sage: S.add_polygon(polygons.square(), label=0)
     0
-    sage: S.category()
+    sage: S.category()  # TODO: Either change this to be topological or fix the documentation.
     Category of oriented orientable similarity surfaces
 
 It does not really make sense to ask which stratum this surface belongs to::
@@ -53,6 +53,7 @@ category gets refined::
 Since this is now a translation surface, we can ask for its stratum again::
 
     sage: S.stratum()
+    H_1(0)
 
 """
 # ####################################################################
@@ -95,13 +96,6 @@ Since this is now a translation surface, we can ask for its stratum again::
 #     # initial surface becomes many triangles and we want to be able
 #     # to navigate between the two versions of the same surface.
 #     pass
-# 
-# 
-# class RationalSimilaritySurfaces(Category):
-#     # TODO: Documentation
-#     # TODO: This is SimilaritySurfaces().Rational()
-#     def super_categories(self):
-#         return [SimilaritySurfaces()]
 # 
 # 
 # # EuclideanConeSurface?
