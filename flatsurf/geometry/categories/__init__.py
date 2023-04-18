@@ -4,7 +4,7 @@ Categories of Surfaces.
 sage-flatsurf uses SageMath categories to distinguish different kinds of
 surfaces such as hyperbolic surfaces, translation surfaces, …. See
 https://doc.sagemath.org/html/en/reference/categories/sage/categories/primer.html
-for a short introduction of categories in SageMath. In short, "categories" are
+for a detailed introduction of categories in SageMath. In short, "categories" are
 not so much mathematical categories but more similar to a normal class
 hierarchy in Python; however, they extend the idea of a classical class
 hierarchy by allowing us to dynamically change the category (and methods) of a
