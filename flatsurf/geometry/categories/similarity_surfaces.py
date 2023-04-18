@@ -109,7 +109,7 @@ check that the test suite fails as expected::
 # ####################################################################
 
 from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom
+from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
 from sage.misc.cachefunc import cached_method
 
 
@@ -334,3 +334,17 @@ class SimilaritySurfaces(Category):
                 from sage.matrix.matrix_space import MatrixSpace
 
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
+
+    class Rational(CategoryWithAxiom):
+        r"""
+        The axiom satisfied by similarity surfaces with rational monodromy,
+        i.e., a walk around a vertex leads to a turn by a rational multiple of
+        2π.
+        """
+
+    class SubcategoryMethods:
+        def Rational(self):
+            return self._with_axiom("Rational")
+
+
+all_axioms += ("Rational",)

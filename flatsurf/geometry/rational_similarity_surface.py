@@ -47,6 +47,7 @@ class RationalSimilaritySurface(SimilaritySurface):
     """
 
     # TODO: Bring these kinds of tests back for all categories.
+    # TODO: But is this test even correct?
     # def _test_edge_matrix(self, **options):
     #     r"""
     #     Check the compatibility condition
