@@ -86,30 +86,54 @@ class TopologicalSurfaces(Category):
 
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)
+                0
                 sage: S.refined_category()
+                Category of compact connected finite type oriented orientable with boundary translation surfaces
 
                 sage: S.set_edge_pairing(0, 0, 0, 2)
                 sage: S.set_edge_pairing(0, 1, 0, 3)
                 sage: S.refined_category()
+                Category of compact connected finite type oriented orientable without boundary translation surfaces
 
             """
             category = self.category()
 
-            if self.is_orientable():
-                category &= category.Orientable()
+            # TODO: Force all surfaces to implement these methods and remove the try/except blocks.
+            try:
+                orientable = self.is_orientable()
+            except NotImplementedError:
+                pass
             else:
-                raise NotImplementedError("there is no axiom for non-orientable surfaces yet")
+                if orientable:
+                    category &= category.Orientable()
+                else:
+                    raise NotImplementedError("there is no axiom for non-orientable surfaces yet")
 
-            if self.is_with_boundary():
-                category &= category.WithBoundary()
+            try:
+                with_boundary = self.is_with_boundary()
+            except NotImplementedError:
+                pass
             else:
-                category &= category.WithoutBoundary()
+                if with_boundary:
+                    category &= category.WithBoundary()
+                else:
+                    category &= category.WithoutBoundary()
 
-            if self.is_compact():
-                category &= category.Compact()
+            try:
+                compact = self.is_compact()
+            except NotImplementedError:
+                pass
+            else:
+                if compact:
+                    category &= category.Compact()
 
-            if self.is_connected():
-                category &= category.Connected()
+            try:
+                connected = self.is_connected()
+            except NotImplementedError:
+                pass
+            else:
+                if connected:
+                    category &= category.Connected()
 
             return category
 
@@ -212,14 +236,36 @@ class TopologicalSurfaces(Category):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-            sage: S = similarity_surfaces.self_glued_polygon(P)
+            sage: from flatsurf import Surface_dict
+            sage: S = Surface_dict(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square(), label=0)
+            0
+            sage: S.set_immutable()
             sage: 'WithBoundary' in S.category().axioms()
-            False
+            True
 
         """
-        # TODO: Implement is_with_boundary()
+
+        def is_with_boundary(self):
+            r"""
+            Return whether this is a surface with boundary, i.e., return ``True``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Surface_dict
+                sage: S = Surface_dict(QQ)
+
+                sage: from flatsurf import polygons
+                sage: S.add_polygon(polygons.square(), label=0)
+                0
+                sage: S.set_immutable()
+                sage: S.is_with_boundary()
+                True
+
+            """
+            return True
 
     # TODO: Can we somehow force that a surface can only be with XOR without boundary?
     class WithoutBoundary(CategoryWithAxiom):
@@ -236,7 +282,21 @@ class TopologicalSurfaces(Category):
             True
 
         """
-        # TODO: Implement is_with_boundary()
+
+        def is_with_boundary(self):
+            r"""
+            Return whether this is a surface with boundary, i.e., return ``False``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_with_boundary()
+                False
+
+            """
+            return False
 
     class SubcategoryMethods:
         def Orientable(self):
@@ -262,6 +322,7 @@ class TopologicalSurfaces(Category):
 
                 sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
                 sage: TopologicalSurfaces().WithBoundary()
+                Category of with boundary topological surfaces
 
             """
             return self._with_axiom("WithBoundary")
@@ -275,6 +336,7 @@ class TopologicalSurfaces(Category):
 
                 sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
                 sage: TopologicalSurfaces().WithoutBoundary()
+                Category of without boundary topological surfaces
 
             """
             return self._with_axiom("WithoutBoundary")

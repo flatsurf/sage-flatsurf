@@ -21,9 +21,7 @@ def _is_finite(surface):
         polygon = surface.polygon(label)
 
         for e in range(polygon.num_edges()):
-            from flatsurf.geometry.similarity_surface import SimilaritySurface
-
-            m = SimilaritySurface.edge_matrix(surface, label, e)
+            m = surface.edge_matrix(label, e)
 
             from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
 

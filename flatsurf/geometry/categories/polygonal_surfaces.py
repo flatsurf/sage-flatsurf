@@ -82,20 +82,28 @@ class PolygonalSurfaces(Category):
 
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)
+                0
                 sage: S.refined_category()
+                Category of compact connected finite type oriented orientable with boundary translation surfaces
 
                 sage: S.set_edge_pairing(0, 0, 0, 2)
                 sage: S.set_edge_pairing(0, 1, 0, 3)
                 sage: S.refined_category()
+                Category of compact connected finite type oriented orientable without boundary translation surfaces
 
             """
             from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
             category = TopologicalSurfaces.ParentMethods.refined_category(self)
 
-            if self.is_finite():
-                category &= category.FiniteType()
+            try:
+                finite_type = self.is_finite()
+            except NotImplementedError:
+                pass
             else:
-                category &= category.InfiniteType()
+                if finite_type:
+                    category &= category.FiniteType()
+                else:
+                    category &= category.InfiniteType()
 
             return category
 
@@ -129,6 +137,13 @@ class PolygonalSurfaces(Category):
                 False
 
             """
+            # Since this methods overrides the implementation from the axioms,
+            # we reenable it.
+            if 'WithBoundary' in self.category().axioms():
+                return True
+            if 'WithoutBoundary' in self.category().axioms():
+                return False
+
             if not self.is_finite():
                 raise NotImplementedError("cannot decide wether a surface has boundary for surfaces of infinite type")
 
@@ -153,6 +168,9 @@ class PolygonalSurfaces(Category):
                 True
 
             """
+            if 'Compact' in self.category().axioms():
+                return True
+
             if not self.is_finite():
                 raise NotImplementedError("cannot decide whether this infinite type surface is compact")
 
@@ -171,6 +189,9 @@ class PolygonalSurfaces(Category):
                 True
 
             """
+            if 'Connected' in self.category().axioms():
+                return True
+
             if not self.is_finite():
                 raise NotImplementedError("cannot decide whether this infinite type surface is connected")
 
@@ -196,7 +217,7 @@ class PolygonalSurfaces(Category):
                     y = find(cross_label)
                     union_find[x] = y
 
-            return len(union_find.values()) > 1
+            return len(union_find.values()) <= 1
 
     class FiniteType(CategoryWithAxiom):
         r"""
@@ -228,6 +249,37 @@ class PolygonalSurfaces(Category):
         """
         # TODO: Implement is_finite()
 
+    class Oriented(CategoryWithAxiom):
+        r"""
+        The axiom satisfied by orientable surfaces with an orientation which
+        is compatible with the orientation of the ambient space of the
+        polygons (assuming that ambient space is orientable.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: 'Oriented' in S.category().axioms()
+            True
+
+        """
+
+        def extra_super_categories(self):
+            r"""
+            Return the axioms that are automatically satisfied by a surfaces
+            which is oriented, namely, that such a surface is orientable.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: 'Orientable' in S.category().axioms()
+                True
+
+            """
+            from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+            return (TopologicalSurfaces().Orientable(),)
+
     class SubcategoryMethods:
         def FiniteType(self):
             r"""
@@ -237,6 +289,7 @@ class PolygonalSurfaces(Category):
 
                 sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
                 sage: PolygonalSurfaces().FiniteType()
+                Category of finite type polygonal surfaces
 
             """
             return self._with_axiom("FiniteType")
@@ -249,9 +302,26 @@ class PolygonalSurfaces(Category):
 
                 sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
                 sage: PolygonalSurfaces().InfiniteType()
+                Category of infinite type polygonal surfaces
 
             """
             return self._with_axiom("InfiniteType")
 
+        def Oriented(self):
+            r"""
+            Return the subcategory of surfaces with an orientation that is
+            inherited from the polygons that it is built from.
 
-all_axioms += ("FiniteType", "InfiniteType")
+            This assumes that the ambient space of the polygons is orientable.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+                sage: PolygonalSurfaces().Oriented()
+                Category of oriented orientable polygonal surfaces
+
+            """
+            return self._with_axiom("Oriented")
+
+
+all_axioms += ("FiniteType", "InfiniteType", "Oriented")

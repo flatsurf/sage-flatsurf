@@ -160,7 +160,26 @@ class Surface(Parent):
 
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 
-        Parent.__init__(self, base=base_ring, category=category or SimilaritySurfaces().Orientable())
+        Parent.__init__(self, base=base_ring, category=category or SimilaritySurfaces().Oriented())
+
+    def _refine_category_(self, category):
+        r"""
+        Refine the category of this surface to a subcategory ``category``.
+
+        We need to override this method from Parent since we need to disable a hashing check that is otherwise enabled when doctesting.
+
+        Since our surfaces are not hashable (since equality of infinite
+        surfaces is a delicate matter,) that hash check otherwise fails with a
+        NotImplementedError.
+
+        """
+        from sage.structure.debug_options import debug
+        old_refine_category_hash_check = debug.refine_category_hash_check
+        debug.refine_category_hash_check = False
+        try:
+            super()._refine_category_(category)
+        finally:
+            debug.refine_category_hash_check = old_refine_category_hash_check
 
     def is_triangulated(self, limit=None):
         r"""

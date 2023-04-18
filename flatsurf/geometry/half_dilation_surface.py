@@ -67,7 +67,7 @@ class HalfDilationSurface(SimilaritySurface):
             raise NotImplementedError("Only implemented for matrices.")
         if not matrix.dimensions != (2, 2):
             raise NotImplementedError("Only implemented for 2x2 matrices.")
-        return self.__class__(GL2RImageSurface(self, matrix)).copy()
+        return self.__class__(GL2RImageSurface(self, matrix), category=self.category()).copy()
 
     def apply_matrix(self, m, in_place=True, mapping=False):
         r"""
@@ -263,12 +263,12 @@ class HalfDilationSurface(SimilaritySurface):
             else:
                 from flatsurf.geometry.surface import Surface_dict
 
-                s = self.__class__(Surface_dict(surface=self, mutable=True))
+                s = self.__class__(Surface_dict(surface=self, mutable=True), category=self.category())
         else:
             from flatsurf.geometry.surface import Surface_list
 
             s = self.__class__(
-                Surface_list(surface=self.triangulate(in_place=in_place), mutable=True)
+                Surface_list(surface=self.triangulate(in_place=in_place), mutable=True), category=self.category()
             )
 
         if direction is None:
@@ -420,7 +420,7 @@ class GL2RMapping(SurfaceMapping):
         r"""
         Hit the surface s with the 2x2 matrix m which should have positive determinant.
         """
-        codomain = s.__class__(GL2RImageSurface(s, m, ring=ring))
+        codomain = s.__class__(GL2RImageSurface(s, m, ring=ring), category=s.category())
         self._m = m
         self._im = ~m
         SurfaceMapping.__init__(self, s, codomain)

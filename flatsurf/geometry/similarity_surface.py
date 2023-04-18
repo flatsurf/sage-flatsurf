@@ -90,7 +90,7 @@ class SimilaritySurface(Parent):
             )
 
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
-        Parent.__init__(self, base=surface.base_ring(), category=category or SimilaritySurfaces())
+        Parent.__init__(self, base=surface.base_ring(), category=category or surface.category() & SimilaritySurfaces().Oriented())
 
     def _an_element_(self):
         label = next(self.label_iterator())
@@ -569,6 +569,7 @@ class SimilaritySurface(Parent):
             sage: ss.base_ring().discriminant()
             -44
         """
+        category = self.category()
         s = None  # This will be the surface we copy. (Likely we will set s=self below.)
         if new_field is not None and optimal_number_field:
             raise ValueError(
@@ -624,7 +625,7 @@ class SimilaritySurface(Parent):
                 ss.change_base_label(self.base_label())
                 for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
                     ss.change_edge_gluing(l1, e1, l2, e2)
-                s = self.__class__(ss)
+                s = self.__class__(ss, category=category)
                 if not relabel:
                     if not mutable:
                         s.set_immutable()
@@ -639,11 +640,11 @@ class SimilaritySurface(Parent):
         if s.is_finite():
             if relabel:
                 return self.__class__(
-                    Surface_list(surface=s, copy=not lazy, mutable=mutable)
+                    Surface_list(surface=s, copy=not lazy, mutable=mutable), category=category
                 )
             else:
                 return self.__class__(
-                    Surface_dict(surface=s, copy=not lazy, mutable=mutable)
+                    Surface_dict(surface=s, copy=not lazy, mutable=mutable), category=category
                 )
         else:
             if lazy is False:
@@ -654,11 +655,11 @@ class SimilaritySurface(Parent):
                 )
             if relabel:
                 return self.__class__(
-                    Surface_list(surface=s, copy=False, mutable=mutable)
+                    Surface_list(surface=s, copy=False, mutable=mutable), category=category
                 )
             else:
                 return self.__class__(
-                    Surface_dict(surface=s, copy=False, mutable=mutable)
+                    Surface_dict(surface=s, copy=False, mutable=mutable), category=category
                 )
 
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
@@ -723,7 +724,7 @@ class SimilaritySurface(Parent):
 
             sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
             sage: from flatsurf.geometry.surface import Surface_list
-            sage: s = s.__class__(Surface_list(surface=s, mutable=True))
+            sage: s = s.__class__(Surface_list(surface=s, mutable=True), category=s.category())
             sage: try:
             ....:     s.triangle_flip(0,0,in_place=True)
             ....: except ValueError as e:
@@ -753,7 +754,7 @@ class SimilaritySurface(Parent):
             sage: p = polygons((2,0),(-1,3),(-1,-3))
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: from flatsurf.geometry.surface import Surface_list
-            sage: s = s.__class__(Surface_list(surface=s,mutable=True))
+            sage: s = s.__class__(Surface_list(surface=s,mutable=True), category=s.category())
             sage: s.triangle_flip(0,1,in_place=True)
             HalfTranslationSurface built from 1 polygon
             sage: for x in s.label_iterator(polygons=True):
@@ -1742,7 +1743,7 @@ class SimilaritySurface(Parent):
             return self.__class__(
                 LazyDelaunayTriangulatedSurface(
                     self, direction=direction, relabel=relabel
-                )
+                ), category=self.category()
             )
         if in_place and not self.is_mutable():
             raise ValueError(
@@ -1906,7 +1907,7 @@ class SimilaritySurface(Parent):
             from flatsurf.geometry.delaunay import LazyDelaunaySurface
 
             return self.__class__(
-                LazyDelaunaySurface(self, direction=direction, relabel=relabel)
+                LazyDelaunaySurface(self, direction=direction, relabel=relabel), category=self.category()
             )
         if in_place:
             s = self

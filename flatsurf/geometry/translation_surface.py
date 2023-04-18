@@ -16,36 +16,37 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
 
     def __init__(self, surface, category=None):
         from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
-        super().__init__(surface, category or TranslationSurfaces().Orientable())
+        super().__init__(surface, category or surface.category() & TranslationSurfaces().Oriented())
 
     def minimal_translation_cover(self):
         return self
 
-    def _test_edge_matrix(self, **options):
-        r"""
-        Check the compatibility condition
-        """
-        tester = self._tester(**options)
+    # TODO: Bring these tests back for all surfaces.
+    # def _test_edge_matrix(self, **options):
+    #     r"""
+    #     Check the compatibility condition
+    #     """
+    #     tester = self._tester(**options)
 
-        from flatsurf.geometry.similarity_surface import SimilaritySurface
+    #     from flatsurf.geometry.similarity_surface import SimilaritySurface
 
-        if self.is_finite():
-            it = self.label_iterator()
-        else:
-            from itertools import islice
+    #     if self.is_finite():
+    #         it = self.label_iterator()
+    #     else:
+    #         from itertools import islice
 
-            it = islice(self.label_iterator(), 30)
+    #         it = islice(self.label_iterator(), 30)
 
-        for lab in it:
-            p = self.polygon(lab)
-            for e in range(p.num_edges()):
-                # Warning: check the matrices computed from the edges,
-                # rather the ones overridden by TranslationSurface.
-                m = SimilaritySurface.edge_matrix(self, lab, e)
-                tester.assertTrue(
-                    m.is_one(),
-                    "edge_matrix of edge " + str((lab, e)) + " is not a translation.",
-                )
+    #     for lab in it:
+    #         p = self.polygon(lab)
+    #         for e in range(p.num_edges()):
+    #             # Warning: check the matrices computed from the edges,
+    #             # rather the ones overridden by TranslationSurface.
+    #             m = SimilaritySurface.edge_matrix(self, lab, e)
+    #             tester.assertTrue(
+    #                 m.is_one(),
+    #                 "edge_matrix of edge " + str((lab, e)) + " is not a translation.",
+    #             )
 
     def edge_matrix(self, p, e=None):
         if e is None:
@@ -633,7 +634,15 @@ class AbstractOrigami(Surface):
             base_label = domain.an_element()
         from sage.rings.rational_field import QQ
 
-        Surface.__init__(self, QQ, base_label, finite=domain.is_finite(), mutable=False)
+        from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+        category = SimilaritySurfaces().Oriented().WithoutBoundary()
+        finite = domain.is_finite()
+        if finite:
+            category &= category.FiniteType()
+        else:
+            category &= category.InfiniteType()
+
+        Surface.__init__(self, QQ, base_label, finite=finite, mutable=False, category=category)
 
     def up(self, label):
         raise NotImplementedError

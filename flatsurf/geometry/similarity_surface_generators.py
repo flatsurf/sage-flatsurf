@@ -1629,13 +1629,10 @@ class TranslationSurfaceGenerators:
             return "The infinite staircase"
 
         def _cache_key(self):
-            return (TranslationSurfaceGenerators._infiniteStaircase,)
+            return (TranslationSurfaceGenerators._InfiniteStaircase,)
 
         def __hash__(self):
             return super().__hash__()
-
-        def _cache_key(self):
-            return (type(TranslationSurfaceGenerators._InfiniteStaircase,))
 
         def __eq__(self, other):
             r"""

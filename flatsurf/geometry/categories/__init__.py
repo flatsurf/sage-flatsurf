@@ -29,7 +29,7 @@ A single square is just a topological surface built from polygons::
     sage: S.add_polygon(polygons.square(), label=0)
     0
     sage: S.category()
-    Category of oriented similarity surfaces
+    Category of oriented orientable similarity surfaces
 
 It does not really make sense to ask which stratum this surface belongs to::
 
@@ -48,6 +48,7 @@ category gets refined::
 
     sage: S.set_immutable()
     sage: S.category()
+    Category of compact connected finite type oriented orientable without boundary translation surfaces
 
 Since this is now a translation surface, we can ask for its stratum again::
 

@@ -43,6 +43,7 @@ rotation of π, this is a half-translation surface::
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
+from sage.misc.lazy_import import LazyImport
 
 
 class HalfTranslationSurfaces(Category):
@@ -60,9 +61,11 @@ class HalfTranslationSurfaces(Category):
     """
 
     def super_categories(self):
-        from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
-        # TODO: We can be more limited here, something like HalfDilationSurfaces() & RationalConeSurfaces()
-        return [SimilaritySurfaces()]
+        from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+        # TODO: We can be more limited here, something like DilationSurfaces() & RationalConeSurfaces()
+        return [DilationSurfaces()]
+
+    Positive = LazyImport('flatsurf.geometry.categories.translation_surfaces', 'TranslationSurfaces')
 
     class Orientable(CategoryWithAxiom):
         class ParentMethods:

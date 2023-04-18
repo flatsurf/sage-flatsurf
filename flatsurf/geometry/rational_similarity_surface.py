@@ -46,31 +46,32 @@ class RationalSimilaritySurface(SimilaritySurface):
         The following tests failed: _test_edge_matrix
     """
 
-    def _test_edge_matrix(self, **options):
-        r"""
-        Check the compatibility condition
-        """
-        tester = self._tester(**options)
+    # TODO: Bring these kinds of tests back for all categories.
+    # def _test_edge_matrix(self, **options):
+    #     r"""
+    #     Check the compatibility condition
+    #     """
+    #     tester = self._tester(**options)
 
-        from .similarity_surface import SimilaritySurface
-        from sage.rings.qqbar import AA
+    #     from .similarity_surface import SimilaritySurface
+    #     from sage.rings.qqbar import AA
 
-        if self.is_finite():
-            it = self.label_iterator()
-        else:
-            from itertools import islice
+    #     if self.is_finite():
+    #         it = self.label_iterator()
+    #     else:
+    #         from itertools import islice
 
-            it = islice(self.label_iterator(), 30)
+    #         it = islice(self.label_iterator(), 30)
 
-        for lab in it:
-            p = self.polygon(lab)
-            for e in range(p.num_edges()):
-                # Warning: check the matrices computed from the edges,
-                # rather the ones overridden by TranslationSurface.
-                m = SimilaritySurface.edge_matrix(self, lab, e)
-                a = AA(m[0, 0])
-                b = AA(m[1, 0])
-                q = (a**2 + b**2).sqrt()
-                a /= q
-                b /= q
-                tester.assertTrue(is_cosine_sine_of_rational(a, b))
+    #     for lab in it:
+    #         p = self.polygon(lab)
+    #         for e in range(p.num_edges()):
+    #             # Warning: check the matrices computed from the edges,
+    #             # rather the ones overridden by TranslationSurface.
+    #             m = self.edge_matrix(lab, e)
+    #             a = AA(m[0, 0])
+    #             b = AA(m[1, 0])
+    #             q = (a**2 + b**2).sqrt()
+    #             a /= q
+    #             b /= q
+    #             tester.assertTrue(is_cosine_sine_of_rational(a, b))

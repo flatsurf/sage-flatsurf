@@ -65,7 +65,7 @@ class DilationSurfaces(Category):
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
         return [SimilaritySurfaces()]
 
-    class PositiveDilation(CategoryWithAxiom):
+    class Positive(CategoryWithAxiom):
         r"""
         The axiom satisfied by dilation surfaces that use homothety with
         positive scaling.
@@ -74,13 +74,13 @@ class DilationSurfaces(Category):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: 'PositiveDilation' in S.category().axioms()
+            sage: 'Positive' in S.category().axioms()
             True
 
         """
 
     class SubcategoryMethods:
-        def PositiveDilation(self):
+        def Positive(self):
             r"""
             Return the subcategory of surfaces glued by positive dilation.
 
@@ -88,10 +88,11 @@ class DilationSurfaces(Category):
 
                 sage: from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
                 sage: C = DilationSurfaces()
-                sage: C.PositiveDilation()
+                sage: C.Positive()
+                Category of positive dilation surfaces
 
             """
-            return self._with_axiom("PositiveDilation")
+            return self._with_axiom("Positive")
 
 
-all_axioms += ('PositiveDilation',)
+all_axioms += ('Positive',)

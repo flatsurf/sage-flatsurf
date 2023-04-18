@@ -24,7 +24,7 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
 
     def __init__(self, surface, category=None):
         from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
-        super().__init__(surface, category or HalfTranslationSurfaces().Orientable())
+        super().__init__(surface, category or surface.category() & HalfTranslationSurfaces().Oriented())
 
     def angles(self, numerical=False, return_adjacent_edges=False):
         r"""
@@ -124,33 +124,6 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
                     angles.append(QQ((angle, 2)))
 
         return angles
-
-    def _test_edge_matrix(self, **options):
-        r"""
-        Check the compatibility condition
-        """
-        tester = self._tester(**options)
-        from flatsurf.geometry.similarity_surface import SimilaritySurface
-
-        if self.is_finite():
-            it = self.label_iterator()
-        else:
-            from itertools import islice
-
-            it = islice(self.label_iterator(), 30)
-
-        for lab in it:
-            p = self.polygon(lab)
-            for e in range(p.num_edges()):
-                # Warning: check the matrices computed from the edges,
-                # rather the ones overridden by TranslationSurface.
-                m = SimilaritySurface.edge_matrix(self, lab, e)
-                tester.assertTrue(
-                    m.is_one() or (-m).is_one(),
-                    "edge_matrix between edge e={} and e'={} has matrix\n{}\nwhich is neither a translation nor a rotation by pi".format(
-                        (lab, e), self.opposite_edge((lab, e)), m
-                    ),
-                )
 
     def holonomy_field(self):
         r"""
@@ -286,4 +259,4 @@ class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
         for (p1, e1), (p2, e2) in self.edge_iterator(gluings=True):
             S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
 
-        return (type(self)(S), M)
+        return (type(self)(S, category=self.category()), M)

@@ -147,30 +147,49 @@ class SimilaritySurfaces(Category):
 
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)
+                0
                 sage: S.refined_category()
+                Category of compact connected finite type oriented orientable with boundary translation surfaces
 
                 sage: S.set_edge_pairing(0, 0, 0, 2)
                 sage: S.set_edge_pairing(0, 1, 0, 3)
                 sage: S.refined_category()
+                Category of compact connected finite type oriented orientable without boundary translation surfaces
 
             """
             from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
             category = PolygonalSurfaces.ParentMethods.refined_category(self)
 
-            if self.is_dilation_surface():
-                from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-                category &= DilationSurfaces()
+            # TODO: Force all surfaces to implement these methods and remove the try/except blocks.
+            try:
+                dilation_surface = self.is_dilation_surface()
+            except NotImplementedError:
+                pass
+            else:
+                if dilation_surface:
+                    from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+                    category &= DilationSurfaces()
 
-                if self.is_dilation_surface(positive=True):
-                    category &= DilationSurfaces().PositiveDilation()
+                    if self.is_dilation_surface(positive=True):
+                        category &= DilationSurfaces().Positive()
 
-                    if self.is_translation_surface():
-                        from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
-                        category &= TranslationSurfaces()
-                else:
-                    if self.is_translation_surface(positive=False):
-                        from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
-                        category &= HalfTranslationSurfaces()
+                        try:
+                            translation_surface = self.is_translation_surface()
+                        except NotImplementedError:
+                            pass
+                        else:
+                            if translation_surface:
+                                from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
+                                category &= TranslationSurfaces()
+                    else:
+                        try:
+                            half_translation_surface = self.is_translation_surface(positive=False)
+                        except NotImplementedError:
+                            pass
+                        else:
+                            if half_translation_surface:
+                                from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+                                category &= HalfTranslationSurfaces()
 
             return category
 
@@ -274,7 +293,7 @@ class SimilaritySurfaces(Category):
 
             return True
 
-    class Orientable(CategoryWithAxiom):
+    class Oriented(CategoryWithAxiom):
         class ParentMethods:
             @cached_method
             def edge_matrix(self, p, e=None):

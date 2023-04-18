@@ -43,12 +43,11 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
 
 
-class TranslationSurfaces(Category):
+class TranslationSurfaces(CategoryWithAxiom):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons with
     translations.
@@ -60,12 +59,9 @@ class TranslationSurfaces(Category):
         Category of translation surfaces
 
     """
-    _base_category_class_and_axiom = (HalfTranslationSurfaces, 'PositiveDilation')
+    _base_category_class_and_axiom = (HalfTranslationSurfaces, 'Positive')
 
-    def super_categories(self):
-        # TODO: They satisfy the axiom of no self-gluing.
-
-        return [HalfTranslationSurfaces()]
+    # TODO: They satisfy the axiom of no self-gluing.
 
     class Orientable(CategoryWithAxiom):
         class ParentMethods:
