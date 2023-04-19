@@ -15,7 +15,7 @@ class TranslationSurface(HalfTranslationSurface, DilationSurface):
     """
 
     def __init__(self, surface, category=None):
-        from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
+        from flatsurf.geometry.categories import TranslationSurfaces
         super().__init__(surface, category or surface.category() & TranslationSurfaces().Oriented())
 
     def minimal_translation_cover(self):
@@ -634,7 +634,7 @@ class AbstractOrigami(Surface):
             base_label = domain.an_element()
         from sage.rings.rational_field import QQ
 
-        from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+        from flatsurf.geometry.categories import SimilaritySurfaces
         category = SimilaritySurfaces().Oriented().WithoutBoundary()
         finite = domain.is_finite()
         if finite:

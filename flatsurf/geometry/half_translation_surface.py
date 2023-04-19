@@ -22,7 +22,7 @@ class HalfTranslationSurface(HalfDilationSurface):
     """
 
     def __init__(self, surface, category=None):
-        from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+        from flatsurf.geometry.categories import HalfTranslationSurfaces
         super().__init__(surface, category or surface.category() & HalfTranslationSurfaces().Oriented())
 
     def holonomy_field(self):

@@ -10,7 +10,7 @@ def _is_finite(surface):
     if not surface.is_finite():
         return False
 
-    from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+    from flatsurf.geometry.categories import ConeSurfaces
 
     if surface in ConeSurfaces().Rational():
         return True

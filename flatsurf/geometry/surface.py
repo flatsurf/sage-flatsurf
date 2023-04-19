@@ -158,7 +158,7 @@ class Surface(Parent):
 
         self._cache = {}
 
-        from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+        from flatsurf.geometry.categories import SimilaritySurfaces
 
         Parent.__init__(self, base=base_ring, category=category or SimilaritySurfaces().Oriented())
 

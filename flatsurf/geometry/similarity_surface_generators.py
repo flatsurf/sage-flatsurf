@@ -538,7 +538,7 @@ class SimilaritySurfaceGenerators:
             sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: Q
             SimilaritySurface built from 2 polygons
-            sage: from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+            sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: Q in ConeSurfaces().Rational()
             True
             sage: M = Q.minimal_cover(cover_type="translation")
@@ -641,7 +641,7 @@ class SimilaritySurfaceGenerators:
             ne = surface.polygon(p).num_edges()
             surface.set_edge_pairing(p, e, m + p, ne - e - 1)
 
-        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        from flatsurf.geometry.categories import ConeSurfaces
         surface._refine_category_(ConeSurfaces())
         if rational:
             surface._refine_category_(surface.category().Rational())
@@ -678,7 +678,7 @@ class SimilaritySurfaceGenerators:
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
             SimilaritySurface built from 2 polygons
-            sage: from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+            sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: R in ConeSurfaces()
             True
             sage: TestSuite(R).run()
