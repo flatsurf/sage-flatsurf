@@ -26,7 +26,7 @@ a rotation, this is a cone surface::
 
     sage: C = S.category()
 
-    sage: from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+    sage: from flatsurf.geometry.categories import ConeSurfaces
     sage: C.is_subcategory(ConeSurfaces())
     True
 
@@ -67,7 +67,7 @@ class ConeSurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        sage: from flatsurf.geometry.categories import ConeSurfaces
         sage: ConeSurfaces()
         Category of cone surfaces
 

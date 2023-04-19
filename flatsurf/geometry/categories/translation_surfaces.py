@@ -17,7 +17,7 @@ EXAMPLES::
     sage: S = translation_surfaces.square_torus()
     sage: C = S.category()
 
-    sage: from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
+    sage: from flatsurf.geometry.categories import TranslationSurfaces
     sage: C.is_subcategory(TranslationSurfaces())
     True
 
@@ -54,7 +54,7 @@ class TranslationSurfaces(CategoryWithAxiom):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
+        sage: from flatsurf.geometry.categories import TranslationSurfaces
         sage: TranslationSurfaces()
         Category of translation surfaces
 

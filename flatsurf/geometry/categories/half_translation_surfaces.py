@@ -17,7 +17,7 @@ rotation of π, this is a half-translation surface::
 
     sage: C = S.category()
 
-    sage: from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+    sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
     sage: C.is_subcategory(HalfTranslationSurfaces())
     True
 
@@ -57,7 +57,7 @@ class HalfTranslationSurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+        sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
         sage: HalfTranslationSurfaces()
         Category of half translation surfaces
 

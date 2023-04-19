@@ -12,7 +12,7 @@ EXAMPLES::
     sage: from flatsurf import Surface_dict
     sage: C = Surface_dict(QQ).category()
 
-    sage: from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
+    sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
     sage: C.is_subcategory(RealProjectivePolygonalSurfaces())
     True
 
@@ -46,7 +46,7 @@ class RealProjectivePolygonalSurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
+        sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
         sage: RealProjectivePolygonalSurfaces()
         Category of real projective polygonal surfaces
 

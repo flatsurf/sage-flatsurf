@@ -17,7 +17,7 @@ EXAMPLES::
     sage: from flatsurf import Surface_dict
     sage: C = Surface_dict(QQ).category()
 
-    sage: from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+    sage: from flatsurf.geometry.categories import SimilaritySurfaces
     sage: C.is_subcategory(SimilaritySurfaces())
     True
 
@@ -120,7 +120,7 @@ class SimilaritySurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+        sage: from flatsurf.geometry.categories import SimilaritySurfaces
         sage: SimilaritySurfaces()
         Category of similarity surfaces
 

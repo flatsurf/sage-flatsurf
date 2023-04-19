@@ -18,7 +18,7 @@ EXAMPLES::
     sage: S = similarity_surfaces.self_glued_polygon(P)
     sage: C = S.category()
 
-    sage: from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+    sage: from flatsurf.geometry.categories import DilationSurfaces
     sage: C.is_subcategory(DilationSurfaces())
     True
 
@@ -55,7 +55,7 @@ class DilationSurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+        sage: from flatsurf.geometry.categories import DilationSurfaces
         sage: DilationSurfaces()
         Category of dilation surfaces
 
@@ -86,7 +86,7 @@ class DilationSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+                sage: from flatsurf.geometry.categories import DilationSurfaces
                 sage: C = DilationSurfaces()
                 sage: C.Positive()
                 Category of positive dilation surfaces
