@@ -336,6 +336,39 @@ class SimilaritySurfaces(Category):
 
             return True
 
+        def genus(self):
+            r"""
+            Return the genus of this surface.
+
+            ALGORITHM:
+
+            We use the angles around the vertices of the surface to compute the
+            genus, see e.g. [Massart2021] p.17. It would probably be better to
+            just compute the Euler characteristic directly from the polygon
+            gluings here (and implement this on the level of polygonal
+            surfaces.)
+
+            EXAMPLES::
+
+                sage: import flatsurf.geometry.similarity_surface_generators as sfg
+                sage: sfg.translation_surfaces.octagon_and_squares().genus()
+                3
+
+                sage: from flatsurf import *
+                sage: T = polygons.triangle(3,4,5)
+                sage: B = similarity_surfaces.billiard(T)
+                sage: B.genus()
+                0
+                sage: B.minimal_cover("translation").genus()
+                3
+
+            .. [Massart2021] \D. Massart. A short introduction to translation
+            surfaces, Veech surfaces, and Teichműller dynamics.
+            https://hal.science/hal-03300179/document
+
+            """
+            return sum(a - 1 for a in self.angles()) // 2 + 1
+
     class Oriented(CategoryWithAxiom):
         class ParentMethods:
             @cached_method

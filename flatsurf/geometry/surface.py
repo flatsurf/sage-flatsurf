@@ -315,21 +315,6 @@ class Surface(Parent):
 
             return Infinity
 
-    def area(self):
-        r"""
-        Return the area of this surface.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["area"]
-            except KeyError:
-                area = sum(p.area() for label, p in self.label_polygon_iterator())
-                self._cache["area"] = area
-                return area
-        raise NotImplementedError(
-            "area is not implemented for surfaces built from an infinite number of polygons"
-        )
-
     def edge_iterator(self):
         r"""
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
