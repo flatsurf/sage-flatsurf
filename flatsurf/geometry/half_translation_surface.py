@@ -11,13 +11,12 @@
 
 from .polygon import wedge_product
 from .half_dilation_surface import HalfDilationSurface
-from .rational_cone_surface import RationalConeSurface
 
 from sage.rings.all import QQ, AA
 from sage.matrix.constructor import matrix
 
 
-class HalfTranslationSurface(HalfDilationSurface, RationalConeSurface):
+class HalfTranslationSurface(HalfDilationSurface):
     r"""
     A half translation surface has gluings between polygons whose monodromy is +I or -I.
     """

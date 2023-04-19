@@ -31,8 +31,6 @@ from .translation_surface import TranslationSurface
 from .dilation_surface import DilationSurface
 from .similarity_surface import SimilaritySurface
 from .half_translation_surface import HalfTranslationSurface
-from .cone_surface import ConeSurface
-from .rational_cone_surface import RationalConeSurface
 from .translation_surface import Origami
 
 
@@ -537,10 +535,12 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf import *
 
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
-            sage: from flatsurf.geometry.rational_cone_surface import RationalConeSurface
             sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: Q
-            RationalConeSurface built from 2 polygons
+            SimilaritySurface built from 2 polygons
+            sage: from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+            sage: Q in ConeSurfaces().Rational()
+            True
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
             TranslationSurface built from 8 polygons
@@ -625,7 +625,6 @@ class SimilaritySurfaceGenerators:
             P = [P]
 
         m = len(P)
-        Q = []
         surface = Surface_list(base_ring=base_ring)
         for p in P:
             surface.add_polygon(p)
@@ -642,12 +641,13 @@ class SimilaritySurfaceGenerators:
             ne = surface.polygon(p).num_edges()
             surface.set_edge_pairing(p, e, m + p, ne - e - 1)
 
-        surface.set_immutable()
+        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        surface._refine_category_(ConeSurfaces())
         if rational:
-            s = RationalConeSurface(surface)
-        else:
-            s = ConeSurface(surface)
-        return s
+            surface._refine_category_(surface.category().Rational())
+
+        surface.set_immutable()
+        return SimilaritySurface(surface)
 
     @staticmethod
     def polygon_double(P):
@@ -667,7 +667,7 @@ class SimilaritySurfaceGenerators:
         surface.add_polygon(Q)  # gets label 1
         surface.change_polygon_gluings(0, [(1, n - i - 1) for i in range(n)])
         surface.set_immutable()
-        return ConeSurface(surface)
+        return SimilaritySurface(surface)
 
     @staticmethod
     def right_angle_triangle(w, h):
@@ -677,11 +677,12 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf import *
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
-            ConeSurface built from 2 polygons
+            SimilaritySurface built from 2 polygons
+            sage: from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+            sage: R in ConeSurfaces()
+            True
             sage: TestSuite(R).run()
         """
-        from sage.modules.free_module_element import vector
-
         F = Sequence([w, h]).universe()
 
         if not F.is_field():
@@ -693,7 +694,7 @@ class SimilaritySurfaceGenerators:
         s.add_polygon(P([V((0, h)), V((-w, -h)), V((w, 0))]))  # gets label 1
         s.change_polygon_gluings(0, [(1, 2), (1, 1), (1, 0)])
         s.set_immutable()
-        return ConeSurface(s)
+        return SimilaritySurface(s)
 
 
 similarity_surfaces = SimilaritySurfaceGenerators()

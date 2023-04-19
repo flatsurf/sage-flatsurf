@@ -161,6 +161,18 @@ class SimilaritySurfaces(Category):
             category = PolygonalSurfaces.ParentMethods.refined_category(self)
 
             # TODO: Force all surfaces to implement these methods and remove the try/except blocks.
+            # TODO: Add rational
+            # TODO: Document why is_… exists if there is in category.
+            # TODO: Drop the NotImplemented path of the is_ for infinite type surfaces and rather put the implementation in the finite type axiom.
+            try:
+                cone_surface = self.is_cone_surface()
+            except NotImplementedError:
+                pass
+            else:
+                if cone_surface:
+                    from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+                    category &= ConeSurfaces()
+
             try:
                 dilation_surface = self.is_dilation_surface()
             except NotImplementedError:
@@ -247,7 +259,7 @@ class SimilaritySurfaces(Category):
             - ``positive`` -- a boolean (default: ``True``); whether the
               transformation must be a translation or is allowed to be a
               half-translation, i.e., a translation followed by a reflection in
-              a point.
+              a point (equivalently, a rotation by π.)
 
             EXAMPLES::
 
@@ -290,6 +302,37 @@ class SimilaritySurfaces(Category):
                             continue
 
                     return False
+
+            return True
+
+        def is_cone_surface(self):
+            r"""
+            Return whether this surface is a cone surface, i.e., glued edges
+            can be transformed into each other with isometries.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_cone_surface()
+                True
+
+            """
+            if not self.is_finite():
+                raise NotImplementedError("cannot decide whether this infinite type surface is a cone surface")
+
+            for label in self.label_iterator():
+                for edge in range(self.polygon(label).num_edges()):
+                    cross = self.opposite_edge(label, edge)
+
+                    if cross is None:
+                        continue
+
+                    matrix = self.edge_matrix(label, edge)
+
+                    if matrix * matrix.transpose() != 1:
+                        return False
 
             return True
 
@@ -338,7 +381,7 @@ class SimilaritySurfaces(Category):
     class Rational(CategoryWithAxiom):
         r"""
         The axiom satisfied by similarity surfaces with rational monodromy,
-        i.e., a walk around a vertex leads to a turn by a rational multiple of
+        i.e., a walk around a point leads to a turn by a rational multiple of
         2π.
         """
 

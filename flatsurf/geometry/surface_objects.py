@@ -868,9 +868,9 @@ class SaddleConnection(SageObject):
         this may not lie in the field of definition of the surface, it is
         returned as an element of the Algebraic Real Field.
         """
-        from .cone_surface import ConeSurface
+        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 
-        if not isinstance(self._surface, ConeSurface):
+        if self._surface not in ConeSurfaces():
             raise NotImplementedError(
                 "length of a saddle connection only makes sense for cone surfaces"
             )
@@ -1310,10 +1310,11 @@ class Cylinder(SageObject):
         r"""
         Return the area of this cylinder if it is contained in a ConeSurface.
         """
-        from .cone_surface import ConeSurface
+        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 
-        if not isinstance(self._surface, ConeSurface):
+        if self._surface not in ConeSurfaces():
             raise NotImplementedError("area only makes sense for cone surfaces")
+
         area = 0
         for label, p in self.polygons():
             area += p.area()
@@ -1441,9 +1442,9 @@ class Cylinder(SageObject):
         not lie in the field of definition of the surface, it is returned
         as an element of the Algebraic Real Field.
         """
-        from .cone_surface import ConeSurface
+        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 
-        if not isinstance(self._surface, ConeSurface):
+        if self._surface not in ConeSurfaces():
             raise NotImplementedError(
                 "circumference only makes sense for cone surfaces"
             )

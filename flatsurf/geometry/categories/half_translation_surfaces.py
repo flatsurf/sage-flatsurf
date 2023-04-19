@@ -1,7 +1,9 @@
 r"""
 The category of half-translation surfaces.
 
-A half-translation surface is a surface built by gluing Euclidean polygons. The sides of the polygons can be glued with translations or half-translations (translation followed by a rotation of angle π.)
+A half-translation surface is a surface built by gluing Euclidean polygons. The
+sides of the polygons can be glued with translations or half-translations
+(translation followed by a rotation of angle π.)
 
 EXAMPLES:
 
@@ -63,8 +65,8 @@ class HalfTranslationSurfaces(Category):
 
     def super_categories(self):
         from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-        # TODO: We can be more limited here, something like DilationSurfaces() & RationalConeSurfaces()
-        return [DilationSurfaces()]
+        from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+        return [DilationSurfaces(), ConeSurfaces().Rational()]
 
     Positive = LazyImport('flatsurf.geometry.categories.translation_surfaces', 'TranslationSurfaces')
 
@@ -87,6 +89,8 @@ class HalfTranslationSurfaces(Category):
 
                 return QuadraticStratum(*[2 * a - 2 for a in angles])
 
+    class Oriented(CategoryWithAxiom):
+        class ParentMethods:
             def angles(self, numerical=False, return_adjacent_edges=False):
                 r"""
                 Return the set of angles around the vertices of the surface.

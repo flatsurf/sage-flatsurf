@@ -10,9 +10,9 @@ def _is_finite(surface):
     if not surface.is_finite():
         return False
 
-    from flatsurf.geometry.rational_cone_surface import RationalConeSurface
+    from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 
-    if isinstance(surface, RationalConeSurface):
+    if surface in ConeSurfaces().Rational():
         return True
 
     surface = surface.reposition_polygons(relabel=True)

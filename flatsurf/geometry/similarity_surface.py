@@ -731,7 +731,7 @@ class SimilaritySurface(Parent):
             ....:     print(e)
             Gluing triangles along this edge yields a non-convex quadrilateral.
             sage: s.triangle_flip(0,1,in_place=True)
-            ConeSurface built from 2 polygons
+            SimilaritySurface built from 2 polygons
             sage: s.polygon(0)
             Polygon: (0, 0), (1, 1), (0, 1)
             sage: s.polygon(1)
@@ -1301,8 +1301,8 @@ class SimilaritySurface(Parent):
             0
             sage: s.change_edge_gluing(0,0,0,1)
             sage: s.change_edge_gluing(0,2,0,3)
-            sage: from flatsurf.geometry.cone_surface import ConeSurface
-            sage: cs = ConeSurface(s)
+            sage: from flatsurf.geometry.similarity_surface import SimilaritySurface
+            sage: cs = SimilaritySurface(s)
             sage: ts = cs.minimal_cover(cover_type="translation")
             sage: ts
             TranslationSurface built from 4 polygons
