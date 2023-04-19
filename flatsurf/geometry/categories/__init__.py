@@ -59,7 +59,7 @@ Since this is now a translation surface, we can ask for its stratum again::
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2021 Julian Rüth
+#        Copyright (C) 2021-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -75,19 +75,31 @@ Since this is now a translation surface, we can ask for its stratum again::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-# # Axioms
-# # * Rational (for similarity) (= finite linear part), Orbifold (for hyperbolic = angles are of the form 2 pi / n = quotient of upper half space)
-# # * "Half"; PositivelyDilating (modulo grammar)
-# 
+# We need to import categories in the correct order here. Otherwise, the lazy
+# importing and cyclic dependencies between categories (half translation and
+# translation surfaces e.g.) will lead to somewhat unfortunate printing of
+# category names.
+
+from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
+from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
+from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+
+__all__ = [TranslationSurfaces, HalfTranslationSurfaces, ConeSurfaces, DilationSurfaces, SimilaritySurfaces, RealProjectivePolygonalSurfaces, PolygonalSurfaces, TopologicalSurfaces]
+
+# TODO
 # class HyperbolicPolygonalSurfaces(Category):
 #     # TODO: Documentation
 #     # glued by isometries (because they have to preserve triangles)
 #     def super_categories(self):
 #         return [PolygonalSurfaces()]
-#     
-# 
-# # How is it different from a HyperbolicSurface which is isometric
-# # to the "master space" (= upper half space)?
+#
+# How is it different from a HyperbolicSurface which is isometric
+# to the "master space" (= upper half space)?
 # class HyperbolicTessellationSurfaces(Category):
 #     # i.e., surface has global coordinates
 #     # do we want polygons to be "colored"? (e.g. for the iso-Delaunay situation we have equivalence of triangulation of the underlying flat surface)
@@ -96,22 +108,3 @@ Since this is now a translation surface, we can ask for its stratum again::
 #     # initial surface becomes many triangles and we want to be able
 #     # to navigate between the two versions of the same surface.
 #     pass
-# 
-# 
-# # EuclideanConeSurface?
-# # FlatRiemannianConicalSurface?
-# class ConeSurfaces(Category):
-#     r"""
-#     Flat Riemannian surfaces with discrete sets of cone points
-#     """
-#     # TODO: Documentation
-#     # TODO: This is similarity by any (possibly orientation-reversing) isometry.
-#     def super_categories(self):
-#         return [SimilaritySurfaces()]
-# 
-# 
-# class RationalConeSurfaces(Category):
-#     # TODO: Documentation
-#     # TODO: This is ConeSurface().Rational()
-#     def super_categories(self):
-#         return [ConeSurfaces(), RationalSimilaritySurfaces()]
