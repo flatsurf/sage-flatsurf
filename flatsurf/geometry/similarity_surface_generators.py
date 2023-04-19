@@ -30,8 +30,8 @@ from .surface import Surface, Surface_list
 from .translation_surface import TranslationSurface
 from .dilation_surface import DilationSurface
 from .similarity_surface import SimilaritySurface
-from .half_translation_surface import HalfTranslationSurface
 from .translation_surface import Origami
+from .half_dilation_surface import HalfDilationSurface
 
 
 ZZ_1 = ZZ(1)
@@ -516,7 +516,7 @@ class SimilaritySurfaceGenerators:
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
         s.add_polygon(P, [(0, i) for i in range(P.num_edges())])
         s.set_immutable()
-        return HalfTranslationSurface(s)
+        return HalfDilationSurface(s)
 
     @staticmethod
     def billiard(P, rational=False):
@@ -811,7 +811,7 @@ class HalfTranslationSurfaceGenerators:
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1,1/2,1/3,1/5])
             sage: S
-            HalfTranslationSurface built from 8 polygons
+            HalfDilationSurface built from 8 polygons
             sage: TestSuite(S).run()
         """
         n = len(h)
@@ -877,7 +877,7 @@ class HalfTranslationSurfaceGenerators:
             S.set_edge_pairing(n + i, 2, n + i + 1, 4)
 
         S.set_immutable()
-        return HalfTranslationSurface(S)
+        return HalfDilationSurface(S)
 
 
 half_translation_surfaces = HalfTranslationSurfaceGenerators()
@@ -1547,7 +1547,7 @@ class TranslationSurfaceGenerators:
                 )
             polys.append(poly)
 
-        return HalfTranslationSurface(
+        return HalfDilationSurface(
             surface_list_from_polygons_and_gluings(polys, adjacencies)
         )
 

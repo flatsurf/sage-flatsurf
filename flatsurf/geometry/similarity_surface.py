@@ -756,7 +756,7 @@ class SimilaritySurface(Parent):
             sage: from flatsurf.geometry.surface import Surface_list
             sage: s = s.__class__(Surface_list(surface=s,mutable=True), category=s.category())
             sage: s.triangle_flip(0,1,in_place=True)
-            HalfTranslationSurface built from 1 polygon
+            HalfDilationSurface built from 1 polygon
             sage: for x in s.label_iterator(polygons=True):
             ....:     print(x)
             (0, Polygon: (0, 0), (-3, -3), (-1, -3))

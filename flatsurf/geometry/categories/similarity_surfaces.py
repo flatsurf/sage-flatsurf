@@ -28,7 +28,7 @@ constructions from
     sage: from flatsurf import polygons, similarity_surfaces
     sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
     sage: similarity_surfaces.self_glued_polygon(P)
-    HalfTranslationSurface built from 1 polygon
+    HalfDilationSurface built from 1 polygon
 
 The second way is to build a surface (using e.g. :class:`flatsurf.geometry.surface.Surface_list`)
 and then use this surface as an argument for class:`SimilaritySurface`)::

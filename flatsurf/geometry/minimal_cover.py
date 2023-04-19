@@ -155,7 +155,7 @@ class MinimalHalfTranslationCover(Surface):
         sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
         sage: s.set_immutable()
         sage: s=SimilaritySurface(s)
-        sage: ss=HalfTranslationSurface(MinimalHalfTranslationCover(s))
+        sage: ss=HalfDilationSurface(MinimalHalfTranslationCover(s))
         sage: ss.is_finite()
         True
         sage: ss.num_polygons()
@@ -169,7 +169,7 @@ class MinimalHalfTranslationCover(Surface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("half-translation")
         sage: S
-        HalfTranslationSurface built from 82 polygons
+        HalfDilationSurface built from 82 polygons
     """
 
     def __init__(self, similarity_surface):

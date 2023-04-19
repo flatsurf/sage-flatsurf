@@ -162,6 +162,11 @@ class Surface(Parent):
 
         Parent.__init__(self, base=base_ring, category=category or SimilaritySurfaces().Oriented())
 
+        if not mutable:
+            # TODO: This is a bit hacky to get the category to be refined. We
+            # should remove the mutable state from Surface.
+            self.set_immutable()
+
     def _refine_category_(self, category):
         r"""
         Refine the category of this surface to a subcategory ``category``.

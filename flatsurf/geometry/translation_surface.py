@@ -5,11 +5,10 @@ Translation Surfaces.
 from sage.matrix.constructor import identity_matrix
 
 from .surface import Surface
-from .half_translation_surface import HalfTranslationSurface
 from .dilation_surface import DilationSurface
 
 
-class TranslationSurface(HalfTranslationSurface, DilationSurface):
+class TranslationSurface(DilationSurface):
     r"""
     A surface with a flat metric and conical singularities whose cone angles are a multiple of pi.
     """
