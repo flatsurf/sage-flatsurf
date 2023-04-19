@@ -15,7 +15,7 @@ EXAMPLES::
     sage: from flatsurf import Surface_dict
     sage: C = Surface_dict(QQ).category()
 
-    sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+    sage: from flatsurf.geometry.categories import PolygonalSurfaces
     sage: C.is_subcategory(PolygonalSurfaces())
     True
 
@@ -54,7 +54,7 @@ class PolygonalSurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+        sage: from flatsurf.geometry.categories import PolygonalSurfaces
         sage: PolygonalSurfaces()
         Category of polygonal surfaces
 
@@ -287,7 +287,7 @@ class PolygonalSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: PolygonalSurfaces().FiniteType()
                 Category of finite type polygonal surfaces
 
@@ -300,7 +300,7 @@ class PolygonalSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: PolygonalSurfaces().InfiniteType()
                 Category of infinite type polygonal surfaces
 
@@ -316,7 +316,7 @@ class PolygonalSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: PolygonalSurfaces().Oriented()
                 Category of oriented orientable polygonal surfaces
 
