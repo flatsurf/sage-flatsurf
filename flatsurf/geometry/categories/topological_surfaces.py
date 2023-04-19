@@ -14,7 +14,7 @@ EXAMPLES::
     sage: from flatsurf import Surface_dict
     sage: C = Surface_dict(QQ).category()
 
-    sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+    sage: from flatsurf.geometry.categories import TopologicalSurfaces
     sage: C.is_subcategory(TopologicalSurfaces())
     True
 
@@ -57,7 +57,7 @@ class TopologicalSurfaces(Category):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+        sage: from flatsurf.geometry.categories import TopologicalSurfaces
         sage: TopologicalSurfaces()
         Category of topological surfaces
 
@@ -305,7 +305,7 @@ class TopologicalSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+                sage: from flatsurf.geometry.categories import TopologicalSurfaces
                 sage: TopologicalSurfaces().Orientable()
                 Category of orientable topological surfaces
 
@@ -320,7 +320,7 @@ class TopologicalSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+                sage: from flatsurf.geometry.categories import TopologicalSurfaces
                 sage: TopologicalSurfaces().WithBoundary()
                 Category of with boundary topological surfaces
 
@@ -334,7 +334,7 @@ class TopologicalSurfaces(Category):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+                sage: from flatsurf.geometry.categories import TopologicalSurfaces
                 sage: TopologicalSurfaces().WithoutBoundary()
                 Category of without boundary topological surfaces
 
