@@ -47,7 +47,6 @@ from surface_dynamics.misc.permutation import perm_dense_cycles
 
 from .polygon import ConvexPolygons
 from .surface import Surface_list
-from .translation_surface import TranslationSurface
 
 
 class ThurstonVeech:
@@ -70,7 +69,7 @@ class ThurstonVeech:
 
             sage: S = TV([1,2], [3,1,1])
             sage: S
-            TranslationSurface built from 4 polygons
+            Surface built from 4 polygons
             sage: S.stratum()
             H_2(1^2)
             sage: S.base_ring()
@@ -80,10 +79,10 @@ class ThurstonVeech:
             sage: S.base_ring()
             Rational Field
         """
-        o = self._o = Origami(hp, vp)
-        n = o.nb_squares()
-        hcycles, hsizes = perm_dense_cycles(o.r_tuple(), n)
-        vcycles, vsizes = perm_dense_cycles(o.u_tuple(), n)
+        self._origami = Origami(hp, vp)
+        n = self._origami.nb_squares()
+        hcycles, hsizes = perm_dense_cycles(self._origami.r_tuple(), n)
+        vcycles, vsizes = perm_dense_cycles(self._origami.u_tuple(), n)
         self._hcycles = hcycles
         self._vcycles = vcycles
         self._num_hcyls = len(hsizes)
@@ -95,15 +94,15 @@ class ThurstonVeech:
 
     def __repr__(self):
         return 'ThurstonVeech("{}", "{}")'.format(
-            self._o.r().cycle_string(singletons=True),
-            self._o.u().cycle_string(singletons=True),
+            self._origami.r().cycle_string(singletons=True),
+            self._origami.u().cycle_string(singletons=True),
         )
 
     def stratum(self):
-        return self._o.stratum()
+        return self._origami.stratum()
 
     def stratum_component(self):
-        return self._o.stratum_component()
+        return self._origami.stratum_component()
 
     def cylinder_intersection_matrix(self):
         return self._E
@@ -167,7 +166,7 @@ class ThurstonVeech:
 
         C = ConvexPolygons(K)
         P = []
-        for i in range(self._o.nb_squares()):
+        for i in range(self._origami.nb_squares()):
             hi = h[self._hcycles[i]]
             vi = v[self._vcycles[i]]
             P.append(C(edges=[(vi, 0), (0, hi), (-vi, 0), (0, -hi)]))
@@ -175,10 +174,10 @@ class ThurstonVeech:
         surface = Surface_list(base_ring=K)
         for p in P:
             surface.add_polygon(p)
-        r = self._o.r_tuple()
-        u = self._o.u_tuple()
-        for i in range(self._o.nb_squares()):
+        r = self._origami.r_tuple()
+        u = self._origami.u_tuple()
+        for i in range(self._origami.nb_squares()):
             surface.set_edge_pairing(i, 1, r[i], 3)
             surface.set_edge_pairing(i, 0, u[i], 2)
         surface.set_immutable()
-        return TranslationSurface(surface)
+        return surface

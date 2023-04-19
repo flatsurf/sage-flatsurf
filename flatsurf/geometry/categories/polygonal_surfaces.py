@@ -39,12 +39,12 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
+from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 
 
-class PolygonalSurfaces(Category):
+class PolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing polygons defined in some space
     such as the projective plane (see
@@ -84,12 +84,12 @@ class PolygonalSurfaces(Category):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of compact connected finite type oriented orientable with boundary translation surfaces
+                Category of compact connected with boundary finite type translation surfaces
 
                 sage: S.set_edge_pairing(0, 0, 0, 2)
                 sage: S.set_edge_pairing(0, 1, 0, 3)
                 sage: S.refined_category()
-                Category of compact connected finite type oriented orientable without boundary translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
             from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
@@ -219,7 +219,32 @@ class PolygonalSurfaces(Category):
 
             return len(union_find.values()) <= 1
 
-    class FiniteType(CategoryWithAxiom):
+        def _test_gluings(self, **options):
+            # iterate over pairs with pair1 glued to pair2
+            tester = self._tester(**options)
+
+            if self.is_finite():
+                it = self.label_iterator()
+            else:
+                from itertools import islice
+
+                it = islice(self.label_iterator(), 30)
+
+            for lab in it:
+                p = self.polygon(lab)
+                for k in range(p.num_edges()):
+                    e = (lab, k)
+                    f = self.opposite_edge(lab, k)
+                    if f is None:
+                        continue
+                    g = self.opposite_edge(f[0], f[1])
+                    tester.assertEqual(
+                        e,
+                        g,
+                        "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g),
+                    )
+
+    class FiniteType(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces built from finitely many polygons.
 
@@ -235,7 +260,7 @@ class PolygonalSurfaces(Category):
         # TODO: Implement is_finite()
 
     # TODO: Can we somehow force that a surface can only be finite XOR infinite type?
-    class InfiniteType(CategoryWithAxiom):
+    class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces built from infinitely many polygons.
 
@@ -249,7 +274,7 @@ class PolygonalSurfaces(Category):
         """
         # TODO: Implement is_finite()
 
-    class Oriented(CategoryWithAxiom):
+    class Oriented(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by orientable surfaces with an orientation which
         is compatible with the orientation of the ambient space of the
@@ -279,6 +304,27 @@ class PolygonalSurfaces(Category):
             """
             from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
             return (TopologicalSurfaces().Orientable(),)
+
+    class WithoutBoundary(SurfaceCategoryWithAxiom):
+        class ParentMethods:
+            def _test_gluings_without_boundary(self, **options):
+                # iterate over pairs with pair1 glued to pair2
+                tester = self._tester(**options)
+
+                if self.is_finite():
+                    it = self.label_iterator()
+                else:
+                    from itertools import islice
+
+                    it = islice(self.label_iterator(), 30)
+
+                for lab in it:
+                    p = self.polygon(lab)
+                    for k in range(p.num_edges()):
+                        f = self.opposite_edge(lab, k)
+                        tester.assertFalse(
+                            f is None, "edge ({}, {}) is not glued".format(lab, k)
+                        )
 
     class SubcategoryMethods:
         def FiniteType(self):
@@ -318,7 +364,7 @@ class PolygonalSurfaces(Category):
 
                 sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: PolygonalSurfaces().Oriented()
-                Category of oriented orientable polygonal surfaces
+                Category of oriented polygonal surfaces
 
             """
             return self._with_axiom("Oriented")

@@ -654,9 +654,9 @@ class SaddleConnection(SageObject):
             The combinatorial limit (in terms of number of polygons crossed) to flow forward
             to check the saddle connection geometry.
         """
-        from .similarity_surface import SimilaritySurface
+        from flatsurf.geometry.categories import SimilaritySurfaces
 
-        if not isinstance(surface, SimilaritySurface):
+        if surface not in SimilaritySurfaces():
             raise TypeError
 
         self._surface = surface
@@ -1408,9 +1408,9 @@ class Cylinder(SageObject):
         In a translation surface, return one of the two holonomy vectors of the cylinder,
         which differ by a sign.
         """
-        from .translation_surface import TranslationSurface
+        from flatsurf.geometry.categories import TranslationSurfaces
 
-        if not isinstance(self._surface, TranslationSurface):
+        if self._surface not in TranslationSurfaces():
             raise NotImplementedError(
                 "holonomy currently only computable for translation surfaces"
             )

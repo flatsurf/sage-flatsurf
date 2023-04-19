@@ -33,7 +33,6 @@ EXAMPLES::
 # ********************************************************************
 
 from .surface import Surface
-from .half_dilation_surface import HalfDilationSurface
 from sage.rings.integer_ring import ZZ
 
 
@@ -72,7 +71,8 @@ class ChamanaraSurface(Surface):
 
         self.rename("Chamanara surface with parameter {}".format(alpha))
 
-        super().__init__(field, ZZ(0), finite=False, mutable=False)
+        from flatsurf.geometry.categories import DilationSurfaces
+        super().__init__(field, ZZ(0), finite=False, mutable=False, category=DilationSurfaces().Oriented())
 
     def polygon(self, lab):
         r"""
@@ -149,7 +149,7 @@ def chamanara_half_dilation_surface(alpha, n=8):
         sage: s = chamanara_half_dilation_surface(1/2)
         sage: TestSuite(s).run()
     """
-    s = HalfDilationSurface(ChamanaraSurface(alpha))
+    s = ChamanaraSurface(alpha)
     adjacencies = [(0, 1)]
     for i in range(n):
         adjacencies.append((-i, 3))

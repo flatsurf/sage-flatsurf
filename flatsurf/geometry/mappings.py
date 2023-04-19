@@ -129,17 +129,15 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
     EXAMPLES::
 
         sage: from flatsurf.geometry.surface import Surface_list
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
         sage: from flatsurf.geometry.polygon import ConvexPolygons
         sage: P = ConvexPolygons(QQ)
-        sage: s0=Surface_list(base_ring=QQ)
-        sage: s0.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
+        sage: s=Surface_list(base_ring=QQ)
+        sage: s.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
         0
-        sage: s0.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
+        sage: s.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
         1
-        sage: s0.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
-        sage: s0.set_immutable()
-        sage: s=TranslationSurface(s0)
+        sage: s.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
+        sage: s.set_immutable()
         sage: from flatsurf.geometry.mappings import *
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
@@ -164,7 +162,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             )
 
         ss2 = s.copy(lazy=True, mutable=True)
-        s2 = ss2.underlying_surface()
+        s2 = ss2
 
         poly1 = s.polygon(p1)
         p2, e2 = s.opposite_edge(p1, e1)
@@ -510,9 +508,9 @@ def triangulation_mapping(s):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s=translation_surfaces.veech_2n_gon(4)
-        sage: from flatsurf.geometry.mappings import *
+        sage: from flatsurf.geometry.mappings import triangulation_mapping
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
@@ -683,7 +681,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 s2.change_edge_gluing(l1, ee1, l2, ee2)
         s2.change_base_label(s.base_label())
         s2.set_immutable()
-        ss2 = s.__class__(s2)
+        ss2 = s2
 
         self._cv = cv
         self._translations = translations
@@ -866,7 +864,7 @@ def canonicalize_translation_surface_mapping(s):
         sage: from flatsurf.geometry.mappings import *
         sage: mat=Matrix([[1,2+a],[0,1]])
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
-        sage: m1=GL2RMapping(s,mat)
+        sage: m1=GL2RMapping(s, mat)
         sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
         sage: m=m2*m1
         sage: translation_surface_cmp(m.domain(),m.codomain())==0
@@ -878,11 +876,11 @@ def canonicalize_translation_surface_mapping(s):
         sage: print(w)
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (a + 3, 1)
     """
-    from flatsurf.geometry.translation_surface import TranslationSurface
+    from flatsurf.geometry.categories import TranslationSurfaces
 
     if not s.is_finite():
         raise NotImplementedError
-    if not isinstance(s, TranslationSurface):
+    if s not in TranslationSurfaces():
         raise ValueError("Only defined for TranslationSurfaces")
     m1 = delaunay_decomposition_mapping(s)
     if m1 is None:

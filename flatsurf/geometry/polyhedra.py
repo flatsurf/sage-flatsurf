@@ -30,7 +30,6 @@ from sage.functions.other import sqrt
 
 from flatsurf.geometry.polygon import ConvexPolygons
 from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
-from flatsurf.geometry.similarity_surface import SimilaritySurface
 from flatsurf.geometry.straight_line_trajectory import (
     StraightLineTrajectory,
     SegmentInPolygon,
@@ -296,7 +295,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         polygons = []
         for vs in polygon_vertices_AA:
             polygons.append(Polys(vertices=vs))
-        S = SimilaritySurface(surface_list_from_polygons_and_gluings(polygons, gluings))
+        S = surface_list_from_polygons_and_gluings(polygons, gluings)
         return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
     else:
         elts = []
@@ -321,7 +320,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
             polygons = []
             for vs in polygon_vertices_field2:
                 polygons.append(Polys(vertices=vs))
-            S = SimilaritySurface(surface_list_from_polygons_and_gluings(polygons, gluings))
+            S = surface_list_from_polygons_and_gluings(polygons, gluings)
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
         else:
@@ -345,7 +344,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
             polygons = []
             for vs in polygon_vertices_field2:
                 polygons.append(Polys(vertices=vs))
-            S = SimilaritySurface(surface_list_from_polygons_and_gluings(polygons, gluings))
+            S = surface_list_from_polygons_and_gluings(polygons, gluings)
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
 

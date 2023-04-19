@@ -29,7 +29,7 @@ A single square is just a topological surface built from polygons::
     sage: S.add_polygon(polygons.square(), label=0)
     0
     sage: S.category()  # TODO: Either change this to be topological or fix the documentation.
-    Category of oriented orientable similarity surfaces
+    Category of oriented similarity surfaces
 
 It does not really make sense to ask which stratum this surface belongs to::
 
@@ -48,7 +48,7 @@ category gets refined::
 
     sage: S.set_immutable()
     sage: S.category()
-    Category of compact connected finite type oriented orientable without boundary translation surfaces
+    Category of compact connected without boundary finite type translation surfaces
 
 Since this is now a translation surface, we can ask for its stratum again::
 
@@ -75,21 +75,14 @@ Since this is now a translation surface, we can ask for its stratum again::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-# We need to import categories in the correct order here. Otherwise, the lazy
-# importing and cyclic dependencies between categories (half translation and
-# translation surfaces e.g.) will lead to somewhat unfortunate printing of
-# category names.
-
-from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
-from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
+from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
-from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
-from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
-from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
-
-__all__ = [TranslationSurfaces, HalfTranslationSurfaces, ConeSurfaces, DilationSurfaces, SimilaritySurfaces, RealProjectivePolygonalSurfaces, PolygonalSurfaces, TopologicalSurfaces]
+from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
 
 # TODO
 # class HyperbolicPolygonalSurfaces(Category):

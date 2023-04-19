@@ -38,7 +38,7 @@ class LazyTriangulatedSurface(Surface):
         sage: from flatsurf import *
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=False))
+        sage: ss=LazyTriangulatedSurface(s,relabel=False)
         sage: ss.polygon(0).num_edges()
         3
         sage: TestSuite(ss).run()
@@ -48,7 +48,7 @@ class LazyTriangulatedSurface(Surface):
         sage: from flatsurf import *
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=TranslationSurface(LazyTriangulatedSurface(s,relabel=True))
+        sage: ss=LazyTriangulatedSurface(s,relabel=True)
         sage: ss.polygon(0).num_edges()
         3
         sage: TestSuite(ss).run()
@@ -104,10 +104,10 @@ class LazyTriangulatedSurface(Surface):
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, TranslationSurface
             sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+            sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S = TranslationSurface(LazyTriangulatedSurface(S))
+            sage: S = LazyTriangulatedSurface(S)
             sage: S == S
             True
 
@@ -130,7 +130,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
         sage: from flatsurf import *
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=False))
+        sage: ss=LazyDelaunayTriangulatedSurface(s,relabel=False)
         sage: ss.polygon(0).num_edges()
         3
         sage: TestSuite(ss).run()
@@ -142,7 +142,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
         sage: from flatsurf import *
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=TranslationSurface(LazyDelaunayTriangulatedSurface(s,relabel=True))
+        sage: ss=LazyDelaunayTriangulatedSurface(s,relabel=True)
         sage: ss.polygon(0).num_edges()
         3
         sage: TestSuite(ss).run()
@@ -171,7 +171,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
         else:
             self._direction = self._ss.vector_space()(direction)
 
-    def __init__(self, similarity_surface, direction=None, relabel=True):
+    def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
         r"""
         Construct a lazy Delaunay triangulation of the provided similarity_surface.
         """
@@ -202,6 +202,7 @@ class LazyDelaunayTriangulatedSurface(Surface):
             base_label,
             finite=self._s.is_finite(),
             mutable=False,
+            category=category
         )
 
     def polygon(self, label):
@@ -349,10 +350,10 @@ class LazyDelaunayTriangulatedSurface(Surface):
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S = TranslationSurface(LazyDelaunayTriangulatedSurface(S))
+            sage: S = LazyDelaunayTriangulatedSurface(S)
             sage: S == S
             True
 
@@ -379,7 +380,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: m=matrix([[2,1],[1,1]])
-        sage: ss=TranslationSurface(LazyDelaunaySurface(m*s,relabel=False))
+        sage: ss=LazyDelaunaySurface(m*s,relabel=False)
         sage: ss.polygon(ss.base_label())
         Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
         sage: ss.is_delaunay_decomposed(limit=100)
@@ -391,13 +392,13 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=chamanara_surface(QQ(1/2))
         sage: m=matrix([[3,4],[-4,3]])*matrix([[4,0],[0,1/4]])
-        sage: ss=TranslationSurface(LazyDelaunaySurface(m*s))
+        sage: ss=LazyDelaunaySurface(m*s)
         sage: ss.is_delaunay_decomposed(limit=100)
         True
         sage: TestSuite(ss).run()
     """
 
-    def __init__(self, similarity_surface, direction=None, relabel=True):
+    def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
         r"""
         Construct a lazy Delaunay triangulation of the provided similarity_surface.
 
@@ -430,6 +431,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             base_label,
             finite=self._s.is_finite(),
             mutable=False,
+            category=category
         )
 
     def _certify_decomposition(self, label):
@@ -484,11 +486,11 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, TranslationSurface
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
             sage: S = translation_surfaces.infinite_staircase()
             sage: m = matrix([[2, 1], [1, 1]])
-            sage: S = TranslationSurface(LazyDelaunaySurface(m*S))
+            sage: S = LazyDelaunaySurface(m*S)
             sage: S == S
             True
 

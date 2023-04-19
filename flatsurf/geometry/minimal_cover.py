@@ -47,8 +47,7 @@ class MinimalTranslationCover(Surface):
         1
         sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
         sage: s.set_immutable()
-        sage: s=SimilaritySurface(s)
-        sage: ss=TranslationSurface(MinimalTranslationCover(s))
+        sage: ss=MinimalTranslationCover(s)
         sage: ss.is_finite()
         True
         sage: ss.num_polygons()
@@ -62,11 +61,18 @@ class MinimalTranslationCover(Surface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("translation")
         sage: S
-        TranslationSurface built from 82 polygons
+        Surface built from 82 polygons
+
+    TESTS::
+
+        sage: from flatsurf.geometry.categories import TranslationSurfaces
+        sage: S in TranslationSurfaces()
+        True
+
     """
 
     def __init__(self, similarity_surface):
-        if similarity_surface.underlying_surface().is_mutable():
+        if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
             else:
@@ -82,8 +88,9 @@ class MinimalTranslationCover(Surface):
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
 
+        from flatsurf.geometry.categories import TranslationSurfaces
         Surface.__init__(
-            self, self._ss.base_ring(), base_label, finite=finite, mutable=False
+            self, self._ss.base_ring(), base_label, finite=finite, mutable=False, category=TranslationSurfaces()
         )
 
     def polygon(self, lab):
@@ -154,8 +161,7 @@ class MinimalHalfTranslationCover(Surface):
         1
         sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
         sage: s.set_immutable()
-        sage: s=SimilaritySurface(s)
-        sage: ss=HalfDilationSurface(MinimalHalfTranslationCover(s))
+        sage: ss=MinimalHalfTranslationCover(s)
         sage: ss.is_finite()
         True
         sage: ss.num_polygons()
@@ -169,11 +175,18 @@ class MinimalHalfTranslationCover(Surface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("half-translation")
         sage: S
-        HalfDilationSurface built from 82 polygons
+        Surface built from 82 polygons
+
+    TESTS::
+
+        sage: from flatsurf.geometry.categories import DilationSurfaces
+        sage: S in DilationSurfaces()
+        True
+
     """
 
     def __init__(self, similarity_surface):
-        if similarity_surface.underlying_surface().is_mutable():
+        if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
             else:
@@ -189,8 +202,9 @@ class MinimalHalfTranslationCover(Surface):
         self._F = self._ss.base_ring()
         base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
 
+        from flatsurf.geometry.categories import HalfTranslationSurfaces
         Surface.__init__(
-            self, self._ss.base_ring(), base_label, finite=finite, mutable=False
+            self, self._ss.base_ring(), base_label, finite=finite, mutable=False, category=HalfTranslationSurfaces().Oriented()
         )
 
     def polygon(self, lab):
@@ -221,7 +235,7 @@ class MinimalPlanarCover(Surface):
         sage: from flatsurf import *
         sage: s = translation_surfaces.square_torus()
         sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
-        sage: pc = TranslationSurface(MinimalPlanarCover(s))
+        sage: pc = MinimalPlanarCover(s)
         sage: pc.is_finite()
         False
         sage: sing = pc.singularity(pc.base_label(),0,limit=4)
@@ -237,7 +251,7 @@ class MinimalPlanarCover(Surface):
     """
 
     def __init__(self, similarity_surface, base_label=None):
-        if similarity_surface.underlying_surface().is_mutable():
+        if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
             else:
@@ -255,8 +269,9 @@ class MinimalPlanarCover(Surface):
 
         new_base_label = (self._ss.base_label(), self._sg.one())
 
+        from flatsurf.geometry.categories import TranslationSurfaces
         Surface.__init__(
-            self, self._ss.base_ring(), new_base_label, finite=False, mutable=False
+            self, self._ss.base_ring(), new_base_label, finite=False, mutable=False, category=TranslationSurfaces()
         )
 
     def polygon(self, lab):
@@ -298,7 +313,7 @@ class MinimalPlanarCover(Surface):
             sage: from flatsurf import *
             sage: s = translation_surfaces.square_torus()
             sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
-            sage: pc = TranslationSurface(MinimalPlanarCover(s))
+            sage: pc = MinimalPlanarCover(s)
             sage: pc == pc
             True
 

@@ -27,10 +27,7 @@ from sage.structure.sequence import Sequence
 from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
 
 from .surface import Surface, Surface_list
-from .translation_surface import TranslationSurface
-from .similarity_surface import SimilaritySurface
 from .translation_surface import Origami
-from .half_dilation_surface import HalfDilationSurface
 
 
 ZZ_1 = ZZ(1)
@@ -331,7 +328,7 @@ class TFractalSurface(Surface):
 
             sage: import flatsurf.geometry.similarity_surface_generators as sfg
             sage: T = sfg.tfractal_surface()
-            sage: W = T.underlying_surface()._words
+            sage: W = T._words
             sage: w = W('LLRLRL')
             sage: T.opposite_edge((w,0),0)
             ((word: LLRLR, 1), 2)
@@ -468,7 +465,7 @@ class TFractalSurface(Surface):
 
 
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
-    return TranslationSurface(TFractalSurface(w, r, h1, h2))
+    return TFractalSurface(w, r, h1, h2)
 
 
 class SimilaritySurfaceGenerators:
@@ -481,13 +478,20 @@ class SimilaritySurfaceGenerators:
         r"""
         Construct a SimilaritySurface from a pair of triangles.
 
-        TESTS::
+        EXAMPLES::
 
             sage: from flatsurf import *
             sage: ex = similarity_surfaces.example()
             sage: ex
-            SimilaritySurface built from 2 polygons
+            Surface built from 2 polygons
+
+        TESTS::
+
             sage: TestSuite(ex).run()
+            sage: from flatsurf.geometry.categories import SimilaritySurfaces
+            sage: ex in SimilaritySurfaces()
+            True
+
         """
         s = Surface_list(base_ring=QQ)
         s.add_polygon(
@@ -498,7 +502,7 @@ class SimilaritySurfaceGenerators:
         )  # gets label 1
         s.change_polygon_gluings(0, [(1, 1), (1, 2), (1, 0)])
         s.set_immutable()
-        return SimilaritySurface(s)
+        return s
 
     @staticmethod
     def self_glued_polygon(P):
@@ -515,7 +519,7 @@ class SimilaritySurfaceGenerators:
         s = Surface_list(base_ring=P.base_ring(), mutable=True)
         s.add_polygon(P, [(0, i) for i in range(P.num_edges())])
         s.set_immutable()
-        return HalfDilationSurface(s)
+        return s
 
     @staticmethod
     def billiard(P, rational=False):
@@ -536,14 +540,17 @@ class SimilaritySurfaceGenerators:
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
             sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: Q
-            SimilaritySurface built from 2 polygons
+            Surface built from 2 polygons
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: Q in ConeSurfaces().Rational()
             True
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
-            TranslationSurface built from 8 polygons
+            Surface built from 8 polygons
             sage: TestSuite(M).run()
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: M in TranslationSurfaces()
+            True
 
         A non-convex examples (L-shape polygon)::
 
@@ -575,8 +582,11 @@ class SimilaritySurfaceGenerators:
             sage: R = ExactReals(E.base_ring()) # optional: exactreal
             sage: P = E(R.random_element()) # optional: exactreal
             sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
-            ConeSurface built from 2 polygons
+            Surface built from 2 polygons
             sage: TestSuite(S).run() # long time (6s), optional: exactreal
+            sage: from flatsurf.geometry.categories import ConeSurfaces
+            sage: S in ConeSurfaces()
+            True
 
         """
         if not isinstance(P, Polygon):
@@ -640,13 +650,11 @@ class SimilaritySurfaceGenerators:
             ne = surface.polygon(p).num_edges()
             surface.set_edge_pairing(p, e, m + p, ne - e - 1)
 
-        from flatsurf.geometry.categories import ConeSurfaces
-        surface._refine_category_(ConeSurfaces())
+        surface.set_immutable()
         if rational:
             surface._refine_category_(surface.category().Rational())
 
-        surface.set_immutable()
-        return SimilaritySurface(surface)
+        return surface
 
     @staticmethod
     def polygon_double(P):
@@ -666,7 +674,7 @@ class SimilaritySurfaceGenerators:
         surface.add_polygon(Q)  # gets label 1
         surface.change_polygon_gluings(0, [(1, n - i - 1) for i in range(n)])
         surface.set_immutable()
-        return SimilaritySurface(surface)
+        return surface
 
     @staticmethod
     def right_angle_triangle(w, h):
@@ -676,7 +684,7 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf import *
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
-            SimilaritySurface built from 2 polygons
+            Surface built from 2 polygons
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: R in ConeSurfaces()
             True
@@ -693,7 +701,7 @@ class SimilaritySurfaceGenerators:
         s.add_polygon(P([V((0, h)), V((-w, -h)), V((w, 0))]))  # gets label 1
         s.change_polygon_gluings(0, [(1, 2), (1, 1), (1, 0)])
         s.set_immutable()
-        return SimilaritySurface(s)
+        return s
 
 
 similarity_surfaces = SimilaritySurfaceGenerators()
@@ -721,7 +729,7 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.basic_dilation_torus(AA(sqrt(2)))
             sage: ds
-            HalfDilationSurface built from 2 polygons
+            Surface built from 2 polygons
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
@@ -738,7 +746,7 @@ class DilationSurfaceGenerators:
         s.change_edge_gluing(0, 3, 1, 1)
         s.change_base_label(0)
         s.set_immutable()
-        return HalfDilationSurface(s)
+        return s
 
     @staticmethod
     def genus_two_square(a, b, c, d):
@@ -772,7 +780,7 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
             sage: ds
-            HalfDilationSurface built from 3 polygons
+            Surface built from 3 polygons
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
@@ -797,7 +805,7 @@ class DilationSurfaceGenerators:
         s.change_edge_gluing(1, 0, 2, 1)
         s.change_edge_gluing(1, 1, 2, 2)
         s.set_immutable()
-        return HalfDilationSurface(s)
+        return s
 
 
 dilation_surfaces = DilationSurfaceGenerators()
@@ -816,7 +824,10 @@ class HalfTranslationSurfaceGenerators:
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1,1,1,1], [1,1/2,1/3,1/5])
             sage: S
-            HalfDilationSurface built from 8 polygons
+            StepBilliard(w=[1, 1, 1, 1], h=[1, 1/2, 1/3, 1/5])
+            sage: from flatsurf.geometry.categories import DilationSurfaces
+            sage: S in DilationSurfaces()
+            True
             sage: TestSuite(S).run()
         """
         n = len(h)
@@ -882,7 +893,7 @@ class HalfTranslationSurfaceGenerators:
             S.set_edge_pairing(n + i, 2, n + i + 1, 4)
 
         S.set_immutable()
-        return HalfDilationSurface(S)
+        return S
 
 
 half_translation_surfaces = HalfTranslationSurfaceGenerators()
@@ -904,7 +915,10 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import *
             sage: T = translation_surfaces.square_torus()
             sage: T
-            TranslationSurface built from 1 polygon
+            Surface built from 1 polygon
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: T in TranslationSurfaces()
+            True
             sage: TestSuite(T).run()
 
         Rational directions are completely periodic::
@@ -932,9 +946,13 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.torus((1, AA(2).sqrt()), (AA(3).sqrt(), 3))
             sage: T
-            TranslationSurface built from 1 polygon
+            Surface built from 1 polygon
             sage: T.polygon(0)
             Polygon: (0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: T in TranslationSurfaces()
+            True
+
         """
         u = vector(u)
         v = vector(v)
@@ -947,7 +965,7 @@ class TranslationSurfaceGenerators:
         p = polygons(vertices=[(0, 0), u, u + v, v], base_ring=field)
         s.add_polygon(p, [(0, 2), (0, 3), (0, 0), (0, 1)])
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def veech_2n_gon(n):
@@ -966,7 +984,7 @@ class TranslationSurfaceGenerators:
         s = Surface_list(base_ring=p.base_ring())
         s.add_polygon(p, [(0, (i + n) % (2 * n)) for i in range(2 * n)])
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def veech_double_n_gon(n):
@@ -987,7 +1005,7 @@ class TranslationSurfaceGenerators:
         s.add_polygon(p)  # label=0
         s.add_polygon(m * p, [(0, i) for i in range(n)])
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def regular_octagon():
@@ -1000,10 +1018,13 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import *
             sage: T = translation_surfaces.regular_octagon()
             sage: T
-            TranslationSurface built from 1 polygon
+            Surface built from 1 polygon
             sage: T.stratum()
             H_2(2)
             sage: TestSuite(T).run()
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: T in TranslationSurfaces()
+            True
         """
         return translation_surfaces.veech_2n_gon(4)
 
@@ -1161,7 +1182,7 @@ class TranslationSurfaceGenerators:
             s.set_edge_pairing(1, 1, 1, 3)
             s.set_edge_pairing(1, 2, 1, 5)
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def mcmullen_L(l1, l2, l3, l4):
@@ -1191,8 +1212,10 @@ class TranslationSurfaceGenerators:
         TESTS::
 
             sage: from flatsurf import translation_surfaces
-            sage: translation_surfaces.mcmullen_L(1r, 1r, 1r, 1r)
-            TranslationSurface built from 3 polygons
+            sage: L = translation_surfaces.mcmullen_L(1r, 1r, 1r, 1r)
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: L in TranslationSurfaces()
+            True
         """
         field = Sequence([l1, l2, l3, l4]).universe()
         if isinstance(field, type):
@@ -1211,7 +1234,7 @@ class TranslationSurfaceGenerators:
         s.change_edge_gluing(1, 1, 1, 3)
         s.change_edge_gluing(2, 0, 2, 2)
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def ward(n):
@@ -1239,7 +1262,7 @@ class TranslationSurfaceGenerators:
         s.change_polygon_gluings(1, [(0, 2 * i) for i in range(n)])
         s.change_polygon_gluings(2, [(0, 2 * i + 1) for i in range(n)])
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def octagon_and_squares():
@@ -1249,8 +1272,11 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: os = translation_surfaces.octagon_and_squares()
             sage: os
-            TranslationSurface built from 3 polygons
+            Surface built from 3 polygons
             sage: TestSuite(os).run()
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: os in TranslationSurfaces()
+            True
         """
         return translation_surfaces.ward(4)
 
@@ -1358,7 +1384,7 @@ class TranslationSurfaceGenerators:
         s.set_edge_pairing(2, 1, 3, 7)
         s.set_edge_pairing(3, 1, 3, 5)
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def arnoux_yoccoz(genus):
@@ -1476,7 +1502,7 @@ class TranslationSurfaceGenerators:
             s.change_edge_gluing(T[g + i], 2, Tp[g + i + 1], 2)
             s.change_edge_gluing(Tp[g + i], 0, T[g + i + 1], 0)
         s.set_immutable()
-        return TranslationSurface(s)
+        return s
 
     @staticmethod
     def from_flipper(h):
@@ -1501,8 +1527,11 @@ class TranslationSurfaceGenerators:
             sage: f = h.flat_structure()                     # optional - flipper
             sage: ts = translation_surfaces.from_flipper(h)  # optional - flipper
             sage: ts                                         # optional - flipper
-            HalfTranslationSurface built from 2 polygons
+            Surface built from 2 polygons
             sage: TestSuite(ts).run()                        # optional - flipper
+            sage: from flatsurf.geometry.categories import HalfTranslationSurfaces  # optional: flipper
+            sage: ts in HalfTranslationSurfaces()  # optional: flipper
+            True
 
         A non-orientable example::
 
@@ -1516,6 +1545,7 @@ class TranslationSurfaceGenerators:
             4
             sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
+
         """
         from .surface import surface_list_from_polygons_and_gluings
 
@@ -1552,9 +1582,7 @@ class TranslationSurfaceGenerators:
                 )
             polys.append(poly)
 
-        return HalfDilationSurface(
-            surface_list_from_polygons_and_gluings(polys, adjacencies)
-        )
+        return surface_list_from_polygons_and_gluings(polys, adjacencies)
 
     @staticmethod
     def origami(r, u, rr=None, uu=None, domain=None):
@@ -1569,7 +1597,7 @@ class TranslationSurfaceGenerators:
             sage: r = S('(1,2)')
             sage: u = S('(1,3)')
             sage: o = translation_surfaces.origami(r,u)
-            sage: o.underlying_surface()
+            sage: o
             Origami defined by r=(1,2) and u=(1,3)
             sage: o.stratum()
             H_2(2)
@@ -1577,7 +1605,7 @@ class TranslationSurfaceGenerators:
         """
         from .translation_surface import Origami
 
-        return TranslationSurface(Origami(r, u, rr, uu, domain))
+        return Origami(r, u, rr, uu, domain)
 
     @staticmethod
     def infinite_staircase():
@@ -1589,15 +1617,14 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
 
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S.underlying_surface()
+            sage: S
             The infinite staircase
             sage: TestSuite(S).run()
         """
 
-        o = TranslationSurfaceGenerators._InfiniteStaircase()
-        s = TranslationSurface(o)
+        s = TranslationSurfaceGenerators._InfiniteStaircase()
 
-        gs = s.graphical_surface(default_position_function=o._position_function)
+        gs = s.graphical_surface(default_position_function=s._position_function)
         gs.make_all_visible(limit=10)
         return s
 
@@ -1665,7 +1692,7 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: tf = translation_surfaces.t_fractal().underlying_surface()
+            sage: tf = translation_surfaces.t_fractal()
             sage: tf
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
             sage: TestSuite(tf).run()
@@ -1695,7 +1722,7 @@ class TranslationSurfaceGenerators:
             sage: s = translation_surfaces.e_infinity_surface()
             sage: TestSuite(s).run()
         """
-        return TranslationSurface(EInfinitySurface(lambda_squared, field))
+        return EInfinitySurface(lambda_squared, field)
 
     @staticmethod
     def chamanara(alpha):
@@ -1707,8 +1734,15 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C
-            TranslationSurface built from infinitely many polygons
+            Surface built from infinitely many polygons
+
+        TESTS::
+
             sage: TestSuite(C).run()
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: C in TranslationSurfaces()
+            True
+
         """
         from .chamanara import chamanara_surface
 

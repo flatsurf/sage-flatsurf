@@ -38,13 +38,13 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
 from sage.categories.topological_spaces import TopologicalSpaces
 from sage.misc.abstract_method import abstract_method
+from flatsurf.geometry.categories.surface_category import SurfaceCategory
 
 
-class TopologicalSurfaces(Category):
+class TopologicalSurfaces(SurfaceCategory):
     r"""
     The category of topological surfaces, i.e., surfaces that are locally
     homeomorphic to the real plane or the closed upper half plane.
@@ -88,12 +88,12 @@ class TopologicalSurfaces(Category):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of compact connected finite type oriented orientable with boundary translation surfaces
+                Category of compact connected with boundary finite type translation surfaces
 
                 sage: S.set_edge_pairing(0, 0, 0, 2)
                 sage: S.set_edge_pairing(0, 1, 0, 3)
                 sage: S.refined_category()
-                Category of compact connected finite type oriented orientable without boundary translation surfaces
+                Category of compact connected without boundary finite type translation surfaces
 
             """
             category = self.category()

@@ -43,13 +43,12 @@ rotation of π, this is a half-translation surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 from sage.misc.lazy_import import LazyImport
 from sage.all import QQ, AA
 
 
-class HalfTranslationSurfaces(Category):
+class HalfTranslationSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons with
     translations and half-translations (translations followed by rotations
@@ -70,7 +69,7 @@ class HalfTranslationSurfaces(Category):
 
     Positive = LazyImport('flatsurf.geometry.categories.translation_surfaces', 'TranslationSurfaces')
 
-    class Orientable(CategoryWithAxiom):
+    class Orientable(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def stratum(self):
                 r"""
@@ -89,7 +88,7 @@ class HalfTranslationSurfaces(Category):
 
                 return QuadraticStratum(*[2 * a - 2 for a in angles])
 
-    class Oriented(CategoryWithAxiom):
+    class Oriented(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def angles(self, numerical=False, return_adjacent_edges=False):
                 r"""
@@ -218,7 +217,7 @@ class HalfTranslationSurfaces(Category):
                 """
                 return self.normalized_coordinates()[0].base_ring()
 
-        class FiniteType(CategoryWithAxiom):
+        class FiniteType(SurfaceCategoryWithAxiom):
             class ParentMethods:
                 def normalized_coordinates(self):
                     r"""
@@ -267,11 +266,11 @@ class HalfTranslationSurfaces(Category):
                         sage: p = E(r1 + r2)
                         sage: B = similarity_surfaces.billiard(p)
                         sage: B.minimal_cover("translation")
-                        TranslationSurface built from 6 polygons
+                        Surface built from 6 polygons
                         sage: S = B.minimal_cover("translation")
                         sage: S, _ = S.normalized_coordinates()
                         sage: S
-                        TranslationSurface built from 6 polygons
+                        Surface built from 6 polygons
                     """
                     from sage.all import matrix
                     if self.base_ring() is QQ:
@@ -326,4 +325,5 @@ class HalfTranslationSurfaces(Category):
                     for (p1, e1), (p2, e2) in self.edge_iterator(gluings=True):
                         S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
 
-                    return (type(self)(S, category=self.category()), M)
+                    S._refine_category_(self.category())
+                    return S, M

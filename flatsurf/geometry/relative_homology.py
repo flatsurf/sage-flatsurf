@@ -34,8 +34,6 @@ from sage.structure.element import ModuleElement
 from sage.modules.module import Module
 from sage.rings.integer_ring import ZZ
 
-from .similarity_surface import SimilaritySurface
-
 
 def cmp(x, y):
     r"""
@@ -134,7 +132,8 @@ class RelativeHomology(Module):
 
     def __init__(self, surface, base_ring=ZZ):
         self._base_ring = base_ring
-        if not isinstance(surface, SimilaritySurface):
+        from flatsurf.geometry.categories import SimilaritySurfaces
+        if surface not in SimilaritySurfaces():
             raise ValueError(
                 "RelativeHomology only defined for SimilaritySurfaces (and better)."
             )

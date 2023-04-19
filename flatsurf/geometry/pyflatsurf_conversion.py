@@ -83,9 +83,9 @@ def to_pyflatsurf(S):
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
-    from flatsurf.geometry.translation_surface import TranslationSurface
+    from flatsurf.geometry.categories import TranslationSurfaces
 
-    if not isinstance(S, TranslationSurface):
+    if S not in TranslationSurfaces():
         raise TypeError("S must be a translation surface")
     if not S.is_finite():
         raise ValueError("the surface S must be finite")
@@ -270,7 +270,6 @@ def from_pyflatsurf(T):
 
         sage: from flatsurf import polygons
         sage: from flatsurf.geometry.surface import Surface_list
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
         sage: from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
         sage: from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
         sage: P = polygons.regular_ngon(10)
@@ -278,12 +277,12 @@ def from_pyflatsurf(T):
         sage: S.add_polygon(P)
         0
         sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
-        sage: M = TranslationSurface(S)
+        sage: M = S
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
-        TranslationSurface built from 8 polygons
+        SimilaritySurface built from 8 polygons
 
     """
     from flatsurf.features import pyflatsurf_feature
@@ -327,7 +326,4 @@ def from_pyflatsurf(T):
         S.change_edge_gluing(face, id, _face, _id)
 
     S.set_immutable()
-
-    from flatsurf.geometry.translation_surface import TranslationSurface
-
-    return TranslationSurface(S)
+    return S

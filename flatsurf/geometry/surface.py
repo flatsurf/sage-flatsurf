@@ -33,22 +33,6 @@ We built a torus by gluing the opposite sides of a square::
     sage: S.opposite_edge(0, 0)
     (0, 2)
 
-There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
-data of a surface described by the subclasses of :class:`Surface` here and the
-:class:`.similarity_surface.SimilaritySurface` and its subclasses which wrap a
-:class:`Surface`. While a :class:`Surface` essentially provides the raw data of
-a surface, a :class:`.similarity_surface.SimilaritySurface` then adds
-mathematical knowledge to that data structure, e.g., by declaring that the data
-describes a :class:`.translation_surface.TranslationSurface`::
-
-    sage: from flatsurf import TranslationSurface
-    sage: T = TranslationSurface(S)
-
-We can recover the underlying surface again::
-
-    sage: T.underlying_surface() is S
-    True
-
 """
 # ********************************************************************
 #  This file is part of sage-flatsurf.
@@ -167,6 +151,25 @@ class Surface(Parent):
             # should remove the mutable state from Surface.
             self.set_immutable()
 
+    def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict
+            sage: S = Surface_list(QQ)
+            sage: S
+            Surface built from 0 polygons
+
+        """
+        if not self.is_finite():
+            return "Surface built from infinitely many polygons"
+        if self.num_polygons() == 1:
+            return "Surface built from 1 polygon"
+
+        return "Surface built from {} polygons".format(self.num_polygons())
+
     def _refine_category_(self, category):
         r"""
         Refine the category of this surface to a subcategory ``category``.
@@ -221,7 +224,7 @@ class Surface(Parent):
         """
         raise NotImplementedError
 
-    def opposite_edge(self, label, e):
+    def opposite_edge(self, label, e=None):
         r"""
         Given the label ``label`` of a polygon and an edge ``e`` in that
         polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
@@ -283,13 +286,15 @@ class Surface(Parent):
 
             return Infinity
 
-    def label_iterator(self):
+    def label_iterator(self, polygons=False):
         r"""
         Iterator over all polygon labels.
 
         Subclasses should consider overriding this method for increased
         performance.
         """
+        if polygons:
+            return self.label_polygon_iterator()
         return iter(self.walker())
 
     def label_polygon_iterator(self):
@@ -320,10 +325,14 @@ class Surface(Parent):
 
             return Infinity
 
-    def edge_iterator(self):
+    def edge_iterator(self, gluings=False):
         r"""
         Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
         """
+        if gluings:
+            for entry in self.edge_gluing_iterator():
+                yield entry
+            return
         for label, polygon in self.label_polygon_iterator():
             for edge in range(polygon.num_edges()):
                 yield label, edge
@@ -788,32 +797,6 @@ class Surface(Parent):
             + str(self.base_label()),
         )
 
-    def _test_gluings(self, **options):
-        # iterate over pairs with pair1 glued to pair2
-        tester = self._tester(**options)
-
-        if self.is_finite():
-            it = self.label_iterator()
-        else:
-            from itertools import islice
-
-            it = islice(self.label_iterator(), 30)
-
-        for lab in it:
-            p = self.polygon(lab)
-            for k in range(p.num_edges()):
-                e = (lab, k)
-                f = self.opposite_edge(lab, k)
-                tester.assertFalse(
-                    f is None, "edge ({}, {}) is not glued".format(lab, k)
-                )
-                g = self.opposite_edge(f[0], f[1])
-                tester.assertEqual(
-                    e,
-                    g,
-                    "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g),
-                )
-
     def _test_override(self, **options):
         # Test that the required methods have been overridden and that some other methods have not been overridden.
 
@@ -979,6 +962,227 @@ class Surface(Parent):
             coordinates = polygon.edge(0) / 2
         return self.point(label, coordinates)
 
+    def set_default_graphical_surface(self, graphical_surface):
+        r"""
+        Replace the default graphical surface with the provided GraphicalSurface.
+        """
+        from flatsurf.graphical.surface import GraphicalSurface
+
+        if not isinstance(graphical_surface, GraphicalSurface):
+            raise ValueError("graphical_surface must be a GraphicalSurface")
+        if self != graphical_surface.get_surface():
+            raise ValueError(
+                "The provided graphical_surface renders a different surface!"
+            )
+        self._gs = graphical_surface
+
+    def graphical_surface(self, *args, **kwds):
+        r"""
+        Return a GraphicalSurface representing this surface.
+
+        By default this returns a cached version of the GraphicalSurface. If
+        ``cached=False`` is provided as a keyword option then a new
+        GraphicalSurface is returned.
+
+        All other parameters are passed on to
+        :class:`~flatsurf.graphical.surface.GraphicalSurface` or its
+        :meth:`~flatsurf.graphical.surface.GraphicalSurface.process_options`.
+        Note that this mutates the cached graphical surface for future calls.
+
+        EXAMPLES:
+
+        Test the difference between the cached graphical_surface and the uncached version::
+
+            sage: from flatsurf import *
+            sage: s = translation_surfaces.octagon_and_squares()
+            sage: s.plot()
+            ...Graphics object consisting of 32 graphics primitives
+            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
+            ...Graphics object consisting of 18 graphics primitives
+
+        """
+        from flatsurf.graphical.surface import GraphicalSurface
+
+        if "cached" in kwds:
+            if not kwds["cached"]:
+                # cached=False: return a new surface.
+                kwds.pop("cached", None)
+                return GraphicalSurface(self, *args, **kwds)
+            kwds.pop("cached", None)
+        if hasattr(self, "_gs"):
+            self._gs.process_options(*args, **kwds)
+        else:
+            self._gs = GraphicalSurface(self, *args, **kwds)
+        return self._gs
+
+    def plot(self, *args, **kwds):
+        r"""
+        Return a plot of the surface.
+
+        The parameters are passed on to :meth:`graphical_surface` and
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot`. Consult their
+        documentation for details.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+            sage: S = flatsurf.translation_surfaces.veech_double_n_gon(5)
+            sage: S.plot()
+            ...Graphics object consisting of 21 graphics primitives
+
+        Keywords are passed on to the underlying plotting routines, see
+        :meth:`flatsurf.graphical.surface.GraphicalSurface.plot` for details::
+
+            sage: S.plot(fill=None)
+            ...Graphics object consisting of 21 graphics primitives
+
+        Note that some keywords mutate the underlying cached graphical surface,
+        see :meth:`graphical_surface`::
+
+            sage: S.plot(edge_labels='gluings and number')
+            ...Graphics object consisting of 23 graphics primitives
+
+        """
+        if len(args) > 1:
+            raise ValueError("plot() can take at most one non-keyword argument")
+
+        graphical_surface_keywords = {
+            key: kwds.pop(key)
+            for key in [
+                "cached",
+                "adjacencies",
+                "polygon_labels",
+                "edge_labels",
+                "default_position_function",
+            ]
+            if key in kwds
+        }
+
+        if len(args) == 1:
+            from flatsurf.graphical.surface import GraphicalSurface
+
+            if not isinstance(args[0], GraphicalSurface):
+                raise TypeError("non-keyword argument must be a GraphicalSurface")
+
+            import warnings
+
+            warnings.warn(
+                "Passing a GraphicalSurface to plot() is deprecated because it mutates that GraphicalSurface. This functionality will be removed in a future version of sage-flatsurf. "
+                "Call process_options() and plot() on the GraphicalSurface explicitly instead."
+            )
+
+            gs = args[0]
+            gs.process_options(**graphical_surface_keywords)
+        else:
+            # It's very surprising that plot mutates the underlying cached
+            # graphical surface. We should change that and make the graphical
+            # surface not cached. See
+            # https://github.com/flatsurf/sage-flatsurf/issues/97
+            gs = self.graphical_surface(**graphical_surface_keywords)
+
+        return gs.plot(**kwds)
+
+    def plot_polygon(
+        self,
+        label,
+        graphical_surface=None,
+        plot_polygon=True,
+        plot_edges=True,
+        plot_edge_labels=True,
+        edge_labels=None,
+        polygon_options={"axes": True},
+        edge_options=None,
+        edge_label_options=None,
+    ):
+        r"""
+        Returns a plot of the polygon with the provided label.
+
+        Note that this method plots the polygon in its coordinates as opposed to
+        graphical coordinates that the :func:``plot`` method uses. This makes it useful
+        for visualizing the natural coordinates of the polygon.
+
+        INPUT:
+
+            - ``graphical_surface`` -- (default ``None``) If provided this function pulls graphical options
+              from the graphical surface. If not provided, we use the default graphical surface.
+
+            - ``plot_polygon`` -- (default ``True``) If True, we plot the solid polygon.
+
+            - ``polygon_options`` -- (default ``{"axes":True}``) Options for the rendering of the polygon.
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_polygon`.
+              This should be either None or a dictionary.
+
+            - ``plot_edges`` -- (default ``True``) If True, we plot the edges of the polygon as segments.
+
+            - ``edge_options`` -- (default ``None``) Options for the rendering of the polygon edges.
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge`.
+              This should be either None or a dictionary.
+
+            - ``plot_edge_labels`` -- (default ``True``) If True, we plot labels on the edges.
+
+            - ``edge_label_options`` -- (default ``None``) Options for the rendering of the edge labels.
+              These options will be passed to :func:`~flatsurf.graphical.polygon.GraphicalPolygon.plot_edge_label`.
+              This should be either None or a dictionary.
+
+            - ``edge_labels`` -- (default ``None``) If None and plot_edge_labels is True, we write the edge
+              number on each edge. Otherwise edge_labels should be a list of strings of length equal to the
+              number of edges of the polygon. The strings will be printed on each edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf import *
+            sage: s = similarity_surfaces.example()
+            sage: s.plot()
+            ...Graphics object consisting of 13 graphics primitives
+            sage: s.plot_polygon(1)
+            ...Graphics object consisting of 7 graphics primitives
+
+            sage: labels = []
+            sage: p = s.polygon(1)
+            sage: for e in range(p.num_edges()): \
+                labels.append(str(p.edge(e)))
+            sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
+                edge_labels=labels, edge_label_options={"color":"red"})
+            ...Graphics object consisting of 4 graphics primitives
+        """
+        if graphical_surface is None:
+            graphical_surface = self.graphical_surface()
+        p = self.polygon(label)
+        from flatsurf.graphical.polygon import GraphicalPolygon
+
+        gp = GraphicalPolygon(p)
+
+        if plot_polygon:
+            if polygon_options is None:
+                o = graphical_surface.polygon_options
+            else:
+                o = graphical_surface.polygon_options.copy()
+                o.update(polygon_options)
+            plt = gp.plot_polygon(**o)
+
+        if plot_edges:
+            if edge_options is None:
+                o = graphical_surface.non_adjacent_edge_options
+            else:
+                o = graphical_surface.non_adjacent_edge_options.copy()
+                o.update(edge_options)
+            for e in range(p.num_edges()):
+                plt += gp.plot_edge(e, **o)
+
+        if plot_edge_labels:
+            if edge_label_options is None:
+                o = graphical_surface.edge_label_options
+            else:
+                o = graphical_surface.edge_label_options.copy()
+                o.update(edge_label_options)
+            for e in range(p.num_edges()):
+                if edge_labels is None:
+                    el = str(e)
+                else:
+                    el = edge_labels[e]
+                plt += gp.plot_edge_label(e, el, **o)
+        return plt
+
 
 class Surface_list(Surface):
     r"""
@@ -1085,7 +1289,7 @@ class Surface_list(Surface):
 
     """
 
-    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None, category=None):
         self._p = []  # list of pairs (polygon, gluings)
         self._reference_surface = None
         self._removed_labels = []
@@ -1106,7 +1310,7 @@ class Surface_list(Surface):
             finite=None,
         )
 
-        Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True)
+        Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True, category=category)
 
         # Initialize surface from reference surface
         if surface is not None:
@@ -1160,11 +1364,6 @@ class Surface_list(Surface):
 
             finite = True
         else:
-            from .similarity_surface import SimilaritySurface
-
-            if isinstance(surface, SimilaritySurface):
-                surface = surface.underlying_surface()
-
             if not isinstance(surface, Surface):
                 raise TypeError("surface must be a Surface or a SimilaritySurface")
 
@@ -1249,11 +1448,13 @@ class Surface_list(Surface):
 
         return data[0]
 
-    def opposite_edge(self, p, e):
+    def opposite_edge(self, p, e=None):
         r"""
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
         """
+        if e is None:
+            p, e = p
         try:
             data = self._p[p]
         except KeyError:
@@ -1411,10 +1612,14 @@ class Surface_list(Surface):
         """
         return self._num_polygons
 
-    def label_iterator(self):
+    def label_iterator(self, polygons=False):
         r"""
         Iterator over all polygon labels.
         """
+        if polygons:
+            for entry in self.label_polygon_iterator():
+                yield entry
+            return
         if self._reference_surface is not None:
             for i in Surface.label_iterator(self):
                 yield i
@@ -1657,7 +1862,7 @@ class Surface_dict(Surface):
         sage: TestSuite(s).run()
     """
 
-    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None, category=None):
         self._p = {}
         self._reference_surface = None
 
@@ -1676,7 +1881,7 @@ class Surface_dict(Surface):
             finite=None,
         )
 
-        Surface.__init__(self, base_ring, base_label=None, finite=finite, mutable=True)
+        Surface.__init__(self, base_ring, base_label=None, finite=finite, mutable=True, category=category)
 
         # Initialize surface from reference surface
         if surface is not None:
@@ -1730,11 +1935,13 @@ class Surface_dict(Surface):
             raise ValueError("Label " + str(lab) + " was removed from the surface.")
         return data[0]
 
-    def opposite_edge(self, p, e):
+    def opposite_edge(self, p, e=None):
         r"""
         Given the label ``p`` of a polygon and an edge ``e`` in that polygon
         returns the pair (``pp``, ``ee``) to which this edge is glued.
         """
+        if e is None:
+            p, e = p
         try:
             data = self._p[p]
         except KeyError:
@@ -1905,10 +2112,14 @@ class Surface_dict(Surface):
 
             return Infinity
 
-    def label_iterator(self):
+    def label_iterator(self, polygons=False):
         r"""
         Iterator over all polygon labels.
         """
+        if polygons:
+            for entry in self.label_polygon_iterator():
+                yield entry
+            return
         if self._reference_surface is None:
             for i in self._p:
                 yield i
@@ -2043,7 +2254,9 @@ class BaseRingChangedSurface(Surface):
     def polygon(self, lab):
         return self._P(self._s.polygon(lab))
 
-    def opposite_edge(self, p, e):
+    def opposite_edge(self, p, e=None):
+        if e is None:
+            p, e = p
         return self._s.opposite_edge(p, e)
 
 
@@ -2133,7 +2346,11 @@ class LabelWalker:
         for label in self:
             yield label, self._s.polygon(label)
 
-    def edge_iterator(self):
+    def edge_iterator(self, gluings=False):
+        if gluings:
+            for entry in self.edge_gluing_iterator():
+                yield entry
+            return
         for label, polygon in self.label_polygon_iterator():
             for e in range(polygon.num_edges()):
                 yield label, e

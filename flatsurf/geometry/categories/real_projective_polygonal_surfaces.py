@@ -36,10 +36,10 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.categories.category import Category
+from flatsurf.geometry.categories.surface_category import SurfaceCategory
 
 
-class RealProjectivePolygonalSurfaces(Category):
+class RealProjectivePolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons (or more
     generally, polygons in two-dimensional real-projective space.)
