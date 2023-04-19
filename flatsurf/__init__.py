@@ -17,7 +17,6 @@ from .geometry.surface import Surface_list, Surface_dict
 # The various surface types
 from .geometry.similarity_surface import SimilaritySurface
 from .geometry.half_dilation_surface import HalfDilationSurface
-from .geometry.dilation_surface import DilationSurface
 from .geometry.translation_surface import TranslationSurface
 
 from .geometry.gl2r_orbit_closure import GL2ROrbitClosure

@@ -1308,7 +1308,10 @@ class SimilaritySurface(Parent):
             TranslationSurface built from 4 polygons
             sage: hts = cs.minimal_cover(cover_type="half-translation")
             sage: hts
-            HalfTranslationSurface built from 2 polygons
+            HalfDilationSurface built from 2 polygons
+            sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+            sage: hts in HalfTranslationSurfaces()
+            True
             sage: TestSuite(hts).run()
             sage: ps = cs.minimal_cover(cover_type="planar")
             sage: ps
@@ -1329,12 +1332,12 @@ class SimilaritySurface(Parent):
 
             return TranslationSurface(MinimalTranslationCover(self))
         if cover_type == "half-translation":
-            from flatsurf.geometry.half_translation_surface import (
-                HalfTranslationSurface,
+            from flatsurf.geometry.half_dilation_surface import (
+                HalfDilationSurface,
             )
             from flatsurf.geometry.minimal_cover import MinimalHalfTranslationCover
 
-            return HalfTranslationSurface(MinimalHalfTranslationCover(self))
+            return HalfDilationSurface(MinimalHalfTranslationCover(self))
         if cover_type == "planar":
             from flatsurf.geometry.translation_surface import TranslationSurface
             from flatsurf.geometry.minimal_cover import MinimalPlanarCover

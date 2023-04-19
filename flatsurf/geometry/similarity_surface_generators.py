@@ -28,7 +28,6 @@ from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_fac
 
 from .surface import Surface, Surface_list
 from .translation_surface import TranslationSurface
-from .dilation_surface import DilationSurface
 from .similarity_surface import SimilaritySurface
 from .translation_surface import Origami
 from .half_dilation_surface import HalfDilationSurface
@@ -722,7 +721,10 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.basic_dilation_torus(AA(sqrt(2)))
             sage: ds
-            DilationSurface built from 2 polygons
+            HalfDilationSurface built from 2 polygons
+            sage: from flatsurf.geometry.categories import DilationSurfaces
+            sage: ds in DilationSurfaces().Positive()
+            True
             sage: TestSuite(ds).run()
 
         """
@@ -736,7 +738,7 @@ class DilationSurfaceGenerators:
         s.change_edge_gluing(0, 3, 1, 1)
         s.change_base_label(0)
         s.set_immutable()
-        return DilationSurface(s)
+        return HalfDilationSurface(s)
 
     @staticmethod
     def genus_two_square(a, b, c, d):
@@ -770,7 +772,10 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
             sage: ds
-            DilationSurface built from 3 polygons
+            HalfDilationSurface built from 3 polygons
+            sage: from flatsurf.geometry.categories import DilationSurfaces
+            sage: ds in DilationSurfaces().Positive()
+            True
             sage: TestSuite(ds).run()
         """
         field = Sequence([a, b, c, d]).universe().fraction_field()
@@ -792,7 +797,7 @@ class DilationSurfaceGenerators:
         s.change_edge_gluing(1, 0, 2, 1)
         s.change_edge_gluing(1, 1, 2, 2)
         s.set_immutable()
-        return DilationSurface(s)
+        return HalfDilationSurface(s)
 
 
 dilation_surfaces = DilationSurfaceGenerators()

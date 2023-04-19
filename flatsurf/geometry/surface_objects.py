@@ -686,15 +686,12 @@ class SaddleConnection(SageObject):
         self._surfacetart_data = tuple(start_data)
 
         if end_direction is None:
-            from .half_dilation_surface import HalfDilationSurface
-            from .dilation_surface import DilationSurface
+            from flatsurf.geometry.categories import DilationSurfaces
 
             # Attempt to infer the end_direction.
-            if isinstance(self._surface, DilationSurface):
+            if self._surface in DilationSurfaces().Positive():
                 end_direction = -self._direction
-            elif (
-                isinstance(self._surface, HalfDilationSurface) and end_data is not None
-            ):
+            elif self._surface in DilationSurfaces() and end_data is not None:
                 p = self._surface.polygon(end_data[0])
                 if (
                     wedge_product(p.edge(end_data[1]), self._direction) >= 0
@@ -710,12 +707,11 @@ class SaddleConnection(SageObject):
 
         if end_holonomy is None and holonomy is not None:
             # Attempt to infer the end_holonomy:
-            from .half_translation_surface import HalfTranslationSurface
-            from .translation_surface import TranslationSurface
+            from flatsurf.categories import HalfTranslationSurfaces, TranslationSurfaces
 
-            if isinstance(self._surface, TranslationSurface):
+            if self._surface in TranslationSurfaces():
                 end_holonomy = -holonomy
-            if isinstance(self._surface, HalfTranslationSurface):
+            if self._surface in HalfTranslationSurfaces():
                 if direction == end_direction:
                     end_holonomy = holonomy
                 else:
