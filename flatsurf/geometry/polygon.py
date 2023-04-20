@@ -23,7 +23,7 @@ EXAMPLES::
     sage: m * p
     Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
@@ -41,7 +41,7 @@ EXAMPLES::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import operator
 

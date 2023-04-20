@@ -5,7 +5,7 @@ Eskin-McMullen-Mukamel-Write quadrilaterals from the article
 Note that in some cases, the billiards might give a Veech surface and not
 the ambient rank 2 locus.
 """
-######################################################################
+# ****************************************************************************
 # This file is part of sage-flatsurf.
 #
 #       Copyright (C) 2020 Vincent Delecroix
@@ -22,7 +22,7 @@ the ambient rank 2 locus.
 #
 # You should have received a copy of the GNU General Public License
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 

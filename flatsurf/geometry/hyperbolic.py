@@ -188,7 +188,7 @@ We can also intersect objects that are not half spaces::
     using any symbolic expressions, and tries to produce better plots.
 
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2022-2023 Julian Rüth
@@ -207,7 +207,7 @@ We can also intersect objects that are not half spaces::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import collections.abc
 

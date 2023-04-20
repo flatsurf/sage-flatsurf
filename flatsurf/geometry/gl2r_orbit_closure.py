@@ -60,7 +60,7 @@ they are generally not parabolic::
     sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
     True
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2019-2022 Julian Rüth
@@ -78,7 +78,7 @@ they are generally not parabolic::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 from sage.all import FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
 

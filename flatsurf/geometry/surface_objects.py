@@ -3,7 +3,7 @@ Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2017-2020 W. Patrick Hooper
@@ -22,7 +22,7 @@ This includes singularities, saddle connections and cylinders.
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector

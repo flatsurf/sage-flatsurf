@@ -1,7 +1,7 @@
 r"""
 Test basic geometry methods used in polygon construction.
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2020 Julian Rüth
@@ -18,7 +18,7 @@ Test basic geometry methods used in polygon construction.
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 

@@ -20,7 +20,7 @@ EXAMPLES::
     True
 
 """
-# ####################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2023 Julian Rüth
@@ -37,7 +37,7 @@ EXAMPLES::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-# ####################################################################
+# ****************************************************************************
 
 from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 from sage.categories.category_with_axiom import all_axioms

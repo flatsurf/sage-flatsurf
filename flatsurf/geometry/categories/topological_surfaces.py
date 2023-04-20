@@ -19,7 +19,7 @@ EXAMPLES::
     True
 
 """
-# ####################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2023 Julian Rüth
@@ -36,7 +36,7 @@ EXAMPLES::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-# ####################################################################
+# ****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
 from sage.categories.topological_spaces import TopologicalSpaces

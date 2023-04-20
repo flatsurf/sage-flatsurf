@@ -77,7 +77,7 @@ Here, we build a surface with boundary::
     sage: TestSuite(S).run()
 
 """
-# ####################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
@@ -95,7 +95,7 @@ Here, we build a surface with boundary::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-# ####################################################################
+# ****************************************************************************
 
 from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 from sage.categories.category_with_axiom import all_axioms

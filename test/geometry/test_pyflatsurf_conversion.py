@@ -1,7 +1,7 @@
 r"""
 Discriminant loci in H(1,1)
 """
-######################################################################
+# ****************************************************************************
 # This file is part of sage-flatsurf.
 #
 #       Copyright (C) 2020 Vincent Delecroix
@@ -18,7 +18,7 @@ Discriminant loci in H(1,1)
 #
 # You should have received a copy of the GNU General Public License
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 

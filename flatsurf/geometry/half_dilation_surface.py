@@ -1,9 +1,9 @@
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
-#                          2023 Julian Rüth <julian.rueth@fsfe.org>
+#       Copyright (C) 2013-2019 Vincent Delecroix
+#                     2013-2019 W. Patrick Hooper
+#                          2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
