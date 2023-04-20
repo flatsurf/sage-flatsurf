@@ -597,7 +597,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if all(a != 1 for a in self.angles()):
                 # no 2π angle
                 return self
-            from .pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
+            from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
 
             S = to_pyflatsurf(self)
             S.delaunay()

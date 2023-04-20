@@ -261,10 +261,15 @@ def from_pyflatsurf(T):
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
-        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
-        TranslationSurface built from 6 polygons
+        sage: T = from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
+        sage: T
+        Surface built from 6 polygons
 
-    TESTS:
+    TESTS::
+
+        sage: from flatsurf.geometry.categories import TranslationSurfaces
+        sage: T in TranslationSurfaces()
+        True
 
     Verify that #137 has been resolved::
 
@@ -277,12 +282,13 @@ def from_pyflatsurf(T):
         sage: S.add_polygon(P)
         0
         sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
+        sage: S.set_immutable()
         sage: M = S
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
-        SimilaritySurface built from 8 polygons
+        Surface built from 8 polygons
 
     """
     from flatsurf.features import pyflatsurf_feature

@@ -2233,7 +2233,7 @@ class EquiangularPolygons:
 
     Polygons can also be defined over a module containing transcendent parameters::
 
-        sage: from pyexactreal import ExactReals # optional: exactreal
+        sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
         sage: R = ExactReals(P.base_ring()) # optional: exactreal
         sage: P(R(1)) # optional: exactreal
         Polygon: (0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))

@@ -150,8 +150,12 @@ class GL2ROrbitClosure:
 
     def __init__(self, surface):
         from flatsurf.geometry.categories import TranslationSurfaces
+        from flatsurf.geometry.surface import Surface
 
-        if surface in TranslationSurfaces():
+        if isinstance(surface, Surface):
+            if surface not in TranslationSurfaces():
+                raise NotImplementedError("cannot compute orbit closure of a non-translation surface")
+
             base_ring = surface.base_ring()
             from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
 
