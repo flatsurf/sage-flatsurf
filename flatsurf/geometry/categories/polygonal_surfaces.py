@@ -107,6 +107,74 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return category
 
+        @abstract_method
+        def labels(self):
+            r"""
+            Return the labels used to enumerate the polygons that make up this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.labels()
+                (0,)
+
+            ::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.labels()
+                (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+            """
+
+        @abstract_method
+        def polygon(self, label):
+            r"""
+            Return the polygon with ``label``.
+
+            INPUT:
+
+            - ``label`` -- one of the labels included in :meth:`labels`
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.polygon(0)
+                Polygon: (0, 0), (2, 0), (1, 4), (0, 5)
+
+            """
+
+        @abstract_method
+        def opposite_edge(self, label, edge):
+            r"""
+            Return the polygon label and edge that is glued to the ``edge`` of
+            the polygon with ``label``.
+
+            INPUT:
+
+            - ``label`` -- one of the labels included in :meth:`labels`
+
+            - ``edge`` -- a non-negative integer to specify an edge (the edges
+              of a polygon are numbered starting from zero.)
+
+            OUTPUT:
+
+            A tuple ``(label, edge)`` with the semantics as in the input.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.opposite_edge(0, 0)
+                (0, 0)
+
+            """
+
         # TODO: Deprecate is_finite everywhere since it clashes with the
         # notion of Sets(). Instead use is_finite_type().
         @abstract_method
