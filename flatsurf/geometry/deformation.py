@@ -374,6 +374,7 @@ class TrianglesFlipDeformation(Deformation):
         domains.pop()
         domains.append(self.codomain())
 
+        # TODO: Get rid of this trivial step.
         deformation = IdentityDeformation(self.domain())
         for i, flip in enumerate(self._flip_sequence):
             deformation = TriangleFlipDeformation(domains[i], domains[i + 1], flip) * deformation
@@ -408,12 +409,12 @@ class TriangleFlipDeformation(Deformation):
 
         if label == self._flip[0]:
             if edge == self._flip[1]:
-                return self._image_edge(label, (edge + 1) % 3) + self._image_edge(label, (edge + 2) % 3)
+                return self._image_edge(*self.domain().opposite_edge(label, (edge + 1) % 3)) + self._image_edge(*self.domain().opposite_edge(label, (edge + 2) % 3))
 
             return [find_in_codomain(self.domain().polygon(label).edge(edge))]
         if label == opposite_flip[0]:
             if edge == opposite_flip[1]:
-                return self._image_edge(label, (edge + 1) % 3) + self._image_edge(label, (edge + 2) % 3)
+                return self._image_edge(*self.domain().opposite_edge(label, (edge + 1) % 3)) + self._image_edge(*self.domain().opposite_edge(label, (edge + 2) % 3))
 
             return [find_in_codomain(self.domain().polygon(label).edge(edge))]
 
