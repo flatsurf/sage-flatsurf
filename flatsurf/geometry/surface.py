@@ -95,6 +95,49 @@ class OrientedSimilaritySurface(Surface_base, Parent):
             coordinates = polygon.edge(0) / 2
         return self.point(label, coordinates)
 
+    def _eq_oriented_similarity_surfaces(self, other):
+        # Whether this surface equals other in terms of oriented similarity surfaces
+        if self is other:
+            return True
+
+        if not isinstance(other, OrientedSimilaritySurface):
+            return False
+
+        if self.base_ring() != other.base_ring():
+            return False
+
+        if self.category() != other.category():
+            return False
+
+        if self.num_polygons() == 0:
+            return other.num_polygons() == 0
+        if other.num_polygons() == 0:
+            return False
+
+        if self.num_polygons() != other.num_polygons():
+            return False
+
+        if self.base_label() != other.base_label():
+            return False
+        if self.polygon(self.base_label()) != other.polygon(self.base_label()):
+            return False
+
+        if not self.is_finite():
+            raise NotImplementedError("cannot compare these infinite surfaces yet")
+
+        for label, polygon in self.label_polygon_iterator():
+            try:
+                polygon2 = other.polygon(label)
+            except ValueError:
+                return False
+            if polygon != polygon2:
+                return False
+            for edge in range(polygon.num_edges()):
+                if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
+                    return False
+
+        return True
+
 
 class MutableOrientedSimilaritySurface(OrientedSimilaritySurface):
     # TODO: Lets us add polygons and change edge gluings.

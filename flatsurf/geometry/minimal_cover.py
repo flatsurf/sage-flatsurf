@@ -1,6 +1,6 @@
 from sage.matrix.constructor import matrix
 
-from .surface import Surface
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
 def _is_finite(surface):
@@ -31,7 +31,7 @@ def _is_finite(surface):
     return True
 
 
-class MinimalTranslationCover(Surface):
+class MinimalTranslationCover(OrientedSimilaritySurface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).
 
@@ -61,7 +61,7 @@ class MinimalTranslationCover(Surface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("translation")
         sage: S
-        Surface built from 82 polygons
+        MinimalTranslationCover(Surface built from 2 polygons)
 
     TESTS::
 
@@ -71,7 +71,7 @@ class MinimalTranslationCover(Surface):
 
     """
 
-    def __init__(self, similarity_surface):
+    def __init__(self, similarity_surface, category=None):
         if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
@@ -82,16 +82,23 @@ class MinimalTranslationCover(Surface):
         else:
             self._ss = similarity_surface
 
-        # We are finite if and only if self._ss is a finite RationalConeSurface.
-        finite = _is_finite(self._ss)
+        if category is None:
+            from flatsurf.geometry.categories import TranslationSurfaces
+            category = TranslationSurfaces()
 
+            if _is_finite(self._ss):
+                category = category.FiniteType()
+            else:
+                category = category.InfiniteType()
+
+        OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
+
+    def base_label(self):
         self._F = self._ss.base_ring()
-        base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
+        return (self._ss.base_label(), self._F.one(), self._F.zero())
 
-        from flatsurf.geometry.categories import TranslationSurfaces
-        Surface.__init__(
-            self, self._ss.base_ring(), base_label, finite=finite, mutable=False, category=TranslationSurfaces()
-        )
+    def is_mutable(self):
+        return False
 
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
@@ -106,17 +113,18 @@ class MinimalTranslationCover(Surface):
         bb = b * m[0][0] + a * m[1][0]
         return ((p2, aa, bb), e2)
 
+    def _repr_(self):
+        return f"MinimalTranslationCover({repr(self._ss)})"
+
     def __hash__(self):
         return super().__hash__()
 
     def _cache_key(self):
-        return (MinimalTranslationCover, self._ss)
+        return (MinimalTranslationCover, self._ss, self.category())
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
-
-        Note that this is not implemented in most non-trivial cases.
 
         EXAMPLES::
 
@@ -138,14 +146,19 @@ class MinimalTranslationCover(Surface):
             False
 
         """
-        if isinstance(other, MinimalTranslationCover):
-            if self._ss == other._ss and self._base_label == other._base_label:
-                return True
+        if not isinstance(other, MinimalTranslationCover):
+            return False
 
-        return super().__eq__(other)
+        if self.category() != other.category():
+            return False
+
+        if self._ss == other._ss:
+            return True
+
+        return self._eq_oriented_similarity_surfaces(other)
 
 
-class MinimalHalfTranslationCover(Surface):
+class MinimalHalfTranslationCover(OrientedSimilaritySurface):
     r"""
     We label copy by cartesian product (polygon from bot, matrix).
 
@@ -175,7 +188,7 @@ class MinimalHalfTranslationCover(Surface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("half-translation")
         sage: S
-        Surface built from 82 polygons
+        MinimalHalfTranslationCover(Surface built from 2 polygons)
 
     TESTS::
 
@@ -185,7 +198,7 @@ class MinimalHalfTranslationCover(Surface):
 
     """
 
-    def __init__(self, similarity_surface):
+    def __init__(self, similarity_surface, category=None):
         if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
@@ -196,16 +209,26 @@ class MinimalHalfTranslationCover(Surface):
         else:
             self._ss = similarity_surface
 
-        # We are finite if and only if self._ss is a finite RationalConeSurface.
-        finite = _is_finite(self._ss)
+        if category is None:
+            from flatsurf.geometry.categories import HalfTranslationSurfaces
+            category = HalfTranslationSurfaces()
 
+            if _is_finite(self._ss):
+                category = category.FiniteType()
+            else:
+                category = category.InfiniteType()
+
+        OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
+
+    def base_label(self):
         self._F = self._ss.base_ring()
-        base_label = (self._ss.base_label(), self._F.one(), self._F.zero())
+        return (self._ss.base_label(), self._F.one(), self._F.zero())
 
-        from flatsurf.geometry.categories import HalfTranslationSurfaces
-        Surface.__init__(
-            self, self._ss.base_ring(), base_label, finite=finite, mutable=False, category=HalfTranslationSurfaces().Oriented()
-        )
+    def is_mutable(self):
+        return False
+
+    def _repr_(self):
+        return f"MinimalHalfTranslationCover({repr(self._ss)})"
 
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
@@ -223,8 +246,26 @@ class MinimalHalfTranslationCover(Surface):
         else:
             return ((p2, -aa, -bb), e2)
 
+    def __hash__(self):
+        return super().__hash__()
 
-class MinimalPlanarCover(Surface):
+    def _cache_key(self):
+        return (MinimalHalfTranslationCover, self._ss, self.category())
+
+    def __eq__(self, other):
+        if not isinstance(other, MinimalHalfTranslationCover):
+            return False
+
+        if self.category() != other.category():
+            return False
+
+        if self._ss == other._ss:
+            return True
+
+        return self._eq_oriented_similarity_surfaces(other)
+
+
+class MinimalPlanarCover(OrientedSimilaritySurface):
     r"""
     The minimal planar cover of a surface S is the smallest cover C so that the
     developing map from the universal cover U to the plane induces a well
@@ -250,7 +291,7 @@ class MinimalPlanarCover(Surface):
         sage: TestSuite(s).run()
     """
 
-    def __init__(self, similarity_surface, base_label=None):
+    def __init__(self, similarity_surface, base_label=None, category=None):
         if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
                 self._ss = similarity_surface.copy()
@@ -266,13 +307,22 @@ class MinimalPlanarCover(Surface):
 
         # The similarity group containing edge identifications.
         self._sg = self._ss.edge_transformation(self._ss.base_label(), 0).parent()
+        self._base_label = (self._ss.base_label(), self._sg.one())
 
-        new_base_label = (self._ss.base_label(), self._sg.one())
+        if category is None:
+            from flatsurf.geometry.categories import TranslationSurfaces
+            category = TranslationSurfaces().InfiniteType()
 
-        from flatsurf.geometry.categories import TranslationSurfaces
-        Surface.__init__(
-            self, self._ss.base_ring(), new_base_label, finite=False, mutable=False, category=TranslationSurfaces()
-        )
+        OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
+
+    def _repr_(self):
+        return f"MinimalPlanarCover({repr(self._ss)})"
+
+    def base_label(self):
+        return self._base_label
+
+    def is_mutable(self):
+        return False
 
     def polygon(self, lab):
         r"""
@@ -300,7 +350,7 @@ class MinimalPlanarCover(Surface):
         return super().__hash__()
 
     def _cache_key(self):
-        return (MinimalPlanarCover, self._ss, self._base_label)
+        return (MinimalPlanarCover, self._ss, self._base_label, self.category())
 
     def __eq__(self, other):
         r"""
@@ -318,8 +368,14 @@ class MinimalPlanarCover(Surface):
             True
 
         """
-        if isinstance(other, MinimalPlanarCover):
-            if self._ss == other._ss and self._base_label == other._base_label:
-                return True
+        if not isinstance(other, MinimalPlanarCover):
+            return False
 
-        return super().__eq__(other)
+        if self._base_label != other._base_label:
+            return False
+        if self.category() != other.category():
+            return False
+        if self._ss == other._ss:
+            return True
+
+        return self._eq_oriented_similarity_surfaces(other)

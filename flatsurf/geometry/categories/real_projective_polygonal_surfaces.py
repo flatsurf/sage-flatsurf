@@ -60,3 +60,6 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
         def graphical_surface(self, *args, **kwargs):
             from flatsurf.graphical.surface import GraphicalSurface
             return GraphicalSurface(self, *args, **kwargs)
+
+        def plot(self, **kwargs):
+            return self.graphical_surface().plot(**kwargs)

@@ -711,7 +711,7 @@ class GraphicalSurface:
             Vector space of dimension 2 over Algebraic Real Field
             sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
             sage: v.bundle()
-            Tangent bundle of Surface built from infinitely many polygons defined over Algebraic Real Field
+            Tangent bundle of MinimalPlanarCover(Surface built from 1 polygon) defined over Algebraic Real Field
 
         """
         surface = self.get_surface()

@@ -266,7 +266,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         sage: p = E(r1 + r2)
                         sage: B = similarity_surfaces.billiard(p)
                         sage: B.minimal_cover("translation")
-                        Surface built from 6 polygons
+                        MinimalTranslationCover(Surface built from 2 polygons)
                         sage: S = B.minimal_cover("translation")
                         sage: S, _ = S.normalized_coordinates()
                         sage: S

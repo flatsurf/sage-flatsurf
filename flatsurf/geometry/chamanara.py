@@ -33,6 +33,7 @@ EXAMPLES::
 # ********************************************************************
 
 from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.minimal_cover import MinimalTranslationCover
 from sage.rings.integer_ring import ZZ
 
 
@@ -124,6 +125,13 @@ class ChamanaraSurface(OrientedSimilaritySurface):
     def _cache_key(self):
         return (ChamanaraSurface, self._p, self.base_ring(), self.base_label())
 
+    def graphical_surface(self):
+        adjacencies = [(0, 1)]
+        for i in range(8):
+            adjacencies.append((-i, 3))
+            adjacencies.append((i + 1, 3))
+        return super().graphical_surface(adjacencies=adjacencies)
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -158,13 +166,26 @@ def chamanara_half_dilation_surface(alpha, n=8):
         sage: s = chamanara_half_dilation_surface(1/2)
         sage: TestSuite(s).run()
     """
-    s = ChamanaraSurface(alpha)
-    adjacencies = [(0, 1)]
-    for i in range(n):
-        adjacencies.append((-i, 3))
-        adjacencies.append((i + 1, 3))
-    s.graphical_surface(adjacencies=adjacencies)
-    return s
+    # TODO: Warn if n != 8
+    return ChamanaraSurface(alpha)
+
+
+class ChamanaraTranslationSurface(MinimalTranslationCover):
+    def __init__(self, alpha):
+        MinimalTranslationCover.__init__(self, ChamanaraSurface(alpha))
+
+    def graphical_surface(self):
+        label = self.base_label()
+        adjacencies = [(label, 1)]
+        for i in range(8):
+            adjacencies.append((label, 3))
+            label = self.opposite_edge(label, 3)[0]
+        label = self.base_label()
+        label = self.opposite_edge(label, 1)[0]
+        for i in range(8):
+            adjacencies.append((label, 3))
+            label = self.opposite_edge(label, 3)[0]
+        return super().graphical_surface(adjacencies=adjacencies)
 
 
 def chamanara_surface(alpha, n=8):
@@ -177,16 +198,5 @@ def chamanara_surface(alpha, n=8):
         sage: s = chamanara_surface(1/2)
         sage: TestSuite(s).run()
     """
-    s = chamanara_half_dilation_surface(alpha).minimal_cover(cover_type="translation")
-    label = s.base_label()
-    adjacencies = [(label, 1)]
-    for i in range(n):
-        adjacencies.append((label, 3))
-        label = s.opposite_edge(label, 3)[0]
-    label = s.base_label()
-    label = s.opposite_edge(label, 1)[0]
-    for i in range(n):
-        adjacencies.append((label, 3))
-        label = s.opposite_edge(label, 3)[0]
-    s.graphical_surface(adjacencies=adjacencies)
-    return s
+    # TODO: Warn if n != 8
+    return ChamanaraTranslationSurface(alpha)

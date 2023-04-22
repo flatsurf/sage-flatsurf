@@ -691,37 +691,18 @@ class Surface(OrientedSimilaritySurface):
         if not isinstance(other, Surface):
             return False
 
-        if self.is_finite() != other.is_finite():
-            return False
-        if self.base_ring() != other.base_ring():
-            return False
         if self.is_mutable() != other.is_mutable():
             return False
-        if self.num_polygons() == 0:
-            return other.num_polygons() == 0
-        if other.num_polygons() == 0:
+
+        if not self._eq_oriented_similarity_surfaces(other):
             return False
+
+        if self.num_polygons() == 0:
+            # Only compare base labels when the surfaces are not empty.
+            return True
+
         if self.base_label() != other.base_label():
             return False
-        if self.num_polygons() != other.num_polygons():
-            return False
-
-        if self.polygon(self.base_label()) != other.polygon(self.base_label()):
-            return False
-
-        if not self.is_finite():
-            raise NotImplementedError("cannot compare these infinite surfaces yet")
-
-        for label, polygon in self.label_polygon_iterator():
-            try:
-                polygon2 = other.polygon(label)
-            except ValueError:
-                return False
-            if polygon != polygon2:
-                return False
-            for edge in range(polygon.num_edges()):
-                if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
-                    return False
 
         return True
 

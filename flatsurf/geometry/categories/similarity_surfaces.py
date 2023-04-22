@@ -1532,20 +1532,20 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: cs = s
                     sage: ts = cs.minimal_cover(cover_type="translation")
                     sage: ts
-                    Surface built from 4 polygons
+                    MinimalTranslationCover(Surface built from 1 polygon)
                     sage: from flatsurf.geometry.categories import TranslationSurfaces
                     sage: ts in TranslationSurfaces()
                     True
                     sage: hts = cs.minimal_cover(cover_type="half-translation")
                     sage: hts
-                    Surface built from 2 polygons
+                    MinimalHalfTranslationCover(Surface built from 1 polygon)
                     sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
                     sage: hts in HalfTranslationSurfaces()
                     True
                     sage: TestSuite(hts).run()
                     sage: ps = cs.minimal_cover(cover_type="planar")
                     sage: ps
-                    Surface built from infinitely many polygons
+                    MinimalPlanarCover(Surface built from 1 polygon)
                     sage: ps in TranslationSurfaces()
                     True
                     sage: TestSuite(ps).run()
@@ -1554,7 +1554,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S = similarity_surfaces.example()
                     sage: T = S.minimal_cover(cover_type="translation")
                     sage: T
-                    Surface built from infinitely many polygons
+                    MinimalTranslationCover(Surface built from 2 polygons)
                     sage: T in TranslationSurfaces()
                     True
                     sage: T.polygon(T.base_label())

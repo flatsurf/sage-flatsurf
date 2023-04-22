@@ -546,7 +546,7 @@ class SimilaritySurfaceGenerators:
             True
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
-            Surface built from 8 polygons
+            MinimalTranslationCover(Surface built from 2 polygons)
             sage: TestSuite(M).run()
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: M in TranslationSurfaces()
@@ -1734,7 +1734,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C
-            Surface built from infinitely many polygons
+            MinimalTranslationCover(Chamanara surface with parameter 1/2)
 
         TESTS::
 
