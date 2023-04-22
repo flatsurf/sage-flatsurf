@@ -24,10 +24,10 @@ from sage.structure.element import get_coercion_model, parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
-from .polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
+from flatsurf.geometry.polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
 
-from .surface import Surface, Surface_list
-from .translation_surface import Origami
+from flatsurf.geometry.surface import OrientedSimilaritySurface, Surface_list
+from flatsurf.geometry.translation_surface import Origami
 
 
 ZZ_1 = ZZ(1)
@@ -85,7 +85,7 @@ def flipper_nf_element_to_sage(x, K=None):
     return K(coeffs)
 
 
-class EInfinitySurface(Surface):
+class EInfinitySurface(OrientedSimilaritySurface):
     r"""
     The surface based on the `E_\infinity` graph.
 
@@ -111,34 +111,38 @@ class EInfinitySurface(Surface):
             field = NumberField(
                 x**3 - ZZ(5) * x**2 + ZZ(4) * x - ZZ(1), "r", embedding=AA(ZZ(4))
             )
-            self._l = field.gen()
+            self._lambda_squared = field.gen()
         else:
             if field is None:
-                self._l = lambda_squared
+                self._lambda_squared = lambda_squared
                 field = lambda_squared.parent()
             else:
-                self._l = field(lambda_squared)
-        super().__init__(field, ZZ.zero(), finite=False, mutable=False)
+                self._lambda_squared = field(lambda_squared)
+        from flatsurf.geometry.categories import SimilaritySurfaces
+        super().__init__(field, category=SimilaritySurfaces().Oriented().InfiniteType())
+
+    def is_mutable(self):
+        return False
+
+    def base_label(self):
+        return ZZ(0)
 
     def _repr_(self):
-        r"""
-        String representation.
-        """
-        return "The E-infinity surface"
+        return f"EInfinitySurface({repr(self._lambda_squared)})"
 
     @cached_method
     def get_white(self, n):
         r"""Get the weight of the white endpoint of edge n."""
         if n == 0 or n == 1:
-            return self._l
+            return self._lambda_squared
         if n == -1:
-            return self._l - 1
+            return self._lambda_squared - 1
         if n == 2:
-            return 1 - 3 * self._l + self._l**2
+            return 1 - 3 * self._lambda_squared + self._lambda_squared**2
         if n > 2:
             x = self.get_white(n - 1)
             y = self.get_black(n)
-            return self._l * y - x
+            return self._lambda_squared * y - x
         return self.get_white(-n)
 
     @cached_method
@@ -147,7 +151,7 @@ class EInfinitySurface(Surface):
         if n == 0:
             return self.base_ring().one()
         if n == 1 or n == -1 or n == 2:
-            return self._l - 1
+            return self._lambda_squared - 1
         if n > 2:
             x = self.get_black(n - 1)
             y = self.get_white(n - 1)
@@ -220,10 +224,7 @@ class EInfinitySurface(Surface):
                 return 1 - p, (e + 2) % 4
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (EInfinitySurface, self.base_ring(), self._l)
+        return hash((EInfinitySurface, self.base_ring(), self._lambda_squared))
 
     def __eq__(self, other):
         r"""
@@ -237,13 +238,13 @@ class EInfinitySurface(Surface):
             True
 
         """
-        if isinstance(other, EInfinitySurface):
-            return self._l == other._l and self.base_ring() == other.base_ring()
+        if not isinstance(other, EInfinitySurface):
+            return False
 
-        return super().__eq__(other)
+        return self._lambda_squared == other._lambda_squared and self.base_ring() == other.base_ring()
 
 
-class TFractalSurface(Surface):
+class TFractalSurface(OrientedSimilaritySurface):
     r"""
     The TFractal surface.
 
@@ -285,11 +286,18 @@ class TFractalSurface(Surface):
         self._wL = self._words("L")
         self._wR = self._words("R")
 
-        base_label = self.polygon_labels()._cartesian_product_of_elements(
+        self._base_label = self.polygon_labels()._cartesian_product_of_elements(
             (self._words(""), 0)
         )
 
-        super().__init__(field, base_label, finite=False, mutable=False)
+        from flatsurf.geometry.categories import TranslationSurfaces
+        super().__init__(field, category=TranslationSurfaces().InfiniteType())
+
+    def base_label(self):
+        return self._base_label
+
+    def is_mutable(self):
+        return False
 
     def _repr_(self):
         return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s" % (
@@ -447,21 +455,18 @@ class TFractalSurface(Surface):
         return ConvexPolygons(self.base_ring())([(w, 0), (0, h), (-w, 0), (0, -h)])
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (TFractalSurface, self._w, self._h1, self._r, self._h2)
+        return hash((TFractalSurface, self._w, self._h1, self._r, self._h2))
 
     def __eq__(self, other):
-        if isinstance(other, TFractalSurface):
-            return (
-                self._w == other._w
-                and self._h1 == other._h1
-                and self._r == other._r
-                and self._h2 == other._h2
-            )
+        if not isinstance(other, TFractalSurface):
+            return False
 
-        return super().__eq__(other)
+        return (
+            self._w == other._w
+            and self._h1 == other._h1
+            and self._r == other._r
+            and self._h2 == other._h2
+        )
 
 
 def tfractal_surface(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
