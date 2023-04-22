@@ -34,61 +34,6 @@ from .surface import Surface
 #                 "edge_matrix of edge " + str((lab, e)) + " is not a translation.",
 #             )
 
-class MinimalTranslationCover(Surface):
-    r"""
-    Do not use translation_surface.MinimalTranslationCover. Use
-    minimal_cover.MinimalTranslationCover instead. This class is being
-    deprecated.
-    """
-
-    def __init__(self, similarity_surface):
-        if similarity_surface.underlying_surface().is_mutable():
-            if similarity_surface.is_finite():
-                self._ss = similarity_surface.copy()
-            else:
-                raise ValueError(
-                    "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
-                )
-        else:
-            self._ss = similarity_surface
-
-        # We are finite if and only if self._ss is a finite RationalConeSurface.
-        from flatsurf.geometry.minimal_cover import _is_finite
-
-        finite = _is_finite(self._ss)
-
-        identity = identity_matrix(self._ss.base_ring(), 2)
-        identity.set_immutable()
-        base_label = (self._ss.base_label(), identity)
-
-        Surface.__init__(
-            self, self._ss.base_ring(), base_label, finite=finite, mutable=False
-        )
-
-    def polygon(self, lab):
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf import *
-            sage: C = translation_surfaces.chamanara(1/2)
-            sage: C.polygon('a')
-            Traceback (most recent call last):
-            ...
-            ValueError: invalid label 'a'
-        """
-        if not isinstance(lab, tuple) or len(lab) != 2:
-            raise ValueError("invalid label {!r}".format(lab))
-        return lab[1] * self._ss.polygon(lab[0])
-
-    def opposite_edge(self, p, e):
-        pp, m = p  # this is the polygon m * ss.polygon(p)
-        p2, e2 = self._ss.opposite_edge(pp, e)
-        me = self._ss.edge_matrix(pp, e)
-        mm = ~me * m
-        mm.set_immutable()
-        return ((p2, mm), e2)
-
-
 class AbstractOrigami(Surface):
     r"""Abstract base class for origamis.
     Realization needs just to define a _domain and four cardinal directions.
