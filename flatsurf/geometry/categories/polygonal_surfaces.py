@@ -130,6 +130,13 @@ class PolygonalSurfaces(SurfaceCategory):
             from flatsurf.geometry.surface import Labels
             return Labels(self)
 
+        def num_polygons(self):
+            # TODO: Deprecate
+            if not self.is_finite():
+                from sage.all import infinity
+                return infinity
+            return len(self.labels())
+
         def label_iterator(self, polygons=False):
             # TODO: Deprecate
             if polygons:

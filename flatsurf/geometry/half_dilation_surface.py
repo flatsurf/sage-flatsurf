@@ -19,13 +19,13 @@
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from flatsurf.geometry.surface import Surface
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping
 
 from flatsurf.geometry.polygon import ConvexPolygons
 
 
-class GL2RImageSurface(Surface):
+class GL2RImageSurface(OrientedSimilaritySurface):
     r"""
     This is a lazy implementation of the SL(2,R) image of a translation surface.
 
@@ -74,9 +74,16 @@ class GL2RImageSurface(Surface):
 
         self._P = ConvexPolygons(base_ring)
 
-        super().__init__(
-            base_ring, self._s.base_label(), finite=self._s.is_finite(), mutable=False, category=category or surface.category()
-        )
+        if category is None:
+            category = surface.category()
+
+        super().__init__(base_ring, category=category)
+
+    def base_label(self):
+        return self._s.base_label()
+
+    def is_mutable(self):
+        return False
 
     def polygon(self, lab):
         if self._det_sign == 1:

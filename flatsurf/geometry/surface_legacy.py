@@ -1290,8 +1290,9 @@ class Surface_list(Surface):
 
             finite = True
         else:
-            if not isinstance(surface, Surface):
-                raise TypeError("surface must be a Surface or a SimilaritySurface")
+            from flatsurf.geometry.surface import OrientedSimilaritySurface
+            if not isinstance(surface, OrientedSimilaritySurface):
+                raise TypeError("surface must be an OrientedSimilaritySurface")
 
             if not surface.is_finite() and surface.is_mutable():
                 raise NotImplementedError(

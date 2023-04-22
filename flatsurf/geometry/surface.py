@@ -110,7 +110,7 @@ class Labels(collections.abc.Set):
     def __len__(self):
         if self._len is None:
             if not self._surface.is_finite():
-                from saeg.all import infinity
+                from sage.all import infinity
                 self._len = infinity
             elif self._labels is not None:
                 self._len = len(self._labels)
