@@ -138,6 +138,10 @@ class TopologicalSurfaces(SurfaceCategory):
             return category
 
         @abstract_method
+        def is_mutable(self):
+            pass
+
+        @abstract_method
         def is_orientable(self):
             r"""
             Return whether this surface is orientable.

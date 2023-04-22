@@ -107,7 +107,6 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return category
 
-        @abstract_method
         def labels(self):
             r"""
             Return the labels used to enumerate the polygons that make up this surface.
@@ -128,6 +127,16 @@ class PolygonalSurfaces(SurfaceCategory):
                 (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
 
             """
+            from flatsurf.geometry.surface import Labels
+            return Labels(self)
+
+        def label_iterator(self):
+            # TODO: Deprecate
+            return iter(self.labels())
+
+        @abstract_method
+        def base_label(self):
+            pass
 
         @abstract_method
         def polygon(self, label):
@@ -325,7 +334,10 @@ class PolygonalSurfaces(SurfaceCategory):
             True
 
         """
-        # TODO: Implement is_finite()
+
+        class ParentMethods:
+            def is_finite(self):
+                return True
 
     # TODO: Can we somehow force that a surface can only be finite XOR infinite type?
     class InfiniteType(SurfaceCategoryWithAxiom):
@@ -340,7 +352,10 @@ class PolygonalSurfaces(SurfaceCategory):
             True
 
         """
-        # TODO: Implement is_finite()
+
+        class ParentMethods:
+            def is_finite(self):
+                return False
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""

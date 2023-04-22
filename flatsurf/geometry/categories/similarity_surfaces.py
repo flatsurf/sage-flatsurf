@@ -556,7 +556,24 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: g((2,-2))
                     (2, 0)
                 """
-                return self.underlying_surface().edge_transformation(p, e)
+                from flatsurf.geometry.similarity import SimilarityGroup
+                G = SimilarityGroup(self.base_ring())
+                q = self.polygon(p)
+                a = q.vertex(e)
+                b = q.vertex(e + 1)
+                # This is the similarity carrying the origin to a and (1,0) to b:
+                g = G(b[0] - a[0], b[1] - a[1], a[0], a[1])
+
+                pp, ee = self.opposite_edge(p, e)
+                qq = self.polygon(pp)
+                # Be careful here: opposite vertices are identified
+                aa = qq.vertex(ee + 1)
+                bb = qq.vertex(ee)
+                # This is the similarity carrying the origin to aa and (1,0) to bb:
+                gg = G(bb[0] - aa[0], bb[1] - aa[1], aa[0], aa[1])
+
+                # This is the similarity carrying (a,b) to (aa,bb):
+                return gg / g
 
             def set_vertex_zero(self, label, v, in_place=False):
                 r"""
@@ -1447,8 +1464,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
                     sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
                     Vector space of dimension 2 over Algebraic Real Field
+
                 """
-                return self.underlying_surface().point(label, point, limit=limit, ring=ring)
+                return self(label, point, limit=limit, ring=ring)
 
             # TODO: deprecate
             surface_point = point

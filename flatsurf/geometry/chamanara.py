@@ -32,7 +32,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
-from .surface import Surface
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 from sage.rings.integer_ring import ZZ
 
 
@@ -51,15 +51,19 @@ def ChamanaraPolygon(alpha):
     return polygons((1, 0), (-x, x), (0, -1), (x - 1, 1 - x))
 
 
-class ChamanaraSurface(Surface):
+class ChamanaraSurface(OrientedSimilaritySurface):
     r"""
     The ChamanaraSurface $X_{\alpha}$.
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.chamanara import ChamanaraSurface
-        sage: ChamanaraSurface(1/2)
+        sage: S = ChamanaraSurface(1/2); S
         Chamanara surface with parameter 1/2
+
+    TESTS::
+
+        sage: TestSuite(S).run()
     """
 
     def __init__(self, alpha):
@@ -72,7 +76,13 @@ class ChamanaraSurface(Surface):
         self.rename("Chamanara surface with parameter {}".format(alpha))
 
         from flatsurf.geometry.categories import DilationSurfaces
-        super().__init__(field, ZZ(0), finite=False, mutable=False, category=DilationSurfaces().Oriented())
+        super().__init__(field, category=DilationSurfaces().Oriented().InfiniteType())
+
+    def base_label(self):
+        return ZZ(0)
+
+    def is_mutable(self):
+        return False
 
     def polygon(self, lab):
         r"""
@@ -133,7 +143,6 @@ class ChamanaraSurface(Surface):
             return (
                 self._p == other._p
                 and self.base_ring() == other.base_ring()
-                and self._base_label == other._base_label
             )
 
         return super().__eq__(other)

@@ -55,3 +55,8 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
     def super_categories(self):
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
         return [PolygonalSurfaces()]
+
+    class ParentMethods:
+        def graphical_surface(self, *args, **kwargs):
+            from flatsurf.graphical.surface import GraphicalSurface
+            return GraphicalSurface(self, *args, **kwargs)
