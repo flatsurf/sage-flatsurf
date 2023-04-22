@@ -24,10 +24,10 @@ surfaces.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
-from flatsurf.geometry.surface import Surface
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
-class LazyTriangulatedSurface(Surface):
+class LazyTriangulatedSurface(OrientedSimilaritySurface):
     r"""
     Surface class used to triangulate an infinite surface.
 
@@ -54,7 +54,7 @@ class LazyTriangulatedSurface(Surface):
         sage: TestSuite(ss).run()
     """
 
-    def __init__(self, similarity_surface, relabel=True):
+    def __init__(self, similarity_surface, relabel=True, category=None):
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
@@ -63,13 +63,16 @@ class LazyTriangulatedSurface(Surface):
         # This surface will converge to the Delaunay Triangulation
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
 
-        Surface.__init__(
+        OrientedSimilaritySurface.__init__(
             self,
-            self._s.base_ring(),
-            self._s.base_label(),
-            mutable=False,
-            finite=self._s.is_finite(),
-        )
+            similarity_surface.base_ring(),
+            category=category or self._s.category())
+
+    def is_mutable(self):
+        return False
+
+    def base_label(self):
+        return self._reference.base_label()
 
     def polygon(self, lab):
         r"""
@@ -119,7 +122,7 @@ class LazyTriangulatedSurface(Surface):
         return super().__eq__(other)
 
 
-class LazyDelaunayTriangulatedSurface(Surface):
+class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     r"""
     Surface class used to find a Delaunay triangulation of an infinite surface.
 
@@ -196,14 +199,17 @@ class LazyDelaunayTriangulatedSurface(Surface):
         while not self._certify_or_improve(base_label):
             pass
 
-        Surface.__init__(
+        OrientedSimilaritySurface.__init__(
             self,
             self._s.base_ring(),
-            base_label,
-            finite=self._s.is_finite(),
-            mutable=False,
-            category=category
+            category=category or self._s.category()
         )
+
+    def is_mutable(self):
+        return False
+
+    def base_label(self):
+        return self._s.base_label()
 
     def polygon(self, label):
         if label in self._certified_labels:
@@ -425,13 +431,10 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
             pass
         self._certify_decomposition(base_label)
 
-        Surface.__init__(
+        OrientedSimilaritySurface.__init__(
             self,
             self._s.base_ring(),
-            base_label,
-            finite=self._s.is_finite(),
-            mutable=False,
-            category=category
+            category=category or similarity_surface.category()
         )
 
     def _certify_decomposition(self, label):

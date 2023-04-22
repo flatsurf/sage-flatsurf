@@ -130,9 +130,49 @@ class PolygonalSurfaces(SurfaceCategory):
             from flatsurf.geometry.surface import Labels
             return Labels(self)
 
-        def label_iterator(self):
+        def label_iterator(self, polygons=False):
             # TODO: Deprecate
-            return iter(self.labels())
+            if polygons:
+                for entry in self.label_polygon_iterator():
+                    yield entry
+            else:
+                for entry in self.labels():
+                    yield entry
+
+        def edge_iterator(self, gluings=False):
+            r"""
+            Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+            """
+            # TODO: Deprecate
+            if gluings:
+                for entry in self.edge_gluing_iterator():
+                    yield entry
+                return
+            for label, polygon in self.label_polygon_iterator():
+                for edge in range(polygon.num_edges()):
+                    yield label, edge
+
+        def edge_gluing_iterator(self):
+            r"""
+            Iterate over the ordered pairs of edges being glued.
+            """
+            # TODO: Deprecate
+            for label_edge_pair in self.edge_iterator():
+                yield (
+                    label_edge_pair,
+                    self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
+                )
+
+        def label_polygon_iterator(self):
+            r"""
+            Iterate over pairs (label, polygon).
+
+            Subclasses should consider overriding this method for increased
+            performance.
+            """
+            # TODO: Deprecate
+            for label in self.label_iterator():
+                yield label, self.polygon(label)
 
         @abstract_method
         def base_label(self):

@@ -279,16 +279,6 @@ class Surface(OrientedSimilaritySurface):
             return self.label_polygon_iterator()
         return iter(self.walker())
 
-    def label_polygon_iterator(self):
-        r"""
-        Iterate over pairs (label, polygon).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        for label in self.label_iterator():
-            yield label, self.polygon(label)
-
     def num_edges(self):
         r"""
         Return the total number of edges of all polygons used.
@@ -306,28 +296,6 @@ class Surface(OrientedSimilaritySurface):
             from sage.rings.infinity import Infinity
 
             return Infinity
-
-    def edge_iterator(self, gluings=False):
-        r"""
-        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
-        """
-        if gluings:
-            for entry in self.edge_gluing_iterator():
-                yield entry
-            return
-        for label, polygon in self.label_polygon_iterator():
-            for edge in range(polygon.num_edges()):
-                yield label, edge
-
-    def edge_gluing_iterator(self):
-        r"""
-        Iterate over the ordered pairs of edges being glued.
-        """
-        for label_edge_pair in self.edge_iterator():
-            yield (
-                label_edge_pair,
-                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
-            )
 
     def base_label(self):
         r"""
