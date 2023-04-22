@@ -46,7 +46,7 @@ class AbstractOrigami(OrientedSimilaritySurface):
 
         if category is None:
             from flatsurf.geometry.categories import TranslationSurfaces
-            category = TranslationSurfaces().WithoutBoundary()
+            category = TranslationSurfaces().WithoutBoundary().Connected()
 
             finite = domain.is_finite()
             if finite:
