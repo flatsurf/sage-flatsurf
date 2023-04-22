@@ -193,6 +193,12 @@ class Labels(collections.abc.Set):
             for e in range(self._surface.polygon(label).num_edges()):
                 pending.append(self._surface.opposite_edge(label, e)[0])
 
+    def __repr__(self):
+        if self._surface.is_finite():
+            return repr(tuple(self))
+
+        from itertools import islice
+        return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
 from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator, BaseRingChangedSurface

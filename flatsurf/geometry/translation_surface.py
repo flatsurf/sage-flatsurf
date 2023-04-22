@@ -2,9 +2,8 @@ r"""
 Translation Surfaces.
 """
 
-from sage.matrix.constructor import identity_matrix
-
-from .surface import Surface
+from sage.rings.rational_field import QQ
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
 # TODO: Bring these tests back for all surfaces.
@@ -34,26 +33,34 @@ from .surface import Surface
 #                 "edge_matrix of edge " + str((lab, e)) + " is not a translation.",
 #             )
 
-class AbstractOrigami(Surface):
+class AbstractOrigami(OrientedSimilaritySurface):
     r"""Abstract base class for origamis.
     Realization needs just to define a _domain and four cardinal directions.
     """
 
-    def __init__(self, domain, base_label=None):
+    def __init__(self, domain, base_label=None, category=None):
         self._domain = domain
         if base_label is None:
             base_label = domain.an_element()
-        from sage.rings.rational_field import QQ
+        self._base_label = base_label
 
-        from flatsurf.geometry.categories import SimilaritySurfaces
-        category = SimilaritySurfaces().Oriented().WithoutBoundary()
-        finite = domain.is_finite()
-        if finite:
-            category &= category.FiniteType()
-        else:
-            category &= category.InfiniteType()
+        if category is None:
+            from flatsurf.geometry.categories import TranslationSurfaces
+            category = TranslationSurfaces().WithoutBoundary()
 
-        Surface.__init__(self, QQ, base_label, finite=finite, mutable=False, category=category)
+            finite = domain.is_finite()
+            if finite:
+                category &= category.FiniteType()
+            else:
+                category &= category.InfiniteType()
+
+        super().__init__(QQ, category=category)
+
+    def base_label(self):
+        return self._base_label
+
+    def is_mutable(self):
+        return False
 
     def up(self, label):
         raise NotImplementedError
@@ -102,7 +109,7 @@ class AbstractOrigami(Surface):
 
 
 class Origami(AbstractOrigami):
-    def __init__(self, r, u, rr=None, uu=None, domain=None, base_label=None):
+    def __init__(self, r, u, rr=None, uu=None, domain=None, base_label=None, category=None):
         if domain is None:
             domain = r.parent().domain()
 
@@ -126,7 +133,7 @@ class Origami(AbstractOrigami):
                     raise ValueError("uu o u is not identity on %s" % a)
 
         self._perms = [uu, r, u, rr]  # down,right,up,left
-        AbstractOrigami.__init__(self, domain, base_label)
+        AbstractOrigami.__init__(self, domain, base_label, category=category)
 
     def opposite_edge(self, p, e):
         if p not in self._domain:
@@ -152,8 +159,17 @@ class Origami(AbstractOrigami):
     def _repr_(self):
         return "Origami defined by r=%s and u=%s" % (self._r, self._u)
 
+    def __eq__(self, other):
+        if not isinstance(other, Origami):
+            return False
 
-class LazyStandardizedPolygonSurface(Surface):
+        return self._perms == other._perms and self._domain is other._domain and self.base_label() == other.base_label() and self.category() is other.category()
+
+    def __hash__(self):
+        return hash((Origami, tuple(self._perms), self._domain, self.base_label()))
+
+
+class LazyStandardizedPolygonSurface(OrientedSimilaritySurface):
     r"""
     This class handles standardizing polygons for infinite translation surfaces.
     See the TranslationSurface.standardize_polygons method.
@@ -162,16 +178,17 @@ class LazyStandardizedPolygonSurface(Surface):
     Instead use TranslationSurface.standardize_polygons.
     """
 
-    def __init__(self, surface, relabel=False):
+    def __init__(self, surface, relabel=False, category=None):
         self._s = surface.copy(mutable=True, relabel=relabel)
         self._labels = set()
-        Surface.__init__(
-            self,
-            self._s.base_ring(),
-            self._s.base_label(),
-            finite=self._s.is_finite(),
-            mutable=False,
-        )
+
+        super().__init__(self._s.base_ring(), category=category or self._s.category())
+
+    def base_label(self):
+        return self._s.base_label()
+
+    def is_mutable(self):
+        return False
 
     def standardize(self, label):
         best = 0

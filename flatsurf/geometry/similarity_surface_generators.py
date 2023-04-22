@@ -1626,12 +1626,7 @@ class TranslationSurfaceGenerators:
             The infinite staircase
             sage: TestSuite(S).run()
         """
-
-        s = TranslationSurfaceGenerators._InfiniteStaircase()
-
-        gs = s.graphical_surface(default_position_function=s._position_function)
-        gs.make_all_visible(limit=10)
-        return s
+        return TranslationSurfaceGenerators._InfiniteStaircase()
 
     class _InfiniteStaircase(Origami):
         def __init__(self):
@@ -1666,11 +1661,8 @@ class TranslationSurfaceGenerators:
         def __repr__(self):
             return "The infinite staircase"
 
-        def _cache_key(self):
-            return (TranslationSurfaceGenerators._InfiniteStaircase,)
-
         def __hash__(self):
-            return super().__hash__()
+            return 1337
 
         def __eq__(self, other):
             r"""
@@ -1684,10 +1676,13 @@ class TranslationSurfaceGenerators:
                 True
 
             """
-            if isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase):
-                return True
+            return isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase)
 
-            return super().__eq__(other)
+        def graphical_surface(self, *args, **kwargs):
+            default_position_function = kwargs.pop("default_position_function", self._position_function)
+            graphical_surface = super().graphical_surface(*args, default_position_function=default_position_function, **kwargs)
+            graphical_surface.make_all_visible(limit=10)
+            return graphical_surface
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):

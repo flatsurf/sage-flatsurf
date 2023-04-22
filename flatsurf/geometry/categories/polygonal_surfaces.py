@@ -107,6 +107,20 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return category
 
+        def is_triangulated(self):
+            if self.num_polygons() == 0:
+                return True
+
+            if self.polygon(self.base_label()).num_edges() != 3:
+                return False
+
+            raise NotImplementedError
+
+        def walker(self):
+            # TODO: Deprecate, use labels() instead
+            from flatsurf.geometry.surface_legacy import LabelWalker
+            return LabelWalker(self)
+
         def labels(self):
             r"""
             Return the labels used to enumerate the polygons that make up this surface.
@@ -403,6 +417,12 @@ class PolygonalSurfaces(SurfaceCategory):
         class ParentMethods:
             def is_finite(self):
                 return False
+
+            def is_triangulated(self):
+                for p in self.polygons():
+                    if p.num_edges() != 3:
+                        return False
+                return True
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
