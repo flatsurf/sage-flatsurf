@@ -75,6 +75,12 @@ class MutablePolygonalSurface(Surface_base):
         self._polygons[label] = polygon
         return label
 
+    def remove_polygon(self, label):
+        if not self._mutable:
+            raise Exception
+
+        self._polygons.pop(label)
+
     def base_label(self):
         if self._base_label is None:
             raise NotImplementedError
@@ -229,6 +235,38 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         super().__init__(base, category=category)
 
+    @classmethod
+    def from_surface(cls, surface, category=None):
+        self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category or surface.category())
+        for label in surface.labels():
+            self.add_polygon(surface.polygon(label), label=label)
+
+        for label in surface.labels():
+            for edge in range(surface.polygon(label).num_edges()):
+                cross = surface.opposite_edge(label, edge)
+                if cross:
+                    self.glue((label, edge), cross)
+
+        self.set_base_label(surface.base_label())
+
+        return self
+
+    def add_polygon(self, polygon, *, label=None):
+        label = super().add_polygon(polygon, label=label)
+        assert label not in self._gluings
+        self._gluings[label] = [None] * polygon.num_edges()
+        return label
+
+    def remove_polygon(self, label):
+        for edge, cross in enumerate(self._gluings[label]):
+            if cross is None:
+                continue
+            cross_label, cross_edge = cross
+            self._gluings[cross_label][cross_edge] = None
+        self._gluings.pop(label)
+
+        super().remove_polygon(label)
+
     def glue(self, x, y):
         if not self._mutable:
             raise Exception
@@ -239,9 +277,6 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         for label in labels:
             if label not in self._polygons:
                 raise ValueError
-
-            if label not in self._gluings:
-                self._gluings[label] = [None] * self.polygon(label).num_edges()
 
         for label, edge in zip(labels, edges):
             if self._gluings[label][edge] is not None:
@@ -262,6 +297,17 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         # TODO: Deprecate?
         for edge0, (label1, edge1) in enumerate(gluings):
             self.glue((label, edge0), (label1, edge1))
+
+    def change_polygon(self, label, polygon, gluings=None):
+        # TODO: Deprecate
+        gluings = self._gluings[label]
+        self.remove_polygon(label)
+        self.add_polygon(polygon, label=label)
+        # TODO: This is an obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
+        if polygon.num_edges() == len(gluings):
+            self._gluings[label] = gluings
+        if gluings is not None:
+            self.change_polygon_gluings(label, gluings)
 
     def opposite_edge(self, label, edge):
         return self._gluings[label][edge]
@@ -332,7 +378,9 @@ class Labels(collections.abc.Set):
 
             yield label
             for e in range(self._surface.polygon(label).num_edges()):
-                pending.append(self._surface.opposite_edge(label, e)[0])
+                cross = self._surface.opposite_edge(label, e)
+                if cross is not None:
+                    pending.append(cross[0])
 
     def __repr__(self):
         if self._surface.is_finite():

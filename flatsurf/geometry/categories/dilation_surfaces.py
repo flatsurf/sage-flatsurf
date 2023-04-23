@@ -284,17 +284,17 @@ class DilationSurfaces(SurfaceCategory):
                 raise NotImplementedError(
                     "no L-infinity Delaunay implemented for infinite surfaces"
                 )
+
             if triangulated:
-                if in_place:
-                    s = self
-                else:
-                    from flatsurf.geometry.surface import Surface_dict
+                # TODO: Deprecated. Ignored now.
+                pass
+            if in_place:
+                raise NotImplementedError  # TODO: removed because was broken
 
-                    s = Surface_dict(surface=self, mutable=True, category=self.category())
-            else:
-                from flatsurf.geometry.surface import Surface_list
+            self = self.triangulate()
 
-                s = Surface_list(surface=self.triangulate(in_place=in_place), mutable=True, category=self.category())
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+            self = MutableOrientedSimilaritySurface.from_surface(self)
 
             if direction is None:
                 base_ring = self.base_ring()
@@ -303,7 +303,7 @@ class DilationSurfaces(SurfaceCategory):
             if direction.is_zero():
                 raise ValueError("direction must be non-zero")
 
-            triangles = set(s.label_iterator())
+            triangles = set(self.label_iterator())
             if limit is None:
                 limit = -1
             else:
@@ -311,13 +311,13 @@ class DilationSurfaces(SurfaceCategory):
             while triangles and limit:
                 p1 = triangles.pop()
                 for e1 in range(3):
-                    p2, e2 = s.opposite_edge(p1, e1)
-                    if s._edge_needs_flip_Linfinity(p1, e1, p2, e2):
-                        s.triangle_flip(p1, e1, in_place=True, direction=direction)
+                    p2, e2 = self.opposite_edge(p1, e1)
+                    if self._edge_needs_flip_Linfinity(p1, e1, p2, e2):
+                        self.triangle_flip(p1, e1, in_place=True, direction=direction)
                         triangles.add(p1)
                         triangles.add(p2)
                         limit -= 1
-            return s
+            return self
 
 
 all_axioms += ('Positive',)

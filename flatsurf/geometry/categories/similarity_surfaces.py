@@ -826,6 +826,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.base_ring().discriminant()
                     -44
                 """
+                # TODO: Deprecate.
                 category = self.category()
                 s = None  # This will be the surface we copy. (Likely we will set s=self below.)
                 if new_field is not None and optimal_number_field:
