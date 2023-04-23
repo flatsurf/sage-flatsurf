@@ -179,7 +179,12 @@ class LazyStandardizedPolygonSurface(OrientedSimilaritySurface):
     """
 
     def __init__(self, surface, relabel=False, category=None):
-        self._s = surface.copy(mutable=True, relabel=relabel)
+        if relabel:
+            # TODO: Complain. Ignored.
+            pass
+
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        self._s = MutableOrientedSimilaritySurface.from_surface(surface)
         self._labels = set()
 
         super().__init__(self._s.base_ring(), category=category or self._s.category())

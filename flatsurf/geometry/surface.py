@@ -140,11 +140,20 @@ class MutablePolygonalSurface(Surface_base):
 
         self._base_label = label
 
+    change_base_label = set_base_label  # TODO: Deprecate
+
+    def labels(self):
+        return Labels(self, labels=self._polygons.keys(), len=len(self._polygons))
+
 
 class OrientedSimilaritySurface(Surface_base):
     Element = SurfacePoint
 
     def __init__(self, base, category=None):
+        from sage.categories.all import Rings
+        if base not in Rings():
+            raise TypeError
+
         from flatsurf.geometry.categories import SimilaritySurfaces
         if category is None:
             category = SimilaritySurfaces().Oriented()
@@ -267,6 +276,9 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         super().remove_polygon(label)
 
+    def unglue(self, x):
+        self._gluings[x[0]][x[1]] = None
+
     def glue(self, x, y):
         if not self._mutable:
             raise Exception
@@ -295,21 +307,25 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
     def change_polygon_gluings(self, label, gluings):
         # TODO: Deprecate?
-        for edge0, (label1, edge1) in enumerate(gluings):
-            self.glue((label, edge0), (label1, edge1))
+        for edge0, cross in enumerate(gluings):
+            if cross is None:
+                self.unglue((label, edge0))
+            else:
+                self.glue((label, edge0), cross)
 
-    def change_polygon(self, label, polygon, gluings=None):
+    def change_polygon(self, label, polygon, gluing_list=None):
         # TODO: Deprecate
-        gluings = self._gluings[label]
+        # TODO: This is an obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
+        if gluing_list is None and polygon.num_edges() == self.polygon(label).num_edges():
+            gluing_list = self._gluings[label][:]
         self.remove_polygon(label)
         self.add_polygon(polygon, label=label)
-        # TODO: This is an obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
-        if polygon.num_edges() == len(gluings):
-            self._gluings[label] = gluings
-        if gluings is not None:
-            self.change_polygon_gluings(label, gluings)
+        if gluing_list is not None:
+            self.change_polygon_gluings(label, gluing_list)
 
-    def opposite_edge(self, label, edge):
+    def opposite_edge(self, label, edge=None):
+        if edge is None:
+            label, edge = label
         return self._gluings[label][edge]
 
     def __eq__(self, other):
@@ -344,10 +360,11 @@ class Labels(collections.abc.Set):
                 self._len = infinity
             elif self._labels is not None:
                 self._len = len(self._labels)
-
-            self._len = 0
-            for label in self:
-                self._len += 1
+            else:
+                length = 0
+                for label in self:
+                    length += 1
+                self._len = length
 
         return self._len
 
@@ -362,6 +379,9 @@ class Labels(collections.abc.Set):
         return False
 
     def __iter__(self):
+        if self._len == 0:
+            return
+
         from collections import deque
 
         seen = set()

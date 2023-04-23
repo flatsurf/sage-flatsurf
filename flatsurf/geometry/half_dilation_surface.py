@@ -44,7 +44,8 @@ class GL2RImageSurface(OrientedSimilaritySurface):
     def __init__(self, surface, m, ring=None, category=None):
         if surface.is_mutable():
             if surface.is_finite():
-                self._s = surface.copy()
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                self._s = MutableOrientedSimilaritySurface.from_surface(surface)
             else:
                 raise ValueError("Can not apply matrix to mutable infinite surface.")
         else:

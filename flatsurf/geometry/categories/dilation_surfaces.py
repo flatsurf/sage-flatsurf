@@ -116,11 +116,13 @@ class DilationSurfaces(SurfaceCategory):
                 return GL2RMapping(self, m)
             if not in_place:
                 if self.is_finite():
+                    # TODO: This code path is not tested anywhere.
                     from sage.structure.element import get_coercion_model
 
                     cm = get_coercion_model()
                     field = cm.common_parent(self.base_ring(), m.base_ring())
-                    s = self.copy(mutable=True, new_field=field)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    s = MutableOrientedSimilaritySurface.from_surface(self).change_ring(field)
                     return s.apply_matrix(m)
                 else:
                     return m * self

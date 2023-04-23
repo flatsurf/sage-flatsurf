@@ -126,7 +126,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
                     s = self
                 else:
-                    s = self.copy(mutable=True)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    s = MutableOrientedSimilaritySurface.from_surface(self)
                 cv = {}  # dictionary for non-zero canonical vertices
                 for label, polygon in s.label_iterator(polygons=True):
                     best = 0
@@ -295,20 +296,22 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     )
                 s = self
             else:
-                s = self.copy(mutable=True)
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                s = MutableOrientedSimilaritySurface.from_surface(self)
             if not s.is_finite():
                 raise ValueError(
                     "canonicalize is only defined for finite translation surfaces."
                 )
             s.delaunay_decomposition(in_place=True)
             s.standardize_polygons(in_place=True)
-            ss = s.copy(mutable=True)
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+            ss = MutableOrientedSimilaritySurface.from_surface(s)
             labels = {label for label in s.label_iterator()}
             labels.remove(s.base_label())
             for label in labels:
-                ss.change_base_label(label)
+                ss.set_base_label(label)
                 if ss.cmp(s) > 0:
-                    s.change_base_label(label)
+                    s.set_base_label(label)
             # We now have the base_label correct.
             # We will use the label walker to generate the canonical labeling of polygons.
             w = s.walker()
@@ -398,7 +401,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             from flatsurf.geometry.polygon import wedge_product, ConvexPolygons
 
             if local:
-                ss = s.copy(mutable=True, new_field=field)
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
                 us = ss.underlying_surface()
 
                 P = ConvexPolygons(field)
@@ -464,7 +468,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 k = 0
                 while True:
                     if ss is None:
-                        ss = s.copy(mutable=True, new_field=field)
+                        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                        ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
                     else:
                         # In place matrix deformation
                         ss.apply_matrix(prod)

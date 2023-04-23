@@ -400,6 +400,13 @@ class PolygonalSurfaces(SurfaceCategory):
             def is_finite(self):
                 return True
 
+            def is_triangulated(self):
+                for label in self.labels():
+                    p = self.polygon(label)
+                    if p.num_edges() != 3:
+                        return False
+                return True
+
     # TODO: Can we somehow force that a surface can only be finite XOR infinite type?
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
@@ -417,12 +424,6 @@ class PolygonalSurfaces(SurfaceCategory):
         class ParentMethods:
             def is_finite(self):
                 return False
-
-            def is_triangulated(self):
-                for p in self.polygons():
-                    if p.num_edges() != 3:
-                        return False
-                return True
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""

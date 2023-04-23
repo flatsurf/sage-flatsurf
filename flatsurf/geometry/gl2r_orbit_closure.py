@@ -395,8 +395,8 @@ class GL2ROrbitClosure:
             sage: span([v0, v1])  # optional: pyflatsurf
             Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
-            [                         1                          0                         -1   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0 (-1/4*l+1/4 ~ -0.59307033)                          0 (-1/4*l+1/4 ~ -0.59307033)]
-            [                         0                          1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)                         -1 (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066) (-1/8*l+1/8 ~ -0.29653517)]
+            [                         1                          0                         -1                          0   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0]
+            [                         0                          1                         -1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)   (1/8*l-1/8 ~ 0.29653517) (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066)]
 
         This can be used to deform the surface::
 
@@ -830,9 +830,9 @@ class GL2ROrbitClosure:
             sage: c0, c1 = dec.components() # optional: pyflatsurf
             sage: kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
             sage: O.cylinder_circumference(c0, *kz) # optional: pyflatsurf
-            (1, 0, 0, -1)
+            (1, 0, -1, 0)
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
-            (0, 0, -1, 0)
+            (0, 0, 0, -1)
         """
         if (
             component.cylinder() != True

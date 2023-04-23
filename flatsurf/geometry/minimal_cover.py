@@ -74,7 +74,8 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
     def __init__(self, similarity_surface, category=None):
         if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
-                self._ss = similarity_surface.copy()
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                self._ss = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
             else:
                 raise ValueError(
                     "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
@@ -201,7 +202,8 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
     def __init__(self, similarity_surface, category=None):
         if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
-                self._ss = similarity_surface.copy()
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                self._ss = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
             else:
                 raise ValueError(
                     "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
@@ -294,7 +296,8 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
     def __init__(self, similarity_surface, base_label=None, category=None):
         if similarity_surface.is_mutable():
             if similarity_surface.is_finite():
-                self._ss = similarity_surface.copy()
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                self._ss = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
             else:
                 raise ValueError(
                     "Can not construct MinimalPlanarCover of a surface that is mutable and infinite."

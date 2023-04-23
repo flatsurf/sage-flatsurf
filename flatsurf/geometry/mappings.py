@@ -894,8 +894,9 @@ def canonicalize_translation_surface_mapping(s):
         m = SurfaceMappingComposition(m1, m2)
     s2 = m.codomain()
 
-    s2copy = s2.copy(mutable=True)
-    ss = s2.copy(mutable=True)
+    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+    s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
+    ss = MutableOrientedSimilaritySurface.from_surface(s2)
     labels = {label for label in s2.label_iterator()}
     labels.remove(s2.base_label())
     for label in labels:

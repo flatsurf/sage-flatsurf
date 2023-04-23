@@ -642,7 +642,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     us.change_polygon(label, pp, gluing_list=glue)
                     return self
                 else:
-                    return self.copy(mutable=True).set_vertex_zero(label, v, in_place=True)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    return MutableOrientedSimilaritySurface.from_surface(self).set_vertex_zero(label, v, in_place=True)
 
             def _label_comparator(self):
                 r"""
@@ -767,7 +768,8 @@ class SimilaritySurfaces(SurfaceCategory):
                                     us.change_edge_gluing(l2, e, ll, ee)
                     return self, len(relabel_errors) == 0
                 else:
-                    return self.copy(mutable=True).relabel(relabeling_map, in_place=True)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    return MutableOrientedSimilaritySurface.from_surface(self).relabel(relabeling_map, in_place=True)
 
             def copy(
                 self,
@@ -919,6 +921,10 @@ class SimilaritySurfaces(SurfaceCategory):
                         from flatsurf.geometry.surface import Surface_dict
                         return Surface_dict(surface=s, copy=False, mutable=mutable, category=category)
 
+            def change_ring(self, ring):
+                from flatsurf.geometry.surface import BaseRingChangedSurface
+                return BaseRingChangedSurface(self, ring)
+
             def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
                 r"""
                 Flips the diagonal of the quadrilateral formed by two triangles
@@ -1050,7 +1056,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     if not s.is_mutable():
                         raise ValueError("surface must be mutable for in place triangle_flip")
                 else:
-                    s = self.copy(mutable=True)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    s = MutableOrientedSimilaritySurface.from_surface(self)
 
                 p1 = s.polygon(l1)
                 if not p1.num_edges() == 3:
@@ -1311,7 +1318,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 if in_place:
                     ss = self
                 else:
-                    ss = self.copy(mutable=True)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    ss = MutableOrientedSimilaritySurface.from_surfaces(self)
                 s = ss.underlying_surface()
 
                 inv_edge_map = {}
@@ -1672,6 +1680,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 surface (because polygons are presented with rotations) then after this
                 change it will be representable as a translation surface.
                 """
+                if relabel:
+                    # TODO: Complain. relabel is not honoured anymore.
+                    pass
                 if not self.is_finite():
                     raise NotImplementedError("Only implemented for finite surfaces.")
                 if in_place:
@@ -1682,7 +1693,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     s = self
                 else:
-                    s = self.copy(relabel=relabel, mutable=True)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    s = MutableOrientedSimilaritySurface.from_surface(self)
                 w = s.walker()
                 from flatsurf.geometry.similarity import SimilarityGroup
 
@@ -1755,7 +1767,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         if in_place:
                             s = self
                         else:
-                            s = self.copy(mutable=True)
+                            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                            s = MutableOrientedSimilaritySurface.from_surface(self)
                         # Subdivide each polygon in turn.
                         for label in labels:
                             s = s.triangulate(in_place=True, label=label)
@@ -1775,7 +1788,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         if in_place:
                             s = self
                         else:
-                            s = self.copy(mutable=True)
+                            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                            s = MutableOrientedSimilaritySurface.from_surface(self)
                     else:
                         # This polygon is already a triangle.
                         return self
@@ -1982,13 +1996,15 @@ class SimilaritySurfaces(SurfaceCategory):
                     if in_place:
                         s = self
                     else:
-                        s = self.copy(mutable=True, relabel=False)
+                        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                        s = MutableOrientedSimilaritySurface.from_surface(self)
                 else:
                     if in_place:
                         s = self
                         self.triangulate(in_place=True)
                     else:
-                        s = self.copy(relabel=True, mutable=True)
+                        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                        s = MutableOrientedSimilaritySurface.from_surface(self)
                         s.triangulate(in_place=True)
                 loop = True
                 if direction is None:
@@ -2123,6 +2139,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.is_delaunay_decomposed(limit=10)
                     True
                 """
+                if relabel:
+                    # TODO: Complain. We ignore this parameter now.
+                    pass
                 if not self.is_finite():
                     if in_place:
                         raise ValueError(
@@ -2139,7 +2158,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 if in_place:
                     s = self
                 else:
-                    s = self.copy(mutable=True, relabel=relabel)
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    s = MutableOrientedSimilaritySurface.from_surface(self)
                 if not delaunay_triangulated:
                     s.delaunay_triangulation(
                         triangulated=triangulated, in_place=True, direction=direction
