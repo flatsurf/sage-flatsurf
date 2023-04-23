@@ -744,7 +744,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         base_label = relabeling_map[base_label]
                         if base_label in relabel_errors:
                             base_label = relabel_errors[base_label]
-                        us.change_base_label(base_label)
+                        us.set_base_label(base_label)
                     # Pass to remove polygons:
                     for l1 in removed_labels:
                         us.remove_polygon(l1)
@@ -866,8 +866,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         # The following converts from field to field2:
                         hom2 = field.hom(im_gens=[field2.gen()])
 
-                        from flatsurf.geometry.surface import Surface_dict
-                        ss = Surface_dict(base_ring=field2)
+                        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                        ss = MutableOrientedSimilaritySurface(field2)
                         index = 0
                         from flatsurf.geometry.polygon import ConvexPolygons
                         P = ConvexPolygons(field2)
@@ -883,7 +883,7 @@ class SimilaritySurfaces(SurfaceCategory):
                                 index += 2
                             pp = P(edges=new_edges)
                             ss.add_polygon(pp, label=label)
-                        ss.change_base_label(self.base_label())
+                        ss.set_base_label(self.base_label())
                         for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
                             ss.change_edge_gluing(l1, e1, l2, e2)
                         s = ss
@@ -1328,7 +1328,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         glue_list.append((p4, e4))
 
                 if s.base_label() == p2:
-                    s.change_base_label(p1)
+                    s.set_base_label(p1)
 
                 s.remove_polygon(p2)
 
