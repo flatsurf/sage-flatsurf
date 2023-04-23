@@ -298,9 +298,9 @@ def from_pyflatsurf(T):
 
     ring = sage_ring(T)
 
-    from flatsurf.geometry.surface import Surface_list
+    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-    S = Surface_list(ring)
+    S = MutableOrientedSimilaritySurface(ring)
 
     from flatsurf.geometry.polygon import ConvexPolygons
 
