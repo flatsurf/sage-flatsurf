@@ -47,7 +47,7 @@ class Surface_pyflatsurf(Surface):
 
     def pyflatsurf(self):
         from flatsurf.geometry.deformation import IdentityDeformation
-        return IdentityDeformation(self, self)
+        return IdentityDeformation(self)
 
     @classmethod
     def _from_flatsurf(cls, surface):
