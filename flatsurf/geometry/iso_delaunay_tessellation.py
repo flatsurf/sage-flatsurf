@@ -929,6 +929,7 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             r"""
             Walk CCW about source vertex of edge, stepping into next face
             """            
+            # TODO: If there's nothing on the other side. Back of by mod edges.
             idx_edge = list(face.edges()).index(edge) 
             edge_turn = face.edges()[idx_edge - 1]
             for (source_tessellation_face, target_tessellation_face, (tessellation_edges, isometry)) in list(self._dual_graph.edges(face, labels=True, sort=False)):
@@ -950,6 +951,8 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
         for face in self._dual_graph.vertices(sort=False):
             mod, _ = self._dual_graph.get_vertex(face)
             if mod is not None:
+                nedges += 1
+                nvertices += 1
                 raise NotImplementedError
 
             # TODO: HyperbolicConvexPolygon.edges() should have an option to return segments ending at marked points (that should be the default.)
