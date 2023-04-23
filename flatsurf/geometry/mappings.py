@@ -750,7 +750,8 @@ class ReindexMapping(SurfaceMapping):
                 new_base_label = f[s.base_label()]
             else:
                 new_base_label = s.base_label()
-        s2 = s.copy(mutable=True, lazy=True)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        s2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2.relabel(relabler, in_place=True)
         s2.underlying_surface().set_base_label(new_base_label)
 
