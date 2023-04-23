@@ -45,8 +45,7 @@ from sage.rings.qqbar import do_polred
 from surface_dynamics.flat_surfaces.origamis.origami import Origami
 from surface_dynamics.misc.permutation import perm_dense_cycles
 
-from .polygon import ConvexPolygons
-from .surface import Surface_list
+from flatsurf.geometry.polygon import ConvexPolygons
 
 
 class ThurstonVeech:
@@ -171,7 +170,8 @@ class ThurstonVeech:
             vi = v[self._vcycles[i]]
             P.append(C(edges=[(vi, 0), (0, hi), (-vi, 0), (0, -hi)]))
 
-        surface = Surface_list(base_ring=K)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        surface = MutableOrientedSimilaritySurface(K)
         for p in P:
             surface.add_polygon(p)
         r = self._origami.r_tuple()
