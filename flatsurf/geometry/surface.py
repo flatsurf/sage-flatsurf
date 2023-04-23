@@ -246,6 +246,8 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
     @classmethod
     def from_surface(cls, surface, category=None):
+        if not surface.is_finite():
+            raise TypeError
         self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category or surface.category())
         for label in surface.labels():
             self.add_polygon(surface.polygon(label), label=label)

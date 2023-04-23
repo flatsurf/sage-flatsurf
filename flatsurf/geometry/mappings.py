@@ -160,7 +160,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
                 "Can only construct SimilarityJoinPolygonsMapping for immutable surfaces."
             )
 
-        ss2 = s.copy(lazy=True, mutable=True)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        ss2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2 = ss2
 
         poly1 = s.polygon(p1)
@@ -312,19 +313,19 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: for pair in s2.label_iterator(polygons=True):
         ....:     print(pair)
         (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
-        (ExtraLabel(0), Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
+        (1, Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
         sage: for glue in s2.edge_iterator(gluings=True):
         ....:     print(glue)
-        ((0, 0), (ExtraLabel(0), 0))
+        ((0, 0), (1, 0))
         ((0, 1), (0, 5))
         ((0, 2), (0, 6))
-        ((0, 3), (ExtraLabel(0), 1))
-        ((0, 4), (ExtraLabel(0), 2))
+        ((0, 3), (1, 1))
+        ((0, 4), (1, 2))
         ((0, 5), (0, 1))
         ((0, 6), (0, 2))
-        ((ExtraLabel(0), 0), (0, 0))
-        ((ExtraLabel(0), 1), (0, 3))
-        ((ExtraLabel(0), 2), (0, 4))
+        ((1, 0), (0, 0))
+        ((1, 1), (0, 3))
+        ((1, 2), (0, 4))
     """
 
     def __init__(self, s, p, v1, v2, new_label=None):
@@ -357,7 +358,8 @@ class SplitPolygonsMapping(SurfaceMapping):
             newvertices2.append(poly.edge(i))
         newpoly2 = ConvexPolygons(s.base_ring())(newvertices2)
 
-        ss2 = s.copy(mutable=True, lazy=True)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        ss2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2 = ss2.underlying_surface()
         s2.change_polygon(p, newpoly1)
         new_label = s2.add_polygon(newpoly2, label=new_label)
