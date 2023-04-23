@@ -57,7 +57,7 @@ class MutablePolygonalSurface(Surface_base):
 
         super().__init__(base, category=category)
 
-    def add_polygon(self, polygon, label=None):
+    def add_polygon(self, polygon, *, label=None):
         if not self._mutable:
             raise Exception
 
@@ -73,6 +73,7 @@ class MutablePolygonalSurface(Surface_base):
             self._base_label = label
 
         self._polygons[label] = polygon
+        return label
 
     def base_label(self):
         if self._base_label is None:
@@ -126,6 +127,12 @@ class MutablePolygonalSurface(Surface_base):
             return "Surface built from 1 polygon"
 
         return "Surface built from {} polygons".format(self.num_polygons())
+
+    def set_base_label(self, label):
+        if not self._mutable:
+            raise Exception
+
+        self._base_label = label
 
 
 class OrientedSimilaritySurface(Surface_base):
@@ -244,6 +251,17 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         self._gluings[labels[0]][edges[0]] = (labels[1], edges[1])
         self._gluings[labels[1]][edges[1]] = (labels[0], edges[0])
+
+    def set_edge_pairing(self, label0, edge0, label1, edge1):
+        # TODO: Deprecate?
+        return self.glue((label0, edge0), (label1, edge1))
+
+    change_edge_gluing = set_edge_pairing
+
+    def change_polygon_gluings(self, label, gluings):
+        # TODO: Deprecate?
+        for edge0, (label1, edge1) in enumerate(gluings):
+            self.glue((label, edge0), (label1, edge1))
 
     def opposite_edge(self, label, edge):
         return self._gluings[label][edge]

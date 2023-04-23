@@ -64,7 +64,19 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
             return GraphicalSurface(self, *args, **kwargs)
 
         def plot(self, **kwargs):
-            return self.graphical_surface().plot(**kwargs)
+            # TODO: Deprecate all this.
+            graphical_surface_keywords = {
+                key: kwargs.pop(key)
+                for key in [
+                    "cached",
+                    "adjacencies",
+                    "polygon_labels",
+                    "edge_labels",
+                    "default_position_function",
+                ]
+                if key in kwargs
+            }
+            return self.graphical_surface(**graphical_surface_keywords).plot(**kwargs)
 
         # TODO: What should be the fate of this function?
         def plot_polygon(
@@ -167,4 +179,3 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
                         el = edge_labels[e]
                     plt += gp.plot_edge_label(e, el, **o)
             return plt
-

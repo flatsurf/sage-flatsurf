@@ -26,7 +26,7 @@ from sage.structure.sequence import Sequence
 
 from flatsurf.geometry.polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface, Surface_list
+from flatsurf.geometry.surface import OrientedSimilaritySurface, MutableOrientedSimilaritySurface
 from flatsurf.geometry.translation_surface import Origami
 
 
@@ -498,7 +498,6 @@ class SimilaritySurfaceGenerators:
             True
 
         """
-        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
         s = MutableOrientedSimilaritySurface(QQ)
 
         s.add_polygon(
@@ -527,7 +526,6 @@ class SimilaritySurfaceGenerators:
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
-        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
         s = MutableOrientedSimilaritySurface(P.base_ring())
         s.add_polygon(P)
         for i in range(P.num_edges()):
@@ -648,7 +646,7 @@ class SimilaritySurfaceGenerators:
             P = [P]
 
         m = len(P)
-        surface = Surface_list(base_ring=base_ring)
+        surface = MutableOrientedSimilaritySurface(base_ring)
         for p in P:
             surface.add_polygon(p)
         for p in P:
@@ -683,9 +681,9 @@ class SimilaritySurfaceGenerators:
         r = matrix(2, [-1, 0, 0, 1])
         Q = polygons(edges=[r * v for v in reversed(P.edges())])
 
-        surface = Surface_list(base_ring=P.base_ring())
-        surface.add_polygon(P)  # gets label 0)
-        surface.add_polygon(Q)  # gets label 1
+        surface = MutableOrientedSimilaritySurface(P.base_ring())
+        surface.add_polygon(P, label=0)
+        surface.add_polygon(Q, label=1)
         surface.change_polygon_gluings(0, [(1, n - i - 1) for i in range(n)])
         surface.set_immutable()
         return surface
@@ -710,9 +708,9 @@ class SimilaritySurfaceGenerators:
             F = F.fraction_field()
         V = VectorSpace(F, 2)
         P = ConvexPolygons(F)
-        s = Surface_list(base_ring=F)
-        s.add_polygon(P([V((w, 0)), V((-w, h)), V((0, -h))]))  # gets label 0
-        s.add_polygon(P([V((0, h)), V((-w, -h)), V((w, 0))]))  # gets label 1
+        s = MutableOrientedSimilaritySurface(F)
+        s.add_polygon(P([V((w, 0)), V((-w, h)), V((0, -h))]), label=0)
+        s.add_polygon(P([V((0, h)), V((-w, -h)), V((w, 0))]), label=1)
         s.change_polygon_gluings(0, [(1, 2), (1, 1), (1, 0)])
         s.set_immutable()
         return s
@@ -750,15 +748,16 @@ class DilationSurfaceGenerators:
             sage: TestSuite(ds).run()
 
         """
-        s = Surface_list(base_ring=a.parent().fraction_field())
+        s = MutableOrientedSimilaritySurface(a.parent().fraction_field())
         CP = ConvexPolygons(s.base_ring())
-        s.add_polygon(CP(edges=[(0, 1), (-1, 0), (0, -1), (1, 0)]))  # label 0
-        s.add_polygon(CP(edges=[(0, 1), (-a, 0), (0, -1), (a, 0)]))  # label 1
+        s.add_polygon(CP(edges=[(0, 1), (-1, 0), (0, -1), (1, 0)]), label=0)
+        s.add_polygon(CP(edges=[(0, 1), (-a, 0), (0, -1), (a, 0)]), label=1)
+        # label 1
         s.change_edge_gluing(0, 0, 1, 2)
         s.change_edge_gluing(0, 1, 1, 3)
         s.change_edge_gluing(0, 2, 1, 0)
         s.change_edge_gluing(0, 3, 1, 1)
-        s.change_base_label(0)
+        s.set_base_label(0)
         s.set_immutable()
         return s
 
@@ -801,17 +800,17 @@ class DilationSurfaceGenerators:
             sage: TestSuite(ds).run()
         """
         field = Sequence([a, b, c, d]).universe().fraction_field()
-        s = Surface_list(base_ring=QQ)
+        s = MutableOrientedSimilaritySurface(QQ)
         CP = ConvexPolygons(field)
         hexagon = CP(
             edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)]
         )
-        s.add_polygon(hexagon)  # polygon 0
-        s.change_base_label(0)
+        s.add_polygon(hexagon, label=0)
+        s.set_base_label(0)
         triangle1 = CP(edges=[(1 - a, 0), (0, b), (a - 1, -b)])
-        s.add_polygon(triangle1)  # polygon 1
+        s.add_polygon(triangle1, label=1)
         triangle2 = CP(edges=[(1 - c, d), (c - 1, 0), (0, -d)])
-        s.add_polygon(triangle2)  # polygon 2
+        s.add_polygon(triangle2, label=2)
         s.change_edge_gluing(0, 0, 0, 3)
         s.change_edge_gluing(0, 2, 0, 5)
         s.change_edge_gluing(0, 1, 1, 2)
@@ -879,13 +878,15 @@ class HalfTranslationSurfaceGenerators:
 
         Prev = [C(vertices=[(x, -y) for x, y in reversed(p.vertices())]) for p in P]
 
-        S = Surface_list(base_ring=C.base_ring())
+        S = MutableOrientedSimilaritySurface(C.base_ring())
         S.rename(
             "StepBilliard(w=[%s], h=[%s])"
             % (", ".join(map(str, w)), ", ".join(map(str, h)))
         )
-        S.add_polygons(P)  # get labels 0, ..., n-1
-        S.add_polygons(Prev)  # get labels n, n+1, ..., 2n-1
+        for p in P:
+            S.add_polygon(p)  # get labels 0, ..., n-1
+        for p in Prev:
+            S.add_polygon(p)  # get labels n, n+1, ..., 2n-1
 
         # reflection gluings
         # (gluings between the polygon and its reflection)
@@ -975,9 +976,11 @@ class TranslationSurfaceGenerators:
             field = py_scalar_parent(field)
         if not field.is_field():
             field = field.fraction_field()
-        s = Surface_list(base_ring=field)
+        s = MutableOrientedSimilaritySurface(field)
         p = polygons(vertices=[(0, 0), u, u + v, v], base_ring=field)
-        s.add_polygon(p, [(0, 2), (0, 3), (0, 0), (0, 1)])
+        s.add_polygon(p)
+        s.glue((0, 0), (0, 2))
+        s.glue((0, 1), (0, 3))
         s.set_immutable()
         return s
 
@@ -995,8 +998,10 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
         """
         p = polygons.regular_ngon(2 * n)
-        s = Surface_list(base_ring=p.base_ring())
-        s.add_polygon(p, [(0, (i + n) % (2 * n)) for i in range(2 * n)])
+        s = MutableOrientedSimilaritySurface(p.base_ring())
+        s.add_polygon(p)
+        for i in range(2*n):
+            s.glue((0, i), (0, (i + n) % (2*n)))
         s.set_immutable()
         return s
 
@@ -1014,10 +1019,12 @@ class TranslationSurfaceGenerators:
         from sage.matrix.constructor import Matrix
 
         p = polygons.regular_ngon(n)
-        s = Surface_list(base_ring=p.base_ring())
+        s = MutableOrientedSimilaritySurface(p.base_ring())
         m = Matrix([[-1, 0], [0, -1]])
-        s.add_polygon(p)  # label=0
-        s.add_polygon(m * p, [(0, i) for i in range(n)])
+        s.add_polygon(p, label=0)
+        s.add_polygon(m * p, label=1)
+        for i in range(n):
+            s.glue((0, i), (1, i))
         s.set_immutable()
         return s
 
@@ -1154,7 +1161,7 @@ class TranslationSurfaceGenerators:
 
         # (lambda,lambda) square on top
         # twisted (w,0), (t,h)
-        s = Surface_list(base_ring=K)
+        s = MutableOrientedSimilaritySurface(K)
         if rel:
             if rel < 0 or rel > w - λ:
                 raise ValueError("invalid rel argument")
@@ -1237,7 +1244,7 @@ class TranslationSurfaceGenerators:
         if not field.is_field():
             field = field.fraction_field()
 
-        s = Surface_list(base_ring=field)
+        s = MutableOrientedSimilaritySurface(field)
         s.add_polygon(polygons((l3, 0), (0, l2), (-l3, 0), (0, -l2), ring=field))
         s.add_polygon(polygons((l3, 0), (0, l1), (-l3, 0), (0, -l1), ring=field))
         s.add_polygon(polygons((l4, 0), (0, l2), (-l4, 0), (0, -l2), ring=field))
@@ -1269,7 +1276,7 @@ class TranslationSurfaceGenerators:
         o = ZZ_2 * polygons.regular_ngon(2 * n)
         p1 = polygons(*[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
         p2 = polygons(*[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
-        s = Surface_list(base_ring=o.parent().field())
+        s = MutableOrientedSimilaritySurface(o.parent().field())
         s.add_polygon(o)
         s.add_polygon(p1)
         s.add_polygon(p2)
@@ -1350,7 +1357,7 @@ class TranslationSurfaceGenerators:
         a = ring(a)
         b = ring(b)
         P = ConvexPolygons(ring)
-        s = Surface_list(base_ring=ring)
+        s = MutableOrientedSimilaritySurface(ring)
         half = QQ((1, 2))
         p0 = P(vertices=[(0, 0), (a, 0), (a, 1), (0, 1)])
         p1 = P(
@@ -1474,7 +1481,7 @@ class TranslationSurfaceGenerators:
                 )
             )
         P = ConvexPolygons(field)
-        s = Surface_list(field)
+        s = MutableOrientedSimilaritySurface(field)
         T = [None] * (2 * g + 1)
         Tp = [None] * (2 * g + 1)
         from sage.matrix.constructor import Matrix
