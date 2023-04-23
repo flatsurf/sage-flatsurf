@@ -498,14 +498,20 @@ class SimilaritySurfaceGenerators:
             True
 
         """
-        s = Surface_list(base_ring=QQ)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        s = MutableOrientedSimilaritySurface(QQ)
+
         s.add_polygon(
-            polygons(vertices=[(0, 0), (2, -2), (2, 0)], ring=QQ)
-        )  # gets label 0
+            polygons(vertices=[(0, 0), (2, -2), (2, 0)], ring=QQ),
+            label=0
+        )
         s.add_polygon(
-            polygons(vertices=[(0, 0), (2, 0), (1, 3)], ring=QQ)
-        )  # gets label 1
-        s.change_polygon_gluings(0, [(1, 1), (1, 2), (1, 0)])
+            polygons(vertices=[(0, 0), (2, 0), (1, 3)], ring=QQ),
+            label=1
+        )
+        s.glue((0, 0), (1, 1))
+        s.glue((0, 1), (1, 2))
+        s.glue((0, 2), (1, 0))
         s.set_immutable()
         return s
 
@@ -521,8 +527,11 @@ class SimilaritySurfaceGenerators:
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: TestSuite(s).run()
         """
-        s = Surface_list(base_ring=P.base_ring(), mutable=True)
-        s.add_polygon(P, [(0, i) for i in range(P.num_edges())])
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        s = MutableOrientedSimilaritySurface(P.base_ring())
+        s.add_polygon(P)
+        for i in range(P.num_edges()):
+            s.glue((0, i), (0, i))
         s.set_immutable()
         return s
 

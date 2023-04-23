@@ -23,7 +23,7 @@ from sage.structure.parent import Parent
 from flatsurf.geometry.surface_objects import SurfacePoint
 
 
-class Surface_base:
+class Surface_base(Parent):
     def _refine_category_(self, category):
         r"""
         Refine the category of this surface to a subcategory ``category``.
@@ -46,22 +46,99 @@ class Surface_base:
 
 class MutablePolygonalSurface(Surface_base):
     # TODO: Lets us add polygons.
-    pass
+    def __init__(self, base, category=None):
+        from sage.all import ZZ
+        self._next_label = ZZ(0)
+        self._base_label = None
+
+        self._polygons = {}
+
+        self._mutable = True
+
+        super().__init__(base, category=category)
+
+    def add_polygon(self, polygon, label=None):
+        if not self._mutable:
+            raise Exception
+
+        if label is None:
+            while self._next_label in self._polygons:
+                self._next_label += 1
+            label = self._next_label
+
+        if label in self._polygons:
+            raise ValueError  # must remove first
+
+        if self._base_label is None:
+            self._base_label = label
+
+        self._polygons[label] = polygon
+
+    def base_label(self):
+        if self._base_label is None:
+            raise NotImplementedError
+
+        return self._base_label
+
+    def polygon(self, label):
+        return self._polygons[label]
+
+    def set_immutable(self):
+        if self._mutable:
+            self._mutable = False
+
+        self._refine_category_(self.refined_category())
+
+    def is_finite(self):
+        return True
+
+    def is_mutable(self):
+        return self._mutable
+
+    def __eq__(self, other):
+        if not isinstance(other, MutablePolygonalSurface):
+            return False
+
+        if self._polygons != other._polygons:
+            return False
+
+        if self._base_label != other._base_label:
+            return False
+
+        if self._mutable != other._mutable:
+            return False
+
+        return True
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __hash__(self):
+        if self._mutable:
+            raise Exception
+        # TODO
+        return 0
+
+    def _repr_(self):
+        if not self.is_finite():
+            return "Surface built from infinitely many polygons"
+        if self.num_polygons() == 1:
+            return "Surface built from 1 polygon"
+
+        return "Surface built from {} polygons".format(self.num_polygons())
 
 
-class OrientedSimilaritySurface(Surface_base, Parent):
+class OrientedSimilaritySurface(Surface_base):
     Element = SurfacePoint
 
     def __init__(self, base, category=None):
-        Surface_base.__init__(self)
-
         from flatsurf.geometry.categories import SimilaritySurfaces
         if category is None:
             category = SimilaritySurfaces().Oriented()
 
         category &= SimilaritySurfaces().Oriented()
 
-        Parent.__init__(self, base, category=category)
+        super().__init__(base, category=category)
 
     def _an_element_(self):
         r"""
@@ -139,9 +216,55 @@ class OrientedSimilaritySurface(Surface_base, Parent):
         return True
 
 
-class MutableOrientedSimilaritySurface(OrientedSimilaritySurface):
-    # TODO: Lets us add polygons and change edge gluings.
-    pass
+class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygonalSurface):
+    def __init__(self, base, category=None):
+        self._gluings = {}
+
+        super().__init__(base, category=category)
+
+    def glue(self, x, y):
+        if not self._mutable:
+            raise Exception
+
+        labels = x[0], y[0]
+        edges = x[1], y[1]
+
+        for label in labels:
+            if label not in self._polygons:
+                raise ValueError
+
+            if label not in self._gluings:
+                self._gluings[label] = [None] * self.polygon(label).num_edges()
+
+        for label, edge in zip(labels, edges):
+            if self._gluings[label][edge] is not None:
+                cross_label, cross_edge = self._gluings[label][edge]
+                self._gluings[cross_label][cross_edge] = None
+                self._gluings[label][edge] = None
+
+        self._gluings[labels[0]][edges[0]] = (labels[1], edges[1])
+        self._gluings[labels[1]][edges[1]] = (labels[0], edges[0])
+
+    def opposite_edge(self, label, edge):
+        return self._gluings[label][edge]
+
+    def __eq__(self, other):
+        if not isinstance(other, MutableOrientedSimilaritySurface):
+            return False
+
+        if not super().__eq__(other):
+            return False
+
+        if self._gluings != other._gluings:
+            return False
+
+        return True
+
+    def __hash__(self):
+        if self._mutable:
+            raise Exception
+        # TODO
+        return 0
 
 
 class Labels(collections.abc.Set):
