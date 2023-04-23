@@ -305,9 +305,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
                     from flatsurf.geometry.polygon import ConvexPolygons
-                    from flatsurf.geometry.surface import Surface_list
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-                    S = Surface_list(K)
+                    S = MutableOrientedSimilaritySurface(K)
                     C = ConvexPolygons(K)
                     relabelling = {}
                     k = 0
