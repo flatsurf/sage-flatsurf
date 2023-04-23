@@ -449,6 +449,8 @@ class Surface(OrientedSimilaritySurface):
         self.__mutate()
         self._base_label = new_base_label
 
+    set_base_label = change_base_label
+
     def subdivide(self):
         r"""
         Return a copy of this surface whose polygons have been partitioned into

@@ -20,7 +20,6 @@ r"""Mappings between translation surfaces."""
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
 from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
-from flatsurf.geometry.surface import Surface_dict
 
 
 class SurfaceMapping:
@@ -189,7 +188,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
         if s.base_label() == p2:
             # The polygon with the base label is being removed.
-            s2.change_base_label(p1)
+            s2.set_base_label(p1)
 
         s2.change_polygon(p1, ConvexPolygons(s.base_ring())(vs))
 
@@ -663,7 +662,8 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         P = ConvexPolygons(ring)
         cv = {}  # dictionary for canonical vertices
         translations = {}  # translations bringing the canonical vertex to the origin.
-        s2 = Surface_dict(base_ring=ring)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        s2 = MutableOrientedSimilaritySurface(ring)
         for label, polygon in s.label_iterator(polygons=True):
             cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
@@ -679,7 +679,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 ee2 = (e2 - cv[l2] + polygon2.num_edges()) % polygon2.num_edges()
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
                 s2.change_edge_gluing(l1, ee1, l2, ee2)
-        s2.change_base_label(s.base_label())
+        s2.set_base_label(s.base_label())
         s2.set_immutable()
         ss2 = s2
 
@@ -752,7 +752,7 @@ class ReindexMapping(SurfaceMapping):
                 new_base_label = s.base_label()
         s2 = s.copy(mutable=True, lazy=True)
         s2.relabel(relabler, in_place=True)
-        s2.underlying_surface().change_base_label(new_base_label)
+        s2.underlying_surface().set_base_label(new_base_label)
 
         SurfaceMapping.__init__(self, s, s2)
 
@@ -899,9 +899,9 @@ def canonicalize_translation_surface_mapping(s):
     labels = {label for label in s2.label_iterator()}
     labels.remove(s2.base_label())
     for label in labels:
-        ss.underlying_surface().change_base_label(label)
+        ss.underlying_surface().set_base_label(label)
         if ss.cmp(s2copy) > 0:
-            s2copy.underlying_surface().change_base_label(label)
+            s2copy.underlying_surface().set_base_label(label)
     # We now have the base_label correct.
     # We will use the label walker to generate the canonical labeling of polygons.
     w = s2copy.walker()
