@@ -24,7 +24,7 @@ surfaces.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.surface import OrientedSimilaritySurface, Labels
 
 
 class LazyTriangulatedSurface(OrientedSimilaritySurface):
@@ -151,6 +151,67 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         return super().__eq__(other)
 
+    def labels(self):
+        return LazyTriangulatedSurface.LazyLabels(self)
+
+    class LazyLabels(Labels):
+        def __contains__(self, label):
+            reference_label, vertices = label
+            if reference_label not in self._surface._reference.labels():
+                return False
+
+            return vertices in self._surface._triangulation(reference_label).values()
+
+
+class LazyMutableSurface(OrientedSimilaritySurface):
+    def __init__(self, surface, category=None):
+        self._reference = surface
+
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        self._surface = MutableOrientedSimilaritySurface(surface.base_ring())
+
+        super().__init__(surface.base_ring(), category=category or surface.category())
+
+    def base_label(self):
+        return self._reference.base_label()
+
+    def labels(self):
+        return self._reference.labels()
+
+    def is_mutable(self):
+        return True
+
+    def change_polygon(self, label, polygon):
+        return self._surface.change_polygon(label, polygon)
+
+    def change_edge_gluing(self, label0, edge0, label1, edge1):
+        return self._surface.change_edge_gluing(label0, edge0, label1, edge1)
+
+    def _ensure_gluings(self, label):
+        assert label in self._surface.labels()
+        for edge in range(self._surface.polygon(label).num_edges()):
+            cross = self._surface.opposite_edge(label, edge)
+            if cross is None:
+                cross_label, cross_edge = self._reference.opposite_edge(label, edge)
+                self._ensure_polygon(cross_label)
+                self._surface.glue((label, edge), (cross_label, cross_edge))
+
+    def _ensure_polygon(self, label):
+        if label not in self._surface.labels():
+            self._surface.add_polygon(self._reference.polygon(label), label=label)
+
+    def polygon(self, label):
+        self._ensure_polygon(label)
+        return self._surface.polygon(label)
+
+    def opposite_edge(self, label, edge):
+        self._ensure_polygon(label)
+        self._ensure_gluings(label)
+        cross_label, cross_edge = self._surface.opposite_edge(label, edge)
+        self._ensure_polygon(cross_label)
+        self._ensure_gluings(cross_label)
+        return cross_label, cross_edge
+
 
 class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     r"""
@@ -164,7 +225,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyDelaunayTriangulatedSurface(s,relabel=False)
-        sage: ss.polygon(0).num_edges()
+        sage: ss.polygon(ss.base_label()).num_edges()
         3
         sage: TestSuite(ss).run()
         sage: ss.is_delaunay_triangulated(limit=100)
@@ -176,7 +237,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyDelaunayTriangulatedSurface(s,relabel=True)
-        sage: ss.polygon(0).num_edges()
+        sage: ss.polygon(ss.base_label()).num_edges()
         3
         sage: TestSuite(ss).run()
         sage: ss.is_delaunay_triangulated(limit=100)
@@ -195,36 +256,22 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: TestSuite(ss).run()
     """
 
-    @classmethod
-    def _direction(cls, surface, direction):
-        # Our Delaunay will respect the provided direction.
-        if direction is None:
-            return surface.vector_space()(
-                (surface.base_ring().zero(), surface.base_ring().one())
-            )
-        else:
-            return surface.vector_space()(direction)
-
     def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
-        r"""
-        Construct a lazy Delaunay triangulation of the provided similarity_surface.
-        """
-        if similarity_surface.underlying_surface().is_mutable():
+        if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
         self._reference = similarity_surface
 
         # This surface will converge to the Delaunay Triangulation
-        self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
+        self._surface = LazyMutableSurface(LazyTriangulatedSurface(similarity_surface))
 
-        self._direction = self._direction(similarity_surface, direction)
+        self._direction = self._surface.vector_space()(direction or (0, 1))
 
         # Set of labels corresponding to known delaunay polygons
         self._certified_labels = set()
 
         # Triangulate the base polygon
-        base_label = self._s.base_label()
-        self._s.triangulate(in_place=True, label=base_label)
+        base_label = self._surface.base_label()
 
         # Certify the base polygon (or apply flips...)
         while not self._certify_or_improve(base_label):
@@ -232,36 +279,35 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
         OrientedSimilaritySurface.__init__(
             self,
-            self._s.base_ring(),
-            category=category or self._s.category()
+            self._surface.base_ring(),
+            category=category or self._surface.category()
         )
 
     def is_mutable(self):
         return False
 
     def base_label(self):
-        return self._s.base_label()
+        return self._surface.base_label()
 
     def polygon(self, label):
-        if label in self._certified_labels:
-            return self._s.polygon(label)
-        else:
-            raise ValueError(
-                "Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
-            )
+        if label not in self._surface.labels():
+            raise ValueError
+        if label not in self._certified_labels:
+            for certified_label in self.labels():
+                if label == certified_label:
+                    assert label in self._certified_labels
+                    break
+
+        return self._surface.polygon(label)
 
     def opposite_edge(self, label, edge):
-        if label in self._certified_labels:
-            ll, ee = self._s.opposite_edge(label, edge)
-            if ll in self._certified_labels:
-                return ll, ee
-            while not self._certify_or_improve(ll):
-                ll, ee = self._s.opposite_edge(label, edge)
-            return self._s.opposite_edge(label, edge)
-        else:
-            raise ValueError(
-                "Asked for an edge of a polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
-            )
+        self.polygon(label)
+        while True:
+            cross_label, cross_edge = self._surface.opposite_edge(label, edge)
+            if self._certify_or_improve(cross_label):
+                break
+
+        return self._surface.opposite_edge(label, edge)
 
     def _certify_or_improve(self, label):
         r"""
@@ -280,13 +326,9 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if label in self._certified_labels:
             # Already certified.
             return True
-        p = self._s.polygon(label)
-        if p.num_edges() > 3:
-            # not triangulated!
-            self._s.triangulate(in_place=True, label=label)
-            p = self._s.polygon(label)
-            # Made major changes to the polygon with label l.
-            return False
+        p = self._surface.polygon(label)
+        assert p.num_edges() == 3
+
         c = p.circumscribing_circle()
 
         # Develop through each of the 3 edges:
@@ -305,20 +347,15 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                     edge_stack = [(label, e, 1, c)]
                 ll, ee, step, cc = edge_stack[len(edge_stack) - 1]
 
-                lll, eee = self._s.opposite_edge(ll, ee)
+                lll, eee = self._surface.opposite_edge(ll, ee)
 
                 if lll not in self._certified_labels:
-                    ppp = self._s.polygon(lll)
-                    if ppp.num_edges() > 3:
-                        # not triangulated!
-                        self._s.triangulate(in_place=True, label=lll)
-                        lll, eee = self._s.opposite_edge(ll, ee)
-                        ppp = self._s.polygon(lll)
-                    # now ppp is a triangle
+                    ppp = self._surface.polygon(lll)
+                    assert ppp.num_edges() == 3
 
-                    if self._s._edge_needs_flip(ll, ee):
+                    if self._surface._edge_needs_flip(ll, ee):
                         # Perform the flip
-                        self._s.triangle_flip(
+                        self._surface.triangle_flip(
                             ll, ee, in_place=True, direction=self._direction
                         )
 
@@ -340,7 +377,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                         continue
 
                     # If we reach here then we know that no flip was needed.
-                    ccc = self._s.edge_transformation(ll, ee) * cc
+                    ccc = self._surface.edge_transformation(ll, ee) * cc
 
                     # Check if the disk passes through the next edge in the chain.
                     lp = ccc.line_segment_position(
@@ -446,7 +483,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         # This surface will converge to the Delaunay Decomposition
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
 
-        self._direction = LazyDelaunayTriangulatedSurface._direction(similarity_surface, direction)
+        self._direction = self._s.vector_space()(direction or (0, 1))
 
         # Set of labels corresponding to known delaunay polygons
         self._certified_labels = set()

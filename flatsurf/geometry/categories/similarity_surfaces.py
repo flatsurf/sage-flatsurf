@@ -1966,11 +1966,11 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
-                    sage: ss = s.delaunay_triangulation(relabel=True)
+                    sage: ss = s.delaunay_triangulation(relabel=True)  # TODO: relabel is gone. It should not be a feature of delaunay_triangulation.
                     sage: ss.base_label()
-                    0
-                    sage: ss.polygon(0)
-                    Polygon: (0, 0), (1, 1), (0, 1)
+                    (0, (0, 1, 2))
+                    sage: ss.polygon((0, (0, 1, 2)))
+                    Polygon: (0, 0), (1, 0), (1, 1)
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated(limit=10)
                     True
