@@ -39,7 +39,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyTriangulatedSurface(s,relabel=False)
-        sage: ss.polygon(0).num_edges()
+        sage: ss.polygon(ss.base_label()).num_edges()
         3
         sage: TestSuite(ss).run()
 
@@ -49,7 +49,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyTriangulatedSurface(s,relabel=True)
-        sage: ss.polygon(0).num_edges()
+        sage: ss.polygon(ss.base_label()).num_edges()
         3
         sage: TestSuite(ss).run()
     """
@@ -60,43 +60,73 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         self._reference = similarity_surface
 
-        # This surface will converge to the Delaunay Triangulation
-        self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
-
         OrientedSimilaritySurface.__init__(
             self,
             similarity_surface.base_ring(),
-            category=category or self._s.category())
+            category=category or self._reference.category())
 
     def is_mutable(self):
         return False
 
     def base_label(self):
-        return self._reference.base_label()
+        reference_label = self._reference.base_label()
+        return (reference_label, self._triangulation(reference_label)[(0, 1)])
 
-    def polygon(self, lab):
-        r"""
-        Return the polygon with label ``lab``.
-        """
-        polygon = self._s.polygon(lab)
-        if polygon.num_edges() > 3:
-            self._s.triangulate(in_place=True, label=lab)
-            return self._s.polygon(lab)
-        else:
-            return polygon
+    def _triangulation(self, reference_label):
+        reference_polygon = self._reference.polygon(reference_label)
 
-    def opposite_edge(self, p, e):
-        r"""
-        Given the label ``p`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``pp``, ``ee``) to which this edge is glued.
-        """
-        pp, ee = self._s.opposite_edge(p, e)
-        polygon = self._s.polygon(pp)
-        if polygon.num_edges() > 3:
-            self.polygon(pp)
-            return self._s.opposite_edge(p, e)
-        else:
-            return (pp, ee)
+        outer_edges = [(vertex, (vertex + 1) % reference_polygon.num_edges()) for vertex in range(reference_polygon.num_edges())]
+        inner_edges = reference_polygon.triangulation()
+        inner_edges.extend([(w, v) for (v, w) in inner_edges])
+
+        edges = outer_edges + inner_edges
+
+        def triangle(edge):
+            v, w = edge
+            next_edges = [edge for edge in edges if edge[0] == w]
+            previous_edges = [edge for edge in edges if edge[1] == v]
+
+            next_vertices = [edge[1] for edge in next_edges]
+            previous_vertices = [edge[0] for edge in previous_edges]
+
+            other_vertex = set(next_vertices).intersection(set(previous_vertices))
+
+            assert len(other_vertex) == 1
+
+            other_vertex = next(iter(other_vertex))
+
+            vertices = v, w, other_vertex
+            while vertices[0] != min(vertices):
+                vertices = vertices[1:] + vertices[:1]
+
+            return vertices
+
+        return {edge: triangle(edge) for edge in edges}
+
+    def polygon(self, label):
+        reference_label, vertices = label
+        reference_polygon = self._reference.polygon(reference_label)
+        return reference_polygon.parent()(vertices=[reference_polygon.vertex(v) for v in vertices])
+
+    def opposite_edge(self, label, edge):
+        reference_label, vertices = label
+        reference_polygon = self._reference.polygon(reference_label)
+
+        if vertices[(edge + 1) % 3] == (vertices[edge] + 1) % reference_polygon.num_edges():
+            # This is an edge of the reference surface
+            cross_reference_label, cross_reference_edge = self._reference.opposite_edge(reference_label, vertices[edge])
+            cross_reference_polygon = self._reference.polygon(cross_reference_label)
+            cross_vertices = self._triangulation(cross_reference_label)[(cross_reference_edge, (cross_reference_edge + 1) % cross_reference_polygon.num_edges())]
+
+            cross_edge = cross_vertices.index(cross_reference_edge)
+
+            return (cross_reference_label, cross_vertices), cross_edge
+
+        # This is an edge that was added by the triangulation
+        edge = (vertices[edge], vertices[(edge + 1) % 3])
+        cross_edge = (edge[1], edge[0])
+        cross_vertices = self._triangulation(reference_label)[cross_edge]
+        return (reference_label, cross_vertices), cross_vertices.index(cross_edge[0])
 
     def _cache_key(self):
         return (type(self), self._reference)

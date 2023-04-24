@@ -381,6 +381,7 @@ class Labels(collections.abc.Set):
         return False
 
     def __iter__(self):
+        # TODO: This does not enumerate the entire surface for non-connected surfaces.
         if self._len == 0:
             return
 
