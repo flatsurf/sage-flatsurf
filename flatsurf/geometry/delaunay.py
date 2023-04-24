@@ -195,14 +195,15 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: TestSuite(ss).run()
     """
 
-    def _setup_direction(self, direction):
+    @classmethod
+    def _direction(cls, surface, direction):
         # Our Delaunay will respect the provided direction.
         if direction is None:
-            self._direction = self._s.vector_space()(
-                (self._s.base_ring().zero(), self._s.base_ring().one())
+            return surface.vector_space()(
+                (surface.base_ring().zero(), surface.base_ring().one())
             )
         else:
-            self._direction = self._ss.vector_space()(direction)
+            return surface.vector_space()(direction)
 
     def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
         r"""
@@ -216,7 +217,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         # This surface will converge to the Delaunay Triangulation
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
 
-        self._setup_direction(direction)
+        self._direction = self._direction(similarity_surface, direction)
 
         # Set of labels corresponding to known delaunay polygons
         self._certified_labels = set()
@@ -401,9 +402,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         return super().__eq__(other)
 
 
-class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
-    # We just inherit to use some methods.
-
+class LazyDelaunaySurface(OrientedSimilaritySurface):
     r"""
     This is an implementation of Surface. It takes a surface (typically
     infinite) from the constructor. This class represents the Delaunay
@@ -447,7 +446,7 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
         # This surface will converge to the Delaunay Decomposition
         self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
 
-        self._setup_direction(direction)
+        self._direction = LazyDelaunayTriangulatedSurface._direction(similarity_surface, direction)
 
         # Set of labels corresponding to known delaunay polygons
         self._certified_labels = set()
@@ -507,6 +506,121 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
                 "Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
             )
 
+    def _certify_or_improve(self, label):
+        r"""
+        This method attempts to develop the circumscribing disk about the polygon
+        with label ``label`` into the surface.
+
+        The method returns True if this is successful. In this case the label
+        is added to the set _certified_labels. It returns False if it failed to
+        develop the disk into the surface. (In this case the original polygon was
+        not a Delaunay triangle.
+
+        The algorithm divides any non-certified polygon in self._s it encounters
+        into triangles. If it encounters a pair of triangles which need a diagonal
+        flip then it does the flip.
+        """
+        if label in self._certified_labels:
+            # Already certified.
+            return True
+        p = self._s.polygon(label)
+        if p.num_edges() > 3:
+            # not triangulated!
+            self._s.triangulate(in_place=True, label=label)
+            p = self._s.polygon(label)
+            # Made major changes to the polygon with label l.
+            return False
+        c = p.circumscribing_circle()
+
+        # Develop through each of the 3 edges:
+        for e in range(3):
+            edge_certified = False
+            # This keeps track of a chain of polygons the disk develops through:
+            edge_stack = []
+
+            # We repeat this until we can verify that the portion of the circle
+            # that passes through the edge e developes into the surface.
+            while not edge_certified:
+                if len(edge_stack) == 0:
+                    # Start at the beginning with label l and edge e.
+                    # The 3rd coordinate in the tuple represents what edge to develop
+                    # through in the triangle opposite this edge.
+                    edge_stack = [(label, e, 1, c)]
+                ll, ee, step, cc = edge_stack[len(edge_stack) - 1]
+
+                lll, eee = self._s.opposite_edge(ll, ee)
+
+                if lll not in self._certified_labels:
+                    ppp = self._s.polygon(lll)
+                    if ppp.num_edges() > 3:
+                        # not triangulated!
+                        self._s.triangulate(in_place=True, label=lll)
+                        lll, eee = self._s.opposite_edge(ll, ee)
+                        ppp = self._s.polygon(lll)
+                    # now ppp is a triangle
+
+                    if self._s._edge_needs_flip(ll, ee):
+                        # Perform the flip
+                        self._s.triangle_flip(
+                            ll, ee, in_place=True, direction=self._direction
+                        )
+
+                        # If we touch the original polygon, then we return False.
+                        if label == ll or label == lll:
+                            return False
+                        # We might have flipped a polygon from earlier in the chain
+                        # In this case we need to trim the stack down so that we recheck
+                        # that polygon.
+                        for index, tup in enumerate(edge_stack):
+                            if tup[0] == ll or tup[0] == lll:
+                                edge_stack = edge_stack[:index]
+                                break
+                        # The following if statement makes sure that we check both subsequent edges of the
+                        # polygon opposite the last edge listed in the stack.
+                        if len(edge_stack) > 0:
+                            ll, ee, step, cc = edge_stack.pop()
+                            edge_stack.append((ll, ee, 1, cc))
+                        continue
+
+                    # If we reach here then we know that no flip was needed.
+                    ccc = self._s.edge_transformation(ll, ee) * cc
+
+                    # Check if the disk passes through the next edge in the chain.
+                    lp = ccc.line_segment_position(
+                        ppp.vertex((eee + step) % 3), ppp.vertex((eee + step + 1) % 3)
+                    )
+                    if lp == 1:
+                        # disk passes through edge and opposite polygon is not certified.
+                        edge_stack.append((lll, (eee + step) % 3, 1, ccc))
+                        continue
+
+                    # We reach this point if the disk doesn't pass through the edge eee+step of polygon lll.
+
+                # Either lll is already certified or the disk didn't pass
+                # through edge (lll,eee+step)
+
+                # Trim off unnecessary edges off the stack.
+                # prune_count=1
+                ll, ee, step, cc = edge_stack.pop()
+                if step == 1:
+                    # if we have just done step 1 (one edge), move on to checking
+                    # the next edge.
+                    edge_stack.append((ll, ee, 2, cc))
+                # if we have pruned an edge, continue to look at pruning in the same way.
+                while step == 2 and len(edge_stack) > 0:
+                    ll, ee, step, cc = edge_stack.pop()
+                    # prune_count= prune_count+1
+                    if step == 1:
+                        edge_stack.append((ll, ee, 2, cc))
+                if len(edge_stack) == 0:
+                    # We're done with this edge
+                    edge_certified = True
+        self._certified_labels.add(label)
+        return True
+
+    def base_label(self):
+        return self._s.base_label()
+
     def __hash__(self):
         return super().__hash__()
 
@@ -533,3 +647,6 @@ class LazyDelaunaySurface(LazyDelaunayTriangulatedSurface):
                 return True
 
         return super().__eq__(other)
+
+    def is_mutable(self):
+        return False
