@@ -1817,7 +1817,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Returns 0 if the quadrilateral formed by the triangles is inscribed
                 in a circle, and returns 1 otherwise.
 
-                A ValueError is raised if the edge is not indident to two triangles.
+                A ValueError is raised if the edge is not incident to two triangles.
                 """
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
@@ -1838,7 +1838,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Returns 0 if the quadrilateral formed by the triangles is inscribed
                 in a circle, and returns 1 otherwise.
 
-                A ValueError is raised if the edge is not indident to two triangles.
+                A ValueError is raised if the edge is not incident to two triangles.
                 """
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
