@@ -106,6 +106,13 @@ class DilationSurfaces(SurfaceCategory):
             In this case in_place must be False.
 
             If in_place=False, then a copy is made before the deformation.
+
+            TESTS::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)
+
             """
             if mapping is True:
                 if in_place:
@@ -116,13 +123,12 @@ class DilationSurfaces(SurfaceCategory):
                 return GL2RMapping(self, m)
             if not in_place:
                 if self.is_finite():
-                    # TODO: This code path is not tested anywhere.
                     from sage.structure.element import get_coercion_model
 
                     cm = get_coercion_model()
                     field = cm.common_parent(self.base_ring(), m.base_ring())
                     from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-                    s = MutableOrientedSimilaritySurface.from_surface(self).change_ring(field)
+                    s = MutableOrientedSimilaritySurface.from_surface(self.change_ring(field))
                     return s.apply_matrix(m)
                 else:
                     return m * self
