@@ -12,7 +12,7 @@ from .geometry.similarity_surface_generators import (
     translation_surfaces,
 )
 
-from .geometry.surface import Surface_list, Surface_dict
+from .geometry.surface import Surface_list, Surface_dict, MutableOrientedSimilaritySurface
 
 from .geometry.gl2r_orbit_closure import GL2ROrbitClosure
 

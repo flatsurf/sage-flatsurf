@@ -20,15 +20,19 @@ translation surfaces, actually add a method to
 
 EXAMPLES::
 
-A single square is just a topological surface built from polygons::
+A single square without any gluings::
 
-    sage: from flatsurf import Surface_dict
-    sage: S = Surface_dict(QQ)
+    sage: from flatsurf import MutableOrientedSimilaritySurface
+    sage: S = MutableOrientedSimilaritySurface(QQ)
 
     sage: from flatsurf import polygons
     sage: S.add_polygon(polygons.square(), label=0)
     0
-    sage: S.category()  # TODO: Either change this to be topological or fix the documentation.
+
+This is considered to be a surface built from polygons with all gluings being
+similarities (however there are none)::
+
+    sage: S.category()
     Category of oriented similarity surfaces
 
 It does not really make sense to ask which stratum this surface belongs to::
@@ -83,21 +87,3 @@ from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
 from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
 from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
-
-# TODO
-# class HyperbolicPolygonalSurfaces(Category):
-#     # TODO: Documentation
-#     # glued by isometries (because they have to preserve triangles)
-#     def super_categories(self):
-#         return [PolygonalSurfaces()]
-#
-# How is it different from a HyperbolicSurface which is isometric
-# to the "master space" (= upper half space)?
-# class HyperbolicTessellationSurfaces(Category):
-#     # i.e., surface has global coordinates
-#     # do we want polygons to be "colored"? (e.g. for the iso-Delaunay situation we have equivalence of triangulation of the underlying flat surface)
-#     # This concept of "global coordinates" is also useful when one does
-#     # retriangulation by adding more marked points. A triangle in the
-#     # initial surface becomes many triangles and we want to be able
-#     # to navigate between the two versions of the same surface.
-#     pass
