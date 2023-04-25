@@ -75,6 +75,14 @@ class MutablePolygonalSurface(Surface_base):
         self._polygons[label] = polygon
         return label
 
+    def add_polygons(self, polygons):
+        # TODO: Deprecate
+        return [self.add_polygon(p) for p in polygons]
+
+    def set_default_graphical_surface(self, graphical_surface):
+        # TODO: Explain what to do instead.
+        raise NotImplementedError("set_default_graphical_surface() has been removed from this version of sage-flatsurf.")
+
     def remove_polygon(self, label):
         if not self._mutable:
             raise Exception

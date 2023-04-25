@@ -2319,6 +2319,239 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                 return sc_list
 
+            def ramified_cover(self, d, data):
+                r"""
+                Make a ramified cover of this surface.
+
+                INPUT:
+
+                - ``d`` - integer (the degree of the cover)
+
+                - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
+                  of {1,...,d}
+                """
+                from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+                G = SymmetricGroup(d)
+                for k in data:
+                    data[k] = G(data[k])
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                cover = MutableOrientedSimilaritySurface(self.base_ring())
+                edges = set(self.edge_iterator())
+                cover_labels = {}
+                for i in range(1, d + 1):
+                    for lab in self.label_iterator():
+                        cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
+                while edges:
+                    lab, e = elab = edges.pop()
+                    llab, ee = eelab = self.opposite_edge(lab, e)
+                    edges.remove(eelab)
+                    if elab in data:
+                        if eelab in data:
+                            if not (data[elab] * data[eelab]).is_one():
+                                raise ValueError("inconsistent covering data")
+                        s = data[elab]
+                    elif eelab in data:
+                        s = ~data[eelab]
+                    else:
+                        s = G.one()
+
+                    for i in range(1, d + 1):
+                        p0 = cover_labels[(lab, i)]
+                        p1 = cover_labels[(lab, s(i))]
+                        cover.set_edge_pairing(p0, e, p1, ee)
+                return cover
+
+            def subdivide(self):
+                r"""
+                Return a copy of this surface whose polygons have been partitioned into
+                smaller triangles with
+                :meth:`.polygon.ConvexPolygon.subdivide`.
+
+                EXAMPLES:
+
+                A surface consisting of a single triangle::
+
+                    sage: from flatsurf.geometry.surface import Surface_dict
+                    sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+                    sage: S = Surface_dict(QQ)
+                    sage: P = ConvexPolygons(QQ)
+                    sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+                    'Δ'
+
+                Subdivision of this surface yields a surface with three triangles::
+
+                    sage: T = S.subdivide()
+                    sage: list(T.label_iterator())
+                    [('Δ', 0), ('Δ', 1), ('Δ', 2)]
+
+                Note that the new labels are old labels plus an index. We verify that
+                the triangles are glued correctly::
+
+                    sage: list(T.edge_gluing_iterator())
+                    [((('Δ', 0), 0), None),
+                     ((('Δ', 0), 1), (('Δ', 1), 2)),
+                     ((('Δ', 0), 2), (('Δ', 2), 1)),
+                     ((('Δ', 1), 0), None),
+                     ((('Δ', 1), 1), (('Δ', 2), 2)),
+                     ((('Δ', 1), 2), (('Δ', 0), 1)),
+                     ((('Δ', 2), 0), None),
+                     ((('Δ', 2), 1), (('Δ', 0), 2)),
+                     ((('Δ', 2), 2), (('Δ', 1), 1))]
+
+                If we add another polygon to the original surface and glue things, we
+                can see how existing gluings are preserved when subdividing::
+
+                    sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+                    '□'
+
+                    sage: S.change_edge_gluing("Δ", 0, "□", 2)
+                    sage: S.change_edge_gluing("□", 1, "□", 3)
+
+                    sage: T = S.subdivide()
+
+                    sage: list(T.label_iterator())
+                    [('Δ', 0), ('□', 2), ('Δ', 1), ('Δ', 2), ('□', 3), ('□', 1), ('□', 0)]
+                    sage: list(sorted(T.edge_gluing_iterator()))
+                    [((('Δ', 0), 0), (('□', 2), 0)),
+                     ((('Δ', 0), 1), (('Δ', 1), 2)),
+                     ((('Δ', 0), 2), (('Δ', 2), 1)),
+                     ((('Δ', 1), 0), None),
+                     ((('Δ', 1), 1), (('Δ', 2), 2)),
+                     ((('Δ', 1), 2), (('Δ', 0), 1)),
+                     ((('Δ', 2), 0), None),
+                     ((('Δ', 2), 1), (('Δ', 0), 2)),
+                     ((('Δ', 2), 2), (('Δ', 1), 1)),
+                     ((('□', 0), 0), None),
+                     ((('□', 0), 1), (('□', 1), 2)),
+                     ((('□', 0), 2), (('□', 3), 1)),
+                     ((('□', 1), 0), (('□', 3), 0)),
+                     ((('□', 1), 1), (('□', 2), 2)),
+                     ((('□', 1), 2), (('□', 0), 1)),
+                     ((('□', 2), 0), (('Δ', 0), 0)),
+                     ((('□', 2), 1), (('□', 3), 2)),
+                     ((('□', 2), 2), (('□', 1), 1)),
+                     ((('□', 3), 0), (('□', 1), 0)),
+                     ((('□', 3), 1), (('□', 0), 2)),
+                     ((('□', 3), 2), (('□', 2), 1))]
+
+                """
+                labels = list(self.label_iterator())
+                polygons = [self.polygon(label) for label in labels]
+
+                subdivisions = [p.subdivide() for p in polygons]
+
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+                surface = MutableOrientedSimilaritySurface(self.base())
+
+                # Add subdivided polygons
+                for s, subdivision in enumerate(subdivisions):
+                    label = labels[s]
+                    for p, polygon in enumerate(subdivision):
+                        surface.add_polygon(polygon, label=(label, p))
+
+                surface.change_base_label((self._base_label, 0))
+
+                # Add gluings between subdivided polygons
+                for s, subdivision in enumerate(subdivisions):
+                    label = labels[s]
+                    for p in range(len(subdivision)):
+                        surface.change_edge_gluing(
+                            (label, p), 1, (label, (p + 1) % len(subdivision)), 2
+                        )
+
+                        # Add gluing from original surface
+                        opposite = self.opposite_edge(label, p)
+                        if opposite is not None:
+                            surface.change_edge_gluing((label, p), 0, opposite, 0)
+
+                return surface
+
+            def subdivide_edges(self, parts=2):
+                r"""
+                Return a copy of this surface whose edges have been split into
+                ``parts`` equal pieces each.
+
+                INPUT:
+
+                - ``parts`` -- a positive integer (default: 2)
+
+                EXAMPLES:
+
+                A surface consisting of a single triangle::
+
+                    sage: from flatsurf.geometry.surface import Surface_dict
+                    sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+
+                    sage: S = Surface_dict(QQ)
+                    sage: P = ConvexPolygons(QQ)
+                    sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+                    'Δ'
+
+                Subdividing this triangle yields a triangle with marked points along
+                the edges::
+
+                    sage: T = S.subdivide_edges()
+
+                If we add another polygon to the original surface and glue them, we
+                can see how existing gluings are preserved when subdividing::
+
+                    sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+                    '□'
+
+                    sage: S.change_edge_gluing("Δ", 0, "□", 2)
+                    sage: S.change_edge_gluing("□", 1, "□", 3)
+
+                    sage: T = S.subdivide_edges()
+                    sage: list(sorted(T.edge_gluing_iterator()))
+                    [(('Δ', 0), ('□', 5)),
+                     (('Δ', 1), ('□', 4)),
+                     (('Δ', 2), None),
+                     (('Δ', 3), None),
+                     (('Δ', 4), None),
+                     (('Δ', 5), None),
+                     (('□', 0), None),
+                     (('□', 1), None),
+                     (('□', 2), ('□', 7)),
+                     (('□', 3), ('□', 6)),
+                     (('□', 4), ('Δ', 1)),
+                     (('□', 5), ('Δ', 0)),
+                     (('□', 6), ('□', 3)),
+                     (('□', 7), ('□', 2))]
+
+                """
+                labels = list(self.label_iterator())
+                polygons = [self.polygon(label) for label in labels]
+
+                subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
+
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+                surface = MutableOrientedSimilaritySurface(self.base())
+
+                # Add subdivided polygons
+                for s, subdivided in enumerate(subdivideds):
+                    surface.add_polygon(subdivided, label=labels[s])
+
+                surface.change_base_label(self._base_label)
+
+                # Reestablish gluings between polygons
+                for label, polygon, subdivided in zip(labels, polygons, subdivideds):
+                    for e in range(polygon.num_edges()):
+                        opposite = self.opposite_edge(label, e)
+                        if opposite is not None:
+                            for p in range(parts):
+                                surface.change_edge_gluing(
+                                    label,
+                                    e * parts + p,
+                                    opposite[0],
+                                    opposite[1] * parts + (parts - p - 1),
+                                )
+
+                return surface
+
     class Rational(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by similarity surfaces with rational monodromy,

@@ -357,6 +357,24 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return len(union_find.values()) <= 1
 
+        def num_edges(self):
+            r"""
+            Return the total number of edges of all polygons used.
+            """
+            if self.is_finite():
+                try:
+                    return self._cache["num_edges"]
+                except KeyError:
+                    num_edges = sum(
+                        p.num_edges() for label, p in self.label_polygon_iterator()
+                    )
+                    self._cache["num_edges"] = num_edges
+                    return num_edges
+            else:
+                from sage.rings.infinity import Infinity
+
+                return Infinity
+
         def _test_gluings(self, **options):
             # iterate over pairs with pair1 glued to pair2
             tester = self._tester(**options)
