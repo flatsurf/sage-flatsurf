@@ -96,6 +96,9 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             edges = [self._m * (-p.edge(e)) for e in range(p.num_edges() - 1, -1, -1)]
             return self._P(edges)
 
+    def labels(self):
+        return self._s.labels()
+
     def opposite_edge(self, p, e):
         if self._det_sign == 1:
             return self._s.opposite_edge(p, e)

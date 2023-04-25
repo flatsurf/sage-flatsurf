@@ -1811,14 +1811,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 raise RuntimeError("Failed to return anything!")
 
             def _edge_needs_flip(self, p1, e1):
-                r"""
-                Returns -1 if the the provided edge incident to two triangles which
-                should be flipped to get closer to the Delaunay decomposition.
-                Returns 0 if the quadrilateral formed by the triangles is inscribed
-                in a circle, and returns 1 otherwise.
-
-                A ValueError is raised if the edge is not incident to two triangles.
-                """
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
                 poly2 = self.polygon(p2)
@@ -1832,14 +1824,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 return sim[1][0] < 0
 
             def _edge_needs_join(self, p1, e1):
-                r"""
-                Returns -1 if the the provided edge incident to two triangles which
-                should be flipped to get closer to the Delaunay decomposition.
-                Returns 0 if the quadrilateral formed by the triangles is inscribed
-                in a circle, and returns 1 otherwise.
-
-                A ValueError is raised if the edge is not incident to two triangles.
-                """
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
                 poly2 = self.polygon(p2)
@@ -2132,8 +2116,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_decomposition()
                     sage: ss.base_label()
-                    0
-                    sage: ss.polygon(0)
+                    (0, (0, 1, 2))
+                    sage: ss.polygon(ss.base_label())
                     Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_decomposed(limit=10)

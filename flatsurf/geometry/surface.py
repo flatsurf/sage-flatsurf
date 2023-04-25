@@ -356,6 +356,7 @@ class Labels(collections.abc.Set):
         self._len = len
 
     def __len__(self):
+        # TODO: This is broken for infinite lengths. Return value must not be PlusInfinity.
         if self._len is None:
             if not self._surface.is_finite():
                 from sage.all import infinity

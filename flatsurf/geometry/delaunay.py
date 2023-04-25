@@ -24,6 +24,8 @@ surfaces.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
+from sage.misc.cachefunc import cached_method
+
 from flatsurf.geometry.surface import OrientedSimilaritySurface, Labels
 
 
@@ -289,17 +291,35 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     def base_label(self):
         return self._surface.base_label()
 
+    @cached_method
     def polygon(self, label):
-        if label not in self._surface.labels():
+        if label not in self.labels():
             raise ValueError
         if label not in self._certified_labels:
-            for certified_label in self.labels():
+            for certified_label in self._walk():
                 if label == certified_label:
                     assert label in self._certified_labels
                     break
 
         return self._surface.polygon(label)
 
+    def _walk(self):
+        visited = set()
+        from collections import deque
+        next = deque([(self.base_label(), 0), (self.base_label(), 1), (self.base_label(), 2)])
+        while next:
+            label, edge = next.popleft()
+            if label in visited:
+                continue
+
+            yield label
+
+            visited.add(label)
+
+            for edge in range(3):
+                next.append(self.opposite_edge(label, edge))
+
+    @cached_method
     def opposite_edge(self, label, edge):
         self.polygon(label)
         while True:
@@ -412,6 +432,9 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._certified_labels.add(label)
         return True
 
+    def labels(self):
+        return self._surface.labels()
+
     def __hash__(self):
         return super().__hash__()
 
@@ -471,198 +494,108 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
     """
 
     def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
-        r"""
-        Construct a lazy Delaunay triangulation of the provided similarity_surface.
-
-        """
-        if similarity_surface.underlying_surface().is_mutable():
+        if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
         self._reference = similarity_surface
 
-        # This surface will converge to the Delaunay Decomposition
-        self._s = similarity_surface.copy(relabel=relabel, lazy=True, mutable=True)
+        self._delaunay_triangulation = LazyDelaunayTriangulatedSurface(self._reference, direction=direction, relabel=relabel)
 
-        self._direction = self._s.vector_space()(direction or (0, 1))
-
-        # Set of labels corresponding to known delaunay polygons
-        self._certified_labels = set()
-        self._decomposition_certified_labels = set()
-
-        base_label = self._s.base_label()
-
-        # We will now try to get the base_polygon.
-        # Certify the base polygon (or apply flips...)
-        while not self._certify_or_improve(base_label):
-            pass
-        self._certify_decomposition(base_label)
-
-        OrientedSimilaritySurface.__init__(
-            self,
-            self._s.base_ring(),
+        super().__init__(
+            similarity_surface.base_ring(),
             category=category or similarity_surface.category()
         )
 
-    def _certify_decomposition(self, label):
-        if label in self._decomposition_certified_labels:
-            return
-        assert label in self._certified_labels
-        changed = True
-        while changed:
-            changed = False
-            p = self._s.polygon(label)
-            for e in range(p.num_edges()):
-                ll, ee = self._s.opposite_edge(label, e)
-                while not self._certify_or_improve(ll):
-                    ll, ee = self._s.opposite_edge(label, e)
-                if self._s._edge_needs_join(label, e):
-                    # ll should not have already been certified!
-                    assert ll not in self._decomposition_certified_labels
-                    self._s.join_polygons(label, e, in_place=True)
-                    changed = True
-                    break
-        self._decomposition_certified_labels.add(label)
-
+    @cached_method
     def polygon(self, label):
-        if label in self._decomposition_certified_labels:
-            return self._s.polygon(label)
-        else:
-            raise ValueError(
-                "Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
-            )
+        if label not in self._delaunay_triangulation.labels():
+            raise ValueError
 
+        cell, edges = self._cell(label)
+
+        if label != self._label(cell):
+            raise ValueError
+
+        edges = [self._delaunay_triangulation.polygon(edge[0]).edge(edge[1]) for edge in edges]
+
+        return self._delaunay_triangulation.polygon(label).parent()(edges=edges)
+
+    @cached_method
+    def _label(self, cell):
+        for label in self._delaunay_triangulation.labels():
+            if label in cell:
+                return label
+
+    @cached_method
+    def _normalize_label(self, label):
+        cell, _ = self._cell(label)
+        return self._label(cell)
+
+    @cached_method
+    def _cell(self, label):
+        edges = []
+        cell = set()
+        explore = [(label, 2), (label, 1), (label, 0)]
+
+        while explore:
+            triangle, edge = explore.pop()
+
+            cell.add(triangle)
+
+            delaunay = self._delaunay_triangulation._edge_needs_join(triangle, edge)
+
+            if not delaunay:
+                edges.append((triangle, edge))
+                continue
+
+            cross_triangle, cross_edge = self._delaunay_triangulation.opposite_edge(triangle, edge)
+
+            for shift in [2, 1]:
+                next_triangle, next_edge = cross_triangle, (cross_edge + shift) % 3
+
+                if (next_triangle, next_edge) in edges:
+                    raise NotImplementedError
+                if (next_triangle, next_edge) in explore:
+                    raise NotImplementedError
+
+                explore.append((next_triangle, next_edge))
+
+        cell = frozenset(cell)
+        normalized_label = self._label(cell)
+        if normalized_label != label:
+            return self._cell(normalized_label)
+
+        return cell, edges
+
+    @cached_method
     def opposite_edge(self, label, edge):
-        if label in self._decomposition_certified_labels:
-            ll, ee = self._s.opposite_edge(label, edge)
-            if ll in self._decomposition_certified_labels:
-                return ll, ee
-            self._certify_decomposition(ll)
-            return self._s.opposite_edge(label, edge)
-        else:
-            raise ValueError(
-                "Asked for polygon not known to be Delaunay. Make sure you obtain polygon labels by walking through the surface."
-            )
+        if label not in self._delaunay_triangulation.labels():
+            raise ValueError
 
-    def _certify_or_improve(self, label):
-        r"""
-        This method attempts to develop the circumscribing disk about the polygon
-        with label ``label`` into the surface.
+        cell, edges = self._cell(label)
 
-        The method returns True if this is successful. In this case the label
-        is added to the set _certified_labels. It returns False if it failed to
-        develop the disk into the surface. (In this case the original polygon was
-        not a Delaunay triangle.
+        if label != self._label(cell):
+            raise ValueError
 
-        The algorithm divides any non-certified polygon in self._s it encounters
-        into triangles. If it encounters a pair of triangles which need a diagonal
-        flip then it does the flip.
-        """
-        if label in self._certified_labels:
-            # Already certified.
-            return True
-        p = self._s.polygon(label)
-        if p.num_edges() > 3:
-            # not triangulated!
-            self._s.triangulate(in_place=True, label=label)
-            p = self._s.polygon(label)
-            # Made major changes to the polygon with label l.
-            return False
-        c = p.circumscribing_circle()
+        edge = edges[edge]
 
-        # Develop through each of the 3 edges:
-        for e in range(3):
-            edge_certified = False
-            # This keeps track of a chain of polygons the disk develops through:
-            edge_stack = []
+        cross_triangle, cross_edge = self._delaunay_triangulation.opposite_edge(*edge)
 
-            # We repeat this until we can verify that the portion of the circle
-            # that passes through the edge e developes into the surface.
-            while not edge_certified:
-                if len(edge_stack) == 0:
-                    # Start at the beginning with label l and edge e.
-                    # The 3rd coordinate in the tuple represents what edge to develop
-                    # through in the triangle opposite this edge.
-                    edge_stack = [(label, e, 1, c)]
-                ll, ee, step, cc = edge_stack[len(edge_stack) - 1]
-
-                lll, eee = self._s.opposite_edge(ll, ee)
-
-                if lll not in self._certified_labels:
-                    ppp = self._s.polygon(lll)
-                    if ppp.num_edges() > 3:
-                        # not triangulated!
-                        self._s.triangulate(in_place=True, label=lll)
-                        lll, eee = self._s.opposite_edge(ll, ee)
-                        ppp = self._s.polygon(lll)
-                    # now ppp is a triangle
-
-                    if self._s._edge_needs_flip(ll, ee):
-                        # Perform the flip
-                        self._s.triangle_flip(
-                            ll, ee, in_place=True, direction=self._direction
-                        )
-
-                        # If we touch the original polygon, then we return False.
-                        if label == ll or label == lll:
-                            return False
-                        # We might have flipped a polygon from earlier in the chain
-                        # In this case we need to trim the stack down so that we recheck
-                        # that polygon.
-                        for index, tup in enumerate(edge_stack):
-                            if tup[0] == ll or tup[0] == lll:
-                                edge_stack = edge_stack[:index]
-                                break
-                        # The following if statement makes sure that we check both subsequent edges of the
-                        # polygon opposite the last edge listed in the stack.
-                        if len(edge_stack) > 0:
-                            ll, ee, step, cc = edge_stack.pop()
-                            edge_stack.append((ll, ee, 1, cc))
-                        continue
-
-                    # If we reach here then we know that no flip was needed.
-                    ccc = self._s.edge_transformation(ll, ee) * cc
-
-                    # Check if the disk passes through the next edge in the chain.
-                    lp = ccc.line_segment_position(
-                        ppp.vertex((eee + step) % 3), ppp.vertex((eee + step + 1) % 3)
-                    )
-                    if lp == 1:
-                        # disk passes through edge and opposite polygon is not certified.
-                        edge_stack.append((lll, (eee + step) % 3, 1, ccc))
-                        continue
-
-                    # We reach this point if the disk doesn't pass through the edge eee+step of polygon lll.
-
-                # Either lll is already certified or the disk didn't pass
-                # through edge (lll,eee+step)
-
-                # Trim off unnecessary edges off the stack.
-                # prune_count=1
-                ll, ee, step, cc = edge_stack.pop()
-                if step == 1:
-                    # if we have just done step 1 (one edge), move on to checking
-                    # the next edge.
-                    edge_stack.append((ll, ee, 2, cc))
-                # if we have pruned an edge, continue to look at pruning in the same way.
-                while step == 2 and len(edge_stack) > 0:
-                    ll, ee, step, cc = edge_stack.pop()
-                    # prune_count= prune_count+1
-                    if step == 1:
-                        edge_stack.append((ll, ee, 2, cc))
-                if len(edge_stack) == 0:
-                    # We're done with this edge
-                    edge_certified = True
-        self._certified_labels.add(label)
-        return True
+        cross_cell, cross_edges = self._cell(cross_triangle)
+        cross_label = self._label(cross_cell)
+        return cross_label, cross_edges.index((cross_triangle, cross_edge))
 
     def base_label(self):
-        return self._s.base_label()
+        return self._delaunay_triangulation.base_label()
+
+    def is_mutable(self):
+        return False
 
     def __hash__(self):
         return super().__hash__()
 
     def _cache_key(self):
-        return (type(self), self._reference, self._direction)
+        return (type(self), self._reference, self._delaunay_triangulation._direction)
 
     def __eq__(self, other):
         r"""
@@ -680,10 +613,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
         """
         if isinstance(other, LazyDelaunaySurface):
-            if self._reference == other._reference and self._direction == other._direction:
+            if self._delaunay_triangulation == other._delaunay_triangulation:
                 return True
 
         return super().__eq__(other)
-
-    def is_mutable(self):
-        return False
