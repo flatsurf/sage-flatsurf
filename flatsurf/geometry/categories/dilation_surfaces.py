@@ -242,7 +242,7 @@ class DilationSurfaces(SurfaceCategory):
             return n < n1
 
         def l_infinity_delaunay_triangulation(
-            self, triangulated=False, in_place=False, limit=None, direction=None
+            self, triangulated=None, in_place=None, limit=None, direction=None
         ):
             r"""
             Returns a L-infinity Delaunay triangulation of a surface, or make some
@@ -250,13 +250,10 @@ class DilationSurfaces(SurfaceCategory):
 
             INPUT:
 
-            - ``triangulated`` -- optional (boolean, default ``False``) If true, the
-              algorithm assumes the surface is already triangulated. It does this
-              without verification.
+            - ``triangulated`` -- deprecated and ignored.
 
-            - ``in_place`` -- optional (boolean, default ``False``) If true, the
-              triangulating and the triangle flips are done in place. Otherwise, a
-              mutable copy of the surface is made.
+            - ``in_place`` -- deprecated  and must be ``None`` (the default);
+              otherwise an error is produced
 
             - ``limit`` -- optional (positive integer) If provided, then at most ``limit``
                 many diagonal flips will be done.
@@ -287,17 +284,37 @@ class DilationSurfaces(SurfaceCategory):
                 sage: s = (m**3)*s0
                 sage: s = s.l_infinity_delaunay_triangulation()
                 sage: TestSuite(s).run()
+
+            TESTS:
+
+            Verify that deprecated keywords do not cause errors::
+
+                sage: s.l_infinity_delaunay_triangulation(triangulated=True)
+                doctest:warning
+                ...
+                UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.
+                Surface built from 6 polygons
+                sage: s.l_infinity_delaunay_triangulation(triangulated=False)
+                Surface built from 6 polygons
+
+            ::
+
+                sage: s.l_infinity_delaunay_triangulation(in_place=True)
+                Traceback (most recent call last):
+                ...
+                NotImplementedError: The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.
+
             """
             if not self.is_finite():
                 raise NotImplementedError(
                     "no L-infinity Delaunay implemented for infinite surfaces"
                 )
 
-            if triangulated:
-                # TODO: Deprecated. Ignored now.
-                pass
-            if in_place:
-                raise NotImplementedError  # TODO: removed because was broken
+            if triangulated is not None:
+                import warnings
+                warnings.warn("The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.")
+            if in_place is not None:
+                raise NotImplementedError("The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.")
 
             self = self.triangulate()
 
