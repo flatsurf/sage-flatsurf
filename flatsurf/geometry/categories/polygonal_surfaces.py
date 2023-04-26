@@ -117,7 +117,25 @@ class PolygonalSurfaces(SurfaceCategory):
             raise NotImplementedError
 
         def walker(self):
-            # TODO: Deprecate, use labels() instead
+            r"""
+            Return an iterable that walks the labels of the surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: walker = S.walker()
+                doctest:warning
+                ...
+                UserWarning: walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.
+                sage: list(walker)
+                [0]
+
+            """
+            import warnings
+            warnings.warn("walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.")
+
             from flatsurf.geometry.surface_legacy import LabelWalker
             return LabelWalker(self)
 
@@ -143,6 +161,30 @@ class PolygonalSurfaces(SurfaceCategory):
             """
             from flatsurf.geometry.surface import Labels
             return Labels(self)
+
+        def polygons(self):
+            r"""
+            Return the polygons that make up this surface (in the same order as
+            the labels are returned by :meth:`labels`)
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.polygons()
+                (Polygon: (0, 0), (2, 0), (1, 4), (0, 5),)
+
+            ::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.polygons()
+                (Polygon: (0, 0), (1, 0), (1, 1), (0, 1), Polygon: (0, 0), (1, 0), (1, 1), (0, 1), ...)
+
+            """
+            from flatsurf.geometry.surface import Polygons
+            return Polygons(self)
 
         def num_polygons(self):
             # TODO: Deprecate

@@ -814,45 +814,6 @@ def polygon_compare(poly1, poly2):
     return 0
 
 
-def translation_surface_cmp(s1, s2):
-    r"""
-    Compare two finite surfaces.
-    The surfaces will be considered equal if and only if there is a translation automorphism
-    respecting the polygons and the base_labels.
-    """
-    if not s1.is_finite() or not s2.is_finite():
-        raise NotImplementedError
-    lw1 = s1.walker()
-    lw2 = s2.walker()
-    try:
-        from itertools import zip_longest
-    except ImportError:
-        from itertools import izip_longest as zip_longest
-    for p1, p2 in zip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
-        if p1 is None:
-            # s2 has more polygons
-            return -1
-        if p2 is None:
-            # s1 has more polygons
-            return 1
-        ret = polygon_compare(p1, p2)
-        if ret != 0:
-            return ret
-    # Polygons are identical. Compare edge gluings.
-    for pair1, pair2 in zip_longest(lw1.edge_iterator(), lw2.edge_iterator()):
-        l1, e1 = s1.opposite_edge(pair1)
-        l2, e2 = s2.opposite_edge(pair2)
-        num1 = lw1.label_to_number(l1)
-        num2 = lw2.label_to_number(l2)
-        ret = (num1 > num2) - (num1 < num2)
-        if ret != 0:
-            return ret
-        ret = (e1 > e2) - (e1 < e2)
-        if ret != 0:
-            return ret
-    return 0
-
-
 def canonicalize_translation_surface_mapping(s):
     r"""
     Return the translation surface in a canonical form.
@@ -870,8 +831,8 @@ def canonicalize_translation_surface_mapping(s):
         sage: m1=GL2RMapping(s, mat)
         sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
         sage: m=m2*m1
-        sage: translation_surface_cmp(m.domain(),m.codomain())==0
-        True
+        sage: m.domain().cmp(m.codomain())
+        0
         sage: TestSuite(m.codomain()).run()
         sage: s=m.domain()
         sage: v=s.tangent_vector(0,(0,0),(1,1))
@@ -897,6 +858,7 @@ def canonicalize_translation_surface_mapping(s):
         m = SurfaceMappingComposition(m1, m2)
     s2 = m.codomain()
 
+    # This is essentially copy & paste from canonicalize() from TranslationSurfaces()
     from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
     s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
     ss = MutableOrientedSimilaritySurface.from_surface(s2)
@@ -908,8 +870,8 @@ def canonicalize_translation_surface_mapping(s):
             s2copy.underlying_surface().set_base_label(label)
     # We now have the base_label correct.
     # We will use the label walker to generate the canonical labeling of polygons.
-    w = s2copy.walker()
-    w.find_all_labels()
+    from flatsurf.geometry.surface import Labels
+    labels = {label: i for (i, label) in enumerate(Labels(s2copy))}
 
-    m3 = ReindexMapping(s2, w.label_dictionary(), 0)
+    m3 = ReindexMapping(s2, labels, 0)
     return SurfaceMappingComposition(m, m3)

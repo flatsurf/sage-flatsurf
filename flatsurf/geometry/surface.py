@@ -358,6 +358,7 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
 
 class Labels(collections.abc.Set):
+    # TODO: Document that this walks in a canonical order if no "labels" are given.
     def __init__(self, surface, labels=None, len=None):
         self._surface = surface
         self._labels = labels
@@ -420,6 +421,32 @@ class Labels(collections.abc.Set):
 
         from itertools import islice
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
+
+
+class Polygons(collections.abc.Collection):
+    def __init__(self, surface):
+        self._surface = surface
+
+    def __len__(self):
+        return len(self._surface.labels())
+
+    def __contains__(self, polygon):
+        for p in self:
+            if p == polygon:
+                return True
+
+        return False
+
+    def __iter__(self):
+        for label in self._surface.labels():
+            yield self._surface.polygon(label)
+
+    def __repr__(self):
+        if self._surface.is_finite():
+            return repr(tuple(self))
+
+        from itertools import islice
+        return f"({', '.join(repr(x)  for x in islice(self, 8))}, …)"
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
 from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator, BaseRingChangedSurface

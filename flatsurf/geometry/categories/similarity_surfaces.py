@@ -1677,19 +1677,21 @@ class SimilaritySurfaces(SurfaceCategory):
                 else:
                     from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                     s = MutableOrientedSimilaritySurface.from_surface(self)
-                w = s.walker()
+                labels = list(s.labels())
                 from flatsurf.geometry.similarity import SimilarityGroup
 
                 S = SimilarityGroup(self.base_ring())
                 identity = S.one()
-                it = iter(w)
+                it = iter(labels)
                 label = next(it)
                 changes = {label: identity}
                 for label in it:
-                    edge = w.edge_back(label)
+                    polygon = self.polygon(label)
+                    adjacencies = {edge: self.opposite_edge(label, edge)[0] for edge in range(polygon.num_edges())}
+                    edge = min(adjacencies, key=lambda edge: labels.index(adjacencies[edge]))
                     label2, edge2 = s.opposite_edge(label, edge)
                     changes[label] = changes[label2] * s.edge_transformation(label, edge)
-                it = iter(w)
+                it = iter(labels)
                 # Skip the base label:
                 label = next(it)
                 for label in it:

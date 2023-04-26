@@ -419,7 +419,7 @@ class GraphicalSurface:
             if not self._ss.is_finite():
                 raise NotImplementedError
             if adjacent:
-                for label, poly in self._ss.walker().label_polygon_iterator():
+                for label, poly in zip(self._ss.labels(), self._ss.polygons()):
                     for e in range(poly.num_edges()):
                         l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
@@ -447,7 +447,7 @@ class GraphicalSurface:
                 raise ValueError
             if adjacent:
                 i = 0
-                for label, poly in self._ss.walker().label_polygon_iterator():
+                for label, poly in zip(self._ss.labels(), self._ss.polygons()):
                     for e in range(poly.num_edges()):
                         l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):

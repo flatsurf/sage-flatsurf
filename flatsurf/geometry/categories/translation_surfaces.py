@@ -249,33 +249,37 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if limit is not None:
                         raise ValueError("limit only enabled for finite surfaces")
 
-                    # print("comparing number of polygons")
                     sign = self.num_polygons() - s2.num_polygons()
                     if sign > 0:
                         return 1
                     if sign < 0:
                         return -1
-                    # print("comparing polygons")
-                    lw1 = self.walker()
-                    lw2 = s2.walker()
-                    for p1, p2 in zip(lw1.polygon_iterator(), lw2.polygon_iterator()):
-                        # Uses Polygon.cmp:
-                        ret = p1.cmp(p2)
+
+                    from flatsurf.geometry.surface import Labels
+
+                    lw1 = Labels(self)
+                    labels1 = list(lw1)
+
+                    lw2 = Labels(s2)
+                    labels2 = list(lw2)
+
+                    for l1, l2 in zip(lw1, lw2):
+                        ret = self.polygon(l1).cmp(self.polygon(l2))
                         if ret != 0:
                             return ret
-                    # Polygons are identical. Compare edge gluings.
-                    # print("comparing edge gluings")
-                    for pair1, pair2 in zip(lw1.edge_iterator(), lw2.edge_iterator()):
-                        l1, e1 = self.opposite_edge(pair1)
-                        l2, e2 = s2.opposite_edge(pair2)
-                        num1 = lw1.label_to_number(l1)
-                        num2 = lw2.label_to_number(l2)
-                        ret = (num1 > num2) - (num1 < num2)
-                        if ret:
-                            return ret
-                        ret = (e1 > e2) - (e1 < e2)
-                        if ret:
-                            return ret
+
+                        for e in range(self.polygon(l1).num_edges()):
+                            ll1, e1 = self.opposite_edge(l1, e)
+                            ll2, e2 = s2.opposite_edge(l2, e)
+                            num1 = labels1.index(ll1)
+                            num2 = labels2.index(ll2)
+
+                            ret = (num1 > num2) - (num1 < num2)
+                            if ret:
+                                return ret
+                            ret = (e1 > e2) - (e1 < e2)
+                            if ret:
+                                return ret
                     return 0
                 else:
                     # s1 is finite but s2 is infinite.
@@ -285,24 +289,30 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # s1 is infinite but s2 is finite.
                     return 1
                 else:
+                    if limit is None:
+                        raise NotImplementedError
+
                     # both surfaces are infinite.
-                    lw1 = self.walker()
-                    lw2 = s2.walker()
+                    from itertools import islice
+                    from flatsurf.geometry.surface import Labels
+
+                    lw1 = Labels(self)
+                    labels1 = list(islice(lw1, limit))
+
+                    lw2 = Labels(s2)
+                    labels2 = list(islice(lw2, limit))
+
                     count = 0
-                    for (l1, p1), (l2, p2) in zip(
-                        lw1.label_polygon_iterator(), lw2.label_polygon_iterator()
-                    ):
-                        # Uses Polygon.cmp:
-                        ret = p1.cmp(p2)
+                    for l1, l2 in zip(lw1, lw2):
+                        ret = self.polygon(l1).cmp(s2.polygon(l2))
                         if ret != 0:
-                            print("Polygons differ")
                             return ret
-                        # If here the number of edges should be equal.
-                        for e in range(p1.num_edges()):
+
+                        for e in range(self.polygon(l1).num_edges()):
                             ll1, ee1 = self.opposite_edge(l1, e)
                             ll2, ee2 = s2.opposite_edge(l2, e)
-                            num1 = lw1.label_to_number(ll1, search=True, limit=limit)
-                            num2 = lw2.label_to_number(ll2, search=True, limit=limit)
+                            num1 = labels1.index(ll1)
+                            num2 = labels2.index(ll2)
                             ret = (num1 > num2) - (num1 < num2)
                             if ret:
                                 return ret
@@ -385,17 +395,15 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             s.standardize_polygons(in_place=True)
             from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
             ss = MutableOrientedSimilaritySurface.from_surface(s)
-            labels = {label for label in s.label_iterator()}
-            labels.remove(s.base_label())
-            for label in labels:
+            for label in ss.labels():
                 ss.set_base_label(label)
                 if ss.cmp(s) > 0:
                     s.set_base_label(label)
             # We now have the base_label correct.
             # We will use the label walker to generate the canonical labeling of polygons.
-            w = s.walker()
-            w.find_all_labels()
-            s.relabel(w.label_dictionary(), in_place=True)
+            from flatsurf.geometry.surface import Labels
+            labels = {label: i for (i, label) in enumerate(Labels(s))}
+            s.relabel(labels, in_place=True)
             s.set_immutable()
             return s
 
