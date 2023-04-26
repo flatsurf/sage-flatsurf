@@ -79,6 +79,28 @@ class DilationSurfaces(SurfaceCategory):
 
         """
 
+        class ParentMethods:
+            def _test_positive_dilation_surface(self, **options):
+                r"""
+                Verify that this is a positive dilation surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S.set_immutable()
+                    sage: S._test_positive_dilation_surface()
+
+                """
+                tester = self._tester(**options)
+
+                limit = None
+
+                if not self.is_finite():
+                    limit = 32
+
+                tester.assertTrue(DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=True, limit=limit))
+
     class SubcategoryMethods:
         def Positive(self):
             r"""
@@ -95,6 +117,79 @@ class DilationSurfaces(SurfaceCategory):
             return self._with_axiom("Positive")
 
     class ParentMethods:
+        @staticmethod
+        def _is_dilation_surface(surface, positive=False, limit=None):
+            r"""
+            Return whether ``surface`` is a dilation surface by checking how
+            its polygons are glued.
+
+            This is a helper method for
+            :meth:`flatsurf.geometry.categories.simililarity_surfaces.ParentMethods.is_dilation_surface`.
+
+            INPUT:
+
+            - ``surface`` -- an oriented similarity surface
+
+            - ``positive`` -- a boolean (default: ``False``); whether the
+              entries of the diagonal matrix must be positive or are allowed to
+              be negative.
+
+            - ``limit`` -- an integer or ``None`` (default: ``None``); if set, only
+              the first ``limit`` polygons are checked
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+
+                sage: from flatsurf.geometry.categories import DilationSurfaces
+                sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, limit=8)
+                True
+
+            ::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons((2, 0),(-1, 3),(-1, -3))
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+                sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, positive=True)
+                False
+                sage: DilationSurfaces.ParentMethods._is_dilation_surface(S)
+                True
+
+            """
+            if 'Oriented' not in surface.category().axioms():
+                raise NotImplementedError
+
+            labels = surface.labels()
+
+            if limit is not None:
+                from itertools import islice
+                labels = islice(labels, limit)
+
+            for label in labels:
+                for edge in range(surface.polygon(label).num_edges()):
+                    cross = surface.opposite_edge(label, edge)
+
+                    if cross is None:
+                        continue
+
+                    # We do not call self.edge_matrix() since the surface might
+                    # have overriden this (just returning the identity matrix e.g.)
+                    # and we want to deduce the matrix from the attached polygon
+                    # edges instead.
+                    from flatsurf.geometry.categories import SimilaritySurfaces
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                    if not matrix.is_diagonal():
+                        return False
+
+                    if positive:
+                        if matrix[0][0] < 0 or matrix[1][1] < 0:
+                            return False
+
+            return True
+
         def apply_matrix(self, m, in_place=True, mapping=False):
             r"""
             Carry out the GL(2,R) action of m on this surface and return the result.
@@ -343,6 +438,27 @@ class DilationSurfaces(SurfaceCategory):
                         triangles.add(p2)
                         limit -= 1
             return self
+
+        def _test_dilation_surface(self, **options):
+            r"""
+            Verify that this is a dilation surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_dilation_surface()
+
+            """
+            tester = self._tester(**options)
+
+            limit = None
+
+            if not self.is_finite():
+                limit = 32
+
+            tester.assertTrue(DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=False, limit=limit))
 
 
 all_axioms += ('Positive',)

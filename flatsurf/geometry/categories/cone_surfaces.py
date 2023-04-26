@@ -77,6 +77,65 @@ class ConeSurfaces(Category):
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
         return [SimilaritySurfaces()]
 
+    class ParentMethods:
+        @staticmethod
+        def _is_cone_surface(surface, limit=None):
+            r"""
+            Return whether ``surface`` is a cone surface by checking how its
+            polygons are glued.
+
+            INPUT:
+
+            - ``limit`` -- an integer or ``None`` (default: ``None``); if set, only
+              the first ``limit`` polygons are checked
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+
+                sage: from flatsurf.geometry.categories import ConeSurfaces
+                sage: ConeSurfaces.ParentMethods._is_cone_surface(S, limit=8)
+                True
+
+            ::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons((2, 0),(-1, 3),(-1, -3))
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+                sage: ConeSurfaces.ParentMethods._is_cone_surface(S)
+                True
+
+            """
+            if 'Oriented' not in surface.category().axioms():
+                raise NotImplementedError
+
+            labels = surface.labels()
+
+            if limit is not None:
+                from itertools import islice
+                labels = islice(labels, limit)
+
+            for label in labels:
+                for edge in range(surface.polygon(label).num_edges()):
+                    cross = surface.opposite_edge(label, edge)
+
+                    if cross is None:
+                        continue
+
+                    # We do not call self.edge_matrix() since the surface might
+                    # have overriden this (just returning the identity matrix e.g.)
+                    # and we want to deduce the matrix from the attached polygon
+                    # edges instead.
+                    from flatsurf.geometry.categories import SimilaritySurfaces
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                    if matrix * matrix.transpose() != 1:
+                        return False
+
+            return True
+
     class FiniteType(CategoryWithAxiom):
         class ParentMethods:
             def area(self):
@@ -86,6 +145,28 @@ class ConeSurfaces(Category):
                 return sum(p.area() for label, p in self.label_polygon_iterator())
 
     class Oriented(CategoryWithAxiom):
+        class ParentMethods:
+            def _test_cone_surface(self, **options):
+                r"""
+                Verify that this is a cone surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S.set_immutable()
+                    sage: S._test_cone_surface()
+
+                """
+                tester = self._tester(**options)
+
+                limit = None
+
+                if not self.is_finite():
+                    limit = 32
+
+                tester.assertTrue(ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit))
+
         class FiniteType(CategoryWithAxiom):
             class ParentMethods:
                 def angles(self, numerical=False, return_adjacent_edges=False):

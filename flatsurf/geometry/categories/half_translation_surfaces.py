@@ -217,6 +217,28 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 """
                 return self.normalized_coordinates()[0].base_ring()
 
+            def _test_half_translation_surface(self, **options):
+                r"""
+                Verify that this is a half-translation surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S._test_half_translation_surface()
+
+                """
+                tester = self._tester(**options)
+
+                limit = None
+
+                if not self.is_finite():
+                    limit = 32
+
+                from flatsurf.geometry.categories import TranslationSurfaces
+                tester.assertTrue(TranslationSurfaces.ParentMethods._is_translation_surface(self, positive=False, limit=limit))
+
         class FiniteType(SurfaceCategoryWithAxiom):
             class ParentMethods:
                 def normalized_coordinates(self):

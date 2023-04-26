@@ -193,6 +193,15 @@ class SimilaritySurfaces(SurfaceCategory):
                                 from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
                                 category &= HalfTranslationSurfaces()
 
+            if "Rational" not in category.axioms():
+                try:
+                    rational_surface = self.is_rational_surface()
+                except NotImplementedError:
+                    pass
+                else:
+                    if rational_surface:
+                        category = category.Rational()
+
             return category
 
         def is_dilation_surface(self, positive=False):
@@ -221,23 +230,8 @@ class SimilaritySurfaces(SurfaceCategory):
             if not self.is_finite():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a dilation surface")
 
-            for label in self.label_iterator():
-                for edge in range(self.polygon(label).num_edges()):
-                    cross = self.opposite_edge(label, edge)
-
-                    if cross is None:
-                        continue
-
-                    matrix = self.edge_matrix(label, edge)
-
-                    if not matrix.is_diagonal():
-                        return False
-
-                    if positive:
-                        if matrix[0][0] < 0 or matrix[1][1] < 0:
-                            return False
-
-            return True
+            from flatsurf.geometry.categories import DilationSurfaces
+            return DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=positive)
 
         def is_translation_surface(self, positive=True):
             r"""
@@ -272,28 +266,8 @@ class SimilaritySurfaces(SurfaceCategory):
             if not self.is_finite():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a translation surface")
 
-            for label in self.label_iterator():
-                for edge in range(self.polygon(label).num_edges()):
-                    cross = self.opposite_edge(label, edge)
-
-                    if cross is None:
-                        continue
-
-                    matrix = self.edge_matrix(label, edge)
-
-                    if not matrix.is_diagonal():
-                        return False
-
-                    if matrix[0][0] == 1 and matrix[1][1] == 1:
-                        continue
-
-                    if matrix[0][0] == -1 and matrix[1][1] == -1:
-                        if not positive:
-                            continue
-
-                    return False
-
-            return True
+            from flatsurf.geometry.categories import TranslationSurfaces
+            return TranslationSurfaces.ParentMethods._is_translation_surface(self, positive=positive)
 
         def is_cone_surface(self):
             r"""
@@ -312,19 +286,27 @@ class SimilaritySurfaces(SurfaceCategory):
             if not self.is_finite():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a cone surface")
 
-            for label in self.label_iterator():
-                for edge in range(self.polygon(label).num_edges()):
-                    cross = self.opposite_edge(label, edge)
+            from flatsurf.geometry.categories import ConeSurfaces
+            return ConeSurfaces.ParentMethods._is_cone_surface(self)
 
-                    if cross is None:
-                        continue
+        def is_rational_surface(self):
+            r"""
+            Return whether this surface is a rational surface, i.e., all the
+            rotational part of all gluings is a rational multiple of π.
 
-                    matrix = self.edge_matrix(label, edge)
+            EXAMPLES::
 
-                    if matrix * matrix.transpose() != 1:
-                        return False
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_rational_surface()
+                True
 
-            return True
+            """
+            if not self.is_finite():
+                raise NotImplementedError("cannot decide whether this infinite type surface is a rational surface")
+
+            return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
 
         def genus(self):
             r"""
@@ -2558,6 +2540,86 @@ class SimilaritySurfaces(SurfaceCategory):
         i.e., a walk around a point leads to a turn by a rational multiple of
         2π.
         """
+        class ParentMethods:
+            @staticmethod
+            def _is_rational_surface(surface, limit=None):
+                r"""
+                Return whether the gluings of this surface lead to a rational
+                surface, i.e., whether the rotational part of all gluings is a
+                rational multiple of π.
+
+                This is a helper method for
+                :meth:`flatsurf.geometry.categories.similarity_surfaces.ParentMethods.is_rational_surface`.
+
+                INPUT:
+
+                - ``limit`` -- an integer or ``None`` (default: ``None``); if set, only
+                  the first ``limit`` polygons are checked
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.infinite_staircase()
+
+                    sage: from flatsurf.geometry.categories import SimilaritySurfaces
+                    sage: SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(S, limit=8)
+                    True
+
+                """
+                if 'Oriented' not in surface.category().axioms():
+                    raise NotImplementedError
+
+                labels = surface.labels()
+
+                if limit is not None:
+                    from itertools import islice
+                    labels = islice(labels, limit)
+
+                for label in labels:
+                    for edge in range(surface.polygon(label).num_edges()):
+                        cross = surface.opposite_edge(label, edge)
+
+                        if cross is None:
+                            continue
+
+                        # We do not call self.edge_matrix() since the surface might
+                        # have overriden this (just returning the identity matrix e.g.)
+                        # and we want to deduce the matrix from the attached polygon
+                        # edges instead.
+                        matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                        a = AA(matrix[0, 0])
+                        b = AA(matrix[1, 0])
+                        q = (a**2 + b**2).sqrt()
+
+                        from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+                        if not is_cosine_sine_of_rational(a / q, b / q):
+                            return False
+
+                return True
+
+            def is_rational_surface(self):
+                return True
+
+            def _test_rational_surface(self, **options):
+                r"""
+                Verify that this is a rational similarity surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S._test_rational_surface()
+
+                """
+                tester = self._tester(**options)
+
+                limit = None
+
+                if not self.is_finite():
+                    limit = 32
+
+                tester.assertTrue(SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self, limit=limit))
 
     class SubcategoryMethods:
         def Rational(self):

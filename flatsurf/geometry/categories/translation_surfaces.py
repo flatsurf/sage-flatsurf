@@ -68,6 +68,85 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
         return (PolygonalSurfaces().Oriented(),)
 
     class ParentMethods:
+        @staticmethod
+        def _is_translation_surface(surface, positive=True, limit=None):
+            r"""
+            Return whether ``surface`` is a translation surface by checking how its
+            polygons are glued.
+
+            This is a helper method for
+            :meth:`flatsurf.geometry.categories.similarity_surfaces.ParentMethods.is_translation_surface.
+
+            INPUT:
+
+            - ``surface`` -- an oriented similarity surface
+
+            - ``positive`` -- a boolean (default: ``True``); whether the
+              transformation must be a translation or is allowed to be a
+              half-translation, i.e., a translation followed by a reflection in
+              a point (equivalently, a rotation by π.)
+
+            - ``limit`` -- an integer or ``None`` (default: ``None``); if set, only
+              the first ``limit`` polygons are checked
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+
+                sage: from flatsurf.geometry.categories import TranslationSurfaces
+                sage: TranslationSurfaces.ParentMethods._is_translation_surface(S, limit=8)
+                True
+
+            ::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons((2, 0),(-1, 3),(-1, -3))
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+                sage: TranslationSurfaces.ParentMethods._is_translation_surface(S)
+                False
+                sage: TranslationSurfaces.ParentMethods._is_translation_surface(S, positive=False)
+                True
+
+            """
+            if 'Oriented' not in surface.category().axioms():
+                raise NotImplementedError
+
+            labels = surface.labels()
+
+            if limit is not None:
+                from itertools import islice
+                labels = islice(labels, limit)
+
+            for label in labels:
+                for edge in range(surface.polygon(label).num_edges()):
+                    cross = surface.opposite_edge(label, edge)
+
+                    if cross is None:
+                        continue
+
+                    # We do not call self.edge_matrix() since the surface might
+                    # have overriden this (just returning the identity matrix e.g.)
+                    # and we want to deduce the matrix from the attached polygon
+                    # edges instead.
+                    from flatsurf.geometry.categories import SimilaritySurfaces
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                    if not matrix.is_diagonal():
+                        return False
+
+                    if matrix[0][0] == 1 and matrix[1][1] == 1:
+                        continue
+
+                    if matrix[0][0] == -1 and matrix[1][1] == -1:
+                        if not positive:
+                            continue
+
+                    return False
+
+            return True
+
         def minimal_translation_cover(self):
             return self
 
@@ -609,3 +688,23 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             S = S.eliminateMarkedPoints().surface()
             S.delaunay()
             return from_pyflatsurf(S)
+
+        def _test_translation_surface(self, **options):
+            r"""
+            Verify that this is a translation surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S._test_translation_surface()
+
+            """
+            tester = self._tester(**options)
+
+            limit = None
+
+            if not self.is_finite():
+                limit = 32
+
+            tester.assertTrue(TranslationSurfaces.ParentMethods._is_translation_surface(self, limit=limit))
