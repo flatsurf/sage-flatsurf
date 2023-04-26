@@ -249,7 +249,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if limit is not None:
                         raise ValueError("limit only enabled for finite surfaces")
 
-                    sign = self.num_polygons() - s2.num_polygons()
+                    sign = len(self.polygons()) - len(s2.polygons())
                     if sign > 0:
                         return 1
                     if sign < 0:

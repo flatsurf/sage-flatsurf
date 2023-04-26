@@ -162,7 +162,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
         sage: TestSuite(surface).run()
         sage: TestSuite(surface_to_octahedron).run()
-        sage: surface.num_polygons()
+        sage: len(surface.polygons())
         8
         sage: surface.base_ring()
         Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?

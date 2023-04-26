@@ -668,7 +668,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     1
                     sage: ss.opposite_edge(1,0)
                     (2, 0)
-                    sage: ss.num_polygons()
+                    sage: len(ss.polygons())
                     2
                     sage: TestSuite(ss).run()
                 """
@@ -1874,7 +1874,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if limit is None:
                     if not self.is_finite():
                         raise NotImplementedError("A limit must be set for infinite surfaces.")
-                    limit = self.num_polygons()
+                    limit = len(self.polygons())
                 for l1, p1 in self.label_iterator(polygons=True):
                     try:
                         c1 = p1.circumscribing_circle()
@@ -2088,7 +2088,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s = m*s0
                     sage: s = s.triangulate()
                     sage: ss = s.delaunay_decomposition(triangulated=True)
-                    sage: ss.num_polygons()
+                    sage: len(ss.polygons())
                     3
 
                     sage: p = polygons((4,0),(-2,1),(-2,-1))

@@ -108,7 +108,7 @@ class PolygonalSurfaces(SurfaceCategory):
             return category
 
         def is_triangulated(self):
-            if self.num_polygons() == 0:
+            if len(self.polygons()) == 0:
                 return True
 
             if self.polygon(self.base_label()).num_edges() != 3:
@@ -187,11 +187,13 @@ class PolygonalSurfaces(SurfaceCategory):
             return Polygons(self)
 
         def num_polygons(self):
-            # TODO: Deprecate
+            import warnings
+            warnings.warn("num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead.")
+
             if not self.is_finite():
                 from sage.all import infinity
                 return infinity
-            return len(self.labels())
+            return len(self.polygons())
 
         def label_iterator(self, polygons=False):
             # TODO: Deprecate

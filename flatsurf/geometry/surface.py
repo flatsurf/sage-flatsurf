@@ -137,10 +137,10 @@ class MutablePolygonalSurface(Surface_base):
     def _repr_(self):
         if not self.is_finite():
             return "Surface built from infinitely many polygons"
-        if self.num_polygons() == 1:
+        if len(self.polygons()) == 1:
             return "Surface built from 1 polygon"
 
-        return "Surface built from {} polygons".format(self.num_polygons())
+        return "Surface built from {} polygons".format(len(self.polygons()))
 
     def set_base_label(self, label):
         if not self._mutable:
@@ -216,21 +216,24 @@ class OrientedSimilaritySurface(Surface_base):
         if self.category() != other.category():
             return False
 
-        if self.num_polygons() == 0:
-            return other.num_polygons() == 0
-        if other.num_polygons() == 0:
+        if self.is_finite() != other.is_finite():
             return False
 
-        if self.num_polygons() != other.num_polygons():
+        if not self.is_finite():
+            raise NotImplementedError("cannot compare these infinite surfaces yet")
+
+        if len(self.polygons()) == 0:
+            return len(other.polygons()) == 0
+        if len(other.polygons()) == 0:
+            return False
+
+        if len(self.polygons()) != len(other.polygons()):
             return False
 
         if self.base_label() != other.base_label():
             return False
         if self.polygon(self.base_label()) != other.polygon(self.base_label()):
             return False
-
-        if not self.is_finite():
-            raise NotImplementedError("cannot compare these infinite surfaces yet")
 
         for label, polygon in self.label_polygon_iterator():
             try:
@@ -368,8 +371,7 @@ class Labels(collections.abc.Set):
         # TODO: This is broken for infinite lengths. Return value must not be PlusInfinity.
         if self._len is None:
             if not self._surface.is_finite():
-                from sage.all import infinity
-                self._len = infinity
+                raise TypeError("infinite type surface has no integer length")
             elif self._labels is not None:
                 self._len = len(self._labels)
             else:

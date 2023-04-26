@@ -54,12 +54,6 @@ class AbstractOrigami(OrientedSimilaritySurface):
     def _repr_(self):
         return "Some AbstractOrigami"
 
-    def num_polygons(self):
-        r"""
-        Returns the number of polygons.
-        """
-        return self._domain.cardinality()
-
     def polygon_labels(self):
         return self._domain
 

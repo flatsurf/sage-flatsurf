@@ -948,7 +948,11 @@ class Surface_list(Surface):
                 self._ref_to_int = {}
                 self._int_to_ref = []
 
-                self._num_polygons = surface.num_polygons()
+                if not surface.is_finite():
+                    from sage.all import infinity
+                    self._num_polygons = infinity
+                else:
+                    self._num_polygons = len(surface.polygons())
 
                 # Cache the base polygon
                 self.change_base_label(self.__get_label(surface.base_label()))
@@ -1153,14 +1157,14 @@ class Surface_list(Surface):
             30
             sage: s.change_polygon_gluings(3,[(30,e) for e in range(5)])
             sage: s.change_base_label(30)
-            sage: s.num_polygons()
+            sage: len(s.polygons())
             2
             sage: TestSuite(s).run()
             sage: s.remove_polygon(3)
             sage: s.add_polygon(p, label=6)
             6
             sage: s.change_polygon_gluings(6,[(30,e) for e in range(5)])
-            sage: s.num_polygons()
+            sage: len(s.polygons())
             2
             sage: TestSuite(s).run()
             sage: s.change_base_label(6)

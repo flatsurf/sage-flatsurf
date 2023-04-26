@@ -50,7 +50,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         sage: ss=MinimalTranslationCover(s)
         sage: ss.is_finite()
         True
-        sage: ss.num_polygons()
+        sage: len(ss.polygons())
         8
         sage: TestSuite(ss).run()
 
@@ -178,7 +178,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         sage: ss=MinimalHalfTranslationCover(s)
         sage: ss.is_finite()
         True
-        sage: ss.num_polygons()
+        sage: len(ss.polygons())
         4
         sage: TestSuite(ss).run()
 

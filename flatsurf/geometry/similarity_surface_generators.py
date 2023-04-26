@@ -1562,7 +1562,7 @@ class TranslationSurfaceGenerators:
             True
             sage: S = translation_surfaces.from_flipper(h)   # optional - flipper
             sage: TestSuite(S).run()                         # optional - flipper
-            sage: S.num_polygons()                           # optional - flipper
+            sage: len(S.polygons())                          # optional - flipper
             4
             sage: from flatsurf.geometry.similarity_surface_generators import flipper_nf_element_to_sage
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
