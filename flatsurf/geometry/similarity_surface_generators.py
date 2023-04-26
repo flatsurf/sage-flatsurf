@@ -662,9 +662,9 @@ class SimilaritySurfaceGenerators:
             ne = surface.polygon(p).num_edges()
             surface.set_edge_pairing(p, e, m + p, ne - e - 1)
 
-        surface.set_immutable()
         if rational:
             surface._refine_category_(surface.category().Rational())
+        surface.set_immutable()
 
         return surface
 
