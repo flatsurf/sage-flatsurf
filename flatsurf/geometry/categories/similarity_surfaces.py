@@ -421,7 +421,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
 
             def _an_element_(self):
-                label = next(self.label_iterator())
+                label = next(iter(self.labels()))
                 polygon = self.polygon(label)
 
                 # We use a point that can be constructed without problems on an
@@ -502,7 +502,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 # surfaces). we should factor out the code
                 edges = set(
                     (p, e)
-                    for p in self.label_iterator()
+                    for p in self.labels()
                     for e in range(self.polygon(p).num_edges())
                 )
 
@@ -827,7 +827,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             "lazy copying is unavailable when optimize_number_field=True"
                         )
                     coordinates_AA = []
-                    for label, p in self.label_iterator(polygons=True):
+                    for label, p in zip(self.labels(), self.polygons()):
                         for e in p.edges():
                             coordinates_AA.append(AA(e[0]))
                             coordinates_AA.append(AA(e[1]))
@@ -855,7 +855,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         index = 0
                         from flatsurf.geometry.polygon import ConvexPolygons
                         P = ConvexPolygons(field2)
-                        for label, p in self.label_iterator(polygons=True):
+                        for label, p in zip(self.labels(), self.polygons()):
                             new_edges = []
                             for i in range(p.num_edges()):
                                 new_edges.append(
@@ -1005,7 +1005,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.categories import DilationSurfaces
                     sage: s in DilationSurfaces()
                     True
-                    sage: for x in s.label_iterator(polygons=True):
+                    sage: for x in zip(s.labels(), s.polygons()):
                     ....:     print(x)
                     (0, Polygon: (0, 0), (-3, -3), (-1, -3))
                     sage: for x in s.edge_iterator(gluings=True):
@@ -1747,7 +1747,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     # We triangulate the whole surface
                     if self.is_finite():
                         # Store the current labels.
-                        labels = [label for label in self.label_iterator()]
+                        labels = [label for label in self.labels()]
                         if in_place:
                             s = self
                         else:
@@ -1875,7 +1875,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     if not self.is_finite():
                         raise NotImplementedError("A limit must be set for infinite surfaces.")
                     limit = len(self.polygons())
-                for l1, p1 in self.label_iterator(polygons=True):
+                for l1, p1 in zip(self.labels(), self.polygons()):
                     try:
                         c1 = p1.circumscribing_circle()
                     except ValueError:
@@ -1985,7 +1985,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if s.is_finite() and limit is None:
                     from collections import deque
 
-                    unchecked_labels = deque(label for label in s.label_iterator())
+                    unchecked_labels = deque(s.labels())
                     checked_labels = set()
                     while unchecked_labels:
                         label = unchecked_labels.popleft()
@@ -2187,7 +2187,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         raise ValueError(
                             "when initial_label is not provided, then initial_vertex must not be provided either"
                         )
-                    for label in self.label_iterator():
+                    for label in self.labels():
                         self.saddle_connections(
                             squared_length_bound, initial_label=label, sc_list=sc_list
                         )
@@ -2324,7 +2324,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 edges = set(self.edge_iterator())
                 cover_labels = {}
                 for i in range(1, d + 1):
-                    for lab in self.label_iterator():
+                    for lab in self.labels():
                         cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
                 while edges:
                     lab, e = elab = edges.pop()
@@ -2367,8 +2367,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 Subdivision of this surface yields a surface with three triangles::
 
                     sage: T = S.subdivide()
-                    sage: list(T.label_iterator())
-                    [('Δ', 0), ('Δ', 1), ('Δ', 2)]
+                    sage: T.labels()
+                    (('Δ', 0), ('Δ', 1), ('Δ', 2))
 
                 Note that the new labels are old labels plus an index. We verify that
                 the triangles are glued correctly::
@@ -2395,8 +2395,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: T = S.subdivide()
 
-                    sage: list(T.label_iterator())
-                    [('Δ', 0), ('□', 2), ('Δ', 1), ('Δ', 2), ('□', 3), ('□', 1), ('□', 0)]
+                    sage: T.labels()
+                    (('Δ', 0), ('□', 2), ('Δ', 1), ('Δ', 2), ('□', 3), ('□', 1), ('□', 0))
                     sage: list(sorted(T.edge_gluing_iterator()))
                     [((('Δ', 0), 0), (('□', 2), 0)),
                      ((('Δ', 0), 1), (('Δ', 1), 2)),
@@ -2421,7 +2421,7 @@ class SimilaritySurfaces(SurfaceCategory):
                      ((('□', 3), 2), (('□', 2), 1))]
 
                 """
-                labels = list(self.label_iterator())
+                labels = list(self.labels())
                 polygons = [self.polygon(label) for label in labels]
 
                 subdivisions = [p.subdivide() for p in polygons]
@@ -2506,7 +2506,7 @@ class SimilaritySurfaces(SurfaceCategory):
                      (('□', 7), ('□', 2))]
 
                 """
-                labels = list(self.label_iterator())
+                labels = list(self.labels())
                 polygons = [self.polygon(label) for label in labels]
 
                 subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]

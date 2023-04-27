@@ -140,7 +140,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: from flatsurf.geometry.mappings import *
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
-        sage: for label,polygon in s2.label_iterator(polygons=True):
+        sage: for label,polygon in zip(s2.labels(), s2.polygons()):
         ....:     print("Polygon "+str(label)+" is "+str(polygon)+".")
         Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
         sage: for label,edge in s2.edge_iterator():
@@ -311,7 +311,7 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: m = SplitPolygonsMapping(s,0,0,2)
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
-        sage: for pair in s2.label_iterator(polygons=True):
+        sage: for pair in zip(s2.labels(), s2.polygons()):
         ....:     print(pair)
         (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
         (1, Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
@@ -488,7 +488,7 @@ def subdivide_a_polygon(s):
     """
     from flatsurf.geometry.polygon import wedge_product
 
-    for label, poly in s.label_iterator(polygons=True):
+    for label, poly in zip(s.labels(), s.polygons()):
         n = poly.num_edges()
         if n > 3:
             for i in range(n):
@@ -516,7 +516,7 @@ def triangulation_mapping(s):
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
-        sage: for label,polygon in s2.label_iterator(polygons=True):
+        sage: for label,polygon in zip(s2.labels(), s2.polygons()):
         ....:     print(str(polygon))
         Polygon: (0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
         Polygon: (0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)
@@ -558,7 +558,7 @@ def one_delaunay_flip_mapping(s):
     r"""
     Returns one delaunay flip, or none if no flips are needed.
     """
-    for p, poly in s.label_iterator(polygons=True):
+    for p, poly in zip(s.labels(), s.polygons()):
         for e in range(poly.num_edges()):
             if s._edge_needs_flip(p, e):
                 return flip_edge_mapping(s, p, e)
@@ -604,7 +604,7 @@ def delaunay_decomposition_mapping(s):
         s1 = m.codomain()
     edge_vectors = []
     lc = s._label_comparator()
-    for p, poly in s1.label_iterator(polygons=True):
+    for p, poly in zip(s1.labels(), s1.polygons()):
         for e in range(poly.num_edges()):
             pp, ee = s1.opposite_edge(p, e)
             if (lc.lt(p, pp) or (p == pp and e < ee)) and s1._edge_needs_join(p, e):
@@ -667,14 +667,14 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         translations = {}  # translations bringing the canonical vertex to the origin.
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
         s2 = MutableOrientedSimilaritySurface(ring)
-        for label, polygon in s.label_iterator(polygons=True):
+        for label, polygon in zip(s.labels(), s.polygons()):
             cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
             for i in range(polygon.num_edges()):
                 newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
             s2.add_polygon(P(newedges), label=label)
             translations[label] = T(-polygon.vertex(cvcur))
-        for l1, polygon in s.label_iterator(polygons=True):
+        for l1, polygon in zip(s.labels(), s.polygons()):
             for e1 in range(polygon.num_edges()):
                 l2, e2 = s.opposite_edge(l1, e1)
                 ee1 = (e1 - cv[l1] + polygon.num_edges()) % polygon.num_edges()
@@ -727,7 +727,7 @@ class ReindexMapping(SurfaceMapping):
             raise ValueError("Currently only works with finite surfaces." "")
         f = {}  # map for labels going forward.
         b = {}  # map for labels going backward.
-        for label in s.label_iterator():
+        for label in s.labels():
             if label in relabler:
                 l2 = relabler[label]
                 f[label] = l2
@@ -863,7 +863,7 @@ def canonicalize_translation_surface_mapping(s):
     from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
     s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
     ss = MutableOrientedSimilaritySurface.from_surface(s2)
-    labels = {label for label in s2.label_iterator()}
+    labels = {label for label in s2.labels()}
     labels.remove(s2.base_label())
     for label in labels:
         ss.underlying_surface().set_base_label(label)

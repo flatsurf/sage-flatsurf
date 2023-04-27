@@ -241,7 +241,7 @@ class DilationSurfaces(SurfaceCategory):
                 us = self.underlying_surface()
                 if not us.is_mutable():
                     raise ValueError("in-place changes only work for mutable surfaces")
-                for label in self.label_iterator():
+                for label in self.labels():
                     us.change_polygon(label, m * self.polygon(label))
                 if m.det() < self.base_ring().zero():
                     # Polygons were all reversed orientation. Need to redo gluings.
@@ -249,7 +249,7 @@ class DilationSurfaces(SurfaceCategory):
                     # First pass record new gluings in a dictionary.
                     new_glue = {}
                     seen_labels = set()
-                    for p1 in self.label_iterator():
+                    for p1 in self.labels():
                         n1 = self.polygon(p1).num_edges()
                         for e1 in range(n1):
                             p2, e2 = self.opposite_edge(p1, e1)
@@ -423,7 +423,7 @@ class DilationSurfaces(SurfaceCategory):
             if direction.is_zero():
                 raise ValueError("direction must be non-zero")
 
-            triangles = set(self.label_iterator())
+            triangles = set(self.labels())
             if limit is None:
                 limit = -1
             else:

@@ -298,7 +298,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     if self.base_ring() is QQ:
                         return (self, matrix(QQ, 2, 2, 1))
 
-                    lab = next(self.label_iterator())
+                    lab = next(iter(self.labels()))
                     p = self.polygon(lab)
                     u = p.edge(1)
                     v = -p.edge(0)
@@ -311,7 +311,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     M = matrix(2, [u, v]).transpose().inverse()
                     assert M.det() > 0
                     hols = []
-                    for lab in self.label_iterator():
+                    for lab in self.labels():
                         p = self.polygon(lab)
                         for e in range(p.num_edges()):
                             w = M * p.edge(e)
@@ -333,7 +333,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     C = ConvexPolygons(K)
                     relabelling = {}
                     k = 0
-                    for lab in self.label_iterator():
+                    for lab in self.labels():
                         m = self.polygon(lab).num_edges()
                         relabelling[lab] = S.add_polygon(
                             C(

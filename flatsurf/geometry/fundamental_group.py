@@ -91,7 +91,7 @@ class Path(MultiplicativeGroupElement):
         pass
 
     def _poly_cross_dict(self):
-        d = {p: [] for p in self.parent()._s.label_iterator()}
+        d = {p: [] for p in self.parent()._s.labels()}
         d[self._polys[0]].append((self._edges_rev[-1], self._edges[0]))
         for i in range(1, len(self._polys) - 1):
             p = self._polys[i]
@@ -279,7 +279,7 @@ class Path(MultiplicativeGroupElement):
         si = self._poly_cross_dict()
         oi = other._poly_cross_dict()
         n = 0
-        for p in self.parent()._s.label_iterator():
+        for p in self.parent()._s.labels():
             for e0, e1 in si[p]:
                 for f0, f1 in oi[p]:
                     n += intersection(e0, e1, f0, f1)

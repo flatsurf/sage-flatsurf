@@ -428,7 +428,7 @@ class GraphicalSurface:
                 from flatsurf.geometry.similarity import SimilarityGroup
 
                 T = SimilarityGroup(self._ss.base_ring())
-                for label in self._ss.label_iterator():
+                for label in self._ss.labels():
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
@@ -460,7 +460,7 @@ class GraphicalSurface:
 
                 T = SimilarityGroup(self._ss.base_ring())
                 i = 0
-                for label in self._ss.label_iterator():
+                for label in self._ss.labels():
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
@@ -720,7 +720,7 @@ class GraphicalSurface:
             if search_all:
                 if search_limit is None:
                     if surface.is_finite():
-                        labels = surface.label_iterator()
+                        labels = surface.labels()
                     else:
                         raise ValueError(
                             "If search_all=True and the surface is infinite, then a search_limit must be provided."
@@ -728,7 +728,7 @@ class GraphicalSurface:
                 else:
                     from itertools import islice
 
-                    labels = islice(surface.label_iterator(), search_limit)
+                    labels = islice(surface.labels(), search_limit)
             else:
                 labels = self.visible()
         else:

@@ -208,7 +208,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                     s = MutableOrientedSimilaritySurface.from_surface(self)
                 cv = {}  # dictionary for non-zero canonical vertices
-                for label, polygon in s.label_iterator(polygons=True):
+                for label, polygon in zip(s.labels(), s.polygons()):
                     best = 0
                     best_pt = polygon.vertex(best)
                     for v in range(1, polygon.num_edges()):
@@ -618,7 +618,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 (0), (0), [2 1]
                 )
             """
-            it = self.label_iterator()
+            it = iter(self.labels())
             lab = next(it)
             P = self.polygon(lab)
             Jxx, Jyy, Jxy = P.j_invariant()

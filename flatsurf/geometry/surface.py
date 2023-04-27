@@ -195,7 +195,7 @@ class OrientedSimilaritySurface(Surface_base):
             Point (1/2, 1/2) of polygon 0
 
         """
-        label = next(self.label_iterator())
+        label = next(iter(self.labels()))
         polygon = self.polygon(label)
 
         # We use a point that can be constructed without problems on an

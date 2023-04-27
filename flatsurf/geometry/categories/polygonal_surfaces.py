@@ -226,11 +226,24 @@ class PolygonalSurfaces(SurfaceCategory):
             return len(self.polygons())
 
         def label_iterator(self, polygons=False):
-            # TODO: Deprecate
+            r"""
+            TESTS::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.label_iterator()
+                <generator object ...>
+
+            """
+            import warnings
+
             if polygons:
+                warnings.warn("label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use zip(labels(), polygons()) instead")
                 for entry in self.label_polygon_iterator():
                     yield entry
             else:
+                warnings.warn("label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead")
                 for entry in self.labels():
                     yield entry
 
@@ -266,7 +279,7 @@ class PolygonalSurfaces(SurfaceCategory):
             performance.
             """
             # TODO: Deprecate
-            for label in self.label_iterator():
+            for label in self.labels():
                 yield label, self.polygon(label)
 
         @abstract_method
@@ -359,7 +372,7 @@ class PolygonalSurfaces(SurfaceCategory):
             if not self.is_finite():
                 raise NotImplementedError("cannot decide wether a surface has boundary for surfaces of infinite type")
 
-            for label in self.label_iterator():
+            for label in self.labels():
                 for edge in range(self.polygon(label).num_edges()):
                     cross = self.opposite_edge(label, edge)
                     if cross is None:
@@ -408,7 +421,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 raise NotImplementedError("cannot decide whether this infinite type surface is connected")
 
             # We use the customary union-find algorithm to identify the connected components.
-            union_find = {label: label for label in self.label_iterator()}
+            union_find = {label: label for label in self.labels()}
 
             def find(label):
                 if union_find[label] == label:
@@ -417,7 +430,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 union_find[label] = parent
                 return parent
 
-            for label in self.label_iterator():
+            for label in self.labels():
                 for edge in range(self.polygon(label).num_edges()):
                     cross = self.opposite_edge(label, edge)
                     if cross is None:
@@ -454,11 +467,11 @@ class PolygonalSurfaces(SurfaceCategory):
             tester = self._tester(**options)
 
             if self.is_finite():
-                it = self.label_iterator()
+                it = self.labels()
             else:
                 from itertools import islice
 
-                it = islice(self.label_iterator(), 30)
+                it = islice(self.labels(), 30)
 
             for lab in it:
                 p = self.polygon(lab)
@@ -555,11 +568,11 @@ class PolygonalSurfaces(SurfaceCategory):
                 tester = self._tester(**options)
 
                 if self.is_finite():
-                    it = self.label_iterator()
+                    it = self.labels()
                 else:
                     from itertools import islice
 
-                    it = islice(self.label_iterator(), 30)
+                    it = islice(self.labels(), 30)
 
                 for lab in it:
                     p = self.polygon(lab)

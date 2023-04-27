@@ -17,7 +17,7 @@ def _is_finite(surface):
 
     surface = surface.reposition_polygons(relabel=True)
 
-    for label in surface.label_iterator():
+    for label in surface.labels():
         polygon = surface.polygon(label)
 
         for e in range(polygon.num_edges()):

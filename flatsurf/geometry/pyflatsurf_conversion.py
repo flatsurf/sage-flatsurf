@@ -93,7 +93,7 @@ def to_pyflatsurf(S):
     S = S.triangulate()
 
     # populate half edges and vectors
-    n = sum(S.polygon(lab).num_edges() for lab in S.label_iterator())
+    n = sum(S.polygon(lab).num_edges() for lab in S.labels())
     half_edge_labels = {}  # map: (face lab, edge num) in faltsurf -> integer
     vec = []  # vectors
     k = 1  # half edge label in {1, ..., n}
