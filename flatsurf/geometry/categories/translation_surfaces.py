@@ -255,12 +255,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if sign < 0:
                         return -1
 
-                    from flatsurf.geometry.surface import Labels
-
-                    lw1 = Labels(self)
+                    lw1 = self.labels()
                     labels1 = list(lw1)
 
-                    lw2 = Labels(s2)
+                    lw2 = s2.labels()
                     labels2 = list(lw2)
 
                     for l1, l2 in zip(lw1, lw2):
@@ -294,12 +292,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     # both surfaces are infinite.
                     from itertools import islice
-                    from flatsurf.geometry.surface import Labels
 
-                    lw1 = Labels(self)
+                    lw1 = self.labels()
                     labels1 = list(islice(lw1, limit))
 
-                    lw2 = Labels(s2)
+                    lw2 = s2.labels()
                     labels2 = list(islice(lw2, limit))
 
                     count = 0
@@ -401,8 +398,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     s.set_base_label(label)
             # We now have the base_label correct.
             # We will use the label walker to generate the canonical labeling of polygons.
-            from flatsurf.geometry.surface import Labels
-            labels = {label: i for (i, label) in enumerate(Labels(s))}
+            labels = {label: i for (i, label) in enumerate(s.labels())}
             s.relabel(labels, in_place=True)
             s.set_immutable()
             return s

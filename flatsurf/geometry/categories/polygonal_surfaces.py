@@ -143,6 +143,10 @@ class PolygonalSurfaces(SurfaceCategory):
             r"""
             Return the labels used to enumerate the polygons that make up this surface.
 
+            # TODO: Add a note that it's worth overriding this so len is fast.
+
+            # TODO: Explain that this is a canonical walk.
+
             EXAMPLES::
 
                 sage: from flatsurf import polygons, similarity_surfaces
@@ -167,6 +171,8 @@ class PolygonalSurfaces(SurfaceCategory):
             Return the polygons that make up this surface (in the same order as
             the labels are returned by :meth:`labels`)
 
+            # TODO: Add a note that it's usually *not* worth overriding this so len is fast.
+
             EXAMPLES::
 
                 sage: from flatsurf import polygons, similarity_surfaces
@@ -186,9 +192,33 @@ class PolygonalSurfaces(SurfaceCategory):
             from flatsurf.geometry.surface import Polygons
             return Polygons(self)
 
+        def _test_labels_polygons(self, **options):
+            tester = self._tester(**options)
+
+            labels = self.labels()
+            polygons = self.polygons()
+
+            if not self.is_finite():
+                import itertools
+                labels = itertools.islice(labels, 32)
+
+            for label, polygon in zip(labels, polygons):
+                tester.assertEqual(self.polygon(label), polygon)
+
         def num_polygons(self):
             import warnings
             warnings.warn("num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead.")
+
+            # Note that using len(self.polygons()) on
+            # MutableOrientedSimilaritySurfaces is only very slightly slower:
+            # %timeit num_polygons()
+            # 137ns
+            # %timeit len(polygons())
+            # 159ns
+
+            # On other surfaces, the effect can be much more pronounced. The
+            # overhead of calling through the category framework and creating a
+            # Labels object can lead to runtimes of about 1μs.
 
             if not self.is_finite():
                 from sage.all import infinity

@@ -19,6 +19,7 @@
 import collections.abc
 
 from sage.structure.parent import Parent
+from sage.misc.cachefunc import cached_method
 
 from flatsurf.geometry.surface_objects import SurfacePoint
 
@@ -150,8 +151,13 @@ class MutablePolygonalSurface(Surface_base):
 
     change_base_label = set_base_label  # TODO: Deprecate
 
+    @cached_method
     def labels(self):
-        return Labels(self, labels=self._polygons.keys(), len=len(self._polygons))
+        return LabelsView(self, self._polygons.keys())
+
+    @cached_method
+    def polygons(self):
+        return Polygons_MutableOrientedSimilaritySurface(self)
 
 
 class OrientedSimilaritySurface(Surface_base):
@@ -219,20 +225,21 @@ class OrientedSimilaritySurface(Surface_base):
         if self.is_finite() != other.is_finite():
             return False
 
-        if not self.is_finite():
-            raise NotImplementedError("cannot compare these infinite surfaces yet")
-
-        if len(self.polygons()) == 0:
-            return len(other.polygons()) == 0
-        if len(other.polygons()) == 0:
-            return False
-
-        if len(self.polygons()) != len(other.polygons()):
-            return False
+        if self.is_finite():
+            if len(self.polygons()) == 0:
+                return len(other.polygons()) == 0
+            if len(other.polygons()) == 0:
+                return False
 
         if self.base_label() != other.base_label():
             return False
         if self.polygon(self.base_label()) != other.polygon(self.base_label()):
+            return False
+
+        if not self.is_finite():
+            raise NotImplementedError("cannot compare these infinite surfaces yet")
+
+        if len(self.polygons()) != len(other.polygons()):
             return False
 
         for label, polygon in self.label_polygon_iterator():
@@ -280,17 +287,21 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         return label
 
     def remove_polygon(self, label):
-        for edge, cross in enumerate(self._gluings[label]):
-            if cross is None:
-                continue
-            cross_label, cross_edge = cross
-            self._gluings[cross_label][cross_edge] = None
+        self._unglue_polygon(label)
         self._gluings.pop(label)
 
         super().remove_polygon(label)
 
     def unglue(self, x):
         self._gluings[x[0]][x[1]] = None
+
+    def _unglue_polygon(self, label):
+        for edge, cross in enumerate(self._gluings[label]):
+            if cross is None:
+                continue
+            cross_label, cross_edge = cross
+            self._gluings[cross_label][cross_edge] = None
+        self._gluings[label] = [None] * self.polygon(label).num_edges()
 
     def glue(self, x, y):
         if not self._mutable:
@@ -329,10 +340,12 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
     def change_polygon(self, label, polygon, gluing_list=None):
         # TODO: Deprecate
         # TODO: This is an obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
-        if gluing_list is None and polygon.num_edges() == self.polygon(label).num_edges():
-            gluing_list = self._gluings[label][:]
-        self.remove_polygon(label)
-        self.add_polygon(polygon, label=label)
+        if polygon.num_edges() != self.polygon(label).num_edges():
+            self._unglue_polygon(label)
+            self._gluings[label] = [None] * polygon.num_edges()
+
+        self._polygons[label] = polygon
+
         if gluing_list is not None:
             self.change_polygon_gluings(label, gluing_list)
 
@@ -361,42 +374,11 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
 
 class Labels(collections.abc.Set):
-    # TODO: Document that this walks in a canonical order if no "labels" are given.
-    def __init__(self, surface, labels=None, len=None):
+    def __init__(self, surface):
         self._surface = surface
-        self._labels = labels
-        self._len = len
-
-    def __len__(self):
-        # TODO: This is broken for infinite lengths. Return value must not be PlusInfinity.
-        if self._len is None:
-            if not self._surface.is_finite():
-                raise TypeError("infinite type surface has no integer length")
-            elif self._labels is not None:
-                self._len = len(self._labels)
-            else:
-                length = 0
-                for label in self:
-                    length += 1
-                self._len = length
-
-        return self._len
-
-    def __contains__(self, x):
-        if self._labels is not None:
-            return x in self._labels
-
-        for label in self:
-            if x == label:
-                return True
-
-        return False
 
     def __iter__(self):
         # TODO: This does not enumerate the entire surface for non-connected surfaces.
-        if self._len == 0:
-            return
-
         from collections import deque
 
         seen = set()
@@ -424,10 +406,43 @@ class Labels(collections.abc.Set):
         from itertools import islice
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
 
+    def __len__(self):
+        if not self._surface.is_finite():
+            raise TypeError("infinite type surface has no integer length")
+
+        length = 0
+        for label in self:
+            length += 1
+
+        return length
+
+    def __contains__(self, x):
+        for label in self:
+            if x == label:
+                return True
+
+        return False
+
+
+class LabelsView(Labels):
+    def __init__(self, surface, view):
+        super().__init__(surface)
+        self._view = view
+
+    def __contains__(self, x):
+        return x in self._view
+
+    def __len__(self):
+        return len(self._view)
+
 
 class Polygons(collections.abc.Collection):
     def __init__(self, surface):
         self._surface = surface
+
+    def __iter__(self):
+        for label in self._surface.labels():
+            yield self._surface.polygon(label)
 
     def __len__(self):
         return len(self._surface.labels())
@@ -439,16 +454,22 @@ class Polygons(collections.abc.Collection):
 
         return False
 
-    def __iter__(self):
-        for label in self._surface.labels():
-            yield self._surface.polygon(label)
-
     def __repr__(self):
         if self._surface.is_finite():
             return repr(tuple(self))
 
         from itertools import islice
         return f"({', '.join(repr(x)  for x in islice(self, 8))}, …)"
+
+
+class Polygons_MutableOrientedSimilaritySurface(Polygons):
+    def __init__(self, surface):
+        # This hack makes __len__ 20% faster (it saves one attribute lookup.)
+        self._polygons = surface._polygons
+        super().__init__(surface)
+
+    def __len__(self):
+        return len(self._polygons)
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
 from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator, BaseRingChangedSurface

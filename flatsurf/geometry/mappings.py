@@ -202,6 +202,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             else:
                 s2.change_edge_gluing(p1, i, p4, e4)
 
+        s2.remove_polygon(p2)
         s2.set_immutable()
 
         self._saved_label = p1
@@ -870,8 +871,7 @@ def canonicalize_translation_surface_mapping(s):
             s2copy.underlying_surface().set_base_label(label)
     # We now have the base_label correct.
     # We will use the label walker to generate the canonical labeling of polygons.
-    from flatsurf.geometry.surface import Labels
-    labels = {label: i for (i, label) in enumerate(Labels(s2copy))}
+    labels = {label: i for (i, label) in enumerate(s2copy.labels())}
 
     m3 = ReindexMapping(s2, labels, 0)
     return SurfaceMappingComposition(m, m3)
