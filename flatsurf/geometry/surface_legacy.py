@@ -449,7 +449,7 @@ class Surface(OrientedSimilaritySurface):
                 self.base_ring(),
                 self.base_label(),
                 tuple(self.label_polygon_iterator()),
-                tuple(self.edge_gluing_iterator()),
+                tuple(self.gluings()),
             )
         )
 
@@ -853,7 +853,7 @@ class Surface_list(Surface):
         sage: print("Glued in label is "+str(l))
         Glued in label is 2
         sage: count = 0
-        sage: for x in ts.edge_iterator(gluings=True):
+        sage: for x in ts.gluings():
         ....:     print(x)
         ....:     count=count+1
         ....:     if count>15:
@@ -934,7 +934,7 @@ class Surface_list(Surface):
                 for (
                     (label, edge),
                     (glued_label, glued_edge),
-                ) in surface.edge_gluing_iterator():
+                    ) in surface.gluings():
                     self.set_edge_pairing(
                         reference_label_to_label[label],
                         edge,
@@ -1479,7 +1479,7 @@ class Surface_dict(Surface):
                 for (
                     (label, edge),
                     (glued_label, glued_edge),
-                ) in surface.edge_gluing_iterator():
+                    ) in surface.gluings():
                     self.set_edge_pairing(
                         reference_label_to_label[label],
                         edge,
@@ -1934,7 +1934,7 @@ class LabelWalker:
 
     def edge_iterator(self, gluings=False):
         if gluings:
-            for entry in self.edge_gluing_iterator():
+            for entry in self.gluings():
                 yield entry
             return
         for label, polygon in self.label_polygon_iterator():

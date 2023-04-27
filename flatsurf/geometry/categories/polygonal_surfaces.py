@@ -232,8 +232,11 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import polygons, similarity_surfaces
                 sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.label_iterator()
-                <generator object ...>
+                sage: list(S.label_iterator())
+                doctest:warning
+                ...
+                UserWarning: label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead
+                [0]
 
             """
             import warnings
@@ -249,27 +252,84 @@ class PolygonalSurfaces(SurfaceCategory):
 
         def edge_iterator(self, gluings=False):
             r"""
-            Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
+            Iterate over the edges of polygons, which are pairs (l,e) where l
+            is a polygon label, 0 <= e < N and N is the number of edges of the
+            polygon with label l.
+
+            TESTS::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: list(S.edge_iterator())
+                doctest:warning
+                ...
+                UserWarning: edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead
+                [(0, 0), (0, 1), (0, 2), (0, 3)]
+
+            ::
+
+                sage: from flatsurf import ConvexPolygons
+                sage: P = ConvexPolygons(QQ)
+                sage: tri0=P([(1,0),(0,1),(-1,-1)])
+                sage: tri1=P([(-1,0),(0,-1),(1,1)])
+                sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
+                sage: from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
+                sage: s=surface_list_from_polygons_and_gluings([tri0,tri1], gluings)
+                sage: for edge in s.edge_iterator():
+                ....:     print(edge)
+                (0, 0)
+                (0, 1)
+                (0, 2)
+                (1, 0)
+                (1, 1)
+                (1, 2)
+
             """
-            # TODO: Deprecate
+            import warnings
+
             if gluings:
-                for entry in self.edge_gluing_iterator():
+                warnings.warn("edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use gluings() instead")
+                for entry in self.gluings():
                     yield entry
                 return
             for label, polygon in self.label_polygon_iterator():
+                warnings.warn("edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead")
                 for edge in range(polygon.num_edges()):
                     yield label, edge
+
+        def edges(self):
+            from flatsurf.geometry.surface import Edges
+            return Edges(self)
 
         def edge_gluing_iterator(self):
             r"""
             Iterate over the ordered pairs of edges being glued.
+
+            TESTS::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: list(S.edge_gluing_iterator())
+                doctest:warning
+                ...
+                UserWarning: edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead
+                [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
+
             """
-            # TODO: Deprecate
-            for label_edge_pair in self.edge_iterator():
+            import warnings
+            warnings.warn("edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead")
+
+            for label_edge_pair in self.edges():
                 yield (
                     label_edge_pair,
                     self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
                 )
+
+        def gluings(self):
+            from flatsurf.geometry.surface import Gluings
+            return Gluings(self)
 
         def label_polygon_iterator(self):
             r"""

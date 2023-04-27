@@ -373,10 +373,36 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         return 0
 
 
-class Labels(collections.abc.Set):
+class LabeledCollection:
     def __init__(self, surface):
         self._surface = surface
 
+    def __repr__(self):
+        if self._surface.is_finite():
+            return repr(tuple(self))
+
+        from itertools import islice
+        return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
+
+    def __len__(self):
+        if not self._surface.is_finite():
+            raise TypeError("infinite type surface has no integer length")
+
+        length = 0
+        for x in self:
+            length += 1
+
+        return length
+
+    def __contains__(self, x):
+        for label in self:
+            if x == label:
+                return True
+
+        return False
+
+
+class Labels(LabeledCollection, collections.abc.Set):
     def __iter__(self):
         # TODO: This does not enumerate the entire surface for non-connected surfaces.
         from collections import deque
@@ -399,30 +425,6 @@ class Labels(collections.abc.Set):
                 if cross is not None:
                     pending.append(cross[0])
 
-    def __repr__(self):
-        if self._surface.is_finite():
-            return repr(tuple(self))
-
-        from itertools import islice
-        return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
-
-    def __len__(self):
-        if not self._surface.is_finite():
-            raise TypeError("infinite type surface has no integer length")
-
-        length = 0
-        for label in self:
-            length += 1
-
-        return length
-
-    def __contains__(self, x):
-        for label in self:
-            if x == label:
-                return True
-
-        return False
-
 
 class LabelsView(Labels):
     def __init__(self, surface, view):
@@ -436,30 +438,13 @@ class LabelsView(Labels):
         return len(self._view)
 
 
-class Polygons(collections.abc.Collection):
-    def __init__(self, surface):
-        self._surface = surface
-
+class Polygons(LabeledCollection, collections.abc.Collection):
     def __iter__(self):
         for label in self._surface.labels():
             yield self._surface.polygon(label)
 
     def __len__(self):
         return len(self._surface.labels())
-
-    def __contains__(self, polygon):
-        for p in self:
-            if p == polygon:
-                return True
-
-        return False
-
-    def __repr__(self):
-        if self._surface.is_finite():
-            return repr(tuple(self))
-
-        from itertools import islice
-        return f"({', '.join(repr(x)  for x in islice(self, 8))}, …)"
 
 
 class Polygons_MutableOrientedSimilaritySurface(Polygons):
@@ -470,6 +455,43 @@ class Polygons_MutableOrientedSimilaritySurface(Polygons):
 
     def __len__(self):
         return len(self._polygons)
+
+
+class Edges(LabeledCollection, collections.abc.Set):
+    def __iter__(self):
+        for label, polygon in zip(self._surface.labels(), self._surface.polygons()):
+            for edge in range(polygon.num_edges()):
+                yield (label, edge)
+
+    def __contains__(self, x):
+        label, edge = x
+        if label not in self._surface.labels():
+            return False
+
+        polygon = self._surface.polygon(label)
+        return 0 <= polygon.num_edges() < edge
+
+
+class Gluings(LabeledCollection, collections.abc.Set):
+    def __iter__(self):
+        for (label, edge) in self._surface.edges():
+            cross = self._surface.opposite_edge(label, edge)
+            if cross is None:
+                continue
+            yield (label, edge), cross
+
+    def __contains__(self, x):
+        x, y = x
+
+        if x not in self._surface.edges():
+            return False
+
+        cross = self._surface.opposite_edge(*x)
+        if cross is None:
+            return False
+
+        return y == cross
+
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
 from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator, BaseRingChangedSurface

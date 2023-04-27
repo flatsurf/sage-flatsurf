@@ -186,7 +186,7 @@ class ConeSurfaces(Category):
                         sage: S.angles(return_adjacent_edges=True)
                         [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
                     """
-                    edges = [pair for pair in self.edge_iterator()]
+                    edges = [pair for pair in self.edges()]
                     edges = set(edges)
                     angles = []
 

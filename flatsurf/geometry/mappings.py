@@ -143,7 +143,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: for label,polygon in zip(s2.labels(), s2.polygons()):
         ....:     print("Polygon "+str(label)+" is "+str(polygon)+".")
         Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
-        sage: for label,edge in s2.edge_iterator():
+        sage: for label,edge in s2.edges():
         ....:     print(str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+".")
         (0, 0) is glued to (0, 2).
         (0, 1) is glued to (0, 3).
@@ -315,7 +315,7 @@ class SplitPolygonsMapping(SurfaceMapping):
         ....:     print(pair)
         (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
         (1, Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
-        sage: for glue in s2.edge_iterator(gluings=True):
+        sage: for glue in s2.gluings():
         ....:     print(glue)
         ((0, 0), (1, 0))
         ((0, 1), (0, 5))

@@ -97,7 +97,7 @@ def to_pyflatsurf(S):
     half_edge_labels = {}  # map: (face lab, edge num) in faltsurf -> integer
     vec = []  # vectors
     k = 1  # half edge label in {1, ..., n}
-    for t0, t1 in S.edge_iterator(gluings=True):
+    for t0, t1 in S.gluings():
         if t0 in half_edge_labels:
             continue
 
@@ -113,7 +113,7 @@ def to_pyflatsurf(S):
     # compute vertex and face permutations
     vp = [None] * (n + 1)  # vertex permutation
     fp = [None] * (n + 1)  # face permutation
-    for t in S.edge_iterator(gluings=False):
+    for t in S.edges():
         e = half_edge_labels[t]
         j = (t[1] + 1) % S.polygon(t[0]).num_edges()
         fp[e] = half_edge_labels[(t[0], j)]

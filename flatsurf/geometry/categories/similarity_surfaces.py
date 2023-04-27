@@ -446,33 +446,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 return self
 
-            # TODO: Preserve documentation and doctests?
-            # def edge_iterator(self, gluings=False):
-            #     r"""
-            #     Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
-
-            #     If the keyword gluings is set to true, then we iterate over ordered
-            #     pairs of edges ((l,e),(ll,ee)) where edge (l,e) is glued to (ll,ee).
-
-            #     EXAMPLES::
-
-            #         sage: from flatsurf import ConvexPolygons
-            #         sage: P = ConvexPolygons(QQ)
-            #         sage: tri0=P([(1,0),(0,1),(-1,-1)])
-            #         sage: tri1=P([(-1,0),(0,-1),(1,1)])
-            #         sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-            #         sage: from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
-            #         sage: s=surface_list_from_polygons_and_gluings([tri0,tri1], gluings)
-            #         sage: for edge in s.edge_iterator():
-            #         ....:     print(edge)
-            #         (0, 0)
-            #         (0, 1)
-            #         (0, 2)
-            #         (1, 0)
-            #         (1, 1)
-            #         (1, 2)
-            #     """
-
             def num_singularities(self):
                 r"""
                 EXAMPLES::
@@ -868,7 +841,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             pp = P(edges=new_edges)
                             ss.add_polygon(pp, label=label)
                         ss.set_base_label(self.base_label())
-                        for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
+                        for (l1, e1), (l2, e2) in self.gluings():
                             ss.change_edge_gluing(l1, e1, l2, e2)
                         s = ss
                         if not relabel:
@@ -981,7 +954,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     Polygon: (0, 0), (1, 1), (0, 1)
                     sage: s.polygon(1)
                     Polygon: (0, 0), (-1, -1), (0, -1)
-                    sage: for p in s.edge_iterator(gluings=True):
+                    sage: for p in s.gluings():
                     ....:     print(p)
                     ((0, 0), (1, 0))
                     ((0, 1), (0, 2))
@@ -1008,7 +981,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: for x in zip(s.labels(), s.polygons()):
                     ....:     print(x)
                     (0, Polygon: (0, 0), (-3, -3), (-1, -3))
-                    sage: for x in s.edge_iterator(gluings=True):
+                    sage: for x in s.gluings():
                     ....:     print(x)
                     ((0, 0), (0, 0))
                     ((0, 1), (0, 1))
@@ -1830,7 +1803,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not self.is_finite():
                     raise NotImplementedError("Not implemented for infinite surfaces.")
                 lc = self._label_comparator()
-                for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
+                for (l1, e1), (l2, e2) in self.gluings():
                     if (lc.lt(l1, l2) or (l1 == l2 and e1 <= e2)) and self._edge_needs_flip(
                         l1, e1
                     ):
@@ -1849,7 +1822,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         raise NotImplementedError("A limit must be set for infinite surfaces.")
                     limit = self.num_edges()
                 count = 0
-                for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
+                for (l1, e1), (l2, e2) in self.gluings():
                     if count >= limit:
                         break
                     count = count + 1
@@ -2017,7 +1990,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     lc = self._label_comparator()
                     while loop:
                         loop = False
-                        for (l1, e1), (l2, e2) in s.edge_iterator(gluings=True):
+                        for (l1, e1), (l2, e2) in s.gluings():
                             if (
                                 lc.lt(l1, l2) or (l1 == l2 and e1 <= e2)
                             ) and s._edge_needs_flip(l1, e1):
@@ -2033,7 +2006,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not self.is_finite():
                     raise NotImplementedError("Not implemented for infinite surfaces.")
                 lc = self._label_comparator()
-                for (l1, e1), (l2, e2) in self.edge_iterator(gluings=True):
+                for (l1, e1), (l2, e2) in self.gluings():
                     if (lc.lt(l1, l2) or (l1 == l2 and e1 <= e2)) and self._edge_needs_join(
                         l1, e1
                     ):
@@ -2137,7 +2110,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 lc = self._label_comparator()
                 while loop:
                     loop = False
-                    for (l1, e1), (l2, e2) in s.edge_iterator(gluings=True):
+                    for (l1, e1), (l2, e2) in s.gluings():
                         if (lc.lt(l1, l2) or (l1 == l2 and e1 <= e2)) and s._edge_needs_join(
                             l1, e1
                         ):
@@ -2321,7 +2294,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     data[k] = G(data[k])
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 cover = MutableOrientedSimilaritySurface(self.base_ring())
-                edges = set(self.edge_iterator())
+                edges = set(self.edges())
                 cover_labels = {}
                 for i in range(1, d + 1):
                     for lab in self.labels():
@@ -2373,14 +2346,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 Note that the new labels are old labels plus an index. We verify that
                 the triangles are glued correctly::
 
-                    sage: list(T.edge_gluing_iterator())
-                    [((('Δ', 0), 0), None),
-                     ((('Δ', 0), 1), (('Δ', 1), 2)),
+                    sage: list(T.gluings())
+                    [((('Δ', 0), 1), (('Δ', 1), 2)),
                      ((('Δ', 0), 2), (('Δ', 2), 1)),
-                     ((('Δ', 1), 0), None),
                      ((('Δ', 1), 1), (('Δ', 2), 2)),
                      ((('Δ', 1), 2), (('Δ', 0), 1)),
-                     ((('Δ', 2), 0), None),
                      ((('Δ', 2), 1), (('Δ', 0), 2)),
                      ((('Δ', 2), 2), (('Δ', 1), 1))]
 
@@ -2397,17 +2367,14 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: T.labels()
                     (('Δ', 0), ('□', 2), ('Δ', 1), ('Δ', 2), ('□', 3), ('□', 1), ('□', 0))
-                    sage: list(sorted(T.edge_gluing_iterator()))
+                    sage: list(sorted(T.gluings()))
                     [((('Δ', 0), 0), (('□', 2), 0)),
                      ((('Δ', 0), 1), (('Δ', 1), 2)),
                      ((('Δ', 0), 2), (('Δ', 2), 1)),
-                     ((('Δ', 1), 0), None),
                      ((('Δ', 1), 1), (('Δ', 2), 2)),
                      ((('Δ', 1), 2), (('Δ', 0), 1)),
-                     ((('Δ', 2), 0), None),
                      ((('Δ', 2), 1), (('Δ', 0), 2)),
                      ((('Δ', 2), 2), (('Δ', 1), 1)),
-                     ((('□', 0), 0), None),
                      ((('□', 0), 1), (('□', 1), 2)),
                      ((('□', 0), 2), (('□', 3), 1)),
                      ((('□', 1), 0), (('□', 3), 0)),
@@ -2489,15 +2456,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.change_edge_gluing("□", 1, "□", 3)
 
                     sage: T = S.subdivide_edges()
-                    sage: list(sorted(T.edge_gluing_iterator()))
+                    sage: list(sorted(T.gluings()))
                     [(('Δ', 0), ('□', 5)),
                      (('Δ', 1), ('□', 4)),
-                     (('Δ', 2), None),
-                     (('Δ', 3), None),
-                     (('Δ', 4), None),
-                     (('Δ', 5), None),
-                     (('□', 0), None),
-                     (('□', 1), None),
                      (('□', 2), ('□', 7)),
                      (('□', 3), ('□', 6)),
                      (('□', 4), ('Δ', 1)),

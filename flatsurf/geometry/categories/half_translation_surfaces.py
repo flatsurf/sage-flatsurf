@@ -137,7 +137,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 if not self.is_finite():
                     raise NotImplementedError("the set of edges is infinite!")
 
-                edges = set(self.edge_iterator())
+                edges = set(self.edges())
                 angles = []
 
                 if return_adjacent_edges:
@@ -344,7 +344,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         )
                         k += 2 * m
 
-                    for (p1, e1), (p2, e2) in self.edge_iterator(gluings=True):
+                    for (p1, e1), (p2, e2) in self.gluings():
                         S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
 
                     S._refine_category_(self.category())
