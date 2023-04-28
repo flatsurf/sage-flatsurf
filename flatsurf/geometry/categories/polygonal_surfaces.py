@@ -607,6 +607,24 @@ class PolygonalSurfaces(SurfaceCategory):
             True
 
         """
+        class InfiniteType(SurfaceCategoryWithAxiom):
+            r"""
+            TESTS::
+
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
+                sage: PolygonalSurfaces().FiniteType() & PolygonalSurfaces().InfiniteType()
+                Traceback (most recent call last):
+                ...
+                TypeError: surface cannot be finite type and infinite type at the same time
+                sage: PolygonalSurfaces().InfiniteType() & PolygonalSurfaces().FiniteType()
+                Traceback (most recent call last):
+                ...
+                TypeError: surface cannot be finite type and infinite type at the same time
+
+            """
+
+            def __init__(self, *args, **kwargs):
+                raise TypeError("surface cannot be finite type and infinite type at the same time")
 
         class ParentMethods:
             def is_finite_type(self):
@@ -619,7 +637,6 @@ class PolygonalSurfaces(SurfaceCategory):
                         return False
                 return True
 
-    # TODO: Can we somehow force that a surface can only be finite XOR infinite type?
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces built from infinitely many polygons.
