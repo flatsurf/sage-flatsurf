@@ -274,12 +274,12 @@ class Similarity(MultiplicativeGroupElement):
             sage: P = ConvexPolygons(QQ)
             sage: p = P.an_element()
             sage: p
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: g = SG.an_element()**2
             sage: g
             (x, y) |-> (25*x + 4, 25*y + 10)
             sage: g(p)
-            Polygon: (4, 10), (29, 10), (29, 35), (4, 35)
+            polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).parent()
             ConvexPolygons(Algebraic Real Field)
         """

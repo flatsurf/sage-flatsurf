@@ -37,15 +37,16 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import MutableOrientedSimilaritySurface, polygon, similarity_surfaces
         sage: from flatsurf.geometry.minimal_cover import MinimalTranslationCover
-        sage: s = Surface_list(QQ)
-        sage: P = ConvexPolygons(QQ)
-        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
+        sage: s = MutableOrientedSimilaritySurface(QQ)
+        sage: s.add_polygon(polygon(vertices=[(0,0),(5,0),(0,5)]))
         0
-        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
+        sage: s.add_polygon(polygon(vertices=[(0,0),(3,4),(-4,3)]))
         1
-        sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
+        sage: s.glue((0, 0), (1, 2))
+        sage: s.glue((0, 1), (1, 1))
+        sage: s.glue((0, 2), (1, 0))
         sage: s.set_immutable()
         sage: ss=MinimalTranslationCover(s)
         sage: ss.is_finite()
@@ -57,7 +58,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)
+        sage: T = polygon.triangle(2, 13, 26)
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("translation")
         sage: S
@@ -165,15 +166,16 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import MutableOrientedSimilaritySurface, polygon, similarity_surfaces
         sage: from flatsurf.geometry.minimal_cover import MinimalHalfTranslationCover
-        sage: s = Surface_list(QQ)
-        sage: P = ConvexPolygons(QQ)
-        sage: s.add_polygon(P(vertices=[(0,0),(5,0),(0,5)]))
+        sage: s = MutableOrientedSimilaritySurface(QQ)
+        sage: s.add_polygon(polygon(vertices=[(0,0),(5,0),(0,5)]))
         0
-        sage: s.add_polygon(P(vertices=[(0,0),(3,4),(-4,3)]))
+        sage: s.add_polygon(polygon(vertices=[(0,0),(3,4),(-4,3)]))
         1
-        sage: s.change_polygon_gluings(0,[(1,2),(1,1),(1,0)])
+        sage: s.glue((0, 0), (1, 2))
+        sage: s.glue((0, 1), (1, 1))
+        sage: s.glue((0, 2), (1, 0))
         sage: s.set_immutable()
         sage: ss=MinimalHalfTranslationCover(s)
         sage: ss.is_finite()
@@ -185,7 +187,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
     The following is to test that unfolding is reasonably fast on the instances reported
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
-        sage: T = polygons.triangle(2, 13, 26)
+        sage: T = polygon.triangle(2, 13, 26)
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("half-translation")
         sage: S

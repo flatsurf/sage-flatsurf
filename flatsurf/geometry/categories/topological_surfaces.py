@@ -11,8 +11,8 @@ category is automatically determined for surfaces.
 
 EXAMPLES::
 
-    sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict(QQ).category()
+    sage: from flatsurf import MutableOrientedSimilaritySurface
+    sage: C = MutableOrientedSimilaritySurface(QQ).category()
 
     sage: from flatsurf.geometry.categories import TopologicalSurfaces
     sage: C.is_subcategory(TopologicalSurfaces())
@@ -81,8 +81,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import Surface_dict
-                sage: S = Surface_dict(QQ)
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
 
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)
@@ -90,8 +90,8 @@ class TopologicalSurfaces(SurfaceCategory):
                 sage: S.refined_category()
                 Category of compact connected with boundary finite type translation surfaces
 
-                sage: S.set_edge_pairing(0, 0, 0, 2)
-                sage: S.set_edge_pairing(0, 1, 0, 3)
+                sage: S.glue((0, 0), (0, 2))
+                sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
                 Category of compact connected without boundary finite type translation surfaces
 
@@ -241,8 +241,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import Surface_dict
-            sage: S = Surface_dict(QQ)
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
 
             sage: from flatsurf import polygons
             sage: S.add_polygon(polygons.square(), label=0)
@@ -259,8 +259,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import Surface_dict
-                sage: S = Surface_dict(QQ)
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
 
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)

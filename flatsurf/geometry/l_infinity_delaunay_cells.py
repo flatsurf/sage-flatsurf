@@ -371,9 +371,9 @@ class LInfinityMarkedTriangulation:
             sage: T = LInfinityMarkedTriangulation(2, gluings, types)
             sage: S = T.barycenter()
             sage: S.polygon(0)
-            Polygon: (0, 0), (3/7, 13/21), (-3/7, 11/21)
+            polygon(vertices=[(0, 0), (3/7, 13/21), (-3/7, 11/21)])
             sage: S.polygon(1)
-            Polygon: (0, 0), (6/7, 2/21), (3/7, 13/21)
+            polygon(vertices=[(0, 0), (6/7, 2/21), (3/7, 13/21)])
         """
         verts = [v.vector() for v in self.polytope().vertices()]
         b = sum(verts) / len(verts)
@@ -383,15 +383,16 @@ class LInfinityMarkedTriangulation:
 
         C = ConvexPolygons(QQ)
 
-        triangles = []
+        from flatsurf import MutableOrientedSimilaritySurface
+        barycenter = MutableOrientedSimilaritySurface(QQ)
+
         for p in range(self._n):
             e1 = (b[6 * p], b[6 * p + 1])
             e2 = (b[6 * p + 2], b[6 * p + 3])
             e3 = (b[6 * p + 4], b[6 * p + 5])
-            triangles.append(C([e1, e2, e3]))
+            barycenter.add_polygon(C([e1, e2, e3]))
 
-        from .surface import surface_list_from_polygons_and_gluings
+        for gluing in self._edge_identifications.items():
+            barycenter.glue(*gluing)
 
-        return surface_list_from_polygons_and_gluings(
-            triangles, self._edge_identifications
-        )
+        return barycenter

@@ -9,8 +9,8 @@ category is automatically determined for surfaces.
 
 EXAMPLES::
 
-    sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict(QQ).category()
+    sage: from flatsurf import MutableOrientedSimilaritySurface
+    sage: C = MutableOrientedSimilaritySurface(QQ).category()
 
     sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
     sage: C.is_subcategory(RealProjectivePolygonalSurfaces())

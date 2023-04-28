@@ -15,13 +15,13 @@ EXAMPLES:
 We glue the sides of a square with a rotation of π/2. Since each gluing is just
 a rotation, this is a cone surface::
 
-    sage: from flatsurf import polygons, Surface_dict
-    sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
-    sage: S = Surface_dict(QQ)
+    sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+    sage: S = MutableOrientedSimilaritySurface(QQ)
     sage: S.add_polygon(P, label=0)
     0
-    sage: S.change_edge_gluing(0, 0, 0, 1)
-    sage: S.change_edge_gluing(0, 2, 0, 3)
+    sage: S.glue((0, 0), (0, 1))
+    sage: S.glue((0, 2), (0, 3))
     sage: S.set_immutable()
 
     sage: C = S.category()

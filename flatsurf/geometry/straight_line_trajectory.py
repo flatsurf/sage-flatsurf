@@ -191,9 +191,9 @@ class SegmentInPolygon:
 
             sage: s = similarity_surfaces.example()
             sage: s.polygon(0)
-            Polygon: (0, 0), (2, -2), (2, 0)
+            polygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            Polygon: (0, 0), (2, 0), (1, 3)
+            polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: v = s.tangent_vector(0, (0,0), (3,-1))
             sage: seg = SegmentInPolygon(v)
             sage: seg
@@ -625,11 +625,13 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
         An example in a cone surface covered by the torus::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
             sage: p = polygons.square()
-            sage: s = Surface_list(base_ring=p.base_ring())
-            sage: s.add_polygon(p,[(0,3),(0,2),(0,1),(0,0)])
+            sage: s = MutableOrientedSimilaritySurface(p.base_ring())
+            sage: s.add_polygon(p)
             0
+            sage: s.glue((0, 0), (0, 3))
+            sage: s.glue((0, 1), (0, 2))
             sage: s.set_immutable()
             sage: t = s
 
@@ -714,7 +716,6 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
     """
 
     def __init__(self, tangent_vector):
-        t = tangent_vector.polygon_label()
         self._vector = tangent_vector.vector()
         self._s = tangent_vector.surface()
 

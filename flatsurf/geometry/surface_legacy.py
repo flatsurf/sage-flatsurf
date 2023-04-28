@@ -25,13 +25,16 @@ We built a torus by gluing the opposite sides of a square::
     sage: from flatsurf.geometry.surface import Surface_list
 
     sage: S = Surface_list(QQ)
+    doctest:warning
+    ...
+    UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
     sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
     0
     sage: S.set_edge_pairing(0, 0, 0, 2)
     sage: S.set_edge_pairing(0, 1, 0, 3)
 
     sage: S.polygon(0)
-    Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+    polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
     sage: S.opposite_edge(0, 0)
     (0, 2)
 
@@ -102,6 +105,9 @@ class Surface(OrientedSimilaritySurface):
         True
 
         sage: S = Surface_dict(QQ)
+        doctest:warning
+        ...
+        UserWarning: Surface_dict has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
         sage: isinstance(S, Surface)
         True
 
@@ -117,7 +123,11 @@ class Surface(OrientedSimilaritySurface):
 
     """
 
-    def __init__(self, base_ring, base_label, finite, mutable, category=None):
+    def __init__(self, base_ring, base_label, finite, mutable, category=None, deprecation_warning=True):
+        if deprecation_warning:
+            import warnings
+            warnings.warn("base class Surface has been deprecated and will be removed in a future version of sage-flatsurf; use OrientedSimilaritySurface instead")
+
         if finite not in [False, True]:
             raise ValueError("finite must be either True or False")
 
@@ -330,7 +340,7 @@ class Surface(OrientedSimilaritySurface):
         try:
             return self._cache["lw"]
         except KeyError:
-            lw = LabelWalker(self)
+            lw = LabelWalker(self, deprecation_warning=False)
             self._cache["lw"] = lw
             return lw
 
@@ -364,7 +374,6 @@ class Surface(OrientedSimilaritySurface):
         self.__mutate()
         self._set_edge_pairing(label1, edge1, label2, edge2)
 
-    # TODO: deprecation alias?
     change_edge_gluing = set_edge_pairing
 
     def change_polygon_gluings(self, label, glue_list):
@@ -824,6 +833,9 @@ class Surface_list(Surface):
         sage: from flatsurf.geometry.surface import Surface_list
         sage: p=polygons.regular_ngon(5)
         sage: s=Surface_list(base_ring=p.base_ring())
+        doctest:warning
+        ...
+        UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
         sage: s.add_polygon(p) # gets label 0
         0
         sage: s.add_polygon( (-matrix.identity(2))*p ) # gets label 1
@@ -838,14 +850,17 @@ class Surface_list(Surface):
         sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
         sage: s = similarity_surfaces.billiard(p)
         sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
+        doctest:warning
+        ...
+        UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead. Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels. However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs.
         sage: # Explore the surface a bit
         sage: ts.polygon(0)
-        Polygon: (0, 0), (4, 0), (0, 3)
+        polygon(vertices=[(0, 0), (4, 0), (0, 3)])
         sage: ts.opposite_edge(0,0)
         (1, 2)
         sage: ts.polygon(1)
-        Polygon: (0, 0), (0, -3), (4, 0)
-        sage: s = ts.underlying_surface()
+        polygon(vertices=[(0, 0), (0, -3), (4, 0)])
+        sage: s = ts
         sage: l=s.add_polygon(polygons.square(side=4))
         sage: s.change_edge_gluing(0,0,l,2)
         sage: s.change_edge_gluing(1,2,l,0)
@@ -880,12 +895,12 @@ class Surface_list(Surface):
         ....:     count=count+1
         ....:     if count>5:
         ....:         break
-        0 -> Polygon: (0, 0), (4, 0), (0, 3)
-        2 -> Polygon: (0, 0), (4, 0), (4, 4), (0, 4)
-        3 -> Polygon: (0, 0), (-72/25, -21/25), (28/25, -96/25)
-        4 -> Polygon: (0, 0), (0, 3), (-4, 0)
-        1 -> Polygon: (0, 0), (0, -3), (4, 0)
-        5 -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
+        0 -> polygon(vertices=[(0, 0), (4, 0), (0, 3)])
+        2 -> polygon(vertices=[(0, 0), (4, 0), (4, 4), (0, 4)])
+        3 -> polygon(vertices=[(0, 0), (-72/25, -21/25), (28/25, -96/25)])
+        4 -> polygon(vertices=[(0, 0), (0, 3), (-4, 0)])
+        1 -> polygon(vertices=[(0, 0), (0, -3), (4, 0)])
+        5 -> polygon(vertices=[(0, 0), (-28/25, 96/25), (-72/25, -21/25)])
 
     TESTS:
 
@@ -894,13 +909,20 @@ class Surface_list(Surface):
 
         sage: from flatsurf import MutableOrientedSimilaritySurface, Surface_list
         sage: legacy_methods = set(dir(Surface_list(QQ)))
+        doctest:warning
+        ...
+        UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
         sage: non_legacy_methods = set(dir(MutableOrientedSimilaritySurface(QQ)))
         sage: [method for method in legacy_methods if method not in non_legacy_methods and not method.startswith("_")]
         []
 
     """
 
-    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None, category=None):
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None, category=None, deprecation_warning=True):
+        if deprecation_warning:
+            import warnings
+            warnings.warn("Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead")
+
         self._p = []  # list of pairs (polygon, gluings)
         self._reference_surface = None
         self._removed_labels = []
@@ -921,7 +943,7 @@ class Surface_list(Surface):
             finite=None,
         )
 
-        Surface.__init__(self, base_ring=base_ring, base_label=0, finite=finite, mutable=True, category=category)
+        Surface.__init__(self, base_ring=base_ring, base_label=0, finite=finite, mutable=True, category=category, deprecation_warning=False)
 
         # Initialize surface from reference surface
         if surface is not None:
@@ -1138,7 +1160,6 @@ class Surface_list(Surface):
             )
         data[1][edge2] = (label1, edge1)
 
-    # TODO: deprecation alias?
     _change_edge_gluing = _set_edge_pairing
 
     def _add_polygon(self, new_polygon, gluing_list=None, label=None):
@@ -1292,6 +1313,9 @@ class Surface_list(Surface):
             sage: from flatsurf import Surface_list, polygons
             sage: P=polygons.regular_ngon(5)
             sage: S = Surface_list(base_ring=P.base_ring())
+            doctest:warning
+            ...
+            UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
             sage: T = Surface_list(base_ring=P.base_ring())
 
             sage: S == T
@@ -1366,10 +1390,13 @@ def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
     and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting
     surface.
     """
+    import warnings
+    warnings.warn("surface_list_from_polygons_and_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead and add polygons and gluings explicitly")
+
     if not (isinstance(polygons, list) or isinstance(polygons, tuple)):
         raise ValueError("polygons must be a list or tuple.")
     field = polygons[0].parent().field()
-    s = Surface_list(base_ring=field)
+    s = Surface_list(base_ring=field, deprecation_warning=False)
     for p in polygons:
         s.add_polygon(p)
     try:
@@ -1427,6 +1454,9 @@ class Surface_dict(Surface):
         sage: from flatsurf import *
         sage: p=polygons.regular_ngon(10)
         sage: s=Surface_dict(base_ring=p.base_ring())
+        doctest:warning
+        ...
+        UserWarning: Surface_dict has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
         sage: s.add_polygon(p,label="A")
         'A'
         sage: s.change_polygon_gluings("A",[("A",(e+5)%10) for e in range(10)])
@@ -1441,13 +1471,20 @@ class Surface_dict(Surface):
 
         sage: from flatsurf import MutableOrientedSimilaritySurface, Surface_dict
         sage: legacy_methods = set(dir(Surface_dict(QQ)))
+        doctest:warning
+        ...
+        UserWarning: Surface_dict has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
         sage: non_legacy_methods = set(dir(MutableOrientedSimilaritySurface(QQ)))
         sage: [method for method in legacy_methods if method not in non_legacy_methods and not method.startswith("_")]
         []
 
     """
 
-    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None, category=None):
+    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None, category=None, deprecation_warning=True):
+        if deprecation_warning:
+            import warnings
+            warnings.warn("Surface_dict has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead")
+
         self._p = {}
         self._reference_surface = None
 
@@ -1466,7 +1503,7 @@ class Surface_dict(Surface):
             finite=None,
         )
 
-        Surface.__init__(self, base_ring=base_ring, base_label=None, finite=finite, mutable=True, category=category)
+        Surface.__init__(self, base_ring=base_ring, base_label=None, finite=finite, mutable=True, category=category, deprecation_warning=False)
 
         # Initialize surface from reference surface
         if surface is not None:
@@ -1822,29 +1859,6 @@ class Surface_dict(Surface):
         return True
 
 
-class BaseRingChangedSurface(Surface):
-    r"""
-    A surface with a different base_ring.
-    """
-
-    def __init__(self, surface, ring):
-        self._s = surface
-        from flatsurf.geometry.polygon import ConvexPolygons
-
-        self._P = ConvexPolygons(ring)
-        Surface.__init__(
-            self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite()
-        )
-
-    def polygon(self, lab):
-        return self._P(self._s.polygon(lab))
-
-    def opposite_edge(self, p, e=None):
-        if e is None:
-            p, e = p
-        return self._s.opposite_edge(p, e)
-
-
 class LabelWalker:
     r"""
     Take a canonical walk around the surface and find the labels of polygons.
@@ -1879,7 +1893,11 @@ class LabelWalker:
         def __iter__(self):
             return self
 
-    def __init__(self, surface):
+    def __init__(self, surface, deprecation_warning=True):
+        if deprecation_warning:
+            import warnings
+            warnings.warn("LabelWalker has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead")
+
         self._s = surface
         self._labels = [self._s.base_label()]
         self._label_dict = {self._s.base_label(): 0}

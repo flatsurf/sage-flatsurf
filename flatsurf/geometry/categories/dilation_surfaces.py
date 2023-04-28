@@ -238,11 +238,11 @@ class DilationSurfaces(SurfaceCategory):
                     raise NotImplementedError(
                         "in-place GL(2,R) action only works for finite surfaces"
                     )
-                us = self.underlying_surface()
+                us = self
                 if not us.is_mutable():
                     raise ValueError("in-place changes only work for mutable surfaces")
                 for label in self.labels():
-                    us.change_polygon(label, m * self.polygon(label))
+                    us.replace_polygon(label, m * self.polygon(label))
                 if m.det() < self.base_ring().zero():
                     # Polygons were all reversed orientation. Need to redo gluings.
 
@@ -263,7 +263,7 @@ class DilationSurfaces(SurfaceCategory):
                         seen_labels.add(p1)
                     # Second pass: reassign gluings
                     for (p1, e1), (p2, e2) in new_glue.items():
-                        us.change_edge_gluing(p1, e1, p2, e2)
+                        us.glue((p1, e1), (p2, e2))
                 return self
 
         def _edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
@@ -273,15 +273,15 @@ class DilationSurfaces(SurfaceCategory):
 
             TESTS::
 
-                sage: from flatsurf import *
-                sage: s = Surface_list(base_ring=QQ)
-                sage: t1 = polygons((1,0),(-1,1),(0,-1))
-                sage: t2 = polygons((0,1),(-1,0),(1,-1))
-                sage: s.add_polygon(polygons(vertices=[(0,0), (1,0), (0,1)]))
+                sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+                sage: s = MutableOrientedSimilaritySurface(QQ)
+                sage: s.add_polygon(polygon(vertices=[(0,0), (1,0), (0,1)]))
                 0
-                sage: s.add_polygon(polygons(vertices=[(1,1), (0,1), (1,0)]))
+                sage: s.add_polygon(polygon(vertices=[(1,1), (0,1), (1,0)]))
                 1
-                sage: s.change_polygon_gluings(0, [(1,0), (1,1), (1,2)])
+                sage: s.glue((0, 0), (1, 0))
+                sage: s.glue((0, 1), (1, 1))
+                sage: s.glue((0, 2), (1, 2))
                 sage: s.set_immutable()
                 sage: [s._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [False, False, False]

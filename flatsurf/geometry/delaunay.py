@@ -183,11 +183,11 @@ class LazyMutableSurface(OrientedSimilaritySurface):
     def is_mutable(self):
         return True
 
-    def change_polygon(self, label, polygon):
-        return self._surface.change_polygon(label, polygon)
+    def replace_polygon(self, label, polygon):
+        return self._surface.replace_polygon(label, polygon)
 
-    def change_edge_gluing(self, label0, edge0, label1, edge1):
-        return self._surface.change_edge_gluing(label0, edge0, label1, edge1)
+    def glue(self, x, y):
+        return self._surface.glue(x, y)
 
     def _ensure_gluings(self, label):
         assert label in self._surface.labels()
@@ -477,7 +477,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: m=matrix([[2,1],[1,1]])
         sage: ss=LazyDelaunaySurface(m*s,relabel=False)
         sage: ss.polygon(ss.base_label())
-        Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+        polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
         sage: ss.is_delaunay_decomposed(limit=100)
         True
         sage: TestSuite(ss).run()

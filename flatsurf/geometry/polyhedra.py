@@ -29,7 +29,6 @@ from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.functions.other import sqrt
 
 from flatsurf.geometry.polygon import ConvexPolygons
-from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
 from flatsurf.geometry.straight_line_trajectory import (
     StraightLineTrajectory,
     SegmentInPolygon,
@@ -290,12 +289,14 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         m = face_map_data[p][3]
         polygon_vertices_AA.append([trans + m * v for v in vs])
 
+    from flatsurf import MutableOrientedSimilaritySurface
     if use_AA is True:
         Polys = ConvexPolygons(AA)
-        polygons = []
+        S = MutableOrientedSimilaritySurface(AA)
         for vs in polygon_vertices_AA:
-            polygons.append(Polys(vertices=vs))
-        S = surface_list_from_polygons_and_gluings(polygons, gluings)
+            S.add_polygon(Polys(vertices=vs))
+        for x, y in gluings.items():
+            S.glue(x, y)
         return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
     else:
         elts = []
@@ -316,11 +317,12 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     vs2.append(vector(field, [elts2[j], elts2[j + 1]]))
                     j = j + 2
                 polygon_vertices_field2.append(vs2)
+            S = MutableOrientedSimilaritySurface(field)
             Polys = ConvexPolygons(field)
-            polygons = []
             for vs in polygon_vertices_field2:
-                polygons.append(Polys(vertices=vs))
-            S = surface_list_from_polygons_and_gluings(polygons, gluings)
+                S.add_polygon(Polys(vertices=vs))
+            for x, y in gluings.items():
+                S.glue(x, y)
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
         else:
@@ -340,11 +342,12 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     vs2.append(vector(field2, [hom2(elts2[j]), hom2(elts2[j + 1])]))
                     j = j + 2
                 polygon_vertices_field2.append(vs2)
+            S = MutableOrientedSimilaritySurface(field2)
             Polys = ConvexPolygons(field2)
-            polygons = []
             for vs in polygon_vertices_field2:
-                polygons.append(Polys(vertices=vs))
-            S = surface_list_from_polygons_and_gluings(polygons, gluings)
+                S.add_polygon(Polys(vertices=vs))
+            for x, y in gluings.items():
+                S.glue(x, y)
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
 

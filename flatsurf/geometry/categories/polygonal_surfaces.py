@@ -12,8 +12,8 @@ category is automatically determined for surfaces.
 
 EXAMPLES::
 
-    sage: from flatsurf import Surface_dict
-    sage: C = Surface_dict(QQ).category()
+    sage: from flatsurf import MutableOrientedSimilaritySurface
+    sage: C = MutableOrientedSimilaritySurface(QQ).category()
 
     sage: from flatsurf.geometry.categories import PolygonalSurfaces
     sage: C.is_subcategory(PolygonalSurfaces())
@@ -77,8 +77,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import Surface_dict
-                sage: S = Surface_dict(QQ)
+                sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+                sage: S = MutableOrientedSimilaritySurface(QQ)
 
                 sage: from flatsurf import polygons
                 sage: S.add_polygon(polygons.square(), label=0)
@@ -86,8 +86,8 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S.refined_category()
                 Category of compact connected with boundary finite type translation surfaces
 
-                sage: S.set_edge_pairing(0, 0, 0, 2)
-                sage: S.set_edge_pairing(0, 1, 0, 3)
+                sage: S.glue((0, 0), (0, 2))
+                sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
                 Category of compact connected without boundary finite type translation surfaces
 
@@ -137,7 +137,7 @@ class PolygonalSurfaces(SurfaceCategory):
             warnings.warn("walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.")
 
             from flatsurf.geometry.surface_legacy import LabelWalker
-            return LabelWalker(self)
+            return LabelWalker(self, deprecation_warning=False)
 
         def labels(self):
             r"""
@@ -179,14 +179,14 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.polygons()
-                (Polygon: (0, 0), (2, 0), (1, 4), (0, 5),)
+                (polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]),)
 
             ::
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.infinite_staircase()
                 sage: S.polygons()
-                (Polygon: (0, 0), (1, 0), (1, 1), (0, 1), Polygon: (0, 0), (1, 0), (1, 1), (0, 1), ...)
+                (polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), ...)
 
             """
             from flatsurf.geometry.surface import Polygons
@@ -210,7 +210,7 @@ class PolygonalSurfaces(SurfaceCategory):
             warnings.warn("num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead.")
 
             # Note that using len(self.polygons()) on
-            # MutableOrientedSimilaritySurfaces is only very slightly slower:
+            # MutableOrientedSimilaritySurface is only very slightly slower:
             # %timeit num_polygons()
             # 137ns
             # %timeit len(polygons())
@@ -269,14 +269,16 @@ class PolygonalSurfaces(SurfaceCategory):
 
             ::
 
-                sage: from flatsurf import ConvexPolygons
-                sage: P = ConvexPolygons(QQ)
-                sage: tri0=P([(1,0),(0,1),(-1,-1)])
-                sage: tri1=P([(-1,0),(0,-1),(1,1)])
-                sage: gluings=[((0,0),(1,0)),((0,1),(1,1)),((0,2),(1,2))]
-                sage: from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
-                sage: s=surface_list_from_polygons_and_gluings([tri0,tri1], gluings)
-                sage: for edge in s.edge_iterator():
+                sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S.add_polygon(polygon(edges=[(1,0),(0,1),(-1,-1)]))
+                0
+                sage: S.add_polygon(polygon(edges=[(-1,0),(0,-1),(1,1)]))
+                1
+                sage: S.glue((0, 0), (1, 0))
+                sage: S.glue((0, 1), (1, 1))
+                sage: S.glue((0, 2), (1, 2))
+                sage: for edge in S.edge_iterator():
                 ....:     print(edge)
                 (0, 0)
                 (0, 1)
@@ -361,7 +363,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.polygon(0)
-                Polygon: (0, 0), (2, 0), (1, 4), (0, 5)
+                polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
 
             """
 

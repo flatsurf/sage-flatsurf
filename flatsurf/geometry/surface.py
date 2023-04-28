@@ -182,14 +182,13 @@ class OrientedSimilaritySurface(Surface_base):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
-            sage: from flatsurf.geometry.surface import Surface_list
+            sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
 
-            sage: S = Surface_list(QQ)
+            sage: S = MutableOrientedSimilaritySurface(QQ)
             sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
-            sage: S.set_edge_pairing(0, 0, 0, 2)
-            sage: S.set_edge_pairing(0, 1, 0, 3)
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
 
             sage: S.an_element()
             Point (1/2, 1/2) of polygon 0
@@ -292,8 +291,11 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         super().remove_polygon(label)
 
-    def unglue(self, x):
-        self._gluings[x[0]][x[1]] = None
+    def unglue(self, label, edge):
+        cross = self._gluings[label][edge]
+        if cross is not None:
+            self._gluings[cross[0]][cross[1]] = None
+        self._gluings[label][edge] = None
 
     def _unglue_polygon(self, label):
         for edge, cross in enumerate(self._gluings[label]):
@@ -307,38 +309,78 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         if not self._mutable:
             raise Exception
 
-        labels = x[0], y[0]
-        edges = x[1], y[1]
+        if x[0] not in self._polygons:
+            raise ValueError
 
-        for label in labels:
-            if label not in self._polygons:
-                raise ValueError
+        if y[0] not in self._polygons:
+            raise ValueError
 
-        for label, edge in zip(labels, edges):
-            if self._gluings[label][edge] is not None:
-                cross_label, cross_edge = self._gluings[label][edge]
-                self._gluings[cross_label][cross_edge] = None
-                self._gluings[label][edge] = None
+        self.unglue(*x)
+        self.unglue(*y)
 
-        self._gluings[labels[0]][edges[0]] = (labels[1], edges[1])
-        self._gluings[labels[1]][edges[1]] = (labels[0], edges[0])
+        self._gluings[x[0]][x[1]] = y
+        self._gluings[y[0]][y[1]] = x
 
     def set_edge_pairing(self, label0, edge0, label1, edge1):
-        # TODO: Deprecate?
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.set_edge_pairing(0, 0, 0, 2)
+            doctest:warning
+            ...
+            UserWarning: set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead
+            sage: S.set_edge_pairing(0, 1, 0, 3)
+
+        """
+        import warnings
+        warnings.warn("set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead")
         return self.glue((label0, edge0), (label1, edge1))
 
-    change_edge_gluing = set_edge_pairing
+    def change_edge_gluing(self, label0, edge0, label1, edge1):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+        """
+        import warnings
+        warnings.warn("change_edge_gluing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead")
+        return self.glue((label0, edge0), (label1, edge1))
 
     def change_polygon_gluings(self, label, gluings):
-        # TODO: Deprecate?
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+        """
+        import warnings
+        warnings.warn("change_polygon_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use glue() in a loop instead")
+
         for edge0, cross in enumerate(gluings):
             if cross is None:
-                self.unglue((label, edge0))
+                self.unglue(label, edge0)
             else:
                 self.glue((label, edge0), cross)
 
     def change_polygon(self, label, polygon, gluing_list=None):
-        # TODO: Deprecate
+        import warnings
+        warnings.warn("change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead")
+
         # TODO: This is an obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
         if polygon.num_edges() != self.polygon(label).num_edges():
             self._unglue_polygon(label)
@@ -347,7 +389,53 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         self._polygons[label] = polygon
 
         if gluing_list is not None:
-            self.change_polygon_gluings(label, gluing_list)
+            for i, cross in enumerate(gluing_list):
+                self.glue((label, i), cross)
+
+    def replace_polygon(self, label, polygon):
+        r"""
+        Replace the polygon ``label`` with ``polygon`` while keeping its
+        gluings intact.
+
+        INPUT:
+
+        - ``label`` -- an element of :meth:`labels`
+
+        - ``polygon`` -- a Euclidean polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+            sage: S.replace_polygon(0, polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
+
+        The replacement of a polygon must have the same number of sides::
+
+            sage: S.replace_polygon(0, polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon must be another quadrilateral
+
+        To replace the polygon without keeping its glueings, remove the polygon
+        first and then add a new one::
+
+            sage: S.remove_polygon(0)
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
+            0
+
+        """
+        old = self.polygon(label)
+
+        if old.num_edges() != polygon.num_edges():
+            from flatsurf.geometry.polygon import Polygon
+            raise ValueError(f"polygon must be another {Polygon.describe_polygon(old.num_edges())}")
+
+        self._polygons[label] = polygon
 
     def opposite_edge(self, label, edge=None):
         if edge is None:
@@ -371,6 +459,25 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
             raise Exception
         # TODO
         return 0
+
+
+class BaseRingChangedSurface(OrientedSimilaritySurface):
+    def __init__(self, surface, ring, category=None):
+        self._reference = surface
+        super().__init__(ring, category=category or surface.category())
+
+    def is_mutable(self):
+        return False
+
+    def base_label(self):
+        return self._reference.base_label()
+
+    def polygon(self, label):
+        return self._reference.polygon(label).change_ring(self.base_ring())
+
+    def opposite_edge(self, label, edge):
+        return self._reference.opposite_edge(label, edge)
+
 
 
 class LabeledCollection:
@@ -494,4 +601,4 @@ class Gluings(LabeledCollection, collections.abc.Set):
 
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
-from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator, BaseRingChangedSurface
+from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator

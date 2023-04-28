@@ -173,29 +173,29 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: from flatsurf import *
                 sage: s=translation_surfaces.veech_double_n_gon(4)
                 sage: s.polygon(1)
-                Polygon: (0, 0), (-1, 0), (-1, -1), (0, -1)
+                polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                 sage: [s.opposite_edge(0,i) for i in range(4)]
                 [(1, 0), (1, 1), (1, 2), (1, 3)]
                 sage: ss=s.standardize_polygons()
                 sage: ss.polygon(1)
-                Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+                polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                 sage: [ss.opposite_edge(0,i) for i in range(4)]
                 [(1, 2), (1, 3), (1, 0), (1, 1)]
                 sage: TestSuite(ss).run()
 
             Make sure first vertex is sent to origin::
 
-                sage: from flatsurf import *
-                sage: P = ConvexPolygons(QQ)
-                sage: p = P(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
-                sage: s = Surface_list(QQ)
+                sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+                sage: p = polygon(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
+                sage: s = MutableOrientedSimilaritySurface(QQ)
                 sage: s.add_polygon(p)
                 0
-                sage: s.change_polygon_gluings(0, [(0,2),(0,3),(0,0),(0,1)])
+                sage: s.glue((0, 0), (0, 2))
+                sage: s.glue((0, 1), (0, 3))
                 sage: s.change_base_label(0)
                 sage: s.set_immutable()
                 sage: s.standardize_polygons().polygon(0)
-                Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+                polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             """
             if self.is_finite():
                 if in_place:
@@ -486,7 +486,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if local:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
-                us = ss.underlying_surface()
+                us = ss
 
                 P = ConvexPolygons(field)
                 for label in deformed_labels:
@@ -522,7 +522,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             % label
                         )
                     # Triangle does not degenerate.
-                    us.change_polygon(
+                    us.replace_polygon(
                         label, P(vertices=[vector_space.zero(), a0 + a1, b0 + b1])
                     )
                 return ss

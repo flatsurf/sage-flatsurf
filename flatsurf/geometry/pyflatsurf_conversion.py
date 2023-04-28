@@ -273,15 +273,14 @@ def from_pyflatsurf(T):
 
     Verify that #137 has been resolved::
 
-        sage: from flatsurf import polygons
-        sage: from flatsurf.geometry.surface import Surface_list
+        sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
         sage: from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
         sage: from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
         sage: P = polygons.regular_ngon(10)
-        sage: S = Surface_list(P.base_ring())
+        sage: S = MutableOrientedSimilaritySurface(P.base_ring())
         sage: S.add_polygon(P)
         0
-        sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
+        sage: for i in range(5): S.glue((0, i), (0, 5+i))
         sage: S.set_immutable()
         sage: M = S
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
@@ -329,7 +328,7 @@ def from_pyflatsurf(T):
 
     for half_edge, (face, id) in half_edges.items():
         _face, _id = half_edges[-half_edge]
-        S.change_edge_gluing(face, id, _face, _id)
+        S.glue((face, id), (_face, _id))
 
     S.set_immutable()
     return S

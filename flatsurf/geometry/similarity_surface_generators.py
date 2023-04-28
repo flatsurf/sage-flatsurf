@@ -434,9 +434,9 @@ class TFractalSurface(OrientedSimilaritySurface):
             sage: import flatsurf.geometry.similarity_surface_generators as sfg
             sage: T = sfg.tfractal_surface()
             sage: T.polygon(('L',0))
-            Polygon: (0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)
+            polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2), (0, 1/2)])
             sage: T.polygon(('LRL',0))
-            Polygon: (0, 0), (1/8, 0), (1/8, 1/8), (0, 1/8)
+            polygon(vertices=[(0, 0), (1/8, 0), (1/8, 1/8), (0, 1/8)])
         """
         w = self._words(lab[0])
         return (1 / self._r ** w.length()) * self._base_polygon(lab[1])
@@ -654,13 +654,13 @@ class SimilaritySurfaceGenerators:
                 polygons(edges=[V((-x, y)) for x, y in reversed(p.edges())])
             )
         for p1, e1, p2, e2 in internal_edges:
-            surface.set_edge_pairing(p1, e1, p2, e2)
+            surface.glue((p1, e1), (p2, e2))
             ne1 = surface.polygon(p1).num_edges()
             ne2 = surface.polygon(p2).num_edges()
-            surface.set_edge_pairing(m + p1, ne1 - e1 - 1, m + p2, ne2 - e2 - 1)
+            surface.glue((m + p1, ne1 - e1 - 1), (m + p2, ne2 - e2 - 1))
         for p, e in external_edges:
             ne = surface.polygon(p).num_edges()
-            surface.set_edge_pairing(p, e, m + p, ne - e - 1)
+            surface.glue((p, e), (m + p, ne - e - 1))
 
         if rational:
             surface._refine_category_(surface.category().Rational())
@@ -684,7 +684,8 @@ class SimilaritySurfaceGenerators:
         surface = MutableOrientedSimilaritySurface(P.base_ring())
         surface.add_polygon(P, label=0)
         surface.add_polygon(Q, label=1)
-        surface.change_polygon_gluings(0, [(1, n - i - 1) for i in range(n)])
+        for i in range(n):
+            surface.glue((0, i), (1, n - i - 1))
         surface.set_immutable()
         return surface
 
@@ -711,7 +712,9 @@ class SimilaritySurfaceGenerators:
         s = MutableOrientedSimilaritySurface(F)
         s.add_polygon(P([V((w, 0)), V((-w, h)), V((0, -h))]), label=0)
         s.add_polygon(P([V((0, h)), V((-w, -h)), V((w, 0))]), label=1)
-        s.change_polygon_gluings(0, [(1, 2), (1, 1), (1, 0)])
+        s.glue((0, 0), (1, 2))
+        s.glue((0, 1), (1, 1))
+        s.glue((0, 2), (1, 0))
         s.set_immutable()
         return s
 
@@ -753,10 +756,10 @@ class DilationSurfaceGenerators:
         s.add_polygon(CP(edges=[(0, 1), (-1, 0), (0, -1), (1, 0)]), label=0)
         s.add_polygon(CP(edges=[(0, 1), (-a, 0), (0, -1), (a, 0)]), label=1)
         # label 1
-        s.change_edge_gluing(0, 0, 1, 2)
-        s.change_edge_gluing(0, 1, 1, 3)
-        s.change_edge_gluing(0, 2, 1, 0)
-        s.change_edge_gluing(0, 3, 1, 1)
+        s.glue((0, 0), (1, 2))
+        s.glue((0, 1), (1, 3))
+        s.glue((0, 2), (1, 0))
+        s.glue((0, 3), (1, 1))
         s.set_base_label(0)
         s.set_immutable()
         return s
@@ -811,12 +814,12 @@ class DilationSurfaceGenerators:
         s.add_polygon(triangle1, label=1)
         triangle2 = CP(edges=[(1 - c, d), (c - 1, 0), (0, -d)])
         s.add_polygon(triangle2, label=2)
-        s.change_edge_gluing(0, 0, 0, 3)
-        s.change_edge_gluing(0, 2, 0, 5)
-        s.change_edge_gluing(0, 1, 1, 2)
-        s.change_edge_gluing(0, 4, 2, 0)
-        s.change_edge_gluing(1, 0, 2, 1)
-        s.change_edge_gluing(1, 1, 2, 2)
+        s.glue((0, 0), (0, 3))
+        s.glue((0, 2), (0, 5))
+        s.glue((0, 1), (1, 2))
+        s.glue((0, 4), (2, 0))
+        s.glue((1, 0), (2, 1))
+        s.glue((1, 1), (2, 2))
         s.set_immutable()
         return s
 
@@ -890,22 +893,22 @@ class HalfTranslationSurfaceGenerators:
 
         # reflection gluings
         # (gluings between the polygon and its reflection)
-        S.set_edge_pairing(0, 4, n, 4)
-        S.set_edge_pairing(n - 1, 0, 2 * n - 1, 2)
-        S.set_edge_pairing(n - 1, 1, 2 * n - 1, 1)
-        S.set_edge_pairing(n - 1, 2, 2 * n - 1, 0)
+        S.glue((0, 4), (n, 4))
+        S.glue((n - 1, 0), (2 * n - 1, 2))
+        S.glue((n - 1, 1), (2 * n - 1, 1))
+        S.glue((n - 1, 2), (2 * n - 1, 0))
         for i in range(n - 1):
-            # set_edge_pairing(polygon1, edge1, polygon2, edge2)
-            S.set_edge_pairing(i, 0, n + i, 3)
-            S.set_edge_pairing(i, 2, n + i, 1)
-            S.set_edge_pairing(i, 3, n + i, 0)
+            # glue((polygon1, edge1), (polygon2, edge2))
+            S.glue((i, 0), (n + i, 3))
+            S.glue((i, 2), (n + i, 1))
+            S.glue((i, 3), (n + i, 0))
 
         # translation gluings
-        S.set_edge_pairing(n - 2, 1, n - 1, 3)
-        S.set_edge_pairing(2 * n - 2, 2, 2 * n - 1, 3)
+        S.glue((n - 2, 1), (n - 1, 3))
+        S.glue((2 * n - 2, 2), (2 * n - 1, 3))
         for i in range(n - 2):
-            S.set_edge_pairing(i, 1, i + 1, 4)
-            S.set_edge_pairing(n + i, 2, n + i + 1, 4)
+            S.glue((i, 1), (i + 1, 4))
+            S.glue((n + i, 2), (n + i + 1, 4))
 
         S.set_immutable()
         return S
@@ -963,7 +966,7 @@ class TranslationSurfaceGenerators:
             sage: T
             Surface built from 1 polygon
             sage: T.polygon(0)
-            Polygon: (0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)
+            polygon(vertices=[(0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)])
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: T in TranslationSurfaces()
             True
@@ -994,7 +997,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import *
             sage: s=translation_surfaces.veech_2n_gon(5)
             sage: s.polygon(0)
-            Polygon: (0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)
+            polygon(vertices=[(0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)])
             sage: TestSuite(s).run()
         """
         p = polygons.regular_ngon(2 * n)
@@ -1183,12 +1186,12 @@ class TranslationSurfaceGenerators:
                     ring=K,
                 )
             )
-            s.set_edge_pairing(0, 1, 0, 3)
-            s.set_edge_pairing(0, 0, 1, 6)
-            s.set_edge_pairing(0, 2, 1, 1)
-            s.set_edge_pairing(1, 2, 1, 4)
-            s.set_edge_pairing(1, 3, 1, 7)
-            s.set_edge_pairing(1, 0, 1, 5)
+            s.glue((0, 1), (0, 3))
+            s.glue((0, 0), (1, 6))
+            s.glue((0, 2), (1, 1))
+            s.glue((1, 2), (1, 4))
+            s.glue((1, 3), (1, 7))
+            s.glue((1, 0), (1, 5))
         else:
             s.add_polygon(polygons(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], ring=K))
             s.add_polygon(
@@ -1197,11 +1200,11 @@ class TranslationSurfaceGenerators:
                     ring=K,
                 )
             )
-            s.set_edge_pairing(0, 1, 0, 3)
-            s.set_edge_pairing(0, 0, 1, 4)
-            s.set_edge_pairing(0, 2, 1, 0)
-            s.set_edge_pairing(1, 1, 1, 3)
-            s.set_edge_pairing(1, 2, 1, 5)
+            s.glue((0, 1), (0, 3))
+            s.glue((0, 0), (1, 4))
+            s.glue((0, 2), (1, 0))
+            s.glue((1, 1), (1, 3))
+            s.glue((1, 2), (1, 5))
         s.set_immutable()
         return s
 
@@ -1248,12 +1251,12 @@ class TranslationSurfaceGenerators:
         s.add_polygon(polygons((l3, 0), (0, l2), (-l3, 0), (0, -l2), ring=field))
         s.add_polygon(polygons((l3, 0), (0, l1), (-l3, 0), (0, -l1), ring=field))
         s.add_polygon(polygons((l4, 0), (0, l2), (-l4, 0), (0, -l2), ring=field))
-        s.change_edge_gluing(0, 0, 1, 2)
-        s.change_edge_gluing(0, 1, 2, 3)
-        s.change_edge_gluing(0, 2, 1, 0)
-        s.change_edge_gluing(0, 3, 2, 1)
-        s.change_edge_gluing(1, 1, 1, 3)
-        s.change_edge_gluing(2, 0, 2, 2)
+        s.glue((0, 0), (1, 2))
+        s.glue((0, 1), (2, 3))
+        s.glue((0, 2), (1, 0))
+        s.glue((0, 3), (2, 1))
+        s.glue((1, 1), (1, 3))
+        s.glue((2, 0), (2, 2))
         s.set_immutable()
         return s
 
@@ -1280,8 +1283,9 @@ class TranslationSurfaceGenerators:
         s.add_polygon(o)
         s.add_polygon(p1)
         s.add_polygon(p2)
-        s.change_polygon_gluings(1, [(0, 2 * i) for i in range(n)])
-        s.change_polygon_gluings(2, [(0, 2 * i + 1) for i in range(n)])
+        for i in range(n):
+            s.glue((1, i), (0, 2*i))
+            s.glue((2, i), (0, 2*i+1))
         s.set_immutable()
         return s
 
@@ -1391,19 +1395,19 @@ class TranslationSurfaceGenerators:
         s.add_polygon(p1)
         s.add_polygon(p2)
         s.add_polygon(p3)
-        s.set_edge_pairing(0, 0, 0, 2)
-        s.set_edge_pairing(0, 1, 1, 9)
-        s.set_edge_pairing(0, 3, 3, 3)
-        s.set_edge_pairing(1, 0, 1, 3)
-        s.set_edge_pairing(1, 1, 3, 4)
-        s.set_edge_pairing(1, 2, 3, 6)
-        s.set_edge_pairing(1, 4, 2, 3)
-        s.set_edge_pairing(1, 5, 1, 8)
-        s.set_edge_pairing(1, 6, 3, 0)
-        s.set_edge_pairing(1, 7, 3, 2)
-        s.set_edge_pairing(2, 0, 2, 2)
-        s.set_edge_pairing(2, 1, 3, 7)
-        s.set_edge_pairing(3, 1, 3, 5)
+        s.glue((0, 0), (0, 2))
+        s.glue((0, 1), (1, 9))
+        s.glue((0, 3), (3, 3))
+        s.glue((1, 0), (1, 3))
+        s.glue((1, 1), (3, 4))
+        s.glue((1, 2), (3, 6))
+        s.glue((1, 4), (2, 3))
+        s.glue((1, 5), (1, 8))
+        s.glue((1, 6), (3, 0))
+        s.glue((1, 7), (3, 2))
+        s.glue((2, 0), (2, 2))
+        s.glue((2, 1), (3, 7))
+        s.glue((3, 1), (3, 5))
         s.set_immutable()
         return s
 
@@ -1501,27 +1505,27 @@ class TranslationSurfaceGenerators:
             # T'_{g+i} is (P'_i,Q'_i, Q'_{i-1})
             Tp[g + i] = s.add_polygon(m * s.polygon(T[g + i]))
         for i in range(1, g):
-            s.change_edge_gluing(T[i], 0, T[i + 1], 2)
-            s.change_edge_gluing(Tp[i], 2, Tp[i + 1], 0)
+            s.glue((T[i], 0), (T[i + 1], 2))
+            s.glue((Tp[i], 2), (Tp[i + 1], 0))
         for i in range(1, g + 1):
-            s.change_edge_gluing(T[i], 1, T[g + i], 1)
-            s.change_edge_gluing(Tp[i], 1, Tp[g + i], 1)
+            s.glue((T[i], 1), (T[g + i], 1))
+            s.glue((Tp[i], 1), (Tp[g + i], 1))
         # P 0 Q 0 is paired with P' 0 Q' 0, ...
-        s.change_edge_gluing(T[1], 2, Tp[g], 2)
-        s.change_edge_gluing(Tp[1], 0, T[g], 0)
+        s.glue((T[1], 2), (Tp[g], 2))
+        s.glue((Tp[1], 0), (T[g], 0))
         # P1Q1 is paired with P'_g Q_{g-1}
-        s.change_edge_gluing(T[g + 1], 2, Tp[2 * g], 2)
-        s.change_edge_gluing(Tp[g + 1], 0, T[2 * g], 0)
+        s.glue((T[g + 1], 2), (Tp[2 * g], 2))
+        s.glue((Tp[g + 1], 0), (T[2 * g], 0))
         # P1Q0 is paired with P_{g-1} Q_{g-1}
-        s.change_edge_gluing(T[g + 1], 0, T[2 * g - 1], 2)
-        s.change_edge_gluing(Tp[g + 1], 2, Tp[2 * g - 1], 0)
+        s.glue((T[g + 1], 0), (T[2 * g - 1], 2))
+        s.glue((Tp[g + 1], 2), (Tp[2 * g - 1], 0))
         # PgQg is paired with Q1P2
-        s.change_edge_gluing(T[2 * g], 2, T[g + 2], 0)
-        s.change_edge_gluing(Tp[2 * g], 0, Tp[g + 2], 2)
+        s.glue((T[2 * g], 2), (T[g + 2], 0))
+        s.glue((Tp[2 * g], 0), (Tp[g + 2], 2))
         for i in range(2, g - 1):
             # PiQi is paired with Q'_i P'_{i+1}
-            s.change_edge_gluing(T[g + i], 2, Tp[g + i + 1], 2)
-            s.change_edge_gluing(Tp[g + i], 0, T[g + i + 1], 0)
+            s.glue((T[g + i], 2), (Tp[g + i + 1], 2))
+            s.glue((Tp[g + i], 0), (T[g + i + 1], 0))
         s.set_immutable()
         return s
 
@@ -1568,8 +1572,6 @@ class TranslationSurfaceGenerators:
             sage: a = flipper_nf_element_to_sage(h.dilatation())  # optional - flipper
 
         """
-        from .surface import surface_list_from_polygons_and_gluings
-
         f = h.flat_structure()
 
         x = next(iter(f.edge_vectors.values())).x
@@ -1588,11 +1590,10 @@ class TranslationSurfaceGenerators:
 
         C = ConvexPolygons(K)
 
-        polys = []
-        adjacencies = {}
+        from flatsurf import MutableOrientedSimilaritySurface
+        S = MutableOrientedSimilaritySurface(K)
+
         for i, t in enumerate(f.triangulation):
-            for j, k in enumerate(t):
-                adjacencies[(i, j)] = to_polygon_number[~k]
             try:
                 poly = C([edge_vectors[i] for i in tuple(t)])
             except ValueError:
@@ -1601,9 +1602,16 @@ class TranslationSurfaceGenerators:
                         t, [edge_vectors[i].n(digits=6) for i in t]
                     )
                 )
-            polys.append(poly)
 
-        return surface_list_from_polygons_and_gluings(polys, adjacencies)
+            S.add_polygon(poly)
+
+        for i, t in enumerate(f.triangulation):
+            for j, k in enumerate(t):
+                S.glue((i, j), to_polygon_number[~k])
+
+        S.set_immutable()
+
+        return S
 
     @staticmethod
     def origami(r, u, rr=None, uu=None, domain=None):

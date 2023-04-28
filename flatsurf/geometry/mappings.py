@@ -127,28 +127,27 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: from flatsurf.geometry.polygon import ConvexPolygons
-        sage: P = ConvexPolygons(QQ)
-        sage: s=Surface_list(base_ring=QQ)
-        sage: s.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
+        sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+        sage: s = MutableOrientedSimilaritySurface(QQ)
+        sage: s.add_polygon(polygon(edges=[(1,0),(0,1),(-1,-1)]))
         0
-        sage: s.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
+        sage: s.add_polygon(polygon(edges=[(-1,0),(0,-1),(1,1)]))
         1
-        sage: s.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
+        sage: s.glue((0, 0), (1, 0))
+        sage: s.glue((0, 1), (1, 1))
+        sage: s.glue((0, 2), (1, 2))
         sage: s.set_immutable()
-        sage: from flatsurf.geometry.mappings import *
+
+        sage: from flatsurf.geometry.mappings import SimilarityJoinPolygonsMapping
         sage: m=SimilarityJoinPolygonsMapping(s,0,2)
         sage: s2=m.codomain()
-        sage: for label,polygon in zip(s2.labels(), s2.polygons()):
-        ....:     print("Polygon "+str(label)+" is "+str(polygon)+".")
-        Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
-        sage: for label,edge in s2.edges():
-        ....:     print(str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+".")
-        (0, 0) is glued to (0, 2).
-        (0, 1) is glued to (0, 3).
-        (0, 2) is glued to (0, 0).
-        (0, 3) is glued to (0, 1).
+        sage: s2.labels()
+        (0,)
+        sage: s2.polygons()
+        (polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]),)
+        sage: s2.gluings()
+        (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
     """
 
     def __init__(self, s, p1, e1):
@@ -191,16 +190,17 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             # The polygon with the base label is being removed.
             s2.set_base_label(p1)
 
-        s2.change_polygon(p1, ConvexPolygons(s.base_ring())(vs))
+        s2.remove_polygon(p1)
+        s2.add_polygon(ConvexPolygons(s.base_ring())(vs), label=p1)
 
         for i in range(len(vs)):
             p3, e3 = edge_map[i]
             p4, e4 = s.opposite_edge(p3, e3)
             if p4 == p1 or p4 == p2:
                 pp, ee = inv_edge_map[(p4, e4)]
-                s2.change_edge_gluing(p1, i, pp, ee)
+                s2.glue((p1, i), (pp, ee))
             else:
-                s2.change_edge_gluing(p1, i, p4, e4)
+                s2.glue((p1, i), (p4, e4))
 
         s2.remove_polygon(p2)
         s2.set_immutable()
@@ -311,22 +311,13 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: m = SplitPolygonsMapping(s,0,0,2)
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
-        sage: for pair in zip(s2.labels(), s2.polygons()):
-        ....:     print(pair)
-        (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
-        (1, Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
-        sage: for glue in s2.gluings():
-        ....:     print(glue)
-        ((0, 0), (1, 0))
-        ((0, 1), (0, 5))
-        ((0, 2), (0, 6))
-        ((0, 3), (1, 1))
-        ((0, 4), (1, 2))
-        ((0, 5), (0, 1))
-        ((0, 6), (0, 2))
-        ((1, 0), (0, 0))
-        ((1, 1), (0, 3))
-        ((1, 2), (0, 4))
+        sage: s2.labels()
+        (0, 1)
+        sage: s2.polygons()
+        (polygon(vertices=[(0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]), polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
+        sage: s2.gluings()
+        (((0, 0), (1, 0)), ((0, 1), (0, 5)), ((0, 2), (0, 6)), ((0, 3), (1, 1)), ((0, 4), (1, 2)), ((0, 5), (0, 1)), ((0, 6), (0, 2)), ((1, 0), (0, 0)), ((1, 1), (0, 3)), ((1, 2), (0, 4)))
+
     """
 
     def __init__(self, s, p, v1, v2, new_label=None):
@@ -361,8 +352,9 @@ class SplitPolygonsMapping(SurfaceMapping):
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
         ss2 = MutableOrientedSimilaritySurface.from_surface(s)
-        s2 = ss2.underlying_surface()
-        s2.change_polygon(p, newpoly1)
+        s2 = ss2
+        s2.remove_polygon(p)
+        s2.add_polygon(newpoly1, label=p)
         new_label = s2.add_polygon(newpoly2, label=new_label)
 
         old_to_new_labels = {}
@@ -378,15 +370,15 @@ class SplitPolygonsMapping(SurfaceMapping):
             new_to_old_labels[pair] = i
 
         # This glues the split polygons together.
-        s2.change_edge_gluing(p, 0, new_label, 0)
+        s2.glue((p, 0), (new_label, 0))
         for e in range(ne):
             ll, ee = old_to_new_labels[e]
             lll, eee = s.opposite_edge(p, e)
             if lll == p:
                 gl, ge = old_to_new_labels[eee]
-                s2.change_edge_gluing(ll, ee, gl, ge)
+                s2.glue((ll, ee), (gl, ge))
             else:
-                s2.change_edge_gluing(ll, ee, lll, eee)
+                s2.glue((ll, ee), (lll, eee))
 
         s2.set_immutable()
 
@@ -518,12 +510,12 @@ def triangulation_mapping(s):
         sage: TestSuite(s2).run()
         sage: for label,polygon in zip(s2.labels(), s2.polygons()):
         ....:     print(str(polygon))
-        Polygon: (0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
-        Polygon: (0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)
-        Polygon: (0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)
-        Polygon: (0, 0), (-1, -a - 1), (1/2*a, -1/2*a)
-        Polygon: (0, 0), (0, -a - 1), (1, 0)
-        Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)
+        polygon(vertices=[(0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
+        polygon(vertices=[(0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)])
+        polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)])
+        polygon(vertices=[(0, 0), (-1, -a - 1), (1/2*a, -1/2*a)])
+        polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)])
+        polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)])
     """
     if not s.is_finite():
         raise NotImplementedError
@@ -681,7 +673,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 polygon2 = s.polygon(l2)
                 ee2 = (e2 - cv[l2] + polygon2.num_edges()) % polygon2.num_edges()
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
-                s2.change_edge_gluing(l1, ee1, l2, ee2)
+                s2.glue((l1, ee1), (l2, ee2))
         s2.set_base_label(s.base_label())
         s2.set_immutable()
         ss2 = s2
@@ -756,7 +748,7 @@ class ReindexMapping(SurfaceMapping):
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
         s2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2.relabel(relabler, in_place=True)
-        s2.underlying_surface().set_base_label(new_base_label)
+        s2.set_base_label(new_base_label)
 
         SurfaceMapping.__init__(self, s, s2)
 
@@ -866,9 +858,9 @@ def canonicalize_translation_surface_mapping(s):
     labels = {label for label in s2.labels()}
     labels.remove(s2.base_label())
     for label in labels:
-        ss.underlying_surface().set_base_label(label)
+        ss.set_base_label(label)
         if ss.cmp(s2copy) > 0:
-            s2copy.underlying_surface().set_base_label(label)
+            s2copy.set_base_label(label)
     # We now have the base_label correct.
     # We will use the label walker to generate the canonical labeling of polygons.
     labels = {label: i for (i, label) in enumerate(s2copy.labels())}

@@ -177,7 +177,7 @@ class ThurstonVeech:
         r = self._origami.r_tuple()
         u = self._origami.u_tuple()
         for i in range(self._origami.nb_squares()):
-            surface.set_edge_pairing(i, 1, r[i], 3)
-            surface.set_edge_pairing(i, 0, u[i], 2)
+            surface.glue((i, 1), (r[i], 3))
+            surface.glue((i, 0), (u[i], 2))
         surface.set_immutable()
         return surface

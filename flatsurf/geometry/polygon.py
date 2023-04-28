@@ -16,12 +16,12 @@ EXAMPLES::
     sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
     sage: p = polygons((1,0), (-sqrt2,1+sqrt2), (sqrt2-1,-1-sqrt2))
     sage: p
-    Polygon: (0, 0), (1, 0), (-sqrt2 + 1, sqrt2 + 1)
+    polygon(vertices=[(0, 0), (1, 0), (-sqrt2 + 1, sqrt2 + 1)])
 
     sage: M = MatrixSpace(K,2)
     sage: m = M([[1,1+sqrt2],[0,1]])
     sage: m * p
-    Polygon: (0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)
+    polygon(vertices=[(0, 0), (1, 0), (sqrt2 + 4, sqrt2 + 1)])
 """
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
@@ -47,6 +47,7 @@ import operator
 
 from sage.all import (
     cached_method,
+    infinity,
     Parent,
     UniqueRepresentation,
     Sets,
@@ -619,10 +620,10 @@ class MatrixActionOnPolygons(Action):
             sage: from flatsurf import polygons
             sage: p = polygons(vertices = [(1,0),(0,1),(-1,-1)])
             sage: print(p)
-            Polygon: (1, 0), (0, 1), (-1, -1)
+            polygon(vertices=[(1, 0), (0, 1), (-1, -1)])
             sage: r = matrix(ZZ,[[0,1], [1,0]])
             sage: print(r*p)
-            Polygon: (0, 1), (-1, -1), (1, 0)
+            polygon(vertices=[(0, 1), (-1, -1), (1, 0)])
         """
         det = g.det()
         if det > 0:
@@ -879,7 +880,7 @@ class Polygon(Element):
 
             sage: from flatsurf import polygons
             sage: polygons(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
-            Polygon: (3, -2), (5, -2), (4, -1)
+            polygon(vertices=[(3, -2), (5, -2), (4, -1)])
         """
         P = self.parent()
         u = P.module()(u)
@@ -895,7 +896,7 @@ class Polygon(Element):
             sage: S = polygons.square()
             sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2)**(1/2))
             sage: S.change_ring(K)
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: S.change_ring(K).base_ring()
             Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
         """
@@ -935,10 +936,44 @@ class Polygon(Element):
         return len(self._v)
 
     def _repr_(self):
-        r"""
-        String representation.
-        """
-        return "Polygon: " + ", ".join(map(str, self.vertices()))
+        return f"polygon(vertices={repr(list(self.vertices()))})"
+
+    # From https://en.wikipedia.org/wiki/Polygon#Naming
+    _ngon_names = {
+        1: "monogon",
+        2: "digon",
+        3: "triangle",
+        4: "quadrilateral",
+        5: "pentagon",
+        6: "hexagon",
+        7: "heptagon",
+        8: "octagon",
+        9: "nonagon",
+        10: "decagon",
+        11: "hendecagon",
+        12: "dodecagon",
+        13: "tridecagon",
+        14: "tetradecagon",
+        15: "pentadecagon",
+        16: "hexadecagon",
+        17: "heptadecagon",
+        18: "octadecagon",
+        19: "enneadecagon",
+        20: "icosagon",
+        # Most people probably don't know the prefixes after that. We
+        # keep a few easy/fun ones.
+        100: "hectogon",
+        1000: "chiliagon",
+        10000: "myriagon",
+        1000000: "megagon",
+        infinity: "apeirogon",
+    }
+
+    @staticmethod
+    def describe_polygon(num_edges, convex=None):
+        ngon = Polygon._ngon_names.get(num_edges, f"{num_edges}-gon")
+
+        return ngon
 
     @cached_method
     def module(self):
@@ -1124,12 +1159,12 @@ class Polygon(Element):
 
             sage: from flatsurf.geometry.polygon import polygons
             sage: P = polygons.regular_ngon(4); P
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: P.centroid()
             (1/2, 1/2)
 
             sage: P = polygons.regular_ngon(8); P
-            Polygon: (0, 0), (1, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
+            polygon(vertices=[(0, 0), (1, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
             sage: P.centroid()
             (1/2, 1/2*a + 1/2)
 
@@ -1891,34 +1926,34 @@ class ConvexPolygon(Polygon):
 
             sage: from flatsurf import polygons
             sage: P = polygons.regular_ngon(3); P
-            Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
+            polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
             sage: P.subdivide()
-            [Polygon: (0, 0), (1, 0), (1/2, 1/6*a),
-             Polygon: (1, 0), (1/2, 1/2*a), (1/2, 1/6*a),
-             Polygon: (1/2, 1/2*a), (0, 0), (1/2, 1/6*a)]
+            [polygon(vertices=[(0, 0), (1, 0), (1/2, 1/6*a)]),
+             polygon(vertices=[(1, 0), (1/2, 1/2*a), (1/2, 1/6*a)]),
+             polygon(vertices=[(1/2, 1/2*a), (0, 0), (1/2, 1/6*a)])]
 
         ::
 
             sage: P = polygons.regular_ngon(4)
             sage: P.subdivide()
-            [Polygon: (0, 0), (1, 0), (1/2, 1/2),
-             Polygon: (1, 0), (1, 1), (1/2, 1/2),
-             Polygon: (1, 1), (0, 1), (1/2, 1/2),
-             Polygon: (0, 1), (0, 0), (1/2, 1/2)]
+            [polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2)]),
+             polygon(vertices=[(1, 0), (1, 1), (1/2, 1/2)]),
+             polygon(vertices=[(1, 1), (0, 1), (1/2, 1/2)]),
+             polygon(vertices=[(0, 1), (0, 0), (1/2, 1/2)])]
 
         Sometimes alternating with :meth:`subdivide_edges` can produce a more
         uniform subdivision::
 
             sage: P = polygons.regular_ngon(4)
             sage: P.subdivide_edges(2).subdivide()
-            [Polygon: (0, 0), (1/2, 0), (1/2, 1/2),
-             Polygon: (1/2, 0), (1, 0), (1/2, 1/2),
-             Polygon: (1, 0), (1, 1/2), (1/2, 1/2),
-             Polygon: (1, 1/2), (1, 1), (1/2, 1/2),
-             Polygon: (1, 1), (1/2, 1), (1/2, 1/2),
-             Polygon: (1/2, 1), (0, 1), (1/2, 1/2),
-             Polygon: (0, 1), (0, 1/2), (1/2, 1/2),
-             Polygon: (0, 1/2), (0, 0), (1/2, 1/2)]
+            [polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2)]),
+             polygon(vertices=[(1/2, 0), (1, 0), (1/2, 1/2)]),
+             polygon(vertices=[(1, 0), (1, 1/2), (1/2, 1/2)]),
+             polygon(vertices=[(1, 1/2), (1, 1), (1/2, 1/2)]),
+             polygon(vertices=[(1, 1), (1/2, 1), (1/2, 1/2)]),
+             polygon(vertices=[(1/2, 1), (0, 1), (1/2, 1/2)]),
+             polygon(vertices=[(0, 1), (0, 1/2), (1/2, 1/2)]),
+             polygon(vertices=[(0, 1/2), (0, 0), (1/2, 1/2)])]
 
         """
         vertices = self.vertices()
@@ -1943,13 +1978,13 @@ class ConvexPolygon(Polygon):
 
             sage: from flatsurf import polygons
             sage: P = polygons.regular_ngon(3); P
-            Polygon: (0, 0), (1, 0), (1/2, 1/2*a)
+            polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
             sage: P.subdivide_edges(1) == P
             True
             sage: P.subdivide_edges(2)
-            Polygon: (0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)
+            polygon(vertices=[(0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)])
             sage: P.subdivide_edges(3)
-            Polygon: (0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)
+            polygon(vertices=[(0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)])
 
         """
         if parts < 1:
@@ -2028,7 +2063,7 @@ class Polygons(UniqueRepresentation, Parent):
             sage: C = Polygons(QQ)
             sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
             sage: p
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: C(p) is p
             True
             sage: C((1,0), (0,1), (-1, 1))
@@ -2038,11 +2073,11 @@ class Polygons(UniqueRepresentation, Parent):
 
             sage: D = ConvexPolygons(QQbar)
             sage: D(p)
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(vertices=p.vertices())
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(edges=p.edges())
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
         """
         check = kwds.pop("check", True)
 
@@ -2088,9 +2123,9 @@ class ConvexPolygons(Polygons):
         sage: from flatsurf import ConvexPolygons
         sage: C = ConvexPolygons(QQ)
         sage: C(vertices=[(0,0), (2,0), (1,1)])
-        Polygon: (0, 0), (2, 0), (1, 1)
+        polygon(vertices=[(0, 0), (2, 0), (1, 1)])
         sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
-        Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+        polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
     A set of polygons can also be created over non-fields::
 
@@ -2138,7 +2173,7 @@ class ConvexPolygons(Polygons):
             sage: C = ConvexPolygons(QQ)
             sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
             sage: p
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: C(p) is p
             True
             sage: C((1,0), (0,1), (-1, 1))
@@ -2148,11 +2183,11 @@ class ConvexPolygons(Polygons):
 
             sage: D = ConvexPolygons(QQbar)
             sage: D(p)
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(vertices=p.vertices())
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(edges=p.edges())
-            Polygon: (0, 0), (1, 0), (2, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
 
         """
         check = kwds.pop("check", True)
@@ -2215,19 +2250,19 @@ class EquiangularPolygons:
         sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
         sage: P(K(1)) # optional: eantic
-        Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: _.base_ring() # optional: eantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
     However, specific instances of such polygons might be defined over another ring::
 
         sage: P(1)
-        Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: _.base_ring()
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
         sage: P(AA(1))
-        Polygon: (0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)
+        polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
         sage: _.base_ring()
         Algebraic Real Field
 
@@ -2236,9 +2271,9 @@ class EquiangularPolygons:
         sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
         sage: R = ExactReals(P.base_ring()) # optional: exactreal
         sage: P(R(1)) # optional: exactreal
-        Polygon: (0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))
+        polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
         sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
-        Polygon: (0, 0),
+        polygon(vertices=[(0, 0),])
                  (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
                  (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
                  ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
@@ -2255,7 +2290,7 @@ class EquiangularPolygons:
         (1, -1/2*c0 + 1, -1/2*c0 + 1)
         sage: p = P(*lengths)    # build one polygon with the given lengths
         sage: p
-        Polygon: (0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: p.angles()
         [1/16, 1/8, 5/16]
         sage: P.angles(integral=False)
@@ -2276,12 +2311,12 @@ class EquiangularPolygons:
         sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
         sage: p = P(*lengths)
         sage: p
-        Polygon: (0, 0),
-                 (-5/3*c^4 + 6*c^2 + 6, 0),
-                 (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
-                 (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
-                 (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
-                 (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)
+        polygon(vertices=[(0, 0),
+                          (-5/3*c^4 + 6*c^2 + 6, 0),
+                          (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
+                          (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
+                          (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
+                          (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)])
 
         sage: p.angles()
         [2/9, 4/9, 2/9, 4/9, 4/9, 2/9]
@@ -2293,7 +2328,7 @@ class EquiangularPolygons:
 
         sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
         sage: E(1, 1, 1, 1, 1, normalized=True)
-        Polygon: (0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
     """
 
     def __init__(self, *angles, **kwds):
@@ -2558,12 +2593,12 @@ class EquiangularPolygons:
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(4, 3, 4, 4, 3, 4).an_element()
-            Polygon: (0, 0),
-                     (1/22*c + 1, 0),
-                     (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11),
-                     (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22),
-                     (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22),
-                     (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)
+            polygon(vertices=[(0, 0),
+                              (1/22*c + 1, 0),
+                              (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11),
+                              (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22),
+                              (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22),
+                              (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)])
         """
         return self(sum(r.vector() for r in self.lengths_polytope().rays()))
 
@@ -2575,11 +2610,11 @@ class EquiangularPolygons:
 
             sage: from flatsurf import EquiangularPolygons
             sage: EquiangularPolygons(1, 1, 1, 2, 5).random_element()
-            Polygon: (0, 0), ...
+            polygon(vertices=[(0, 0), ...])
             sage: EquiangularPolygons(1,1,1,15,15,15).random_element()
-            Polygon: (0, 0), ...
+            polygon(vertices=[(0, 0), ...])
             sage: EquiangularPolygons(1,15,1,15,1,15).random_element()
-            Polygon: (0, 0), ...
+            polygon(vertices=[(0, 0), ...])
         """
         if ring is None:
             ring = QQ
@@ -2625,12 +2660,12 @@ class EquiangularPolygons:
             sage: r0, r1 = [r.vector() for r in L.rays()]
             sage: lengths = r0 + r1
             sage: P(*lengths[:-2])
-            Polygon: (0, 0), (1, 0), (c + 1, 3), (c, 3)
+            polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
             sage: P = EquiangularPolygons(2, 2, 3, 13)
             sage: r0, r1 = [r.vector() for r in P.lengths_polytope().rays()]
             sage: P(r0 + r1)
-            Polygon: (0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)
+            polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
         """
         if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
             lengths = lengths[0]
@@ -2993,7 +3028,7 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
 
             sage: polygons.square()
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: polygons.square(field=QQbar).parent()
             ConvexPolygons(Algebraic Field)
         """
@@ -3006,11 +3041,11 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
 
             sage: polygons.rectangle(1,2)
-            Polygon: (0, 0), (1, 0), (1, 2), (0, 2)
+            polygon(vertices=[(0, 0), (1, 0), (1, 2), (0, 2)])
 
             sage: K.<sqrt2> = QuadraticField(2)
             sage: polygons.rectangle(1,sqrt2)
-            Polygon: (0, 0), (1, 0), (1, sqrt2), (0, sqrt2)
+            polygon(vertices=[(0, 0), (1, 0), (1, sqrt2), (0, sqrt2)])
             sage: _.parent()
             ConvexPolygons(Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?)
         """
@@ -3029,7 +3064,7 @@ class PolygonsConstructor:
             sage: from flatsurf.geometry.polygon import polygons
             sage: T = polygons.triangle(3,4,5)
             sage: T
-            Polygon: (0, 0), (1, 0), (-1/2*c0 + 3/2, -1/2*c0 + 3/2)
+            polygon(vertices=[(0, 0), (1, 0), (-1/2*c0 + 3/2, -1/2*c0 + 3/2)])
             sage: T.base_ring()
             Number Field in c0 with defining polynomial x^2 - 3 with c0 = 1.732050807568878?
 
@@ -3039,18 +3074,18 @@ class PolygonsConstructor:
         Some fairly complicated examples::
 
             sage: polygons.triangle(1, 15, 21)  # long time (2s)
-            Polygon: (0, 0),
-                     (1, 0),
-                     (1/2*c^34 - 17*c^32 + 264*c^30 - 2480*c^28 + 15732*c^26 - 142481/2*c^24 + 237372*c^22 - 1182269/2*c^20 +
-                      1106380*c^18 - 1552100*c^16 + 3229985/2*c^14 - 2445665/2*c^12 + 654017*c^10 - 472615/2*c^8 + 107809/2*c^6 - 13923/2*c^4 + 416*c^2 - 6,
-                      -1/2*c^27 + 27/2*c^25 - 323/2*c^23 + 1127*c^21 - 10165/2*c^19 + 31009/2*c^17 - 65093/2*c^15 + 46911*c^13 - 91091/2*c^11 + 57355/2*c^9 - 10994*c^7 + 4621/2*c^5 - 439/2*c^3 + 6*c)
+            polygon(vertices=[(0, 0),
+                              (1, 0),
+                              (1/2*c^34 - 17*c^32 + 264*c^30 - 2480*c^28 + 15732*c^26 - 142481/2*c^24 + 237372*c^22 - 1182269/2*c^20 +
+                               1106380*c^18 - 1552100*c^16 + 3229985/2*c^14 - 2445665/2*c^12 + 654017*c^10 - 472615/2*c^8 + 107809/2*c^6 - 13923/2*c^4 + 416*c^2 - 6,
+                               -1/2*c^27 + 27/2*c^25 - 323/2*c^23 + 1127*c^21 - 10165/2*c^19 + 31009/2*c^17 - 65093/2*c^15 + 46911*c^13 - 91091/2*c^11 + 57355/2*c^9 - 10994*c^7 + 4621/2*c^5 - 439/2*c^3 + 6*c)])
 
             sage: polygons.triangle(2, 13, 26)  # long time (3s)
-            Polygon: (0, 0),
-                     (1, 0),
-                     (1/2*c^30 - 15*c^28 + 405/2*c^26 - 1625*c^24 + 8625*c^22 - 31878*c^20 + 168245/2*c^18 - 159885*c^16 + 218025*c^14 - 209950*c^12 + 138567*c^10 - 59670*c^8 + 15470*c^6 - 2100*c^4 + 225/2*c^2 - 1/2,
-                      -1/2*c^39 + 19*c^37 - 333*c^35 + 3571*c^33 - 26212*c^31 + 139593*c^29 - 557844*c^27 + 1706678*c^25 - 8085237/2*c^23 + 7449332*c^21 -
-                      10671265*c^19 + 11812681*c^17 - 9983946*c^15 + 6317339*c^13 - 5805345/2*c^11 + 1848183/2*c^9 - 378929/2*c^7 + 44543/2*c^5 - 2487/2*c^3 + 43/2*c)
+            polygon(vertices=[(0, 0),
+                              (1, 0),
+                              (1/2*c^30 - 15*c^28 + 405/2*c^26 - 1625*c^24 + 8625*c^22 - 31878*c^20 + 168245/2*c^18 - 159885*c^16 + 218025*c^14 - 209950*c^12 + 138567*c^10 - 59670*c^8 + 15470*c^6 - 2100*c^4 + 225/2*c^2 - 1/2,
+                               -1/2*c^39 + 19*c^37 - 333*c^35 + 3571*c^33 - 26212*c^31 + 139593*c^29 - 557844*c^27 + 1706678*c^25 - 8085237/2*c^23 + 7449332*c^21 -
+                               10671265*c^19 + 11812681*c^17 - 9983946*c^15 + 6317339*c^13 - 5805345/2*c^11 + 1848183/2*c^9 - 378929/2*c^7 + 44543/2*c^5 - 2487/2*c^3 + 43/2*c)])
         """
         return EquiangularPolygons(a, b, c)([1])
 
@@ -3069,10 +3104,10 @@ class PolygonsConstructor:
 
             sage: p = polygons.regular_ngon(17)
             sage: p
-            Polygon: (0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)
+            polygon(vertices=[(0, 0), (1, 0), ..., (-1/2*a^14 + 15/2*a^12 - 45*a^10 + 275/2*a^8 - 225*a^6 + 189*a^4 - 70*a^2 + 15/2, 1/2*a)])
 
             sage: polygons.regular_ngon(3,field=AA)
-            Polygon: (0, 0), (1, 0), (1/2, 0.866025403784439?)
+            polygon(vertices=[(0, 0), (1, 0), (1/2, 0.866025403784439?)])
         """
         # The code below crashes for n=4!
         if n == 4:
@@ -3108,12 +3143,12 @@ class PolygonsConstructor:
 
             sage: P = polygons.right_triangle(1/3, 1)
             sage: P
-            Polygon: (0, 0), (1, 0), (1, a)
+            polygon(vertices=[(0, 0), (1, 0), (1, a)])
             sage: P.base_ring()
             Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
 
             sage: polygons.right_triangle(1/4,1)
-            Polygon: (0, 0), (1, 0), (1, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1)])
             sage: polygons.right_triangle(1/4,1).field()
             Rational Field
         """
@@ -3153,17 +3188,17 @@ class PolygonsConstructor:
             sage: from flatsurf import *
 
             sage: polygons((1,0),(0,1),(-1,0),(0,-1))
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
-            Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: _.parent()
             ConvexPolygons(Algebraic Field)
 
             sage: polygons(vertices=[(0,0), (1,0), (0,1)])
-            Polygon: (0, 0), (1, 0), (0, 1)
+            polygon(vertices=[(0, 0), (1, 0), (0, 1)])
 
             sage: polygons(edges=[(2,0),(-1,1),(-1,-1)], base_point=(3,3))
-            Polygon: (3, 3), (5, 3), (4, 4)
+            polygon(vertices=[(3, 3), (5, 3), (4, 4)])
             sage: polygons(vertices=[(0,0),(2,0),(1,1)], base_point=(3,3))
             Traceback (most recent call last):
             ...
@@ -3171,11 +3206,11 @@ class PolygonsConstructor:
 
 
             sage: polygons(angles=[1,1,1,2], length=1)
-            Polygon: (0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)
+            polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
             sage: polygons(angles=[1,1,1,2], length=2)
-            Polygon: (0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)
+            polygon(vertices=[(0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)])
             sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))
-            Polygon: (0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.2700907567377265?, 0.8312538755549069?)
+            polygon(vertices=[(0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.2700907567377265?, 0.8312538755549069?)])
 
             sage: polygons(angles=[1]*5).angles()
             [3/10, 3/10, 3/10, 3/10, 3/10]
@@ -3189,7 +3224,7 @@ class PolygonsConstructor:
             sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
 
             sage: polygons(angles=[1,1,1,2])
-            Polygon: (0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)
+            polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
 
             sage: polygons(angles=[1,1,1,8])
             Traceback (most recent call last):
@@ -3200,7 +3235,7 @@ class PolygonsConstructor:
             ...
             ValueError: non-convex equiangular polygon; lengths must be provided
             sage: polygons(angles=[1,1,1,8], lengths=[1,1], convex=False)
-            Polygon: (0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)
+            polygon(vertices=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
 
         TESTS::
 
@@ -3320,6 +3355,7 @@ class PolygonsConstructor:
 
 
 polygons = PolygonsConstructor()
+polygon = polygons
 
 
 class PolygonCreator:

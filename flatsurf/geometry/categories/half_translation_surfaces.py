@@ -345,7 +345,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         k += 2 * m
 
                     for (p1, e1), (p2, e2) in self.gluings():
-                        S.set_edge_pairing(relabelling[p1], e1, relabelling[p2], e2)
+                        S.glue((relabelling[p1], e1), (relabelling[p2], e2))
 
                     S._refine_category_(self.category())
                     return S, M

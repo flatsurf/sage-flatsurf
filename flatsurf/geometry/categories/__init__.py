@@ -44,8 +44,8 @@ It does not really make sense to ask which stratum this surface belongs to::
 
 Once we add gluings, this turns into a square torus.
 
-    sage: S.set_edge_pairing(0, 0, 0, 2)
-    sage: S.set_edge_pairing(0, 1, 0, 3)
+    sage: S.glue((0, 0), (0, 2))
+    sage: S.glue((0, 1), (0, 3))
 
 We signal to sage-flatsurf that we are done building this surface, and its
 category gets refined::
