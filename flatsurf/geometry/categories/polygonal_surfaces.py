@@ -141,11 +141,19 @@ class PolygonalSurfaces(SurfaceCategory):
 
         def labels(self):
             r"""
-            Return the labels used to enumerate the polygons that make up this surface.
+            Return the labels used to enumerate the polygons that make up this
+            surface.
 
-            # TODO: Add a note that it's worth overriding this so len is fast.
+            The labels are returned in a breadth first search order starting at
+            the :meth:`base_label`. This order is compatible with the order in
+            which polygons are returned by :meth:`polygons`.
 
-            # TODO: Explain that this is a canonical walk.
+            .. NOTE::
+
+                The generic implementation of this method returns a collection
+                that is very slow at computing its length and deciding
+                containment. To speed things up it is recommended to override
+                this method.
 
             EXAMPLES::
 
@@ -171,7 +179,10 @@ class PolygonalSurfaces(SurfaceCategory):
             Return the polygons that make up this surface (in the same order as
             the labels are returned by :meth:`labels`)
 
-            # TODO: Add a note that it's usually *not* worth overriding this so len is fast.
+            .. NOTE::
+
+                Unlike with :meth:`labels`, this method should usually not be
+                overriden. Things will be fast if :meth:`labels` is fast.
 
             EXAMPLES::
 
