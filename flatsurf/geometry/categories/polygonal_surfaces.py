@@ -84,14 +84,17 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of compact connected with boundary finite type translation surfaces
+                Category of connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of compact connected without boundary finite type translation surfaces
+                Category of connected without boundary finite type translation surfaces
 
             """
+            # TODO: Explain the difference between is_ and in category() and
+            # that the latter could be preferred for speed.
+
             from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
             category = TopologicalSurfaces.ParentMethods.refined_category(self)
 
@@ -456,101 +459,6 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
 
-        def is_with_boundary(self):
-            r"""
-            Return whether this surface has a boundary, i.e., unglued polygon edges.
-
-            EXAMPLES::
-
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.is_with_boundary()
-                False
-
-            """
-            # Since this methods overrides the implementation from the axioms,
-            # we reenable it.
-            if 'WithBoundary' in self.category().axioms():
-                return True
-            if 'WithoutBoundary' in self.category().axioms():
-                return False
-
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide wether a surface has boundary for surfaces of infinite type")
-
-            for label in self.labels():
-                for edge in range(self.polygon(label).num_edges()):
-                    cross = self.opposite_edge(label, edge)
-                    if cross is None:
-                        return True
-
-            return False
-
-        def is_compact(self):
-            r"""
-            Return whether this surface is compact.
-
-            EXAMPLES::
-
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.is_compact()
-                True
-
-            """
-            if 'Compact' in self.category().axioms():
-                return True
-
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide whether this infinite type surface is compact")
-
-            return True
-
-        def is_connected(self):
-            r"""
-            Return whether this surface is connected.
-
-            EXAMPLES::
-
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.is_connected()
-                True
-
-            """
-            if 'Connected' in self.category().axioms():
-                return True
-
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide whether this infinite type surface is connected")
-
-            # We use the customary union-find algorithm to identify the connected components.
-            union_find = {label: label for label in self.labels()}
-
-            def find(label):
-                if union_find[label] == label:
-                    return label
-                parent = find(union_find[label])
-                union_find[label] = parent
-                return parent
-
-            for label in self.labels():
-                for edge in range(self.polygon(label).num_edges()):
-                    cross = self.opposite_edge(label, edge)
-                    if cross is None:
-                        continue
-
-                    cross_label, cross_edge = cross
-
-                    x = find(label)
-                    y = find(cross_label)
-                    union_find[x] = y
-
-            return len(union_find.values()) <= 1
-
         def num_edges(self):
             r"""
             Return the total number of edges of all polygons used.
@@ -607,6 +515,11 @@ class PolygonalSurfaces(SurfaceCategory):
             True
 
         """
+
+        def extra_super_categories(self):
+            from sage.categories.topological_spaces import TopologicalSpaces
+            return (TopologicalSpaces().Compact(),)
+
         class InfiniteType(SurfaceCategoryWithAxiom):
             r"""
             TESTS::
@@ -636,6 +549,79 @@ class PolygonalSurfaces(SurfaceCategory):
                     if p.num_edges() != 3:
                         return False
                 return True
+
+            def is_with_boundary(self):
+                r"""
+                Return whether this surface has a boundary, i.e., unglued polygon edges.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_with_boundary()
+                    False
+
+                """
+                for label in self.labels():
+                    for edge in range(self.polygon(label).num_edges()):
+                        cross = self.opposite_edge(label, edge)
+                        if cross is None:
+                            return True
+
+                return False
+
+            def is_compact(self):
+                r"""
+                Return whether this surface is compact.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_compact()
+                    True
+
+                """
+                return True
+
+            def is_connected(self):
+                r"""
+                Return whether this surface is connected.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_connected()
+                    True
+
+                """
+                # We use the customary union-find algorithm to identify the connected components.
+                union_find = {label: label for label in self.labels()}
+
+                def find(label):
+                    if union_find[label] == label:
+                        return label
+                    parent = find(union_find[label])
+                    union_find[label] = parent
+                    return parent
+
+                for label in self.labels():
+                    for edge in range(self.polygon(label).num_edges()):
+                        cross = self.opposite_edge(label, edge)
+                        if cross is None:
+                            continue
+
+                        cross_label, cross_edge = cross
+
+                        x = find(label)
+                        y = find(cross_label)
+                        union_find[x] = y
+
+                return len(union_find.values()) <= 1
 
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""

@@ -78,6 +78,9 @@ class ConeSurfaces(Category):
         return [SimilaritySurfaces()]
 
     class ParentMethods:
+        def is_cone_surface(self):
+            return True
+
         @staticmethod
         def _is_cone_surface(surface, limit=None):
             r"""

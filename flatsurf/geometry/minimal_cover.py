@@ -84,14 +84,24 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         else:
             self._ss = similarity_surface
 
+        if similarity_surface.is_with_boundary():
+            raise TypeError("can only build translation cover of surfaces without boundary")
+
+        from flatsurf.geometry.categories import TranslationSurfaces
         if category is None:
-            from flatsurf.geometry.categories import TranslationSurfaces
             category = TranslationSurfaces()
 
-            if _is_finite(self._ss):
-                category = category.FiniteType()
-            else:
-                category = category.InfiniteType()
+        category &= TranslationSurfaces()
+
+        if _is_finite(self._ss):
+            category = category.FiniteType()
+        else:
+            category = category.InfiniteType()
+
+        category = category.WithoutBoundary()
+
+        if similarity_surface.is_connected():
+            category = category.Connected()
 
         OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
 
@@ -213,14 +223,24 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         else:
             self._ss = similarity_surface
 
+        if similarity_surface.is_with_boundary():
+            raise TypeError("can only build translation cover of surfaces without boundary")
+
+        from flatsurf.geometry.categories import HalfTranslationSurfaces
         if category is None:
-            from flatsurf.geometry.categories import HalfTranslationSurfaces
             category = HalfTranslationSurfaces()
 
-            if _is_finite(self._ss):
-                category = category.FiniteType()
-            else:
-                category = category.InfiniteType()
+        category &= HalfTranslationSurfaces()
+
+        if _is_finite(self._ss):
+            category = category.FiniteType()
+        else:
+            category = category.InfiniteType()
+
+        category = category.WithoutBoundary()
+
+        if similarity_surface.is_connected():
+            category = category.Connected()
 
         OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
 
@@ -314,14 +334,27 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         self._sg = self._ss.edge_transformation(self._ss.base_label(), 0).parent()
         self._base_label = (self._ss.base_label(), self._sg.one())
 
+        if similarity_surface.is_with_boundary():
+            raise TypeError("can only build translation cover of surfaces without boundary")
+
+        from flatsurf.geometry.categories import TranslationSurfaces
         if category is None:
-            from flatsurf.geometry.categories import TranslationSurfaces
-            category = TranslationSurfaces().InfiniteType()
+            category = TranslationSurfaces()
+
+        category &= TranslationSurfaces().InfiniteType()
+
+        category = category.WithoutBoundary()
+
+        if similarity_surface.is_connected():
+            category = category.Connected()
 
         OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
 
     def _repr_(self):
         return f"MinimalPlanarCover({repr(self._ss)})"
+
+    def is_compact(self):
+        return False
 
     def base_label(self):
         return self._base_label

@@ -69,6 +69,13 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
     Positive = LazyImport('flatsurf.geometry.categories.translation_surfaces', 'TranslationSurfaces')
 
+    class ParentMethods:
+        def is_translation_surface(self, positive=True):
+            if not positive:
+                return True
+
+            return super(HalfTranslationSurfaces().parent_class, self).is_translation_surface(positive=positive)
+
     class Orientable(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def stratum(self):

@@ -33,7 +33,7 @@ This is considered to be a surface built from polygons with all gluings being
 similarities (however there are none)::
 
     sage: S.category()
-    Category of oriented similarity surfaces
+    Category of finite type oriented similarity surfaces
 
 It does not really make sense to ask which stratum this surface belongs to::
 
@@ -52,7 +52,7 @@ category gets refined::
 
     sage: S.set_immutable()
     sage: S.category()
-    Category of compact connected without boundary finite type translation surfaces
+    Category of connected without boundary finite type translation surfaces
 
 Since this is now a translation surface, we can ask for its stratum again::
 

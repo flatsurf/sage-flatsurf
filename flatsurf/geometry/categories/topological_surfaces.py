@@ -38,10 +38,10 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.topological_spaces import TopologicalSpaces
 from sage.misc.abstract_method import abstract_method
-from flatsurf.geometry.categories.surface_category import SurfaceCategory
+from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 
 
 class TopologicalSurfaces(SurfaceCategory):
@@ -88,54 +88,36 @@ class TopologicalSurfaces(SurfaceCategory):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of compact connected with boundary finite type translation surfaces
+                Category of connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of compact connected without boundary finite type translation surfaces
+                Category of connected without boundary finite type translation surfaces
 
             """
             category = self.category()
 
-            # TODO: Force all surfaces to implement these methods and remove the try/except blocks.
-            try:
-                orientable = self.is_orientable()
-            except NotImplementedError:
-                pass
-            else:
-                if orientable:
-                    category &= category.Orientable()
-                else:
-                    raise NotImplementedError("there is no axiom for non-orientable surfaces yet")
+            if self.is_orientable():
+                category &= category.Orientable()
 
-            try:
-                with_boundary = self.is_with_boundary()
-            except NotImplementedError:
-                pass
+            if self.is_with_boundary():
+                category &= category.WithBoundary()
             else:
-                if with_boundary:
-                    category &= category.WithBoundary()
-                else:
-                    category &= category.WithoutBoundary()
+                category &= category.WithoutBoundary()
 
-            try:
-                compact = self.is_compact()
-            except NotImplementedError:
-                pass
-            else:
-                if compact:
-                    category &= category.Compact()
+            if self.is_compact():
+                category &= category.Compact()
 
-            try:
-                connected = self.is_connected()
-            except NotImplementedError:
-                pass
-            else:
-                if connected:
-                    category &= category.Connected()
+            if self.is_connected():
+                category &= category.Connected()
 
             return category
+
+        def _test_refined_category(self, **options):
+            tester = self._tester(**options)
+
+            tester.assertTrue(self.category().is_subcategory(self.refined_category()))
 
         @abstract_method
         def is_mutable(self):
@@ -202,7 +184,7 @@ class TopologicalSurfaces(SurfaceCategory):
 
             """
 
-    class Orientable(CategoryWithAxiom):
+    class Orientable(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces that can be oriented.
 
@@ -234,7 +216,7 @@ class TopologicalSurfaces(SurfaceCategory):
                 """
                 return True
 
-    class WithBoundary(CategoryWithAxiom):
+    class WithBoundary(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces that have a boundary, i.e., at some
         points this surface is homeomorphic to the closed upper half plane.
@@ -253,27 +235,31 @@ class TopologicalSurfaces(SurfaceCategory):
 
         """
 
-        def is_with_boundary(self):
-            r"""
-            Return whether this is a surface with boundary, i.e., return ``True``.
+        class ParentMethods:
+            def is_with_boundary(self):
+                r"""
+                Return whether this is a surface with boundary, i.e., return ``True``.
 
-            EXAMPLES::
+                EXAMPLES::
 
-                sage: from flatsurf import MutableOrientedSimilaritySurface
-                sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
 
-                sage: from flatsurf import polygons
-                sage: S.add_polygon(polygons.square(), label=0)
-                0
-                sage: S.set_immutable()
-                sage: S.is_with_boundary()
-                True
+                    sage: from flatsurf import polygons
+                    sage: S.add_polygon(polygons.square(), label=0)
+                    0
+                    sage: S.set_immutable()
+                    sage: S.is_with_boundary()
+                    True
 
-            """
-            return True
+                """
+                return True
 
-    # TODO: Can we somehow force that a surface can only be with XOR without boundary?
-    class WithoutBoundary(CategoryWithAxiom):
+        class WithoutBoundary(SurfaceCategoryWithAxiom):
+            def __init__(self, *args, **kwargs):
+                raise TypeError
+
+    class WithoutBoundary(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces that have no boundary, i.e., the
         surface is everywhere homeomorphic to the real plane.
@@ -287,21 +273,31 @@ class TopologicalSurfaces(SurfaceCategory):
             True
 
         """
+        class ParentMethods:
+            def is_with_boundary(self):
+                r"""
+                Return whether this is a surface with boundary, i.e., return ``False``.
 
-        def is_with_boundary(self):
-            r"""
-            Return whether this is a surface with boundary, i.e., return ``False``.
+                EXAMPLES::
 
-            EXAMPLES::
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_with_boundary()
+                    False
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.is_with_boundary()
-                False
+                """
+                return False
 
-            """
-            return False
+    class Connected(SurfaceCategoryWithAxiom):
+        class ParentMethods:
+            def is_connected(self):
+                return True
+
+    class Compact(SurfaceCategoryWithAxiom):
+        class ParentMethods:
+            def is_compact(self):
+                return True
 
     class SubcategoryMethods:
         def Orientable(self):

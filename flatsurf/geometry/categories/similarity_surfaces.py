@@ -129,6 +129,16 @@ class SimilaritySurfaces(SurfaceCategory):
             change the category of the surface (and enable functionality
             specific to the smaller classes of surfaces.)
 
+
+            .. NOTE::
+
+                If a surface cannot implement the various ``is_`` methods used in
+                the implementation of this method (i.e., if any of them throws a
+                ``NotImplementedError``,) then this method ``refined_category``
+                must be overriden to skip that check. We don't want to actively
+                catch a ``NotImplementedError`` and instead encourage authors
+                to explicitly select the category their surfaces lives in.
+
             EXAMPLES::
 
                 sage: from flatsurf import MutableOrientedSimilaritySurface
@@ -138,70 +148,60 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: S.add_polygon(polygons.square(), label=0)
                 0
                 sage: S.refined_category()
-                Category of compact connected with boundary finite type translation surfaces
+                Category of connected with boundary finite type translation surfaces
 
                 sage: S.glue((0, 0), (0, 2))
                 sage: S.glue((0, 1), (0, 3))
                 sage: S.refined_category()
-                Category of compact connected without boundary finite type translation surfaces
+                Category of connected without boundary finite type translation surfaces
 
             """
             from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
             category = PolygonalSurfaces.ParentMethods.refined_category(self)
 
-            # TODO: Force all surfaces to implement these methods and remove the try/except blocks.
-            # TODO: Add rational
             # TODO: Document why is_… exists if there is in category.
-            # TODO: Drop the NotImplemented path of the is_ for infinite type surfaces and rather put the implementation in the finite type axiom.
-            try:
-                cone_surface = self.is_cone_surface()
-            except NotImplementedError:
-                pass
-            else:
-                if cone_surface:
-                    from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
-                    category &= ConeSurfaces()
+            if self.is_cone_surface():
+                from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+                category &= ConeSurfaces()
 
-            try:
-                dilation_surface = self.is_dilation_surface()
-            except NotImplementedError:
-                pass
-            else:
-                if dilation_surface:
-                    from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-                    category &= DilationSurfaces()
+            if self.is_dilation_surface():
+                from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
+                category &= DilationSurfaces()
 
-                    if self.is_dilation_surface(positive=True):
-                        category &= DilationSurfaces().Positive()
+                if self.is_dilation_surface(positive=True):
+                    category &= DilationSurfaces().Positive()
 
-                        try:
-                            translation_surface = self.is_translation_surface()
-                        except NotImplementedError:
-                            pass
-                        else:
-                            if translation_surface:
-                                from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
-                                category &= TranslationSurfaces()
-                    else:
-                        try:
-                            half_translation_surface = self.is_translation_surface(positive=False)
-                        except NotImplementedError:
-                            pass
-                        else:
-                            if half_translation_surface:
-                                from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
-                                category &= HalfTranslationSurfaces()
+                    if self.is_translation_surface():
+                        from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
+                        category &= TranslationSurfaces()
+                elif self.is_translation_surface(positive=False):
+                    from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+                    category &= HalfTranslationSurfaces()
 
             if "Rational" not in category.axioms():
-                try:
-                    rational_surface = self.is_rational_surface()
-                except NotImplementedError:
-                    pass
-                else:
-                    if rational_surface:
-                        category = category.Rational()
+                if self.is_rational_surface():
+                    category = category.Rational()
 
             return category
+
+        def is_cone_surface(self):
+            r"""
+            Return whether this surface is a cone surface, i.e., glued edges
+            can be transformed into each other with isometries.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_cone_surface()
+                True
+
+            """
+            if self.is_translation_surface():
+                return True
+
+            raise NotImplementedError("surface does not implement is_cone_surface()")
 
         def is_dilation_surface(self, positive=False):
             r"""
@@ -226,16 +226,17 @@ class SimilaritySurfaces(SurfaceCategory):
                 False
 
             """
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide whether this infinite type surface is a dilation surface")
+            if self.is_translation_surface(positive=positive):
+                return True
 
-            from flatsurf.geometry.categories import DilationSurfaces
-            return DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=positive)
+            raise NotImplementedError("surface does not implement is_dilation_surface()")
 
         def is_translation_surface(self, positive=True):
             r"""
             Return whether this surface is a translation surface, i.e., glued
             edges can be transformed into each other by translations.
+
+            This method must be implemented if this surface is a dilation surface.
 
             INPUT:
 
@@ -262,31 +263,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide whether this infinite type surface is a translation surface")
-
-            from flatsurf.geometry.categories import TranslationSurfaces
-            return TranslationSurfaces.ParentMethods._is_translation_surface(self, positive=positive)
-
-        def is_cone_surface(self):
-            r"""
-            Return whether this surface is a cone surface, i.e., glued edges
-            can be transformed into each other with isometries.
-
-            EXAMPLES::
-
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
-                sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.is_cone_surface()
-                True
-
-            """
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide whether this infinite type surface is a cone surface")
-
-            from flatsurf.geometry.categories import ConeSurfaces
-            return ConeSurfaces.ParentMethods._is_cone_surface(self)
+            raise NotImplementedError("surface does not implement is_translation_surface()")
 
         def is_rational_surface(self):
             r"""
@@ -302,11 +279,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            if not self.is_finite_type():
-                raise NotImplementedError("cannot decide whether this infinite type surface is a rational surface")
+            if self.is_translation_surface():
+                return True
 
-            return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
+            raise NotImplementedError("surface does not implement is_rational_surface()")
 
+        # TODO: Implement in topological surface
         def genus(self):
             r"""
             Return the genus of this surface.
@@ -834,7 +812,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 import warnings
                 warnings.warn(message)
 
-                # TODO: Deprecate.
                 category = self.category()
                 s = None  # This will be the surface we copy. (Likely we will set s=self below.)
                 if new_field is not None and optimal_number_field:
@@ -2621,6 +2598,100 @@ class SimilaritySurfaces(SurfaceCategory):
                     limit = 32
 
                 tester.assertTrue(SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self, limit=limit))
+
+    class FiniteType(SurfaceCategoryWithAxiom):
+        class ParentMethods:
+            def is_cone_surface(self):
+                r"""
+                Return whether this surface is a cone surface, i.e., glued edges
+                can be transformed into each other with isometries.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_cone_surface()
+                    True
+
+                """
+                from flatsurf.geometry.categories import ConeSurfaces
+                return ConeSurfaces.ParentMethods._is_cone_surface(self)
+
+            def is_dilation_surface(self, positive=False):
+                r"""
+                Return whether this surface is a dilation surface, i.e., whether
+                glued edges can be transformed into each other by translation
+                followed by a dilation (multiplication by a diagonal matrix.)
+
+                INPUT:
+
+                - ``positive`` -- a boolean (default: ``False``); whether the
+                  entries of the diagonal matrix must be positive or are allowed to
+                  be negative.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_dilation_surface()
+                    True
+                    sage: S.is_dilation_surface(positive=True)
+                    False
+
+                """
+                from flatsurf.geometry.categories import DilationSurfaces
+                return DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=positive)
+
+            def is_translation_surface(self, positive=True):
+                r"""
+                Return whether this surface is a translation surface, i.e., glued
+                edges can be transformed into each other by translations.
+
+                INPUT:
+
+                - ``positive`` -- a boolean (default: ``True``); whether the
+                  transformation must be a translation or is allowed to be a
+                  half-translation, i.e., a translation followed by a reflection in
+                  a point (equivalently, a rotation by π.)
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_translation_surface()
+                    False
+                    sage: S.is_translation_surface(False)
+                    True
+
+                ::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S.is_translation_surface()
+                    True
+
+                """
+                from flatsurf.geometry.categories import TranslationSurfaces
+                return TranslationSurfaces.ParentMethods._is_translation_surface(self, positive=positive)
+
+            def is_rational_surface(self):
+                r"""
+                Return whether this surface is a rational surface, i.e., all the
+                rotational part of all gluings is a rational multiple of π.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_rational_surface()
+                    True
+
+                """
+                return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
 
     class SubcategoryMethods:
         def Rational(self):

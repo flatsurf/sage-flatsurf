@@ -118,8 +118,11 @@ class EInfinitySurface(OrientedSimilaritySurface):
                 field = lambda_squared.parent()
             else:
                 self._lambda_squared = field(lambda_squared)
-        from flatsurf.geometry.categories import SimilaritySurfaces
-        super().__init__(field, category=SimilaritySurfaces().Oriented().InfiniteType())
+        from flatsurf.geometry.categories import TranslationSurfaces
+        super().__init__(field, category=TranslationSurfaces().InfiniteType().Connected().WithoutBoundary())
+
+    def is_compact(self):
+        return False
 
     def is_mutable(self):
         return False
@@ -291,7 +294,7 @@ class TFractalSurface(OrientedSimilaritySurface):
         )
 
         from flatsurf.geometry.categories import TranslationSurfaces
-        super().__init__(field, category=TranslationSurfaces().InfiniteType())
+        super().__init__(field, category=TranslationSurfaces().InfiniteType().WithoutBoundary().Compact().Connected())
 
     def base_label(self):
         return self._base_label
@@ -1631,8 +1634,9 @@ class TranslationSurfaceGenerators:
             sage: o.stratum()
             H_2(2)
             sage: TestSuite(o).run()
+
         """
-        from .translation_surface import Origami
+        from flatsurf.geometry.translation_surface import Origami
 
         return Origami(r, u, rr, uu, domain)
 
@@ -1662,6 +1666,12 @@ class TranslationSurfaceGenerators:
                 domain=ZZ,
                 base_label=ZZ(0),
             )
+
+        def is_compact(self):
+            return False
+
+        def is_connected(self):
+            return True
 
         def _vertical(self, x):
             if x % 2:

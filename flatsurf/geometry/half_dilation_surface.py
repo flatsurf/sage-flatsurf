@@ -83,8 +83,17 @@ class GL2RImageSurface(OrientedSimilaritySurface):
     def base_label(self):
         return self._s.base_label()
 
+    def is_compact(self):
+        return self._s.is_compact()
+
+    def is_connected(self):
+        return self._s.is_connected()
+
     def is_mutable(self):
         return False
+
+    def is_translation_surface(self, positive=True):
+        return self._s.is_translation_surface(positive=positive)
 
     def polygon(self, lab):
         if self._det_sign == 1:

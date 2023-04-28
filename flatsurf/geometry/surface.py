@@ -58,6 +58,12 @@ class MutablePolygonalSurface(Surface_base):
 
         super().__init__(base, category=category)
 
+    def _test_refined_category(self, **options):
+        if self._mutable:
+            return
+
+        super()._test_refined_category(**options)
+
     def add_polygon(self, polygon, *, label=None):
         if not self._mutable:
             raise Exception
@@ -258,6 +264,12 @@ class OrientedSimilaritySurface(Surface_base):
 class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygonalSurface):
     def __init__(self, base, category=None):
         self._gluings = {}
+
+        from flatsurf.geometry.categories import SimilaritySurfaces
+        if category is None:
+            category = SimilaritySurfaces().Oriented().FiniteType()
+
+        category &= SimilaritySurfaces().Oriented().FiniteType()
 
         super().__init__(base, category=category)
 

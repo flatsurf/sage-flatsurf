@@ -68,6 +68,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
         return (PolygonalSurfaces().Oriented(),)
 
     class ParentMethods:
+        def is_translation_surface(self, positive=True):
+            return True
+
         @staticmethod
         def _is_translation_surface(surface, positive=True, limit=None):
             r"""

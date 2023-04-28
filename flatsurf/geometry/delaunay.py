@@ -70,6 +70,12 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def is_mutable(self):
         return False
 
+    def is_compact(self):
+        return self._reference.is_compact()
+
+    def is_connected(self):
+        return self._reference.is_connected()
+
     def base_label(self):
         reference_label = self._reference.base_label()
         return (reference_label, self._triangulation(reference_label)[(0, 1)])
@@ -287,6 +293,12 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
     def is_mutable(self):
         return False
+
+    def is_compact(self):
+        return self._reference.is_compact()
+
+    def is_connected(self):
+        return self._reference.is_connected()
 
     def base_label(self):
         return self._surface.base_label()
@@ -587,6 +599,12 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
     def base_label(self):
         return self._delaunay_triangulation.base_label()
+
+    def is_compact(self):
+        return self._reference.is_compact()
+
+    def is_connected(self):
+        return self._reference.is_connected()
 
     def is_mutable(self):
         return False

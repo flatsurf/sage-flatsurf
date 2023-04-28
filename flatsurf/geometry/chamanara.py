@@ -77,7 +77,19 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         self.rename("Chamanara surface with parameter {}".format(alpha))
 
         from flatsurf.geometry.categories import DilationSurfaces
-        super().__init__(field, category=DilationSurfaces().Oriented().InfiniteType())
+        super().__init__(field, category=DilationSurfaces().Oriented().InfiniteType().Compact().WithoutBoundary().Connected().Rational())
+
+    def is_dilation_surface(self, positive=False):
+        return not positive
+
+    def is_rational_surface(self):
+        return True
+
+    def is_cone_surface(self):
+        return False
+
+    def is_translation_surface(self, positive=True):
+        return False
 
     def base_label(self):
         return ZZ(0)
@@ -173,6 +185,7 @@ def chamanara_half_dilation_surface(alpha, n=8):
 class ChamanaraTranslationSurface(MinimalTranslationCover):
     def __init__(self, alpha):
         MinimalTranslationCover.__init__(self, ChamanaraSurface(alpha))
+        self._refine_category_(self.category().Compact())
 
     def graphical_surface(self):
         label = self.base_label()

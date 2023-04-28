@@ -80,6 +80,9 @@ class DilationSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
+            def is_dilation_surface(self, positive=False):
+                return True
+
             def _test_positive_dilation_surface(self, **options):
                 r"""
                 Verify that this is a positive dilation surface.
@@ -117,6 +120,12 @@ class DilationSurfaces(SurfaceCategory):
             return self._with_axiom("Positive")
 
     class ParentMethods:
+        def is_dilation_surface(self, positive=False):
+            if not positive:
+                return True
+
+            return super(DilationSurfaces().parent_class, self).is_dilation_surface(positive=positive)
+
         @staticmethod
         def _is_dilation_surface(surface, positive=False, limit=None):
             r"""

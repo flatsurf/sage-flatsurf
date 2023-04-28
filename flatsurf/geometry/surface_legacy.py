@@ -152,12 +152,31 @@ class Surface(OrientedSimilaritySurface):
 
         self._cache = {}
 
+        from flatsurf.geometry.categories import SimilaritySurfaces
+        if category is None:
+            category = SimilaritySurfaces()
+
+        # Previously, all surfaces were assumed to be connected and without
+        # boundary (even though it was possible to construct non-connected
+        # surfaces but only the base_label component was really functional
+        # then.)
+        category &= SimilaritySurfaces().Oriented().WithoutBoundary().Connected()
+
+        if finite:
+            category = category.FiniteType()
+
         OrientedSimilaritySurface.__init__(self, base=base_ring, category=category)
 
         if not mutable:
             # TODO: This is a bit hacky to get the category to be refined. We
             # should remove the mutable state from Surface.
             self.set_immutable()
+
+    def _test_refined_category(self, **options):
+        if self.is_mutable():
+            return
+
+        super()._test_refined_category(**options)
 
     def _repr_(self):
         r"""
@@ -1062,6 +1081,12 @@ class Surface_list(Surface):
                 self._int_to_ref.append(ref_label)
             return i
 
+    def is_compact(self):
+        if self._reference_surface is not None:
+            return self._reference_surface.is_compact()
+
+        return True
+
     def polygon(self, lab):
         r"""
         Return the polygon with label ``lab``.
@@ -1532,6 +1557,12 @@ class Surface_dict(Surface):
 
         if not mutable:
             self.set_immutable()
+
+    def is_compact(self):
+        if self._reference_surface is not None:
+            return self._reference_surface.is_compact()
+
+        return True
 
     def polygon(self, lab):
         r"""

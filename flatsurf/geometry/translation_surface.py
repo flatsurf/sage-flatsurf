@@ -17,15 +17,18 @@ class AbstractOrigami(OrientedSimilaritySurface):
             base_label = domain.an_element()
         self._base_label = base_label
 
+        from flatsurf.geometry.categories import TranslationSurfaces
         if category is None:
-            from flatsurf.geometry.categories import TranslationSurfaces
-            category = TranslationSurfaces().WithoutBoundary().Connected()
+            category = TranslationSurfaces()
 
-            finite = domain.is_finite()
-            if finite:
-                category &= category.FiniteType()
-            else:
-                category &= category.InfiniteType()
+        # TODO: Document that origamis must be connected.
+        category &= TranslationSurfaces().WithoutBoundary().Connected()
+
+        finite = domain.is_finite()
+        if finite:
+            category &= category.FiniteType()
+        else:
+            category &= category.InfiniteType()
 
         super().__init__(QQ, category=category)
 
