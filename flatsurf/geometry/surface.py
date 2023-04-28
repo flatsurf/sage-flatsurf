@@ -241,7 +241,7 @@ class OrientedSimilaritySurface(Surface_base):
         if len(self.polygons()) != len(other.polygons()):
             return False
 
-        for label, polygon in self.label_polygon_iterator():
+        for label, polygon in zip(self.labels(), self.polygons()):
             try:
                 polygon2 = other.polygon(label)
             except ValueError:

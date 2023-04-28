@@ -286,7 +286,7 @@ class Surface(OrientedSimilaritySurface):
         performance.
         """
         if polygons:
-            return self.label_polygon_iterator()
+            return zip(self.labels(), self.polygons())
         return iter(self.walker())
 
     def base_label(self):
@@ -457,7 +457,7 @@ class Surface(OrientedSimilaritySurface):
             (
                 self.base_ring(),
                 self.base_label(),
-                tuple(self.label_polygon_iterator()),
+                tuple(zip(self.labels(), self.polygons())),
                 tuple(self.gluings()),
             )
         )
@@ -950,7 +950,7 @@ class Surface_list(Surface):
             if copy is True:
                 reference_label_to_label = {
                     label: self.add_polygon(polygon)
-                    for label, polygon in surface.label_polygon_iterator()
+                    for label, polygon in zip(surface.labels(), surface.polygons())
                 }
 
                 for (
@@ -1254,7 +1254,7 @@ class Surface_list(Surface):
         Iterator over all polygon labels.
         """
         if polygons:
-            for entry in self.label_polygon_iterator():
+            for entry in zip(self.labels(), self.polygons()):
                 yield entry
             return
         if self._reference_surface is not None:
@@ -1510,7 +1510,7 @@ class Surface_dict(Surface):
             if copy is True:
                 reference_label_to_label = {
                     label: self.add_polygon(polygon, label=label)
-                    for label, polygon in surface.label_polygon_iterator()
+                    for label, polygon in zip(surface.labels(), surface.polygons())
                 }
 
                 for (
@@ -1739,7 +1739,7 @@ class Surface_dict(Surface):
         Iterator over all polygon labels.
         """
         if polygons:
-            for entry in self.label_polygon_iterator():
+            for entry in zip(self.labels(), self.polygons()):
                 yield entry
             return
         if self._reference_surface is None:

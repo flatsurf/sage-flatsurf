@@ -142,7 +142,7 @@ class ConeSurfaces(Category):
                 r"""
                 Return the area of this surface.
                 """
-                return sum(p.area() for label, p in self.label_polygon_iterator())
+                return sum(p.area() for p in self.polygons())
 
     class Oriented(CategoryWithAxiom):
         class ParentMethods:
