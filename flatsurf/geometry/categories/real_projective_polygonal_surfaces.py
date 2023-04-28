@@ -59,12 +59,14 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
     class ParentMethods:
         def graphical_surface(self, *args, **kwargs):
             if "cached" in kwargs:
-                kwargs.pop("cached")  # TODO: Warn that this is gone.
+                import warnings
+                warnings.warn("The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. The result of graphical_surface() is never cached now.")
+
+                kwargs.pop("cached")
             from flatsurf.graphical.surface import GraphicalSurface
             return GraphicalSurface(self, *args, **kwargs)
 
         def plot(self, **kwargs):
-            # TODO: Deprecate all this.
             graphical_surface_keywords = {
                 key: kwargs.pop(key)
                 for key in [
@@ -78,7 +80,6 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
             }
             return self.graphical_surface(**graphical_surface_keywords).plot(**kwargs)
 
-        # TODO: What should be the fate of this function?
         def plot_polygon(
             self,
             label,
@@ -145,8 +146,8 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
             if graphical_surface is None:
                 graphical_surface = self.graphical_surface()
             p = self.polygon(label)
-            from flatsurf.graphical.polygon import GraphicalPolygon
 
+            from flatsurf.graphical.polygon import GraphicalPolygon
             gp = GraphicalPolygon(p)
 
             if plot_polygon:
