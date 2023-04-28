@@ -96,7 +96,7 @@ class DilationSurfaces(SurfaceCategory):
 
                 limit = None
 
-                if not self.is_finite():
+                if not self.is_finite_type():
                     limit = 32
 
                 tester.assertTrue(DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=True, limit=limit))
@@ -217,7 +217,7 @@ class DilationSurfaces(SurfaceCategory):
                 from flatsurf.geometry.dilation_surface import GL2RMapping
                 return GL2RMapping(self, m)
             if not in_place:
-                if self.is_finite():
+                if self.is_finite_type():
                     from sage.structure.element import get_coercion_model
 
                     cm = get_coercion_model()
@@ -234,7 +234,7 @@ class DilationSurfaces(SurfaceCategory):
                 m = Matrix(self.base_ring(), 2, 2, m)
                 if m.det() == self.base_ring().zero():
                     raise ValueError("can not deform by degenerate matrix")
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise NotImplementedError(
                         "in-place GL(2,R) action only works for finite surfaces"
                     )
@@ -400,7 +400,7 @@ class DilationSurfaces(SurfaceCategory):
                 NotImplementedError: The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.
 
             """
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError(
                     "no L-infinity Delaunay implemented for infinite surfaces"
                 )
@@ -455,7 +455,7 @@ class DilationSurfaces(SurfaceCategory):
 
             limit = None
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 limit = 32
 
             tester.assertTrue(DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=False, limit=limit))

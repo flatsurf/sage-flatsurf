@@ -162,7 +162,7 @@ class GraphicalSurface:
         self._visible = set([self._ss.base_label()])
 
         if adjacencies is None:
-            if self._ss.is_finite():
+            if self._ss.is_finite_type():
                 self.make_all_visible()
         self._edge_labels = None
 
@@ -416,7 +416,7 @@ class GraphicalSurface:
         if adjacent is None:
             adjacent = self._default_position_function is None
         if limit is None:
-            if not self._ss.is_finite():
+            if not self._ss.is_finite_type():
                 raise NotImplementedError
             if adjacent:
                 for label, poly in zip(self._ss.labels(), self._ss.polygons()):
@@ -719,7 +719,7 @@ class GraphicalSurface:
         if label is None:
             if search_all:
                 if search_limit is None:
-                    if surface.is_finite():
+                    if surface.is_finite_type():
                         labels = surface.labels()
                     else:
                         raise ValueError(

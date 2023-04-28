@@ -43,7 +43,7 @@ class GL2RImageSurface(OrientedSimilaritySurface):
 
     def __init__(self, surface, m, ring=None, category=None):
         if surface.is_mutable():
-            if surface.is_finite():
+            if surface.is_finite_type():
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 self._s = MutableOrientedSimilaritySurface.from_surface(surface)
             else:

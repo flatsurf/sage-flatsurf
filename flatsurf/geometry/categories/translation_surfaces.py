@@ -197,7 +197,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: s.standardize_polygons().polygon(0)
                 polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             """
-            if self.is_finite():
+            if self.is_finite_type():
                 if in_place:
                     if not self.is_mutable():
                         raise ValueError(
@@ -244,8 +244,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             If the two surfaces are infinite, we just examine the first limit polygons.
             """
-            if self.is_finite():
-                if s2.is_finite():
+            if self.is_finite_type():
+                if s2.is_finite_type():
                     if limit is not None:
                         raise ValueError("limit only enabled for finite surfaces")
 
@@ -283,7 +283,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # s1 is finite but s2 is infinite.
                     return -1
             else:
-                if s2.is_finite():
+                if s2.is_finite_type():
                     # s1 is infinite but s2 is finite.
                     return 1
                 else:
@@ -384,7 +384,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             else:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-            if not s.is_finite():
+            if not s.is_finite_type():
                 raise ValueError(
                     "canonicalize is only defined for finite translation surfaces."
                 )
@@ -708,7 +708,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             limit = None
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 limit = 32
 
             tester.assertTrue(TranslationSurfaces.ParentMethods._is_translation_surface(self, limit=limit))

@@ -87,7 +87,7 @@ def to_pyflatsurf(S):
 
     if S not in TranslationSurfaces():
         raise TypeError("S must be a translation surface")
-    if not S.is_finite():
+    if not S.is_finite_type():
         raise ValueError("the surface S must be finite")
 
     S = S.triangulate()

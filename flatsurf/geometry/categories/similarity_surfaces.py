@@ -226,7 +226,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 False
 
             """
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a dilation surface")
 
             from flatsurf.geometry.categories import DilationSurfaces
@@ -262,7 +262,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a translation surface")
 
             from flatsurf.geometry.categories import TranslationSurfaces
@@ -282,7 +282,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a cone surface")
 
             from flatsurf.geometry.categories import ConeSurfaces
@@ -302,7 +302,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide whether this infinite type surface is a rational surface")
 
             return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
@@ -481,7 +481,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: translation_surfaces.origami(r,u).num_singularities()
                     4
                 """
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise ValueError("the method only work for finite surfaces")
 
                 # NOTE:
@@ -822,7 +822,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if relabel:
                     message += " Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels."
 
-                if not self.is_finite():
+                if not self.is_finite_type():
                     message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs."
 
                 if new_field is not None:
@@ -842,7 +842,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         "You can not set a new_field and also set optimal_number_field=True."
                     )
                 if optimal_number_field is True:
-                    if not self.is_finite():
+                    if not self.is_finite_type():
                         raise NotImplementedError(
                             "can only optimize_number_field for a finite surface"
                         )
@@ -906,7 +906,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     s = BaseRingChangedSurface(self, new_field)
                 if s is None:
                     s = self
-                if s.is_finite():
+                if s.is_finite_type():
                     if relabel:
                         from flatsurf.geometry.surface import Surface_list
                         return Surface_list(surface=s, copy=not lazy, mutable=mutable, category=category, deprecation_warning=False)
@@ -1511,7 +1511,7 @@ class SimilaritySurfaces(SurfaceCategory):
             #         ...
             #         ValueError: inconsistent covering data
             #     """
-            #     if not self.is_finite():
+            #     if not self.is_finite_type():
             #         raise ValueError("this method is only available for finite surfaces")
             #     return type(self)(self._s.ramified_cover(degree, data))
 
@@ -1593,7 +1593,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 r"""
                 Return the fundamental group of this surface.
                 """
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise ValueError("the method only work for finite surfaces")
                 if base_label is None:
                     base_label = self.base_label()
@@ -1680,7 +1680,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if relabel:
                     # TODO: Complain. relabel is not honoured anymore.
                     pass
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise NotImplementedError("Only implemented for finite surfaces.")
                 if in_place:
                     if not self.is_mutable():
@@ -1760,7 +1760,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if label is None:
                     # We triangulate the whole surface
-                    if self.is_finite():
+                    if self.is_finite_type():
                         # Store the current labels.
                         labels = [label for label in self.labels()]
                         if in_place:
@@ -1842,7 +1842,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 r"""
                 Does a single in place flip of a triangulated mutable surface.
                 """
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise NotImplementedError("Not implemented for infinite surfaces.")
                 lc = self._label_comparator()
                 for (l1, e1), (l2, e2) in self.gluings():
@@ -1860,7 +1860,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Limit must be set for infinite surfaces.
                 """
                 if limit is None:
-                    if not self.is_finite():
+                    if not self.is_finite_type():
                         raise NotImplementedError("A limit must be set for infinite surfaces.")
                     limit = self.num_edges()
                 count = 0
@@ -1887,7 +1887,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Limit must be set for infinite surfaces.
                 """
                 if limit is None:
-                    if not self.is_finite():
+                    if not self.is_finite_type():
                         raise NotImplementedError("A limit must be set for infinite surfaces.")
                     limit = len(self.polygons())
                 for l1, p1 in zip(self.labels(), self.polygons()):
@@ -1958,7 +1958,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.is_delaunay_triangulated(limit=10)
                     True
                 """
-                if not self.is_finite() and limit is None:
+                if not self.is_finite_type() and limit is None:
                     if in_place:
                         raise ValueError(
                             "in_place delaunay triangulation is not possible for infinite surfaces unless a limit is set."
@@ -1997,7 +1997,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if direction.is_zero():
                     raise ValueError
 
-                if s.is_finite() and limit is None:
+                if s.is_finite_type() and limit is None:
                     from collections import deque
 
                     unchecked_labels = deque(s.labels())
@@ -2045,7 +2045,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     return s
 
             def delaunay_single_join(self):
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise NotImplementedError("Not implemented for infinite surfaces.")
                 lc = self._label_comparator()
                 for (l1, e1), (l2, e2) in self.gluings():
@@ -2125,7 +2125,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if relabel:
                     # TODO: Complain. We ignore this parameter now.
                     pass
-                if not self.is_finite():
+                if not self.is_finite_type():
                     if in_place:
                         raise ValueError(
                             "in_place delaunay_decomposition is not possible for infinite surfaces."
@@ -2196,7 +2196,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if sc_list is None:
                     sc_list = []
                 if initial_label is None:
-                    if not self.is_finite():
+                    if not self.is_finite_type():
                         raise NotImplementedError
                     if initial_vertex is not None:
                         raise ValueError(
@@ -2617,7 +2617,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 limit = None
 
-                if not self.is_finite():
+                if not self.is_finite_type():
                     limit = 32
 
                 tester.assertTrue(SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self, limit=limit))

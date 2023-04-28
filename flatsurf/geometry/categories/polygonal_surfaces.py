@@ -96,7 +96,7 @@ class PolygonalSurfaces(SurfaceCategory):
             category = TopologicalSurfaces.ParentMethods.refined_category(self)
 
             try:
-                finite_type = self.is_finite()
+                finite_type = self.is_finite_type()
             except NotImplementedError:
                 pass
             else:
@@ -209,7 +209,7 @@ class PolygonalSurfaces(SurfaceCategory):
             labels = self.labels()
             polygons = self.polygons()
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 import itertools
                 labels = itertools.islice(labels, 32)
 
@@ -231,7 +231,7 @@ class PolygonalSurfaces(SurfaceCategory):
             # overhead of calling through the category framework and creating a
             # Labels object can lead to runtimes of about 1μs.
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 from sage.all import infinity
                 return infinity
             return len(self.polygons())
@@ -418,10 +418,31 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
 
-        # TODO: Deprecate is_finite everywhere since it clashes with the
-        # notion of Sets(). Instead use is_finite_type().
-        @abstract_method
         def is_finite(self):
+            r"""
+            Return whether this surface is constructed from finitely many polygons.
+
+            .. NOTE::
+
+                The semantics of this function clash with the notion of finite
+                sets inherited from the category of sets. Therefore
+                :meth:`is_finite_type` should be used instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_finite_type()
+                True
+
+            """
+            import warnings
+            warnings.warn("is_finite() has been deprecated and will be removed in a future version of sage-flatsurf; use is_finite_type() instead")
+            return self.is_finite_type()
+
+        @abstract_method
+        def is_finite_type(self):
             r"""
             Return whether this surface is constructed from finitely many polygons.
 
@@ -430,7 +451,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import polygons, similarity_surfaces
                 sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: S.is_finite()
+                sage: S.is_finite_type()
                 True
 
             """
@@ -455,7 +476,7 @@ class PolygonalSurfaces(SurfaceCategory):
             if 'WithoutBoundary' in self.category().axioms():
                 return False
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide wether a surface has boundary for surfaces of infinite type")
 
             for label in self.labels():
@@ -482,7 +503,7 @@ class PolygonalSurfaces(SurfaceCategory):
             if 'Compact' in self.category().axioms():
                 return True
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide whether this infinite type surface is compact")
 
             return True
@@ -503,7 +524,7 @@ class PolygonalSurfaces(SurfaceCategory):
             if 'Connected' in self.category().axioms():
                 return True
 
-            if not self.is_finite():
+            if not self.is_finite_type():
                 raise NotImplementedError("cannot decide whether this infinite type surface is connected")
 
             # We use the customary union-find algorithm to identify the connected components.
@@ -534,7 +555,7 @@ class PolygonalSurfaces(SurfaceCategory):
             r"""
             Return the total number of edges of all polygons used.
             """
-            if self.is_finite():
+            if self.is_finite_type():
                 try:
                     return self._cache["num_edges"]
                 except KeyError:
@@ -552,7 +573,7 @@ class PolygonalSurfaces(SurfaceCategory):
             # iterate over pairs with pair1 glued to pair2
             tester = self._tester(**options)
 
-            if self.is_finite():
+            if self.is_finite_type():
                 it = self.labels()
             else:
                 from itertools import islice
@@ -588,7 +609,7 @@ class PolygonalSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
-            def is_finite(self):
+            def is_finite_type(self):
                 return True
 
             def is_triangulated(self):
@@ -613,7 +634,7 @@ class PolygonalSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
-            def is_finite(self):
+            def is_finite_type(self):
                 return False
 
     class Oriented(SurfaceCategoryWithAxiom):
@@ -653,7 +674,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 # iterate over pairs with pair1 glued to pair2
                 tester = self._tester(**options)
 
-                if self.is_finite():
+                if self.is_finite_type():
                     it = self.labels()
                 else:
                     from itertools import islice

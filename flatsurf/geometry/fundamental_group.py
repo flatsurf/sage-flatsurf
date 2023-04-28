@@ -299,7 +299,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
     Element = Path
 
     def __init__(self, surface, base):
-        if not surface.is_finite():
+        if not surface.is_finite_type():
             raise ValueError("the method only work for finite surfaces")
         self._s = surface
         self._b = base

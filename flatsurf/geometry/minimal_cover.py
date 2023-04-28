@@ -7,7 +7,7 @@ def _is_finite(surface):
     r"""
     Return whether ``surface`` is a finite rational cone surface.
     """
-    if not surface.is_finite():
+    if not surface.is_finite_type():
         return False
 
     from flatsurf.geometry.categories import ConeSurfaces
@@ -49,7 +49,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         sage: s.glue((0, 2), (1, 0))
         sage: s.set_immutable()
         sage: ss=MinimalTranslationCover(s)
-        sage: ss.is_finite()
+        sage: ss.is_finite_type()
         True
         sage: len(ss.polygons())
         8
@@ -74,7 +74,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
     def __init__(self, similarity_surface, category=None):
         if similarity_surface.is_mutable():
-            if similarity_surface.is_finite():
+            if similarity_surface.is_finite_type():
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 self._ss = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
             else:
@@ -178,7 +178,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         sage: s.glue((0, 2), (1, 0))
         sage: s.set_immutable()
         sage: ss=MinimalHalfTranslationCover(s)
-        sage: ss.is_finite()
+        sage: ss.is_finite_type()
         True
         sage: len(ss.polygons())
         4
@@ -203,7 +203,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
     def __init__(self, similarity_surface, category=None):
         if similarity_surface.is_mutable():
-            if similarity_surface.is_finite():
+            if similarity_surface.is_finite_type():
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 self._ss = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
             else:
@@ -281,7 +281,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         sage: s = translation_surfaces.square_torus()
         sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
         sage: pc = MinimalPlanarCover(s)
-        sage: pc.is_finite()
+        sage: pc.is_finite_type()
         False
         sage: sing = pc.singularity(pc.base_label(),0,limit=4)
         doctest:warning
@@ -297,7 +297,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
 
     def __init__(self, similarity_surface, base_label=None, category=None):
         if similarity_surface.is_mutable():
-            if similarity_surface.is_finite():
+            if similarity_surface.is_finite_type():
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
                 self._ss = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
             else:

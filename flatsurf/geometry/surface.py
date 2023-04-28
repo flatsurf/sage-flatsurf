@@ -105,7 +105,7 @@ class MutablePolygonalSurface(Surface_base):
 
         self._refine_category_(self.refined_category())
 
-    def is_finite(self):
+    def is_finite_type(self):
         return True
 
     def is_mutable(self):
@@ -136,7 +136,7 @@ class MutablePolygonalSurface(Surface_base):
         return 0
 
     def _repr_(self):
-        if not self.is_finite():
+        if not self.is_finite_type():
             return "Surface built from infinitely many polygons"
         if len(self.polygons()) == 1:
             return "Surface built from 1 polygon"
@@ -221,10 +221,10 @@ class OrientedSimilaritySurface(Surface_base):
         if self.category() != other.category():
             return False
 
-        if self.is_finite() != other.is_finite():
+        if self.is_finite_type() != other.is_finite_type():
             return False
 
-        if self.is_finite():
+        if self.is_finite_type():
             if len(self.polygons()) == 0:
                 return len(other.polygons()) == 0
             if len(other.polygons()) == 0:
@@ -235,7 +235,7 @@ class OrientedSimilaritySurface(Surface_base):
         if self.polygon(self.base_label()) != other.polygon(self.base_label()):
             return False
 
-        if not self.is_finite():
+        if not self.is_finite_type():
             raise NotImplementedError("cannot compare these infinite surfaces yet")
 
         if len(self.polygons()) != len(other.polygons()):
@@ -263,7 +263,7 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
     @classmethod
     def from_surface(cls, surface, category=None):
-        if not surface.is_finite():
+        if not surface.is_finite_type():
             raise TypeError
         self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category or surface.category())
         for label in surface.labels():
@@ -485,14 +485,14 @@ class LabeledCollection:
         self._surface = surface
 
     def __repr__(self):
-        if self._surface.is_finite():
+        if self._surface.is_finite_type():
             return repr(tuple(self))
 
         from itertools import islice
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
 
     def __len__(self):
-        if not self._surface.is_finite():
+        if not self._surface.is_finite_type():
             raise TypeError("infinite type surface has no integer length")
 
         length = 0

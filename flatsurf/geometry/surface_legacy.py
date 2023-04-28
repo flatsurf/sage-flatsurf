@@ -171,7 +171,7 @@ class Surface(OrientedSimilaritySurface):
             Surface built from 0 polygons
 
         """
-        if not self.is_finite():
+        if not self.is_finite_type():
             return "Surface built from infinitely many polygons"
         if self.num_polygons() == 1:
             return "Surface built from 1 polygon"
@@ -194,7 +194,7 @@ class Surface(OrientedSimilaritySurface):
             True
         """
         it = self.label_iterator()
-        if not self.is_finite():
+        if not self.is_finite_type():
             if limit is None:
                 raise ValueError(
                     "for infinite polygon, 'limit' must be set to a positive integer"
@@ -269,7 +269,7 @@ class Surface(OrientedSimilaritySurface):
         Subclasses should consider overriding this method for increased
         performance.
         """
-        if self.is_finite():
+        if self.is_finite_type():
             lw = self.walker()
             lw.find_all_labels()
             return len(lw)
@@ -313,7 +313,7 @@ class Surface(OrientedSimilaritySurface):
             raise Exception("base label has not been set for this surface")
         return self._base_label
 
-    def is_finite(self):
+    def is_finite_type(self):
         r"""
         Return whether or not the surface is finite.
         """
@@ -450,7 +450,7 @@ class Surface(OrientedSimilaritySurface):
         if self.is_mutable():
             raise TypeError("mutable surface is not hashable")
 
-        if not self.is_finite():
+        if not self.is_finite_type():
             raise TypeError("cannot hash this infinite surface")
 
         return hash(
@@ -599,7 +599,7 @@ class Surface(OrientedSimilaritySurface):
             tester = self._tester(**options)
         from .polygon import ConvexPolygon
 
-        if self.is_finite():
+        if self.is_finite_type():
             it = self.label_iterator()
         else:
             from itertools import islice
@@ -970,7 +970,7 @@ class Surface_list(Surface):
                 self._ref_to_int = {}
                 self._int_to_ref = []
 
-                if not surface.is_finite():
+                if not surface.is_finite_type():
                     from sage.all import infinity
                     self._num_polygons = infinity
                 else:
@@ -1005,7 +1005,7 @@ class Surface_list(Surface):
             if not isinstance(surface, OrientedSimilaritySurface):
                 raise TypeError("surface must be an OrientedSimilaritySurface")
 
-            if not surface.is_finite() and surface.is_mutable():
+            if not surface.is_finite_type() and surface.is_mutable():
                 raise NotImplementedError(
                     "Cannot create surface from infinite mutable surface yet."
                 )
@@ -1024,13 +1024,13 @@ class Surface_list(Surface):
             if copy is None:
                 copy = surface.is_mutable()
 
-            if copy and not surface.is_finite():
+            if copy and not surface.is_finite_type():
                 raise ValueError("Cannot copy infinite surface.")
 
             if surface.is_mutable() and not copy:
                 raise ValueError("Cannot reference mutable surface.")
 
-            finite = surface.is_finite()
+            finite = surface.is_finite_type()
 
         return base_ring, surface, copy, mutable, finite
 
@@ -1723,7 +1723,7 @@ class Surface_dict(Surface):
         r"""
         Return the number of polygons making up the surface in constant time.
         """
-        if self.is_finite():
+        if self.is_finite_type():
             if self._reference_surface is None:
                 return len(self._p)
             else:
@@ -1926,7 +1926,7 @@ class LabelWalker:
             return self._label_edge_back[label]
         except KeyError:
             if limit is None:
-                if not self._s.is_finite():
+                if not self._s.is_finite_type():
                     limit = 1000
                 else:
                     limit = self._s.num_polygons()
@@ -1998,7 +1998,7 @@ class LabelWalker:
         return new_labels
 
     def find_all_labels(self):
-        if not self._s.is_finite():
+        if not self._s.is_finite_type():
             raise NotImplementedError
         label = self.find_a_new_label()
         while label is not None:
@@ -2149,7 +2149,7 @@ class LabelsView(collections.abc.Set):
         return self._surface.num_polygons()
 
     def __repr__(self):
-        if self._surface.is_finite():
+        if self._surface.is_finite_type():
             return repr(tuple(self))
 
         from itertools import islice

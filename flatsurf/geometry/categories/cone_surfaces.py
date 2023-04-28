@@ -162,7 +162,7 @@ class ConeSurfaces(Category):
 
                 limit = None
 
-                if not self.is_finite():
+                if not self.is_finite_type():
                     limit = 32
 
                 tester.assertTrue(ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit))

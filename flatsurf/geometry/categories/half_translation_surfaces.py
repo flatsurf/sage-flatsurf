@@ -134,7 +134,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     sage: S.angles(return_adjacent_edges=True)
                      [(1, [...]), (5, [...]), (1, [...]), (1, [...])]
                 """
-                if not self.is_finite():
+                if not self.is_finite_type():
                     raise NotImplementedError("the set of edges is infinite!")
 
                 edges = set(self.edges())
@@ -233,7 +233,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 limit = None
 
-                if not self.is_finite():
+                if not self.is_finite_type():
                     limit = 32
 
                 from flatsurf.geometry.categories import TranslationSurfaces

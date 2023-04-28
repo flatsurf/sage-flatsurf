@@ -517,7 +517,7 @@ def triangulation_mapping(s):
         polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)])
         polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)])
     """
-    if not s.is_finite():
+    if not s.is_finite_type():
         raise NotImplementedError
 
     m = subdivide_a_polygon(s)
@@ -561,7 +561,7 @@ def delaunay_triangulation_mapping(s):
     r"""
     Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.
     """
-    if not s.is_finite():
+    if not s.is_finite_type():
         raise NotImplementedError
 
     m = triangulation_mapping(s)
@@ -648,7 +648,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         r"""
         Split the polygon with label p of surface s along the diagonal joining vertex v1 to vertex v2.
         """
-        if not s.is_finite():
+        if not s.is_finite_type():
             raise ValueError("Currently only works with finite surfaces.")
         ring = s.base_ring()
         from flatsurf.geometry.similarity import SimilarityGroup
@@ -715,7 +715,7 @@ class ReindexMapping(SurfaceMapping):
         r"""
         The parameters should be a surface and a dictionary which takes as input a label and produces a new label.
         """
-        if not s.is_finite():
+        if not s.is_finite_type():
             raise ValueError("Currently only works with finite surfaces." "")
         f = {}  # map for labels going forward.
         b = {}  # map for labels going backward.
@@ -835,7 +835,7 @@ def canonicalize_translation_surface_mapping(s):
     """
     from flatsurf.geometry.categories import TranslationSurfaces
 
-    if not s.is_finite():
+    if not s.is_finite_type():
         raise NotImplementedError
     if s not in TranslationSurfaces():
         raise ValueError("Only defined for TranslationSurfaces")
