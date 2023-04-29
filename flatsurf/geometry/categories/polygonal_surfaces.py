@@ -621,7 +621,9 @@ class PolygonalSurfaces(SurfaceCategory):
                         y = find(cross_label)
                         union_find[x] = y
 
-                return len(union_find.values()) <= 1
+                roots = set(find(label) for label in self.labels())
+
+                return len(roots) <= 1
 
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
