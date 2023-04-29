@@ -673,6 +673,82 @@ class PolygonalSurfaces(SurfaceCategory):
             from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
             return (TopologicalSurfaces().Orientable(),)
 
+        class WithoutBoundary(SurfaceCategoryWithAxiom):
+            class Connected(SurfaceCategoryWithAxiom):
+                class ParentMethods:
+                    def genus(self):
+                        r"""
+                        Return the genus of this surface.
+
+                        ALGORITHM:
+
+                        We deduce the genus from the Euler characteristic.
+
+                        EXAMPLES::
+
+                            sage: from flatsurf import translation_surfaces
+                            sage: translation_surfaces.octagon_and_squares().genus()
+                            3
+
+                        """
+                        return 1 - self.euler_characteristic() / 2
+
+        class FiniteType(SurfaceCategoryWithAxiom):
+            class ParentMethods:
+                def euler_characteristic(self):
+                    r"""
+                    Return the Euler characteristic of this surface.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.octagon_and_squares()
+                        sage: S.euler_characteristic()
+                        -4
+
+                    .. [Massart2021] \D. Massart. A short introduction to translation
+                    surfaces, Veech surfaces, and Teichműller dynamics.
+                    https://hal.science/hal-03300179/document
+
+                    """
+                    # Count the vertices
+                    union_find = {edge: edge for edge in self.edges()}
+
+                    def find(node):
+                        if union_find[node] == node:
+                            return node
+                        parent = find(union_find[node])
+                        union_find[node] = parent
+                        return parent
+
+                    for (label, edge) in self.edges():
+                        previous = (edge - 1) % self.polygon(label).num_edges()
+                        cross = self.opposite_edge(label, previous)
+                        if cross is None:
+                            continue
+
+                        union_find[find((label, edge))] = find(cross)
+
+                    V = len(set(find((label, edge)) for (label, edge) in self.edges()))
+
+                    # Count the edges
+                    from sage.all import QQ, ZZ
+                    E = QQ(0)
+                    for (label, edge) in self.edges():
+                        if self.opposite_edge(label, edge) is None:
+                            E += 1
+                        elif self.opposite_edge(label, edge) == (label, edge):
+                            E += 1
+                            V += 1
+                        else:
+                            E += 1/2
+                    assert E in ZZ
+
+                    # Count the faces
+                    F = len(self.polygons())
+
+                    return ZZ(V - E + F)
+
     class WithoutBoundary(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def _test_gluings_without_boundary(self, **options):

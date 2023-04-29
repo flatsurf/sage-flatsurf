@@ -52,11 +52,11 @@ a rotation, this is a cone surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom
+# TODO: Use SurfaceCategory everywhere
+from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 
 
-class ConeSurfaces(Category):
+class ConeSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons with
     isometries on the edges.
@@ -139,7 +139,7 @@ class ConeSurfaces(Category):
 
             return True
 
-    class FiniteType(CategoryWithAxiom):
+    class FiniteType(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def area(self):
                 r"""
@@ -147,7 +147,7 @@ class ConeSurfaces(Category):
                 """
                 return sum(p.area() for p in self.polygons())
 
-    class Oriented(CategoryWithAxiom):
+    class Oriented(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def _test_cone_surface(self, **options):
                 r"""
@@ -170,54 +170,89 @@ class ConeSurfaces(Category):
 
                 tester.assertTrue(ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit))
 
-        class FiniteType(CategoryWithAxiom):
-            class ParentMethods:
-                def angles(self, numerical=False, return_adjacent_edges=False):
-                    r"""
-                    Return the set of angles around the vertices of the surface.
+        class FiniteType(SurfaceCategoryWithAxiom):
+            class WithoutBoundary(SurfaceCategoryWithAxiom):
+                class ParentMethods:
+                    def angles(self, numerical=False, return_adjacent_edges=False):
+                        r"""
+                        Return the set of angles around the vertices of the surface.
 
-                    EXAMPLES::
+                        EXAMPLES::
 
-                        sage: from flatsurf import polygons, similarity_surfaces
-                        sage: T = polygons.triangle(3, 4, 5)
-                        sage: S = similarity_surfaces.billiard(T)
-                        sage: S.angles()
-                        [1/3, 1/4, 5/12]
-                        sage: S.angles(numerical=True)   # abs tol 1e-14
-                        [0.333333333333333, 0.250000000000000, 0.416666666666667]
+                            sage: from flatsurf import polygons, similarity_surfaces
+                            sage: T = polygons.triangle(3, 4, 5)
+                            sage: S = similarity_surfaces.billiard(T)
+                            sage: S.angles()
+                            [1/3, 1/4, 5/12]
+                            sage: S.angles(numerical=True)   # abs tol 1e-14
+                            [0.333333333333333, 0.250000000000000, 0.416666666666667]
 
-                        sage: S.angles(return_adjacent_edges=True)
-                        [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
-                    """
-                    edges = [pair for pair in self.edges()]
-                    edges = set(edges)
-                    angles = []
+                            sage: S.angles(return_adjacent_edges=True)
+                            [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
+                        """
+                        edges = [pair for pair in self.edges()]
+                        edges = set(edges)
+                        angles = []
 
-                    if return_adjacent_edges:
-                        while edges:
-                            p, e = edges.pop()
-                            adjacent_edges = [(p, e)]
-                            angle = self.polygon(p).angle(e, numerical=numerical)
-                            pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
-                            while pp != p or ee != e:
-                                edges.remove((pp, ee))
-                                adjacent_edges.append((pp, ee))
-                                angle += self.polygon(pp).angle(ee, numerical=numerical)
-                                pp, ee = self.opposite_edge(
-                                    pp, (ee - 1) % self.polygon(pp).num_edges()
-                                )
-                            angles.append((angle, adjacent_edges))
-                    else:
-                        while edges:
-                            p, e = edges.pop()
-                            angle = self.polygon(p).angle(e, numerical=numerical)
-                            pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
-                            while pp != p or ee != e:
-                                edges.remove((pp, ee))
-                                angle += self.polygon(pp).angle(ee, numerical=numerical)
-                                pp, ee = self.opposite_edge(
-                                    pp, (ee - 1) % self.polygon(pp).num_edges()
-                                )
-                            angles.append(angle)
+                        if return_adjacent_edges:
+                            while edges:
+                                p, e = edges.pop()
+                                adjacent_edges = [(p, e)]
+                                angle = self.polygon(p).angle(e, numerical=numerical)
+                                pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
+                                while pp != p or ee != e:
+                                    edges.remove((pp, ee))
+                                    adjacent_edges.append((pp, ee))
+                                    angle += self.polygon(pp).angle(ee, numerical=numerical)
+                                    pp, ee = self.opposite_edge(
+                                        pp, (ee - 1) % self.polygon(pp).num_edges()
+                                    )
+                                angles.append((angle, adjacent_edges))
+                        else:
+                            while edges:
+                                p, e = edges.pop()
+                                angle = self.polygon(p).angle(e, numerical=numerical)
+                                pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
+                                while pp != p or ee != e:
+                                    edges.remove((pp, ee))
+                                    angle += self.polygon(pp).angle(ee, numerical=numerical)
+                                    pp, ee = self.opposite_edge(
+                                        pp, (ee - 1) % self.polygon(pp).num_edges()
+                                    )
+                                angles.append(angle)
 
-                    return angles
+                        return angles
+
+                class Connected(SurfaceCategoryWithAxiom):
+                    class ParentMethods:
+                        def _test_genus(self, **options):
+                            r"""
+                            Verify that the genus is compatible with the angles of the
+                            singularities.
+
+                            ALGORITHM:
+
+                            We use the angles around the vertices of the surface to compute the
+                            genus, see e.g. [Massart2021] p.17. It would probably be better to
+                            just compute the Euler characteristic directly from the polygon
+                            gluings here (and implement this on the level of polygonal
+                            surfaces.)
+
+                            EXAMPLES::
+
+                                sage: from flatsurf import translation_surfaces
+                                sage: translation_surfaces.octagon_and_squares()._test_genus()
+
+                            .. [Massart2021] \D. Massart. A short introduction to translation
+                            surfaces, Veech surfaces, and Teichműller dynamics.
+                            https://hal.science/hal-03300179/document
+
+                            """
+                            tester = self._tester(**options)
+
+                            for edge in self.edges():
+                                if self.opposite_edge(*edge) == edge:
+                                    # The genus formula below is wrong when there is a vertex on an edge.
+                                    return
+
+                            tester.assertEqual(self.genus(), sum(a - 1 for a in self.angles()) // 2 + 1)

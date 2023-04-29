@@ -97,105 +97,6 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
     class Oriented(SurfaceCategoryWithAxiom):
         class ParentMethods:
-            def angles(self, numerical=False, return_adjacent_edges=False):
-                r"""
-                Return the set of angles around the vertices of the surface.
-
-                These are given as multiple of `2 \pi`.
-
-                EXAMPLES::
-
-                    sage: import flatsurf.geometry.similarity_surface_generators as sfg
-                    sage: sfg.translation_surfaces.regular_octagon().angles()
-                    [3]
-                    sage: S = sfg.translation_surfaces.veech_2n_gon(5)
-                    sage: S.angles()
-                    [2, 2]
-                    sage: S.angles(numerical=True)
-                    [2.0, 2.0]
-                    sage: S.angles(return_adjacent_edges=True) # random output
-                    [(2, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
-                     (2, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
-                    sage: S.angles(numerical=True, return_adjacent_edges=True) # random output
-                    [(2.0, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
-                     (2.0, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
-
-                    sage: sfg.translation_surfaces.veech_2n_gon(6).angles()
-                    [5]
-                    sage: sfg.translation_surfaces.veech_double_n_gon(5).angles()
-                    [3]
-                    sage: sfg.translation_surfaces.cathedral(1, 1).angles()
-                    [3, 3, 3]
-
-                    sage: from flatsurf import polygons, similarity_surfaces
-                    sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
-                    sage: H = B.minimal_cover(cover_type="half-translation")
-                    sage: S = B.minimal_cover(cover_type="translation")
-                    sage: H.angles()
-                    [1/2, 5/2, 1/2, 1/2]
-                    sage: S.angles()
-                    [1, 5, 1, 1]
-
-                    sage: H.angles(return_adjacent_edges=True)
-                     [(1/2, [...]), (5/2, [...]), (1/2, [...]), (1/2, [...])]
-                    sage: S.angles(return_adjacent_edges=True)
-                     [(1, [...]), (5, [...]), (1, [...]), (1, [...])]
-                """
-                if not self.is_finite_type():
-                    raise NotImplementedError("the set of edges is infinite!")
-
-                edges = set(self.edges())
-                angles = []
-
-                if return_adjacent_edges:
-                    while edges:
-                        # Note that iteration order here is different for different
-                        # versions of Python. Therefore, the output in the doctest
-                        # above is random.
-                        pair = p, e = next(iter(edges))
-                        ve = self.polygon(p).edge(e)
-                        angle = 0
-                        adjacent_edges = []
-                        while pair in edges:
-                            adjacent_edges.append(pair)
-                            edges.remove(pair)
-                            f = (e - 1) % self.polygon(p).num_edges()
-                            ve = self.polygon(p).edge(e)
-                            vf = -self.polygon(p).edge(f)
-                            ppair = pp, ff = self.opposite_edge(p, f)
-                            angle += (
-                                (ve[0] > 0 and vf[0] <= 0)
-                                or (ve[0] < 0 and vf[0] >= 0)
-                                or (ve[0] == vf[0] == 0)
-                            )
-                            pair, p, e = ppair, pp, ff
-                        if numerical:
-                            angles.append((float(angle) / 2, adjacent_edges))
-                        else:
-                            angles.append((QQ((angle, 2)), adjacent_edges))
-                else:
-                    while edges:
-                        pair = p, e = next(iter(edges))
-                        angle = 0
-                        while pair in edges:
-                            edges.remove(pair)
-                            f = (e - 1) % self.polygon(p).num_edges()
-                            ve = self.polygon(p).edge(e)
-                            vf = -self.polygon(p).edge(f)
-                            ppair = pp, ff = self.opposite_edge(p, f)
-                            angle += (
-                                (ve[0] > 0 and vf[0] <= 0)
-                                or (ve[0] < 0 and vf[0] >= 0)
-                                or (ve[0] == vf[0] == 0)
-                            )
-                            pair, p, e = ppair, pp, ff
-                        if numerical:
-                            angles.append(float(angle) / 2)
-                        else:
-                            angles.append(QQ((angle, 2)))
-
-                return angles
-
             def holonomy_field(self):
                 r"""
                 Return the relative holonomy field of this translation or half-translation surface.
@@ -356,3 +257,104 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     S._refine_category_(self.category())
                     return S, M
+
+            class WithoutBoundary(SurfaceCategoryWithAxiom):
+                class ParentMethods:
+                    def angles(self, numerical=False, return_adjacent_edges=False):
+                        r"""
+                        Return the set of angles around the vertices of the surface.
+
+                        These are given as multiple of `2 \pi`.
+
+                        EXAMPLES::
+
+                            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+                            sage: sfg.translation_surfaces.regular_octagon().angles()
+                            [3]
+                            sage: S = sfg.translation_surfaces.veech_2n_gon(5)
+                            sage: S.angles()
+                            [2, 2]
+                            sage: S.angles(numerical=True)
+                            [2.0, 2.0]
+                            sage: S.angles(return_adjacent_edges=True) # random output
+                            [(2, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
+                             (2, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
+                            sage: S.angles(numerical=True, return_adjacent_edges=True) # random output
+                            [(2.0, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
+                             (2.0, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
+
+                            sage: sfg.translation_surfaces.veech_2n_gon(6).angles()
+                            [5]
+                            sage: sfg.translation_surfaces.veech_double_n_gon(5).angles()
+                            [3]
+                            sage: sfg.translation_surfaces.cathedral(1, 1).angles()
+                            [3, 3, 3]
+
+                            sage: from flatsurf import polygons, similarity_surfaces
+                            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                            sage: H = B.minimal_cover(cover_type="half-translation")
+                            sage: S = B.minimal_cover(cover_type="translation")
+                            sage: H.angles()
+                            [1/2, 5/2, 1/2, 1/2]
+                            sage: S.angles()
+                            [1, 5, 1, 1]
+
+                            sage: H.angles(return_adjacent_edges=True)
+                             [(1/2, [...]), (5/2, [...]), (1/2, [...]), (1/2, [...])]
+                            sage: S.angles(return_adjacent_edges=True)
+                             [(1, [...]), (5, [...]), (1, [...]), (1, [...])]
+                        """
+                        if not self.is_finite_type():
+                            raise NotImplementedError("the set of edges is infinite!")
+
+                        edges = set(self.edges())
+                        angles = []
+
+                        if return_adjacent_edges:
+                            while edges:
+                                # Note that iteration order here is different for different
+                                # versions of Python. Therefore, the output in the doctest
+                                # above is random.
+                                pair = p, e = next(iter(edges))
+                                ve = self.polygon(p).edge(e)
+                                angle = 0
+                                adjacent_edges = []
+                                while pair in edges:
+                                    adjacent_edges.append(pair)
+                                    edges.remove(pair)
+                                    f = (e - 1) % self.polygon(p).num_edges()
+                                    ve = self.polygon(p).edge(e)
+                                    vf = -self.polygon(p).edge(f)
+                                    ppair = pp, ff = self.opposite_edge(p, f)
+                                    angle += (
+                                        (ve[0] > 0 and vf[0] <= 0)
+                                        or (ve[0] < 0 and vf[0] >= 0)
+                                        or (ve[0] == vf[0] == 0)
+                                    )
+                                    pair, p, e = ppair, pp, ff
+                                if numerical:
+                                    angles.append((float(angle) / 2, adjacent_edges))
+                                else:
+                                    angles.append((QQ((angle, 2)), adjacent_edges))
+                        else:
+                            while edges:
+                                pair = p, e = next(iter(edges))
+                                angle = 0
+                                while pair in edges:
+                                    edges.remove(pair)
+                                    f = (e - 1) % self.polygon(p).num_edges()
+                                    ve = self.polygon(p).edge(e)
+                                    vf = -self.polygon(p).edge(f)
+                                    ppair = pp, ff = self.opposite_edge(p, f)
+                                    angle += (
+                                        (ve[0] > 0 and vf[0] <= 0)
+                                        or (ve[0] < 0 and vf[0] >= 0)
+                                        or (ve[0] == vf[0] == 0)
+                                    )
+                                    pair, p, e = ppair, pp, ff
+                                if numerical:
+                                    angles.append(float(angle) / 2)
+                                else:
+                                    angles.append(QQ((angle, 2)))
+
+                        return angles

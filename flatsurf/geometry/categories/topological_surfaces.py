@@ -184,6 +184,19 @@ class TopologicalSurfaces(SurfaceCategory):
 
             """
 
+        @abstract_method(optional=True)
+        def genus(self):
+            r"""
+            Return the genus of this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: translation_surfaces.octagon_and_squares().genus()
+                3
+
+            """
+
     class Orientable(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces that can be oriented.
