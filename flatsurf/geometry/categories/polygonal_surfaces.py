@@ -92,9 +92,6 @@ class PolygonalSurfaces(SurfaceCategory):
                 Category of connected without boundary finite type translation surfaces
 
             """
-            # TODO: Explain the difference between is_ and in category() and
-            # that the latter could be preferred for speed.
-
             from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
             category = TopologicalSurfaces.ParentMethods.refined_category(self)
 
@@ -448,6 +445,14 @@ class PolygonalSurfaces(SurfaceCategory):
         def is_finite_type(self):
             r"""
             Return whether this surface is constructed from finitely many polygons.
+
+            .. NOTE::
+
+                This method is used to determine whether this surface satisfies
+                the :class:`FiniteType` axiom or the :class:`InfiniteType`
+                axiom. Surfaces can override this method to perform specialized
+                logic, see the note in :mod:`flatsurf.geometry.categories` for
+                performance considerations.
 
             EXAMPLES::
 

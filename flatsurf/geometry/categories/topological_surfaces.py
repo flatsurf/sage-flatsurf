@@ -129,6 +129,14 @@ class TopologicalSurfaces(SurfaceCategory):
             r"""
             Return whether this surface is orientable.
 
+            .. NOTE::
+
+                This method is used by :meth:`refined_category` to determine
+                whether this surface satisfies the axiom :class:`Orientable`.
+                Surfaces can override this method to perform specialized logic,
+                see the note in :mod:`flatsurf.geometry.categories` for
+                performance considerations.
+
             EXAMPLES::
 
                 sage: from flatsurf import polygons, similarity_surfaces
@@ -143,6 +151,15 @@ class TopologicalSurfaces(SurfaceCategory):
         def is_with_boundary(self):
             r"""
             Return whether this a topological surface with boundary.
+
+            .. NOTE::
+
+                This method is used by :meth:`refined_category` to determine
+                whether this surface satisfies the axiom :class:`WithBoundary`
+                or :class:`WithoutBoundary`. Surfaces can override this method
+                to perform specialized logic, see the note in
+                :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             EXAMPLES::
 
@@ -159,6 +176,14 @@ class TopologicalSurfaces(SurfaceCategory):
             r"""
             Return whether this surface is compact.
 
+            .. NOTE::
+
+                This method is used by :meth:`refined_category` to determine
+                whether this surface satisfies the axiom of compactness.
+                Surfaces can override this method to perform specialized logic,
+                see the note in :mod:`flatsurf.geometry.categories` for
+                performance considerations.
+
             EXAMPLES::
 
                 sage: from flatsurf import polygons, similarity_surfaces
@@ -173,6 +198,14 @@ class TopologicalSurfaces(SurfaceCategory):
         def is_connected(self):
             r"""
             Return whether this surface is connected.
+
+            .. NOTE::
+
+                This method is used by :meth:`refined_category` to determine
+                whether this surface satisfies the axiom of connectedness.
+                Surfaces can override this method to perform specialized logic,
+                see the note in :mod:`flatsurf.geometry.categories` for
+                performance considerations.
 
             EXAMPLES::
 

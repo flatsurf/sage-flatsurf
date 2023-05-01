@@ -18,6 +18,22 @@ provide entry points to place your code; e.g., to add a method to all
 translation surfaces, actually add a method to
 :class:`TranslationSurfaces.ParentMethods`.
 
+.. NOTE::
+
+    Categories are deduced by calling methods such as :meth:`is_orientable`,
+    :meth:`is_with_boundary`, :meth:`is_compact`, :meth:`is_connected`,
+    :meth:`is_finite_type`, :meth:`is_cone_surface`,
+    :meth:`is_dilation_surface`, :meth:`is_translation_surface`, and
+    :meth:`is_rational`. There are default implementations for these for finite
+    type surfaces. Once a surfaces has been found to be in a subcategory, these
+    methods are replaced to simply return ``True`` instead of computing
+    anything. If a class explicitly overrides these methods, then tha category
+    machinary cannot replace that method anymore when the category of the
+    surface gets refined. Consequently, it can be beneficial for the override
+    to shortcut the question by querying the category, e.g., ``is_rational``
+    could start with ``if "Rational" in self.category().axioms(): return True``
+    before actually performing any computation.
+
 EXAMPLES::
 
 A single square without any gluings::
@@ -42,7 +58,7 @@ It does not really make sense to ask which stratum this surface belongs to::
     ...
     AttributeError: ... has no attribute 'stratum'
 
-Once we add gluings, this turns into a square torus.
+Once we add gluings, this turns into a square torus::
 
     sage: S.glue((0, 0), (0, 2))
     sage: S.glue((0, 1), (0, 3))

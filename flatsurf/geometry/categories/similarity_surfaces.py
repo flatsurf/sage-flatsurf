@@ -159,7 +159,6 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
             category = PolygonalSurfaces.ParentMethods.refined_category(self)
 
-            # TODO: Document why is_… exists if there is in category.
             if self.is_cone_surface():
                 from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
                 category &= ConeSurfaces()
@@ -189,6 +188,13 @@ class SimilaritySurfaces(SurfaceCategory):
             Return whether this surface is a cone surface, i.e., glued edges
             can be transformed into each other with isometries.
 
+            .. NOTE::
+
+                This method is used to determine whether this surface is in the
+                category of :class:`ConeSurfaces`. Surfaces can override this
+                method to perform specialized logic, see the note in
+                :mod:`flatsurf.geometry.categories` for performance considerations.
+
             EXAMPLES::
 
                 sage: from flatsurf import polygons, similarity_surfaces
@@ -208,6 +214,15 @@ class SimilaritySurfaces(SurfaceCategory):
             Return whether this surface is a dilation surface, i.e., whether
             glued edges can be transformed into each other by translation
             followed by a dilation (multiplication by a diagonal matrix.)
+
+            .. NOTE::
+
+                This method is used to determine whether this surface is in the
+                category of :class:`DilationSurfaces` or
+                :class:`DilationSurfaces.Positive`. Surfaces can override this
+                method to perform specialized logic, see the note in
+                :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             INPUT:
 
@@ -237,6 +252,15 @@ class SimilaritySurfaces(SurfaceCategory):
             edges can be transformed into each other by translations.
 
             This method must be implemented if this surface is a dilation surface.
+
+            .. NOTE::
+
+                This method is used to determine whether this surface is in the
+                category of :class:`HalfTranslationSurfaces` or
+                :class:`TranslationSurfaces`. Surfaces can override this method
+                to perform specialized logic, see the note in
+                :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             INPUT:
 
@@ -269,6 +293,14 @@ class SimilaritySurfaces(SurfaceCategory):
             r"""
             Return whether this surface is a rational surface, i.e., all the
             rotational part of all gluings is a rational multiple of π.
+
+            .. NOTE::
+
+                This method is used to determine whether this surface satisfies
+                the :class:`Rational` axiom. Surfaces can override this method
+                to perform specialized logic, see the note in
+                :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             EXAMPLES::
 
@@ -2569,8 +2601,9 @@ class SimilaritySurfaces(SurfaceCategory):
         class ParentMethods:
             def is_cone_surface(self):
                 r"""
-                Return whether this surface is a cone surface, i.e., glued edges
-                can be transformed into each other with isometries.
+                Return whether this finite type surface is a cone surface,
+                i.e., glued edges can be transformed into each other with
+                isometries.
 
                 EXAMPLES::
 
@@ -2586,9 +2619,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def is_dilation_surface(self, positive=False):
                 r"""
-                Return whether this surface is a dilation surface, i.e., whether
-                glued edges can be transformed into each other by translation
-                followed by a dilation (multiplication by a diagonal matrix.)
+                Return whether this finite type surface is a dilation surface,
+                i.e., whether glued edges can be transformed into each other by
+                translation followed by a dilation (multiplication by a
+                diagonal matrix.)
 
                 INPUT:
 
@@ -2612,8 +2646,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def is_translation_surface(self, positive=True):
                 r"""
-                Return whether this surface is a translation surface, i.e., glued
-                edges can be transformed into each other by translations.
+                Return whether this finite type surface is a translation
+                surface, i.e., glued edges can be transformed into each other
+                by translations.
 
                 INPUT:
 
@@ -2645,8 +2680,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def is_rational_surface(self):
                 r"""
-                Return whether this surface is a rational surface, i.e., all the
-                rotational part of all gluings is a rational multiple of π.
+                Return whether this finite type surface is a rational surface,
+                i.e., all the rotational part of all gluings is a rational
+                multiple of π.
 
                 EXAMPLES::
 
