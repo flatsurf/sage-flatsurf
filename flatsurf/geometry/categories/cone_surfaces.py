@@ -52,7 +52,6 @@ a rotation, this is a cone surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-# TODO: Use SurfaceCategory everywhere
 from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 
 
