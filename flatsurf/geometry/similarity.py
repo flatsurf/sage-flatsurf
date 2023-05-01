@@ -293,7 +293,7 @@ class Similarity(MultiplicativeGroupElement):
 
             try:
                 return P(vertices=[self(v) for v in w.vertices()])
-            except ValueError as e:
+            except ValueError:
                 if not self._sign.is_one():
                     raise ValueError("Similarity must be orientation preserving.")
                 else:

@@ -714,7 +714,6 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
     """
 
     def __init__(self, tangent_vector):
-        t = tangent_vector.polygon_label()
         self._vector = tangent_vector.vector()
         self._s = tangent_vector.surface()
 

@@ -1764,8 +1764,6 @@ class SimilaritySurface(SageObject):
             poly2.vertex(e2) - poly2.vertex(e2 + 2), -poly2.edge(e2 + 1)
         )
         sim = sim1 * sim2
-        from sage.functions.generalized import sgn
-
         return sim[1][0] == 0
 
     def delaunay_single_flip(self):
@@ -1820,7 +1818,6 @@ class SimilaritySurface(SageObject):
             if not self.is_finite():
                 raise NotImplementedError("A limit must be set for infinite surfaces.")
             limit = self.num_polygons()
-        count = 0
         for l1, p1 in self.label_iterator(polygons=True):
             try:
                 c1 = p1.circumscribing_circle()

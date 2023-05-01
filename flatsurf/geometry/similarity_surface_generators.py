@@ -613,7 +613,6 @@ class SimilaritySurfaceGenerators:
             P = [P]
 
         m = len(P)
-        Q = []
         surface = Surface_list(base_ring=base_ring)
         for p in P:
             surface.add_polygon(p)
@@ -668,8 +667,6 @@ class SimilaritySurfaceGenerators:
             ConeSurface built from 2 polygons
             sage: TestSuite(R).run()
         """
-        from sage.modules.free_module_element import vector
-
         F = Sequence([w, h]).universe()
 
         if not F.is_field():

@@ -1376,7 +1376,6 @@ class Surface_list(Surface):
         for k in data:
             data[k] = G(data[k])
         cover = Surface_list(base_ring=self.base_ring())
-        labels = list(self.label_iterator())
         edges = set(self.edge_iterator())
         cover_labels = {}
         for i in range(1, d + 1):

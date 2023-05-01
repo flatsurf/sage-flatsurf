@@ -835,7 +835,7 @@ class GL2ROrbitClosure:
         ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is not True"
             raise ValueError
 
-        perimeters = [p for p in component.perimeter()]
+        perimeters = list(component.perimeter())
         per = perimeters[0]
         assert not per.vertical()
         sc = per.saddleConnection()
@@ -1004,7 +1004,7 @@ class GL2ROrbitClosure:
           boundary of ``decomposition`` and the corresponding values are the indices
           of the components of ``decomposition``
         """
-        components = [c for c in decomposition.components()]
+        components = list(decomposition.components())
 
         n = len(sc_index)
         assert n % 2 == 0
@@ -1012,7 +1012,6 @@ class GL2ROrbitClosure:
 
         for p in components[0].perimeter():
             break
-        root = p.saddleConnection()
         t = {0: None}  # face -> half edge to take to go to the root
         todo = [0]
         edges = []  # store edges in topological order to perform Gauss reduction
@@ -1135,7 +1134,6 @@ class GL2ROrbitClosure:
         for i, sc in enumerate(spanning_set):
             sc = sc_pos[sc]
             c = sc.chain()
-            v = [0] * self.d
             for edge in self._surface.edges():
                 A[i] += ZZ(str(c[edge])) * self.proj.column(edge.index())
         assert A.det().is_unit()
@@ -1304,10 +1302,7 @@ class GL2ROrbitClosure:
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
             sage: loads(dumps(O)) == O  # long time (6s, #123)
             True
-
         """
-        from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
-
         return (
             GL2ROrbitClosure,
             (self._surface,),
