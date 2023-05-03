@@ -121,7 +121,6 @@ class TopologicalSurfaces(SurfaceCategory):
 
         @abstract_method
         def is_mutable(self):
-            # TODO: Deprecate. We only really care whether a surface can be put into a cache here so we should test that instead. If it's mutable, it won't allow us to do that. (We should state that somewhere and test for it.)
             pass
 
         @abstract_method
