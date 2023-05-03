@@ -28,7 +28,7 @@ constructions from
     sage: from flatsurf import polygon, similarity_surfaces
     sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
     sage: similarity_surfaces.self_glued_polygon(P)
-    Surface built from 1 polygon
+    Genus 0 Half-Translation Surface built from a quadrilateral
 
 The second way is to build a surface (using e.g.
 :class:`flatsurf.geometry.surface.MutableOrientedSimilaritySurface`)::

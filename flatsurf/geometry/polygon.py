@@ -940,40 +940,107 @@ class Polygon(Element):
 
     # From https://en.wikipedia.org/wiki/Polygon#Naming
     _ngon_names = {
-        1: "monogon",
-        2: "digon",
-        3: "triangle",
-        4: "quadrilateral",
-        5: "pentagon",
-        6: "hexagon",
-        7: "heptagon",
-        8: "octagon",
-        9: "nonagon",
-        10: "decagon",
-        11: "hendecagon",
-        12: "dodecagon",
-        13: "tridecagon",
-        14: "tetradecagon",
-        15: "pentadecagon",
-        16: "hexadecagon",
-        17: "heptadecagon",
-        18: "octadecagon",
-        19: "enneadecagon",
-        20: "icosagon",
+        1: ("a", "monogon"),
+        2: ("a", "digon"),
+        3: ("a", "triangle"),
+        4: ("a", "quadrilateral"),
+        5: ("a", "pentagon"),
+        6: ("a", "hexagon"),
+        7: ("a", "heptagon"),
+        8: ("an", "octagon"),
+        9: ("a", "nonagon"),
+        10: ("a", "decagon"),
+        11: ("a", "hendecagon"),
+        12: ("a", "dodecagon"),
+        13: ("a", "tridecagon"),
+        14: ("a", "tetradecagon"),
+        15: ("a", "pentadecagon"),
+        16: ("a", "hexadecagon"),
+        17: ("a", "heptadecagon"),
+        18: ("an", "octadecagon"),
+        19: ("an", "enneadecagon"),
+        20: ("an", "icosagon"),
         # Most people probably don't know the prefixes after that. We
         # keep a few easy/fun ones.
-        100: "hectogon",
-        1000: "chiliagon",
-        10000: "myriagon",
-        1000000: "megagon",
-        infinity: "apeirogon",
+        100: ("a", "hectogon"),
+        1000: ("a", "chiliagon"),
+        10000: ("a", "myriagon"),
+        1000000: ("a", "megagon"),
+        infinity: ("an", "apeirogon"),
     }
 
     @staticmethod
-    def describe_polygon(num_edges, convex=None):
-        ngon = Polygon._ngon_names.get(num_edges, f"{num_edges}-gon")
+    def _describe_polygon(num_edges, **kwargs):
+        description = Polygon._ngon_names.get(num_edges, f"{num_edges}-gon")
 
-        return ngon
+        def augment(article, *attributes):
+            nonlocal description
+            description = article, " ".join(attributes + (description[1],))
+
+        def augment_if(article, attribute, *properties):
+            if all([kwargs.get(property, False) for property in (properties or [attribute])]):
+                augment(article, attribute)
+                return True
+            return False
+
+        def augment_if_not(article, attribute, *properties):
+            if all([not kwargs.get(property, True) for property in (properties or [attribute])]):
+                augment(article, attribute)
+                return True
+            return False
+
+        if augment_if("a", "degenerate"):
+            return description
+
+        if num_edges == 3:
+            augment_if("an", "equilateral") or augment_if("an", "isosceles") or augment_if("a", "right")
+
+            return description
+
+        if num_edges == 4:
+            if kwargs.get("equilateral", False) and kwargs.get("equiangular", False):
+                return "a", "square"
+
+            if kwargs.get("equiangular", False):
+                return "a", "rectangle"
+
+            if kwargs.get("equilateral", False):
+                return "a", "rhombus"
+
+        augment_if("a", "regular", "equilateral", "equiangular")
+
+        augment_if_not("a", "non-convex", "convex")
+
+        return description
+
+    def describe_polygon(self):
+        properties = {
+            "degenerate": self.is_degenerate(),
+            "equilateral": self.is_equilateral(),
+            "equiangular": self.is_equiangular(),
+            "convex": self.is_convex(),
+        }
+
+        if self.num_edges() == 3:
+            properties["right"] = any(angle * 4 == 1 for angle in self.angles())
+            properties["isosceles"] = len(set(self.angles())) == 2
+
+        return Polygon._describe_polygon(self.num_edges(), **properties)
+
+    def is_degenerate(self):
+        if self.area() == 0:
+            return True
+
+        if any(angle * 2 == 1 for angle in self.angles()):
+            return True
+
+        return False
+
+    def is_equilateral(self):
+        return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
+
+    def is_equiangular(self):
+        return len(set(self.angles())) == 1
 
     @cached_method
     def module(self):

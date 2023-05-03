@@ -144,10 +144,40 @@ class MutablePolygonalSurface(Surface_base):
     def _repr_(self):
         if not self.is_finite_type():
             return "Surface built from infinitely many polygons"
-        if len(self.polygons()) == 1:
-            return "Surface built from 1 polygon"
 
-        return "Surface built from {} polygons".format(len(self.polygons()))
+        if len(self.labels()) == 0:
+            return "Empty Surface"
+
+        return f"{self._describe_surface()} built from {self._describe_polygons()}"
+
+    def _describe_surface(self):
+        return "Surface"
+
+    def _describe_polygons(self):
+        polygons = [p.describe_polygon() for p in sorted(self.polygons(), key=lambda polygon: -polygon.num_edges())]
+
+        if not polygons:
+            return ""
+
+        collated = []
+        while polygons:
+            count = 1
+            polygon = polygons.pop()
+            while polygons and polygons[-1] == polygon:
+                count += 1
+                polygons.pop()
+
+            if count == 1:
+                collated.append(" ".join(polygon))
+            else:
+                collated.append(f"{count} {polygon[1]}s")
+
+        description = collated.pop()
+
+        if collated:
+            description = ", ".join(collated) + " and " + description
+
+        return description
 
     def set_base_label(self, label):
         if not self._mutable:
@@ -185,6 +215,36 @@ class OrientedSimilaritySurface(Surface_base):
         category &= SimilaritySurfaces().Oriented()
 
         super().__init__(base, category=category)
+
+    def _describe_surface(self):
+        if not self.is_finite_type():
+            return "Surface built from infinitely many polygons"
+
+        if not self.is_connected():
+            # Many checks do not work yet if a surface is not connected, so we stop here.
+            return "Disconnected Surface"
+
+        if self.is_translation_surface(positive=True):
+            description = "Translation Surface"
+        elif self.is_translation_surface(positive=False):
+            description = "Half-Translation Surface"
+        elif self.is_dilation_surface(positive=True):
+            description = "Positive Dilation Surface"
+        elif self.is_dilation_surface(positive=False):
+            description = "Dilation Surface"
+        elif self.is_cone_surface():
+            description = "Cone Surface"
+            if self.is_rational_surface():
+                description = f"Rational {description}"
+        else:
+            description = "Surface"
+
+        genus = self.genus()
+
+        if self.is_with_boundary():
+            description += " with boundary"
+
+        return f"Genus {genus} {description}"
 
     def _an_element_(self):
         r"""
@@ -449,7 +509,7 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         if old.num_edges() != polygon.num_edges():
             from flatsurf.geometry.polygon import Polygon
-            raise ValueError(f"polygon must be another {Polygon.describe_polygon(old.num_edges())}")
+            raise ValueError(f"polygon must be {' '.join(Polygon._describe_polygon(old.num_edges()))}")
 
         self._polygons[label] = polygon
 
