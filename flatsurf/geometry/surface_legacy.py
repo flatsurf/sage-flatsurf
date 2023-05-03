@@ -168,9 +168,7 @@ class Surface(OrientedSimilaritySurface):
         OrientedSimilaritySurface.__init__(self, base=base_ring, category=category)
 
         if not mutable:
-            # TODO: This is a bit hacky to get the category to be refined. We
-            # should remove the mutable state from Surface.
-            self.set_immutable()
+            self._refine_category_(self.refined_category())
 
     def _test_refined_category(self, **options):
         if self.is_mutable():
@@ -1322,13 +1320,6 @@ class Surface_list(Surface):
     def __hash__(self):
         return super().__hash__()
 
-    def _cache_key(self):
-        if self.is_mutable():
-            raise TypeError("cannot hash mutable surface")
-
-        # TODO
-        return (Surface_list, self.base_ring(), self.base_label(), tuple((polygon, tuple(sorted(adj))) for (polygon, adj) in self._p), self._reference_surface)
-
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
@@ -1805,13 +1796,6 @@ class Surface_dict(Surface):
 
     def __hash__(self):
         return super().__hash__()
-
-    def _cache_key(self):
-        if self.is_mutable():
-            raise TypeError("cannot hash mutable surface")
-
-        # TODO
-        return (Surface_dict, self.base_ring(), self.base_label(), tuple(sorted((key, polygon, tuple(sorted(adj))) for (key, (polygon, adj)) in self._p.items())), self._reference_surface)
 
     def __eq__(self, other):
         r"""
