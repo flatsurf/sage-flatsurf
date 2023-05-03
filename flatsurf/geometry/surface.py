@@ -46,7 +46,6 @@ class Surface_base(Parent):
 
 
 class MutablePolygonalSurface(Surface_base):
-    # TODO: Lets us add polygons.
     def __init__(self, base, category=None):
         from sage.all import ZZ
         self._next_label = ZZ(0)
@@ -83,12 +82,13 @@ class MutablePolygonalSurface(Surface_base):
         return label
 
     def add_polygons(self, polygons):
-        # TODO: Deprecate
+        import warnings
+        warnings.warn("add_polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use labels = [add_polygon(p) for p in polygons] instead")
+
         return [self.add_polygon(p) for p in polygons]
 
     def set_default_graphical_surface(self, graphical_surface):
-        # TODO: Explain what to do instead.
-        raise NotImplementedError("set_default_graphical_surface() has been removed from this version of sage-flatsurf.")
+        raise NotImplementedError("set_default_graphical_surface() has been removed from this version of sage-flatsurf. If you want to change the default plotting of a surface create a subclass and override graphical_surface() instead")
 
     def remove_polygon(self, label):
         if not self._mutable:
@@ -137,9 +137,9 @@ class MutablePolygonalSurface(Surface_base):
 
     def __hash__(self):
         if self._mutable:
-            raise Exception
-        # TODO
-        return 0
+            raise TypeError("cannot hash a mutable surface")
+
+        return hash((tuple(self.labels()), tuple(self.polygons()), self._base_label))
 
     def _repr_(self):
         if not self.is_finite_type():
@@ -155,7 +155,11 @@ class MutablePolygonalSurface(Surface_base):
 
         self._base_label = label
 
-    change_base_label = set_base_label  # TODO: Deprecate
+    def change_base_label(self, label):
+        import warnings
+        warnings.warn("change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_base_label() instead")
+
+        self.set_base_label(label)
 
     @cached_method
     def labels(self):
@@ -393,7 +397,7 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
         import warnings
         warnings.warn("change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead")
 
-        # TODO: This is an obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
+        # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
         if polygon.num_edges() != self.polygon(label).num_edges():
             self._unglue_polygon(label)
             self._gluings[label] = [None] * polygon.num_edges()
@@ -468,9 +472,9 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
     def __hash__(self):
         if self._mutable:
-            raise Exception
-        # TODO
-        return 0
+            raise TypeError("cannot hash a mutable surface")
+
+        return hash((super().__hash__(), tuple(self._gluings)))
 
 
 class BaseRingChangedSurface(OrientedSimilaritySurface):
@@ -523,7 +527,8 @@ class LabeledCollection:
 
 class Labels(LabeledCollection, collections.abc.Set):
     def __iter__(self):
-        # TODO: This does not enumerate the entire surface for non-connected surfaces.
+        # TODO: Currently, this gets non-connected surfaces wrong. Only one component is being explored because there is only a single base label.
+
         from collections import deque
 
         seen = set()

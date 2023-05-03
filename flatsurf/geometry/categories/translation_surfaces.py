@@ -193,7 +193,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 0
                 sage: s.glue((0, 0), (0, 2))
                 sage: s.glue((0, 1), (0, 3))
-                sage: s.change_base_label(0)
+                sage: s.set_base_label(0)
                 sage: s.set_immutable()
                 sage: s.standardize_polygons().polygon(0)
                 polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
