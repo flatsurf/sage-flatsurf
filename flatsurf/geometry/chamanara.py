@@ -168,7 +168,7 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         return super().__eq__(other)
 
 
-def chamanara_half_dilation_surface(alpha, n=8):
+def chamanara_half_dilation_surface(alpha, n=None):
     r"""
     Return Chamanara's surface thought of as a Half Dilation surface.
 
@@ -178,7 +178,10 @@ def chamanara_half_dilation_surface(alpha, n=8):
         sage: s = chamanara_half_dilation_surface(1/2)
         sage: TestSuite(s).run()
     """
-    # TODO: Warn if n != 8
+    if n is not None:
+        import warnings
+        warnings.warn("the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf")
+
     return ChamanaraSurface(alpha)
 
 
@@ -201,7 +204,7 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
         return super().graphical_surface(adjacencies=adjacencies)
 
 
-def chamanara_surface(alpha, n=8):
+def chamanara_surface(alpha, n=None):
     r"""
     Return Chamanara's surface thought of as a translation surface.
 
@@ -211,5 +214,8 @@ def chamanara_surface(alpha, n=8):
         sage: s = chamanara_surface(1/2)
         sage: TestSuite(s).run()
     """
-    # TODO: Warn if n != 8
+    if n is not None:
+        import warnings
+        warnings.warn("the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf")
+
     return ChamanaraTranslationSurface(alpha)

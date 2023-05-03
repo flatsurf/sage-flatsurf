@@ -61,8 +61,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
     """
     _base_category_class_and_axiom = (HalfTranslationSurfaces, 'Positive')
 
-    # TODO: They satisfy the axiom of no self-gluing and are oriented.
-
     def extra_super_categories(self):
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
         return (PolygonalSurfaces().Oriented(),)
