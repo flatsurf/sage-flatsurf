@@ -7,7 +7,9 @@ from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
 class AbstractOrigami(OrientedSimilaritySurface):
-    r"""Abstract base class for origamis.
+    r"""
+    Abstract base class for (connected) origamis.
+
     Realization needs just to define a _domain and four cardinal directions.
     """
 
@@ -21,7 +23,6 @@ class AbstractOrigami(OrientedSimilaritySurface):
         if category is None:
             category = TranslationSurfaces()
 
-        # TODO: Document that origamis must be connected.
         category &= TranslationSurfaces().WithoutBoundary().Connected()
 
         finite = domain.is_finite()
@@ -152,10 +153,13 @@ class LazyStandardizedPolygonSurface(OrientedSimilaritySurface):
     Instead use TranslationSurface.standardize_polygons.
     """
 
-    def __init__(self, surface, relabel=False, category=None):
-        if relabel:
-            # TODO: Complain. Ignored.
-            pass
+    def __init__(self, surface, relabel=None, category=None):
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError("the relabel keyword has been removed from LazyStandardizedPolygonSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+            else:
+                import warnings
+                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyStandardizedPolygonSurface")
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
         self._s = MutableOrientedSimilaritySurface.from_surface(surface)
