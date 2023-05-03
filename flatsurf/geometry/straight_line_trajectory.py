@@ -508,7 +508,7 @@ class AbstractStraightLineTrajectory:
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):
-                                new_point = self.surface().surface_point(
+                                new_point = self.surface().point(
                                     seg1.polygon_label(), x
                                 )
                                 if new_point not in intersection_points:

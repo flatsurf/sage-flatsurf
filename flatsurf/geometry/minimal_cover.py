@@ -15,7 +15,7 @@ def _is_finite(surface):
     if surface in ConeSurfaces().Rational():
         return True
 
-    surface = surface.reposition_polygons(relabel=True)
+    surface = surface.reposition_polygons()
 
     for label in surface.labels():
         polygon = surface.polygon(label)

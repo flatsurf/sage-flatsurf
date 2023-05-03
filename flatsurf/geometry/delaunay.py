@@ -33,30 +33,25 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     r"""
     Surface class used to triangulate an infinite surface.
 
-    EXAMPLES:
-
-    Example with relabel=False::
+    EXAMPLES::
 
         sage: from flatsurf import *
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=LazyTriangulatedSurface(s,relabel=False)
-        sage: ss.polygon(ss.base_label()).num_edges()
-        3
-        sage: TestSuite(ss).run()
-
-    Example with relabel=True::
-
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.delaunay import *
-        sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=LazyTriangulatedSurface(s,relabel=True)
+        sage: ss=LazyTriangulatedSurface(s)
         sage: ss.polygon(ss.base_label()).num_edges()
         3
         sage: TestSuite(ss).run()
     """
 
-    def __init__(self, similarity_surface, relabel=True, category=None):
+    def __init__(self, similarity_surface, relabel=None, category=None):
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError("the relabel keyword has been removed from LazyTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+            else:
+                import warnings
+                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyTriangulatedSurface()")
+
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
@@ -225,26 +220,12 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     r"""
     Surface class used to find a Delaunay triangulation of an infinite surface.
 
-    EXAMPLES:
-
-    Example with relabel=False::
+    EXAMPLES::
 
         sage: from flatsurf import *
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=LazyDelaunayTriangulatedSurface(s,relabel=False)
-        sage: ss.polygon(ss.base_label()).num_edges()
-        3
-        sage: TestSuite(ss).run()
-        sage: ss.is_delaunay_triangulated(limit=100)
-        True
-
-    Example with relabel=True::
-
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.delaunay import *
-        sage: s=translation_surfaces.infinite_staircase()
-        sage: ss=LazyDelaunayTriangulatedSurface(s,relabel=True)
+        sage: ss=LazyDelaunayTriangulatedSurface(s)
         sage: ss.polygon(ss.base_label()).num_edges()
         3
         sage: TestSuite(ss).run()
@@ -264,7 +245,14 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: TestSuite(ss).run()
     """
 
-    def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
+    def __init__(self, similarity_surface, direction=None, relabel=None, category=None):
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError("the relabel keyword has been removed from LazyDelaunayTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+            else:
+                import warnings
+                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunayTriangulatedSurface()")
+
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
@@ -487,7 +475,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: m=matrix([[2,1],[1,1]])
-        sage: ss=LazyDelaunaySurface(m*s,relabel=False)
+        sage: ss=LazyDelaunaySurface(m*s)
         sage: ss.polygon(ss.base_label())
         polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
         sage: ss.is_delaunay_decomposed(limit=100)
@@ -505,7 +493,14 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: TestSuite(ss).run()
     """
 
-    def __init__(self, similarity_surface, direction=None, relabel=True, category=None):
+    def __init__(self, similarity_surface, direction=None, relabel=None, category=None):
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError("the relabel keyword has been removed from LazyDelaunaySurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+            else:
+                import warnings
+                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunaySurface()")
+
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
