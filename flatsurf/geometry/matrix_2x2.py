@@ -140,9 +140,11 @@ def is_cosine_sine_of_rational(cos, sin):
 
     # Suppose that (c, s) are indeed sine and cosine of a rational angle. Then
     # x = c + I*s generates a cyclotomic field C and for some N we have x^N =
-    # ±1. Since C is contained in the compositum of K=Q(c) and L=Q(i*s), N is
-    # bounded by their degrees.
-    for n in range(cos.minpoly().degree() * sin.minpoly().degree() * 2):
+    # ±1. Since C is contained in the compositum of K=Q(c) and L=Q(i*s), the
+    # degree of C is bounded from above by their degrees. The degree of C is
+    # the totient of N which is bounded from below by sqrt(N/2).
+    # So 2 deg(K) deg(L) ≥ deg(C) = φ(N) ≥ sqrt(N/2).
+    for n in range(8 * cos.minpoly().degree()**2 * sin.minpoly().degree()**2):
         c, s = c * cos - s * sin, s * cos + c * sin
         if s == 0 or c == 0:
             return True
