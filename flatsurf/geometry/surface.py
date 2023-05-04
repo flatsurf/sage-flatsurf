@@ -154,7 +154,9 @@ class MutablePolygonalSurface(Surface_base):
         return "Surface"
 
     def _describe_polygons(self):
-        polygons = [p.describe_polygon() for p in sorted(self.polygons(), key=lambda polygon: -polygon.num_edges())]
+        polygons = [(-p.erase_marked_vertices().num_edges(), p.describe_polygon()) for p in self.polygons()]
+        polygons.sort()
+        polygons = [description for (edges, description) in polygons]
 
         if not polygons:
             return ""

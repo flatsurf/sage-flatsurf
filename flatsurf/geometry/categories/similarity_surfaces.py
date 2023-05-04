@@ -1491,7 +1491,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: TestSuite(hts).run()
                     sage: ps = cs.minimal_cover(cover_type="planar")
                     sage: ps
-                    MinimalPlanarCover(Surface built from 1 polygon)
+                    Minimal Planar Cover of Rational Cone Surface built from a square
                     sage: ps in TranslationSurfaces()
                     True
                     sage: TestSuite(ps).run()

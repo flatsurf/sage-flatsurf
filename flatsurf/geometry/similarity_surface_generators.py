@@ -1288,9 +1288,8 @@ class TranslationSurfaceGenerators:
             Translation Surface in H_1(0^3) built from 2 equilateral triangles and a regular hexagon
             sage: TestSuite(s).run()
             sage: s = translation_surfaces.ward(7)
-            Translation Surface in H_6(10) built from 2 regular heptagons and a regular tetradecagon
-
             sage: s
+            Translation Surface in H_6(10) built from 2 regular heptagons and a regular tetradecagon
             sage: TestSuite(s).run()
         """
         if n < 3:
