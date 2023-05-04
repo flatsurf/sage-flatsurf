@@ -263,7 +263,7 @@ def from_pyflatsurf(T):
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
         sage: T = from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
         sage: T
-        Surface built from 6 polygons
+        Translation Surface in H_2(2) built from 6 isosceles triangles
 
     TESTS::
 
@@ -286,8 +286,8 @@ def from_pyflatsurf(T):
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
-        sage: from_pyflatsurf(T0)  # optional: pyflatsurf
-        Surface built from 8 polygons
+        sage: from_pyflatsurf(T0)  # optional: pyflatsurf  # TODO: Printing is broken here
+        Translation Surface in H_2(1^2) built from 5 triangles, an isosceles triangle, a triangle and an isosceles triangle
 
     """
     from flatsurf.features import pyflatsurf_feature

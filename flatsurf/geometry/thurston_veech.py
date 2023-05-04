@@ -68,9 +68,7 @@ class ThurstonVeech:
 
             sage: S = TV([1,2], [3,1,1])
             sage: S
-            Surface built from 4 polygons
-            sage: S.stratum()
-            H_2(1^2)
+            Translation Surface in H_2(1^2) built from 4 rectangles
             sage: S.base_ring()
             Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095?
 

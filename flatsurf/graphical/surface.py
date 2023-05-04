@@ -359,7 +359,7 @@ class GraphicalSurface:
         return gs
 
     def __repr__(self):
-        return "Graphical version of {!r}".format(self._ss)
+        return "Graphical representation of {!r}".format(self._ss)
 
     def visible(self):
         r"""

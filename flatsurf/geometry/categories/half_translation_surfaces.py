@@ -87,10 +87,27 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     sage: H = B.minimal_cover(cover_type="half-translation")
                     sage: H.stratum()
                     Q_1(3, -1^3)
+
+                TESTS:
+
+                Verify that the stratum is correct for surfaces with self-glued edges::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.stratum()
+                    Q_0(0, -1^4)
+
                 """
                 angles = self.angles()
+
+                for a, b in self.gluings():
+                    if a == b:
+                        angles.append(QQ(1/2))
+
                 if all(x.denominator() == 1 for x in angles):
                     raise NotImplementedError
+
                 from surface_dynamics import QuadraticStratum
 
                 return QuadraticStratum(*[2 * a - 2 for a in angles])
@@ -196,11 +213,12 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         sage: p = E(r1 + r2)
                         sage: B = similarity_surfaces.billiard(p)
                         sage: B.minimal_cover("translation")
-                        MinimalTranslationCover(Surface built from 2 polygons)
+                        Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 equilateral triangles
                         sage: S = B.minimal_cover("translation")
                         sage: S, _ = S.normalized_coordinates()
                         sage: S
-                        Surface built from 6 polygons
+                        Translation Surface in H_1(0^6) built from 6 right triangles
+
                     """
                     from sage.all import matrix
                     if self.base_ring() is QQ:
@@ -303,6 +321,16 @@ class HalfTranslationSurfaces(SurfaceCategory):
                              [(1/2, [...]), (5/2, [...]), (1/2, [...]), (1/2, [...])]
                             sage: S.angles(return_adjacent_edges=True)
                              [(1, [...]), (5, [...]), (1, [...]), (1, [...])]
+
+                        For self-glued edges, no angle is reported for the
+                        "vertex" at the midpoint of the edge::
+
+                            sage: from flatsurf import polygon, similarity_surfaces
+                            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                            sage: S = similarity_surfaces.self_glued_polygon(P)
+                            sage: S.angles()
+                            [1]
+
                         """
                         if not self.is_finite_type():
                             raise NotImplementedError("the set of edges is infinite!")

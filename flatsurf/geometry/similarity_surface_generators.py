@@ -491,7 +491,7 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf import *
             sage: ex = similarity_surfaces.example()
             sage: ex
-            Surface built from 2 polygons
+            Genus 1 Surface built from 2 isosceles triangles
 
         TESTS::
 
@@ -527,7 +527,10 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf import *
             sage: p = polygons((2,0),(-1,3),(-1,-3))
             sage: s = similarity_surfaces.self_glued_polygon(p)
+            sage: s
+            Half-Translation Surface in Q_0(-1^4) built from an isosceles triangle
             sage: TestSuite(s).run()
+
         """
         s = MutableOrientedSimilaritySurface(P.base_ring())
         s.add_polygon(P)
@@ -555,13 +558,13 @@ class SimilaritySurfaceGenerators:
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
             sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: Q
-            Surface built from 2 polygons
+            Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: Q in ConeSurfaces().Rational()
             True
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: M
-            MinimalTranslationCover(Surface built from 2 polygons)
+            Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: TestSuite(M).run()
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: M in TranslationSurfaces()
@@ -700,7 +703,7 @@ class SimilaritySurfaceGenerators:
             sage: from flatsurf import *
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
-            Surface built from 2 polygons
+            Genus 0 Cone Surface built from 2 right triangles
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: R in ConeSurfaces()
             True
@@ -747,7 +750,7 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.basic_dilation_torus(AA(sqrt(2)))
             sage: ds
-            Surface built from 2 polygons
+            Genus 1 Positive Dilation Surface built from a rectangle and a square
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
@@ -799,7 +802,7 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
             sage: ds
-            Surface built from 3 polygons
+            Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
@@ -936,7 +939,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import *
             sage: T = translation_surfaces.square_torus()
             sage: T
-            Surface built from 1 polygon
+            Translation Surface in H_1(0) built from a square
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: T in TranslationSurfaces()
             True
@@ -967,7 +970,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.torus((1, AA(2).sqrt()), (AA(3).sqrt(), 3))
             sage: T
-            Surface built from 1 polygon
+            Translation Surface in H_1(0) built from a quadrilateral
             sage: T.polygon(0)
             polygon(vertices=[(0, 0), (1, 1.414213562373095?), (2.732050807568878?, 4.414213562373095?), (1.732050807568878?, 3)])
             sage: from flatsurf.geometry.categories import TranslationSurfaces
@@ -998,10 +1001,11 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s=translation_surfaces.veech_2n_gon(5)
-            sage: s.polygon(0)
-            polygon(vertices=[(0, 0), (1, 0), (-1/2*a^2 + 5/2, 1/2*a), (-a^2 + 7/2, -1/2*a^3 + 2*a), (-1/2*a^2 + 5/2, -a^3 + 7/2*a), (1, -a^3 + 4*a), (0, -a^3 + 4*a), (1/2*a^2 - 3/2, -a^3 + 7/2*a), (a^2 - 5/2, -1/2*a^3 + 2*a), (1/2*a^2 - 3/2, 1/2*a)])
+            sage: s = translation_surfaces.veech_2n_gon(5)
+            sage: s
+            Translation Surface in H_2(1^2) built from a regular decagon
             sage: TestSuite(s).run()
+
         """
         p = polygons.regular_ngon(2 * n)
         s = MutableOrientedSimilaritySurface(p.base_ring())
@@ -1020,7 +1024,10 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import *
             sage: s=translation_surfaces.veech_double_n_gon(5)
+            sage: s
+            Translation Surface in H_2(2) built from 2 regular pentagons
             sage: TestSuite(s).run()
+
         """
         from sage.matrix.constructor import Matrix
 
@@ -1045,9 +1052,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import *
             sage: T = translation_surfaces.regular_octagon()
             sage: T
-            Surface built from 1 polygon
-            sage: T.stratum()
-            H_2(2)
+            Translation Surface in H_2(2) built from a regular octagon
             sage: TestSuite(T).run()
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: T in TranslationSurfaces()
@@ -1097,7 +1102,11 @@ class TranslationSurfaceGenerators:
         An example with some relative homology::
 
             sage: U8 = translation_surfaces.mcmullen_genus2_prototype(2,1,0,0,1/4)    # discriminant 8
+            sage: U8
+            Translation Surface in H_2(1^2) built from a quadrilateral and a rectangle
             sage: U12 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,0,3/10)   # discriminant 12
+            sage: U12
+            Translation Surface in H_2(1^2) built from a quadrilateral and a rectangle
 
             sage: U8.stratum()
             H_2(1^2)
@@ -1234,6 +1243,8 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
+            sage: s
+            Translation Surface in H_2(2) built from 3 squares
             sage: TestSuite(s).run()
 
         TESTS::
@@ -1272,9 +1283,14 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import *
-            sage: s=translation_surfaces.ward(3)
+            sage: s = translation_surfaces.ward(3)
+            sage: s
+            Translation Surface in H_1(0^3) built from 2 equilateral triangles and a regular hexagon
             sage: TestSuite(s).run()
-            sage: s=translation_surfaces.ward(7)
+            sage: s = translation_surfaces.ward(7)
+            Translation Surface in H_6(10) built from 2 regular heptagons and a regular tetradecagon
+
+            sage: s
             sage: TestSuite(s).run()
         """
         if n < 3:
@@ -1300,7 +1316,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: os = translation_surfaces.octagon_and_squares()
             sage: os
-            Surface built from 3 polygons
+            Translation Surface in H_3(4) built from 2 squares and a regular octagon
             sage: TestSuite(os).run()
             sage: from flatsurf.geometry.categories import TranslationSurfaces
             sage: os in TranslationSurfaces()
@@ -1344,14 +1360,16 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.cathedral(1,2)
-            sage: C.stratum()
-            H_4(2^3)
+            sage: C
+            Translation Surface in H_4(2^3) built from 2 squares, an octagon and a hexagon with 4 marked vertices
             sage: TestSuite(C).run()
 
             sage: from pyexactreal import ExactReals # optional: exactreal
             sage: K = QuadraticField(5, embedding=AA(5).sqrt())
             sage: R = ExactReals(K) # optional: exactreal
             sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
+            sage: C  # optional: exactreal
+            Translation Surface in H_4(2^3) built from 2 squares, an octagon and a hexagon with 4 marked vertices
             sage: C.stratum() # optional: exactreal
             H_4(2^3)
             sage: TestSuite(C).run() # long time (6s), optional: exactreal
@@ -1427,10 +1445,14 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import *
             sage: s = translation_surfaces.arnoux_yoccoz(4)
+            sage: s
+            Translation Surface in H_4(3^2) built from 16 triangles
             sage: TestSuite(s).run()
             sage: s.is_delaunay_decomposed()
             True
             sage: s = s.canonicalize()
+            sage: s
+            Translation Surface in H_4(3^2) built from 16 triangles
             sage: field=s.base_ring()
             sage: a = field.gen()
             sage: from sage.matrix.constructor import Matrix
@@ -1768,7 +1790,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C
-            MinimalTranslationCover(Chamanara surface with parameter 1/2)
+            Minimal Translation Cover of Chamanara surface with parameter 1/2
 
         TESTS::
 

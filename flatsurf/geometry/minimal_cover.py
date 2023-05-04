@@ -62,7 +62,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("translation")
         sage: S
-        MinimalTranslationCover(Surface built from 2 polygons)
+        Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 triangles
 
     TESTS::
 
@@ -201,7 +201,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         sage: S = similarity_surfaces.billiard(T, rational=True)
         sage: S = S.minimal_cover("half-translation")
         sage: S
-        MinimalHalfTranslationCover(Surface built from 2 polygons)
+        Minimal Half-Translation Cover of Genus 0 Rational Cone Surface built from 2 triangles
 
     TESTS::
 

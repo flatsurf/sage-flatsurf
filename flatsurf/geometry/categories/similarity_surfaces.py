@@ -28,7 +28,7 @@ constructions from
     sage: from flatsurf import polygon, similarity_surfaces
     sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
     sage: similarity_surfaces.self_glued_polygon(P)
-    Genus 0 Half-Translation Surface built from a quadrilateral
+    Half-Translation Surface in Q_0(0, -1^4) built from a quadrilateral
 
 The second way is to build a surface (using e.g.
 :class:`flatsurf.geometry.surface.MutableOrientedSimilaritySurface`)::
@@ -48,7 +48,7 @@ The second way is to build a surface (using e.g.
     sage: S.glue((1, 2), (2, 1))
     sage: S.glue((1, 0), (2, 3))
     sage: S
-    Surface built from 3 polygons
+    Surface built from 3 squares
 
 To perform a sanity check on the obtained surface, you can run its test
 suite::
@@ -972,7 +972,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     ...
                     ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.
                     sage: s.triangle_flip(0,1,in_place=True)
-                    Surface built from 2 polygons
+                    Genus 0 Rational Cone Surface built from 2 isosceles triangles
                     sage: s.polygon(0)
                     polygon(vertices=[(0, 0), (1, 1), (0, 1)])
                     sage: s.polygon(1)
@@ -988,7 +988,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s = similarity_surfaces.self_glued_polygon(p)
                     sage: s = MutableOrientedSimilaritySurface.from_surface(s)
                     sage: s.triangle_flip(0,1,in_place=True)
-                    Surface built from 1 polygon
+                    Half-Translation Surface in Q_0(-1^4) built from a triangle
 
                     sage: from flatsurf.geometry.categories import DilationSurfaces
                     sage: s in DilationSurfaces()
@@ -1228,11 +1228,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss = translation_surfaces.ward(3)
                     sage: s = MutableOrientedSimilaritySurface.from_surface(ss)
                     sage: s.join_polygons(0,0, in_place=True)
-                    Surface built from 2 polygons
+                    Translation Surface in H_1(0^3) built from an equilateral triangle and a pentagon with 2 marked vertices
                     sage: s.polygon(0)
                     polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)])
                     sage: s.join_polygons(0,4, in_place=True)
-                    Surface built from 1 polygon
+                    Translation Surface in H_1(0^3) built from a rhombus
                     sage: s.polygon(0)
                     polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)])
 
@@ -1478,13 +1478,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: cs = s
                     sage: ts = cs.minimal_cover(cover_type="translation")
                     sage: ts
-                    MinimalTranslationCover(Surface built from 1 polygon)
+                    Minimal Translation Cover of Rational Cone Surface built from a square
                     sage: from flatsurf.geometry.categories import TranslationSurfaces
                     sage: ts in TranslationSurfaces()
                     True
                     sage: hts = cs.minimal_cover(cover_type="half-translation")
                     sage: hts
-                    MinimalHalfTranslationCover(Surface built from 1 polygon)
+                    Minimal Half-Translation Cover of Rational Cone Surface built from a square
                     sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
                     sage: hts in HalfTranslationSurfaces()
                     True
@@ -1691,7 +1691,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: gs=ss.graphical_surface()
                     sage: gs.make_all_visible()
                     sage: gs
-                    Graphical version of Surface built from 6 polygons
+                    Graphical representation of Translation Surface in H_2(2) built from 6 isosceles triangles
 
                 A non-strictly convex example that caused trouble:
 
@@ -2277,7 +2277,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: import flatsurf
                     sage: T = flatsurf.translation_surfaces.square_torus()
                     sage: T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
-                    Surface built from 3 polygons
+                    Translation Surface in H_2(2) built from 3 squares
                     sage: O = T.ramified_cover(3, {(0,0): '(1,2)', (0,1): '(1,3)'})
                     sage: O.stratum()
                     H_2(2)

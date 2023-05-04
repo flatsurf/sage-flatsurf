@@ -144,7 +144,9 @@ def is_cosine_sine_of_rational(cos, sin):
     # degree of C is bounded from above by their degrees. The degree of C is
     # the totient of N which is bounded from below by sqrt(N/2).
     # So 2 deg(K) deg(L) ≥ deg(C) = φ(N) ≥ sqrt(N/2).
-    for n in range(8 * cos.minpoly().degree()**2 * sin.minpoly().degree()**2):
+    # TODO: Use a sharper bound here. This is very slow still. (The not commented-out bound is probably wrong but faster for testing.)
+    # for n in range(8 * cos.minpoly().degree()**2 * sin.minpoly().degree()**2):
+    for n in range(8 * cos.minpoly().degree() * sin.minpoly().degree()):
         c, s = c * cos - s * sin, s * cos + c * sin
         if s == 0 or c == 0:
             return True

@@ -972,10 +972,11 @@ class Polygon(Element):
     @staticmethod
     def _describe_polygon(num_edges, **kwargs):
         description = Polygon._ngon_names.get(num_edges, f"{num_edges}-gon")
+        description = description + (description[1] + "s",)
 
         def augment(article, *attributes):
             nonlocal description
-            description = article, " ".join(attributes + (description[1],))
+            description = article, " ".join(attributes + (description[1],)), " ".join(attributes + (description[2],))
 
         def augment_if(article, attribute, *properties):
             if all([kwargs.get(property, False) for property in (properties or [attribute])]):
@@ -999,26 +1000,40 @@ class Polygon(Element):
 
         if num_edges == 4:
             if kwargs.get("equilateral", False) and kwargs.get("equiangular", False):
-                return "a", "square"
+                return "a", "square", "squares"
 
             if kwargs.get("equiangular", False):
-                return "a", "rectangle"
+                return "a", "rectangle", "rectangles"
 
             if kwargs.get("equilateral", False):
-                return "a", "rhombus"
+                return "a", "rhombus", "rhombi"
 
         augment_if("a", "regular", "equilateral", "equiangular")
 
         augment_if_not("a", "non-convex", "convex")
 
+        marked_vertices = kwargs.get("marked_vertices", 0)
+        if marked_vertices:
+            if marked_vertices == 1:
+                suffix = "with a marked vertex"
+            else:
+                suffix = f"with {kwargs.get('marked_vertices')} marked vertices"
+            description = description[0], f"{description[1]} {suffix}", f"{description[2]} {suffix}"
+
         return description
 
     def describe_polygon(self):
+        marked_vertices = self.marked_vertices()
+
+        if marked_vertices and self.area() != 0:
+            self = self.erase_marked_vertices()
+
         properties = {
             "degenerate": self.is_degenerate(),
             "equilateral": self.is_equilateral(),
             "equiangular": self.is_equiangular(),
             "convex": self.is_convex(),
+            "marked_vertices": len(marked_vertices),
         }
 
         if self.num_edges() == 3:
@@ -1026,6 +1041,9 @@ class Polygon(Element):
             properties["isosceles"] = len(set(self.angles())) == 2
 
         return Polygon._describe_polygon(self.num_edges(), **properties)
+
+    def marked_vertices(self):
+        return [vertex for (vertex, angle) in zip(self.vertices(), self.angles()) if angle * 2 == 1]
 
     def is_degenerate(self):
         if self.area() == 0:
@@ -1035,6 +1053,15 @@ class Polygon(Element):
             return True
 
         return False
+
+    def erase_marked_vertices(self):
+        marked_vertices = self.marked_vertices()
+
+        if not marked_vertices:
+            return self
+
+        vertices = [v for v in self.vertices() if v not in marked_vertices]
+        return self.parent()(vertices=vertices)
 
     def is_equilateral(self):
         return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1

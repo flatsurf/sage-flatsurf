@@ -361,7 +361,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: from flatsurf import *
                 sage: s = translation_surfaces.octagon_and_squares()
                 sage: s
-                Surface built from 3 polygons
+                Translation Surface in H_3(4) built from 2 squares and a regular octagon
                 sage: from flatsurf.geometry.categories import TranslationSurfaces
                 sage: s in TranslationSurfaces()
                 True

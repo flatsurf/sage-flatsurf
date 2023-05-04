@@ -168,9 +168,9 @@ class MutablePolygonalSurface(Surface_base):
                 polygons.pop()
 
             if count == 1:
-                collated.append(" ".join(polygon))
+                collated.append(f"{polygon[0]} {polygon[1]}")
             else:
-                collated.append(f"{count} {polygon[1]}s")
+                collated.append(f"{count} {polygon[2]}")
 
         description = collated.pop()
 
@@ -498,7 +498,7 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
             sage: S.replace_polygon(0, polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
             Traceback (most recent call last):
             ...
-            ValueError: polygon must be another quadrilateral
+            ValueError: polygon must be a quadrilateral
 
         To replace the polygon without keeping its glueings, remove the polygon
         first and then add a new one::
@@ -512,7 +512,8 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         if old.num_edges() != polygon.num_edges():
             from flatsurf.geometry.polygon import Polygon
-            raise ValueError(f"polygon must be {' '.join(Polygon._describe_polygon(old.num_edges()))}")
+            article, singular, plural = Polygon._describe_polygon(old.num_edges())
+            raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
 
