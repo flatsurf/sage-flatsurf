@@ -239,12 +239,15 @@ class OrientedSimilaritySurface(Surface_base):
         else:
             description = "Surface"
 
-        genus = self.genus()
+        if hasattr(self, "stratum"):
+            description += f" in {self.stratum()}"
+        elif self.genus is not NotImplemented:
+            description = f"Genus {self.genus()} {description}"
 
         if self.is_with_boundary():
             description += " with boundary"
 
-        return f"Genus {genus} {description}"
+        return description
 
     def _an_element_(self):
         r"""

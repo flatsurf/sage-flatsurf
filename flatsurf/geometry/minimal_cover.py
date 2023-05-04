@@ -126,7 +126,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         return ((p2, aa, bb), e2)
 
     def _repr_(self):
-        return f"MinimalTranslationCover({repr(self._ss)})"
+        return f"Minimal Translation Cover of {repr(self._ss)}"
 
     def __hash__(self):
         return super().__hash__()
@@ -252,7 +252,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         return False
 
     def _repr_(self):
-        return f"MinimalHalfTranslationCover({repr(self._ss)})"
+        return f"Minimal Half-Translation Cover of {repr(self._ss)}"
 
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
@@ -351,7 +351,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         OrientedSimilaritySurface.__init__(self, self._ss.base_ring(), category=category)
 
     def _repr_(self):
-        return f"MinimalPlanarCover({repr(self._ss)})"
+        return f"Minimal Planar Cover of {repr(self._ss)}"
 
     def is_compact(self):
         return False

@@ -98,7 +98,7 @@ def similarity_from_vectors(u, v, matrix_space=None):
     return m
 
 
-def is_cosine_sine_of_rational(c, s):
+def is_cosine_sine_of_rational(cos, sin):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
 
@@ -135,10 +135,22 @@ def is_cosine_sine_of_rational(c, s):
         True
 
     """
-    return (QQbar(c) + QQbar.gen() * QQbar(s)).minpoly().is_cyclotomic()
+    c = cos
+    s = sin
+
+    # Suppose that (c, s) are indeed sine and cosine of a rational angle. Then
+    # x = c + I*s generates a cyclotomic field C and for some N we have x^N =
+    # ±1. Since C is contained in the compositum of K=Q(c) and L=Q(i*s), N is
+    # bounded by their degrees.
+    for n in range(cos.minpoly().degree() * sin.minpoly().degree() * 2):
+        c, s = c * cos - s * sin, s * cos + c * sin
+        if s == 0 or c == 0:
+            return True
+
+    return False
 
 
-def angle(u, v, numerical=False, assume_rational=False):
+def angle(u, v, numerical=False):
     r"""
     Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.
 
@@ -147,11 +159,6 @@ def angle(u, v, numerical=False, assume_rational=False):
     - ``u``, ``v`` - vectors
 
     - ``numerical`` - boolean, whether to return floating point numbers
-
-    - ``assume_rational`` - whether we assume that the angle is a multiple
-      rational of ``pi``. By default it is ``False`` but if it is known in
-      advance that the result is rational then setting it to ``True`` might be
-      much faster.
 
     EXAMPLES::
 
@@ -195,24 +202,6 @@ def angle(u, v, numerical=False, assume_rational=False):
         sage: v / v.norm()
         (0.6324555320336758?, 0.774596669241484?)
     """
-    if not assume_rational and not numerical:
-        sqnorm_u = u[0] * u[0] + u[1] * u[1]
-        sqnorm_v = v[0] * v[0] + v[1] * v[1]
-
-        if sqnorm_u != sqnorm_v:
-            uu = vector(AA, u)
-            vv = (AA(sqnorm_u) / AA(sqnorm_v)).sqrt() * vector(AA, v)
-        else:
-            uu = u
-            vv = v
-
-        cos_uv = (uu[0] * vv[0] + uu[1] * vv[1]) / sqnorm_u
-        sin_uv = (uu[0] * vv[1] - uu[1] * vv[0]) / sqnorm_u
-
-        is_rational = is_cosine_sine_of_rational(cos_uv, sin_uv)
-    elif assume_rational:
-        is_rational = True
-
     import math
 
     u0 = float(u[0])
@@ -229,28 +218,28 @@ def angle(u, v, numerical=False, assume_rational=False):
         cos_uv = 1.0
     angle = math.acos(cos_uv) / (2 * math.pi)  # rat number between 0 and 1/2
 
-    if numerical or not is_rational:
+    if numerical:
         return 1.0 - angle if u0 * v1 - u1 * v0 < 0 else angle
-    else:
-        # fast and dirty way using floating point approximation
-        # (see below for a slow but exact method)
-        angle_rat = RR(angle).nearby_rational(0.00000001)
-        if angle_rat.denominator() > 100:
-            raise NotImplementedError("the numerical method used is not smart enough!")
-        return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
 
-        # a neater way is provided below by working only with number fields
-        # but this method is slower...
-        # sqnorm_u = u[0]*u[0] + u[1]*u[1]
-        # sqnorm_v = v[0]*v[0] + v[1]*v[1]
-        #
-        # if sqnorm_u != sqnorm_v:
-        #    # we need to take a square root in order that u and v have the
-        #    # same norm
-        #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
-        #    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
-        #    sqnorm_u = AA.one()
-        #    sqnorm_v = AA.one()
-        #
-        # cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
-        # sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
+    # fast and dirty way using floating point approximation
+    # (see below for a slow but exact method)
+    angle_rat = RR(angle).nearby_rational(0.00000001)
+    if angle_rat.denominator() > 100:
+        raise NotImplementedError("the numerical method used is not smart enough!")
+    return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
+
+    # a neater way is provided below by working only with number fields
+    # but this method is slower...
+    # sqnorm_u = u[0]*u[0] + u[1]*u[1]
+    # sqnorm_v = v[0]*v[0] + v[1]*v[1]
+    #
+    # if sqnorm_u != sqnorm_v:
+    #    # we need to take a square root in order that u and v have the
+    #    # same norm
+    #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
+    #    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
+    #    sqnorm_u = AA.one()
+    #    sqnorm_v = AA.one()
+    #
+    # cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
+    # sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u

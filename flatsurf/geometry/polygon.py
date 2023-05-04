@@ -1040,7 +1040,9 @@ class Polygon(Element):
         return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
 
     def is_equiangular(self):
-        return len(set(self.angles())) == 1
+        angles = iter(self.angles())
+        angle = next(angles)
+        return all(a == angle for a in angles)
 
     @cached_method
     def module(self):
@@ -1145,7 +1147,31 @@ class Polygon(Element):
             + point2d(P, **vertex_options)
         )
 
-    def angle(self, e, numerical=False, assume_rational=False):
+    @cached_method
+    def is_rational(self):
+        for e in range(self.num_edges()):
+            u = self.edge(e)
+            v = -self.edge((e-1) % self.num_edges())
+            sqnorm_u = u[0] * u[0] + u[1] * u[1]
+            sqnorm_v = v[0] * v[0] + v[1] * v[1]
+
+            if sqnorm_u != sqnorm_v:
+                uu = vector(AA, u)
+                vv = (AA(sqnorm_u) / AA(sqnorm_v)).sqrt() * vector(AA, v)
+            else:
+                uu = u
+                vv = v
+
+            cos_uv = (uu[0] * vv[0] + uu[1] * vv[1]) / sqnorm_u
+            sin_uv = (uu[0] * vv[1] - uu[1] * vv[0]) / sqnorm_u
+
+            from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+            if not is_cosine_sine_of_rational(cos_uv, sin_uv):
+                return False
+
+        return True
+
+    def angle(self, e, numerical=None, assume_rational=False):
         r"""
         Return the angle at the beginning of the start point of the edge ``e``.
 
@@ -1163,11 +1189,15 @@ class Polygon(Element):
             sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
             0.5
         """
+        # TODO: Deprecate assume_rational
+
+        if numerical is None:
+            numerical = not self.is_rational()
+
         return angle(
             self.edge(e),
             -self.edge((e - 1) % self.num_edges()),
             numerical=numerical,
-            assume_rational=assume_rational,
         )
 
     def angles(self, numerical=False, assume_rational=False):
@@ -1184,6 +1214,7 @@ class Polygon(Element):
             sage: sum(T.angle(i) for i in range(3))
             1/2
         """
+        # TODO: Deprecate assume_rational; it's ignored anyway :(
         return [self.angle(i) for i in range(self.num_edges())]
 
     def area(self):
