@@ -135,23 +135,32 @@ def is_cosine_sine_of_rational(cos, sin):
         True
 
     """
-    c = cos
-    s = sin
+    from sage.all import CBF
 
-    # Suppose that (c, s) are indeed sine and cosine of a rational angle. Then
-    # x = c + I*s generates a cyclotomic field C and for some N we have x^N =
-    # ±1. Since C is contained in the compositum of K=Q(c) and L=Q(i*s), the
-    # degree of C is bounded from above by their degrees. The degree of C is
-    # the totient of N which is bounded from below by sqrt(N/2).
-    # So 2 deg(K) deg(L) ≥ deg(C) = φ(N) ≥ sqrt(N/2).
-    # TODO: Use a sharper bound here. This is very slow still. (The not commented-out bound is probably wrong but faster for testing.)
-    # for n in range(8 * cos.minpoly().degree()**2 * sin.minpoly().degree()**2):
-    for n in range(8 * cos.minpoly().degree() * sin.minpoly().degree()):
-        c, s = c * cos - s * sin, s * cos + c * sin
-        if s == 0 or c == 0:
-            return True
+    x = CBF(cos) + CBF.gen(0) * CBF(sin)
+    xN = x
 
-    return False
+    # Suppose that (cos, sin) are indeed sine and cosine of a rational angle.
+    # Then x = cos + I*sin generates a cyclotomic field C and for some N we
+    # have x^N = ±1. Since C is contained in the compositum of K=Q(cos) and
+    # L=Q(i*sin) and Q(cos) and Q(sin) are both contained in C, the degree of C
+    # is bounded from above by twice (accounting for the imaginary unit) the
+    # degrees of K and L. The degree of C is the totient of N which is bounded
+    # from below by n / (e^γ loglog n + 3 / loglog n) [cf. wikipedia].
+    degree_bound = 2*cos.minpoly().degree()*sin.minpoly().degree()
+
+    from itertools import count
+    for n in count(2):
+        xN *= x
+
+        if xN.real().contains_zero() or xN.imag().contains_zero():
+            exact = (QQbar(cos) + QQbar.gen(0) * QQbar(sin)) ** n
+            if exact.real() == 0 or exact.imag() == 0:
+                return True
+
+        from math import log
+        if n / (2. * log(log(n)) + 3 / log(log(n))) > 2 * degree_bound:
+            return False
 
 
 def angle(u, v, numerical=False):
