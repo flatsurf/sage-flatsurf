@@ -19,6 +19,7 @@
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+
 class GraphicalSegmentInPolygon:
     def __init__(self, segment, graphical_surface):
         r"""

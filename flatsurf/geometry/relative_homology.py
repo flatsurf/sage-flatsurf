@@ -133,6 +133,7 @@ class RelativeHomology(Module):
     def __init__(self, surface, base_ring=ZZ):
         self._base_ring = base_ring
         from flatsurf.geometry.categories import SimilaritySurfaces
+
         if surface not in SimilaritySurfaces():
             raise ValueError(
                 "RelativeHomology only defined for SimilaritySurfaces (and better)."

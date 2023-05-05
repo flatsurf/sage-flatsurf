@@ -290,6 +290,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         polygon_vertices_AA.append([trans + m * v for v in vs])
 
     from flatsurf import MutableOrientedSimilaritySurface
+
     if use_AA is True:
         Polys = ConvexPolygons(AA)
         S = MutableOrientedSimilaritySurface(AA)

@@ -20,6 +20,7 @@ class AbstractOrigami(OrientedSimilaritySurface):
         self._base_label = base_label
 
         from flatsurf.geometry.categories import TranslationSurfaces
+
         if category is None:
             category = TranslationSurfaces()
 
@@ -38,6 +39,7 @@ class AbstractOrigami(OrientedSimilaritySurface):
 
     def labels(self):
         from flatsurf.geometry.surface import LabelsView
+
         return LabelsView(self, self._domain)
 
     def is_mutable(self):
@@ -84,7 +86,9 @@ class AbstractOrigami(OrientedSimilaritySurface):
 
 
 class Origami(AbstractOrigami):
-    def __init__(self, r, u, rr=None, uu=None, domain=None, base_label=None, category=None):
+    def __init__(
+        self, r, u, rr=None, uu=None, domain=None, base_label=None, category=None
+    ):
         if domain is None:
             domain = r.parent().domain()
 
@@ -138,7 +142,12 @@ class Origami(AbstractOrigami):
         if not isinstance(other, Origami):
             return False
 
-        return self._perms == other._perms and self._domain is other._domain and self.base_label() == other.base_label() and self.category() is other.category()
+        return (
+            self._perms == other._perms
+            and self._domain is other._domain
+            and self.base_label() == other.base_label()
+            and self.category() is other.category()
+        )
 
     def __hash__(self):
         return hash((Origami, tuple(self._perms), self._domain, self.base_label()))
@@ -156,12 +165,18 @@ class LazyStandardizedPolygonSurface(OrientedSimilaritySurface):
     def __init__(self, surface, relabel=None, category=None):
         if relabel is not None:
             if relabel:
-                raise NotImplementedError("the relabel keyword has been removed from LazyStandardizedPolygonSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from LazyStandardizedPolygonSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                )
             else:
                 import warnings
-                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyStandardizedPolygonSurface")
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyStandardizedPolygonSurface"
+                )
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         self._s = MutableOrientedSimilaritySurface.from_surface(surface)
         self._labels = set()
 

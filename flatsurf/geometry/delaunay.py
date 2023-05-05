@@ -47,10 +47,15 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def __init__(self, similarity_surface, relabel=None, category=None):
         if relabel is not None:
             if relabel:
-                raise NotImplementedError("the relabel keyword has been removed from LazyTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from LazyTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                )
             else:
                 import warnings
-                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyTriangulatedSurface()")
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyTriangulatedSurface()"
+                )
 
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
@@ -60,7 +65,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         OrientedSimilaritySurface.__init__(
             self,
             similarity_surface.base_ring(),
-            category=category or self._reference.category())
+            category=category or self._reference.category(),
+        )
 
     def is_mutable(self):
         return False
@@ -78,7 +84,10 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def _triangulation(self, reference_label):
         reference_polygon = self._reference.polygon(reference_label)
 
-        outer_edges = [(vertex, (vertex + 1) % reference_polygon.num_edges()) for vertex in range(reference_polygon.num_edges())]
+        outer_edges = [
+            (vertex, (vertex + 1) % reference_polygon.num_edges())
+            for vertex in range(reference_polygon.num_edges())
+        ]
         inner_edges = reference_polygon.triangulation()
         inner_edges.extend([(w, v) for (v, w) in inner_edges])
 
@@ -109,17 +118,29 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def polygon(self, label):
         reference_label, vertices = label
         reference_polygon = self._reference.polygon(reference_label)
-        return reference_polygon.parent()(vertices=[reference_polygon.vertex(v) for v in vertices])
+        return reference_polygon.parent()(
+            vertices=[reference_polygon.vertex(v) for v in vertices]
+        )
 
     def opposite_edge(self, label, edge):
         reference_label, vertices = label
         reference_polygon = self._reference.polygon(reference_label)
 
-        if vertices[(edge + 1) % 3] == (vertices[edge] + 1) % reference_polygon.num_edges():
+        if (
+            vertices[(edge + 1) % 3]
+            == (vertices[edge] + 1) % reference_polygon.num_edges()
+        ):
             # This is an edge of the reference surface
-            cross_reference_label, cross_reference_edge = self._reference.opposite_edge(reference_label, vertices[edge])
+            cross_reference_label, cross_reference_edge = self._reference.opposite_edge(
+                reference_label, vertices[edge]
+            )
             cross_reference_polygon = self._reference.polygon(cross_reference_label)
-            cross_vertices = self._triangulation(cross_reference_label)[(cross_reference_edge, (cross_reference_edge + 1) % cross_reference_polygon.num_edges())]
+            cross_vertices = self._triangulation(cross_reference_label)[
+                (
+                    cross_reference_edge,
+                    (cross_reference_edge + 1) % cross_reference_polygon.num_edges(),
+                )
+            ]
 
             cross_edge = cross_vertices.index(cross_reference_edge)
 
@@ -171,6 +192,7 @@ class LazyMutableSurface(OrientedSimilaritySurface):
         self._reference = surface
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         self._surface = MutableOrientedSimilaritySurface(surface.base_ring())
 
         super().__init__(surface.base_ring(), category=category or surface.category())
@@ -248,10 +270,15 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     def __init__(self, similarity_surface, direction=None, relabel=None, category=None):
         if relabel is not None:
             if relabel:
-                raise NotImplementedError("the relabel keyword has been removed from LazyDelaunayTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from LazyDelaunayTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                )
             else:
                 import warnings
-                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunayTriangulatedSurface()")
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunayTriangulatedSurface()"
+                )
 
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
@@ -276,7 +303,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         OrientedSimilaritySurface.__init__(
             self,
             self._surface.base_ring(),
-            category=category or self._surface.category()
+            category=category or self._surface.category(),
         )
 
     def is_mutable(self):
@@ -306,7 +333,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     def _walk(self):
         visited = set()
         from collections import deque
-        next = deque([(self.base_label(), 0), (self.base_label(), 1), (self.base_label(), 2)])
+
+        next = deque(
+            [(self.base_label(), 0), (self.base_label(), 1), (self.base_label(), 2)]
+        )
         while next:
             label, edge = next.popleft()
             if label in visited:
@@ -456,7 +486,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
         """
         if isinstance(other, LazyDelaunayTriangulatedSurface):
-            if self._reference == other._reference and self._direction == other._direction:
+            if (
+                self._reference == other._reference
+                and self._direction == other._direction
+            ):
                 return True
 
         return super().__eq__(other)
@@ -496,21 +529,28 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
     def __init__(self, similarity_surface, direction=None, relabel=None, category=None):
         if relabel is not None:
             if relabel:
-                raise NotImplementedError("the relabel keyword has been removed from LazyDelaunaySurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead")
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from LazyDelaunaySurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                )
             else:
                 import warnings
-                warnings.warn("the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunaySurface()")
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunaySurface()"
+                )
 
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
         self._reference = similarity_surface
 
-        self._delaunay_triangulation = LazyDelaunayTriangulatedSurface(self._reference, direction=direction, relabel=relabel)
+        self._delaunay_triangulation = LazyDelaunayTriangulatedSurface(
+            self._reference, direction=direction, relabel=relabel
+        )
 
         super().__init__(
             similarity_surface.base_ring(),
-            category=category or similarity_surface.category()
+            category=category or similarity_surface.category(),
         )
 
     @cached_method
@@ -523,7 +563,10 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if label != self._label(cell):
             raise ValueError
 
-        edges = [self._delaunay_triangulation.polygon(edge[0]).edge(edge[1]) for edge in edges]
+        edges = [
+            self._delaunay_triangulation.polygon(edge[0]).edge(edge[1])
+            for edge in edges
+        ]
 
         return self._delaunay_triangulation.polygon(label).parent()(edges=edges)
 
@@ -555,7 +598,9 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
                 edges.append((triangle, edge))
                 continue
 
-            cross_triangle, cross_edge = self._delaunay_triangulation.opposite_edge(triangle, edge)
+            cross_triangle, cross_edge = self._delaunay_triangulation.opposite_edge(
+                triangle, edge
+            )
 
             for shift in [2, 1]:
                 next_triangle, next_edge = cross_triangle, (cross_edge + shift) % 3

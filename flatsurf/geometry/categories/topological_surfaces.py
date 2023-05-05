@@ -41,7 +41,10 @@ EXAMPLES::
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.topological_spaces import TopologicalSpaces
 from sage.misc.abstract_method import abstract_method
-from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
 
 
 class TopologicalSurfaces(SurfaceCategory):
@@ -318,6 +321,7 @@ class TopologicalSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             def is_with_boundary(self):
                 r"""

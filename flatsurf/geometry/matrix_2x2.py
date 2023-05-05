@@ -141,7 +141,7 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
         return False
 
     if not scaled:
-        if cos ** 2 + sin ** 2 != 1:
+        if cos**2 + sin**2 != 1:
             return False
 
     cos = AA(cos).as_number_field_element(embedded=True)
@@ -150,7 +150,6 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
     sin = AA(sin).as_number_field_element(embedded=True)
     # We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613
     sin = sin[0](sin[1])
-
 
     from sage.all import ComplexBallField
 
@@ -166,9 +165,10 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
     # is bounded from above by twice (accounting for the imaginary unit) the
     # degrees of K and L. The degree of C is the totient of N which is bounded
     # from below by n / (e^γ loglog n + 3 / loglog n) [cf. wikipedia].
-    degree_bound = 2*cos.minpoly().degree()*sin.minpoly().degree()
+    degree_bound = 2 * cos.minpoly().degree() * sin.minpoly().degree()
 
     from itertools import count
+
     for n in count(2):
         xN *= x
 
@@ -185,10 +185,11 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
 
             CBF = ComplexBallField(CBF.precision() * 2)
             x = CBF(cos) + CBF.gen(0) * CBF(sin)
-            xN = x ** n
+            xN = x**n
 
         from math import log
-        if n / (2. * log(log(n)) + 3 / log(log(n))) > 2 * degree_bound:
+
+        if n / (2.0 * log(log(n)) + 3 / log(log(n))) > 2 * degree_bound:
             return False
 
 
@@ -271,7 +272,9 @@ def angle(u, v, numerical=False):
     # (see below for a slow but exact method)
     angle_rat = RR(angle).nearby_rational(0.00000001)
     if angle_rat.denominator() > 100:
-        raise NotImplementedError("cannot recover a rational angle from these numerical results")
+        raise NotImplementedError(
+            "cannot recover a rational angle from these numerical results"
+        )
     return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
 
     # a neater way is provided below by working only with number fields

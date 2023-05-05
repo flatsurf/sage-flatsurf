@@ -24,9 +24,18 @@ from sage.structure.element import get_coercion_model, parent
 from sage.misc.cachefunc import cached_method
 from sage.structure.sequence import Sequence
 
-from flatsurf.geometry.polygon import polygons, ConvexPolygons, Polygon, ConvexPolygon, build_faces
+from flatsurf.geometry.polygon import (
+    polygons,
+    ConvexPolygons,
+    Polygon,
+    ConvexPolygon,
+    build_faces,
+)
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface, MutableOrientedSimilaritySurface
+from flatsurf.geometry.surface import (
+    OrientedSimilaritySurface,
+    MutableOrientedSimilaritySurface,
+)
 from flatsurf.geometry.translation_surface import Origami
 
 
@@ -119,7 +128,11 @@ class EInfinitySurface(OrientedSimilaritySurface):
             else:
                 self._lambda_squared = field(lambda_squared)
         from flatsurf.geometry.categories import TranslationSurfaces
-        super().__init__(field, category=TranslationSurfaces().InfiniteType().Connected().WithoutBoundary())
+
+        super().__init__(
+            field,
+            category=TranslationSurfaces().InfiniteType().Connected().WithoutBoundary(),
+        )
 
     def is_compact(self):
         return False
@@ -244,7 +257,10 @@ class EInfinitySurface(OrientedSimilaritySurface):
         if not isinstance(other, EInfinitySurface):
             return False
 
-        return self._lambda_squared == other._lambda_squared and self.base_ring() == other.base_ring()
+        return (
+            self._lambda_squared == other._lambda_squared
+            and self.base_ring() == other.base_ring()
+        )
 
 
 class TFractalSurface(OrientedSimilaritySurface):
@@ -294,7 +310,15 @@ class TFractalSurface(OrientedSimilaritySurface):
         )
 
         from flatsurf.geometry.categories import TranslationSurfaces
-        super().__init__(field, category=TranslationSurfaces().InfiniteType().WithoutBoundary().Compact().Connected())
+
+        super().__init__(
+            field,
+            category=TranslationSurfaces()
+            .InfiniteType()
+            .WithoutBoundary()
+            .Compact()
+            .Connected(),
+        )
 
     def base_label(self):
         return self._base_label
@@ -503,14 +527,8 @@ class SimilaritySurfaceGenerators:
         """
         s = MutableOrientedSimilaritySurface(QQ)
 
-        s.add_polygon(
-            polygons(vertices=[(0, 0), (2, -2), (2, 0)], ring=QQ),
-            label=0
-        )
-        s.add_polygon(
-            polygons(vertices=[(0, 0), (2, 0), (1, 3)], ring=QQ),
-            label=1
-        )
+        s.add_polygon(polygons(vertices=[(0, 0), (2, -2), (2, 0)], ring=QQ), label=0)
+        s.add_polygon(polygons(vertices=[(0, 0), (2, 0), (1, 3)], ring=QQ), label=1)
         s.glue((0, 0), (1, 1))
         s.glue((0, 1), (1, 2))
         s.glue((0, 2), (1, 0))
@@ -1010,8 +1028,8 @@ class TranslationSurfaceGenerators:
         p = polygons.regular_ngon(2 * n)
         s = MutableOrientedSimilaritySurface(p.base_ring())
         s.add_polygon(p)
-        for i in range(2*n):
-            s.glue((0, i), (0, (i + n) % (2*n)))
+        for i in range(2 * n):
+            s.glue((0, i), (0, (i + n) % (2 * n)))
         s.set_immutable()
         return s
 
@@ -1302,8 +1320,8 @@ class TranslationSurfaceGenerators:
         s.add_polygon(p1)
         s.add_polygon(p2)
         for i in range(n):
-            s.glue((1, i), (0, 2*i))
-            s.glue((2, i), (0, 2*i+1))
+            s.glue((1, i), (0, 2 * i))
+            s.glue((2, i), (0, 2 * i + 1))
         s.set_immutable()
         return s
 
@@ -1615,6 +1633,7 @@ class TranslationSurfaceGenerators:
         C = ConvexPolygons(K)
 
         from flatsurf import MutableOrientedSimilaritySurface
+
         S = MutableOrientedSimilaritySurface(K)
 
         for i, t in enumerate(f.triangulation):
@@ -1734,8 +1753,12 @@ class TranslationSurfaceGenerators:
             return isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase)
 
         def graphical_surface(self, *args, **kwargs):
-            default_position_function = kwargs.pop("default_position_function", self._position_function)
-            graphical_surface = super().graphical_surface(*args, default_position_function=default_position_function, **kwargs)
+            default_position_function = kwargs.pop(
+                "default_position_function", self._position_function
+            )
+            graphical_surface = super().graphical_surface(
+                *args, default_position_function=default_position_function, **kwargs
+            )
             graphical_surface.make_all_visible(limit=10)
             return graphical_surface
 

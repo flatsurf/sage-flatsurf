@@ -54,16 +54,21 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
 
     def super_categories(self):
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+
         return [PolygonalSurfaces()]
 
     class ParentMethods:
         def graphical_surface(self, *args, **kwargs):
             if "cached" in kwargs:
                 import warnings
-                warnings.warn("The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. The result of graphical_surface() is never cached now.")
+
+                warnings.warn(
+                    "The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. The result of graphical_surface() is never cached now."
+                )
 
                 kwargs.pop("cached")
             from flatsurf.graphical.surface import GraphicalSurface
+
             return GraphicalSurface(self, *args, **kwargs)
 
         def plot(self, **kwargs):
@@ -148,6 +153,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
             p = self.polygon(label)
 
             from flatsurf.graphical.polygon import GraphicalPolygon
+
             gp = GraphicalPolygon(p)
 
             if plot_polygon:

@@ -52,7 +52,10 @@ a rotation, this is a cone surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
 
 
 class ConeSurfaces(SurfaceCategory):
@@ -74,6 +77,7 @@ class ConeSurfaces(SurfaceCategory):
 
     def super_categories(self):
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+
         return [SimilaritySurfaces()]
 
     class ParentMethods:
@@ -110,13 +114,14 @@ class ConeSurfaces(SurfaceCategory):
                 True
 
             """
-            if 'Oriented' not in surface.category().axioms():
+            if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError
 
             labels = surface.labels()
 
             if limit is not None:
                 from itertools import islice
+
                 labels = islice(labels, limit)
 
             for label in labels:
@@ -131,7 +136,10 @@ class ConeSurfaces(SurfaceCategory):
                     # and we want to deduce the matrix from the attached polygon
                     # edges instead.
                     from flatsurf.geometry.categories import SimilaritySurfaces
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(
+                        surface, label, edge
+                    )
 
                     if matrix * matrix.transpose() != 1:
                         return False
@@ -167,7 +175,9 @@ class ConeSurfaces(SurfaceCategory):
                 if not self.is_finite_type():
                     limit = 32
 
-                tester.assertTrue(ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit))
+                tester.assertTrue(
+                    ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit)
+                )
 
         class FiniteType(SurfaceCategoryWithAxiom):
             class WithoutBoundary(SurfaceCategoryWithAxiom):
@@ -189,8 +199,12 @@ class ConeSurfaces(SurfaceCategory):
                             sage: S.angles(return_adjacent_edges=True)
                             [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
                         """
-                        if not numerical and any(not p.is_rational() for p in self.polygons()):
-                            raise NotImplementedError("cannot compute exact angles in this surface built from non-rational polygons yet")
+                        if not numerical and any(
+                            not p.is_rational() for p in self.polygons()
+                        ):
+                            raise NotImplementedError(
+                                "cannot compute exact angles in this surface built from non-rational polygons yet"
+                            )
 
                         edges = [pair for pair in self.edges()]
                         edges = set(edges)
@@ -201,11 +215,15 @@ class ConeSurfaces(SurfaceCategory):
                                 p, e = edges.pop()
                                 adjacent_edges = [(p, e)]
                                 angle = self.polygon(p).angle(e, numerical=numerical)
-                                pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
+                                pp, ee = self.opposite_edge(
+                                    p, (e - 1) % self.polygon(p).num_edges()
+                                )
                                 while pp != p or ee != e:
                                     edges.remove((pp, ee))
                                     adjacent_edges.append((pp, ee))
-                                    angle += self.polygon(pp).angle(ee, numerical=numerical)
+                                    angle += self.polygon(pp).angle(
+                                        ee, numerical=numerical
+                                    )
                                     pp, ee = self.opposite_edge(
                                         pp, (ee - 1) % self.polygon(pp).num_edges()
                                     )
@@ -214,10 +232,14 @@ class ConeSurfaces(SurfaceCategory):
                             while edges:
                                 p, e = edges.pop()
                                 angle = self.polygon(p).angle(e, numerical=numerical)
-                                pp, ee = self.opposite_edge(p, (e - 1) % self.polygon(p).num_edges())
+                                pp, ee = self.opposite_edge(
+                                    p, (e - 1) % self.polygon(p).num_edges()
+                                )
                                 while pp != p or ee != e:
                                     edges.remove((pp, ee))
-                                    angle += self.polygon(pp).angle(ee, numerical=numerical)
+                                    angle += self.polygon(pp).angle(
+                                        ee, numerical=numerical
+                                    )
                                     pp, ee = self.opposite_edge(
                                         pp, (ee - 1) % self.polygon(pp).num_edges()
                                     )
@@ -257,4 +279,8 @@ class ConeSurfaces(SurfaceCategory):
                                     # The genus formula below is wrong when there is a vertex on an edge.
                                     return
 
-                            tester.assertEqual(self.genus(), sum(a - 1 for a in self.angles(numerical=True)) // 2 + 1)
+                            tester.assertEqual(
+                                self.genus(),
+                                sum(a - 1 for a in self.angles(numerical=True)) // 2
+                                + 1,
+                            )

@@ -976,16 +976,30 @@ class Polygon(Element):
 
         def augment(article, *attributes):
             nonlocal description
-            description = article, " ".join(attributes + (description[1],)), " ".join(attributes + (description[2],))
+            description = (
+                article,
+                " ".join(attributes + (description[1],)),
+                " ".join(attributes + (description[2],)),
+            )
 
         def augment_if(article, attribute, *properties):
-            if all([kwargs.get(property, False) for property in (properties or [attribute])]):
+            if all(
+                [
+                    kwargs.get(property, False)
+                    for property in (properties or [attribute])
+                ]
+            ):
                 augment(article, attribute)
                 return True
             return False
 
         def augment_if_not(article, attribute, *properties):
-            if all([not kwargs.get(property, True) for property in (properties or [attribute])]):
+            if all(
+                [
+                    not kwargs.get(property, True)
+                    for property in (properties or [attribute])
+                ]
+            ):
                 augment(article, attribute)
                 return True
             return False
@@ -994,7 +1008,9 @@ class Polygon(Element):
             return description
 
         if num_edges == 3:
-            augment_if("an", "equilateral") or augment_if("an", "isosceles") or augment_if("a", "right")
+            augment_if("an", "equilateral") or augment_if(
+                "an", "isosceles"
+            ) or augment_if("a", "right")
 
             return description
 
@@ -1018,7 +1034,11 @@ class Polygon(Element):
                 suffix = "with a marked vertex"
             else:
                 suffix = f"with {kwargs.get('marked_vertices')} marked vertices"
-            description = description[0], f"{description[1]} {suffix}", f"{description[2]} {suffix}"
+            description = (
+                description[0],
+                f"{description[1]} {suffix}",
+                f"{description[2]} {suffix}",
+            )
 
         return description
 
@@ -1026,7 +1046,10 @@ class Polygon(Element):
         if not relative:
             return self.edges()
 
-        edges = [(self.edge((e - 1) % self.num_edges()), self.edge(e)) for e in range(self.num_edges())]
+        edges = [
+            (self.edge((e - 1) % self.num_edges()), self.edge(e))
+            for e in range(self.num_edges())
+        ]
 
         cos = [u.dot_product(v) for (u, v) in edges]
         sin = [u[0] * v[1] - u[1] * v[0] for (u, v) in edges]
@@ -1052,14 +1075,23 @@ class Polygon(Element):
             properties["right"] = any(slope[0] == 0 for slope in slopes)
 
             from flatsurf.geometry.matrix_2x2 import parallel
-            properties["isosceles"] = parallel(slopes[0], slopes[1]) or parallel(slopes[0], slopes[2]) or parallel(slopes[1], slopes[2])
+
+            properties["isosceles"] = (
+                parallel(slopes[0], slopes[1])
+                or parallel(slopes[0], slopes[2])
+                or parallel(slopes[1], slopes[2])
+            )
 
         return Polygon._describe_polygon(self.num_edges(), **properties)
 
     def marked_vertices(self):
         from flatsurf.geometry.matrix_2x2 import parallel
 
-        return [vertex for (i, vertex) in enumerate(self.vertices()) if parallel(self.edge(i), self.edge((i - 1) % self.num_edges()))]
+        return [
+            vertex
+            for (i, vertex) in enumerate(self.vertices())
+            if parallel(self.edge(i), self.edge((i - 1) % self.num_edges()))
+        ]
 
     def is_degenerate(self):
         if self.area() == 0:
@@ -1086,6 +1118,7 @@ class Polygon(Element):
         slopes = self.slopes(relative=True)
 
         from flatsurf.geometry.matrix_2x2 import parallel
+
         return all(parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes)))
 
     @cached_method
@@ -1195,12 +1228,13 @@ class Polygon(Element):
     def is_rational(self):
         for e in range(self.num_edges()):
             u = self.edge(e)
-            v = -self.edge((e-1) % self.num_edges())
+            v = -self.edge((e - 1) % self.num_edges())
 
             cos = u.dot_product(v)
             sin = u[0] * v[1] - u[1] * v[0]
 
             from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+
             if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                 return False
 
@@ -1226,14 +1260,20 @@ class Polygon(Element):
         """
         if assume_rational is not None:
             import warnings
-            warnings.warn("assume_rational has been deprecated as a keyword to angle() and will be removed from a future version of sage-flatsurf")
+
+            warnings.warn(
+                "assume_rational has been deprecated as a keyword to angle() and will be removed from a future version of sage-flatsurf"
+            )
 
         if numerical is None:
             numerical = not self.is_rational()
 
             if numerical:
                 import warnings
-                warnings.warn("the behavior of angle() has been changed in recent versions of sage-flatsurf; for non-rational polygons, numerical=True must be set explicitly to get a numerical approximation of the angle")
+
+                warnings.warn(
+                    "the behavior of angle() has been changed in recent versions of sage-flatsurf; for non-rational polygons, numerical=True must be set explicitly to get a numerical approximation of the angle"
+                )
 
         return angle(
             self.edge(e),
@@ -1257,7 +1297,10 @@ class Polygon(Element):
         """
         if assume_rational is not None:
             import warnings
-            warnings.warn("assume_rational has been deprecated as a keyword to angles() and will be removed from a future version of sage-flatsurf")
+
+            warnings.warn(
+                "assume_rational has been deprecated as a keyword to angles() and will be removed from a future version of sage-flatsurf"
+            )
 
         return [self.angle(i, numerical=numerical) for i in range(self.num_edges())]
 

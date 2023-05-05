@@ -44,7 +44,10 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
 from sage.categories.category_with_axiom import all_axioms
 
 
@@ -63,6 +66,7 @@ class DilationSurfaces(SurfaceCategory):
 
     def super_categories(self):
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+
         return [SimilaritySurfaces()]
 
     class Positive(SurfaceCategoryWithAxiom):
@@ -102,7 +106,11 @@ class DilationSurfaces(SurfaceCategory):
                 if not self.is_finite_type():
                     limit = 32
 
-                tester.assertTrue(DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=True, limit=limit))
+                tester.assertTrue(
+                    DilationSurfaces.ParentMethods._is_dilation_surface(
+                        self, positive=True, limit=limit
+                    )
+                )
 
     class SubcategoryMethods:
         def Positive(self):
@@ -124,7 +132,9 @@ class DilationSurfaces(SurfaceCategory):
             if not positive:
                 return True
 
-            return super(DilationSurfaces().parent_class, self).is_dilation_surface(positive=positive)
+            return super(DilationSurfaces().parent_class, self).is_dilation_surface(
+                positive=positive
+            )
 
         @staticmethod
         def _is_dilation_surface(surface, positive=False, limit=None):
@@ -167,13 +177,14 @@ class DilationSurfaces(SurfaceCategory):
                 True
 
             """
-            if 'Oriented' not in surface.category().axioms():
+            if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError
 
             labels = surface.labels()
 
             if limit is not None:
                 from itertools import islice
+
                 labels = islice(labels, limit)
 
             for label in labels:
@@ -188,7 +199,10 @@ class DilationSurfaces(SurfaceCategory):
                     # and we want to deduce the matrix from the attached polygon
                     # edges instead.
                     from flatsurf.geometry.categories import SimilaritySurfaces
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(
+                        surface, label, edge
+                    )
 
                     if not matrix.is_diagonal():
                         return False
@@ -224,6 +238,7 @@ class DilationSurfaces(SurfaceCategory):
                         "can not modify in place and return a mapping"
                     )
                 from flatsurf.geometry.dilation_surface import GL2RMapping
+
                 return GL2RMapping(self, m)
             if not in_place:
                 if self.is_finite_type():
@@ -231,8 +246,13 @@ class DilationSurfaces(SurfaceCategory):
 
                     cm = get_coercion_model()
                     field = cm.common_parent(self.base_ring(), m.base_ring())
-                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-                    s = MutableOrientedSimilaritySurface.from_surface(self.change_ring(field))
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
+
+                    s = MutableOrientedSimilaritySurface.from_surface(
+                        self.change_ring(field)
+                    )
                     return s.apply_matrix(m)
                 else:
                     return m * self
@@ -419,13 +439,19 @@ class DilationSurfaces(SurfaceCategory):
 
             if triangulated is not None:
                 import warnings
-                warnings.warn("The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.")
+
+                warnings.warn(
+                    "The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore."
+                )
             if in_place is not None:
-                raise NotImplementedError("The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.")
+                raise NotImplementedError(
+                    "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
+                )
 
             self = self.triangulate()
 
             from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
             self = MutableOrientedSimilaritySurface.from_surface(self)
 
             if direction is None:
@@ -470,7 +496,11 @@ class DilationSurfaces(SurfaceCategory):
             if not self.is_finite_type():
                 limit = 32
 
-            tester.assertTrue(DilationSurfaces.ParentMethods._is_dilation_surface(self, positive=False, limit=limit))
+            tester.assertTrue(
+                DilationSurfaces.ParentMethods._is_dilation_surface(
+                    self, positive=False, limit=limit
+                )
+            )
 
 
-all_axioms += ('Positive',)
+all_axioms += ("Positive",)

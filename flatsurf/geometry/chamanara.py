@@ -77,7 +77,17 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         self.rename("Chamanara surface with parameter {}".format(alpha))
 
         from flatsurf.geometry.categories import DilationSurfaces
-        super().__init__(field, category=DilationSurfaces().Oriented().InfiniteType().Compact().WithoutBoundary().Connected().Rational())
+
+        super().__init__(
+            field,
+            category=DilationSurfaces()
+            .Oriented()
+            .InfiniteType()
+            .Compact()
+            .WithoutBoundary()
+            .Connected()
+            .Rational(),
+        )
 
     def is_dilation_surface(self, positive=False):
         return not positive
@@ -160,10 +170,7 @@ class ChamanaraSurface(OrientedSimilaritySurface):
 
         """
         if isinstance(other, ChamanaraSurface):
-            return (
-                self._p == other._p
-                and self.base_ring() == other.base_ring()
-            )
+            return self._p == other._p and self.base_ring() == other.base_ring()
 
         return super().__eq__(other)
 
@@ -180,7 +187,10 @@ def chamanara_half_dilation_surface(alpha, n=None):
     """
     if n is not None:
         import warnings
-        warnings.warn("the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf")
+
+        warnings.warn(
+            "the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf"
+        )
 
     return ChamanaraSurface(alpha)
 
@@ -216,6 +226,9 @@ def chamanara_surface(alpha, n=None):
     """
     if n is not None:
         import warnings
-        warnings.warn("the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf")
+
+        warnings.warn(
+            "the n keyword of chamanara_half_dilation_surface() is not supported anymore; it will be removed in a future version of sage-flatsurf"
+        )
 
     return ChamanaraTranslationSurface(alpha)

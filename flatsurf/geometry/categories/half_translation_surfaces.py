@@ -43,7 +43,10 @@ rotation of π, this is a half-translation surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
 from sage.misc.lazy_import import LazyImport
 from sage.all import QQ, AA
 
@@ -65,16 +68,21 @@ class HalfTranslationSurfaces(SurfaceCategory):
     def super_categories(self):
         from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
         from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
+
         return [DilationSurfaces(), ConeSurfaces().Rational()]
 
-    Positive = LazyImport('flatsurf.geometry.categories.translation_surfaces', 'TranslationSurfaces')
+    Positive = LazyImport(
+        "flatsurf.geometry.categories.translation_surfaces", "TranslationSurfaces"
+    )
 
     class ParentMethods:
         def is_translation_surface(self, positive=True):
             if not positive:
                 return True
 
-            return super(HalfTranslationSurfaces().parent_class, self).is_translation_surface(positive=positive)
+            return super(
+                HalfTranslationSurfaces().parent_class, self
+            ).is_translation_surface(positive=positive)
 
     class Orientable(SurfaceCategoryWithAxiom):
         class ParentMethods:
@@ -103,7 +111,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 for a, b in self.gluings():
                     if a == b:
-                        angles.append(QQ(1/2))
+                        angles.append(QQ(1 / 2))
 
                 if all(x.denominator() == 1 for x in angles):
                     raise NotImplementedError
@@ -162,7 +170,12 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     limit = 32
 
                 from flatsurf.geometry.categories import TranslationSurfaces
-                tester.assertTrue(TranslationSurfaces.ParentMethods._is_translation_surface(self, positive=False, limit=limit))
+
+                tester.assertTrue(
+                    TranslationSurfaces.ParentMethods._is_translation_surface(
+                        self, positive=False, limit=limit
+                    )
+                )
 
         class FiniteType(SurfaceCategoryWithAxiom):
             class ParentMethods:
@@ -221,6 +234,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     """
                     from sage.all import matrix
+
                     if self.base_ring() is QQ:
                         return (self, matrix(QQ, 2, 2, 1))
 
@@ -230,6 +244,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     v = -p.edge(0)
                     i = 1
                     from flatsurf.geometry.polygon import wedge_product
+
                     while wedge_product(u, v) == 0:
                         i += 1
                         u = p.edge(i)
@@ -244,7 +259,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                             hols.append(w[0])
                             hols.append(w[1])
                     if self.base_ring() is AA:
-                        from flatsurf.geometry.subfield import number_field_elements_from_algebraics
+                        from flatsurf.geometry.subfield import (
+                            number_field_elements_from_algebraics,
+                        )
 
                         K, new_hols = number_field_elements_from_algebraics(hols)
                     else:
@@ -253,7 +270,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
                     from flatsurf.geometry.polygon import ConvexPolygons
-                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
 
                     S = MutableOrientedSimilaritySurface(K)
                     C = ConvexPolygons(K)
@@ -264,7 +283,8 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         relabelling[lab] = S.add_polygon(
                             C(
                                 edges=[
-                                    (new_hols[k + 2 * i], new_hols[k + 2 * i + 1]) for i in range(m)
+                                    (new_hols[k + 2 * i], new_hols[k + 2 * i + 1])
+                                    for i in range(m)
                                 ]
                             )
                         )

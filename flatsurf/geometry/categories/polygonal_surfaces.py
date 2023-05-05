@@ -39,7 +39,10 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import (
+    SurfaceCategory,
+    SurfaceCategoryWithAxiom,
+)
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 
@@ -61,7 +64,10 @@ class PolygonalSurfaces(SurfaceCategory):
     """
 
     def super_categories(self):
-        from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+        from flatsurf.geometry.categories.topological_surfaces import (
+            TopologicalSurfaces,
+        )
+
         return [TopologicalSurfaces()]
 
     class ParentMethods:
@@ -92,7 +98,10 @@ class PolygonalSurfaces(SurfaceCategory):
                 Category of connected without boundary finite type translation surfaces
 
             """
-            from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+            from flatsurf.geometry.categories.topological_surfaces import (
+                TopologicalSurfaces,
+            )
+
             category = TopologicalSurfaces.ParentMethods.refined_category(self)
 
             try:
@@ -134,9 +143,13 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             import warnings
-            warnings.warn("walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.")
+
+            warnings.warn(
+                "walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead."
+            )
 
             from flatsurf.geometry.surface_legacy import LabelWalker
+
             return LabelWalker(self, deprecation_warning=False)
 
         def labels(self):
@@ -172,6 +185,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             from flatsurf.geometry.surface import Labels
+
             return Labels(self)
 
         def polygons(self):
@@ -201,6 +215,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             from flatsurf.geometry.surface import Polygons
+
             return Polygons(self)
 
         def _test_labels_polygons(self, **options):
@@ -211,6 +226,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             if not self.is_finite_type():
                 import itertools
+
                 labels = itertools.islice(labels, 32)
 
             for label, polygon in zip(labels, polygons):
@@ -218,7 +234,10 @@ class PolygonalSurfaces(SurfaceCategory):
 
         def num_polygons(self):
             import warnings
-            warnings.warn("num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead.")
+
+            warnings.warn(
+                "num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead."
+            )
 
             # Note that using len(self.polygons()) on
             # MutableOrientedSimilaritySurface is only very slightly slower:
@@ -233,6 +252,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             if not self.is_finite_type():
                 from sage.all import infinity
+
                 return infinity
             return len(self.polygons())
 
@@ -253,11 +273,15 @@ class PolygonalSurfaces(SurfaceCategory):
             import warnings
 
             if polygons:
-                warnings.warn("label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use zip(labels(), polygons()) instead")
+                warnings.warn(
+                    "label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use zip(labels(), polygons()) instead"
+                )
                 for entry in zip(self.labels(), self.polygons()):
                     yield entry
             else:
-                warnings.warn("label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead")
+                warnings.warn(
+                    "label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead"
+                )
                 for entry in self.labels():
                     yield entry
 
@@ -302,17 +326,22 @@ class PolygonalSurfaces(SurfaceCategory):
             import warnings
 
             if gluings:
-                warnings.warn("edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use gluings() instead")
+                warnings.warn(
+                    "edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use gluings() instead"
+                )
                 for entry in self.gluings():
                     yield entry
                 return
             for label, polygon in zip(self.labels(), self.polygons()):
-                warnings.warn("edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead")
+                warnings.warn(
+                    "edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead"
+                )
                 for edge in range(polygon.num_edges()):
                     yield label, edge
 
         def edges(self):
             from flatsurf.geometry.surface import Edges
+
             return Edges(self)
 
         def edge_gluing_iterator(self):
@@ -332,7 +361,10 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             import warnings
-            warnings.warn("edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead")
+
+            warnings.warn(
+                "edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead"
+            )
 
             for label_edge_pair in self.edges():
                 yield (
@@ -342,6 +374,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
         def gluings(self):
             from flatsurf.geometry.surface import Gluings
+
             return Gluings(self)
 
         def label_polygon_iterator(self):
@@ -364,7 +397,10 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             import warnings
-            warnings.warn("label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead")
+
+            warnings.warn(
+                "label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead"
+            )
 
             return zip(self.labels(), self.polygons())
 
@@ -438,7 +474,10 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             import warnings
-            warnings.warn("is_finite() has been deprecated and will be removed in a future version of sage-flatsurf; use is_finite_type() instead")
+
+            warnings.warn(
+                "is_finite() has been deprecated and will be removed in a future version of sage-flatsurf; use is_finite_type() instead"
+            )
             return self.is_finite_type()
 
         @abstract_method
@@ -472,9 +511,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 try:
                     return self._cache["num_edges"]
                 except KeyError:
-                    num_edges = sum(
-                        p.num_edges() for p in self.polygons()
-                    )
+                    num_edges = sum(p.num_edges() for p in self.polygons())
                     self._cache["num_edges"] = num_edges
                     return num_edges
             else:
@@ -523,6 +560,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
         def extra_super_categories(self):
             from sage.categories.topological_spaces import TopologicalSpaces
+
             return (TopologicalSpaces().Compact(),)
 
         class InfiniteType(SurfaceCategoryWithAxiom):
@@ -542,7 +580,9 @@ class PolygonalSurfaces(SurfaceCategory):
             """
 
             def __init__(self, *args, **kwargs):
-                raise TypeError("surface cannot be finite type and infinite type at the same time")
+                raise TypeError(
+                    "surface cannot be finite type and infinite type at the same time"
+                )
 
         class ParentMethods:
             def is_finite_type(self):
@@ -675,7 +715,10 @@ class PolygonalSurfaces(SurfaceCategory):
                 True
 
             """
-            from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
+            from flatsurf.geometry.categories.topological_surfaces import (
+                TopologicalSurfaces,
+            )
+
             return (TopologicalSurfaces().Orientable(),)
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
@@ -726,7 +769,7 @@ class PolygonalSurfaces(SurfaceCategory):
                         union_find[node] = parent
                         return parent
 
-                    for (label, edge) in self.edges():
+                    for label, edge in self.edges():
                         previous = (edge - 1) % self.polygon(label).num_edges()
                         cross = self.opposite_edge(label, previous)
                         if cross is None:
@@ -738,15 +781,16 @@ class PolygonalSurfaces(SurfaceCategory):
 
                     # Count the edges
                     from sage.all import QQ, ZZ
+
                     E = QQ(0)
-                    for (label, edge) in self.edges():
+                    for label, edge in self.edges():
                         if self.opposite_edge(label, edge) is None:
                             E += 1
                         elif self.opposite_edge(label, edge) == (label, edge):
                             E += 1
                             V += 1
                         else:
-                            E += 1/2
+                            E += 1 / 2
                     assert E in ZZ
 
                     # Count the faces

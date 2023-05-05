@@ -36,16 +36,21 @@ import sage.categories.category
 import sage.categories.category_with_axiom
 from sage.misc.c3_controlled import _cmp_key
 
-flags = {atom: 1 << (30 - i) for i, atom in enumerate([
-        "TopologicalSurfaces",
-        "PolygonalSurfaces",
-        "RealProjectivePolygonalSurfaces",
-        "SimilaritySurfaces",
-        "ConeSurfaces",
-        "DilationSurfaces",
-        "HalfTranslationSurfaces",
-        "TranslationSurfaces",
-    ])}
+flags = {
+    atom: 1 << (30 - i)
+    for i, atom in enumerate(
+        [
+            "TopologicalSurfaces",
+            "PolygonalSurfaces",
+            "RealProjectivePolygonalSurfaces",
+            "SimilaritySurfaces",
+            "ConeSurfaces",
+            "DilationSurfaces",
+            "HalfTranslationSurfaces",
+            "TranslationSurfaces",
+        ]
+    )
+}
 
 
 class SurfaceCmpKey:

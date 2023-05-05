@@ -97,9 +97,13 @@ Since this is now a translation surface, we can ask for its stratum again::
 
 from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
 from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
-from flatsurf.geometry.categories.real_projective_polygonal_surfaces import RealProjectivePolygonalSurfaces
+from flatsurf.geometry.categories.real_projective_polygonal_surfaces import (
+    RealProjectivePolygonalSurfaces,
+)
 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
-from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+from flatsurf.geometry.categories.half_translation_surfaces import (
+    HalfTranslationSurfaces,
+)
 from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces

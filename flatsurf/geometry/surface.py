@@ -37,6 +37,7 @@ class Surface_base(Parent):
 
         """
         from sage.structure.debug_options import debug
+
         old_refine_category_hash_check = debug.refine_category_hash_check
         debug.refine_category_hash_check = False
         try:
@@ -48,6 +49,7 @@ class Surface_base(Parent):
 class MutablePolygonalSurface(Surface_base):
     def __init__(self, base, category=None):
         from sage.all import ZZ
+
         self._next_label = ZZ(0)
         self._base_label = None
 
@@ -83,12 +85,17 @@ class MutablePolygonalSurface(Surface_base):
 
     def add_polygons(self, polygons):
         import warnings
-        warnings.warn("add_polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use labels = [add_polygon(p) for p in polygons] instead")
+
+        warnings.warn(
+            "add_polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use labels = [add_polygon(p) for p in polygons] instead"
+        )
 
         return [self.add_polygon(p) for p in polygons]
 
     def set_default_graphical_surface(self, graphical_surface):
-        raise NotImplementedError("set_default_graphical_surface() has been removed from this version of sage-flatsurf. If you want to change the default plotting of a surface create a subclass and override graphical_surface() instead")
+        raise NotImplementedError(
+            "set_default_graphical_surface() has been removed from this version of sage-flatsurf. If you want to change the default plotting of a surface create a subclass and override graphical_surface() instead"
+        )
 
     def remove_polygon(self, label):
         if not self._mutable:
@@ -154,7 +161,10 @@ class MutablePolygonalSurface(Surface_base):
         return "Surface"
 
     def _describe_polygons(self):
-        polygons = [(-p.erase_marked_vertices().num_edges(), p.describe_polygon()) for p in self.polygons()]
+        polygons = [
+            (-p.erase_marked_vertices().num_edges(), p.describe_polygon())
+            for p in self.polygons()
+        ]
         polygons.sort()
         polygons = [description for (edges, description) in polygons]
 
@@ -189,7 +199,10 @@ class MutablePolygonalSurface(Surface_base):
 
     def change_base_label(self, label):
         import warnings
-        warnings.warn("change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_base_label() instead")
+
+        warnings.warn(
+            "change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_base_label() instead"
+        )
 
         self.set_base_label(label)
 
@@ -207,10 +220,12 @@ class OrientedSimilaritySurface(Surface_base):
 
     def __init__(self, base, category=None):
         from sage.categories.all import Rings
+
         if base not in Rings():
             raise TypeError
 
         from flatsurf.geometry.categories import SimilaritySurfaces
+
         if category is None:
             category = SimilaritySurfaces().Oriented()
 
@@ -330,11 +345,14 @@ class OrientedSimilaritySurface(Surface_base):
         return True
 
 
-class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygonalSurface):
+class MutableOrientedSimilaritySurface(
+    OrientedSimilaritySurface, MutablePolygonalSurface
+):
     def __init__(self, base, category=None):
         self._gluings = {}
 
         from flatsurf.geometry.categories import SimilaritySurfaces
+
         if category is None:
             category = SimilaritySurfaces().Oriented().FiniteType()
 
@@ -346,7 +364,9 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
     def from_surface(cls, surface, category=None):
         if not surface.is_finite_type():
             raise TypeError
-        self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category or surface.category())
+        self = MutableOrientedSimilaritySurface(
+            surface.base_ring(), category=category or surface.category()
+        )
         for label in surface.labels():
             self.add_polygon(surface.polygon(label), label=label)
 
@@ -418,7 +438,10 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         """
         import warnings
-        warnings.warn("set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead")
+
+        warnings.warn(
+            "set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead"
+        )
         return self.glue((label0, edge0), (label1, edge1))
 
     def change_edge_gluing(self, label0, edge0, label1, edge1):
@@ -434,7 +457,10 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         """
         import warnings
-        warnings.warn("change_edge_gluing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead")
+
+        warnings.warn(
+            "change_edge_gluing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead"
+        )
         return self.glue((label0, edge0), (label1, edge1))
 
     def change_polygon_gluings(self, label, gluings):
@@ -450,7 +476,10 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         """
         import warnings
-        warnings.warn("change_polygon_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use glue() in a loop instead")
+
+        warnings.warn(
+            "change_polygon_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use glue() in a loop instead"
+        )
 
         for edge0, cross in enumerate(gluings):
             if cross is None:
@@ -460,7 +489,10 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
     def change_polygon(self, label, polygon, gluing_list=None):
         import warnings
-        warnings.warn("change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead")
+
+        warnings.warn(
+            "change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead"
+        )
 
         # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
         if polygon.num_edges() != self.polygon(label).num_edges():
@@ -514,6 +546,7 @@ class MutableOrientedSimilaritySurface(OrientedSimilaritySurface, MutablePolygon
 
         if old.num_edges() != polygon.num_edges():
             from flatsurf.geometry.polygon import Polygon
+
             article, singular, plural = Polygon._describe_polygon(old.num_edges())
             raise ValueError(f"polygon must be {article} {singular}")
 
@@ -561,7 +594,6 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
         return self._reference.opposite_edge(label, edge)
 
 
-
 class LabeledCollection:
     def __init__(self, surface):
         self._surface = surface
@@ -571,6 +603,7 @@ class LabeledCollection:
             return repr(tuple(self))
 
         from itertools import islice
+
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
 
     def __len__(self):
@@ -664,7 +697,7 @@ class Edges(LabeledCollection, collections.abc.Set):
 
 class Gluings(LabeledCollection, collections.abc.Set):
     def __iter__(self):
-        for (label, edge) in self._surface.edges():
+        for label, edge in self._surface.edges():
             cross = self._surface.opposite_edge(label, edge)
             if cross is None:
                 continue
@@ -684,4 +717,10 @@ class Gluings(LabeledCollection, collections.abc.Set):
 
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
-from flatsurf.geometry.surface_legacy import Surface, Surface_list, Surface_dict, surface_list_from_polygons_and_gluings, LabelComparator
+from flatsurf.geometry.surface_legacy import (
+    Surface,
+    Surface_list,
+    Surface_dict,
+    surface_list_from_polygons_and_gluings,
+    LabelComparator,
+)

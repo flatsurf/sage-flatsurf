@@ -169,6 +169,7 @@ class ThurstonVeech:
             P.append(C(edges=[(vi, 0), (0, hi), (-vi, 0), (0, -hi)]))
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         surface = MutableOrientedSimilaritySurface(K)
         for p in P:
             surface.add_polygon(p)

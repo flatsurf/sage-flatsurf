@@ -160,6 +160,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             )
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         ss2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2 = ss2
 
@@ -351,6 +352,7 @@ class SplitPolygonsMapping(SurfaceMapping):
         newpoly2 = ConvexPolygons(s.base_ring())(newvertices2)
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         ss2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2 = ss2
         s2.remove_polygon(p)
@@ -658,6 +660,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         cv = {}  # dictionary for canonical vertices
         translations = {}  # translations bringing the canonical vertex to the origin.
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         s2 = MutableOrientedSimilaritySurface(ring)
         for label, polygon in zip(s.labels(), s.polygons()):
             cv[label] = cvcur = canonical_first_vertex(polygon)
@@ -746,6 +749,7 @@ class ReindexMapping(SurfaceMapping):
             else:
                 new_base_label = s.base_label()
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
         s2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2.relabel(relabler, in_place=True)
         s2.set_base_label(new_base_label)
@@ -853,6 +857,7 @@ def canonicalize_translation_surface_mapping(s):
 
     # This is essentially copy & paste from canonicalize() from TranslationSurfaces()
     from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
     s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
     ss = MutableOrientedSimilaritySurface.from_surface(s2)
     labels = {label for label in s2.labels()}

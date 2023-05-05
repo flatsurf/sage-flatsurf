@@ -44,7 +44,9 @@ EXAMPLES::
 # ####################################################################
 
 from flatsurf.geometry.categories.surface_category import SurfaceCategoryWithAxiom
-from flatsurf.geometry.categories.half_translation_surfaces import HalfTranslationSurfaces
+from flatsurf.geometry.categories.half_translation_surfaces import (
+    HalfTranslationSurfaces,
+)
 
 
 class TranslationSurfaces(SurfaceCategoryWithAxiom):
@@ -59,10 +61,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
         Category of translation surfaces
 
     """
-    _base_category_class_and_axiom = (HalfTranslationSurfaces, 'Positive')
+    _base_category_class_and_axiom = (HalfTranslationSurfaces, "Positive")
 
     def extra_super_categories(self):
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
+
         return (PolygonalSurfaces().Oriented(),)
 
     class ParentMethods:
@@ -111,13 +114,14 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 True
 
             """
-            if 'Oriented' not in surface.category().axioms():
+            if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError
 
             labels = surface.labels()
 
             if limit is not None:
                 from itertools import islice
+
                 labels = islice(labels, limit)
 
             for label in labels:
@@ -132,7 +136,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # and we want to deduce the matrix from the attached polygon
                     # edges instead.
                     from flatsurf.geometry.categories import SimilaritySurfaces
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
+
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(
+                        surface, label, edge
+                    )
 
                     if not matrix.is_diagonal():
                         return False
@@ -157,6 +164,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if e < 0 or e >= self.polygon(p).num_edges():
                 raise ValueError
             from sage.all import identity_matrix
+
             return identity_matrix(self.base_ring(), 2)
 
         def standardize_polygons(self, in_place=False):
@@ -206,7 +214,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
                     s = self
                 else:
-                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
+
                     s = MutableOrientedSimilaritySurface.from_surface(self)
                 cv = {}  # dictionary for non-zero canonical vertices
                 for label, polygon in zip(s.labels(), s.polygons()):
@@ -233,7 +244,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     )
 
                 from flatsurf.geometry.similarity_surface import SimilaritySurface
-                from flatsurf.geometry.translation_surface import LazyStandardizedPolygonSurface
+                from flatsurf.geometry.translation_surface import (
+                    LazyStandardizedPolygonSurface,
+                )
+
                 return SimilaritySurface(LazyStandardizedPolygonSurface(self))
 
         def cmp(self, s2, limit=None):
@@ -384,6 +398,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 s = self
             else:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
                 s = MutableOrientedSimilaritySurface.from_surface(self)
             if not s.is_finite_type():
                 raise ValueError(
@@ -392,6 +407,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             s.delaunay_decomposition(in_place=True)
             s.standardize_polygons(in_place=True)
             from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
             ss = MutableOrientedSimilaritySurface.from_surface(s)
             for label in ss.labels():
                 ss.set_base_label(label)
@@ -486,6 +502,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             if local:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
                 ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
                 us = ss
 
@@ -552,8 +569,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 k = 0
                 while True:
                     if ss is None:
-                        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-                        ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
+                        from flatsurf.geometry.surface import (
+                            MutableOrientedSimilaritySurface,
+                        )
+
+                        ss = MutableOrientedSimilaritySurface.from_surface(
+                            s.change_ring(field)
+                        )
                     else:
                         # In place matrix deformation
                         ss.apply_matrix(prod)
@@ -578,10 +600,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                                 found = None
                                 for vv in range(3):
                                     if (
-                                        wedge_product(ss.polygon(label).edge(vv), nonzero)
+                                        wedge_product(
+                                            ss.polygon(label).edge(vv), nonzero
+                                        )
                                         >= 0
                                         and wedge_product(
-                                            nonzero, -ss.polygon(label).edge((vv + 2) % 3)
+                                            nonzero,
+                                            -ss.polygon(label).edge((vv + 2) % 3),
                                         )
                                         > 0
                                     ):
@@ -686,7 +711,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if all(a != 1 for a in self.angles()):
                 # no 2π angle
                 return self
-            from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf, to_pyflatsurf
+            from flatsurf.geometry.pyflatsurf_conversion import (
+                from_pyflatsurf,
+                to_pyflatsurf,
+            )
 
             S = to_pyflatsurf(self)
             S.delaunay()
@@ -712,4 +740,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if not self.is_finite_type():
                 limit = 32
 
-            tester.assertTrue(TranslationSurfaces.ParentMethods._is_translation_surface(self, limit=limit))
+            tester.assertTrue(
+                TranslationSurfaces.ParentMethods._is_translation_surface(
+                    self, limit=limit
+                )
+            )

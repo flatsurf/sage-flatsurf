@@ -384,6 +384,7 @@ class LInfinityMarkedTriangulation:
         C = ConvexPolygons(QQ)
 
         from flatsurf import MutableOrientedSimilaritySurface
+
         barycenter = MutableOrientedSimilaritySurface(QQ)
 
         for p in range(self._n):
