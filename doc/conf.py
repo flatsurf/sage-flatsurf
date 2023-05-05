@@ -1,4 +1,4 @@
-fcerom flatsurf.version import version
+from flatsurf.version import version
 import sage_docbuild.conf
 
 # -- General configuration ------------------------------------------------
