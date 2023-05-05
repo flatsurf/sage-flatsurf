@@ -289,3 +289,13 @@ def angle(u, v, numerical=False):
     #
     # cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
     # sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
+
+
+def parallel(v, w):
+    if v[0] * w[1] != v[1] * w[0]:
+        return False
+
+    if v[0] * w[0] + v[1] * w[1] <= 0:
+        return False
+
+    return True

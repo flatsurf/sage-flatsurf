@@ -1022,6 +1022,17 @@ class Polygon(Element):
 
         return description
 
+    def slopes(self, relative=False):
+        if not relative:
+            return self.edges()
+
+        edges = [(self.edge((e - 1) % self.num_edges()), self.edge(e)) for e in range(self.num_edges())]
+
+        cos = [u.dot_product(v) for (u, v) in edges]
+        sin = [u[0] * v[1] - u[1] * v[0] for (u, v) in edges]
+
+        return [vector((c, s)) for (c, s) in zip(cos, sin)]
+
     def describe_polygon(self):
         marked_vertices = self.marked_vertices()
 
@@ -1037,21 +1048,24 @@ class Polygon(Element):
         }
 
         if self.num_edges() == 3:
-            properties["right"] = any(angle * 4 == 1 for angle in self.angles())
-            properties["isosceles"] = len(set(self.angles())) == 2
+            slopes = self.slopes(relative=True)
+            properties["right"] = any(slope[0] == 0 for slope in slopes)
+
+            from flatsurf.geometry.matrix_2x2 import parallel
+            properties["isosceles"] = parallel(slopes[0], slopes[1]) or parallel(slopes[0], slopes[2]) or parallel(slopes[1], slopes[2])
 
         return Polygon._describe_polygon(self.num_edges(), **properties)
 
     def marked_vertices(self):
-        # TODO: This has trouble when the angles cannot be determined exactly.
-        return [vertex for (vertex, angle) in zip(self.vertices(), self.angles()) if angle * 2 == 1]
+        from flatsurf.geometry.matrix_2x2 import parallel
+
+        return [vertex for (i, vertex) in enumerate(self.vertices()) if parallel(self.edge(i), self.edge((i - 1) % self.num_edges()))]
 
     def is_degenerate(self):
         if self.area() == 0:
             return True
 
-        # TODO: This has trouble when the angles cannot be determined exactly.
-        if any(angle * 2 == 1 for angle in self.angles()):
+        if self.marked_vertices():
             return True
 
         return False
@@ -1069,10 +1083,10 @@ class Polygon(Element):
         return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
 
     def is_equiangular(self):
-        # TODO: This has trouble when the angles cannot be determined exactly.
-        angles = iter(self.angles())
-        angle = next(angles)
-        return all(a == angle for a in angles)
+        slopes = self.slopes(relative=True)
+
+        from flatsurf.geometry.matrix_2x2 import parallel
+        return all(parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes)))
 
     @cached_method
     def module(self):
@@ -1192,7 +1206,7 @@ class Polygon(Element):
 
         return True
 
-    def angle(self, e, numerical=None, assume_rational=False):
+    def angle(self, e, numerical=None, assume_rational=None):
         r"""
         Return the angle at the beginning of the start point of the edge ``e``.
 
@@ -1210,10 +1224,16 @@ class Polygon(Element):
             sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
             0.5
         """
-        # TODO: Deprecate assume_rational
+        if assume_rational is not None:
+            import warnings
+            warnings.warn("assume_rational has been deprecated as a keyword to angle() and will be removed from a future version of sage-flatsurf")
 
         if numerical is None:
             numerical = not self.is_rational()
+
+            if numerical:
+                import warnings
+                warnings.warn("the behavior of angle() has been changed in recent versions of sage-flatsurf; for non-rational polygons, numerical=True must be set explicitly to get a numerical approximation of the angle")
 
         return angle(
             self.edge(e),
@@ -1221,7 +1241,7 @@ class Polygon(Element):
             numerical=numerical,
         )
 
-    def angles(self, numerical=False, assume_rational=False):
+    def angles(self, numerical=None, assume_rational=None):
         r"""
         Return the list of angles of this polygon (divided by `2 \pi`).
 
@@ -1235,8 +1255,11 @@ class Polygon(Element):
             sage: sum(T.angle(i) for i in range(3))
             1/2
         """
-        # TODO: Deprecate assume_rational; it's ignored anyway :(
-        return [self.angle(i) for i in range(self.num_edges())]
+        if assume_rational is not None:
+            import warnings
+            warnings.warn("assume_rational has been deprecated as a keyword to angles() and will be removed from a future version of sage-flatsurf")
+
+        return [self.angle(i, numerical=numerical) for i in range(self.num_edges())]
 
     def area(self):
         r"""
