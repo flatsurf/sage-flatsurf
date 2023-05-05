@@ -1500,7 +1500,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S = similarity_surfaces.example()
                     sage: T = S.minimal_cover(cover_type="translation")
                     sage: T
-                    MinimalTranslationCover(Surface built from 2 polygons)
+                    Minimal Translation Cover of Genus 1 Surface built from 2 isosceles triangles
                     sage: T in TranslationSurfaces()
                     True
                     sage: T.polygon(T.base_label())

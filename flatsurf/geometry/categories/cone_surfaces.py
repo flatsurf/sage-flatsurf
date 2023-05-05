@@ -189,6 +189,9 @@ class ConeSurfaces(SurfaceCategory):
                             sage: S.angles(return_adjacent_edges=True)
                             [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
                         """
+                        if not numerical and any(not p.is_rational() for p in self.polygons()):
+                            raise NotImplementedError("cannot compute exact angles in this surface built from non-rational polygons yet")
+
                         edges = [pair for pair in self.edges()]
                         edges = set(edges)
                         angles = []
@@ -254,4 +257,4 @@ class ConeSurfaces(SurfaceCategory):
                                     # The genus formula below is wrong when there is a vertex on an edge.
                                     return
 
-                            tester.assertEqual(self.genus(), sum(a - 1 for a in self.angles()) // 2 + 1)
+                            tester.assertEqual(self.genus(), sum(a - 1 for a in self.angles(numerical=True)) // 2 + 1)

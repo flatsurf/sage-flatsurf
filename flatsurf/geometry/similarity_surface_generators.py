@@ -600,7 +600,7 @@ class SimilaritySurfaceGenerators:
             sage: R = ExactReals(E.base_ring()) # optional: exactreal
             sage: P = E(R.random_element()) # optional: exactreal
             sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
-            Surface built from 2 polygons
+            Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: TestSuite(S).run() # long time (6s), optional: exactreal
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: S in ConeSurfaces()
@@ -750,7 +750,7 @@ class DilationSurfaceGenerators:
             sage: from flatsurf import *
             sage: ds = dilation_surfaces.basic_dilation_torus(AA(sqrt(2)))
             sage: ds
-            Genus 1 Positive Dilation Surface built from a rectangle and a square
+            Genus 1 Positive Dilation Surface built from a square and a rectangle
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: ds in DilationSurfaces().Positive()
             True
@@ -1103,10 +1103,10 @@ class TranslationSurfaceGenerators:
 
             sage: U8 = translation_surfaces.mcmullen_genus2_prototype(2,1,0,0,1/4)    # discriminant 8
             sage: U8
-            Translation Surface in H_2(1^2) built from a quadrilateral and a rectangle
+            Translation Surface in H_2(1^2) built from a rectangle and a quadrilateral
             sage: U12 = translation_surfaces.mcmullen_genus2_prototype(3,1,0,0,3/10)   # discriminant 12
             sage: U12
-            Translation Surface in H_2(1^2) built from a quadrilateral and a rectangle
+            Translation Surface in H_2(1^2) built from a rectangle and a quadrilateral
 
             sage: U8.stratum()
             H_2(1^2)
@@ -1360,7 +1360,7 @@ class TranslationSurfaceGenerators:
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.cathedral(1,2)
             sage: C
-            Translation Surface in H_4(2^3) built from 2 squares, an octagon and a hexagon with 4 marked vertices
+            Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
             sage: TestSuite(C).run()
 
             sage: from pyexactreal import ExactReals # optional: exactreal
@@ -1368,7 +1368,7 @@ class TranslationSurfaceGenerators:
             sage: R = ExactReals(K) # optional: exactreal
             sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
             sage: C  # optional: exactreal
-            Translation Surface in H_4(2^3) built from 2 squares, an octagon and a hexagon with 4 marked vertices
+            Translation Surface in H_4(2^3) built from 2 rectangles, a hexagon with 4 marked vertices and an octagon
             sage: C.stratum() # optional: exactreal
             H_4(2^3)
             sage: TestSuite(C).run() # long time (6s), optional: exactreal

@@ -98,7 +98,7 @@ def similarity_from_vectors(u, v, matrix_space=None):
     return m
 
 
-def is_cosine_sine_of_rational(cos, sin):
+def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
 
@@ -135,7 +135,26 @@ def is_cosine_sine_of_rational(cos, sin):
         True
 
     """
-    from sage.all import CBF
+    if cos not in AA:
+        return False
+    if sin not in AA:
+        return False
+
+    if not scaled:
+        if cos ** 2 + sin ** 2 != 1:
+            return False
+
+    cos = AA(cos).as_number_field_element(embedded=True)
+    # We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613
+    cos = cos[0](cos[1])
+    sin = AA(sin).as_number_field_element(embedded=True)
+    # We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613
+    sin = sin[0](sin[1])
+
+
+    from sage.all import ComplexBallField
+
+    CBF = ComplexBallField(53)
 
     x = CBF(cos) + CBF.gen(0) * CBF(sin)
     xN = x
@@ -153,10 +172,20 @@ def is_cosine_sine_of_rational(cos, sin):
     for n in count(2):
         xN *= x
 
+        c = xN.real()
+        s = xN.imag()
+
         if xN.real().contains_zero() or xN.imag().contains_zero():
-            exact = (QQbar(cos) + QQbar.gen(0) * QQbar(sin)) ** n
-            if exact.real() == 0 or exact.imag() == 0:
+            c, s = cos, sin
+            for i in range(n - 1):
+                c, s = c * cos - s * sin, s * cos + c * sin
+
+            if c == 0 or s == 0:
                 return True
+
+            CBF = ComplexBallField(CBF.precision() * 2)
+            x = CBF(cos) + CBF.gen(0) * CBF(sin)
+            xN = x ** n
 
         from math import log
         if n / (2. * log(log(n)) + 3 / log(log(n))) > 2 * degree_bound:
@@ -208,6 +237,10 @@ def angle(u, v, numerical=False):
 
         sage: v = vector((AA(sqrt(2)), AA(sqrt(3))))
         sage: a = angle(u, v)
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: cannot recover a rational angle from these numerical results
+        sage: a = angle(u, v, numerical=True)
         sage: a    # abs tol 1e-14
         0.14102355421224375
         sage: exp(2*pi.n()*CC(0,1)*a)
@@ -238,7 +271,7 @@ def angle(u, v, numerical=False):
     # (see below for a slow but exact method)
     angle_rat = RR(angle).nearby_rational(0.00000001)
     if angle_rat.denominator() > 100:
-        raise NotImplementedError("the numerical method used is not smart enough!")
+        raise NotImplementedError("cannot recover a rational angle from these numerical results")
     return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
 
     # a neater way is provided below by working only with number fields

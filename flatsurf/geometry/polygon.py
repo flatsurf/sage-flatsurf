@@ -1043,12 +1043,14 @@ class Polygon(Element):
         return Polygon._describe_polygon(self.num_edges(), **properties)
 
     def marked_vertices(self):
+        # TODO: This has trouble when the angles cannot be determined exactly.
         return [vertex for (vertex, angle) in zip(self.vertices(), self.angles()) if angle * 2 == 1]
 
     def is_degenerate(self):
         if self.area() == 0:
             return True
 
+        # TODO: This has trouble when the angles cannot be determined exactly.
         if any(angle * 2 == 1 for angle in self.angles()):
             return True
 
@@ -1067,6 +1069,7 @@ class Polygon(Element):
         return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
 
     def is_equiangular(self):
+        # TODO: This has trouble when the angles cannot be determined exactly.
         angles = iter(self.angles())
         angle = next(angles)
         return all(a == angle for a in angles)
@@ -1179,21 +1182,12 @@ class Polygon(Element):
         for e in range(self.num_edges()):
             u = self.edge(e)
             v = -self.edge((e-1) % self.num_edges())
-            sqnorm_u = u[0] * u[0] + u[1] * u[1]
-            sqnorm_v = v[0] * v[0] + v[1] * v[1]
 
-            if sqnorm_u != sqnorm_v:
-                uu = vector(AA, u)
-                vv = (AA(sqnorm_u) / AA(sqnorm_v)).sqrt() * vector(AA, v)
-            else:
-                uu = u
-                vv = v
-
-            cos_uv = (uu[0] * vv[0] + uu[1] * vv[1]) / sqnorm_u
-            sin_uv = (uu[0] * vv[1] - uu[1] * vv[0]) / sqnorm_u
+            cos = u.dot_product(v)
+            sin = u[0] * v[1] - u[1] * v[0]
 
             from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
-            if not is_cosine_sine_of_rational(cos_uv, sin_uv):
+            if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                 return False
 
         return True
