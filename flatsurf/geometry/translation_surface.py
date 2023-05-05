@@ -32,6 +32,9 @@ class AbstractOrigami(OrientedSimilaritySurface):
         else:
             category &= category.InfiniteType()
 
+        from flatsurf.geometry.polygon import polygons
+        self._square = polygons.square()
+
         super().__init__(QQ, category=category)
 
     def base_label(self):
@@ -67,9 +70,8 @@ class AbstractOrigami(OrientedSimilaritySurface):
         if lab not in self._domain:
             # Updated to print a possibly useful error message
             raise ValueError("Label " + str(lab) + " is not in the domain")
-        from flatsurf.geometry.polygon import polygons
 
-        return polygons.square()
+        return self._square
 
     def opposite_edge(self, p, e):
         if p not in self._domain:
