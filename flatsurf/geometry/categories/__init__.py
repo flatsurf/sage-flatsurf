@@ -27,8 +27,8 @@ translation surfaces, actually add a method to
     :meth:`is_rational`. There are default implementations for these for finite
     type surfaces. Once a surfaces has been found to be in a subcategory, these
     methods are replaced to simply return ``True`` instead of computing
-    anything. If a class explicitly overrides these methods, then tha category
-    machinary cannot replace that method anymore when the category of the
+    anything. If a class explicitly overrides these methods, then that category
+    machinery cannot replace that method anymore when the category of the
     surface gets refined. Consequently, it can be beneficial for the override
     to shortcut the question by querying the category, e.g., ``is_rational``
     could start with ``if "Rational" in self.category().axioms(): return True``

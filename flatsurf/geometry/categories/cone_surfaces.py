@@ -127,7 +127,7 @@ class ConeSurfaces(SurfaceCategory):
                         continue
 
                     # We do not call self.edge_matrix() since the surface might
-                    # have overriden this (just returning the identity matrix e.g.)
+                    # have overridden this (just returning the identity matrix e.g.)
                     # and we want to deduce the matrix from the attached polygon
                     # edges instead.
                     from flatsurf.geometry.categories import SimilaritySurfaces

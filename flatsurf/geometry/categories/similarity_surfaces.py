@@ -135,7 +135,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 If a surface cannot implement the various ``is_`` methods used in
                 the implementation of this method (i.e., if any of them throws a
                 ``NotImplementedError``,) then this method ``refined_category``
-                must be overriden to skip that check. We don't want to actively
+                must be overridden to skip that check. We don't want to actively
                 catch a ``NotImplementedError`` and instead encourage authors
                 to explicitly select the category their surfaces lives in.
 
@@ -2547,7 +2547,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             continue
 
                         # We do not call self.edge_matrix() since the surface might
-                        # have overriden this (just returning the identity matrix e.g.)
+                        # have overridden this (just returning the identity matrix e.g.)
                         # and we want to deduce the matrix from the attached polygon
                         # edges instead.
                         matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(surface, label, edge)
