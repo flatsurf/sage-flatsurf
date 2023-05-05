@@ -23,6 +23,7 @@ from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping
 
 from flatsurf.geometry.polygon import ConvexPolygons
+from sage.misc.cachefunc import cached_method
 
 
 class GL2RImageSurface(OrientedSimilaritySurface):
@@ -96,6 +97,7 @@ class GL2RImageSurface(OrientedSimilaritySurface):
     def is_translation_surface(self, positive=True):
         return self._s.is_translation_surface(positive=positive)
 
+    @cached_method
     def polygon(self, lab):
         if self._det_sign == 1:
             p = self._s.polygon(lab)
