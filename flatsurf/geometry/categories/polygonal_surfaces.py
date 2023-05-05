@@ -196,7 +196,7 @@ class PolygonalSurfaces(SurfaceCategory):
             .. NOTE::
 
                 Unlike with :meth:`labels`, this method should usually not be
-                overriden. Things will be fast if :meth:`labels` is fast.
+                overridden. Things will be fast if :meth:`labels` is fast.
 
             EXAMPLES::
 
