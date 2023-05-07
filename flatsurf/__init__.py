@@ -7,7 +7,7 @@ from flatsurf.geometry.polygon import (
     polygon,
     polygons,
     EquiangularPolygons,
-    Polygons,
+    RealProjectivePolygons as Polygons,
     ConvexPolygons,
 )
 

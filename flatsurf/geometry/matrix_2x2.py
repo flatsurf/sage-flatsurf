@@ -20,6 +20,8 @@ Some tools for 2x2 matrices and planar geometry.
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
+# TODO: Rename this module.
+
 from sage.rings.all import AA, QQbar, RR
 
 from sage.modules.free_module_element import vector
@@ -302,3 +304,127 @@ def parallel(v, w):
         return False
 
     return True
+
+
+def wedge_product(v, w):
+    return v[0] * w[1] - v[1] * w[0]
+
+
+def wedge(u, v):
+    r"""
+    General wedge product of two vectors.
+    """
+    d = len(u)
+    R = u.base_ring()
+    assert len(u) == len(v) and v.base_ring() == R
+    from sage.all import free_module_element
+    return free_module_element(
+        R,
+        d * (d - 1) // 2,
+        [(u[i] * v[j] - u[j] * v[i]) for i in range(d - 1) for j in range(i + 1, d)],
+    )
+
+
+def tensor(u, v):
+    r"""
+    General tensor product of two vectors.
+    """
+    d = len(u)
+    R = u.base_ring()
+    assert len(u) == len(v) and v.base_ring() == R
+    from sage.all import matrix
+    return matrix(R, d, [u[i] * v[j] for j in range(d) for i in range(d)])
+
+
+def line_intersection(p1, p2, q1, q2):
+    r"""
+    Return the point of intersection between the line joining p1 to p2
+    and the line joining q1 to q2. If the lines are parallel we return
+    None. Here p1, p2, q1 and q2 should be vectors in the plane.
+    """
+    if wedge_product(p2 - p1, q2 - q1) == 0:
+        return None
+    # Since the wedge product is non-zero, the following is invertible:
+    from sage.all import matrix
+    m = matrix([[p2[0] - p1[0], q1[0] - q2[0]], [p2[1] - p1[1], q1[1] - q2[1]]])
+    return p1 + (m.inverse() * (q1 - p1))[0] * (p2 - p1)
+
+
+def is_same_direction(v, w, zero=None):
+    r"""
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import is_same_direction
+        sage: V = QQ**2
+
+        sage: is_same_direction(V((0,1)), V((0,2)))
+        True
+        sage: is_same_direction(V((1,-1)), V((2,-2)))
+        True
+        sage: is_same_direction(V((4,-2)), V((2,-1)))
+        True
+        sage: is_same_direction(V((1,2)), V((2,4)))
+        True
+        sage: is_same_direction(V((0,2)), V((0,1)))
+        True
+
+        sage: is_same_direction(V((1,1)), V((1,2)))
+        False
+        sage: is_same_direction(V((1,2)), V((2,1)))
+        False
+        sage: is_same_direction(V((1,2)), V((1,-2)))
+        False
+        sage: is_same_direction(V((1,2)), V((-1,-2)))
+        False
+        sage: is_same_direction(V((2,-1)), V((-2,1)))
+        False
+
+        sage: is_same_direction(V((1,0)), V.zero())
+        Traceback (most recent call last):
+        ...
+        TypeError: zero vector has no direction
+
+    """
+    if not v or not w:
+        raise TypeError("zero vector has no direction")
+    return not wedge_product(v, w) and (v[0] * w[0] > 0 or v[1] * w[1] > 0)
+
+
+def is_opposite_direction(v, w):
+    r"""
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import is_opposite_direction
+        sage: V = QQ**2
+
+        sage: is_opposite_direction(V((0,1)), V((0,-2)))
+        True
+        sage: is_opposite_direction(V((1,-1)), V((-2,2)))
+        True
+        sage: is_opposite_direction(V((4,-2)), V((-2,1)))
+        True
+        sage: is_opposite_direction(V((-1,-2)), V((2,4)))
+        True
+
+        sage: is_opposite_direction(V((1,1)), V((1,2)))
+        False
+        sage: is_opposite_direction(V((1,2)), V((2,1)))
+        False
+        sage: is_opposite_direction(V((0,2)), V((0,1)))
+        False
+        sage: is_opposite_direction(V((1,2)), V((1,-2)))
+        False
+        sage: is_opposite_direction(V((1,2)), V((-1,2)))
+        False
+        sage: is_opposite_direction(V((2,-1)), V((-2,-1)))
+        False
+
+        sage: is_opposite_direction(V((1,0)), V.zero())
+        Traceback (most recent call last):
+        ...
+        TypeError: zero vector has no direction
+
+    """
+    if not v or not w:
+        raise TypeError("zero vector has no direction")
+    return not wedge_product(v, w) and (v[0] * w[0] < 0 or v[1] * w[1] < 0)

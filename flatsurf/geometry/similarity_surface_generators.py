@@ -28,7 +28,6 @@ from flatsurf.geometry.polygon import (
     polygons,
     ConvexPolygons,
     Polygon,
-    ConvexPolygon,
     build_faces,
 )
 
@@ -630,7 +629,7 @@ class SimilaritySurfaceGenerators:
 
         V = P.module()
 
-        if not isinstance(P, ConvexPolygon):
+        if not P.is_convex():
             # triangulate non-convex ones
             base_ring = P.base_ring()
             C = ConvexPolygons(base_ring)
@@ -1315,7 +1314,7 @@ class TranslationSurfaceGenerators:
         o = ZZ_2 * polygons.regular_ngon(2 * n)
         p1 = polygons(*[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
         p2 = polygons(*[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
-        s = MutableOrientedSimilaritySurface(o.parent().field())
+        s = MutableOrientedSimilaritySurface(o.base_ring())
         s.add_polygon(o)
         s.add_polygon(p1)
         s.add_polygon(p2)

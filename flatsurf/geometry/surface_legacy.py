@@ -551,10 +551,9 @@ class Surface(OrientedSimilaritySurface):
     def _test_base_label(self, **options):
         # Test that the base_label is associated to a polygon
         tester = self._tester(**options)
-        from .polygon import ConvexPolygon
 
         tester.assertTrue(
-            isinstance(self.polygon(self.base_label()), ConvexPolygon),
+            self.polygon(self.base_label()).is_convex(),
             "polygon(base_label) does not return a ConvexPolygon. "
             + "Here base_label="
             + str(self.base_label()),
@@ -626,7 +625,6 @@ class Surface(OrientedSimilaritySurface):
             tester = options["tester"]
         else:
             tester = self._tester(**options)
-        from .polygon import ConvexPolygon
 
         if self.is_finite_type():
             it = self.label_iterator()
@@ -636,7 +634,7 @@ class Surface(OrientedSimilaritySurface):
             it = islice(self.label_iterator(), 30)
         for label in it:
             tester.assertTrue(
-                isinstance(self.polygon(label), ConvexPolygon),
+                self.polygon(label).is_convex(),
                 "polygon(label) does not return a ConvexPolygon when label="
                 + str(label),
             )

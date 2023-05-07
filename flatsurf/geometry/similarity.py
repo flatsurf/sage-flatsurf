@@ -34,7 +34,7 @@ from sage.modules.free_module_element import FreeModuleElement
 
 from sage.structure.element import is_Matrix
 
-from flatsurf.geometry.polygon import ConvexPolygon, ConvexPolygons
+from flatsurf.geometry.polygon import ConvexPolygons
 
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
@@ -254,9 +254,10 @@ class Similarity(MultiplicativeGroupElement):
 
     def __call__(self, w, ring=None):
         r"""
-        Return the image of ``w`` under the similarity. Here ``w`` may be a ConvexPolygon or a vector
-        (or something that can be indexed in the same way as a vector). If a ring is provided,
-        the objects returned will be defined over this ring.
+        Return the image of ``w`` under the similarity. Here ``w`` may be a
+        convex polygon or a vector (or something that can be indexed in the
+        same way as a vector). If a ring is provided, the objects returned will
+        be defined over this ring.
 
         TESTS::
 
@@ -272,33 +273,32 @@ class Similarity(MultiplicativeGroupElement):
             sage: SG = SimilarityGroup(QQ)
             sage: from flatsurf import ConvexPolygons
             sage: P = ConvexPolygons(QQ)
-            sage: p = P.an_element()
-            sage: p
-            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: p = P(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: g = SG.an_element()**2
             sage: g
             (x, y) |-> (25*x + 4, 25*y + 10)
             sage: g(p)
             polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).parent()
-            ConvexPolygons(Algebraic Real Field)
+            Category of convex real projective polygons over Algebraic Real Field
         """
         if ring is not None and ring not in Rings():
             raise TypeError("ring must be a ring")
 
-        if isinstance(w, ConvexPolygon):
+        from flatsurf.geometry.polygon import EuclideanPolygon
+        if isinstance(w, EuclideanPolygon) and w.is_convex():
             if ring is None:
                 ring = self.parent().base_ring()
             P = ConvexPolygons(ring)
 
             try:
                 return P(vertices=[self(v) for v in w.vertices()])
-            except ValueError as e:
+            except ValueError:
                 if not self._sign.is_one():
                     raise ValueError("Similarity must be orientation preserving.")
-                else:
-                    # Not sure why this would happen:
-                    raise
+
+                # Not sure why this would happen:
+                raise
 
         if ring is None:
             if self._sign.is_one():
