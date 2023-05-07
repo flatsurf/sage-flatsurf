@@ -52,7 +52,6 @@ from sage.all import (
     UniqueRepresentation,
     Sets,
     Rings,
-    Fields,
     AA,
     ZZ,
     QQ,
@@ -639,7 +638,7 @@ class MatrixActionOnPolygons(Action):
 
 class PolygonPosition:
     r"""
-    Class for describing the position of a point within or outside of a polygon.
+    Describes the position of a point within or outside of a polygon.
     """
     # Position Types:
     OUTSIDE = 0
@@ -716,6 +715,10 @@ class PolygonPosition:
 
 
 class Polygon(Element):
+    r"""
+    A (possibly non-convex) polygon in the plane `\mathbb{R}^2`.
+    """
+
     def __init__(self, parent, vertices, check=True):
         Element.__init__(self, parent)
         V = parent.module()
@@ -1636,20 +1639,17 @@ class Polygon(Element):
 
 class ConvexPolygon(Polygon):
     r"""
-    A convex polygon in the plane RR^2
+    A convex polygon in the plane `\mathbb{R}^2`.
     """
 
     def __init__(self, parent, vertices, check=True):
         r"""
-        To construct the polygon you should either use a list of edge vectors
-        or a list of vertices. Using both will result in a ValueError. The polygon
-        needs to be convex with postively oriented boundary.
-
         INPUT:
 
         - ``parent`` -- a parent
 
-        - ``vertices`` -- a list of vertices of the polygon
+        - ``vertices`` -- a list of vertices of the polygon; the resulting
+          polygon must be convex with positively oriented boundary.
         """
         Polygon.__init__(self, parent, vertices, check=False)
         if check:
@@ -3536,68 +3536,3 @@ class PolygonsConstructor:
 
 polygons = PolygonsConstructor()
 polygon = polygons
-
-
-class PolygonCreator:
-    r"""
-    Class for iteratively constructing a polygon over the field.
-    """
-
-    def __init__(self, field=QQ):
-        r"""Create a polygon in the provided field."""
-        self._v = []
-        self._w = []
-
-        if field not in Fields():
-            raise TypeError("field must be a field")
-
-        self._field = field
-
-    def vector_space(self):
-        r"""
-        Return the vector space in which self naturally embeds.
-        """
-        return VectorSpace(self._field, 2)
-
-    def add_vertex(self, new_vertex):
-        r"""
-        Add a vertex to the polygon.
-        Returns 1 if successful and 0 if not, in which case the resulting
-        polygon would not have been convex.
-        """
-        V = self.vector_space()
-        newv = V(new_vertex)
-        if len(self._v) == 0:
-            self._v.append(newv)
-            self._w.append(V.zero())
-            return 1
-        if len(self._v) == 1:
-            if self._v[0] == newv:
-                return 0
-            else:
-                self._w[-1] = newv - self._v[-1]
-                self._w.append(self._v[0] - newv)
-                self._v.append(newv)
-                return 1
-        if len(self._v) >= 2:
-            neww1 = newv - self._v[-1]
-            if wedge_product(self._w[-2], neww1) <= 0:
-                return 0
-            neww2 = self._v[0] - newv
-            if wedge_product(neww1, neww2) <= 0:
-                return 0
-            if wedge_product(neww2, self._w[0]) <= 0:
-                return 0
-            self._w[-1] = newv - self._v[-1]
-            self._w.append(self._v[0] - newv)
-            self._v.append(newv)
-            return 1
-
-    def get_polygon(self):
-        r"""
-        Return the polygon.
-        Raises a ValueError if less than three vertices have been accepted.
-        """
-        if len(self._v) < 2:
-            raise ValueError("Not enough vertices!")
-        return ConvexPolygons(self._field)(self._w)
