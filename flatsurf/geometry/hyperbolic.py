@@ -449,7 +449,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def __contains__(self, x):
         r"""
-        Return whether the hyperboic plane contains ``x``.
+        Return whether the hyperbolic plane contains ``x``.
 
         EXAMPLES::
 
