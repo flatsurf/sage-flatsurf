@@ -32,35 +32,6 @@ class Polygons(Category_over_base_ring):
     def super_categories(self):
         return [Sets()]
 
-    # def __init__(self, ring):
-    #     # Parent.__init__(self, category=Sets())
-    #     if ring not in Rings():
-    #         raise ValueError("'ring' must be a ring")
-    #     self._ring = ring
-    #     # TODO: Make this work again.
-    #     # self.register_action(MatrixActionOnPolygons(self))
-    #     super().__init__()
-
-    # def base_ring(self):
-    #     return self._ring
-
-    # def field(self):
-    #     r"""
-    #     Return the field over which this polygon is defined.
-
-    #     EXAMPLES::
-
-    #         sage: from flatsurf import polygons
-    #         sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
-    #         sage: P.field()
-    #         Rational Field
-
-    #     """
-    #     return self._ring.fraction_field()
-
-    # def _repr_(self):
-    #     return "Polygons(%s)" % self.base_ring()
-
     class ParentMethods:
         pass
 
@@ -90,22 +61,6 @@ class Polygons(Category_over_base_ring):
             sage: TestSuite(ConvexPolygons(QQbar)).run()
             sage: TestSuite(ConvexPolygons(ZZ)).run()
         """
-
-        # def has_coerce_map_from(self, other):
-        #     r"""
-        #     TESTS::
-
-        #         sage: from flatsurf import ConvexPolygons
-        #         sage: C1 = ConvexPolygons(QQ)
-        #         sage: C2 = ConvexPolygons(AA)
-        #         sage: C2.has_coerce_map_from(C1)
-        #         True
-        #         sage: C1.has_coerce_map_from(C2)
-        #         False
-        #     """
-        #     return isinstance(other, Polygons.ConvexPolygons) and self.field().has_coerce_map_from(
-        #         other.field()
-        #     )
 
         class ParentMethods:
             def is_convex(self):
@@ -644,10 +599,21 @@ class Polygons(Category_over_base_ring):
             return self._with_axiom("Convex")
 
         def field(self):
-            import warnings
-            warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() instead")
+            r"""
+            Return the field over which this polygon is defined.
 
-            return self.base_ring()
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+                sage: P.field()
+                Rational Field
+
+            """
+            import warnings
+            warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead")
+
+            return self.base_ring().fraction_field()
 
 
 all_axioms += ("Convex", )
