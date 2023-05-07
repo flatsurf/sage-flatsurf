@@ -1593,8 +1593,8 @@ class TranslationSurfaceGenerators:
             sage: h = h1*h2^(-1r)                            # optional - flipper
             sage: f = h.flat_structure()                     # optional - flipper
             sage: ts = translation_surfaces.from_flipper(h)  # optional - flipper
-            sage: ts                                         # optional - flipper
-            Surface built from 2 polygons
+            sage: ts                                         # optional - flipper; computation of the stratum fails here, see #227
+            Half-Translation Surface built from 2 triangles
             sage: TestSuite(ts).run()                        # optional - flipper
             sage: from flatsurf.geometry.categories import HalfTranslationSurfaces  # optional: flipper
             sage: ts in HalfTranslationSurfaces()  # optional: flipper

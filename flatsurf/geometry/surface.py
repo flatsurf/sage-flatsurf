@@ -257,7 +257,11 @@ class OrientedSimilaritySurface(Surface_base):
             description = "Surface"
 
         if hasattr(self, "stratum"):
-            description += f" in {self.stratum()}"
+            try:
+                description += f" in {self.stratum()}"
+            except NotImplementedError:
+                # Computation of the stratum might fail due to #227.
+                pass
         elif self.genus is not NotImplemented:
             description = f"Genus {self.genus()} {description}"
 
