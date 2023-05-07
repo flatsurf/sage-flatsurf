@@ -1,5 +1,5 @@
 r"""
-sage-flatsurf: Sagemath module for similitude surfaces
+Flat Surfaces in SageMath
 """
 from flatsurf.version import version as __version__
 
