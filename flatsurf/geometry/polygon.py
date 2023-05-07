@@ -1789,7 +1789,6 @@ class ConvexPolygon(Polygon):
             sage: p.get_point_position(V([5/2,1/4]))
             point positioned in interior of polygon
         """
-        V = self.vector_space()
         if translation is None:
             # Since we allow the initial vertex to be non-zero, this changed:
             v1 = self.vertex(0)
@@ -1838,7 +1837,6 @@ class ConvexPolygon(Polygon):
         if direction == V.zero():
             raise ValueError("Zero vector provided as direction.")
         v0 = self.vertex(0)
-        w = direction
         for i in range(self.num_edges()):
             e = self.edge(i)
             m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
@@ -2020,7 +2018,6 @@ class ConvexPolygon(Polygon):
             v0 = self.vertex(0)
         else:
             v0 = self.vertex(0) + translation
-        w = holonomy
         for i in range(self.num_edges()):
             e = self.edge(i)
             m = matrix([[e[0], -holonomy[0]], [e[1], -holonomy[1]]])
@@ -2722,7 +2719,6 @@ class EquiangularPolygons:
         n = len(slopes)
         cosines = [x[0] for x in slopes]
         sines = [x[1] for x in slopes]
-        v = V.zero()
         e = V(e0)
         edges = [e]
         for i in range(n - 1):
@@ -3460,7 +3456,6 @@ class PolygonsConstructor:
             lengths = kwds.pop("lengths", None)
             length = kwds.pop("length", None)
             base_point = kwds.pop("base_point", (0, 0))
-            number_field = kwds.pop("number_field", True)
         elif args:
             edges = args
             args = ()
