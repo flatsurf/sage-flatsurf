@@ -19,8 +19,8 @@
 # ****************************************************************************
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
-from sage.all import FreeModule
 from sage.misc.cachefunc import cached_method
+from sage.all import FreeModule
 
 from flatsurf.geometry.categories.polygons import Polygons
 from flatsurf.geometry.matrix_2x2 import wedge_product
@@ -99,6 +99,10 @@ class RealProjectivePolygons(Category_over_base_ring):
             """
             from sage.all import VectorSpace
             return VectorSpace(self.base_ring().fraction_field(), 2)
+
+        def _WithAngles(self, angles):
+            from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            return RealProjectivePolygonsWithAngles(self.base_ring(), angles) & self
 
     def __call__(self, *args, **kwds):
         r"""

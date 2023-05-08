@@ -20,8 +20,8 @@
 # *********************************************************************
 from collections import deque
 
-from .polygon import line_intersection
-from .surface_objects import SaddleConnection
+from flatsurf.geometry.matrix_2x2 import line_intersection
+from flatsurf.geometry.surface_objects import SaddleConnection
 
 # Vincent question:
 # using deque has the disadvantage of losing the initial points
@@ -165,7 +165,7 @@ class SegmentInPolygon:
         vv = self.start().vector()
         vertex = self.start().vertex()
         ww = self.start().polygon().edge(vertex)
-        from flatsurf.geometry.polygon import is_same_direction
+        from flatsurf.geometry.matrix_2x2 import is_same_direction
 
         return is_same_direction(vv, ww)
 

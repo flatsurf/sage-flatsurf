@@ -354,7 +354,7 @@ def is_same_direction(v, w, zero=None):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polygon import is_same_direction
+        sage: from flatsurf.geometry.matrix_2x2 import is_same_direction
         sage: V = QQ**2
 
         sage: is_same_direction(V((0,1)), V((0,2)))
@@ -394,7 +394,7 @@ def is_opposite_direction(v, w):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polygon import is_opposite_direction
+        sage: from flatsurf.geometry.matrix_2x2 import is_opposite_direction
         sage: V = QQ**2
 
         sage: is_opposite_direction(V((0,1)), V((0,-2)))

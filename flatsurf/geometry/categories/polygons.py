@@ -70,6 +70,14 @@ class Polygons(Category_over_base_ring):
         def Rational(self):
             return self._with_axiom("Rational")
 
+        def WithAngles(self, angles):
+            from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
+            return self._WithAngles(angles)
+
+        def _WithAngles(self, angles):
+            raise NotImplementedError
+
         def field(self):
             r"""
             Return the field over which this polygon is defined.
