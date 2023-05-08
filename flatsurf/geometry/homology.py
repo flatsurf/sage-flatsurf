@@ -407,7 +407,8 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     Element = SimplicialHomologyClass
 
     @staticmethod
-    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="spanning_tree", category=None):
+    # TODO: implementation should default to spanning_tree
+    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
         r"""
         Normalize parameters used to construct homology.
 

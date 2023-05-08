@@ -1305,7 +1305,7 @@ class SimilaritySurface(SageObject):
             TranslationSurface built from 20 polygons
 
         """
-        return self.__class__(self._s.subdivide())
+        return self.__class__(self._s.subdivide().codomain())
 
     def subdivide_edges(self, parts=2):
         r"""
@@ -1324,7 +1324,7 @@ class SimilaritySurface(SageObject):
             TranslationSurface built from 2 polygons
 
         """
-        return self.__class__(self._s.subdivide_edges(parts=parts))
+        return self.__class__(self._s.subdivide_edges(parts=parts).codomain())
 
     def singularity(self, label, v, limit=None):
         r"""

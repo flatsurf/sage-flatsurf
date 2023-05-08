@@ -69,6 +69,9 @@ class ConeSurface(SimilaritySurface):
 
         return angles
 
+    def singularities(self):
+        return [self.point(edges[0][0], self.polygon(edges[0][0]).vertex(edges[0][1])) for (angle, edges) in self.angles(return_adjacent_edges=True) if angle > 1]
+
     def genus(self):
         """
         Return the genus of the surface.
