@@ -110,3 +110,5 @@ from flatsurf.geometry.categories.translation_surfaces import TranslationSurface
 
 from flatsurf.geometry.categories.polygons import Polygons, ConvexPolygons
 from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
+from flatsurf.geometry.categories.hyperbolic_polygons import HyperbolicPolygons
+from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
