@@ -67,6 +67,9 @@ class Polygons(Category_over_base_ring):
         def Convex(self):
             return self._with_axiom("Convex")
 
+        def Rational(self):
+            return self._with_axiom("Rational")
+
         def field(self):
             r"""
             Return the field over which this polygon is defined.
@@ -86,6 +89,9 @@ class Polygons(Category_over_base_ring):
             warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead")
 
             return self.base_ring().fraction_field()
+
+    class Rational(CategoryWithAxiom_over_base_ring):
+        pass
 
 
 all_axioms += ("Convex", )
