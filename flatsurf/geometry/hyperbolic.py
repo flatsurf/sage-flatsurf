@@ -11343,7 +11343,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             ....:     marked_vertices=[I])
 
             sage: P.change(ring=AA)
-            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+            {x - 1 ≤ 0} ∩ {x + 1 ≥ 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∪ {I}
 
         We cannot give a polygon an explicit orientation::
 
@@ -11368,6 +11368,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                     check=False,
                     assume_sorted=True,
                     assume_minimal=True,
+                    marked_vertices=[vertex.change(ring=ring, geometry=geometry) for vertex in self._marked_vertices],
                 )
             )
 
