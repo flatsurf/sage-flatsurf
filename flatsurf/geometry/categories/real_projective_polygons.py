@@ -232,7 +232,7 @@ class RealProjectivePolygons(Category_over_base_ring):
             return EuclideanPolygon(ring=self.base(), vertices=vertices, category=self, check=check)
 
         class ParentMethods:
-            def _convexity_check(self):
+            def _check(self):
                 r"""
                 TESTS::
 
@@ -264,6 +264,8 @@ class RealProjectivePolygons(Category_over_base_ring):
                     from flatsurf.geometry.matrix_2x2 import is_opposite_direction
                     if is_opposite_direction(self.edge(i), self.edge(i + 1)):
                         raise ValueError("degenerate polygon")
+
+                Polygons.ParentMethods._check(self)
 
             def find_separatrix(self, direction=None, start_vertex=0):
                 r"""

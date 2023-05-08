@@ -28,7 +28,9 @@ class Polygons(Category_over_base_ring):
         return [Sets()]
 
     class ParentMethods:
-        pass
+        def _check(self):
+            if self.area() < 0:
+                raise ValueError("polygon has negative area; probably the vertices are not in counter-clockwise order?")
 
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""

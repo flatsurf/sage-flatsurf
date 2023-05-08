@@ -564,29 +564,13 @@ class EuclideanPolygon(Parent):
         super().__init__(ring, category=category)
 
         if check:
-            self._non_intersection_check()
-            self._inside_outside_check()
+            self._check()
 
     def parent(self):
         # TODO: Deprecate (warn that this is going to change eventually.)
         return self.category()
 
-    def _inside_outside_check(self):
-        r"""
-        TESTS::
-
-            sage: from flatsurf import Polygons
-            sage: P = Polygons(QQ)
-            sage: P(vertices=[(0,0),(-1,-1),(0,1),(1,-1)])
-            Traceback (most recent call last):
-            ...
-            ValueError: the vertices are in clockwise order
-        """
-        # NOTE: should we do something more efficient?
-        if self.area() < 0:
-            raise ValueError("the vertices are in clockwise order")
-
-    def _non_intersection_check(self):
+    def _check(self):
         r"""
         TESTS::
 
@@ -597,6 +581,8 @@ class EuclideanPolygon(Parent):
             ...
             ValueError: edge 0 (= ((0, 0), (2, 0))) and edge 2 (= ((1, 1), (1, -1))) intersect
         """
+        super()._check()
+
         n = len(self._v)
         for i in range(n - 1):
             ei = (self._v[i], self._v[i + 1])
@@ -1879,17 +1865,8 @@ class EquiangularPolygons:
             coeffs, r = random_element()
             try:
                 return self(*r)
-            except ValueError as e:
-                if (
-                    not e.args[0].startswith("edge ")
-                    or not e.args[0].endswith("intersect")
-                    or e.args[0].count(" and edge ") != 1
-                ):
-                    raise RuntimeError(
-                        "unexpected error with coeffs {!r} ~ {!r}: {!r}".format(
-                            coeffs, [numerical_approx(x) for x in coeffs], e
-                        )
-                    )
+            except ValueError:
+                pass
 
     def __call__(self, *lengths, normalized=False, base_ring=None):
         r"""
