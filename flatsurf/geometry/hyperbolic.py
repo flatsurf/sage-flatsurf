@@ -6067,7 +6067,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             sage: H.half_circle(0, 2).start() in h
             Traceback (most recent call last):
             ...
-            ValueError: ...
+            NotImplementedError: cannot decide whether this ideal point is contained in the half space yet
 
         .. NOTE::
 
@@ -6084,7 +6084,18 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         if not isinstance(point, HyperbolicPoint):
             raise TypeError("point must be a point in the hyperbolic plane")
 
-        x, y = point.coordinates(model="klein")
+        try:
+            x, y = point.coordinates(model="klein")
+        except ValueError:
+            # The point does not have coordinates in the base ring in the Klein model.
+            # It is the starting point of a geodesic.
+            assert point.is_ideal()
+
+            if point in self.boundary():
+                return True
+
+            raise NotImplementedError("cannot decide whether this ideal point is contained in the half space yet")
+
         a, b, c = self.equation(model="klein")
 
         # We should use a specialized predicate here to do something more
