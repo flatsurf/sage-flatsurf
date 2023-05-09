@@ -670,6 +670,11 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 return len(roots) <= 1
 
+            def _test_labels(self, **options):
+                tester = self._tester(**options)
+
+                tester.assertEqual(len([label for label in self.labels()]), len(self.labels()))
+
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces built from infinitely many polygons.
