@@ -62,6 +62,10 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         else:
             raise ValueError("Can not apply matrix with zero determinant to surface.")
 
+        if m.is_mutable():
+            from sage.all import matrix
+            m = matrix(m)
+            m.set_immutable()
         self._m = m
 
         if ring is None:
@@ -121,14 +125,14 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             return pp, polygon2.num_edges() - 1 - ee
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (GL2RImageSurface, self._s, self._m, self.base_ring())
+        return hash((self._s, self._m))
 
     def __eq__(self, other):
         r"""
         Return whether this image is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -140,15 +144,10 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             True
 
         """
-        if isinstance(other, GL2RImageSurface):
-            if (
-                self._s == other._s
-                and self._m == other._m
-                and self.base_ring() == other.base_ring()
-            ):
-                return True
+        if not isinstance(other, GL2RImageSurface):
+            return False
 
-        return super().__eq__(other)
+        return self._s == other._s and self._m == other._m and self.base_ring() == other.base_ring()
 
 
 class GL2RMapping(SurfaceMapping):

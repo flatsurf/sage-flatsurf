@@ -148,7 +148,6 @@ class Origami(AbstractOrigami):
             self._perms == other._perms
             and self._domain is other._domain
             and self.base_label() == other.base_label()
-            and self.category() is other.category()
         )
 
     def __hash__(self):

@@ -101,7 +101,7 @@ class Path(MultiplicativeGroupElement):
         return d
 
     def __hash__(self):
-        return hash(self._polys) ^ hash(self._edges)
+        return hash((self._polys, self._edges))
 
     def __eq__(self, other):
         r"""

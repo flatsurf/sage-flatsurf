@@ -137,14 +137,14 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         return f"Minimal Translation Cover of {repr(self._ss)}"
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (MinimalTranslationCover, self._ss, self.category())
+        return hash(self._ss)
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -169,13 +169,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         if not isinstance(other, MinimalTranslationCover):
             return False
 
-        if self.category() != other.category():
-            return False
-
-        if self._ss == other._ss:
-            return True
-
-        return self._eq_oriented_similarity_surfaces(other)
+        return self._ss == other._ss
 
 
 class MinimalHalfTranslationCover(OrientedSimilaritySurface):
@@ -227,6 +221,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
                 self._ss = MutableOrientedSimilaritySurface.from_surface(
                     similarity_surface
                 )
+                self._ss.set_immutable()
             else:
                 raise ValueError(
                     "Can not construct MinimalTranslationCover of a surface that is mutable and infinite."
@@ -287,22 +282,13 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
             return ((p2, -aa, -bb), e2)
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (MinimalHalfTranslationCover, self._ss, self.category())
+        return hash(self._ss)
 
     def __eq__(self, other):
         if not isinstance(other, MinimalHalfTranslationCover):
             return False
 
-        if self.category() != other.category():
-            return False
-
-        if self._ss == other._ss:
-            return True
-
-        return self._eq_oriented_similarity_surfaces(other)
+        return self._ss == other._ss
 
 
 class MinimalPlanarCover(OrientedSimilaritySurface):
@@ -339,6 +325,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
                 self._ss = MutableOrientedSimilaritySurface.from_surface(
                     similarity_surface
                 )
+                self._ss.set_immutable()
             else:
                 raise ValueError(
                     "Can not construct MinimalPlanarCover of a surface that is mutable and infinite."
@@ -409,16 +396,14 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         return ((p2, mm), e2)
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (MinimalPlanarCover, self._ss, self._base_label, self.category())
+        return hash((self._ss, self._base_label))
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
-        Note that this is not implemented in most non-trivial cases.
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -433,11 +418,4 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         if not isinstance(other, MinimalPlanarCover):
             return False
 
-        if self._base_label != other._base_label:
-            return False
-        if self.category() != other.category():
-            return False
-        if self._ss == other._ss:
-            return True
-
-        return self._eq_oriented_similarity_surfaces(other)
+        return self._ss == other._ss and self._base_label == other._base_label

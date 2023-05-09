@@ -2893,6 +2893,57 @@ class SimilaritySurfaces(SurfaceCategory):
                     self
                 )
 
+            def _test_eq_surface(self, **options):
+                r"""
+                Verify that this surface follows our standards for equality of
+                surfaces.
+
+                We want two surfaces to compare equal (`S == T`) iff they are
+                virtually indistinguishable; so without a lot of non-Pythonic
+                effort, you should not be able to tell them apart. They have
+                (virtually) the same type, are made from equally labeled
+                polygons with indistinguishable coordinates and equal gluings.
+                Any other data that was used when creating them should be
+                indistinguishable. They might of course live at different
+                memory addresses have differences in their internal caches and
+                representation but everything user-facing should be the same.
+
+                People often want `==` to mean that the two surfaces are
+                isomorphic in some more-or-less strong sense. Such a notion for
+                `==` always leads to trouble down the road. The operator `==`
+                is used to identify surfaces in caches and identify surfaces in
+                sets. Sometimes "are isomorphic" is a good notion in such cases
+                but most of the time "are indistinguishable" is the much safer
+                default. Also, "are isomorphic" is often costly or, e.g. in the case
+                of infinite surfaces, not even decidable.
+
+                Currently, we do treat two surfaces as equal even if they
+                differ by category because categories can presently be changed
+                for immutable surfaces (as more properties of the surface are
+                found.)
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S._test_eq_surface()
+
+                """
+                tester = self._tester(**options)
+
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                copy = MutableOrientedSimilaritySurface.from_surface(self)
+                if not self.is_mutable():
+                    copy.set_immutable()
+
+                if isinstance(self, MutableOrientedSimilaritySurface):
+                    tester.assertEqual(self, copy)
+                    tester.assertFalse(self != copy)
+                else:
+                    tester.assertNotEqual(self, copy)
+                    tester.assertTrue(self != copy)
+
     class SubcategoryMethods:
         def Rational(self):
             return self._with_axiom("Rational")

@@ -152,12 +152,15 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         cross_vertices = self._triangulation(reference_label)[cross_edge]
         return (reference_label, cross_vertices), cross_vertices.index(cross_edge[0])
 
-    def _cache_key(self):
-        return (type(self), self._reference)
+    def __hash__(self):
+        return hash(self._reference)
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -169,11 +172,10 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             True
 
         """
-        if isinstance(other, LazyTriangulatedSurface):
-            if self._reference == other._reference:
-                return True
+        if not isinstance(other, LazyTriangulatedSurface):
+            return False
 
-        return super().__eq__(other)
+        return self._reference == other._reference
 
     def labels(self):
         return LazyTriangulatedSurface.LazyLabels(self)
@@ -289,6 +291,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._surface = LazyMutableSurface(LazyTriangulatedSurface(similarity_surface))
 
         self._direction = self._surface.vector_space()(direction or (0, 1))
+        self._direction.set_immutable()
 
         # Set of labels corresponding to known delaunay polygons
         self._certified_labels = set()
@@ -466,14 +469,14 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         return self._surface.labels()
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (type(self), self._reference, self._direction)
+        return hash((self._reference, self._direction))
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -485,14 +488,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             True
 
         """
-        if isinstance(other, LazyDelaunayTriangulatedSurface):
-            if (
-                self._reference == other._reference
-                and self._direction == other._direction
-            ):
-                return True
+        if not isinstance(other, LazyDelaunayTriangulatedSurface):
+            return False
 
-        return super().__eq__(other)
+        return self._reference == other._reference and self._direction == other._direction
 
 
 class LazyDelaunaySurface(OrientedSimilaritySurface):
@@ -650,14 +649,14 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         return False
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (type(self), self._reference, self._delaunay_triangulation._direction)
+        return hash(self._delaunay_triangulation)
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -670,8 +669,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             True
 
         """
-        if isinstance(other, LazyDelaunaySurface):
-            if self._delaunay_triangulation == other._delaunay_triangulation:
-                return True
+        if not isinstance(other, LazyDelaunaySurface):
+            return False
 
-        return super().__eq__(other)
+        return self._delaunay_triangulation == other._delaunay_triangulation

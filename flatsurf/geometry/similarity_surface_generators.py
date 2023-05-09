@@ -239,11 +239,14 @@ class EInfinitySurface(OrientedSimilaritySurface):
                 return 1 - p, (e + 2) % 4
 
     def __hash__(self):
-        return hash((EInfinitySurface, self.base_ring(), self._lambda_squared))
+        return hash((self.base_ring(), self._lambda_squared))
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
 
         EXAMPLES::
 
@@ -481,7 +484,7 @@ class TFractalSurface(OrientedSimilaritySurface):
         return ConvexPolygons(self.base_ring())([(w, 0), (0, h), (-w, 0), (0, -h)])
 
     def __hash__(self):
-        return hash((TFractalSurface, self._w, self._h1, self._r, self._h2))
+        return hash((self._w, self._h1, self._r, self._h2))
 
     def __eq__(self, other):
         if not isinstance(other, TFractalSurface):
@@ -1740,6 +1743,9 @@ class TranslationSurfaceGenerators:
         def __eq__(self, other):
             r"""
             Return whether this surface is indistinguishable from ``other``.
+
+            See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+            on this notion of inequality.
 
             EXAMPLES::
 

@@ -142,10 +142,7 @@ class ChamanaraSurface(OrientedSimilaritySurface):
                 return p + 1, 1
 
     def __hash__(self):
-        return super().__hash__()
-
-    def _cache_key(self):
-        return (ChamanaraSurface, self._p, self.base_ring(), self.base_label())
+        return hash((self._p, self.base_ring()))
 
     def graphical_surface(self):
         adjacencies = [(0, 1)]
@@ -158,6 +155,9 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of inequality.
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
@@ -169,10 +169,10 @@ class ChamanaraSurface(OrientedSimilaritySurface):
             False
 
         """
-        if isinstance(other, ChamanaraSurface):
-            return self._p == other._p and self.base_ring() == other.base_ring()
+        if not isinstance(other, ChamanaraSurface):
+            return False
 
-        return super().__eq__(other)
+        return self._p == other._p and self.base_ring() == other.base_ring()
 
 
 def chamanara_half_dilation_surface(alpha, n=None):
