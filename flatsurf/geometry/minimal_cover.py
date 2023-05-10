@@ -113,9 +113,9 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
             self, self._ss.base_ring(), category=category
         )
 
-    def base_label(self):
+    def roots(self):
         self._F = self._ss.base_ring()
-        return (self._ss.base_label(), self._F.one(), self._F.zero())
+        return tuple((label, self._F.one(), self._F.zero()) for label in self._ss.roots())
 
     def is_mutable(self):
         return False
@@ -255,9 +255,9 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
             self, self._ss.base_ring(), category=category
         )
 
-    def base_label(self):
+    def roots(self):
         self._F = self._ss.base_ring()
-        return (self._ss.base_label(), self._F.one(), self._F.zero())
+        return tuple((label, self._F.one(), self._F.zero()) for label in self._ss.roots())
 
     def is_mutable(self):
         return False
@@ -305,7 +305,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         sage: pc = MinimalPlanarCover(s)
         sage: pc.is_finite_type()
         False
-        sage: sing = pc.singularity(pc.base_label(),0,limit=4)
+        sage: sing = pc.singularity(pc.root(), 0, limit=4)
         doctest:warning
         ...
         UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
@@ -333,12 +333,16 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         else:
             self._ss = similarity_surface
 
-        if base_label is None:
-            base_label = self._ss.base_label()
+        if base_label is not None:
+            import warnings
+            warnings.warn("the keyword argument base_label of a minimal planar cover is ignored and will be removed in a future version of sage-flatsurf; it had no effect in previous versions of sage-flatsurf")
+
+        if not self._ss.is_connected():
+            raise NotImplementedError("can only create a minimal planar cover of connected surfaces")
 
         # The similarity group containing edge identifications.
-        self._sg = self._ss.edge_transformation(self._ss.base_label(), 0).parent()
-        self._base_label = (self._ss.base_label(), self._sg.one())
+        self._sg = self._ss.edge_transformation(self._ss.root(), 0).parent()
+        self._root = (self._ss.root(), self._sg.one())
 
         if similarity_surface.is_with_boundary():
             raise TypeError(
@@ -367,8 +371,8 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
     def is_compact(self):
         return False
 
-    def base_label(self):
-        return self._base_label
+    def roots(self):
+        return (self._root,)
 
     def is_mutable(self):
         return False
@@ -396,7 +400,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         return ((p2, mm), e2)
 
     def __hash__(self):
-        return hash((self._ss, self._base_label))
+        return hash((self._ss, self._root))
 
     def __eq__(self, other):
         r"""
@@ -418,4 +422,4 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         if not isinstance(other, MinimalPlanarCover):
             return False
 
-        return self._ss == other._ss and self._base_label == other._base_label
+        return self._ss == other._ss and self._root == other._root

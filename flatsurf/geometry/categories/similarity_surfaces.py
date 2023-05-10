@@ -56,14 +56,14 @@ suite::
     sage: TestSuite(S).run()
 
 In the following example, we attempt to build a broken surface but edges get
-unglued automatically unglued::
+unglued automatically::
 
     sage: S.glue((0, 0), (0, 3))
     sage: S.glue((0, 1), (0, 3))
     sage: S.glue((0, 2), (0, 3))
 
     sage: S.gluings()
-    (((0, 2), (0, 3)), ((0, 3), (0, 2)))
+    (((0, 2), (0, 3)), ((0, 3), (0, 2)), ((1, 0), (2, 3)), ((1, 2), (2, 1)), ((2, 1), (1, 2)), ((2, 3), (1, 0)))
 
     sage: TestSuite(S).run()
 
@@ -667,7 +667,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss,valid=s.relabel({0:1,1:2})
                     sage: valid
                     True
-                    sage: ss.base_label()
+                    sage: ss.root()
                     1
                     sage: ss.opposite_edge(1,0)
                     (2, 0)
@@ -710,6 +710,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     added_labels = codomain.difference(domain)
                     removed_labels = domain.difference(codomain)
                     # Pass to add_polygons
+                    roots = list(us.roots())
                     relabel_errors = {}
                     for l2 in added_labels:
                         p, glue = data[l2]
@@ -725,13 +726,9 @@ class SimilaritySurfaces(SurfaceCategory):
                         us.remove_polygon(l2)
                         us.add_polygon(p, label=l2)
                         us.replace_polygon(l2, p)
-                    # Deal with the base_label
-                    base_label = us.base_label()
-                    if base_label in relabeling_map:
-                        base_label = relabeling_map[base_label]
-                        if base_label in relabel_errors:
-                            base_label = relabel_errors[base_label]
-                        us.set_base_label(base_label)
+                    # Deal with the component roots
+                    roots = [relabeling_map.get(label, label) for label in roots]
+                    roots = [relabel_errors.get(label, label) for label in roots]
                     # Pass to remove polygons:
                     for l1 in removed_labels:
                         us.remove_polygon(l1)
@@ -753,6 +750,7 @@ class SimilaritySurfaces(SurfaceCategory):
                                     us.glue((l2, e), (relabel_errors[ll], ee))
                                 except KeyError:
                                     us.glue((l2, e), (ll, ee))
+                    us.set_roots(roots)
                     return self, len(relabel_errors) == 0
                 else:
                     from flatsurf.geometry.surface import (
@@ -916,7 +914,7 @@ class SimilaritySurfaces(SurfaceCategory):
                                 index += 2
                             pp = P(edges=new_edges)
                             ss.add_polygon(pp, label=label)
-                        ss.set_base_label(self.base_label())
+                        ss.set_roots(self.roots())
                         for (l1, e1), (l2, e2) in self.gluings():
                             ss.glue((l1, e1), (l2, e2))
                         s = ss
@@ -1408,8 +1406,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     else:
                         glue_list.append((p4, e4))
 
-                if s.base_label() == p2:
-                    s.set_base_label(p1)
+                if p2 in s.roots():
+                    s.set_roots((p1 if label == p2 else label for label in s.roots()))
 
                 s.remove_polygon(p2)
 
@@ -1511,12 +1509,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import *
                     sage: s = translation_surfaces.square_torus()
                     sage: pc = s.minimal_cover(cover_type="planar")
-                    sage: pc.singularity(pc.base_label(),0)
+                    sage: pc.singularity(pc.root(), 0)
                     doctest:warning
                     ...
                     UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
                     Vertex 0 of polygon (0, (x, y) |-> (x, y))
-                    sage: pc.singularity(pc.base_label(),0,limit=1)
+                    sage: pc.singularity(pc.root(), 0, limit=1)
                     Traceback (most recent call last):
                     ...
                     ValueError: number of edges at singularity exceeds limit
@@ -1546,9 +1544,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import *
                     sage: s = translation_surfaces.square_torus()
                     sage: pc = s.minimal_cover(cover_type="planar")
-                    sage: pc.point(pc.base_label(),(0,0))
+                    sage: pc.point(pc.root(), (0,0))
                     Vertex 0 of polygon (0, (x, y) |-> (x, y))
-                    sage: z = pc.point(pc.base_label(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
+                    sage: z = pc.point(pc.root(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
                     doctest:warning
                     ...
                     UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
@@ -1596,14 +1594,14 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
                     sage: hts = cs.minimal_cover(cover_type="half-translation")
                     sage: hts
-                    Minimal Half-Translation Cover of Rational Cone Surface built from a square
+                    Minimal Half-Translation Cover of Genus 0 Rational Cone Surface built from a square
                     sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
                     sage: hts in HalfTranslationSurfaces()
                     True
                     sage: TestSuite(hts).run()
                     sage: ps = cs.minimal_cover(cover_type="planar")
                     sage: ps
-                    Minimal Planar Cover of Rational Cone Surface built from a square
+                    Minimal Planar Cover of Genus 0 Rational Cone Surface built from a square
                     sage: ps in TranslationSurfaces()
                     True
                     sage: TestSuite(ps).run()
@@ -1615,7 +1613,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     Minimal Translation Cover of Genus 1 Surface built from 2 isosceles triangles
                     sage: T in TranslationSurfaces()
                     True
-                    sage: T.polygon(T.base_label())
+                    sage: T.polygon(T.root())
                     polygon(vertices=[(0, 0), (2, -2), (2, 0)])
 
                 """
@@ -1647,10 +1645,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 r"""
                 Return the fundamental group of this surface.
                 """
-                if not self.is_finite_type():
-                    raise ValueError("the method only work for finite surfaces")
+                if not self.is_finite_type() or not self.is_connected():
+                    raise ValueError("the method only work for finite connected surfaces")
                 if base_label is None:
-                    base_label = self.base_label()
+                    base_label = self.root()
                 from flatsurf.geometry.fundamental_group import FundamentalGroup
 
                 return FundamentalGroup(self, base_label)
@@ -1699,10 +1697,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf.geometry.chamanara import chamanara_surface
                     sage: S = chamanara_surface(1/2)
-                    sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,1))
+                    sage: S.tangent_vector(S.root(), (1/2,1/2), (1,1))
                     SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, 1)
                     sage: K.<sqrt2> = QuadraticField(2)
-                    sage: S.tangent_vector(S.base_label(), (1/2,1/2), (1,sqrt2), ring=K)
+                    sage: S.tangent_vector(S.root(), (1/2,1/2), (1,sqrt2), ring=K)
                     SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, sqrt2)
                 """
                 from sage.all import vector
@@ -2034,7 +2032,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_triangulation()
-                    sage: ss.base_label()
+                    sage: ss.root()
                     (0, (0, 1, 2))
                     sage: ss.polygon((0, (0, 1, 2)))
                     polygon(vertices=[(0, 0), (1, 0), (1, 1)])
@@ -2217,9 +2215,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_decomposition()
-                    sage: ss.base_label()
+                    sage: ss.root()
                     (0, (0, 1, 2))
-                    sage: ss.polygon(ss.base_label())
+                    sage: ss.polygon(ss.root())
                     polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_decomposed(limit=10)
@@ -2591,7 +2589,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     for p, polygon in enumerate(subdivision):
                         surface.add_polygon(polygon, label=(label, p))
 
-                surface.set_base_label((self._base_label, 0))
+                surface.set_roots(((label, 0) for label in self.roots()))
 
                 # Add gluings between subdivided polygons
                 for s, subdivision in enumerate(subdivisions):
@@ -2668,7 +2666,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 for s, subdivided in enumerate(subdivideds):
                     surface.add_polygon(subdivided, label=labels[s])
 
-                surface.set_base_label(self._base_label)
+                surface.set_roots(self.roots())
 
                 # Reestablish gluings between polygons
                 for label, polygon, subdivided in zip(labels, polygons, subdivideds):

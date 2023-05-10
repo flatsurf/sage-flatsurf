@@ -139,8 +139,8 @@ class EInfinitySurface(OrientedSimilaritySurface):
     def is_mutable(self):
         return False
 
-    def base_label(self):
-        return ZZ(0)
+    def roots(self):
+        return (ZZ(0),)
 
     def _repr_(self):
         return f"EInfinitySurface({repr(self._lambda_squared)})"
@@ -307,7 +307,7 @@ class TFractalSurface(OrientedSimilaritySurface):
         self._wL = self._words("L")
         self._wR = self._words("R")
 
-        self._base_label = self.polygon_labels()._cartesian_product_of_elements(
+        self._root = self.polygon_labels()._cartesian_product_of_elements(
             (self._words(""), 0)
         )
 
@@ -322,8 +322,8 @@ class TFractalSurface(OrientedSimilaritySurface):
             .Connected(),
         )
 
-    def base_label(self):
-        return self._base_label
+    def roots(self):
+        return (self._root,)
 
     def is_mutable(self):
         return False
@@ -786,7 +786,7 @@ class DilationSurfaceGenerators:
         s.glue((0, 1), (1, 3))
         s.glue((0, 2), (1, 0))
         s.glue((0, 3), (1, 1))
-        s.set_base_label(0)
+        s.set_roots([0])
         s.set_immutable()
         return s
 
@@ -835,7 +835,7 @@ class DilationSurfaceGenerators:
             edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)]
         )
         s.add_polygon(hexagon, label=0)
-        s.set_base_label(0)
+        s.set_roots([0])
         triangle1 = CP(edges=[(1 - a, 0), (0, b), (a - 1, -b)])
         s.add_polygon(triangle1, label=1)
         triangle2 = CP(edges=[(1 - c, d), (c - 1, 0), (0, -d)])
@@ -1706,14 +1706,11 @@ class TranslationSurfaceGenerators:
                 self._vertical,
                 self._horizontal,
                 domain=ZZ,
-                base_label=ZZ(0),
+                root=ZZ(0),
             )
 
         def is_compact(self):
             return False
-
-        def is_connected(self):
-            return True
 
         def _vertical(self, x):
             if x % 2:

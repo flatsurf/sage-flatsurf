@@ -86,14 +86,11 @@ class GL2RImageSurface(OrientedSimilaritySurface):
 
         super().__init__(base_ring, category=category)
 
-    def base_label(self):
-        return self._s.base_label()
+    def roots(self):
+        return self._s.roots()
 
     def is_compact(self):
         return self._s.is_compact()
-
-    def is_connected(self):
-        return self._s.is_connected()
 
     def is_mutable(self):
         return False

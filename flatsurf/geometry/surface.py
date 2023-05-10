@@ -51,7 +51,7 @@ class MutablePolygonalSurface(Surface_base):
         from sage.all import ZZ
 
         self._next_label = ZZ(0)
-        self._base_label = None
+        self._roots = ()
 
         self._polygons = {}
 
@@ -77,9 +77,6 @@ class MutablePolygonalSurface(Surface_base):
         if label in self._polygons:
             raise ValueError  # must remove first
 
-        if self._base_label is None:
-            self._base_label = label
-
         self._polygons[label] = polygon
         return label
 
@@ -102,18 +99,23 @@ class MutablePolygonalSurface(Surface_base):
             raise Exception
 
         self._polygons.pop(label)
+        self._roots = tuple(root for root in self._roots if root != label)
 
-    def base_label(self):
-        if self._base_label is None:
-            raise NotImplementedError
+    def _components(self):
+        return RootedComponents_MutablePolygonalSurface(self)
 
-        return self._base_label
+    def roots(self):
+        return LabeledView(self, self._components().keys(), finite=True)
+
+    def components(self):
+        return LabeledView(self, self._components().values(), finite=True)
 
     def polygon(self, label):
         return self._polygons[label]
 
     def set_immutable(self):
         if self._mutable:
+            self.set_roots(self.roots())
             self._mutable = False
 
         self._refine_category_(self.refined_category())
@@ -131,7 +133,8 @@ class MutablePolygonalSurface(Surface_base):
         if self._polygons != other._polygons:
             return False
 
-        if self._base_label != other._base_label:
+        # Note that the order of the root labels matters since it changes the order of iteration in labels()
+        if self._roots != other._roots:
             return False
 
         if self._mutable != other._mutable:
@@ -146,7 +149,7 @@ class MutablePolygonalSurface(Surface_base):
         if self._mutable:
             raise TypeError("cannot hash a mutable surface")
 
-        return hash((tuple(self.labels()), tuple(self.polygons()), self._base_label))
+        return hash((tuple(self.labels()), tuple(self.polygons()), self._roots))
 
     def _repr_(self):
         if not self.is_finite_type():
@@ -191,24 +194,51 @@ class MutablePolygonalSurface(Surface_base):
 
         return description
 
-    def set_base_label(self, label):
+    def set_root(self, root):
         if not self._mutable:
             raise Exception
 
-        self._base_label = label
+        root = [label for label in self.labels() if label == root]
+        if not root:
+            raise ValueError("root must be a label in the surface")
+        assert len(root) == 1
+        root = root[0]
+
+        component = [component for component in self.components() if root in component]
+
+        self._roots = tuple(r for r in self._roots if r not in component) + (root,)
+
+    def set_roots(self, roots):
+        if not self._mutable:
+            raise Exception
+
+        roots = [[label for label in self.labels() if label == root] for root in roots]
+
+        if any(len(root) == 0 for root in roots):
+            raise ValueError("roots must be existing labels in the surface")
+
+        assert all(len(root) == 1 for root in roots)
+
+        roots = tuple(root[0] for root in roots)
+
+        for component in self.components():
+            if len([root for root in roots if root in component]) > 1:
+                raise ValueError("there must be at most one root for each connected component")
+
+        self._roots = tuple(roots)
 
     def change_base_label(self, label):
         import warnings
 
         warnings.warn(
-            "change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_base_label() instead"
+            "change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_root() instead"
         )
 
-        self.set_base_label(label)
+        self.set_root(label)
 
     @cached_method
     def labels(self):
-        return LabelsView(self, self._polygons.keys())
+        return LabelsView(self, self._polygons.keys(), finite=True)
 
     @cached_method
     def polygons(self):
@@ -324,10 +354,12 @@ class OrientedSimilaritySurface(Surface_base):
             if len(other.polygons()) == 0:
                 return False
 
-        if self.base_label() != other.base_label():
+        if self.roots() != other.roots():
             return False
-        if self.polygon(self.base_label()) != other.polygon(self.base_label()):
-            return False
+
+        for label in self.roots():
+            if self.polygon(label) != other.polygon(label):
+                return False
 
         if not self.is_finite_type():
             raise NotImplementedError("cannot compare these infinite surfaces yet")
@@ -380,7 +412,11 @@ class MutableOrientedSimilaritySurface(
                 if cross:
                     self.glue((label, edge), cross)
 
-        self.set_base_label(surface.base_label())
+        if isinstance(surface, MutablePolygonalSurface):
+            # Only copy explicitly set roots over
+            self._roots = surface._roots
+        else:
+            self.set_roots(surface.roots())
 
         return self
 
@@ -397,6 +433,9 @@ class MutableOrientedSimilaritySurface(
         super().remove_polygon(label)
 
     def unglue(self, label, edge):
+        if not self._mutable:
+            raise Exception
+
         cross = self._gluings[label][edge]
         if cross is not None:
             self._gluings[cross[0]][cross[1]] = None
@@ -411,6 +450,7 @@ class MutableOrientedSimilaritySurface(
         self._gluings[label] = [None] * self.polygon(label).num_edges()
 
     def glue(self, x, y):
+        # TODO: Update roots.
         if not self._mutable:
             raise Exception
 
@@ -497,6 +537,9 @@ class MutableOrientedSimilaritySurface(
         warnings.warn(
             "change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead"
         )
+
+        if not self._mutable:
+            raise Exception
 
         # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
         if polygon.num_edges() != self.polygon(label).num_edges():
@@ -588,8 +631,8 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
     def is_mutable(self):
         return False
 
-    def base_label(self):
-        return self._reference.base_label()
+    def roots(self):
+        return self._reference.roots()
 
     def polygon(self, label):
         return self._reference.polygon(label).change_ring(self.base_ring())
@@ -598,21 +641,67 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
         return self._reference.opposite_edge(label, edge)
 
 
-class LabeledCollection:
+class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
     def __init__(self, surface):
         self._surface = surface
 
-    def __repr__(self):
-        if self._surface.is_finite_type():
-            return repr(tuple(self))
+    def __getitem__(self, root):
+        return self._surface.component(root)
 
+    def __iter__(self):
+        connected = "Connected" in self._surface.category().axioms()
+
+        for root in self._surface._roots:
+            yield root
+            if connected:
+                return
+
+        labels = set(self._surface._polygons)
+        for root in self._surface._roots:
+            for label in self._surface.component(root):
+                labels.remove(label)
+
+        while labels:
+            try:
+                root = min(labels)
+            except TypeError:
+                if len(set((repr(label) for label in labels))) != len(labels):
+                    raise TypeError("cannot determine root label consistently in this surface since the labels cannot be ordered and their repr conversion to string are not unique")
+                root = min(labels, key=lambda label: repr(label))
+
+            yield root
+            if connected:
+                return
+            for label in self._surface.component(root):
+                labels.remove(label)
+
+    def __len__(self):
+        components = 0
+        for root in self:
+            components += 1
+        return components
+
+
+class LabeledCollection:
+    def __init__(self, surface, finite=None):
+        if finite is None and surface.is_finite_type():
+            finite = True
+
+        self._surface = surface
+        self._finite = finite
+
+    def __repr__(self):
         from itertools import islice
+        items = list(islice(self, 17))
+
+        if self._finite is True or len(items) < 17:
+            return repr(tuple(self))
 
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
 
     def __len__(self):
-        if not self._surface.is_finite_type():
-            raise TypeError("infinite type surface has no integer length")
+        if self._finite is False:
+            raise TypeError("infinite set has no integer length")
 
         length = 0
         for x in self:
@@ -628,16 +717,31 @@ class LabeledCollection:
         return False
 
 
-class Labels(LabeledCollection, collections.abc.Set):
-    def __iter__(self):
-        # TODO: Currently, this gets non-connected surfaces wrong. Only one component is being explored because there is only a single base label.
+class LabeledView(LabeledCollection):
+    def __init__(self, surface, view, finite=None):
+        super().__init__(surface, finite=finite)
+        self._view = view
 
+    def __iter__(self):
+        return iter(self._view)
+
+    def __contains__(self, x):
+        return x in self._view
+
+    def __len__(self):
+        return len(self._view)
+
+
+class ComponentLabels(LabeledCollection):
+    def __init__(self, surface, root, finite=None):
+        super().__init__(surface, finite=finite)
+        self._root = root
+
+    def __iter__(self):
         from collections import deque
 
         seen = set()
-        pending = deque()
-
-        pending.append(self._surface.base_label())
+        pending = deque([self._root])
 
         while pending:
             label = pending.popleft()
@@ -653,16 +757,15 @@ class Labels(LabeledCollection, collections.abc.Set):
                     pending.append(cross[0])
 
 
-class LabelsView(Labels):
-    def __init__(self, surface, view):
-        super().__init__(surface)
-        self._view = view
+class Labels(LabeledCollection, collections.abc.Set):
+    def __iter__(self):
+        for component in self._surface.components():
+            for label in component:
+                yield label
 
-    def __contains__(self, x):
-        return x in self._view
 
-    def __len__(self):
-        return len(self._view)
+class LabelsView(Labels, LabeledView):
+    pass
 
 
 class Polygons(LabeledCollection, collections.abc.Collection):

@@ -101,8 +101,8 @@ class ChamanaraSurface(OrientedSimilaritySurface):
     def is_translation_surface(self, positive=True):
         return False
 
-    def base_label(self):
-        return ZZ(0)
+    def roots(self):
+        return (ZZ(0),)
 
     def is_mutable(self):
         return False

@@ -39,7 +39,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyTriangulatedSurface(s)
-        sage: ss.polygon(ss.base_label()).num_edges()
+        sage: ss.polygon(ss.root()).num_edges()
         3
         sage: TestSuite(ss).run()
     """
@@ -74,12 +74,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def is_compact(self):
         return self._reference.is_compact()
 
-    def is_connected(self):
-        return self._reference.is_connected()
-
-    def base_label(self):
-        reference_label = self._reference.base_label()
-        return (reference_label, self._triangulation(reference_label)[(0, 1)])
+    def roots(self):
+        return tuple((reference_label, self._triangulation(reference_label)[(0, 1)]) for reference_label in self._reference.roots())
 
     def _triangulation(self, reference_label):
         reference_polygon = self._reference.polygon(reference_label)
@@ -199,8 +195,8 @@ class LazyMutableSurface(OrientedSimilaritySurface):
 
         super().__init__(surface.base_ring(), category=category or surface.category())
 
-    def base_label(self):
-        return self._reference.base_label()
+    def roots(self):
+        return self._reference.roots()
 
     def labels(self):
         return self._reference.labels()
@@ -250,7 +246,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import *
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyDelaunayTriangulatedSurface(s)
-        sage: ss.polygon(ss.base_label()).num_edges()
+        sage: ss.polygon(ss.root()).num_edges()
         3
         sage: TestSuite(ss).run()
         sage: ss.is_delaunay_triangulated(limit=100)
@@ -283,7 +279,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                 )
 
         if similarity_surface.is_mutable():
-            raise ValueError("Surface must be immutable.")
+            raise ValueError("surface must be immutable")
+
+        if not similarity_surface.is_connected():
+            raise NotImplementedError("surface must be connected")
 
         self._reference = similarity_surface
 
@@ -297,10 +296,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._certified_labels = set()
 
         # Triangulate the base polygon
-        base_label = self._surface.base_label()
+        root = self._surface.root()
 
         # Certify the base polygon (or apply flips...)
-        while not self._certify_or_improve(base_label):
+        while not self._certify_or_improve(root):
             pass
 
         OrientedSimilaritySurface.__init__(
@@ -315,11 +314,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     def is_compact(self):
         return self._reference.is_compact()
 
-    def is_connected(self):
-        return self._reference.is_connected()
-
-    def base_label(self):
-        return self._surface.base_label()
+    def roots(self):
+        return self._surface.roots()
 
     @cached_method
     def polygon(self, label):
@@ -338,7 +334,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         from collections import deque
 
         next = deque(
-            [(self.base_label(), 0), (self.base_label(), 1), (self.base_label(), 2)]
+            [(self.root(), 0), (self.root(), 1), (self.root(), 2)],
         )
         while next:
             label, edge = next.popleft()
@@ -508,7 +504,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: s=translation_surfaces.infinite_staircase()
         sage: m=matrix([[2,1],[1,1]])
         sage: ss=LazyDelaunaySurface(m*s)
-        sage: ss.polygon(ss.base_label())
+        sage: ss.polygon(ss.root())
         polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
         sage: ss.is_delaunay_decomposed(limit=100)
         True
@@ -636,14 +632,11 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         cross_label = self._label(cross_cell)
         return cross_label, cross_edges.index((cross_triangle, cross_edge))
 
-    def base_label(self):
-        return self._delaunay_triangulation.base_label()
+    def roots(self):
+        return self._delaunay_triangulation.roots()
 
     def is_compact(self):
         return self._reference.is_compact()
-
-    def is_connected(self):
-        return self._reference.is_connected()
 
     def is_mutable(self):
         return False

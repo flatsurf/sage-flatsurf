@@ -187,9 +187,9 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         for key, value in edge_map.items():
             inv_edge_map[value] = (p1, key)
 
-        if s.base_label() == p2:
+        if p2 in s.roots():
             # The polygon with the base label is being removed.
-            s2.set_base_label(p1)
+            s2.set_roots(tuple(p1 if label == p2 else label for label in s.roots()))
 
         s2.remove_polygon(p1)
         s2.add_polygon(ConvexPolygons(s.base_ring())(vs), label=p1)
@@ -677,7 +677,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 ee2 = (e2 - cv[l2] + polygon2.num_edges()) % polygon2.num_edges()
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
                 s2.glue((l1, ee1), (l2, ee2))
-        s2.set_base_label(s.base_label())
+        s2.set_roots(s.roots())
         s2.set_immutable()
         ss2 = s2
 
@@ -744,15 +744,15 @@ class ReindexMapping(SurfaceMapping):
         self._b = b
 
         if new_base_label is None:
-            if s.base_label() in f:
-                new_base_label = f[s.base_label()]
+            if s.root() in f:
+                new_base_label = f[s.root()]
             else:
-                new_base_label = s.base_label()
+                new_base_label = s.root()
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
         s2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2.relabel(relabler, in_place=True)
-        s2.set_base_label(new_base_label)
+        s2.set_roots([new_base_label])
 
         SurfaceMapping.__init__(self, s, s2)
 
@@ -861,11 +861,10 @@ def canonicalize_translation_surface_mapping(s):
     s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
     ss = MutableOrientedSimilaritySurface.from_surface(s2)
     labels = {label for label in s2.labels()}
-    labels.remove(s2.base_label())
     for label in labels:
-        ss.set_base_label(label)
+        ss.set_roots([label])
         if ss.cmp(s2copy) > 0:
-            s2copy.set_base_label(label)
+            s2copy.set_roots([label])
     # We now have the base_label correct.
     # We will use the label walker to generate the canonical labeling of polygons.
     labels = {label: i for (i, label) in enumerate(s2copy.labels())}

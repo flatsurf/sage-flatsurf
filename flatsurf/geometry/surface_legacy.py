@@ -318,29 +318,10 @@ class Surface(OrientedSimilaritySurface):
             return zip(self.labels(), self.polygons())
         return iter(self.walker())
 
-    def base_label(self):
-        r"""
-        Return the label of a special chosen polygon in the surface.
-
-        When no specific choice was made with :meth:`change_base_label`, this
-        might just be the initial polygon, i.e., the one that was first added
-        in the construction of this surface.
-
-        This label is for example used as the starting position when walking
-        the surface in a canonical order with :meth:`walker`.
-
-        EXAMPLES::
-
-            sage: import flatsurf
-            sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
-            sage: S.base_label()
-            1
-
-        """
+    def roots(self):
         if self._base_label is None:
-            raise Exception("base label has not been set for this surface")
-        return self._base_label
+            return ()
+        return (self._base_label,)
 
     def is_finite_type(self):
         r"""
@@ -469,8 +450,6 @@ class Surface(OrientedSimilaritySurface):
         self.__mutate()
         self._base_label = new_base_label
 
-    set_base_label = change_base_label
-
     @cached_method
     def __hash__(self):
         r"""
@@ -485,7 +464,7 @@ class Surface(OrientedSimilaritySurface):
         return hash(
             (
                 self.base_ring(),
-                self.base_label(),
+                self.root(),
                 tuple(zip(self.labels(), self.polygons())),
                 tuple(self.gluings()),
             )
@@ -533,7 +512,7 @@ class Surface(OrientedSimilaritySurface):
             # Only compare base labels when the surfaces are not empty.
             return True
 
-        if self.base_label() != other.base_label():
+        if self.root() != other.root():
             return False
 
         return True
@@ -553,10 +532,10 @@ class Surface(OrientedSimilaritySurface):
         tester = self._tester(**options)
 
         tester.assertTrue(
-            self.polygon(self.base_label()).is_convex(),
+            self.polygon(self.root()).is_convex(),
             "polygon(base_label) does not return a ConvexPolygon. "
             + "Here base_label="
-            + str(self.base_label()),
+            + str(self.root()),
         )
 
     def _test_override(self, **options):
@@ -1010,7 +989,7 @@ class Surface_list(Surface):
                         glued_edge,
                     )
 
-                self.change_base_label(reference_label_to_label[surface.base_label()])
+                self.change_base_label(reference_label_to_label[surface.root()])
             else:
                 self._reference_surface = surface
                 self._ref_to_int = {}
@@ -1024,8 +1003,8 @@ class Surface_list(Surface):
                     self._num_polygons = len(surface.polygons())
 
                 # Cache the base polygon
-                self.change_base_label(self.__get_label(surface.base_label()))
-                assert self.base_label() == 0
+                self.change_base_label(self.__get_label(surface.root()))
+                assert self.root() == 0
 
         if not mutable:
             self.set_immutable()
@@ -1115,6 +1094,12 @@ class Surface_list(Surface):
             return self._reference_surface.is_compact()
 
         return True
+
+    def change_base_label(self, new_base_label):
+        r"""
+        Change the base_label to the provided label.
+        """
+        super().change_base_label(int(new_base_label))
 
     def polygon(self, lab):
         r"""
@@ -1302,6 +1287,11 @@ class Surface_list(Surface):
         Return the number of polygons making up the surface in constant time.
         """
         return self._num_polygons
+
+    def _test_roots(self, **options):
+        # Surface_list does not iterate labels in a canonical order from the
+        # roots(). Instead, it iterates by increasing labels.
+        pass
 
     def label_iterator(self, polygons=False):
         r"""
@@ -1576,6 +1566,8 @@ class Surface_dict(Surface):
 
         # Initialize surface from reference surface
         if surface is not None:
+            base_label = surface.root()
+
             if copy is True:
                 reference_label_to_label = {
                     label: self.add_polygon(polygon, label=label)
@@ -1593,11 +1585,11 @@ class Surface_dict(Surface):
                         glued_edge,
                     )
 
-                self.change_base_label(reference_label_to_label[surface.base_label()])
+                self.change_base_label(reference_label_to_label[base_label])
             else:
                 self._reference_surface = surface
 
-                self.change_base_label(surface.base_label())
+                self.change_base_label(base_label)
 
         if not mutable:
             self.set_immutable()
@@ -1970,16 +1962,16 @@ class LabelWalker:
             )
 
         self._s = surface
-        self._labels = [self._s.base_label()]
-        self._label_dict = {self._s.base_label(): 0}
+        self._labels = [self._s.root()]
+        self._label_dict = {self._labels[0]: 0}
 
         # This will stores an edge to move through to get to a polygon closer to the base_polygon
-        self._label_edge_back = {self._s.base_label(): None}
+        self._label_edge_back = {self._labels[0]: None}
 
         from collections import deque
 
         self._walk = deque()
-        self._walk.append((self._s.base_label(), 0))
+        self._walk.append((self._labels[0], 0))
 
     def label_dictionary(self):
         r"""

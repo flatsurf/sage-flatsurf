@@ -159,7 +159,7 @@ class GraphicalSurface:
         self._ss = surface
         self._default_position_function = default_position_function
         self._polygons = {}
-        self._visible = set([self._ss.base_label()])
+        self._visible = set([self._ss.root()])
 
         if adjacencies is None:
             if self._ss.is_finite_type():

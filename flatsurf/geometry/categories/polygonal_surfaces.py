@@ -188,6 +188,23 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return Labels(self)
 
+        def base_label(self):
+            import warnings
+            warnings.warn("base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general")
+
+            return self.root()
+
+        def root(self):
+            roots = self.roots()
+
+            if not roots:
+                raise NotImplementedError("cannot return a root label for the connected component on an empty surface")
+
+            if len(roots) > 1:
+                raise Exception("surface has more than one root label, use roots() instead")
+
+            return next(iter(roots))
+
         def polygons(self):
             r"""
             Return the polygons that make up this surface (in the same order as
@@ -342,7 +359,7 @@ class PolygonalSurfaces(SurfaceCategory):
         def edges(self):
             from flatsurf.geometry.surface import Edges
 
-            return Edges(self)
+            return Edges(self, finite=self.is_finite_type())
 
         def edge_gluing_iterator(self):
             r"""
@@ -403,10 +420,6 @@ class PolygonalSurfaces(SurfaceCategory):
             )
 
             return zip(self.labels(), self.polygons())
-
-        @abstract_method
-        def base_label(self):
-            pass
 
         @abstract_method
         def polygon(self, label):
@@ -544,6 +557,54 @@ class PolygonalSurfaces(SurfaceCategory):
                         "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g),
                     )
 
+        @abstract_method
+        def roots(self):
+            r"""
+            Return root labels for the polygons forming the connected
+            components of this surface.
+
+            A root label is just any of the :meth:`labels` of the surface.
+            However, the iteration of :meth:`labels` starts from those root
+            labels so for some surfaces they might have been specifically
+            chosen.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.roots()
+                (0,)
+
+            """
+
+        def is_connected(self):
+            r"""
+            Return whether this surface is connected.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.is_connected()
+                True
+
+            """
+            return len(self.roots()) <= 1
+
+        def component(self, root):
+            from flatsurf.geometry.surface import ComponentLabels
+            return ComponentLabels(self, root)
+
+        def components(self):
+            return tuple(self.component(root) for root in self.roots())
+
+        def _test_components(self, **options):
+            tester = self._tester(**options)
+
+            tester.assertEqual(len(self.components()), len(self.roots()))
+
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces built from finitely many polygons.
@@ -583,6 +644,23 @@ class PolygonalSurfaces(SurfaceCategory):
                 raise TypeError(
                     "surface cannot be finite type and infinite type at the same time"
                 )
+
+        class Connected(SurfaceCategoryWithAxiom):
+            class ParentMethods:
+                def _test_roots(self, **options):
+                    tester = self._tester(**options)
+
+                    roots = self.roots()
+
+                    for root in roots:
+                        label = [label for label in self.labels() if label == root]
+                        tester.assertEqual(len(label), 1)
+                        tester.assertEqual(type(label[0]), type(root))
+
+                    if not roots:
+                        tester.assertTrue(not any([True for label in self.labels()]))
+                    else:
+                        tester.assertTrue(next(iter(self.labels())) in roots)
 
         class ParentMethods:
             def is_finite_type(self):
@@ -630,45 +708,6 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 """
                 return True
-
-            def is_connected(self):
-                r"""
-                Return whether this surface is connected.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import polygons, similarity_surfaces
-                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_connected()
-                    True
-
-                """
-                # We use the customary union-find algorithm to identify the connected components.
-                union_find = {label: label for label in self.labels()}
-
-                def find(label):
-                    if union_find[label] == label:
-                        return label
-                    parent = find(union_find[label])
-                    union_find[label] = parent
-                    return parent
-
-                for label in self.labels():
-                    for edge in range(self.polygon(label).num_edges()):
-                        cross = self.opposite_edge(label, edge)
-                        if cross is None:
-                            continue
-
-                        cross_label, cross_edge = cross
-
-                        x = find(label)
-                        y = find(cross_label)
-                        union_find[x] = y
-
-                roots = set(find(label) for label in self.labels())
-
-                return len(roots) <= 1
 
             def _test_labels(self, **options):
                 tester = self._tester(**options)

@@ -201,7 +201,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 0
                 sage: s.glue((0, 0), (0, 2))
                 sage: s.glue((0, 1), (0, 3))
-                sage: s.set_base_label(0)
+                sage: s.set_root(0)
                 sage: s.set_immutable()
                 sage: s.standardize_polygons().polygon(0)
                 polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -255,7 +255,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             Compare two surfaces. This is an ordering returning -1, 0, or 1.
 
             The surfaces will be considered equal if and only if there is a translation automorphism
-            respecting the polygons and the base_labels.
+            respecting the polygons and the root labels.
 
             If the two surfaces are infinite, we just examine the first limit polygons.
             """
@@ -410,10 +410,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             ss = MutableOrientedSimilaritySurface.from_surface(s)
             for label in ss.labels():
-                ss.set_base_label(label)
+                ss.set_roots([label])
                 if ss.cmp(s) > 0:
-                    s.set_base_label(label)
-            # We now have the base_label correct.
+                    s.set_roots([label])
+            # We now have the root label correct.
             # We will use the label walker to generate the canonical labeling of polygons.
             labels = {label: i for (i, label) in enumerate(s.labels())}
             s.relabel(labels, in_place=True)
