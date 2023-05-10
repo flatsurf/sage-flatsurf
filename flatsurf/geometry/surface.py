@@ -433,6 +433,7 @@ class MutableOrientedSimilaritySurface(
         super().remove_polygon(label)
 
     def unglue(self, label, edge):
+        # TODO: Update roots.
         if not self._mutable:
             raise Exception
 
