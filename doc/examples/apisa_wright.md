@@ -78,8 +78,7 @@ def apisa_wright_surface(h24, h3, l15, l6, l7, l8):
 We use some simple parameters:
 
 ```{code-cell} ipython3
-x = polygen(QQ)
-K.<c> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
+K.<c> = QuadraticField(2)
 S = apisa_wright_surface(1, 1+c, 1, c, 1+c, 2*c-1)
 S.plot(edge_labels=False)
 ```
