@@ -2219,3 +2219,61 @@ class LabelsView(collections.abc.Set):
         from itertools import islice
 
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
+
+
+def SurfaceClass(surface, name, category, *args, **kwargs):
+    category = category.Oriented().Connected().WithoutBoundary()
+
+    message = f"{name} has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore."
+
+    if surface.is_finite_type():
+        message += f" Calling set_immutable() on this surface should determine the category of this surface automatically so calling {name} should not be necessary in this case."
+    else:
+        message += f" For this surface of infinite type, you should create a subclass of OrientedSimilaritySurface and set the category in the __init__ method; see flatsurf.geometry.similarity_surface_generators.EInfinitySurface for an example of this approach"
+
+    message += f" You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the {category}."
+
+    if args or kwargs:
+        message += " Note that we are ignoring any other parameters that were passed to this function."
+
+    import warnings
+    warnings.warn(message)
+
+    surface._refine_category_(category)
+
+    return surface
+
+
+def SimilaritySurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import SimilaritySurfaces
+    return SurfaceClass(surface, "SimilaritySurface()", SimilaritySurfaces(), *args, **kwargs)
+
+
+def HalfDilationSurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import DilationSurfaces
+    return SurfaceClass(surface, "HalfDilationSurface()", DilationSurfaces(), *args, **kwargs)
+
+
+def DilationSurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import DilationSurfaces
+    return SurfaceClass(surface, "DilationSurface()", DilationSurfaces().Positive(), *args, **kwargs)
+
+
+def ConeSurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import ConeSurfaces
+    return SurfaceClass(surface, "ConeSurface()", ConeSurfaces(), *args, **kwargs)
+
+
+def RationalConeSurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import ConeSurfaces
+    return SurfaceClass(surface, "RationalConeSurface()", ConeSurfaces().Rational(), *args, **kwargs)
+
+
+def HalfTranslationSurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import HalfTranslationSurfaces
+    return SurfaceClass(surface, "HalfTranslationSurface()", HalfTranslationSurfaces(), *args, **kwargs)
+
+
+def TranslationSurface(surface, *args, **kwargs):
+    from flatsurf.geometry.categories import TranslationSurfaces
+    return SurfaceClass(surface, "TranslationSurface()", TranslationSurfaces(), *args, **kwargs)
