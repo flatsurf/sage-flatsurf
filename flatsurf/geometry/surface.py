@@ -666,6 +666,9 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
             try:
                 root = min(labels)
             except TypeError:
+                # TODO: This is a hack. I don't want to resurrect
+                # LabelComparator since it is not stable across sessions (or
+                # across architectures) but we need something reasonable here.
                 if len(set((repr(label) for label in labels))) != len(labels):
                     raise TypeError("cannot determine root label consistently in this surface since the labels cannot be ordered and their repr conversion to string are not unique")
                 root = min(labels, key=lambda label: repr(label))

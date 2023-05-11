@@ -611,7 +611,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                                         > 0
                                     ):
                                         found = vv
-                                        deformation2[ss.singularity(label, vv)] = vect
+                                        deformation2[ss.point(label, ss.polygon(label).vertex(vv))] = vect
                                         break
                                 assert found is not None
                                 break

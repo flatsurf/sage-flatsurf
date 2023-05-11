@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.5
 kernelspec:
-  display_name: SageMath 9.3
+  display_name: SageMath 9.7
   language: sage
   name: sagemath
 ---
@@ -43,36 +43,36 @@ We consider the following half-translation surface
 It belongs to $Q_3(10, -1^2)$.
 
 ```{code-cell} ipython3
+from flatsurf import polygon, MutableOrientedSimilaritySurface
+
 def apisa_wright_surface(h24, h3, l15, l6, l7, l8):
-    from flatsurf import ConvexPolygons, HalfTranslationSurface, Surface_list
-    params = [h24, h3, l15, l6, l7, l8]
-    K = Sequence(params).universe().fraction_field()
+    K = Sequence([h24, h3, l15, l6, l7, l8]).universe().fraction_field()
+    
     v24 = vector(K, (0, h24))
     v3 = vector(K, (0, h3))
     v15 = vector(K, (l15, 0))
     v6 = vector(K, (l6, 0))
     v7 = vector(K, (l7, 0))
     v8 = vector(K, (l8, 0))
-    C = ConvexPolygons(K)
-    P0 = C(edges=[v15,v15,v24,-2*v15,-v24])
-    P1 = C(edges=[2*v15,v8,v7,v6,v3,-v8,-v7,-v6,-v15,-v15,-v3])
-    P2 = C(edges=[v15,v24,-v15,-v24])
-    S = Surface_list(base_ring = C.base_ring())
-    S.rename("ApisaWrightSurface({})".format(', '.join(map(str, params))))
-    S.add_polygons([P0, P1, P2])
-    # set_edge_pairing(poly_num1, edge_num1, poly_num2, edge_num2)
-    S.set_edge_pairing(0, 0, 0, 1)
-    S.set_edge_pairing(0, 2, 0, 4)
-    S.set_edge_pairing(0, 3, 1, 0)
-    S.set_edge_pairing(1, 1, 1, 5)
-    S.set_edge_pairing(1, 2, 1, 6)
-    S.set_edge_pairing(1, 3, 1, 7)
-    S.set_edge_pairing(1, 4, 1, 10)
-    S.set_edge_pairing(1, 8, 2, 2)
-    S.set_edge_pairing(1, 9, 2, 0)
-    S.set_edge_pairing(2, 1, 2, 3)
+
+    S = MutableOrientedSimilaritySurface(K)
+    
+    S.add_polygon(polygon(edges=[v15,v15,v24,-2*v15,-v24]))
+    S.add_polygon(polygon(edges=[2*v15,v8,v7,v6,v3,-v8,-v7,-v6,-v15,-v15,-v3]))
+    S.add_polygon(polygon(edges=[v15,v24,-v15,-v24], ring=K))
+
+    S.glue((0, 0), (0, 1))
+    S.glue((0, 2), (0, 4))
+    S.glue((0, 3), (1, 0))
+    S.glue((1, 1), (1, 5))
+    S.glue((1, 2), (1, 6))
+    S.glue((1, 3), (1, 7))
+    S.glue((1, 4), (1, 10))
+    S.glue((1, 8), (2, 2))
+    S.glue((1, 9), (2, 0))
+    S.glue((2, 1), (2, 3))
     S.set_immutable()
-    return HalfTranslationSurface(S)
+    return S
 ```
 
 We use some simple parameters:
@@ -84,15 +84,11 @@ S = apisa_wright_surface(1, 1+c, 1, c, 1+c, 2*c-1)
 S.plot(edge_labels=False)
 ```
 
+```{code-cell} ipython3
+S
+```
+
 Now build the canonical double cover and orbit closure:
-
-```{code-cell} ipython3
-S.stratum()
-```
-
-```{code-cell} ipython3
-S.stratum().dimension()
-```
 
 ```{code-cell} ipython3
 U = S.minimal_cover("translation")
@@ -106,7 +102,6 @@ the surface via A. Wright's cylinder deformation.
 
 ```{code-cell} ipython3
 from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
-U = S.minimal_cover('translation')  # optional: pyflatsurf
 O = GL2ROrbitClosure(U) # optional: pyflatsurf
 O.dimension() # optional: pyflatsurf
 ```

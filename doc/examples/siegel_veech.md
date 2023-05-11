@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.10.3
+    jupytext_version: 1.14.5
 kernelspec:
-  display_name: SageMath 9.2
+  display_name: SageMath 9.7
   language: sage
   name: sagemath
 ---
@@ -25,6 +25,7 @@ We start by creating a surface with [sage-flatsurf](https://github.com/flatsurf/
 
 ```{code-cell} ipython3
 from flatsurf import translation_surfaces
+
 S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
 ```
 

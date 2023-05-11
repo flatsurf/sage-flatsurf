@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.14.5
 kernelspec:
-  display_name: SageMath 9.6
+  display_name: SageMath 9.7
   language: sage
   name: sagemath
 ---
@@ -17,6 +17,8 @@ kernelspec:
 ## Rearranging Polygons
 
 ```{code-cell} ipython3
+from flatsurf.geometry.polyhedra import platonic_dodecahedron
+
 s = platonic_dodecahedron()[1]
 ```
 
@@ -28,7 +30,7 @@ s.plot()
 
 Labels in the center of each polygon indicate the label of the polygon. Edge labels above indicate which polygon the edge is glued to.
 
-Plotting the surface is controlled by a GraphicalSurface object. You can get the surface as follows:
+Plotting the surface is controlled by a GraphicalSurface object:
 
 ```{code-cell} ipython3
 gs = s.graphical_surface()
@@ -59,7 +61,7 @@ gs.make_adjacent(10, 0)
 Lets check that it worked:
 
 ```{code-cell} ipython3
-s.plot()
+gs.plot()
 ```
 
 Let's build the symmetric widget at polygon 1 by moving 7 to be adjacent to 5 and 3 to be adjacent to 7. Note that the order of the movements matter. If we do it in the wrong order, we detach things:
@@ -67,7 +69,7 @@ Let's build the symmetric widget at polygon 1 by moving 7 to be adjacent to 5 an
 ```{code-cell} ipython3
 gs.make_adjacent(7, 3)
 gs.make_adjacent(5, 4)
-s.plot()
+gs.plot()
 ```
 
 Indeed, we moved 3 to be adjacent to 7 but then moved 7 away. Let's do it in the correct order:
@@ -75,14 +77,14 @@ Indeed, we moved 3 to be adjacent to 7 but then moved 7 away. Let's do it in the
 ```{code-cell} ipython3
 gs.make_adjacent(5, 4)
 gs.make_adjacent(7, 3)
-s.plot()
+gs.plot()
 ```
 
 Finally, glue 9 to 8 for a symmetric picture:
 
 ```{code-cell} ipython3
 gs.make_adjacent(8, 0)
-s.plot()
+gs.plot()
 ```
 
 ## Moving between coordinate systems
@@ -131,13 +133,15 @@ s.polygon(7).plot() + point2d([pt], zorder=100, color="red")
 
 Lets convert it to a surface point and plot it!
 
+Note that we will have to pass the graphical surface to the point so it plots with respect to ``gs`` and not with respect to ``s.graphical_surface``.
+
 ```{code-cell} ipython3
-spt = s.surface_point(7, pt)
+spt = s.point(7, pt)
 spt
 ```
 
 ```{code-cell} ipython3
-s.plot() + spt.plot(color="red", size=20)
+gs.plot() + spt.plot(gs, color="red", size=20)
 ```
 
 Now we want to plot an upward trajectory through this point. Again, we have to deal with the fact that the coordinates might not match. You can get access to the transformation (a similarity) from geometric coordinates to graphical coordinates:
@@ -179,16 +183,16 @@ traj.is_closed()
 ```
 
 ```{code-cell} ipython3
-s.plot() + spt.plot(color="red") + traj.plot(color="orange")
+gs.plot() + spt.plot(gs, color="red") + traj.plot(gs, color="orange")
 ```
 
 ## Multiple graphical surfaces
 
 It is possible to have more than one graphical surface. Maybe you want to have one where things look better.
-To get a new suface, you can call `s.graphical_surface()` again but with a `cached=False` parameter.
+To get a new suface, you can call `s.graphical_surface()` again.
 
 ```{code-cell} ipython3
-pretty_gs = s.graphical_surface(polygon_labels=False, edge_labels=False, cached=False)
+pretty_gs = s.graphical_surface(polygon_labels=False, edge_labels=False)
 ```
 
 ```{code-cell} ipython3
@@ -216,7 +220,7 @@ pretty_gs.will_plot_adjacent_edges = False
 pretty_gs.plot()
 ```
 
-To use a non-default graphical surface you need to pass the graphical surface as a parameter.
+Again, to use a non-default graphical surface, we need to pass the graphical surface as a parameter.
 
 ```{code-cell} ipython3
 pretty_gs.plot() + spt.plot(pretty_gs, color="red") + traj.plot(pretty_gs)
@@ -260,6 +264,8 @@ plot
 ## Manipulating edge labels
 
 ```{code-cell} ipython3
+from flatsurf import translation_surfaces
+
 s = translation_surfaces.arnoux_yoccoz(4)
 ```
 

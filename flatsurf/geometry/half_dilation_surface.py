@@ -121,6 +121,13 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             polygon2 = self._s.polygon(pp)
             return pp, polygon2.num_edges() - 1 - ee
 
+    def __repr__(self):
+        if self.is_finite_type():
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+            return repr(MutableOrientedSimilaritySurface.from_surface(self))
+
+        return f"GL2RImageSurface of {self._s}"
+
     def __hash__(self):
         return hash((self._s, self._m))
 

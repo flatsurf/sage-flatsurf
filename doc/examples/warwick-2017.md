@@ -5,15 +5,12 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.10.3
+    jupytext_version: 1.14.5
 kernelspec:
-  display_name: SageMath 9.2
+  display_name: SageMath 9.7
   language: sage
   name: sagemath
-author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 ---
-
-+++ {"deletable": true, "editable": true}
 
 # Notes from the Warwick EPSRC Symposium on "Computation in geometric topology"
 
@@ -23,19 +20,17 @@ Veech's double n-gon surfaces:
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
+from flatsurf import translation_surfaces
+
 s = translation_surfaces.veech_double_n_gon(5).canonicalize()
 s.plot()
 ```
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -46,8 +41,6 @@ AA(modulus)
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -58,65 +51,44 @@ ss.plot()
 ```
 
 ```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: false
----
-ss.delaunay_decomposition().plot()
+ss = ss.delaunay_decomposition()
+ss.plot()
 ```
 
-+++ {"deletable": true, "editable": true}
-
-The following checks that the matrix m stabilizes s:
+The following checks that the matrix m stabilizes s; actually, it does not, see [#230](https://github.com/flatsurf/sage-flatsurf/issues/230):
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
 ss.canonicalize() == s
 ```
 
-+++ {"deletable": true, "editable": true}
-
 ## Geodesics
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
 s = translation_surfaces.veech_double_n_gon(5)
 ```
 
-+++ {"deletable": true, "editable": true}
-
 The tangent bundle of the surface:
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: true
 ---
 TB = s.tangent_bundle()
 ```
 
-+++ {"deletable": true, "editable": true}
-
 Define a tangent vector in polygon $0$ starting at $(\frac{1}{2}, 0)$ and pointed in some direction:
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -124,14 +96,10 @@ direction = s.polygon(0).vertex(2) + 3*s.polygon(0).vertex(3)
 v = TB(0, (1/2, 0), direction)
 ```
 
-+++ {"deletable": true, "editable": true}
-
 Convert the vector to a straight-line trajectory.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: true
 ---
@@ -140,8 +108,6 @@ traj = v.straight_line_trajectory()
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -150,8 +116,6 @@ s.plot() + traj.plot()
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -161,8 +125,6 @@ print(traj.combinatorial_length())
 s.plot() + traj.plot()
 ```
 
-+++ {"deletable": true, "editable": true}
-
 ## Cone surfaces from polyhedra
 
 Polyhedra are built into Sage and you can use them to build a translation surface.
@@ -170,18 +132,16 @@ In this demo we only use a built-in function for a Platonic Solid.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: true
 ---
+from flatsurf.geometry.polyhedra import platonic_dodecahedron
+
 polyhedron, s, mapping = platonic_dodecahedron()
 ```
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -190,8 +150,6 @@ polyhedron.plot(frame=False)
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -200,8 +158,6 @@ s.plot(polygon_labels=False, edge_labels=False)
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -216,8 +172,6 @@ print(traj.combinatorial_length())
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -226,8 +180,6 @@ s.plot() + traj.plot()
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -238,8 +190,6 @@ G
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -254,8 +204,6 @@ print(traj.combinatorial_length())
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -264,8 +212,6 @@ show(s.plot() + traj.plot())
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -274,14 +220,10 @@ p += line3d(mapping(traj), radius=0.02, frame=False)
 p.show(viewer='tachyon', frame=False)
 ```
 
-+++ {"deletable": true, "editable": true}
-
 ## Relative period deformations
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -289,44 +231,32 @@ s = translation_surfaces.veech_2n_gon(5)
 s.plot(edge_labels=False, polygon_labels=False)
 ```
 
-+++ {"deletable": true, "editable": true}
-
 Currently we have to triangulate to do a rel deformation.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
-s = s.triangulate().copy(relabel=True, mutable=True)
+s = s.triangulate()
 ```
-
-+++ {"deletable": true, "editable": true}
 
 A singularity is an equivalence class of vertices of polygons.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
-sing = s.singularity(0, 0)
+sing = s.point(0, 0)
 sing
 ```
-
-+++ {"deletable": true, "editable": true}
 
 We can now deform by moving one singularity relative to the others.
 Here is a small deformation in the slope one direction.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -334,22 +264,16 @@ ss = s.rel_deformation({sing: vector(s.base_ring(), (1/20, 1/20))})
 ss.plot()
 ```
 
-+++ {"deletable": true, "editable": true}
-
 A larger deformation:
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
 ss = s.rel_deformation({sing:vector(s.base_ring(), (100, 100))})
 ss.plot()
 ```
-
-+++ {"deletable": true, "editable": true}
 
 ## The Necker Cube Surface
 
@@ -358,15 +282,12 @@ an undergraduate at City College of New York.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
 from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
 
 class SurfaceToSpaceMapping(SageObject):
-
     def __init__(self, similarity_surface, tranformation):
         self._s = similarity_surface
         from types import FunctionType
@@ -479,22 +400,43 @@ class SurfaceToSpaceMapping(SageObject):
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: true
 ---
-from flatsurf.geometry.surface import Surface
-from flatsurf.geometry.polygon import ConvexPolygons
-from flatsurf.geometry.similarity import SimilarityGroup
-class CubeSurf(Surface):
+from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.categories import ConeSurfaces
+from flatsurf.geometry.polygon import polygon
+
+class CubeSurf(OrientedSimilaritySurface):
     def __init__(self, F):
-        ZZ3 = IntegerModRing(3)
-        P = ConvexPolygons(F)
-        self._faceA = P(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)])
-        self._faceB = P(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)])
-        self._faceC = P(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)])
-        Surface.__init__(self, F, (ZZ(0), ZZ(0), ZZ3(0)), finite=False, mutable=False)
+        self._faceA = polygon(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceB = polygon(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceC = polygon(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        super().__init__(F, category=ConeSurfaces().Rational().InfiniteType().WithoutBoundary().Connected())
+        
+    def is_mutable(self):
+        return False
+    
+    def is_compact(self):
+        return False
+    
+    def roots(self):
+        return ((0, 0, IntegerModRing(3)(0)),)
+    
+    def is_translation_surface(self, positive=True):
+        return False
+    
+    def is_dilation_surface(self, positive=False):
+        return False
+    
+    def __eq__(self, other):
+        if not isinstance(other, CubeSurf):
+            return False
+        
+        return self.base_ring() is other.base_ring()
+    
+    def __hash__(self):
+        return hash(self.base_ring())
 
     def polygon(self, label):
         x, y, l = label
@@ -535,34 +477,18 @@ class CubeSurf(Surface):
                 return((x, y + 1, l + 1), 0)
             if edge == 3:
                 return((x - 1 , y + 1, l + 2), 0)
+```
 
-SG = SimilarityGroup(QQ)
-def default_position(label):
-    x, y, l = label
-    if(ZZ(l) == 0):
-        return SG(2*x, 2*y)  # (b + c) x, (a + c) y
-    if(ZZ(l) == 1):
-        return SG(2*x + 1, 2*y)  # (b + c) x + c, (a + c) y
-    if(ZZ(l) == 2):
-        return SG(2*x, 2*y + 1)  # (b + c) x, (a + c) y + c
-    # Reminder to parameterize a, b, c here for positions.
-    # Rework this to work for surfaces of different sizes.
+```{code-cell} ipython3
+s = CubeSurf(QQ)
+```
+
+```{code-cell} ipython3
+TestSuite(s).run()
 ```
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: false
----
-s = SimilaritySurface(CubeSurf(QQ))
-```
-
-```{code-cell} ipython3
----
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
@@ -580,6 +506,7 @@ def transformation(label):
         return MM*M([[0, 0], [0, 1], [-1, 0]]), MM*V([x + 1, y, -x - y])
     else:  # l == 2
         return MM*M([[1, 0], [0, 0], [0, -1]]), MM*V([x, y + 1, -x - y])
+
 m = SurfaceToSpaceMapping(s, transformation)
 def label_to_color(label):
     if label[2] == 0:
@@ -592,16 +519,13 @@ def label_to_color(label):
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
-it = s.label_iterator()
-m.plot({next(it) for i in range(30)}, label_to_color=label_to_color)
-```
+from itertools import islice
 
-+++ {"deletable": true, "editable": true}
+m.plot(set(islice(s.labels(), 30)), label_to_color=label_to_color)
+```
 
 <b>Theorem (Pavel Javornik).</b>
 A trajectory of rational slope (measured on one of the squares interpreted to
@@ -610,27 +534,21 @@ if and only if the slope can be expressed as the ratio of two odd integers.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: true
 ---
 B = s.tangent_bundle()
 ```
 
-+++ {"deletable": true, "editable": true}
-
 The following builds a trajectory starting in the base polygon at the point
 $(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
-v = B(s.base_label(), (1/4, 1/4), (-1, 1))
+v = B(s.root(), (1/4, 1/4), (-1, 1))
 traj = v.straight_line_trajectory()
 traj.flow(100)
 if traj.is_closed():
@@ -639,18 +557,14 @@ labels = [seg.polygon_label() for seg in traj.segments()]
 m.plot(labels, label_to_color=label_to_color) + line3d(m(traj), radius=0.02)
 ```
 
-+++ {"deletable": true, "editable": true}
-
 A trajectory of slope $5/4$.
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
-v = B(s.base_label(), (1/3, 1/4), (4, 5))
+v = B(s.root(), (1/3, 1/4), (4, 5))
 traj = v.straight_line_trajectory()
 traj.flow(50)
 labels = [seg.polygon_label() for seg in traj.segments()]
@@ -661,18 +575,14 @@ p.frame_aspect_ratio(tuple(vector(p.bounding_box()[1])
 p
 ```
 
-+++ {"deletable": true, "editable": true}
-
 A trajectory of slope $11/9$
 
 ```{code-cell} ipython3
 ---
-deletable: true
-editable: true
 jupyter:
   outputs_hidden: false
 ---
-v = B(s.base_label(), (1/3, 1/4), (9, 11))
+v = B(s.root(), (1/3, 1/4), (9, 11))
 traj = v.straight_line_trajectory()
 traj.flow(1000)
 while not traj.is_closed():
@@ -680,25 +590,5 @@ while not traj.is_closed():
 labels = [seg.polygon_label() for seg in traj.segments()]
 p = m.plot(labels, label_to_color=label_to_color)
 p += line3d(m(traj), radius=0.04)
-# p
-```
-
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: false
----
-show(p, frame=False, viewer="tachyon")
-```
-
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: false
----
-# show(p, frame=False)
+p
 ```

@@ -144,12 +144,12 @@ class ChamanaraSurface(OrientedSimilaritySurface):
     def __hash__(self):
         return hash((self._p, self.base_ring()))
 
-    def graphical_surface(self):
+    def graphical_surface(self, **kwds):
         adjacencies = [(0, 1)]
         for i in range(8):
             adjacencies.append((-i, 3))
             adjacencies.append((i + 1, 3))
-        return super().graphical_surface(adjacencies=adjacencies)
+        return super().graphical_surface(adjacencies=adjacencies, **kwds)
 
     def __eq__(self, other):
         r"""
@@ -200,18 +200,18 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
         MinimalTranslationCover.__init__(self, ChamanaraSurface(alpha))
         self._refine_category_(self.category().Compact())
 
-    def graphical_surface(self):
-        label = self.base_label()
+    def graphical_surface(self, **kwds):
+        label = self.root()
         adjacencies = [(label, 1)]
         for i in range(8):
             adjacencies.append((label, 3))
             label = self.opposite_edge(label, 3)[0]
-        label = self.base_label()
+        label = self.root()
         label = self.opposite_edge(label, 1)[0]
         for i in range(8):
             adjacencies.append((label, 3))
             label = self.opposite_edge(label, 3)[0]
-        return super().graphical_surface(adjacencies=adjacencies)
+        return super().graphical_surface(adjacencies=adjacencies, **kwds)
 
 
 def chamanara_surface(alpha, n=None):

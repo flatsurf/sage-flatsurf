@@ -1416,7 +1416,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 for e, cross in enumerate(glue_list):
                     s.glue((p1, e), cross)
 
-                return ss
+                return s
 
             def subdivide_polygon(self, p, v1, v2, test=False, new_label=None):
                 r"""
@@ -2248,6 +2248,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     return LazyDelaunaySurface(
                         self, direction=direction, category=self.category()
                     )
+
                 if in_place:
                     s = self
                 else:
@@ -2256,11 +2257,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
 
                     s = MutableOrientedSimilaritySurface.from_surface(self)
+
                 if not delaunay_triangulated:
                     s.delaunay_triangulation(
                         triangulated=triangulated, in_place=True, direction=direction
                     )
-                # Now s is Delaunay Triangulated
+
+                # Now s is Delaunay triangulated
                 loop = True
                 lc = self._label_comparator()
                 while loop:

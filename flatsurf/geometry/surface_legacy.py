@@ -1090,6 +1090,8 @@ class Surface_list(Surface):
 
     def is_compact(self):
         if self._reference_surface is not None:
+            # Since we are only modifying a finite number of polygons, this
+            # surface is compact iff its reference surface is.
             return self._reference_surface.is_compact()
 
         return True

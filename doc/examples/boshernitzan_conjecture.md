@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.8
+    jupytext_version: 1.14.5
 kernelspec:
-  display_name: SageMath 9.5
+  display_name: SageMath 9.7
   language: sage
   name: sagemath
 ---

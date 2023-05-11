@@ -62,7 +62,7 @@ def Singularity(similarity_surface, label, v, limit=None):
     import warnings
 
     warnings.warn(
-        "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead."
+        "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point(label, surface.polygon(label).vertex(v)) instead."
     )
     return similarity_surface.point(
         label, similarity_surface.polygon(label).vertex(v), limit=limit

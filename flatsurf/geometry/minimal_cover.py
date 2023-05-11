@@ -120,6 +120,15 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
     def is_mutable(self):
         return False
 
+    def is_compact(self):
+        if not self._ss.is_compact():
+            return False
+
+        if not self._ss.is_rational_surface():
+            return False
+
+        return True
+
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
