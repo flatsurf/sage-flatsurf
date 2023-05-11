@@ -27,7 +27,7 @@ from sage.all import QQ, randint
 
 @pytest.mark.repeat(1024)
 def test_is_same_direction():
-    from flatsurf.geometry.polygon import is_same_direction
+    from flatsurf.geometry.matrix_2x2 import is_same_direction
 
     V = QQ**2
 
@@ -41,7 +41,7 @@ def test_is_same_direction():
 
 @pytest.mark.repeat(100)
 def test_is_opposite_direction():
-    from flatsurf.geometry.polygon import is_opposite_direction
+    from flatsurf.geometry.matrix_2x2 import is_opposite_direction
 
     V = QQ**2
 
