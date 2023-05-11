@@ -179,7 +179,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             EXAMPLES::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import translation_surfaces
                 sage: s=translation_surfaces.veech_double_n_gon(4)
                 sage: s.polygon(1)
                 polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
@@ -372,7 +372,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             We will check if an element lies in the Veech group::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.octagon_and_squares()
                 sage: s
                 Translation Surface in H_3(4) built from 2 squares and a regular octagon
@@ -455,7 +455,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             EXAMPLES::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.arnoux_yoccoz(4)
                 sage: field = s.base_ring()
                 sage: a = field.gen()
@@ -636,7 +636,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             EXAMPLES::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import translation_surfaces
                 sage: O = translation_surfaces.regular_octagon()
                 sage: O.j_invariant()
                 (

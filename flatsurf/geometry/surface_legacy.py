@@ -709,7 +709,7 @@ class Surface(OrientedSimilaritySurface):
 
         Test the difference between the cached graphical_surface and the uncached version::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.octagon_and_squares()
             sage: s.plot()
             ...Graphics object consisting of 32 graphics primitives
@@ -835,8 +835,7 @@ class Surface_list(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.surface import Surface_list
+        sage: from flatsurf import polygons, Surface_list
         sage: p=polygons.regular_ngon(5)
         sage: s=Surface_list(base_ring=p.base_ring())
         doctest:warning
@@ -1207,8 +1206,7 @@ class Surface_list(Surface):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
-            sage: from flatsurf.geometry.surface import Surface_list
+            sage: from flatsurf import polygons, Surface_list
             sage: p=polygons.regular_ngon(5)
             sage: s=Surface_list(base_ring=p.base_ring())
             sage: s.add_polygon(p, label=3)
@@ -1491,7 +1489,7 @@ class Surface_dict(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import polygons
         sage: p=polygons.regular_ngon(10)
         sage: s=Surface_dict(base_ring=p.base_ring())
         doctest:warning

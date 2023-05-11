@@ -758,7 +758,7 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
             sage: polygons(vertices=[(0,0), (1,0), (1,1)]).is_strictly_convex()
             True
             sage: polygons(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
@@ -1209,7 +1209,7 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
 
             sage: polygons.right_triangle(1/3,1).j_invariant()
             (
@@ -1566,7 +1566,7 @@ class PolygonsConstructor:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
 
             sage: P = polygons.right_triangle(1/3, 1)
             sage: P
@@ -1613,7 +1613,7 @@ class PolygonsConstructor:
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
 
             sage: polygons((1,0),(0,1),(-1,0),(0,-1))
             polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])

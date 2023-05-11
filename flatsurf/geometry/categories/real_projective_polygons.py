@@ -240,7 +240,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                 r"""
                 TESTS::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import polygons
                     sage: polygons(vertices=[(0,0),(1,0)])
                     Traceback (most recent call last):
                     ...

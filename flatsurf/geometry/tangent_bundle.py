@@ -30,7 +30,7 @@ class SimilaritySurfaceTangentVector:
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
 
     Examples on edges in direction of edges::
 
@@ -341,7 +341,7 @@ class SimilaritySurfaceTangentVector:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
 
             sage: s = translation_surfaces.square_torus()
             sage: v = s.tangent_vector(0, (0,0), (1,1))
@@ -386,7 +386,7 @@ class SimilaritySurfaceTangentVector:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s=translation_surfaces.regular_octagon()
             sage: v=s.tangent_vector(0,(0,0),(1,1))
             sage: v.clockwise_to((-1,-1))
@@ -462,7 +462,7 @@ class SimilaritySurfaceTangentVector:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s=translation_surfaces.regular_octagon()
             sage: v=s.tangent_vector(0,(0,0),(1,1))
             sage: v.counterclockwise_to((-1,-1))

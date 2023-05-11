@@ -1061,7 +1061,7 @@ class Cylinder(SageObject):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s = translation_surfaces.octagon_and_squares()
         sage: from flatsurf.geometry.surface_objects import Cylinder
         sage: cyl = Cylinder(s, 0, [2, 3, 3, 3, 2, 0, 1, 3, 2, 0])

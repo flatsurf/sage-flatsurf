@@ -514,7 +514,7 @@ class SimilaritySurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: ex = similarity_surfaces.example()
             sage: ex
             Genus 1 Surface built from 2 isosceles triangles
@@ -544,7 +544,7 @@ class SimilaritySurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
             sage: p = polygons((2,0),(-1,3),(-1,-3))
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: s
@@ -573,7 +573,7 @@ class SimilaritySurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import polygons
 
             sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
             sage: Q = similarity_surfaces.billiard(P, rational=True)
@@ -720,7 +720,7 @@ class SimilaritySurfaceGenerators:
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: R = similarity_surfaces.right_angle_triangle(2, 3)
             sage: R
             Genus 0 Cone Surface built from 2 right triangles
@@ -767,7 +767,7 @@ class DilationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import dilation_surfaces
             sage: ds = dilation_surfaces.basic_dilation_torus(AA(sqrt(2)))
             sage: ds
             Genus 1 Positive Dilation Surface built from a square and a rectangle
@@ -819,7 +819,7 @@ class DilationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import dilation_surfaces
             sage: ds = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
             sage: ds
             Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon
@@ -956,7 +956,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.square_torus()
             sage: T
             Translation Surface in H_1(0) built from a square
@@ -1020,7 +1020,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.veech_2n_gon(5)
             sage: s
             Translation Surface in H_2(1^2) built from a regular decagon
@@ -1042,7 +1042,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s=translation_surfaces.veech_double_n_gon(5)
             sage: s
             Translation Surface in H_2(2) built from 2 regular pentagons
@@ -1069,7 +1069,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.regular_octagon()
             sage: T
             Translation Surface in H_2(2) built from a regular octagon
@@ -1261,7 +1261,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.mcmullen_L(1,1,1,1)
             sage: s
             Translation Surface in H_2(2) built from 3 squares
@@ -1302,7 +1302,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.ward(3)
             sage: s
             Translation Surface in H_1(0^3) built from 2 equilateral triangles and a regular hexagon
@@ -1462,7 +1462,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.arnoux_yoccoz(4)
             sage: s
             Translation Surface in H_4(3^2) built from 16 triangles
@@ -1580,7 +1580,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: import flipper                             # optional - flipper
 
         A torus example::
@@ -1798,7 +1798,7 @@ class TranslationSurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.e_infinity_surface()
             sage: TestSuite(s).run()
         """

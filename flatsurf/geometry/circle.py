@@ -213,8 +213,7 @@ class Circle:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
-            sage: from flatsurf.geometry.circle import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.square_torus()
             sage: c = s.polygon(0).circumscribing_circle()
             sage: c

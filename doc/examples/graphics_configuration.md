@@ -17,11 +17,6 @@ kernelspec:
 ## Rearranging Polygons
 
 ```{code-cell} ipython3
-from flatsurf import *
-from flatsurf.geometry.polyhedra import *
-```
-
-```{code-cell} ipython3
 s = platonic_dodecahedron()[1]
 ```
 

@@ -345,7 +345,7 @@ class SimilaritySurfaces(SurfaceCategory):
             r"""
             EXAMPLES::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.infinite_staircase()
                 sage: s
                 The infinite staircase
@@ -357,7 +357,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             Testing multiplication by a matrix with negative determinant::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import dilation_surfaces
                 sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: ds1.polygon(0)
                 polygon(vertices=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
@@ -469,7 +469,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 r"""
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
 
                     sage: translation_surfaces.regular_octagon().num_singularities()
                     1
@@ -565,7 +565,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 Example with polygon glued to another polygon::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.veech_double_n_gon(4)
                     sage: s.polygon(0)
                     polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -662,7 +662,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s=translation_surfaces.veech_double_n_gon(5)
                     sage: ss,valid=s.relabel({0:1,1:2})
                     sage: valid
@@ -791,7 +791,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: ss=translation_surfaces.ward(3)
                     sage: ss.is_mutable()
                     False
@@ -805,8 +805,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s == ss
                     False
 
-                    sage: # Changing the base field
-                    sage: from flatsurf import *
+                Changing the base field::
+
                     sage: s=translation_surfaces.veech_double_n_gon(5)
                     sage: ss=s.copy(mutable=False,new_field=AA)
                     doctest:warning
@@ -816,8 +816,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.base_ring()
                     Algebraic Real Field
 
-                    sage: # Optimization of number field
-                    sage: from flatsurf import *
+                Optimization of number field::
+
                     sage: s = translation_surfaces.arnoux_yoccoz(3)
                     sage: ss = s.copy(new_field=AA).copy(optimal_number_field=True)
                     doctest:warning
@@ -1506,7 +1506,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.square_torus()
                     sage: pc = s.minimal_cover(cover_type="planar")
                     sage: pc.singularity(pc.root(), 0)
@@ -1541,7 +1541,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.square_torus()
                     sage: pc = s.minimal_cover(cover_type="planar")
                     sage: pc.point(pc.root(), (0,0))
@@ -1819,7 +1819,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
                     sage: ss=s.triangulate()
                     sage: gs=ss.graphical_surface()
@@ -1829,7 +1829,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 A non-strictly convex example that caused trouble:
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import similarity_surfaces
                     sage: s=similarity_surfaces.self_glued_polygon(polygons(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
                     sage: s=s.triangulate()
                     sage: s.polygon(0).num_edges()
@@ -2026,8 +2026,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
-                    sage: from flatsurf.geometry.delaunay import *
+                    sage: from flatsurf import translation_surfaces
 
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
@@ -2197,7 +2196,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s0 = translation_surfaces.octagon_and_squares()
                     sage: a = s0.base_ring().gens()[0]
                     sage: m = Matrix([[1,2+a],[0,1]])
@@ -2298,7 +2297,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 If check==True it uses the checks in the SaddleConnection class to sanity check our results.
 
                 EXAMPLES::
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.square_torus()
                     sage: sc_list = s.saddle_connections(13, check=True)
                     sage: len(sc_list)

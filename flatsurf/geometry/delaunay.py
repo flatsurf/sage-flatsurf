@@ -35,8 +35,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.delaunay import *
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyTriangulatedSurface(s)
         sage: ss.polygon(ss.root()).num_edges()
@@ -242,8 +242,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.delaunay import *
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
         sage: s=translation_surfaces.infinite_staircase()
         sage: ss=LazyDelaunayTriangulatedSurface(s)
         sage: ss.polygon(ss.root()).num_edges()
@@ -254,8 +254,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
     Chamanara example::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.chamanara import *
+        sage: from flatsurf.geometry.chamanara import chamanara_surface
         sage: s=chamanara_surface(QQ(1/2))
         sage: m=matrix([[2,1],[1,1]])**4
         sage: ss=(m*s).delaunay_triangulation()
@@ -499,8 +498,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.delaunay import *
+        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
         sage: s=translation_surfaces.infinite_staircase()
         sage: m=matrix([[2,1],[1,1]])
         sage: ss=LazyDelaunaySurface(m*s)
@@ -510,9 +509,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         True
         sage: TestSuite(ss).run()
 
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.chamanara import *
-        sage: from flatsurf.geometry.delaunay import *
+        sage: from flatsurf.geometry.chamanara import chamanara_surface
         sage: s=chamanara_surface(QQ(1/2))
         sage: m=matrix([[3,4],[-4,3]])*matrix([[4,0],[0,1/4]])
         sage: ss=LazyDelaunaySurface(m*s)

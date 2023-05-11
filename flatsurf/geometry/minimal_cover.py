@@ -299,7 +299,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s = translation_surfaces.square_torus()
         sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
         sage: pc = MinimalPlanarCover(s)
@@ -381,7 +381,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.chamanara(1/2)
             sage: C.polygon('a')
             Traceback (most recent call last):
@@ -411,7 +411,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.square_torus()
             sage: from flatsurf.geometry.minimal_cover import MinimalPlanarCover
             sage: pc = MinimalPlanarCover(s)

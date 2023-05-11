@@ -82,7 +82,7 @@ class SegmentInPolygon:
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import similarity_surfaces
         sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
         sage: s = similarity_surfaces.example()
         sage: v = s.tangent_vector(0, (1/3,-1/4), (0,1))
@@ -130,7 +130,7 @@ class SegmentInPolygon:
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
             sage: s = similarity_surfaces.example()
             sage: v = s.tangent_vector(0, (0,0), (3,-1))
@@ -186,7 +186,7 @@ class SegmentInPolygon:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
 
             sage: s = similarity_surfaces.example()
@@ -249,7 +249,7 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.square_torus()
             sage: v = T.tangent_vector(0, (0,0), (5,7))
             sage: L = v.straight_line_trajectory()
@@ -292,7 +292,7 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.regular_octagon()
             sage: v = s.tangent_vector(0,(1/2,0),(sqrt(2),1))
             sage: traj = v.straight_line_trajectory()
@@ -332,7 +332,7 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
 
             sage: v = t.tangent_vector(0, (1/2,0), (5,6))
@@ -531,7 +531,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
     EXAMPLES::
 
         # Demonstrate the handling of edges
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         sage: p = SymmetricGroup(2)('(1,2)')
         sage: s = translation_surfaces.origami(p,p)
@@ -562,7 +562,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
 
             sage: O = translation_surfaces.regular_octagon()
             sage: v = O.tangent_vector(0, (1,1), (33,45))
@@ -667,7 +667,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
 
             sage: s = similarity_surfaces.example()
             sage: v = s.tangent_vector(0, (1,-1/2), (3,-1))
@@ -752,7 +752,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
             sage: S = SymmetricGroup(3)
             sage: r = S('(1,2)')
@@ -799,7 +799,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: O = translation_surfaces.regular_octagon()
@@ -841,7 +841,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: s = translation_surfaces.square_torus()
@@ -873,7 +873,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: torus = translation_surfaces.square_torus()

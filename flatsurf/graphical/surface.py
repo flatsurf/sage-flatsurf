@@ -137,7 +137,7 @@ class GraphicalSurface:
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import similarity_surfaces
         sage: from flatsurf.graphical.surface import GraphicalSurface
 
         sage: s = similarity_surfaces.example()
@@ -265,7 +265,7 @@ class GraphicalSurface:
 
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
 
             sage: c = translation_surfaces.chamanara(1/2)
             sage: gs = c.graphical_surface()
@@ -307,7 +307,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.octagon_and_squares()
             sage: gs = s.graphical_surface()
             sage: gs.will_plot_zero_flags = True
@@ -399,7 +399,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
@@ -548,7 +548,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface(adjacencies=[])
             sage: gs.graphical_polygon(0)
@@ -605,7 +605,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(adjacencies=[])
             sage: g.is_adjacent(0,0)
@@ -683,7 +683,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((1,-2))
@@ -833,7 +833,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(cached=False, adjacencies=[])
             sage: g.edge_labels(0)
@@ -1022,7 +1022,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)

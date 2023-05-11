@@ -157,7 +157,7 @@ class GL2RMapping(SurfaceMapping):
 
     EXAMPLE::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
         sage: mat=Matrix([[2,1],[1,1]])

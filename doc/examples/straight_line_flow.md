@@ -17,18 +17,6 @@ author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 
 # Straight-Line Flow
 
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: true
----
-from flatsurf import *
-```
-
-+++ {"deletable": true, "editable": true}
-
 ## Acting on surfaces by matrices.
 
 ```{code-cell} ipython3

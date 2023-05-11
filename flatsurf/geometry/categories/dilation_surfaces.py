@@ -391,7 +391,7 @@ class DilationSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import translation_surfaces
                 sage: s0 = translation_surfaces.veech_double_n_gon(5)
                 sage: field = s0.base_ring()
                 sage: a = field.gen()

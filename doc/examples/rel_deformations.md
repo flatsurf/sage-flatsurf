@@ -17,18 +17,6 @@ author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 
 # Relative Period Deformations
 
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: true
----
-from flatsurf import *
-```
-
-+++ {"deletable": true, "editable": true}
-
 ## The Arnoux-Yoccoz surface
 
 ```{code-cell} ipython3

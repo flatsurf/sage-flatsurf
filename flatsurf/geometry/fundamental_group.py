@@ -107,7 +107,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: F = t.fundamental_group()
             sage: a,b = F.gens()
@@ -128,7 +128,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: F = t.fundamental_group()
             sage: a,b = F.gens()
@@ -166,7 +166,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: a,b = t.fundamental_group().gens()
             sage: a*b
@@ -199,7 +199,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: o = translation_surfaces.octagon_and_squares()
             sage: F = o.fundamental_group()
             sage: a1,a2,a3,a4,a5,a6 = F.gens()
@@ -219,7 +219,7 @@ class Path(MultiplicativeGroupElement):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: a,b = t.fundamental_group().gens()
             sage: a.intersection(b)
@@ -292,7 +292,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: t = translation_surfaces.square_torus()
         sage: TestSuite(t.fundamental_group()).run()
     """
@@ -310,7 +310,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: S = SymmetricGroup(4)
             sage: r = S('(1,2)(3,4)')
             sage: u = S('(2,3)')
@@ -354,7 +354,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: S = SymmetricGroup(8)
             sage: r = S('(1,2,3,4,5,6,7,8)')
             sage: u = S('(1,8,5,4)(2,3)(6,7)')

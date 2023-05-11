@@ -306,7 +306,7 @@ class SplitPolygonsMapping(SurfaceMapping):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.mappings import SplitPolygonsMapping
         sage: m = SplitPolygonsMapping(s,0,0,2)
@@ -817,12 +817,12 @@ def canonicalize_translation_surface_mapping(s):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s=translation_surfaces.octagon_and_squares().canonicalize()
         sage: TestSuite(s).run()
         sage: a = s.base_ring().gen()  # a is the square root of 2.
 
-        sage: from flatsurf.geometry.mappings import *
+        sage: from flatsurf.geometry.mappings import GL2RMapping
         sage: mat=Matrix([[1,2+a],[0,1]])
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
         sage: m1=GL2RMapping(s, mat)

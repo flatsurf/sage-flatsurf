@@ -24,16 +24,6 @@ editable: true
 jupyter:
   outputs_hidden: true
 ---
-from flatsurf import *
-```
-
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: true
----
 s = translation_surfaces.veech_double_n_gon(5)
 ```
 

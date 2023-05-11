@@ -55,12 +55,12 @@ class GraphicalSegmentInPolygon:
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: v = s.tangent_vector(0, (1,-0.5), (3,-1))
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
             sage: seg = SegmentInPolygon(v)
-            sage: from flatsurf.graphical.straight_line_trajectory import *
+            sage: from flatsurf.graphical.straight_line_trajectory import GraphicalSegmentInPolygon
             sage: gseg = GraphicalSegmentInPolygon(seg, s.graphical_surface())
             sage: gseg.plot()
             ...Graphics object consisting of 1 graphics primitive
@@ -98,7 +98,7 @@ class GraphicalStraightLineTrajectory:
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: K.<sqrt2>=NumberField(x^2-2,embedding=1)

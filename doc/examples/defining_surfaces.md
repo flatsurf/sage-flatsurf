@@ -15,10 +15,6 @@ author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 
 # Defining Surfaces
 
-```{code-cell} ipython3
-from flatsurf import *
-```
-
 ## Built in surfaces
 
 Veech's double n-gon surfaces:
@@ -227,10 +223,6 @@ The surface s is actually a half translation surface
 ```
 
 ## From polyhedra
-
-```{code-cell} ipython3
-from flatsurf.geometry.polyhedra import *
-```
 
 ```{code-cell} ipython3
 polyhedron,s,mapping = platonic_dodecahedron()

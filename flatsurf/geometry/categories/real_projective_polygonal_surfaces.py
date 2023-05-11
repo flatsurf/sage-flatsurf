@@ -133,7 +133,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import *
+                sage: from flatsurf import similarity_surfaces
                 sage: s = similarity_surfaces.example()
                 sage: s.plot()
                 ...Graphics object consisting of 13 graphics primitives

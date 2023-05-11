@@ -17,18 +17,6 @@ author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 
 # Notes from the Warwick EPSRC Symposium on "Computation in geometric topology"
 
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: true
----
-from flatsurf import *
-```
-
-+++ {"deletable": true, "editable": true}
-
 ## Veech group elements (affine symmetries)
 
 Veech's double n-gon surfaces:
@@ -179,16 +167,6 @@ s.plot() + traj.plot()
 
 Polyhedra are built into Sage and you can use them to build a translation surface.
 In this demo we only use a built-in function for a Platonic Solid.
-
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: true
----
-from flatsurf.geometry.polyhedra import *
-```
 
 ```{code-cell} ipython3
 ---

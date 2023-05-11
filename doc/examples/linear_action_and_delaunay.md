@@ -17,18 +17,6 @@ author: W. Patrick Hooper <whooper@ccny.cuny.edu>
 
 # The GL(2,R) Action, the Veech Group, Delaunay Decomposition
 
-```{code-cell} ipython3
----
-deletable: true
-editable: true
-jupyter:
-  outputs_hidden: true
----
-from flatsurf import *
-```
-
-+++ {"deletable": true, "editable": true}
-
 ## Acting on surfaces by matrices.
 
 ```{code-cell} ipython3

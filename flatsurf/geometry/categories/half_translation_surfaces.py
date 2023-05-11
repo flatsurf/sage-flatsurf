@@ -128,7 +128,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import *
+                    sage: from flatsurf import translation_surfaces, polygons, similarity_surfaces
 
                     sage: S = translation_surfaces.veech_2n_gon(5)
                     sage: S.holonomy_field()
@@ -187,7 +187,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     EXAMPLES::
 
-                        sage: from flatsurf import *
+                        sage: from flatsurf import translation_surfaces, polygons, similarity_surfaces
 
                         sage: S = translation_surfaces.veech_2n_gon(5)
                         sage: U, mat = S.normalized_coordinates()
