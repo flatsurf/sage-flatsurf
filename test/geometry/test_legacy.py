@@ -65,7 +65,4 @@ def test_apisa_wright():
     S.set_edge_pairing(1, 9, 2, 0)
     S.set_edge_pairing(2, 1, 2, 3)
     S.set_immutable()
-    return HalfTranslationSurface(S)
-
-
-
+    HalfTranslationSurface(S)
