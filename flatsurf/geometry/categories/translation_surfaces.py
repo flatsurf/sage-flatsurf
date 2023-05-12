@@ -104,8 +104,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             ::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons((2, 0),(-1, 3),(-1, -3))
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
                 sage: TranslationSurfaces.ParentMethods._is_translation_surface(S)

@@ -306,10 +306,10 @@ class OrientedSimilaritySurface(Surface_base):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
+            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
 
             sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.glue((0, 0), (0, 2))
             sage: S.glue((0, 1), (0, 3))

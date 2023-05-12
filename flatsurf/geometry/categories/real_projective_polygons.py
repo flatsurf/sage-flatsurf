@@ -115,6 +115,8 @@ class RealProjectivePolygons(Category_over_base_ring):
             sage: p
             polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: C(p) is p
+            False
+            sage: C(p) == p
             True
             sage: C((1,0), (0,1), (-1, 1))
             Traceback (most recent call last):
@@ -166,7 +168,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     raise ValueError("the polygon does not close up")
 
         from flatsurf.geometry.polygon import EuclideanPolygon
-        return EuclideanPolygon(ring=self.base(), vertices=vertices, category=self, check=check)
+        return EuclideanPolygon(base_ring=self.base(), vertices=vertices, category=self, check=check)
 
     class Convex(CategoryWithAxiom_over_base_ring):
         def __call__(self, *args, **kwds):
@@ -233,23 +235,21 @@ class RealProjectivePolygons(Category_over_base_ring):
                         raise ValueError("the polygon does not close up")
 
             from flatsurf.geometry.polygon import EuclideanPolygon
-            return EuclideanPolygon(ring=self.base(), vertices=vertices, category=self, check=check)
+            return EuclideanPolygon(base_ring=self.base(), vertices=vertices, category=self, check=check)
 
         class ParentMethods:
             def _check(self):
                 r"""
                 TESTS::
 
-                    sage: from flatsurf import polygons
-                    sage: polygons(vertices=[(0,0),(1,0)])
+                    sage: from flatsurf import polygon
+                    sage: polygon(vertices=[(0,0),(1,0)])
                     Traceback (most recent call last):
                     ...
                     ValueError: a polygon should have more than two edges!
-                    sage: polygons(vertices=[(0,0),(1,2),(0,1),(-1,2)])
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: not convex
-                    sage: polygons(vertices=[(0,0),(1,0),(2,0)])
+                    sage: polygon(vertices=[(0,0),(1,2),(0,1),(-1,2)])
+                    polygon(vertices=[(0, 0), (1, 2), (0, 1), (-1, 2)])
+                    sage: polygon(vertices=[(0,0),(1,0),(2,0)])
                     Traceback (most recent call last):
                     ...
                     ValueError: degenerate polygon
@@ -343,7 +343,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 EXAMPLES::
 
-                    sage: from flatsurf.geometry.polygon import polygons
+                    sage: from flatsurf.geometry.polygon import polygons, polygon
                     sage: s = polygons.square()
                     sage: V = s.parent().vector_space()
                     sage: s.get_point_position(V((1/2,1/2)))
@@ -355,7 +355,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     sage: s.get_point_position(V((1,3/2)))
                     point positioned outside polygon
 
-                    sage: p=polygons(edges=[(1,0),(1,0),(1,0),(0,1),(-3,0),(0,-1)])
+                    sage: p=polygon(edges=[(1,0),(1,0),(1,0),(0,1),(-3,0),(0,-1)])
                     sage: V=p.vector_space()
                     sage: p.get_point_position(V([10,0]))
                     point positioned outside polygon
@@ -484,8 +484,8 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 EXAMPLES::
 
-                    sage: from flatsurf.geometry.polygon import polygons
-                    sage: S = polygons(vertices=[(0,0),(2,0),(2,2),(1,2),(0,2),(0,1)])
+                    sage: from flatsurf.geometry.polygon import polygon
+                    sage: S = polygon(vertices=[(0,0),(2,0),(2,2),(1,2),(0,2),(0,1)])
                     sage: S.flow_map((0,1))
                      Flow polygon map:
                       3 2
@@ -673,8 +673,8 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygons
-                    sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+                    sage: from flatsurf import polygon
+                    sage: P = polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
                     sage: P.circumscribing_circle()
                     Circle((1/2, 3/2), 5/2)
                 """

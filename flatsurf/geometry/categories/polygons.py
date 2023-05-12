@@ -84,8 +84,8 @@ class Polygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons
-                sage: P = polygons(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+                sage: from flatsurf import polygon
+                sage: P = polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
                 sage: P.field()
                 doctest:warning
                 ...

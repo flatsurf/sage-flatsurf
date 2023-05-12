@@ -150,7 +150,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polyhedra import Polyhedron
+        sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface
         sage: vertices=[]
         sage: for i in range(3):
         ....:     temp=vector([1 if k==i else 0 for k in range(3)])

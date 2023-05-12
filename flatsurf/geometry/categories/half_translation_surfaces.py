@@ -10,8 +10,8 @@ EXAMPLES:
 We glue all the sides of a square to themselves. Since each gluing is just a
 rotation of π, this is a half-translation surface::
 
-    sage: from flatsurf import polygons, similarity_surfaces
-    sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1)])
+    sage: from flatsurf import polygon, similarity_surfaces
+    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
     sage: S = similarity_surfaces.self_glued_polygon(P)
     sage: S.set_immutable()
 
@@ -156,8 +156,8 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygons, similarity_surfaces
-                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S._test_half_translation_surface()
 

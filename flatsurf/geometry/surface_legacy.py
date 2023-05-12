@@ -21,14 +21,14 @@ EXAMPLES:
 
 We built a torus by gluing the opposite sides of a square::
 
-    sage: from flatsurf import polygons
+    sage: from flatsurf import polygon
     sage: from flatsurf.geometry.surface import Surface_list
 
     sage: S = Surface_list(QQ)
     doctest:warning
     ...
     UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
-    sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+    sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
     0
     sage: S.set_edge_pairing(0, 0, 0, 2)
     sage: S.set_edge_pairing(0, 1, 0, 3)
@@ -631,11 +631,11 @@ class Surface(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
+            sage: from flatsurf import polygon
             sage: from flatsurf.geometry.surface import Surface_list
 
             sage: S = Surface_list(QQ)
-            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.set_edge_pairing(0, 0, 0, 2)
             sage: S.set_edge_pairing(0, 1, 0, 3)
@@ -652,11 +652,11 @@ class Surface(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
+            sage: from flatsurf import polygon
             sage: from flatsurf.geometry.surface import Surface_list
 
             sage: S = Surface_list(QQ)
-            sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.set_edge_pairing(0, 0, 0, 2)
             sage: S.set_edge_pairing(0, 1, 0, 3)
@@ -835,7 +835,7 @@ class Surface_list(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import polygons, Surface_list
+        sage: from flatsurf import polygons, Surface_list, polygon, similarity_surfaces
         sage: p=polygons.regular_ngon(5)
         sage: s=Surface_list(base_ring=p.base_ring())
         doctest:warning
@@ -852,7 +852,7 @@ class Surface_list(Surface):
 
     We surgically add a square into an infinite billiard surface::
 
-        sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
+        sage: p = polygon(vertices=[(0,0),(4,0),(0,3)])
         sage: s = similarity_surfaces.billiard(p)
         sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
         doctest:warning
@@ -1491,7 +1491,7 @@ class Surface_dict(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import polygons
+        sage: from flatsurf import polygons, Surface_dict
         sage: p=polygons.regular_ngon(10)
         sage: s=Surface_dict(base_ring=p.base_ring())
         doctest:warning

@@ -131,8 +131,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: walker = S.walker()
                 doctest:warning
@@ -170,8 +170,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.labels()
                 (0,)
@@ -217,8 +217,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.polygons()
                 (polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]),)
@@ -277,8 +277,8 @@ class PolygonalSurfaces(SurfaceCategory):
             r"""
             TESTS::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: list(S.label_iterator())
                 doctest:warning
@@ -310,8 +310,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             TESTS::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: list(S.edge_iterator())
                 doctest:warning
@@ -367,8 +367,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             TESTS::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: list(S.edge_gluing_iterator())
                 doctest:warning
@@ -403,8 +403,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: list(S.label_polygon_iterator())
                 doctest:warning
@@ -432,8 +432,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.polygon(0)
                 polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
@@ -459,8 +459,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.opposite_edge(0, 0)
                 (0, 0)
@@ -479,8 +479,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_finite_type()
                 True
@@ -508,8 +508,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_finite_type()
                 True
@@ -570,8 +570,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.roots()
                 (0,)
@@ -584,8 +584,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_connected()
                 True
@@ -611,8 +611,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons, similarity_surfaces
-            sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: from flatsurf import polygon, similarity_surfaces
+            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
             sage: 'FiniteType' in S.category().axioms()
             True
@@ -679,8 +679,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygons, similarity_surfaces
-                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_with_boundary()
                     False
@@ -700,8 +700,8 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygons, similarity_surfaces
-                    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_compact()
                     True

@@ -11,10 +11,10 @@ for non-convex polygons.
 
 EXAMPLES::
 
-    sage: from flatsurf.geometry.polygon import polygons
+    sage: from flatsurf.geometry.polygon import polygon
 
     sage: K.<sqrt2> = NumberField(x^2 - 2, embedding=AA(2).sqrt())
-    sage: p = polygons((1,0), (-sqrt2,1+sqrt2), (sqrt2-1,-1-sqrt2))
+    sage: p = polygon(edges=[(1,0), (-sqrt2,1+sqrt2), (sqrt2-1,-1-sqrt2)])
     sage: p
     polygon(vertices=[(0, 0), (1, 0), (-sqrt2 + 1, sqrt2 + 1)])
 
@@ -544,15 +544,19 @@ class EuclideanPolygon(Parent):
     """
     Element = EuclideanPolygonPoint
 
-    def __init__(self, ring, vertices, check=True, category=None):
-        V = ring**2
+    def __init__(self, base_ring, vertices, check=True, category=None):
+        V = base_ring**2
         self._v = tuple(map(V, vertices))
         for vv in self._v:
             vv.set_immutable()
         if category is None:
-            category = RealProjectivePolygons(ring)
+            category = RealProjectivePolygons(base_ring)
 
-        super().__init__(ring, category=category)
+        category &= RealProjectivePolygons(base_ring)
+        if self.is_convex():
+            category = category.Convex()
+
+        super().__init__(base_ring, category=category)
 
         if check:
             self._check()
@@ -601,12 +605,12 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
-            sage: p = polygons(vertices = [(1,0),(0,1),(-1,-1)])
-            sage: print(p)
+            sage: from flatsurf import polygon
+            sage: p = polygon(vertices = [(1,0),(0,1),(-1,-1)])
+            sage: p
             polygon(vertices=[(1, 0), (0, 1), (-1, -1)])
             sage: r = matrix(ZZ,[[0,1], [1,0]])
-            sage: print(r*p)
+            sage: r * p
             polygon(vertices=[(0, 1), (-1, -1), (1, 0)])
         """
         x = self
@@ -634,13 +638,13 @@ class EuclideanPolygon(Parent):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.polygon import polygons
+            sage: from flatsurf import polygons, polygon
             sage: p1 = polygons.square()
-            sage: p2 = polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
+            sage: p2 = polygon(edges=[(1,0),(0,1),(-1,0),(0,-1)], base_ring=QQbar)
             sage: p1 == p2
             True
 
-            sage: p3 = polygons((2,0),(-1,1),(-1,-1))
+            sage: p3 = polygon(edges=[(2,0),(-1,1),(-1,-1)])
             sage: p1 == p3
             False
         """
@@ -653,13 +657,13 @@ class EuclideanPolygon(Parent):
         r"""
         TESTS::
 
-            sage: from flatsurf.geometry.polygon import polygons
+            sage: from flatsurf import polygon, polygons
             sage: p1 = polygons.square()
-            sage: p2 = polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
+            sage: p2 = polygon(edges=[(1,0),(0,1),(-1,0),(0,-1)], base_ring=QQbar)
             sage: p1 != p2
             False
 
-            sage: p3 = polygons((2,0),(-1,1),(-1,-1))
+            sage: p3 = polygon(edges=[(2,0),(-1,1),(-1,-1)])
             sage: p1 != p3
             True
         """
@@ -705,11 +709,13 @@ class EuclideanPolygon(Parent):
         Return a list of pairs of indices of vertices that together with the boundary
         form a triangulation.
 
-        EXAMPLES::
+        EXAMPLES:
 
-            sage: from flatsurf import polygons
-            sage: P = polygons(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
-            ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)], convex=False)
+        We triangulate a non-convex polygon::
+
+            sage: from flatsurf import polygon
+            sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
+            ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)])
             sage: P.triangulation()
             [(0, 2), (2, 8), (3, 5), (6, 8), (8, 3), (3, 6), (9, 11), (0, 9), (2, 9)]
         """
@@ -721,16 +727,16 @@ class EuclideanPolygon(Parent):
         r"""
         TESTS::
 
-            sage: from flatsurf import polygons
-            sage: polygons(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
+            sage: from flatsurf import polygon
+            sage: polygon(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
             polygon(vertices=[(3, -2), (5, -2), (4, -1)])
         """
         u = self.module()(u)
         return EuclideanPolygon(self.base_ring(), [u + v for v in self._v], check=False, category=self.category())
 
-    def change_ring(self, R):
+    def change_ring(self, ring):
         r"""
-        Return an equal polygon over the base ring ``R``.
+        Return an equal polygon over the base ring ``ring``.
 
         EXAMPLES::
 
@@ -742,9 +748,9 @@ class EuclideanPolygon(Parent):
             sage: S.change_ring(K).base_ring()
             Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.4142...
         """
-        if R is self.base_ring():
+        if ring is self.base_ring():
             return self
-        return PolygonsConstructor()(ring=R, vertices=self._v)
+        return polygon(base_ring=ring, vertices=self._v)
 
     def is_convex(self):
         for i in range(self.num_edges()):
@@ -758,10 +764,10 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
-            sage: polygons(vertices=[(0,0), (1,0), (1,1)]).is_strictly_convex()
+            sage: from flatsurf import polygon
+            sage: polygon(vertices=[(0,0), (1,0), (1,1)]).is_strictly_convex()
             True
-            sage: polygons(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
+            sage: polygon(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
             False
         """
         for i in range(self.num_edges()):
@@ -1062,7 +1068,8 @@ class EuclideanPolygon(Parent):
             sage: polygons.regular_ngon(8).angle(0)
             3/8
 
-            sage: T = polygons(vertices=[(0,0), (3,1), (1,5)])
+            sage: from flatsurf import polygon
+            sage: T = polygon(vertices=[(0,0), (3,1), (1,5)])
             sage: [T.angle(i, numerical=True) for i in range(3)]  # abs tol 1e-13
             [0.16737532973071603, 0.22741638234956674, 0.10520828791971722]
             sage: sum(T.angle(i, numerical=True) for i in range(3))   # abs tol 1e-13
@@ -1097,9 +1104,9 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.polygon import polygons
+            sage: from flatsurf import polygon
 
-            sage: T = polygons(angles=[1,2,3])
+            sage: T = polygon(angles=[1, 2, 3])
             sage: [T.angle(i) for i in range(3)]
             [1/12, 1/6, 1/4]
             sage: T.angles()
@@ -1155,7 +1162,8 @@ class EuclideanPolygon(Parent):
         EXAMPLES::
 
             sage: from flatsurf.geometry.polygon import polygons
-            sage: P = polygons.regular_ngon(4); P
+            sage: P = polygons.regular_ngon(4)
+            sage: P
             polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: P.centroid()
             (1/2, 1/2)
@@ -1238,12 +1246,15 @@ class EuclideanPolygon(Parent):
             sage: uy = -2/3 + a
             sage: vx = 1/5 - a**2
             sage: vy = a + 7/13*a**2
-            sage: p = polygons((ux, uy), (vx,vy), (-ux-vx,-uy-vy), ring=K)
+
+            sage: from flatsurf import polygon
+            sage: p = polygon(edges=[(ux, uy), (vx,vy), (-ux-vx,-uy-vy)], base_ring=K)
             sage: Jxx, Jyy, Jxy = p.j_invariant()
             sage: wedge(ux.vector(), vx.vector()) == Jxx
             True
             sage: wedge(uy.vector(), vy.vector()) == Jyy
             True
+
         """
         if self.base_ring() is QQ:
             raise NotImplementedError
@@ -1287,7 +1298,7 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
+            sage: from flatsurf import polygon, polygons
             sage: S = polygons.square()
             sage: S.is_isometric(S)
             True
@@ -1302,18 +1313,18 @@ class EuclideanPolygon(Parent):
             sage: U.is_isometric(S)
             True
 
-            sage: U2 = polygons((1,0), (sqrt2/2, sqrt2/2), (-1,0), (-sqrt2/2, -sqrt2/2))
+            sage: U2 = polygon(edges=[(1,0), (sqrt2/2, sqrt2/2), (-1,0), (-sqrt2/2, -sqrt2/2)])
             sage: U2.is_isometric(U)
             False
             sage: U2.is_isometric(U, certificate=True)
             (False, None)
 
-            sage: S = polygons((1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6))
-            sage: T = polygons((sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0))
+            sage: S = polygon(edges=[(1,0), (sqrt2/2, 3), (-2,3), (-sqrt2/2+1, -6)])
+            sage: T = polygon(edges=[(sqrt2/2,3), (-2,3), (-sqrt2/2+1, -6), (1,0)])
             sage: isometric, cert = S.is_isometric(T, certificate=True)
             sage: assert isometric
             sage: shift, rot = cert
-            sage: polygons(edges=[rot * S.edge((k + shift) % 4) for k in range(4)], base_point=T.vertex(0)) == T
+            sage: polygon(edges=[rot * S.edge((k + shift) % 4) for k in range(4)]).translate(T.vertex(0)) == T
             True
 
 
@@ -1321,7 +1332,7 @@ class EuclideanPolygon(Parent):
             sage: isometric, cert = S.is_isometric(T, certificate=True)
             sage: assert isometric
             sage: shift, rot = cert
-            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(4)], base_point=T.vertex(0)) == T
+            sage: polygon(edges=[rot * S.edge(k + shift) for k in range(4)]).translate(T.vertex(0)) == T
             True
         """
         if type(self) is not type(other):
@@ -1359,15 +1370,15 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
-            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
+            sage: from flatsurf import polygon
+            sage: S = polygon(vertices=[(0,0), (3,0), (1,1)])
             sage: T1 = S.translate((2,3))
             sage: S.is_translate(T1)
             True
-            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
+            sage: T2 = polygon(vertices=[(-1,1), (1,0), (2,1)])
             sage: S.is_translate(T2)
             False
-            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
+            sage: T3 = polygon(vertices=[(0,0), (3,0), (2,1)])
             sage: S.is_translate(T3)
             False
 
@@ -1400,15 +1411,15 @@ class EuclideanPolygon(Parent):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
-            sage: S = polygons(vertices=[(0,0), (3,0), (1,1)])
+            sage: from flatsurf import polygon
+            sage: S = polygon(vertices=[(0,0), (3,0), (1,1)])
             sage: T1 = S.translate((2,3))
             sage: S.is_half_translate(T1)
             True
-            sage: T2 = polygons(vertices=[(-1,1), (1,0), (2,1)])
+            sage: T2 = polygon(vertices=[(-1,1), (1,0), (2,1)])
             sage: S.is_half_translate(T2)
             True
-            sage: T3 = polygons(vertices=[(0,0), (3,0), (2,1)])
+            sage: T3 = polygon(vertices=[(0,0), (3,0), (2,1)])
             sage: S.is_half_translate(T3)
             False
 
@@ -1417,7 +1428,7 @@ class EuclideanPolygon(Parent):
             sage: half_translate, cert = S.is_half_translate(T2, certificate=True)
             sage: assert half_translate
             sage: shift, rot = cert
-            sage: polygons(edges=[rot * S.edge(k + shift) for k in range(3)], base_point=T2.vertex(0)) == T2
+            sage: polygon(edges=[rot * S.edge(k + shift) for k in range(3)]).translate(T2.vertex(0)) == T2
             True
             sage: S.is_half_translate(T3, certificate=True)
             (False, None)
@@ -1455,8 +1466,9 @@ class PolygonsConstructor:
 
             sage: polygons.square()
             polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
-            sage: polygons.square(field=QQbar).category()
+            sage: polygons.square(base_ring=QQbar).category()
             Category of convex real projective polygons over Algebraic Field
+
         """
         return self.rectangle(side, side, **kwds)
 
@@ -1476,7 +1488,7 @@ class PolygonsConstructor:
             Category of convex real projective polygons over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
 
         """
-        return self((width, 0), (0, height), (-width, 0), (0, -height), **kwds)
+        return polygon(edges=[(width, 0), (0, height), (-width, 0), (0, -height)], **kwds)
 
     def triangle(self, a, b, c):
         """
@@ -1538,7 +1550,7 @@ class PolygonsConstructor:
         """
         # The code below crashes for n=4!
         if n == 4:
-            return polygons.square(QQ(1), field=field)
+            return polygons.square(QQ(1), base_ring=field)
 
         from sage.rings.qqbar import QQbar
 
@@ -1554,7 +1566,7 @@ class PolygonsConstructor:
             cn, sn = c * cn - s * sn, c * sn + s * cn
             edges.append((cn, sn))
 
-        return PolygonsConstructor()(base_ring=field, edges=edges)
+        return polygon(base_ring=field, edges=edges)
 
     @staticmethod
     def right_triangle(angle, leg0=None, leg1=None, hypotenuse=None):
@@ -1605,19 +1617,25 @@ class PolygonsConstructor:
 
         field, (c, s) = number_field_elements_from_algebraics((c, s))
 
-        return PolygonsConstructor()(
+        return polygon(
             base_ring=field,
             edges=[(c, field.zero()), (field.zero(), s), (-c, -s)])
 
-    def __call__(self, *args, **kwds):
+    def __call__(self, *args, **kwargs):
         r"""
         EXAMPLES::
 
             sage: from flatsurf import polygons
 
             sage: polygons((1,0),(0,1),(-1,0),(0,-1))
+            doctest:warning
+            ...
+            UserWarning: calling polygon() with positional arguments has been deprecated and will not be supported in a future version of sage-flatsurf; use edges= or vertices= explicitly instead
             polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: polygons((1,0),(0,1),(-1,0),(0,-1), ring=QQbar)
+            doctest:warning
+            ...
+            UserWarning: ring has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead
             polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: _.category()
             Category of convex real projective polygons over Algebraic Field
@@ -1626,14 +1644,17 @@ class PolygonsConstructor:
             polygon(vertices=[(0, 0), (1, 0), (0, 1)])
 
             sage: polygons(edges=[(2,0),(-1,1),(-1,-1)], base_point=(3,3))
+            doctest:warning
+            ...
+            UserWarning: base_point has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead
             polygon(vertices=[(3, 3), (5, 3), (4, 4)])
             sage: polygons(vertices=[(0,0),(2,0),(1,1)], base_point=(3,3))
-            Traceback (most recent call last):
-            ...
-            ValueError: invalid keyword 'base_point'
-
+            polygon(vertices=[(3, 3), (5, 3), (4, 4)])
 
             sage: polygons(angles=[1,1,1,2], length=1)
+            doctest:warning
+            ...
+            UserWarning: length has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use lengths instead
             polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
             sage: polygons(angles=[1,1,1,2], length=2)
             polygon(vertices=[(0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)])
@@ -1655,14 +1676,8 @@ class PolygonsConstructor:
             polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
 
             sage: polygons(angles=[1,1,1,8])
-            Traceback (most recent call last):
-            ...
-            ValueError: 'angles' do not determine convex polygon; you might want to set the option 'convex=False'
-            sage: polygons(angles=[1,1,1,8], convex=False)
-            Traceback (most recent call last):
-            ...
-            ValueError: non-convex equiangular polygon; lengths must be provided
-            sage: polygons(angles=[1,1,1,8], lengths=[1,1], convex=False)
+            polygon(vertices=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
+            sage: polygons(angles=[1,1,1,8], lengths=[1,1])
             polygon(vertices=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
 
         TESTS::
@@ -1676,126 +1691,9 @@ class PolygonsConstructor:
             ....:     assert T.angles() == [a/D, b/D, c/D]
             ....:     assert T.edge(0) == T.vector_space()((1,0))
         """
-        base_ring = None
-        if "ring" in kwds:
-            base_ring = kwds.pop("ring")
-        elif "base_ring" in kwds:
-            base_ring = kwds.pop("base_ring")
-        elif "field" in kwds:
-            base_ring = kwds.pop("field")
-
-        convex = kwds.pop("convex", True)
-
-        vertices = None
-        edges = None
-        angles = None
-        base_point = None
-        length = None
-        lengths = None
-
-        if "edges" in kwds:
-            edges = kwds.pop("edges")
-            base_point = kwds.pop("base_point", (0, 0))
-        elif "vertices" in kwds:
-            vertices = kwds.pop("vertices")
-        elif "angles" in kwds:
-            angles = kwds.pop("angles")
-            lengths = kwds.pop("lengths", None)
-            length = kwds.pop("length", None)
-            base_point = kwds.pop("base_point", (0, 0))
-        elif args:
-            edges = args
-            args = ()
-            base_point = kwds.pop("base_point", (0, 0))
-
-        if (vertices is not None) + (edges is not None) + (angles is not None) != 1:
-            raise ValueError(
-                "exactly one of 'vertices', 'edges' or 'angles' should be provided"
-            )
-
-        if vertices is None and edges is None and angles is None and lengths is None:
-            raise ValueError("either vertices, edges or angles should be provided")
-        if args:
-            raise ValueError("invalid argument {!r}".format(args))
-        if kwds:
-            raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
-
-        if vertices is not None:
-            vertices = list(map(vector, vertices))
-            if base_ring is None:
-                base_ring = Sequence(
-                    [x for x, _ in vertices] + [y for _, y in vertices]
-                ).universe()
-                if isinstance(base_ring, type):
-                    base_ring = py_scalar_parent(base_ring)
-
-        elif edges is not None:
-            edges = list(map(vector, edges))
-            if base_ring is None:
-                base_ring = Sequence(
-                    [x for x, _ in edges] + [y for _, y in edges] + list(base_point)
-                ).universe()
-                if isinstance(base_ring, type):
-                    base_ring = py_scalar_parent(base_ring)
-
-        elif angles is not None:
-            E = EquiangularPolygons(*angles)
-            if convex and not E.convexity():
-                raise ValueError(
-                    "'angles' do not determine convex polygon; you might want to set the option 'convex=False'"
-                )
-            n = len(angles)
-            if length is not None and lengths is not None:
-                raise ValueError(
-                    "only one of 'length' or 'lengths' can be set together with 'angles'"
-                )
-            if lengths is None:
-                if not E.convexity():
-                    raise ValueError(
-                        "non-convex equiangular polygon; lengths must be provided"
-                    )
-                lengths = [length or 1] * (n - 2)
-
-            if len(lengths) != n - 2:
-                raise ValueError(
-                    "'lengths' must be a list of n-2 numbers (one less than 'angles')"
-                )
-
-            return E(lengths, normalized=True)
-
-        if base_ring is ZZ:
-            # Typically, we do not want to go to the fraction field of the base
-            # ring, e.g., we do not want to go to FractionField(ExactReals()).
-            # However, manual input of parameters often leads to the
-            # automatically detected base ring ZZ which is essentially never
-            # what the user wanted.
-            base_ring = QQ
-
-        if edges is not None:
-            assert vertices is None
-
-            V = base_ring**2
-            v = V(base_point)
-            vertices = []
-            for e in map(V, edges):
-                vertices.append(v)
-                v += e
-            if v != vertices[0]:
-                raise ValueError("polygon does not close up")
-
-            base_point = None
-            edges = None
-
-        category = RealProjectivePolygons(base_ring)
-        if convex:
-            category = category.Convex()
-
-        assert edges is None
-        assert base_point is None
-
-        return Polygon(
-            ring=base_ring, vertices=vertices, category=category
-        )
+        import warnings
+        warnings.warn("calling polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead")
+        return polygon(*args, **kwargs)
 
 
 def ConvexPolygons(base_ring):
@@ -1803,9 +1701,105 @@ def ConvexPolygons(base_ring):
     return RealProjectivePolygons(base_ring).Convex()
 
 
+def polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ring=None, category=None, **kwds):
+    if "base_point" in kwds:
+        base_point = kwds.pop("base_point")
+        import warnings
+        warnings.warn("base_point has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead")
+        return polygon(*args, vertices=vertices, edges=edges, angles=angles, lengths=lengths, base_ring=base_ring, category=category, **kwds).translate(base_point)
+
+    if "ring" in kwds:
+        import warnings
+        warnings.warn("ring has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead")
+        base_ring = kwds.pop("ring")
+
+    if "field" in kwds:
+        import warnings
+        warnings.warn("field has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead")
+        base_ring = kwds.pop("field")
+
+    convex = None
+    if "convex" in kwds:
+        convex = kwds.pop("convex")
+        import warnings
+        if convex:
+            warnings.warn("convex has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; it has no effect other than checking the input for convexity so you may just drop it")
+        else:
+            warnings.warn("convex has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; it has no effect anymore, polygons are always allowed to be non-convex")
+
+    if args:
+        import warnings
+        warnings.warn("calling polygon() with positional arguments has been deprecated and will not be supported in a future version of sage-flatsurf; use edges= or vertices= explicitly instead")
+
+        edges = args
+
+    if angles:
+        if "length" in kwds:
+            import warnings
+            warnings.warn("length has been deprecated as a keyword argument to polygon() and will be removed in a future version of sage-flatsurf; use lengths instead")
+
+            lengths = [kwds.pop("length")] * (len(angles) - 2)
+
+    if kwds:
+        raise ValueError("keyword argument not supported by polygon()")
+
+    if bool(vertices) + bool(edges) + bool(angles) != 1:
+        raise ValueError("exactly one of 'vertices', 'edges' or 'angles' must be provided")
+
+    if angles:
+        if not lengths:
+            lengths = [1] * (len(angles) - 2)
+
+        vertices = EuclideanPolygonsWithAngles(angles)(lengths, normalized=True)
+
+    if edges:
+        universe = base_ring or Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe()
+
+        if isinstance(universe, type):
+            universe = py_scalar_parent(universe)
+
+        edges = [vector(universe, edge) for edge in edges]
+
+        vertices = [edges[0].parent().zero()]
+        for edge in edges:
+            vertices.append(vertices[-1] + edge)
+
+        if vertices[0] != vertices[-1]:
+            raise ValueError("edges do not define a closed polygon")
+
+        vertices.pop()
+
+    assert vertices
+
+    if base_ring is None:
+        base_ring = Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe()
+
+        if isinstance(base_ring, type):
+            base_ring = py_scalar_parent(universe)
+
+        if base_ring is ZZ:
+            # Typically, we do not want to go to the fraction field of the base
+            # ring, e.g., we do not want to go to FractionField(ExactReals()).
+            # However, manual input of parameters often leads to the
+            # automatically detected base ring ZZ which is essentially never
+            # what the user wanted.
+            base_ring = base_ring.fraction_field()
+
+    vertices = [vector(base_ring, vertex) for vertex in vertices]
+
+    p = Polygon(
+        base_ring=base_ring, vertices=vertices, category=category
+    )
+
+    if convex and not p.is_convex():
+        raise ValueError("polygon is not convex")
+
+    return p
+
+
 polygons = PolygonsConstructor()
-polygon = polygons
 Polygon = EuclideanPolygon
+
 
 def EuclideanPolygonsWithAngles(*angles, **kwds):
     if "number_field" in kwds:

@@ -817,12 +817,13 @@ def canonicalize_translation_surface_mapping(s):
 
     EXAMPLES::
 
-        sage: from flatsurf import translation_surfaces
+        sage: from flatsurf import translation_surfaces, polygon
         sage: s=translation_surfaces.octagon_and_squares().canonicalize()
         sage: TestSuite(s).run()
         sage: a = s.base_ring().gen()  # a is the square root of 2.
 
-        sage: from flatsurf.geometry.mappings import GL2RMapping
+        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
+        sage: from flatsurf.geometry.mappings import canonicalize_translation_surface_mapping
         sage: mat=Matrix([[1,2+a],[0,1]])
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
         sage: m1=GL2RMapping(s, mat)

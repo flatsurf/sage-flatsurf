@@ -13,8 +13,8 @@ category is automatically determined for surfaces.
 
 EXAMPLES::
 
-    sage: from flatsurf import polygons, similarity_surfaces
-    sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+    sage: from flatsurf import polygon, similarity_surfaces
+    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
     sage: S = similarity_surfaces.self_glued_polygon(P)
     sage: C = S.category()
 
@@ -167,8 +167,8 @@ class DilationSurfaces(SurfaceCategory):
 
             ::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons((2, 0),(-1, 3),(-1, -3))
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
                 sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, positive=True)
@@ -483,8 +483,8 @@ class DilationSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygons, similarity_surfaces
-                sage: P = polygons(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S._test_dilation_surface()
 

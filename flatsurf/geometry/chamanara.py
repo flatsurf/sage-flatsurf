@@ -47,9 +47,9 @@ def ChamanaraPolygon(alpha):
         ValueError("The value of alpha must be between zero and one.")
     # The value of x is $\sum_{n=0}^\infty \alpha^n$.
     x = 1 / (1 - alpha)
-    from .polygon import polygons
+    from flatsurf import polygon
 
-    return polygons((1, 0), (-x, x), (0, -1), (x - 1, 1 - x))
+    return polygon(edges=[(1, 0), (-x, x), (0, -1), (x - 1, 1 - x)])
 
 
 class ChamanaraSurface(OrientedSimilaritySurface):

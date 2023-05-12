@@ -26,6 +26,7 @@ from sage.structure.sequence import Sequence
 
 from flatsurf.geometry.polygon import (
     polygons,
+    polygon,
     ConvexPolygons,
     Polygon,
     build_faces,
@@ -529,8 +530,8 @@ class SimilaritySurfaceGenerators:
         """
         s = MutableOrientedSimilaritySurface(QQ)
 
-        s.add_polygon(polygons(vertices=[(0, 0), (2, -2), (2, 0)], ring=QQ), label=0)
-        s.add_polygon(polygons(vertices=[(0, 0), (2, 0), (1, 3)], ring=QQ), label=1)
+        s.add_polygon(polygon(vertices=[(0, 0), (2, -2), (2, 0)], base_ring=QQ), label=0)
+        s.add_polygon(polygon(vertices=[(0, 0), (2, 0), (1, 3)], base_ring=QQ), label=1)
         s.glue((0, 0), (1, 1))
         s.glue((0, 1), (1, 2))
         s.glue((0, 2), (1, 0))
@@ -544,8 +545,8 @@ class SimilaritySurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
-            sage: p = polygons((2,0),(-1,3),(-1,-3))
+            sage: from flatsurf import polygon, similarity_surfaces
+            sage: p = polygon(edges=[(2,0),(-1,3),(-1,-3)])
             sage: s = similarity_surfaces.self_glued_polygon(p)
             sage: s
             Half-Translation Surface in Q_0(-1^4) built from an isosceles triangle
@@ -573,9 +574,9 @@ class SimilaritySurfaceGenerators:
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons
+            sage: from flatsurf import polygon, similarity_surfaces
 
-            sage: P = polygons(vertices=[(0,0), (1,0), (0,1)])
+            sage: P = polygon(vertices=[(0,0), (1,0), (0,1)])
             sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: Q
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
@@ -592,7 +593,7 @@ class SimilaritySurfaceGenerators:
 
         A non-convex examples (L-shape polygon)::
 
-            sage: P = polygons(vertices=[(0,0), (2,0), (2,1), (1,1), (1,2), (0,2)], convex=False)
+            sage: P = polygon(vertices=[(0,0), (2,0), (2,1), (1,1), (1,2), (0,2)])
             sage: Q = similarity_surfaces.billiard(P, rational=True)
             sage: TestSuite(Q).run()
             sage: M = Q.minimal_cover(cover_type="translation")
@@ -602,6 +603,7 @@ class SimilaritySurfaceGenerators:
 
         A quadrilateral from Eskin-McMullen-Mukamel-Wright::
 
+            sage: from flatsurf import EquiangularPolygons
             sage: E = EquiangularPolygons(1, 1, 1, 7)
             sage: P = E.an_element()
             sage: S = similarity_surfaces.billiard(P)
@@ -677,7 +679,7 @@ class SimilaritySurfaceGenerators:
             surface.add_polygon(p)
         for p in P:
             surface.add_polygon(
-                polygons(edges=[V((-x, y)) for x, y in reversed(p.edges())])
+                polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())])
             )
         for p1, e1, p2, e2 in internal_edges:
             surface.glue((p1, e1), (p2, e2))
@@ -705,7 +707,7 @@ class SimilaritySurfaceGenerators:
 
         n = P.num_edges()
         r = matrix(2, [-1, 0, 0, 1])
-        Q = polygons(edges=[r * v for v in reversed(P.edges())])
+        Q = polygon(edges=[r * v for v in reversed(P.edges())])
 
         surface = MutableOrientedSimilaritySurface(P.base_ring())
         surface.add_polygon(P, label=0)
@@ -1006,7 +1008,7 @@ class TranslationSurfaceGenerators:
         if not field.is_field():
             field = field.fraction_field()
         s = MutableOrientedSimilaritySurface(field)
-        p = polygons(vertices=[(0, 0), u, u + v, v], base_ring=field)
+        p = polygon(vertices=[(0, 0), u, u + v, v], base_ring=field)
         s.add_polygon(p)
         s.glue((0, 0), (0, 2))
         s.glue((0, 1), (0, 3))
@@ -1201,10 +1203,10 @@ class TranslationSurfaceGenerators:
             if rel < 0 or rel > w - λ:
                 raise ValueError("invalid rel argument")
             s.add_polygon(
-                polygons(vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], ring=K)
+                polygon(vertices=[(0, 0), (λ, 0), (λ + rel, λ), (rel, λ)], base_ring=K)
             )
             s.add_polygon(
-                polygons(
+                polygon(
                     vertices=[
                         (0, 0),
                         (rel, 0),
@@ -1215,7 +1217,7 @@ class TranslationSurfaceGenerators:
                         (t + λ, h),
                         (t, h),
                     ],
-                    ring=K,
+                    base_ring=K,
                 )
             )
             s.glue((0, 1), (0, 3))
@@ -1225,11 +1227,11 @@ class TranslationSurfaceGenerators:
             s.glue((1, 3), (1, 7))
             s.glue((1, 0), (1, 5))
         else:
-            s.add_polygon(polygons(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], ring=K))
+            s.add_polygon(polygon(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], base_ring=K))
             s.add_polygon(
-                polygons(
+                polygon(
                     vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
-                    ring=K,
+                    base_ring=K,
                 )
             )
             s.glue((0, 1), (0, 3))
@@ -1282,9 +1284,9 @@ class TranslationSurfaceGenerators:
             field = field.fraction_field()
 
         s = MutableOrientedSimilaritySurface(field)
-        s.add_polygon(polygons((l3, 0), (0, l2), (-l3, 0), (0, -l2), ring=field))
-        s.add_polygon(polygons((l3, 0), (0, l1), (-l3, 0), (0, -l1), ring=field))
-        s.add_polygon(polygons((l4, 0), (0, l2), (-l4, 0), (0, -l2), ring=field))
+        s.add_polygon(polygon(edges=[(l3, 0), (0, l2), (-l3, 0), (0, -l2)], base_ring=field))
+        s.add_polygon(polygon(edges=[(l3, 0), (0, l1), (-l3, 0), (0, -l1)], base_ring=field))
+        s.add_polygon(polygon(edges=[(l4, 0), (0, l2), (-l4, 0), (0, -l2)], base_ring=field))
         s.glue((0, 0), (1, 2))
         s.glue((0, 1), (2, 3))
         s.glue((0, 2), (1, 0))
@@ -1315,8 +1317,8 @@ class TranslationSurfaceGenerators:
         if n < 3:
             raise ValueError
         o = ZZ_2 * polygons.regular_ngon(2 * n)
-        p1 = polygons(*[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
-        p2 = polygons(*[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
+        p1 = polygon(edges=[o.edge((2 * i + n) % (2 * n)) for i in range(n)])
+        p2 = polygon(edges=[o.edge((2 * i + n + 1) % (2 * n)) for i in range(n)])
         s = MutableOrientedSimilaritySurface(o.base_ring())
         s.add_polygon(o)
         s.add_polygon(p1)
