@@ -46,7 +46,7 @@ jupyter:
 ---
 m = matrix(s.base_ring(), [[1, 2], [0, 1]])
 show(matrix(AA, m))
-ss = m*s
+ss = m * s
 ss.plot()
 ```
 
@@ -92,8 +92,8 @@ Define a tangent vector in polygon $0$ starting at $(\frac{1}{2}, 0)$ and pointe
 jupyter:
   outputs_hidden: false
 ---
-direction = s.polygon(0).vertex(2) + 3*s.polygon(0).vertex(3)
-v = TB(0, (1/2, 0), direction)
+direction = s.polygon(0).vertex(2) + 3 * s.polygon(0).vertex(3)
+v = TB(0, (1 / 2, 0), direction)
 ```
 
 Convert the vector to a straight-line trajectory.
@@ -162,8 +162,8 @@ jupyter:
   outputs_hidden: false
 ---
 TB = s.tangent_bundle()
-direction = s.polygon(0).vertex(2) + 2*s.polygon(0).vertex(3)
-v = TB(0, (1/2, 0), direction)
+direction = s.polygon(0).vertex(2) + 2 * s.polygon(0).vertex(3)
+v = TB(0, (1 / 2, 0), direction)
 traj = v.straight_line_trajectory()
 traj.flow(100)
 print(traj.is_closed())
@@ -194,8 +194,8 @@ jupyter:
   outputs_hidden: false
 ---
 TB = s.tangent_bundle()
-direction = s.polygon(0).vertex(2) + 3*s.polygon(0).vertex(3)
-v = TB(0, (1/2, 0), direction)
+direction = s.polygon(0).vertex(2) + 3 * s.polygon(0).vertex(3)
+v = TB(0, (1 / 2, 0), direction)
 traj = v.straight_line_trajectory()
 traj.flow(1000)
 print(traj.is_closed())
@@ -217,7 +217,7 @@ jupyter:
 ---
 p = polyhedron.plot(frame=False, point=False, line=False, wireframe=None)
 p += line3d(mapping(traj), radius=0.02, frame=False)
-p.show(viewer='tachyon', frame=False)
+p.show(viewer="tachyon", frame=False)
 ```
 
 ## Relative period deformations
@@ -260,7 +260,7 @@ Here is a small deformation in the slope one direction.
 jupyter:
   outputs_hidden: false
 ---
-ss = s.rel_deformation({sing: vector(s.base_ring(), (1/20, 1/20))})
+ss = s.rel_deformation({sing: vector(s.base_ring(), (1 / 20, 1 / 20))})
 ss.plot()
 ```
 
@@ -271,7 +271,7 @@ A larger deformation:
 jupyter:
   outputs_hidden: false
 ---
-ss = s.rel_deformation({sing:vector(s.base_ring(), (100, 100))})
+ss = s.rel_deformation({sing: vector(s.base_ring(), (100, 100))})
 ss.plot()
 ```
 
@@ -287,10 +287,12 @@ jupyter:
 ---
 from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
 
+
 class SurfaceToSpaceMapping(SageObject):
     def __init__(self, similarity_surface, tranformation):
         self._s = similarity_surface
         from types import FunctionType
+
         if isinstance(transformation, FunctionType):
             self.transformation = transformation
 
@@ -302,7 +304,7 @@ class SurfaceToSpaceMapping(SageObject):
         is v mapsto m*v + t where v is a point in the polygon.
         """
         return self._t[label]
-    
+
     def image_polygon(self, label):
         r"""
         Return a 2-dimensional polyhedron in 3-space representing
@@ -310,11 +312,19 @@ class SurfaceToSpaceMapping(SageObject):
         """
         p = self._s.polygon(label)
         m, t = self.transformation(label)
-        vertices = [m*v + t for v in p.vertices()]
+        vertices = [m * v + t for v in p.vertices()]
         return Polyhedron(vertices=vertices)
 
-    def plot(self, labels, point=False, line=False, polygon=None,
-             wireframe=None, frame=False, label_to_color=None):
+    def plot(
+        self,
+        labels,
+        point=False,
+        line=False,
+        polygon=None,
+        wireframe=None,
+        frame=False,
+        label_to_color=None,
+    ):
         r"""
         Return a 3d plot of the polygonal images in 3-space
         corresponding to the collection of labels.
@@ -325,37 +335,47 @@ class SurfaceToSpaceMapping(SageObject):
         it = iter(labels)
         label = next(it)
         if label_to_color is None:
-            p = self.image_polygon(label).plot(point=point,
-                                               line=line,
-                                               polygon=polygon,
-                                               wireframe=wireframe,
-                                               frame=frame,
-                                               color="pink")
+            p = self.image_polygon(label).plot(
+                point=point,
+                line=line,
+                polygon=polygon,
+                wireframe=wireframe,
+                frame=frame,
+                color="pink",
+            )
         else:
-            p = self.image_polygon(label).plot(point=point,
-                                               line=line,
-                                               polygon=polygon,
-                                               wireframe=wireframe,
-                                               frame=frame,
-                                               color=label_to_color(label))
+            p = self.image_polygon(label).plot(
+                point=point,
+                line=line,
+                polygon=polygon,
+                wireframe=wireframe,
+                frame=frame,
+                color=label_to_color(label),
+            )
         for label in it:
             if label_to_color is None:
-                p += self.image_polygon(label).plot(point=point,
-                                                    line=line,
-                                                    polygon=polygon,
-                                                    wireframe=wireframe,
-                                                    frame=frame,
-                                                    color="pink")
+                p += self.image_polygon(label).plot(
+                    point=point,
+                    line=line,
+                    polygon=polygon,
+                    wireframe=wireframe,
+                    frame=frame,
+                    color="pink",
+                )
             else:
-                p += self.image_polygon(label).plot(point=point,
-                                                    line=line,
-                                                    polygon=polygon,
-                                                    wireframe=wireframe,
-                                                    frame=frame,
-                                                    color=label_to_color(label))
+                p += self.image_polygon(label).plot(
+                    point=point,
+                    line=line,
+                    polygon=polygon,
+                    wireframe=wireframe,
+                    frame=frame,
+                    color=label_to_color(label),
+                )
         from sage.modules.free_module_element import vector
-        p.frame_aspect_ratio(tuple(vector(p.bounding_box()[1])
-                                   - vector(p.bounding_box()[0])))
+
+        p.frame_aspect_ratio(
+            tuple(vector(p.bounding_box()[1]) - vector(p.bounding_box()[0]))
+        )
         return p
 
     def __call__(self, o):
@@ -375,18 +395,18 @@ class SurfaceToSpaceMapping(SageObject):
             s = next(it)
             label = s.polygon_label()
             m, t = self.transformation(label)
-            points.append(t + m*s.start().point())
-            points.append(t + m*s.end().point())
+            points.append(t + m * s.start().point())
+            points.append(t + m * s.end().point())
             for s in it:
                 label = s.polygon_label()
                 m, t = self.transformation(label)
-                points.append(t + m*s.end().point())
+                points.append(t + m * s.end().point())
             return points
         if isinstance(o, SegmentInPolygon):
             # Return the pair of images of the endpoints.
             label = o.polygon_label()
             m, t = self.transformation(label)
-            return (t + m*o.start().point(), t + m*o.end().point())
+            return (t + m * o.start().point(), t + m * o.end().point())
         if isinstance(o, SimilaritySurfaceTangentVector):
             # Map to a pair of vectors consisting of the image
             # of the basepoint and the image of the vector.
@@ -394,7 +414,7 @@ class SurfaceToSpaceMapping(SageObject):
             m, t = self.transformation(label)
             point = o.point()
             vector = o.vector()
-            return (t + m*point, m*vector)
+            return (t + m * point, m * vector)
         raise ValueError("Failed to recognize type of passed object")
 ```
 
@@ -407,34 +427,42 @@ from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.categories import ConeSurfaces
 from flatsurf.geometry.polygon import polygon
 
+
 class CubeSurf(OrientedSimilaritySurface):
     def __init__(self, F):
-        self._faceA = polygon(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        self._faceB = polygon(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        self._faceC = polygon(vertices = [(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        super().__init__(F, category=ConeSurfaces().Rational().InfiniteType().WithoutBoundary().Connected())
-        
+        self._faceA = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceB = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceC = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        super().__init__(
+            F,
+            category=ConeSurfaces()
+            .Rational()
+            .InfiniteType()
+            .WithoutBoundary()
+            .Connected(),
+        )
+
     def is_mutable(self):
         return False
-    
+
     def is_compact(self):
         return False
-    
+
     def roots(self):
         return ((0, 0, IntegerModRing(3)(0)),)
-    
+
     def is_translation_surface(self, positive=True):
         return False
-    
+
     def is_dilation_surface(self, positive=False):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, CubeSurf):
             return False
-        
+
         return self.base_ring() is other.base_ring()
-    
+
     def __hash__(self):
         return hash(self.base_ring())
 
@@ -452,31 +480,31 @@ class CubeSurf(OrientedSimilaritySurface):
         # l(0) = A, l(1) = B, l(2) = C
         if l == 0:
             if edge == 0:
-                return((x, y - 1, l + 2), 2)
+                return ((x, y - 1, l + 2), 2)
             if edge == 1:
-                return((x, y, l + 1), 3)
+                return ((x, y, l + 1), 3)
             if edge == 2:
-                return((x, y, l + 2), 0)
+                return ((x, y, l + 2), 0)
             if edge == 3:
-                return((x - 1, y, l + 1), 1)
+                return ((x - 1, y, l + 1), 1)
         if l == 1:
             if edge == 0:
-                return((x + 1, y - 1, l + 1), 3)
+                return ((x + 1, y - 1, l + 1), 3)
             if edge == 1:
-                return((x + 1, y, l + 2), 3)
+                return ((x + 1, y, l + 2), 3)
             if edge == 2:
-                return((x, y, l + 1), 1)
+                return ((x, y, l + 1), 1)
             if edge == 3:
-                return((x, y, l + 2), 1)
+                return ((x, y, l + 2), 1)
         if l == 2:
             if edge == 0:
-                return((x, y, l + 1), 2)
+                return ((x, y, l + 1), 2)
             if edge == 1:
-                return((x, y, l + 2), 2)
+                return ((x, y, l + 2), 2)
             if edge == 2:
-                return((x, y + 1, l + 1), 0)
+                return ((x, y + 1, l + 1), 0)
             if edge == 3:
-                return((x - 1 , y + 1, l + 2), 0)
+                return ((x - 1, y + 1, l + 2), 0)
 ```
 
 ```{code-cell} ipython3
@@ -492,22 +520,24 @@ TestSuite(s).run()
 jupyter:
   outputs_hidden: false
 ---
-MM = matrix(QQ,[[0, 1, 0],
-                [-1, 0, 0],
-                [0, 0, 1]
-])
+MM = matrix(QQ, [[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
+
+
 def transformation(label):
     M = MatrixSpace(QQ, 3, 2)
     V = VectorSpace(QQ, 3)
     x, y, l = label
     if l == 0:
-        return MM*M([[1, 0], [0, 1], [0, 0]]), MM*V([x, y, -x - y])
+        return MM * M([[1, 0], [0, 1], [0, 0]]), MM * V([x, y, -x - y])
     elif l == 1:
-        return MM*M([[0, 0], [0, 1], [-1, 0]]), MM*V([x + 1, y, -x - y])
+        return MM * M([[0, 0], [0, 1], [-1, 0]]), MM * V([x + 1, y, -x - y])
     else:  # l == 2
-        return MM*M([[1, 0], [0, 0], [0, -1]]), MM*V([x, y + 1, -x - y])
+        return MM * M([[1, 0], [0, 0], [0, -1]]), MM * V([x, y + 1, -x - y])
+
 
 m = SurfaceToSpaceMapping(s, transformation)
+
+
 def label_to_color(label):
     if label[2] == 0:
         return "pink"
@@ -548,7 +578,7 @@ $(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.
 jupyter:
   outputs_hidden: false
 ---
-v = B(s.root(), (1/4, 1/4), (-1, 1))
+v = B(s.root(), (1 / 4, 1 / 4), (-1, 1))
 traj = v.straight_line_trajectory()
 traj.flow(100)
 if traj.is_closed():
@@ -564,14 +594,14 @@ A trajectory of slope $5/4$.
 jupyter:
   outputs_hidden: false
 ---
-v = B(s.root(), (1/3, 1/4), (4, 5))
+v = B(s.root(), (1 / 3, 1 / 4), (4, 5))
 traj = v.straight_line_trajectory()
 traj.flow(50)
 labels = [seg.polygon_label() for seg in traj.segments()]
-p = m.plot(labels, label_to_color=label_to_color) + line3d(m(traj),
-           radius=0.04, label_to_color=label_to_color)
-p.frame_aspect_ratio(tuple(vector(p.bounding_box()[1])
-                           - vector(p.bounding_box()[0])))
+p = m.plot(labels, label_to_color=label_to_color) + line3d(
+    m(traj), radius=0.04, label_to_color=label_to_color
+)
+p.frame_aspect_ratio(tuple(vector(p.bounding_box()[1]) - vector(p.bounding_box()[0])))
 p
 ```
 
@@ -582,7 +612,7 @@ A trajectory of slope $11/9$
 jupyter:
   outputs_hidden: false
 ---
-v = B(s.root(), (1/3, 1/4), (9, 11))
+v = B(s.root(), (1 / 3, 1 / 4), (9, 11))
 traj = v.straight_line_trajectory()
 traj.flow(1000)
 while not traj.is_closed():

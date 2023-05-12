@@ -39,7 +39,7 @@ s.plot()
 jupyter:
   outputs_hidden: false
 ---
-m=matrix([[2,1],[1,1]])
+m = matrix([[2, 1], [1, 1]])
 ```
 
 You can act on surfaces with the $GL(2,R)$ action
@@ -49,7 +49,7 @@ You can act on surfaces with the $GL(2,R)$ action
 jupyter:
   outputs_hidden: false
 ---
-ss = m*s
+ss = m * s
 ss
 ```
 
@@ -99,7 +99,7 @@ The surface has a horizontal cylinder decomposition all of whose moduli are give
 jupyter:
   outputs_hidden: false
 ---
-modulus = (p.vertex(3)[1]-p.vertex(2)[1])/(p.vertex(2)[0]-p.vertex(4)[0])
+modulus = (p.vertex(3)[1] - p.vertex(2)[1]) / (p.vertex(2)[0] - p.vertex(4)[0])
 AA(modulus)
 ```
 
@@ -108,7 +108,7 @@ AA(modulus)
 jupyter:
   outputs_hidden: false
 ---
-m = matrix(s.base_ring(),[[1, 1/modulus],[0,1]])
+m = matrix(s.base_ring(), [[1, 1 / modulus], [0, 1]])
 show(m)
 ```
 
@@ -117,7 +117,7 @@ show(m)
 jupyter:
   outputs_hidden: false
 ---
-show(matrix(AA,m))
+show(matrix(AA, m))
 ```
 
 The following can be used to check that $m$ is in the Veech group of $s$.
@@ -127,7 +127,7 @@ The following can be used to check that $m$ is in the Veech group of $s$.
 jupyter:
   outputs_hidden: false
 ---
-s.canonicalize() == (m*s).canonicalize()
+s.canonicalize() == (m * s).canonicalize()
 ```
 
 ## Infinite surfaces
@@ -139,7 +139,7 @@ Infinite surfaces support multiplication by matrices and computing the Delaunay 
 jupyter:
   outputs_hidden: false
 ---
-s = translation_surfaces.chamanara(1/2)
+s = translation_surfaces.chamanara(1 / 2)
 ```
 
 ```{code-cell} ipython3
@@ -180,7 +180,7 @@ gs.plot()
 jupyter:
   outputs_hidden: true
 ---
-m = matrix([[2,0],[0,1/2]])
+m = matrix([[2, 0], [0, 1 / 2]])
 ```
 
 ```{code-cell} ipython3
@@ -188,7 +188,7 @@ m = matrix([[2,0],[0,1/2]])
 jupyter:
   outputs_hidden: true
 ---
-ms = m*s
+ms = m * s
 ```
 
 ```{code-cell} ipython3

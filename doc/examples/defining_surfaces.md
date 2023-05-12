@@ -35,7 +35,7 @@ s.plot()
 Chamanara's infinite translation surface:
 
 ```{code-cell} ipython3
-s = translation_surfaces.chamanara(1/2)
+s = translation_surfaces.chamanara(1 / 2)
 ```
 
 ```{code-cell} ipython3
@@ -43,7 +43,7 @@ s.plot(polygon_labels=False, edge_labels=False)
 ```
 
 ```{code-cell} ipython3
-s=translation_surfaces.infinite_staircase()
+s = translation_surfaces.infinite_staircase()
 ```
 
 ```{code-cell} ipython3
@@ -55,7 +55,7 @@ s.plot()
 ```{code-cell} ipython3
 from flatsurf import similarity_surfaces, polygon
 
-s = similarity_surfaces.billiard(polygon(vertices=[(0,0), (3,0), (0,4)]))
+s = similarity_surfaces.billiard(polygon(vertices=[(0, 0), (3, 0), (0, 4)]))
 ```
 
 ```{code-cell} ipython3
@@ -89,12 +89,12 @@ This defines a regular 12-gon with algebraic real coordinates (AA) with first ve
 ```{code-cell} ipython3
 from flatsurf import polygons
 
-p0 = polygons.regular_ngon(12,field=AA)
-p1 = polygons.regular_ngon(3,field=AA)
+p0 = polygons.regular_ngon(12, field=AA)
+p1 = polygons.regular_ngon(3, field=AA)
 ```
 
 ```{code-cell} ipython3
-p0.plot()+p1.plot()
+p0.plot() + p1.plot()
 ```
 
 The vertices of n-gons are numbered by $\{0,...,n-1\}$, with the $0$-th vertex at the origin. Edge $i$ joins vertex $i$ to vertex $i+1 \pmod{n}$.
@@ -102,12 +102,12 @@ The vertices of n-gons are numbered by $\{0,...,n-1\}$, with the $0$-th vertex a
 We can act on polygon with $2 \times 2$ matrices. We define the rotation by $\frac{\pi}{6}$ below:
 
 ```{code-cell} ipython3
-R = matrix(AA,[[cos(pi/6),-sin(pi/6)],[sin(pi/6),cos(pi/6)]])
+R = matrix(AA, [[cos(pi / 6), -sin(pi / 6)], [sin(pi / 6), cos(pi / 6)]])
 show(R)
 ```
 
 ```{code-cell} ipython3
-R*p1
+R * p1
 ```
 
 Define a surface over the field <code>AA</code> of algebraic reals.
@@ -140,7 +140,7 @@ Add three more rotated triangles and glue them appropriately.
 
 ```{code-cell} ipython3
 for i in range(1, 4):
-    surface.add_polygon((R**i) * p1, label=i+1)
+    surface.add_polygon((R**i) * p1, label=i + 1)
     surface.glue((0, 6 + i), (i + 1, 0))
     surface.glue((0, (10 + i) % 12), (i + 1, 1))
     surface.glue((0, 2 + i), (i + 1, 2))
@@ -196,11 +196,11 @@ import flipper
 ```
 
 ```{code-cell} ipython3
-T = flipper.load('SB_4')
+T = flipper.load("SB_4")
 ```
 
 ```{code-cell} ipython3
-h = T.mapping_class('s_0S_1s_2S_3s_1S_2') 
+h = T.mapping_class("s_0S_1s_2S_3s_1S_2")
 ```
 
 ```{code-cell} ipython3
@@ -226,7 +226,7 @@ s.plot()
 ```{code-cell} ipython3
 from flatsurf.geometry.polyhedra import platonic_dodecahedron
 
-polyhedron,s,mapping = platonic_dodecahedron()
+polyhedron, s, mapping = platonic_dodecahedron()
 ```
 
 The surface $s$ is a Euclidean cone surface.
@@ -242,7 +242,7 @@ s.plot()
 Sage has a built in polyhedron class. You can build a polyhedron as a convex hull of a list of vertices.
 
 ```{code-cell} ipython3
-polyhedron=Polyhedron([(0,0,0),(1,0,0),(0,1,0),(0,0,1)])
+polyhedron = Polyhedron([(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)])
 ```
 
 ```{code-cell} ipython3
@@ -270,50 +270,54 @@ Finite surfaces can be built by gluing polygons into a ``MutableOrientedSimilari
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.categories import TranslationSurfaces
 
+
 class ParabolaSurface(OrientedSimilaritySurface):
     def __init__(self):
         # For finite surfaces, the category can be determined automotatically
         # but for infinite surfaces, we need to make an explicit choice here.
-        super().__init__(QQ, category=TranslationSurfaces().InfiniteType().WithoutBoundary().Connected())
+        super().__init__(
+            QQ,
+            category=TranslationSurfaces().InfiniteType().WithoutBoundary().Connected(),
+        )
 
     def __repr__(self):
         r"""
         Return a printable representation of this surface.
         """
         return "ParabolaSurface()"
-    
+
     def roots(self):
         r"""
         Return a label for each connected component of the surface.
-        
+
         Iterating the polygons of the connected component starts at these labels.
         """
         return (1,)
-    
+
     def is_mutable(self):
         r"""
         Return whether this surface can be modified by the user.
         """
         return False
-    
+
     def is_compact(self):
         r"""
         Return whether this surface is a compact space.
         """
         return False
-    
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
         """
         return isinstance(other, ParabolaSurface)
-    
+
     def __hash__(self):
         r"""
         Return a hash value for this surface that is compatible with ``__eq``.
         """
         return hash(type(self))
-    
+
     def graphical_surface(self, **kwds):
         r"""
         Return a plottable representation of this surface.
@@ -321,26 +325,30 @@ class ParabolaSurface(OrientedSimilaritySurface):
         graphical_surface = super().graphical_surface(**kwds)
         # Make the first six polygons of the surface visible by default when plotting.
         graphical_surface.make_all_visible(limit=6)
-        return graphical_surface        
-    
+        return graphical_surface
+
     def polygon(self, label):
         r"""
         Return the polygon making up this surface labeled ``label``.
         """
         if label not in ZZ or label == 0:
             raise ValueError(f"invalid label {label}")
-            
+
         if label < 0:
-            return matrix(QQ,[[-1,0],[0,-1]])*self.polygon(-label)
+            return matrix(QQ, [[-1, 0], [0, -1]]) * self.polygon(-label)
 
         if label == 1:
-            return polygon(vertices=[(0,0),(1,1),(-1,1)], ring=QQ)
+            return polygon(vertices=[(0, 0), (1, 1), (-1, 1)], ring=QQ)
 
-        return polygon( vertices=[
-            (label-1, (label-1)**2),
-            (label, label**2),
-            (-label, label**2),
-            (-label+1, (label-1)**2) ], ring=QQ)
+        return polygon(
+            vertices=[
+                (label - 1, (label - 1) ** 2),
+                (label, label**2),
+                (-label, label**2),
+                (-label + 1, (label - 1) ** 2),
+            ],
+            ring=QQ,
+        )
 
     def opposite_edge(self, label, e):
         if label not in ZZ or label == 0:
@@ -349,13 +357,13 @@ class ParabolaSurface(OrientedSimilaritySurface):
             raise ValueError("no such edge")
         if e not in [0, 1, 2, 3]:
             raise ValueError("no such edge")
-            
+
         if label in [-1, 1] and e == 1:
             return 2 * label, 3
-        
+
         if e in [0, 2]:
             return -label, e
-        
+
         if e == 1:
             return label + label.sign(), 3
 

@@ -37,6 +37,7 @@ Decomposition of a surface into cylinders is implemented in [pyflatsurf](https:/
 
 ```{code-cell} ipython3
 from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+
 S = to_pyflatsurf(S)
 S = S.eliminateMarkedPoints().surface()
 ```
@@ -44,7 +45,7 @@ S = S.eliminateMarkedPoints().surface()
 We will iterate over all directions coming from saddle connections of length at most L (ignoring connections that have the same slope.)
 
 ```{code-cell} ipython3
-L = 16R
+L = int(16)
 
 directions = S.connections().bound(L).slopes()
 ```
@@ -63,12 +64,15 @@ def target(component):
         return True
 
     height = component.height()
-    
+
     # This height bounds the size of any cylinder. However, it is stretched by the length of the vector
     # defining the vertical direction. (That vector is not normalized because that is hard to do in
     # general rings…)
     from pyflatsurf import flatsurf
-    bound = (height * height) / flatsurf.Bound.upper(component.vertical().vertical()).squared()
+
+    bound = (height * height) / flatsurf.Bound.upper(
+        component.vertical().vertical()
+    ).squared()
     return bound > L
 ```
 
@@ -79,6 +83,7 @@ circumferences = []
 
 for direction in directions:
     from pyflatsurf import flatsurf
+
     decomposition = flatsurf.makeFlowDecomposition(S, direction.vector())
     decomposition.decompose(target)
     for component in decomposition.components():
@@ -92,12 +97,13 @@ for direction in directions:
 We will plot a histogram of all the cylinders that we found ordered by their length. It would be easy to plot this differently, weighted by the area, …
 
 ```{code-cell} ipython3
-lengths = [sqrt(float(v.x())**2 + float(v.y())**2) for v in circumferences]
+lengths = [sqrt(float(v.x()) ** 2 + float(v.y()) ** 2) for v in circumferences]
 
 import matplotlib.pyplot as plot
+
 _ = plot.hist(lengths)
 _ = plot.xlim(0, L)
 _ = plot.title(f"{len(circumferences)} cylinders with length at most {L}")
-_ = plot.xlabel('Length')
-_ = plot.ylabel('Count')
+_ = plot.xlabel("Length")
+_ = plot.ylabel("Count")
 ```

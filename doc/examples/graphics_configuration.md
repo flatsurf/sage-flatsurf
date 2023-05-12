@@ -165,7 +165,7 @@ show(inverse_transformation.derivative())
 ```
 
 ```{code-cell} ipython3
-direction = inverse_transformation.derivative() * vector((0,1))
+direction = inverse_transformation.derivative() * vector((0, 1))
 direction
 ```
 
@@ -207,7 +207,7 @@ pretty_gs.polygon_options
 
 ```{code-cell} ipython3
 del pretty_gs.polygon_options["color"]
-pretty_gs.polygon_options["rgbcolor"]="#ffeeee"
+pretty_gs.polygon_options["rgbcolor"] = "#ffeeee"
 ```
 
 ```{code-cell} ipython3
@@ -240,7 +240,7 @@ The edges have length two so we will keep anything that has a different length.
 saddle_connections2 = []
 for sc in saddle_connections:
     h = sc.holonomy()
-    if h[0]**2 + h[1]**2 != 4:
+    if h[0] ** 2 + h[1] ** 2 != 4:
         saddle_connections2.append(sc)
 len(saddle_connections2)
 ```
@@ -281,13 +281,13 @@ gs = s.graphical_surface(cached=False)
 
 ```{code-cell} ipython3
 del gs.polygon_options["color"]
-gs.polygon_options["rgbcolor"]="#eee"
-gs.edge_label_options["position"]="edge"
-gs.edge_label_options["t"]=0.5
-gs.edge_label_options["push_off"]=0
-gs.edge_label_options["color"]="green"
-gs.adjacent_edge_options["thickness"]=0.5
-gs.will_plot_non_adjacent_edges=False
+gs.polygon_options["rgbcolor"] = "#eee"
+gs.edge_label_options["position"] = "edge"
+gs.edge_label_options["t"] = 0.5
+gs.edge_label_options["push_off"] = 0
+gs.edge_label_options["color"] = "green"
+gs.adjacent_edge_options["thickness"] = 0.5
+gs.will_plot_non_adjacent_edges = False
 ```
 
 ```{code-cell} ipython3
@@ -300,13 +300,13 @@ gs = s.graphical_surface(cached=False)
 
 ```{code-cell} ipython3
 del gs.polygon_options["color"]
-gs.polygon_options["rgbcolor"]="#eef"
-gs.edge_label_options["position"]="outside"
-gs.edge_label_options["t"]=0.5
-gs.edge_label_options["push_off"]=0.02
-gs.edge_label_options["color"]="green"
-gs.adjacent_edge_options["thickness"]=0.5
-gs.non_adjacent_edge_options["thickness"]=0.25
+gs.polygon_options["rgbcolor"] = "#eef"
+gs.edge_label_options["position"] = "outside"
+gs.edge_label_options["t"] = 0.5
+gs.edge_label_options["push_off"] = 0.02
+gs.edge_label_options["color"] = "green"
+gs.adjacent_edge_options["thickness"] = 0.5
+gs.non_adjacent_edge_options["thickness"] = 0.25
 ```
 
 ```{code-cell} ipython3

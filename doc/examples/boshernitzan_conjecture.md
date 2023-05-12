@@ -53,6 +53,7 @@ First, we construct a triangle with angles (7, 7, 16).
 
 ```{code-cell} ipython3
 from flatsurf import EquiangularPolygons
+
 Δ = EquiangularPolygons(7, 7, 16).an_element()
 Δ
 ```
@@ -61,6 +62,7 @@ We unfold this triangle and obtain a translation surface.
 
 ```{code-cell} ipython3
 from flatsurf import similarity_surfaces
+
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
 S.plot(edge_labels=False, polygon_labels=False)
 ```
@@ -69,6 +71,7 @@ We construct the flow decomposition in direction (0, 1), orthogonal to one of th
 
 ```{code-cell} ipython3
 from flatsurf import GL2ROrbitClosure
+
 D = GL2ROrbitClosure(S).decomposition(vector(Δ.base_ring(), (0, 1)))
 D
 ```
@@ -82,7 +85,7 @@ cylinders = [c for c in D.components() if c.cylinder()]
 Widget(cylinders)
 ```
 
-## (b) Cylinder Periodic Directions of Odd Triangles 
+## (b) Cylinder Periodic Directions of Odd Triangles
 
 Assertion (b) can be phrased as follows:
 > Let $d$ be odd and let $d=α+β+γ$ be a partition into coprime positive integers. Consider the triangle $\Delta=(α,β,γ)$, i.e., the triangle with angles $(α\pi/d, β\pi/d, γ\pi/d)$, embedded into the complex plane such that one of its sides is horizontal. Let $z\in S^1$ be such that $z^{2d}=-1$. Then the flow in direction $z$ on the unfolding of $\Delta$ completely decomposes into cylinders.
@@ -115,6 +118,7 @@ We find that this completely decomposes into cylinders in horizontal direction:
 
 ```{code-cell} ipython3
 from flatsurf import GL2ROrbitClosure
+
 D = GL2ROrbitClosure(S).decomposition(vector(Δ.base_ring(), (0, 1)))
 D
 ```
@@ -185,10 +189,12 @@ We start by retriangulating our surface. Namely, we want to obtain a single *lar
 import pyflatsurf
 
 V = pyflatsurf.flatsurf.Vector[type(F).Coordinate]
-horizontal = V(1R, 0R)
+horizontal = V(int(1), int(0))
 
 F = pyflatsurf.flatsurf.FlatTriangulationCollapsed[type(F).Coordinate](F, horizontal)
-pyflatsurf.flatsurf.IntervalExchangeTransformation[type(F)].makeUniqueLargeEdges(F, horizontal)
+pyflatsurf.flatsurf.IntervalExchangeTransformation[type(F)].makeUniqueLargeEdges(
+    F, horizontal
+)
 ```
 
 Unfortunately, we cannot display a plot of such a surface since it is not a real translation surface anymore. Some of the edges (the ones is direction of the flow) have been collapsed, see [#62](https://github.com/flatsurf/vue-flatsurf/issues/62).
@@ -207,7 +213,9 @@ This defines an Interval Exchange Transformation.
 ```{code-cell} ipython3
 import pyintervalxt, pyeantic
 
-iet = pyflatsurf.flatsurf.IntervalExchangeTransformation[type(F)](F, F.vertical().vertical(), large).forget()
+iet = pyflatsurf.flatsurf.IntervalExchangeTransformation[type(F)](
+    F, F.vertical().vertical(), large
+).forget()
 iet
 ```
 
@@ -258,7 +266,7 @@ iet
 Therefore, we can simplify the interval exchange transformation by dropping the label `f`.
 
 ```{code-cell} ipython3
-iet.induce(0R)
+iet.induce(int(0))
 iet
 ```
 
@@ -274,7 +282,7 @@ iet
 A few more induction steps, let us drop the `e` label as we did before.
 
 ```{code-cell} ipython3
-iet.induce(-1R)
+iet.induce(-int(1))
 iet
 ```
 
@@ -321,8 +329,16 @@ We can compute flow decompositions for some short saddle connections in this sur
 ```{code-cell} ipython3
 for connection in S.saddle_connections(4):
     decomposition = GL2ROrbitClosure(S).decomposition(connection.direction())
-    if any(component.withoutPeriodicTrajectory() for component in decomposition.components()):
-        print("Found minimal component in", decomposition, "for direction", connection.direction())
+    if any(
+        component.withoutPeriodicTrajectory()
+        for component in decomposition.components()
+    ):
+        print(
+            "Found minimal component in",
+            decomposition,
+            "for direction",
+            connection.direction(),
+        )
         break
 ```
 
@@ -357,6 +373,7 @@ Widget(S)
 
 ```{code-cell} ipython3
 from flatsurf import GL2ROrbitClosure
+
 D = GL2ROrbitClosure(S).decomposition(vector(Δ.base_ring(), (1, 0)))
 D
 ```

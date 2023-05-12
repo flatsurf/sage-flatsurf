@@ -76,8 +76,8 @@ We can find their holonomies and other information about them using methods.
 jupyter:
   outputs_hidden: false
 ---
-print("Holonomy of sc1 is"+str(sc1.holonomy())+" = "+str(sc1.holonomy().n()))
-print("Holonomy of sc2 is"+str(sc2.holonomy())+" = "+str(sc2.holonomy().n()))
+print("Holonomy of sc1 is" + str(sc1.holonomy()) + " = " + str(sc1.holonomy().n()))
+print("Holonomy of sc2 is" + str(sc2.holonomy()) + " = " + str(sc2.holonomy().n()))
 ```
 
 ```{code-cell} ipython3
@@ -155,7 +155,7 @@ jupyter:
 d = {}
 
 for i in range(len(sc_list2)):
-    for j in range(i+1,len(sc_list2)):
+    for j in range(i + 1, len(sc_list2)):
         if not sc_list2[i].intersects(sc_list2[j]):
             if i not in d:
                 d[i] = [j]
@@ -165,7 +165,7 @@ for i in range(len(sc_list2)):
                 d[j] = [i]
             else:
                 d[j].append(i)
-                
+
 g = Graph(d)
 ```
 
@@ -180,9 +180,9 @@ pos = {}
 for i in range(len(sc_list2)):
     sc = sc_list2[i]
     val = sc.holonomy().n()
-    z = val[0]+I*val[1]
-    w = z**2/z.abs()
-    pos[i] = (w.real(),w.imag())
+    z = val[0] + I * val[1]
+    w = z**2 / z.abs()
+    pos[i] = (w.real(), w.imag())
 ```
 
 ```{code-cell} ipython3
@@ -190,5 +190,5 @@ for i in range(len(sc_list2)):
 jupyter:
   outputs_hidden: false
 ---
-g.plot(pos = pos, vertex_labels = False, vertex_size = 0)
+g.plot(pos=pos, vertex_labels=False, vertex_size=0)
 ```
