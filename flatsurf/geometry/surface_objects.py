@@ -62,7 +62,7 @@ def Singularity(similarity_surface, label, v, limit=None):
     import warnings
 
     warnings.warn(
-        "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point(label, surface.polygon(label).vertex(v)) instead."
+        "Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead."
     )
     return similarity_surface.point(
         label, similarity_surface.polygon(label).vertex(v), limit=limit
@@ -81,7 +81,8 @@ class SurfacePoint(Element):
     - ``label`` -- a polygon label for the polygon with respect to which the
       ``point`` coordinates can be made sense of
 
-    - ``point`` -- coordinates of a point in the polygon ``label``
+    - ``point`` -- coordinates of a point in the polygon ``label`` or the index
+      of the vertex of the polygon with ``label``
 
     - ``ring`` -- a SageMath ring or ``None`` (default: ``None``); the
       coordinate ring for ``point``
@@ -137,6 +138,10 @@ class SurfacePoint(Element):
         polygon = surface.polygon(label)
 
         from sage.modules.free_module import VectorSpace
+
+        from sage.all import ZZ
+        if point in ZZ:
+            point = surface.polygon(label).vertex(point)
 
         point = VectorSpace(ring, 2)(point)
         point.set_immutable()

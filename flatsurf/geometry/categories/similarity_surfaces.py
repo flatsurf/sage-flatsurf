@@ -1532,7 +1532,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 - ``label`` - label of the polygon
 
-                - ``point`` - coordinates of the point inside the polygon
+                - ``point`` - coordinates of the point inside the polygon or
+                  the index of the vertex of the polygon.
 
                 - ``ring`` (optional) - a ring for the coordinates
 
@@ -1544,7 +1545,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.square_torus()
                     sage: pc = s.minimal_cover(cover_type="planar")
-                    sage: pc.point(pc.root(), (0,0))
+                    sage: pc.point(pc.root(), (0, 0))
+                    Vertex 0 of polygon (0, (x, y) |-> (x, y))
+                    sage: pc.point(pc.root(), 0)
+                    Vertex 0 of polygon (0, (x, y) |-> (x, y))
+                    sage: pc.point(pc.root(), 1)
+                    Vertex 0 of polygon (0, (x, y) |-> (x, y))
+                    sage: pc.point(pc.root(), (1, 1))
                     Vertex 0 of polygon (0, (x, y) |-> (x, y))
                     sage: z = pc.point(pc.root(),(sqrt(2)-1,sqrt(3)-1),ring=AA)
                     doctest:warning
@@ -1552,6 +1559,18 @@ class SimilaritySurfaces(SurfaceCategory):
                     UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
                     sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
                     Vector space of dimension 2 over Algebraic Real Field
+
+                ::
+
+                    sage: s = translation_surfaces.cathedral(2, 3)
+                    sage: s.point(0, 0)
+                    Vertex 0 of polygon 0
+                    sage: s.point(0, (0, 0))
+                    Vertex 0 of polygon 0
+                    sage: s.point(0, (1, 1))
+                    Point (1, 0) of polygon 0
+                    sage: s.point(0, 1)
+                    Vertex 0 of polygon 1
 
                 """
                 return self(label, point, limit=limit, ring=ring)
