@@ -146,9 +146,16 @@ for i in range(1, 4):
     surface.glue((0, 2 + i), (i + 1, 2))
 ```
 
-Now we have a closed surface. In fact we have defined a Translation Surface.
+Now we have a closed surface. In fact this is a translation surface:
 
 ```{code-cell} ipython3
+surface
+```
+
+Once we are done building the surface, it is recommended to make the surface immutable. This lets sage-flatsurf speed up many operations on the surface and makes it possible to compute invariants such as the stratum:
+
+```{code-cell} ipython3
+surface.set_immutable()
 surface
 ```
 
