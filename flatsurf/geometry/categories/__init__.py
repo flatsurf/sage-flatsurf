@@ -25,14 +25,15 @@ translation surfaces, actually add a method to
     :meth:`is_finite_type`, :meth:`is_cone_surface`,
     :meth:`is_dilation_surface`, :meth:`is_translation_surface`, and
     :meth:`is_rational`. There are default implementations for these for finite
-    type surfaces. Once a surfaces has been found to be in a subcategory, these
-    methods are replaced to simply return ``True`` instead of computing
-    anything. If a class explicitly overrides these methods, then that category
-    machinery cannot replace that method anymore when the category of the
-    surface gets refined. Consequently, it can be beneficial for the override
-    to shortcut the question by querying the category, e.g., ``is_rational``
-    could start with ``if "Rational" in self.category().axioms(): return True``
-    before actually performing any computation.
+    type surfaces. Once a surfaces has been found to be in a certain
+    subcategory, these methods are replaced to simply return ``True`` instead
+    of computing anything. If a class explicitly overrides these methods, then
+    the category machinery cannot replace that method anymore when the category
+    of the surface gets refined. Consequently, it can be beneficial for the
+    override to shortcut the question by querying the category, e.g.,
+    ``is_rational`` could start with ``if "Rational" in
+    self.category().axioms(): return True`` before actually performing any
+    computation.
 
 EXAMPLES::
 
