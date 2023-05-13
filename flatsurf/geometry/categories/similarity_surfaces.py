@@ -209,6 +209,12 @@ class SimilaritySurfaces(SurfaceCategory):
 
             .. NOTE::
 
+                This is a stronger requirement than the usual
+                definition of a cone surface, see :mod:`ConeSurfaces` for
+                details.
+
+            .. NOTE::
+
                 This method is used to determine whether this surface is in the
                 category of :class:`ConeSurfaces`. Surfaces can override this
                 method to perform specialized logic, see the note in
@@ -2812,6 +2818,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 Return whether this finite type surface is a cone surface,
                 i.e., glued edges can be transformed into each other with
                 isometries.
+
+                .. NOTE::
+
+                    This is a stronger requirement than the usual
+                    definition of a cone surface, see :mod:`ConeSurfaces` for
+                    details.
 
                 EXAMPLES::
 
