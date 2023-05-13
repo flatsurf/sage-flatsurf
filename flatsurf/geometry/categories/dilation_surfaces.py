@@ -65,6 +65,16 @@ class DilationSurfaces(SurfaceCategory):
     """
 
     def super_categories(self):
+        r"""
+        Return the categories that a dilation surfaces is also always a member
+        of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import DilationSurfaces
+            sage: DilationSurfaces().super_categories()
+
+        """
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 
         return [SimilaritySurfaces()]
@@ -84,7 +94,20 @@ class DilationSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
+            r"""
+            Provides methods available to all positive dilation surfaces.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
             def is_dilation_surface(self, positive=False):
+                r"""
+                Return whether this surface is a dilation surface.
+
+                See
+                :meth:`SimilaritySurfaces.ParentMethods.is_dilation_surface`
+                for details.
+                """
                 return True
 
             def _test_positive_dilation_surface(self, **options):
@@ -128,10 +151,25 @@ class DilationSurfaces(SurfaceCategory):
             return self._with_axiom("Positive")
 
     class ParentMethods:
+        r"""
+        Provides methods available to all dilation surfaces.
+
+        If you want to add functionality for such surfaces you most likely want
+        to put it here.
+        """
         def is_dilation_surface(self, positive=False):
+            r"""
+            Return whether this surface is a dilation surface.
+
+            See :meth:`SimilaritySurfaces.ParentMethods.is_dilation_surface`
+            for details.
+            """
             if not positive:
                 return True
 
+            # We do not know whether this surface is a positive dilation
+            # surface or not so we have to rely on the generic implementation
+            # of this.
             return super(DilationSurfaces().parent_class, self).is_dilation_surface(
                 positive=positive
             )
@@ -178,7 +216,7 @@ class DilationSurfaces(SurfaceCategory):
 
             """
             if "Oriented" not in surface.category().axioms():
-                raise NotImplementedError
+                raise NotImplementedError("cannot decide whether a non-oriented surface is dilation surface yet")
 
             labels = surface.labels()
 
@@ -330,7 +368,6 @@ class DilationSurfaces(SurfaceCategory):
                 sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [True, False, False]
             """
-            # safety check for now
             assert self.opposite_edge(p1, e1) == (p2, e2), "not opposite edges"
 
             # triangles
@@ -365,118 +402,6 @@ class DilationSurfaces(SurfaceCategory):
             n = max(abs(new_edge[0]), abs(new_edge[1]))
             return n < n1
 
-        def l_infinity_delaunay_triangulation(
-            self, triangulated=None, in_place=None, limit=None, direction=None
-        ):
-            r"""
-            Returns a L-infinity Delaunay triangulation of a surface, or make some
-            triangle flips to get closer to the Delaunay decomposition.
-
-            INPUT:
-
-            - ``triangulated`` -- deprecated and ignored.
-
-            - ``in_place`` -- deprecated  and must be ``None`` (the default);
-              otherwise an error is produced
-
-            - ``limit`` -- optional (positive integer) If provided, then at most ``limit``
-                many diagonal flips will be done.
-
-            - ``direction`` -- optional (vector). Used to determine labels when a
-              pair of triangles is flipped. Each triangle has a unique separatrix
-              which points in the provided direction or its negation. As such a
-              vector determines a sign for each triangle.  A pair of adjacent
-              triangles have opposite signs. Labels are chosen so that this sign is
-              preserved (as a function of labels).
-
-            EXAMPLES::
-
-                sage: from flatsurf import translation_surfaces
-                sage: s0 = translation_surfaces.veech_double_n_gon(5)
-                sage: field = s0.base_ring()
-                sage: a = field.gen()
-                sage: m = matrix(field, 2, [2,a,1,1])
-
-                sage: s = m*s0
-                sage: s = s.l_infinity_delaunay_triangulation()
-                sage: TestSuite(s).run()
-
-                sage: s = (m**2)*s0
-                sage: s = s.l_infinity_delaunay_triangulation()
-                sage: TestSuite(s).run()
-
-                sage: s = (m**3)*s0
-                sage: s = s.l_infinity_delaunay_triangulation()
-                sage: TestSuite(s).run()
-
-            TESTS:
-
-            Verify that deprecated keywords do not cause errors::
-
-                sage: s.l_infinity_delaunay_triangulation(triangulated=True)
-                doctest:warning
-                ...
-                UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.
-                Translation Surface in H_2(2) built from 6 triangles
-                sage: s.l_infinity_delaunay_triangulation(triangulated=False)
-                doctest:warning
-                ...
-                UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.
-                Translation Surface in H_2(2) built from 6 triangles
-
-            ::
-
-                sage: s.l_infinity_delaunay_triangulation(in_place=True)
-                Traceback (most recent call last):
-                ...
-                NotImplementedError: The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.
-
-            """
-            if not self.is_finite_type():
-                raise NotImplementedError(
-                    "no L-infinity Delaunay implemented for infinite surfaces"
-                )
-
-            if triangulated is not None:
-                import warnings
-
-                warnings.warn(
-                    "The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore."
-                )
-            if in_place is not None:
-                raise NotImplementedError(
-                    "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
-                )
-
-            self = self.triangulate()
-
-            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-            self = MutableOrientedSimilaritySurface.from_surface(self)
-
-            if direction is None:
-                base_ring = self.base_ring()
-                direction = self.vector_space()((base_ring.zero(), base_ring.one()))
-
-            if direction.is_zero():
-                raise ValueError("direction must be non-zero")
-
-            triangles = set(self.labels())
-            if limit is None:
-                limit = -1
-            else:
-                limit = int(limit)
-            while triangles and limit:
-                p1 = triangles.pop()
-                for e1 in range(3):
-                    p2, e2 = self.opposite_edge(p1, e1)
-                    if self._edge_needs_flip_Linfinity(p1, e1, p2, e2):
-                        self.triangle_flip(p1, e1, in_place=True, direction=direction)
-                        triangles.add(p1)
-                        triangles.add(p2)
-                        limit -= 1
-            return self
-
         def _test_dilation_surface(self, **options):
             r"""
             Verify that this is a dilation surface.
@@ -502,5 +427,137 @@ class DilationSurfaces(SurfaceCategory):
                 )
             )
 
+    class FiniteType(SurfaceCategoryWithAxiom):
+        r"""
+        The category of dilation surfaces built from a finite number of polygons.
 
+        EXAMPLES::
+
+            sage: from flatsurf import polygon, similarity_surfaces
+            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            sage: from flatsurf.geometry.categories import DilationSurfaces
+            sage: S in DilationSurfaces().FiniteType()
+            True
+
+        """
+        class ParentMethods:
+            r"""
+            Provides methods available to all dilation surfaces built from
+            finitely many polygons.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+            def l_infinity_delaunay_triangulation(
+                self, triangulated=None, in_place=None, limit=None, direction=None
+            ):
+                r"""
+                Return an L-infinity Delaunay triangulation of a surface, or make
+                some triangle flips to get closer to the Delaunay decomposition.
+
+                INPUT:
+
+                - ``triangulated`` -- deprecated and ignored.
+
+                - ``in_place`` -- deprecated  and must be ``None`` (the default);
+                  otherwise an error is produced
+
+                - ``limit`` -- optional (positive integer) If provided, then at most ``limit``
+                    many diagonal flips will be done.
+
+                - ``direction`` -- optional (vector). Used to determine labels when a
+                  pair of triangles is flipped. Each triangle has a unique separatrix
+                  which points in the provided direction or its negation. As such a
+                  vector determines a sign for each triangle.  A pair of adjacent
+                  triangles have opposite signs. Labels are chosen so that this sign is
+                  preserved (as a function of labels).
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: s0 = translation_surfaces.veech_double_n_gon(5)
+                    sage: field = s0.base_ring()
+                    sage: a = field.gen()
+                    sage: m = matrix(field, 2, [2,a,1,1])
+
+                    sage: s = m*s0
+                    sage: s = s.l_infinity_delaunay_triangulation()
+                    sage: TestSuite(s).run()
+
+                    sage: s = (m**2)*s0
+                    sage: s = s.l_infinity_delaunay_triangulation()
+                    sage: TestSuite(s).run()
+
+                    sage: s = (m**3)*s0
+                    sage: s = s.l_infinity_delaunay_triangulation()
+                    sage: TestSuite(s).run()
+
+                TESTS:
+
+                Verify that deprecated keywords do not cause errors::
+
+                    sage: s.l_infinity_delaunay_triangulation(triangulated=True)
+                    doctest:warning
+                    ...
+                    UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.
+                    Translation Surface in H_2(2) built from 6 triangles
+                    sage: s.l_infinity_delaunay_triangulation(triangulated=False)
+                    doctest:warning
+                    ...
+                    UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.
+                    Translation Surface in H_2(2) built from 6 triangles
+
+                ::
+
+                    sage: s.l_infinity_delaunay_triangulation(in_place=True)
+                    Traceback (most recent call last):
+                    ...
+                    NotImplementedError: The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.
+
+                """
+                if triangulated is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore."
+                    )
+                if in_place is not None:
+                    raise NotImplementedError(
+                        "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
+                    )
+
+                self = self.triangulate()
+
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+                self = MutableOrientedSimilaritySurface.from_surface(self)
+
+                if direction is None:
+                    base_ring = self.base_ring()
+                    direction = self.vector_space()((base_ring.zero(), base_ring.one()))
+
+                if direction.is_zero():
+                    raise ValueError("direction must be non-zero")
+
+                triangles = set(self.labels())
+                if limit is None:
+                    limit = -1
+                else:
+                    limit = int(limit)
+                while triangles and limit:
+                    p1 = triangles.pop()
+                    for e1 in range(3):
+                        p2, e2 = self.opposite_edge(p1, e1)
+                        if self._edge_needs_flip_Linfinity(p1, e1, p2, e2):
+                            self.triangle_flip(p1, e1, in_place=True, direction=direction)
+                            triangles.add(p1)
+                            triangles.add(p2)
+                            limit -= 1
+                return self
+
+
+# Currently, there is no "Positive" axiom in SageMath so we make it known to
+# the category framework.
 all_axioms += ("Positive",)

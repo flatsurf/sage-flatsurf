@@ -66,26 +66,74 @@ class HalfTranslationSurfaces(SurfaceCategory):
     """
 
     def super_categories(self):
+        r"""
+        Return the categories that a half-translation surface is always a
+        member of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+            sage: HalfTranslationSurfaces().super_categories()
+
+        """
         from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
         from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 
         return [DilationSurfaces(), ConeSurfaces().Rational()]
 
+    # Declare that the "positive" half-translation surfaces are called
+    # "translation surfaces".
     Positive = LazyImport(
         "flatsurf.geometry.categories.translation_surfaces", "TranslationSurfaces"
     )
 
     class ParentMethods:
+        r"""
+        Provides methods available to all half-translation surfaces.
+
+        If you want to add functionality for such surfaces you most likely want
+        to put it here.
+        """
         def is_translation_surface(self, positive=True):
+            r"""
+            Return whether this surface is a (half-)translation surface.
+
+            This overrides
+            :meth:`SimilaritySurfaces.ParentMethods.is_translation_surface`.
+            """
             if not positive:
                 return True
 
+            # If this is not explicitly a translation surface, we have to
+            # decide with the generic checks whether it is a positive
+            # half-translation surface.
             return super(
                 HalfTranslationSurfaces().parent_class, self
             ).is_translation_surface(positive=positive)
 
     class Orientable(SurfaceCategoryWithAxiom):
+        r"""
+        The category of orientable half-translation surfaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+            sage: H = B.minimal_cover(cover_type="half-translation")
+
+            sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+            sage: H in HalfTranslationSurfaces().Orientable()
+            True
+
+        """
         class ParentMethods:
+            r"""
+            Provides methods available to all orientable half-translation
+            surfaces.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
             def stratum(self):
                 r"""
                 EXAMPLES::
@@ -121,7 +169,30 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 return QuadraticStratum(*[2 * a - 2 for a in angles])
 
     class Oriented(SurfaceCategoryWithAxiom):
+        r"""
+        The category of oriented half-translation surfaces, i.e., orientable
+        half-translation surfaces which can be oriented in a way compatible
+        with the embedding of their polygons in the real projective plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, similarity_surfaces
+            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+            sage: H = B.minimal_cover(cover_type="half-translation")
+
+            sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+            sage: H in HalfTranslationSurfaces().Oriented()
+            True
+
+        """
         class ParentMethods:
+            r"""
+            Provides methods available to all oriented half-translation
+            surfaces.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
             def holonomy_field(self):
                 r"""
                 Return the relative holonomy field of this translation or half-translation surface.
@@ -178,7 +249,29 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 )
 
         class FiniteType(SurfaceCategoryWithAxiom):
+            r"""
+            The category of oriented half-translation surfaces built from
+            finitely many polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                sage: H = B.minimal_cover(cover_type="half-translation")
+
+                sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+                sage: H in HalfTranslationSurfaces().Oriented().FiniteType()
+                True
+
+            """
             class ParentMethods:
+                r"""
+                Provides methods available to all oriented half-translation
+                surfaces built from finitely many polygons.
+
+                If you want to add functionality for such surfaces you most
+                likely want to put it here.
+                """
                 def normalized_coordinates(self):
                     r"""
                     Return a pair ``(new_surface, matrix)`` where ``new_surface`` is defined over the
@@ -297,7 +390,30 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     return S, M
 
             class WithoutBoundary(SurfaceCategoryWithAxiom):
+                r"""
+                The category of oriented half-translation surfaces without
+                boundary built from finitely many polygons.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                    sage: H = B.minimal_cover(cover_type="half-translation")
+
+                    sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+                    sage: H in HalfTranslationSurfaces().Oriented().FiniteType().WithoutBoundary()
+                    True
+
+                """
                 class ParentMethods:
+                    r"""
+                    Provides methods available to all oriented half-translation
+                    surfaces without boundary built from finitely many
+                    polygons.
+
+                    If you want to add functionality for such surfaces you most
+                    likely want to put it here.
+                    """
                     def angles(self, numerical=False, return_adjacent_edges=False):
                         r"""
                         Return the set of angles around the vertices of the surface.
@@ -352,9 +468,6 @@ class HalfTranslationSurfaces(SurfaceCategory):
                             [1]
 
                         """
-                        if not self.is_finite_type():
-                            raise NotImplementedError("the set of edges is infinite!")
-
                         edges = set(self.edges())
                         angles = []
 

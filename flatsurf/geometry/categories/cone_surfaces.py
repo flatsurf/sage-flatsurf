@@ -185,7 +185,7 @@ class ConeSurfaces(SurfaceCategory):
 
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
-        The category of cone surfaces of finite type.
+        The category of cone surfaces built from finitely many polygons.
 
         EXAMPLES::
 
@@ -200,7 +200,8 @@ class ConeSurfaces(SurfaceCategory):
         """
         class ParentMethods:
             r"""
-            Provides methods available to all cone surfaces of finite type.
+            Provides methods available to all cone surfaces built from finitely
+            many polygons.
 
             If you want to add functionality for such surfaces you most likely
             want to put it here.
