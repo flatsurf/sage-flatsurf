@@ -1,3 +1,24 @@
+r"""
+The category of polygons in the hyperbolic plane.
+
+EXAMPLES::
+
+    sage: from flatsurf import HyperbolicPlane
+    sage: H = HyperbolicPlane()
+
+    sage: P = H.polygon([
+    ....:   H.vertical(1).left_half_space(),
+    ....:   H.vertical(-1).right_half_space(),
+    ....:   H.half_circle(0, 2).left_half_space(),
+    ....:   H.half_circle(0, 4).right_half_space(),
+    ....: ])
+
+    sage: P.category()
+
+    sage: from flatsurf.geometry.categories import HyperbolicPolygons
+    sage: P in HyperbolicPolygons()
+
+"""
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -22,6 +43,29 @@ from flatsurf.geometry.categories.polygons import Polygons
 
 
 class HyperbolicPolygons(Category_over_base_ring):
+    r"""
+    The category of polygons in the hyperbolic plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories import HyperbolicPolygons
+        sage: C = HyperbolicPolygons()
+
+    TESTS::
+
+        sage: TestSuite(C).run()
+
+    """
     def super_categories(self):
+        r"""
+        Return the categories that a hyperbolic polygon is also a member of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import HyperbolicPolygons
+            sage: C = HyperbolicPolygons()
+            sage: C.super_categories()
+
+        """
         return [Polygons(self.base_ring())]
 
