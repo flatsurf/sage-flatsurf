@@ -1,3 +1,24 @@
+r"""
+The category of polyogons
+
+This module provides shared functionality for all polygons in sage-flatsurf.
+
+See :mod:`flatsurf.geometry.categories` for a general description of the
+category framework in sage-flatsurf.
+
+Normally, you won't create this (or any other) category directly. The correct
+category of a polygon is automatically determined.
+
+EXAMPLES::
+
+    sage: from flatsurf.geometry.categories import Polygons
+    sage: C = Polygons(QQ)
+
+    sage: from flatsurf import polygons
+    sage: polygons.square() in C
+    True
+
+"""
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -24,63 +45,122 @@ from sage.categories.all import Sets
 
 
 class Polygons(Category_over_base_ring):
+    r"""
+    The category of polygons defined over a base ring.
+
+    This comprises arbitrary base ring, e.g., this category contains Euclidean
+    polygons and hyperbolic polygons.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories import Polygons
+        sage: Polygons(QQ)
+
+    """
     def super_categories(self):
+        r"""
+        Return the categories polygons automatically belong to.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import Polygons
+            sage: C = Polygons(QQ)
+            sage: C.super_categories()
+
+        """
         return [Sets()]
 
     class ParentMethods:
+        r"""
+        Provides methods available to all polygons.
+
+        If you want to add functionality to all polygons, independent of
+        implementation, you probably want to put it here.
+        """
         def _check(self):
+            r"""
+            Verify that this is a valid polygon.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: P = polygons.square()
+                sage: P._check()
+
+            """
             if self.area() < 0:
                 raise ValueError("polygon has negative area; probably the vertices are not in counter-clockwise order?")
 
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""
-        The set of convex polygons with a fixed base field.
+        The axiom satisfied by convex polygons.
 
         EXAMPLES::
 
-            sage: from flatsurf import ConvexPolygons
-            sage: C = ConvexPolygons(QQ)
-            sage: C(vertices=[(0,0), (2,0), (1,1)])
-            polygon(vertices=[(0, 0), (2, 0), (1, 1)])
-            sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
-            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: from flatsurf.geometry.categories import Polygons
+            sage: C = Polygons(QQ)
+            sage: C.Convex()
 
-        A set of polygons can also be created over non-fields::
-
-            sage: ConvexPolygons(ZZ)
-            Category of convex real projective polygons over Integer Ring
-
-        TESTS::
-
-            sage: ConvexPolygons(QQ) is ConvexPolygons(QQ)
-            True
-            sage: TestSuite(ConvexPolygons(QQ)).run()
-            sage: TestSuite(ConvexPolygons(QQbar)).run()
-            sage: TestSuite(ConvexPolygons(ZZ)).run()
         """
-
         class ParentMethods:
+            r"""
+            Provides methods available to all convex polygons.
+
+            If you want to add functionality to all such polygons, you probably
+            want to put it here.
+            """
             def is_convex(self):
+                r"""
+                Return whether this is a convex polygon, which it is.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons
+                    sage: P = polygons.square()
+                    sage: P.is_convex()
+                    True
+
+                """
                 return True
+
+    class Rational(CategoryWithAxiom_over_base_ring):
+        r"""
+        The axiom satisfied by polygons whose inner angles are rational
+        multiples of π.
+
+        EXAMPLES::
+
+        """
+        pass
 
     class SubcategoryMethods:
         def Convex(self):
+            r"""
+            Return the subcategory of convex polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf.goemetry.categories import Polygons
+                sage: Polygons().Convex()
+
+            """
             return self._with_axiom("Convex")
 
         def Rational(self):
+            r"""
+            Return the subcategory of polygons with rational angles.
+
+            EXAMPLES::
+
+                sage: from flatsurf.goemetry.categories import Polygons
+                sage: Polygons().Rational()
+
+            """
             return self._with_axiom("Rational")
-
-        def WithAngles(self, angles):
-            from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
-            angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
-            return self._WithAngles(angles)
-
-        def _WithAngles(self, angles):
-            raise NotImplementedError
 
         def field(self):
             r"""
-            Return the field over which this polygon is defined.
+            Return the field over which these polygons are defined.
 
             EXAMPLES::
 
@@ -98,10 +178,8 @@ class Polygons(Category_over_base_ring):
 
             return self.base_ring().fraction_field()
 
-    class Rational(CategoryWithAxiom_over_base_ring):
-        pass
 
-
+# Currently, there is no "Convex" axiom in SageMath so we make it known to the
+# category framework. Note that "Rational" is already defined by topological
+# surfaces so we don't need to declare it here again.
 all_axioms += ("Convex", )
-
-ConvexPolygons = Polygons.Convex

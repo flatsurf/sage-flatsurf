@@ -1,3 +1,22 @@
+r"""
+The category of polygons defined in the real projective plane such as Euclidean
+polygons.
+
+See :mod:`flatsurf.geometry.categories` for a general description of the
+category framework in sage-flatsurf.
+
+Normally, you won't create this (or any other) category directly. The correct
+category of a polygon is automatically determined.
+
+EXAMPLES::
+
+    sage: from flatsurf.geometry.categories import RealProjectivePolygons
+    sage: C = RealProjectivePolygons(QQ)
+
+    sage: from flatsurf import polygons
+    sage: polygons.square() in C
+
+"""
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -30,13 +49,39 @@ cm = get_coercion_model()
 
 
 class RealProjectivePolygons(Category_over_base_ring):
+    r"""
+    The category of polygons defined in the real projective plane over a fixed
+    base ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories import RealProjectivePolygons
+        sage: RealProjectivePolygons(QQ)
+
+    """
     def super_categories(self):
+        r"""
+        Return the categories real projective polygons are also contained in,
+        namely the polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import RealProjectivePolygons
+            sage: RealProjectivePolygons().super_categories()
+
+        """
         return [Polygons(self.base_ring())]
 
     class ParentMethods:
+        r"""
+        Provides methods available to all polygons in the real projective plane.
+
+        If you want to add functionality to such polygons, you probably want to
+        put it here.
+        """
         def vector_space(self):
             r"""
-            Return the vector space of dimension 2 in which these polygons embed.
+            Return the vector space of dimension 2 in which this polygon embeds.
 
             EXAMPLES::
 
@@ -63,10 +108,18 @@ class RealProjectivePolygons(Category_over_base_ring):
             return self.category().module()
 
         def field(self):
-            import warnings
-            warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() instead")
+            r"""
+            EXAMPLES::
 
-            return self.base_ring()
+                sage: from flatsurf import polygons
+                sage: S = polygons.square()
+                sage: S.field()
+
+            """
+            import warnings
+            warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring().fraction_field() instead")
+
+            return self.base_ring().fraction_field()
 
     class SubcategoryMethods:
         @cached_method
@@ -100,8 +153,24 @@ class RealProjectivePolygons(Category_over_base_ring):
             from sage.all import VectorSpace
             return VectorSpace(self.base_ring().fraction_field(), 2)
 
-        def _WithAngles(self, angles):
+        def WithAngles(self, angles):
+            r"""
+            Return the subcategory of polygons with fixed ``angles``.
+
+            INPUT:
+
+            - ``angles`` -- a finite sequence of numbers, the inner angles of
+              the polygon; the angles are automatically normalized to sum to
+              `(n-2)π`.
+
+            EXAMPLES::
+
+                sage: from flatsurf.goemetry.categories import Polygons
+                sage: Polygons().WithAngles([1, 2, 3])
+
+            """
             from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
             return RealProjectivePolygonsWithAngles(self.base_ring(), angles) & self
 
     def __call__(self, *args, **kwds):
@@ -131,7 +200,13 @@ class RealProjectivePolygons(Category_over_base_ring):
             sage: D(edges=p.edges())
             polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
         """
-        # TODO: We should deprecate this. It will conflict with more complex categories eventually.
+        # We cannot have a __call__() in SubcategoryMethods so there is no good
+        # way to support this in the category framework. Also, this code is
+        # duplicated in several places and the polygon() helper seems to be
+        # much more versatile.
+        import warnings
+        warnings.warn("Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead")
+
         check = kwds.pop("check", True)
 
         from flatsurf.geometry.polygon import Polygon
@@ -171,6 +246,38 @@ class RealProjectivePolygons(Category_over_base_ring):
         return EuclideanPolygon(base_ring=self.base(), vertices=vertices, category=self, check=check)
 
     class Convex(CategoryWithAxiom_over_base_ring):
+        r"""
+        The subcategory of convex polygons in the real projective plane.
+
+        EXAMPLES:
+
+        For historic reasons, there is the shortcut ``ConvexPolygons`` to get
+        the real projective convex polygons::
+
+            sage: from flatsurf import ConvexPolygons
+            sage: C = ConvexPolygons(QQ)
+
+            sage: from flatsurf.geometry.categories import RealProjectivePolygons
+            sage: C is RealProjectivePolygons(QQ).Convex()
+
+            sage: C(vertices=[(0,0), (2,0), (1,1)])
+            polygon(vertices=[(0, 0), (2, 0), (1, 1)])
+
+            sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        This axiom can also be created over non-fields::
+
+            sage: ConvexPolygons(ZZ)
+            Category of convex real projective polygons over Integer Ring
+
+        TESTS::
+
+            sage: TestSuite(ConvexPolygons(QQ)).run()
+            sage: TestSuite(ConvexPolygons(QQbar)).run()
+            sage: TestSuite(ConvexPolygons(ZZ)).run()
+
+        """
         def __call__(self, *args, **kwds):
             r"""
             TESTS::
@@ -197,7 +304,13 @@ class RealProjectivePolygons(Category_over_base_ring):
                 polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
 
             """
-            # TODO: We should deprecate this. It will conflict with more complex categories eventually.
+            # We cannot have a __call__() in SubcategoryMethods so there is no good
+            # way to support this in the category framework. Also, this code is
+            # duplicated in several places and the polygon() helper seems to be
+            # much more versatile.
+            import warnings
+            warnings.warn("ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead")
+
             check = kwds.pop("check", True)
 
             from flatsurf.geometry.polygon import Polygon
@@ -238,8 +351,17 @@ class RealProjectivePolygons(Category_over_base_ring):
             return EuclideanPolygon(base_ring=self.base(), vertices=vertices, category=self, check=check)
 
         class ParentMethods:
+            r"""
+            Provides methods available to all polygons in the real projective
+            plane.
+
+            If you want to add functionality to such polygons, you probably
+            want to put it here.
+            """
             def _check(self):
                 r"""
+                Verify that this is a valid polygon.
+
                 TESTS::
 
                     sage: from flatsurf import polygon
@@ -253,6 +375,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     Traceback (most recent call last):
                     ...
                     ValueError: degenerate polygon
+
                 """
                 if self.num_edges() <= 2:
                     raise ValueError("a polygon should have more than two edges!")
@@ -299,6 +422,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     (1, True)
                     sage: print(p.find_separatrix(start_vertex=2))
                     (3, False)
+
                 """
                 if direction is None:
                     direction = self.module()((self.base_ring().zero(), self.base_ring().one()))
@@ -323,7 +447,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             def contains_point(self, point, translation=None):
                 r"""
-                Return true if the point is within the polygon (after the polygon is possibly translated)
+                Return whether the point is within the polygon (after the polygon is possibly translated)
                 """
                 return self.get_point_position(point, translation=translation).is_inside()
 
