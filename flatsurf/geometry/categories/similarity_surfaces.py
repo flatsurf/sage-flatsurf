@@ -1,10 +1,10 @@
 r"""
 The category of similarity surfaces.
 
-This provides shared functionality for all surfaces in sage-flatsurf that are
-built from Euclidean polygons that are glued by similarities, i.e., identified
-edges can be transformed into each other by application of rotation and
-homothety (dilation) and translation.
+This module provides shared functionality for all surfaces in sage-flatsurf
+that are built from Euclidean polygons that are glued by similarities, i.e.,
+identified edges can be transformed into each other by application of rotation
+and homothety (dilation) and translation.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.

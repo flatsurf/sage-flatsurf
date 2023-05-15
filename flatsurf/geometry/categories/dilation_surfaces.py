@@ -1,9 +1,9 @@
 r"""
 The category of dilation surfaces.
 
-This provides shared functionality for all surfaces in sage-flatsurf that are
-built from Euclidean polygons that are glued by translation followed by
-homothety, i.e., application of a diagonal matrix.
+This module provides shared functionality for all surfaces in sage-flatsurf
+that are built from Euclidean polygons that are glued by translation followed
+by homothety, i.e., application of a diagonal matrix.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.

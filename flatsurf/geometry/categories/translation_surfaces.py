@@ -1,9 +1,9 @@
 r"""
 The category of translation surfaces.
 
-This provides shared functionality for all surfaces in sage-flatsurf that are
-built from Euclidean polygons whose glued edges can be transformed into each
-other with translations.
+This module provides shared functionality for all surfaces in sage-flatsurf
+that are built from Euclidean polygons whose glued edges can be transformed
+into each other with translations.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.

@@ -1,8 +1,9 @@
 r"""
 The category of surfaces built from polygons.
 
-This provides shared functionality for all surfaces in sage-flatsurf that are
-built from polygons (such as Euclidean polygons or hyperbolic polygons.)
+This module provides shared functionality for all surfaces in sage-flatsurf
+that are built from polygons (such as Euclidean polygons or hyperbolic
+polygons.)
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -64,6 +65,16 @@ class PolygonalSurfaces(SurfaceCategory):
     """
 
     def super_categories(self):
+        r"""
+        Return the categories that a polygonal surface is always also a member
+        of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import PolygonalSurfaces
+            sage: PolygonalSurfaces().super_categories()
+
+        """
         from flatsurf.geometry.categories.topological_surfaces import (
             TopologicalSurfaces,
         )
@@ -71,13 +82,19 @@ class PolygonalSurfaces(SurfaceCategory):
         return [TopologicalSurfaces()]
 
     class ParentMethods:
+        r"""
+        Provides methods available to all surfaces that are built from polygons.
+
+        If you want to add functionality for such surfaces you most likely
+        want to put it here.
+        """
         def refined_category(self):
             r"""
             Return the smallest subcategory that this surface is in by
             consulting which edges are glued to each other.
 
             Note that this does not take into account how the edges are glued
-            to each other exactly (i.e., by which similarity) since at this
+            to each other exactly (e.g., by which similarity) since at this
             level (i.e., without knowing about the space in which the polygons
             live) the gluing is just described combinatorially.
 
@@ -104,26 +121,34 @@ class PolygonalSurfaces(SurfaceCategory):
 
             category = TopologicalSurfaces.ParentMethods.refined_category(self)
 
-            try:
-                finite_type = self.is_finite_type()
-            except NotImplementedError:
-                pass
+            if self.is_finite_type():
+                category &= category.FiniteType()
             else:
-                if finite_type:
-                    category &= category.FiniteType()
-                else:
-                    category &= category.InfiniteType()
+                category &= category.InfiniteType()
 
             return category
 
         def is_triangulated(self):
+            r"""
+            Return whether this surface is built from triangles.
+
+            Surfaces of infinite type should override this method.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_triangulated()
+                False
+
+            """
             if len(self.polygons()) == 0:
                 return True
 
             if self.polygon(self.base_label()).num_edges() != 3:
                 return False
 
-            raise NotImplementedError
+            raise NotImplementedError("cannot decide whether this (potentially infinite type) surface is triangulated")
 
         def walker(self):
             r"""
@@ -189,16 +214,54 @@ class PolygonalSurfaces(SurfaceCategory):
             return Labels(self)
 
         def base_label(self):
+            r"""
+            Return the polygon label from which iteration by :meth:`labels`
+            should start.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.base_label()
+                0
+
+            """
             import warnings
             warnings.warn("base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general")
 
             return self.root()
 
         def root(self):
+            r"""
+            Return the polygon label from which iteration by :meth:`labels`
+            should start on this connected surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.root()
+                0
+
+            When there are multiple connected components, :meth:`roots` must be
+            used instead::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S.add_polygon(polygons.square())
+                0
+                sage: S.add_polygon(polygons.square())
+                1
+
+                sage: S.root()
+                sage: S.roots()
+                (0, 1)
+
+            """
             roots = self.roots()
 
             if not roots:
-                raise NotImplementedError("cannot return a root label for the connected component on an empty surface")
+                raise Exception("cannot return a root label for the connected component on an empty surface, use roots() instead")
 
             if len(roots) > 1:
                 raise Exception("surface has more than one root label, use roots() instead")
@@ -236,6 +299,17 @@ class PolygonalSurfaces(SurfaceCategory):
             return Polygons(self)
 
         def _test_labels_polygons(self, **options):
+            r"""
+            Verify that :meth:`labels` and :meth:`polygons` are compatible.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_labels_polygons()
+
+            """
             tester = self._tester(**options)
 
             labels = self.labels()
@@ -250,10 +324,32 @@ class PolygonalSurfaces(SurfaceCategory):
                 tester.assertEqual(self.polygon(label), polygon)
 
         def num_polygons(self):
+            r"""
+            Return the number of polygons that make up this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.num_polygons()
+                1
+                sage: len(S.polygons())
+                1
+
+            ::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.num_polygons()
+                sage: S.is_finite_type()
+                False
+
+            """
             import warnings
 
             warnings.warn(
-                "num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead."
+                "num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces.)"
             )
 
             # Note that using len(self.polygons()) on
@@ -285,6 +381,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 ...
                 UserWarning: label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead
                 [0]
+                sage: S.labels()
 
             """
             import warnings
@@ -318,6 +415,8 @@ class PolygonalSurfaces(SurfaceCategory):
                 ...
                 UserWarning: edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead
                 [(0, 0), (0, 1), (0, 2), (0, 3)]
+                sage: S.edges()
+                [(0, 0), (0, 1), (0, 2), (0, 3)]
 
             ::
 
@@ -330,14 +429,10 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S.glue((0, 0), (1, 0))
                 sage: S.glue((0, 1), (1, 1))
                 sage: S.glue((0, 2), (1, 2))
-                sage: for edge in S.edge_iterator():
-                ....:     print(edge)
-                (0, 0)
-                (0, 1)
-                (0, 2)
-                (1, 0)
-                (1, 1)
-                (1, 2)
+                sage: list(S.edge_iterator())
+                [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
+                sage: S.edges()
+                [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
 
             """
             import warnings
@@ -357,6 +452,24 @@ class PolygonalSurfaces(SurfaceCategory):
                     yield label, edge
 
         def edges(self):
+            r"""
+            Return the edges of the polygons that make up this surface as pairs
+            (polygon label, edge index).
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.edges()
+
+            ::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.edges()
+
+            """
             from flatsurf.geometry.surface import Edges
 
             return Edges(self, finite=self.is_finite_type())
@@ -375,6 +488,8 @@ class PolygonalSurfaces(SurfaceCategory):
                 ...
                 UserWarning: edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead
                 [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
+                sage: S.gluings()
+                [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
 
             """
             import warnings
@@ -390,6 +505,30 @@ class PolygonalSurfaces(SurfaceCategory):
                 )
 
         def gluings(self):
+            r"""
+            Return the pairs of edges being glued to each other.
+
+            Each gluing is reported as a pair of pairs (polygon label, edge
+            index) and (glued polygon label, glued edge index).
+
+            Note that each gluing is reported twice (unless it is a
+            self-gluing.)
+
+            EXAMPLES::
+            
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.gluings()
+
+            A surface with only self-gluings::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.gluings()
+                [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
+
+            """
             from flatsurf.geometry.surface import Gluings
 
             return Gluings(self)
@@ -397,9 +536,6 @@ class PolygonalSurfaces(SurfaceCategory):
         def label_polygon_iterator(self):
             r"""
             Iterate over pairs (label, polygon).
-
-            Subclasses should consider overriding this method for increased
-            performance.
 
             EXAMPLES::
 
@@ -410,6 +546,8 @@ class PolygonalSurfaces(SurfaceCategory):
                 doctest:warning
                 ...
                 UserWarning: label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead
+                [(0, polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
+                sage: list(zip(S.labels(), S.polygons()))
                 [(0, polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
 
             """
@@ -519,21 +657,37 @@ class PolygonalSurfaces(SurfaceCategory):
         def num_edges(self):
             r"""
             Return the total number of edges of all polygons used.
-            """
-            if self.is_finite_type():
-                try:
-                    return self._cache["num_edges"]
-                except KeyError:
-                    num_edges = sum(p.num_edges() for p in self.polygons())
-                    self._cache["num_edges"] = num_edges
-                    return num_edges
-            else:
-                from sage.rings.infinity import Infinity
 
-                return Infinity
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.num_edges()
+
+            """
+            import warnings
+            warnings.warn("num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(p.num_edges() for p in polygons()) instead")
+
+            if self.is_finite_type():
+                return sum(p.num_edges() for p in self.polygons())
+
+            from sage.rings.infinity import Infinity
+
+            return Infinity
 
         def _test_gluings(self, **options):
-            # iterate over pairs with pair1 glued to pair2
+            r"""
+            Verify that the gluings of this surface are consistent.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_gluings()
+
+            """
             tester = self._tester(**options)
 
             if self.is_finite_type():
@@ -594,13 +748,60 @@ class PolygonalSurfaces(SurfaceCategory):
             return len(self.roots()) <= 1
 
         def component(self, root):
+            r"""
+            Return the labels contained in the connected component containing
+            the label ``root``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S.component(0)
+                (0,)
+
+            """
             from flatsurf.geometry.surface import ComponentLabels
             return ComponentLabels(self, root)
 
         def components(self):
+            r"""
+            Return the connected components that make up this surface.
+
+            OUTPUT:
+
+            A sequence of connected components where each component is in turn
+            a sequence of the polygon labels contained in that component.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S.add_polygon(polygons.square())
+                0
+                sage: S.add_polygon(polygons.square())
+                1
+                sage: S.add_polygon(polygons.square())
+                2
+                sage: S.glue((0, 0), (1, 0))
+                sage: S.components()
+                ((0, 1), (2,))
+
+            """
             return tuple(self.component(root) for root in self.roots())
 
         def _test_components(self, **options):
+            r"""
+            Verify that :meth:`components` is compatible with :meth:`roots`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_components()
+
+            """
             tester = self._tester(**options)
 
             tester.assertEqual(len(self.components()), len(self.roots()))
@@ -620,12 +821,28 @@ class PolygonalSurfaces(SurfaceCategory):
         """
 
         def extra_super_categories(self):
+            r"""
+            Return the categories that surfaces built from finitely many
+            polygons are additionally contained in; namely such a surface is a
+            compact space.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
+                sage: PolygonalSurfaces().FiniteType().extra_super_categories()
+
+            """
             from sage.categories.topological_spaces import TopologicalSpaces
 
             return (TopologicalSpaces().Compact(),)
 
         class InfiniteType(SurfaceCategoryWithAxiom):
             r"""
+            The axiom satisfied by surfaces that are built from finitely and
+            infinitely many polygons at the same time.
+
+            This axiom does not exist and it is an error to create it.
+
             TESTS::
 
                 sage: from flatsurf.geometry.categories import PolygonalSurfaces
@@ -646,8 +863,36 @@ class PolygonalSurfaces(SurfaceCategory):
                 )
 
         class Connected(SurfaceCategoryWithAxiom):
+            r"""
+            The axiom satisfied by connected surfaces built from finitely many polygons.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
+                sage: PolygonalSurfaces().FiniteType().Connected()
+
+            """
             class ParentMethods:
+                r"""
+                Provides methods available to all connected surfaces built from
+                finitely many polygons.
+
+                If you want to add functionality for such surfaces you most likely want
+                to put it here.
+                """
                 def _test_roots(self, **options):
+                    r"""
+                    Verify that :meth:`roots` only reports a single connected
+                    component.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import polygon, similarity_surfaces
+                        sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                        sage: S = similarity_surfaces.self_glued_polygon(P)
+                        sage: S._test_roots()
+
+                    """
                     tester = self._tester(**options)
 
                     roots = self.roots()
@@ -662,131 +907,30 @@ class PolygonalSurfaces(SurfaceCategory):
                     else:
                         tester.assertTrue(next(iter(self.labels())) in roots)
 
-        class ParentMethods:
-            def is_finite_type(self):
-                return True
-
-            def is_triangulated(self):
-                for label in self.labels():
-                    p = self.polygon(label)
-                    if p.num_edges() != 3:
-                        return False
-                return True
-
-            def is_with_boundary(self):
-                r"""
-                Return whether this surface has a boundary, i.e., unglued polygon edges.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_with_boundary()
-                    False
-
-                """
-                for label in self.labels():
-                    for edge in range(self.polygon(label).num_edges()):
-                        cross = self.opposite_edge(label, edge)
-                        if cross is None:
-                            return True
-
-                return False
-
-            def is_compact(self):
-                r"""
-                Return whether this surface is compact.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_compact()
-                    True
-
-                """
-                return True
-
-            def _test_labels(self, **options):
-                tester = self._tester(**options)
-
-                tester.assertEqual(len([label for label in self.labels()]), len(self.labels()))
-
-    class InfiniteType(SurfaceCategoryWithAxiom):
-        r"""
-        The axiom satisfied by surfaces built from infinitely many polygons.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase()
-            sage: 'InfiniteType' in S.category().axioms()
-            True
-
-        """
-
-        class ParentMethods:
-            def is_finite_type(self):
-                return False
-
-    class Oriented(SurfaceCategoryWithAxiom):
-        r"""
-        The axiom satisfied by orientable surfaces with an orientation which
-        is compatible with the orientation of the ambient space of the
-        polygons (assuming that ambient space is orientable.)
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase()
-            sage: 'Oriented' in S.category().axioms()
-            True
-
-        """
-
-        def extra_super_categories(self):
+        class Oriented(SurfaceCategoryWithAxiom):
             r"""
-            Return the axioms that are automatically satisfied by a surfaces
-            which is oriented, namely, that such a surface is orientable.
+            The axiom satisfied by orientable surfaces with an orientation
+            which is compatible with the orientation of the ambient space of
+            the finitely many polygons that define the surface (assuming that
+            that ambient space is orientable.)
 
             EXAMPLES::
 
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.infinite_staircase()
-                sage: 'Orientable' in S.category().axioms()
+                sage: S = translation_surfaces.octagon_and_squares()
+                sage: S.category().is_subcategory(PolygonalSurfaces().FiniteType().Oriented())
                 True
 
             """
-            from flatsurf.geometry.categories.topological_surfaces import (
-                TopologicalSurfaces,
-            )
-
-            return (TopologicalSurfaces().Orientable(),)
-
-        class WithoutBoundary(SurfaceCategoryWithAxiom):
-            class Connected(SurfaceCategoryWithAxiom):
-                class ParentMethods:
-                    def genus(self):
-                        r"""
-                        Return the genus of this surface.
-
-                        ALGORITHM:
-
-                        We deduce the genus from the Euler characteristic.
-
-                        EXAMPLES::
-
-                            sage: from flatsurf import translation_surfaces
-                            sage: translation_surfaces.octagon_and_squares().genus()
-                            3
-
-                        """
-                        return 1 - self.euler_characteristic() / 2
-
-        class FiniteType(SurfaceCategoryWithAxiom):
             class ParentMethods:
+                r"""
+                Provides methods available to all surfaces built from finitely
+                many oriented polygons.
+
+                If you want to add functionality for such surfaces you most likely want
+                to put it here.
+                """
                 def euler_characteristic(self):
                     r"""
                     Return the Euler characteristic of this surface.
@@ -797,10 +941,6 @@ class PolygonalSurfaces(SurfaceCategory):
                         sage: S = translation_surfaces.octagon_and_squares()
                         sage: S.euler_characteristic()
                         -4
-
-                    .. [Massart2021] \D. Massart. A short introduction to translation
-                    surfaces, Veech surfaces, and Teichműller dynamics.
-                    https://hal.science/hal-03300179/document
 
                     """
                     # Count the vertices
@@ -842,10 +982,247 @@ class PolygonalSurfaces(SurfaceCategory):
 
                     return ZZ(V - E + F)
 
-    class WithoutBoundary(SurfaceCategoryWithAxiom):
         class ParentMethods:
+            r"""
+            Provides methods available to all surfaces built from finitely many polygons.
+
+            If you want to add functionality for such surfaces you most likely want
+            to put it here.
+            """
+            def is_finite_type(self):
+                r"""
+                Return whether this surface is built from finitely many polygons.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_finite_type()
+                    True
+
+                """
+                return True
+
+            def is_triangulated(self):
+                r"""
+                Return whether this surfaces is built from triangles.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_triangulated()
+                    False
+
+                """
+                for p in self.polygons():
+                    if p.num_edges() != 3:
+                        return False
+
+                return True
+
+            def is_with_boundary(self):
+                r"""
+                Return whether this surface has a boundary, i.e., unglued polygon edges.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_with_boundary()
+                    False
+
+                """
+                for label in self.labels():
+                    for edge in range(self.polygon(label).num_edges()):
+                        cross = self.opposite_edge(label, edge)
+                        if cross is None:
+                            return True
+
+                return False
+
+            def _test_labels(self, **options):
+                r"""
+                Verify that :meth:`labels` has been implemented correctly by
+                this surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S._test_labels()
+
+                """
+                tester = self._tester(**options)
+
+                tester.assertEqual(len([label for label in self.labels()]), len(self.labels()))
+
+    class InfiniteType(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces built from infinitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: 'InfiniteType' in S.category().axioms()
+            True
+
+        """
+
+        class ParentMethods:
+            r"""
+            Provides methods available to all surfaces built from infinitely
+            many polygons.
+
+            If you want to add functionality for such surfaces you most likely want
+            to put it here.
+            """
+            def is_finite_type(self):
+                r"""
+                Return whether this surfaces has been built from finitely many
+                polygons which it has not.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.infinite_staircase()
+                    sage: S.is_finite_type()
+                    False
+
+                """
+                return False
+
+    class Oriented(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by orientable surfaces with an orientation which is
+        compatible with the orientation of the ambient space of the polygons
+        (assuming that that ambient space is orientable.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: 'Oriented' in S.category().axioms()
+            True
+
+        """
+
+        def extra_super_categories(self):
+            r"""
+            Return the axioms that are automatically satisfied by a surfaces
+            which is oriented, namely, that such a surface is orientable.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: 'Orientable' in S.category().axioms()
+                True
+
+            """
+            from flatsurf.geometry.categories.topological_surfaces import (
+                TopologicalSurfaces,
+            )
+
+            return (TopologicalSurfaces().Orientable(),)
+
+        class WithoutBoundary(SurfaceCategoryWithAxiom):
+            r"""
+            The axiom satisfied by oriented surfaces built from polygons that
+            have no unglued polygon edges.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: form flatsurf.geometry.categories import PolygonalSurfaces
+                sage: S.category().is_subcategory(PolygonalSurfaces().Oriented().WithoutBoundary())
+
+            """
+            class Connected(SurfaceCategoryWithAxiom):
+                r"""
+                The axiom satisfied by oriented connected surfaces built from
+                polygons that have no unglued polygon edges.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.infinite_staircase()
+                    sage: form flatsurf.geometry.categories import PolygonalSurfaces
+                    sage: S.category().is_subcategory(PolygonalSurfaces().Oriented().WithoutBoundary().Connected())
+
+                """
+                class ParentMethods:
+                    r"""
+                    Provides methods available to all oriented connected
+                    surfaces built from polygons without unglued edges.
+
+                    If you want to add functionality for such surfaces you most
+                    likely want to put it here.
+                    """
+                    def genus(self):
+                        r"""
+                        Return the genus of this surface.
+
+                        ALGORITHM:
+
+                        We deduce the genus from the Euler characteristic.
+
+                        EXAMPLES::
+
+                            sage: from flatsurf import translation_surfaces
+                            sage: translation_surfaces.octagon_and_squares().genus()
+                            3
+
+                        This method might not be functional if the Euler
+                        characteristic has not been implemented for the surface::
+
+                            sage: S = translation_surfaces.infinite_staircase()
+                            sage: S.genus()
+                            Traceback (most recent call last):
+                            ...
+                            AttributeError: ... has no attribute 'euler_characteristic'
+
+                        """
+                        return 1 - self.euler_characteristic() / 2
+
+    class WithoutBoundary(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces built from polygons without any unglued
+        edges.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: form flatsurf.geometry.categories import PolygonalSurfaces
+            sage: S.category().is_subcategory(PolygonalSurfaces().WithoutBoundary())
+
+        """
+        class ParentMethods:
+            r"""
+            Provides methods available to all surfaces that are built from
+            polygons without unglued edges.
+
+            If you want to add functionality for such surfaces you most likely want
+            to put it here.
+            """
             def _test_gluings_without_boundary(self, **options):
-                # iterate over pairs with pair1 glued to pair2
+                r"""
+                Verify that this surface has no unglued edges.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.infinite_staircase()
+                    sage: S._test_gluings_without_boundary()
+
+                """
                 tester = self._tester(**options)
 
                 if self.is_finite_type():
@@ -907,4 +1284,6 @@ class PolygonalSurfaces(SurfaceCategory):
             return self._with_axiom("Oriented")
 
 
+# Currently, there is no "FiniteType", "InfiniteType", and "Oriented"
+# axiom in SageMath so we make it known to the category framework.
 all_axioms += ("FiniteType", "InfiniteType", "Oriented")

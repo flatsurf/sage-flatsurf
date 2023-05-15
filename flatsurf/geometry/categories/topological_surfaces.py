@@ -1,7 +1,7 @@
 r"""
 The category of topological surfaces.
 
-This provides a base category for all the surfaces in sage-flatsurf.
+This module provides a base category for all the surfaces in sage-flatsurf.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -346,6 +346,18 @@ class TopologicalSurfaces(SurfaceCategory):
     class Compact(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def is_compact(self):
+                r"""
+                Return whether this surface is compact.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_compact()
+                    True
+
+                """
                 return True
 
     class SubcategoryMethods:
@@ -392,4 +404,6 @@ class TopologicalSurfaces(SurfaceCategory):
             return self._with_axiom("WithoutBoundary")
 
 
+# Currently, there is no "Orientable", "WithBoundary", and "WithoutBoundary"
+# axiom in SageMath so we make it known to the category framework.
 all_axioms += ("Orientable", "WithBoundary", "WithoutBoundary")
