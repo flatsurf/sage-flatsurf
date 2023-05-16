@@ -20,7 +20,8 @@ EXAMPLES::
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2023 Julian Rüth
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,7 +42,7 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategory
 
 class RealProjectivePolygonalSurfaces(SurfaceCategory):
     r"""
-    The category of surfaces built by gluing (Euclidean) polygons (or more
+    The category of surfaces built by gluing Euclidean polygons (or more
     generally, polygons in two-dimensional real-projective space.)
 
     EXAMPLES::
@@ -53,12 +54,47 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
     """
 
     def super_categories(self):
+        r"""
+        The categories such surfaces are also automatically contained in,
+        namely the category of surfaces built from polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
+            sage: C = RealProjectivePolygonalSurfaces()
+            sage: C.super_categories()
+
+        """
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
 
         return [PolygonalSurfaces()]
 
     class ParentMethods:
+        r"""
+        Provides methods available to all surfaces that are built from polygons
+        in the real projective plane.
+
+        If you want to add functionality for such surfaces you most likely
+        want to put it here.
+        """
         def graphical_surface(self, *args, **kwargs):
+            r"""
+            Return a graphical representation of this surface.
+
+            This method can be used to further configure or augment a plot
+            beyond the possibilities of :meth:`plot`.
+
+            The documentation of sage-flatsurf contains a section of example
+            plots or consult the :mod:`flatsurf.graphical.surface` reference for all the
+            details.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.graphical_surface()
+
+            """
             if "cached" in kwargs:
                 import warnings
 
@@ -72,6 +108,20 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
             return GraphicalSurface(self, *args, **kwargs)
 
         def plot(self, **kwargs):
+            r"""
+            Return a plot of this surface.
+
+            The documentation of sage-flatsurf contains a section of example
+            plots or consult the :mod:`flatsurf.graphical.surface` reference
+            for all the details.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.plot()
+
+            """
             graphical_surface_keywords = {
                 key: kwargs.pop(key)
                 for key in [
