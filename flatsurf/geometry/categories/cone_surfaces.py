@@ -83,6 +83,7 @@ class ConeSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: ConeSurfaces().super_categories()
+            [Category of similarity surfaces]
 
         """
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
@@ -206,6 +207,7 @@ class ConeSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
             def area(self):
                 r"""
                 Return the area of this surface.
@@ -216,56 +218,58 @@ class ConeSurfaces(SurfaceCategory):
                     sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.area()
+                    3
 
                 """
                 return sum(p.area() for p in self.polygons())
 
-    class Oriented(SurfaceCategoryWithAxiom):
-        r"""
-        The category of oriented cone surfaces, i.e., orientable cone surfaces
-        whose orientation can be chosen to be compatible with the embedding of
-        its polygons in the real projective plane.
-
-        EXAMPLES::
-
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
-            sage: S = similarity_surfaces.self_glued_polygon(P)
-
-            sage: from flatsurf.geometry.categories import ConeSurfaces
-            sage: S in ConeSurfaces().Oriented()
-            True
-
-        """
-        class ParentMethods:
+        class Oriented(SurfaceCategoryWithAxiom):
             r"""
-            Provides methods available to all oriented cone surfaces.
+            The category of oriented cone surfaces, i.e., orientable cone surfaces
+            whose orientation can be chosen to be compatible with the embedding of
+            its polygons in the real projective plane.
 
-            If you want to add functionality for such surfaces you most likely
-            want to put it here.
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+                sage: from flatsurf.geometry.categories import ConeSurfaces
+                sage: S in ConeSurfaces().Oriented()
+                True
+
             """
-            def _test_cone_surface(self, **options):
+            class ParentMethods:
                 r"""
-                Verify that this is a cone surface.
+                Provides methods available to all oriented cone surfaces.
 
-                EXAMPLES::
-
-                    sage: from flatsurf import translation_surfaces
-                    sage: S = translation_surfaces.square_torus()
-                    sage: S.set_immutable()
-                    sage: S._test_cone_surface()
-
+                If you want to add functionality for such surfaces you most likely
+                want to put it here.
                 """
-                tester = self._tester(**options)
 
-                limit = None
+                def _test_cone_surface(self, **options):
+                    r"""
+                    Verify that this is a cone surface.
 
-                if not self.is_finite_type():
-                    limit = 32
+                    EXAMPLES::
 
-                tester.assertTrue(
-                    ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit)
-                )
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.square_torus()
+                        sage: S.set_immutable()
+                        sage: S._test_cone_surface()
+
+                    """
+                    tester = self._tester(**options)
+
+                    limit = None
+
+                    if not self.is_finite_type():
+                        limit = 32
+
+                    tester.assertTrue(
+                        ConeSurfaces.ParentMethods._is_cone_surface(self, limit=limit)
+                    )
 
             class WithoutBoundary(SurfaceCategoryWithAxiom):
                 r"""
@@ -290,6 +294,7 @@ class ConeSurfaces(SurfaceCategory):
                     If you want to add functionality for such surfaces you most
                     likely want to put it here.
                     """
+
                     def angles(self, numerical=False, return_adjacent_edges=False):
                         r"""
                         Return the set of angles around the vertices of the surface.
@@ -358,7 +363,7 @@ class ConeSurfaces(SurfaceCategory):
 
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""
-                    The category of oriented connected cone surfaces.
+                    The category of oriented connected cone surfaces without boundary.
 
                     EXAMPLES::
 
@@ -374,11 +379,12 @@ class ConeSurfaces(SurfaceCategory):
                     class ParentMethods:
                         r"""
                         Provides methods available to all oriented connected
-                        cone surfaces.
+                        cone surfaces without boundary.
 
                         If you want to add functionality for such surfaces you
                         most likely want to put it here.
                         """
+
                         def _test_genus(self, **options):
                             r"""
                             Verify that the genus is compatible with the angles of the

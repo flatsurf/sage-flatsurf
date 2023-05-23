@@ -73,6 +73,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import PolygonalSurfaces
             sage: PolygonalSurfaces().super_categories()
+            [Category of topological surfaces]
 
         """
         from flatsurf.geometry.categories.topological_surfaces import (
@@ -142,11 +143,14 @@ class PolygonalSurfaces(SurfaceCategory):
                 False
 
             """
-            if len(self.polygons()) == 0:
+            roots = self.roots()
+
+            if not roots:
                 return True
 
-            if self.polygon(self.base_label()).num_edges() != 3:
-                return False
+            for root in roots:
+                if self.polygon(root).num_edges() != 3:
+                    return False
 
             raise NotImplementedError("cannot decide whether this (potentially infinite type) surface is triangulated")
 
@@ -223,6 +227,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.infinite_staircase()
                 sage: S.base_label()
+                doctest:warning
+                ...
+                UserWarning: base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general
                 0
 
             """
@@ -254,6 +261,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 1
 
                 sage: S.root()
+                Traceback (most recent call last):
+                ...
+                Exception: surface has more than one root label, use roots() instead
                 sage: S.roots()
                 (0, 1)
 
@@ -333,6 +343,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.num_polygons()
+                doctest:warning
+                ...
+                UserWarning: num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces.)
                 1
                 sage: len(S.polygons())
                 1
@@ -342,6 +355,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.infinite_staircase()
                 sage: S.num_polygons()
+                +Infinity
                 sage: S.is_finite_type()
                 False
 
@@ -382,6 +396,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 UserWarning: label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead
                 [0]
                 sage: S.labels()
+                (0,)
 
             """
             import warnings
@@ -416,7 +431,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 UserWarning: edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead
                 [(0, 0), (0, 1), (0, 2), (0, 3)]
                 sage: S.edges()
-                [(0, 0), (0, 1), (0, 2), (0, 3)]
+                ((0, 0), (0, 1), (0, 2), (0, 3))
 
             ::
 
@@ -432,7 +447,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: list(S.edge_iterator())
                 [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
                 sage: S.edges()
-                [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
+                ((0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2))
 
             """
             import warnings
@@ -462,12 +477,14 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.edges()
+                ((0, 0), (0, 1), (0, 2), (0, 3))
 
             ::
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.infinite_staircase()
                 sage: S.edges()
+                ((0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (-1, 0), (-1, 1), (-1, 2), (-1, 3), (2, 0), (2, 1), (2, 2), (2, 3), …)
 
             """
             from flatsurf.geometry.surface import Edges
@@ -489,7 +506,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 UserWarning: edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead
                 [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
                 sage: S.gluings()
-                [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
+                (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3)))
 
             """
             import warnings
@@ -515,10 +532,11 @@ class PolygonalSurfaces(SurfaceCategory):
             self-gluing.)
 
             EXAMPLES::
-            
+
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
                 sage: S.gluings()
+                (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
 
             A surface with only self-gluings::
 
@@ -526,7 +544,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.gluings()
-                [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]
+                (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3)))
 
             """
             from flatsurf.geometry.surface import Gluings
@@ -664,6 +682,10 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.num_edges()
+                doctest:warning
+                ...
+                UserWarning: num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(p.num_edges() for p in polygons()) instead
+                4
 
             """
             import warnings
@@ -830,6 +852,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: PolygonalSurfaces().FiniteType().extra_super_categories()
+                (Category of compact topological spaces,)
 
             """
             from sage.categories.topological_spaces import TopologicalSpaces
@@ -870,6 +893,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: PolygonalSurfaces().FiniteType().Connected()
+                Category of connected finite type polygonal surfaces
 
             """
             class ParentMethods:
@@ -1140,8 +1164,9 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.infinite_staircase()
-                sage: form flatsurf.geometry.categories import PolygonalSurfaces
+                sage: from flatsurf.geometry.categories import PolygonalSurfaces
                 sage: S.category().is_subcategory(PolygonalSurfaces().Oriented().WithoutBoundary())
+                True
 
             """
             class Connected(SurfaceCategoryWithAxiom):
@@ -1153,8 +1178,9 @@ class PolygonalSurfaces(SurfaceCategory):
 
                     sage: from flatsurf import translation_surfaces
                     sage: S = translation_surfaces.infinite_staircase()
-                    sage: form flatsurf.geometry.categories import PolygonalSurfaces
+                    sage: from flatsurf.geometry.categories import PolygonalSurfaces
                     sage: S.category().is_subcategory(PolygonalSurfaces().Oriented().WithoutBoundary().Connected())
+                    True
 
                 """
                 class ParentMethods:
@@ -1200,8 +1226,9 @@ class PolygonalSurfaces(SurfaceCategory):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: form flatsurf.geometry.categories import PolygonalSurfaces
+            sage: from flatsurf.geometry.categories import PolygonalSurfaces
             sage: S.category().is_subcategory(PolygonalSurfaces().WithoutBoundary())
+            True
 
         """
         class ParentMethods:

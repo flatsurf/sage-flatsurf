@@ -1,120 +1,158 @@
+r"""
+The category of polygons in the real projective plane with fixed rational
+angles.
+
+This module provides a common structure for all polygons with certain fixed
+angles.
+
+See :mod:`flatsurf.geometry.categories` for a general description of the
+category framework in sage-flatsurf.
+
+Normally, you won't create this (or any other) category directly. The correct
+category is automatically determined for polygons.
+
+EXAMPLES:
+
+The category of rectangles::
+
+    sage: from flatsurf.geometry.categories import RealProjectivePolygons
+    sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1])
+
+It is often tedious to create this category manually, since you need to
+determine a base ring that can describe the coordinates of polygons with such
+angles::
+
+    sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1])
+    sage: C.slopes()
+    Traceback (most recent call last):
+    ...
+    TypeError: Unable to coerce c to a rational
+
+    sage: C = RealProjectivePolygons(AA).WithAngles([1, 1, 1])
+    sage: C.slopes()
+    [(1, 0), (-0.5773502691896258?, 1), (-0.5773502691896258?, -1)]
+
+Instead, we can use :meth:`EuclideanPolygonsWithAngles` to create this category
+over a minimal number field::
+
+    sage: from flatsurf import EuclideanPolygonsWithAngles
+    sage: C = EuclideanPolygonsWithAngles([1, 1, 1])
+    sage: C.slopes()
+    [(1, 0), (-c, 3), (-c, -3)]
+
+The category of polygons is automatically determined when using
+:meth:`polygon`::
+
+    sage: from flatsurf import polygon
+    sage: p = polygon(angles=(1, 1, 1))
+    sage: p.category()
+    Category of convex real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+
+However, it can be very costly to determine that a polygon is rational and what
+its actual angles are (the "equilateral" in the previous example.) Therefore,
+the category might get refined once these aspects have been determined::
+
+    sage: p = polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)])
+    sage: p.category()
+    Category of convex real projective polygons over Rational Field
+    sage: p.is_rational()
+    True
+    sage: p.category()
+    Category of rational convex real projective polygons over Rational Field
+    sage: p.angles()
+    (1/4, 1/4, 1/4, 1/4)
+    sage: p.category()
+    Category of convex real projective rectangles over Rational Field
+
+Note that SageMath applies the same strategy when determining wether the
+integers modulo N are a field::
+
+    sage: K = Zmod(1361)
+    sage: K.category()
+    Join of Category of finite commutative rings and Category of subquotients of monoids and Category of quotients of semigroups and Category of finite enumerated sets
+    sage: K.is_field()
+    True
+    sage: K.category()
+    Join of Category of finite enumerated fields and Category of subquotients of monoids and Category of quotients of semigroups
+
+"""
+# ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                      2020-2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ****************************************************************************
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_types import Category_over_base_ring
 from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
 
 
 class RealProjectivePolygonsWithAngles(Category_over_base_ring):
-    # TODO: This is the docstring of EquiangularPolygons
     r"""
-    Polygons with fixed (rational) angles.
+    The category of real projective polygons with fixed rational angles.
 
     EXAMPLES::
 
-        sage: from flatsurf import EquiangularPolygons
+        sage: from flatsurf.geometry.categories import RealProjectivePolygons
+        sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1])
 
-    The polygons with inner angles `\pi/4`, `\pi/2`, `5\pi/4`::
+    TESTS::
 
-        sage: P = EquiangularPolygons(1, 2, 5)
-        sage: P
-        Category of real projective polygons with angles (1, 2, 5) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+        sage: TestSuite(C).run()
 
-    Internally, polygons are given by their vertices' coordinates over some
-    number field, in this case a quadratic field::
-
-        sage: P.base_ring()
-        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-
-    Polygons can also be defined over other number field implementations::
-
-        sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-        sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
-        sage: P(K(1)) # optional: eantic
-        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-        sage: _.base_ring() # optional: eantic
-        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-
-    However, specific instances of such polygons might be defined over another ring::
-
-        sage: P(1)
-        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-        sage: _.base_ring()
-        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-
-        sage: P(AA(1))
-        polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
-        sage: _.base_ring()
-        Algebraic Real Field
-
-    Polygons can also be defined over a module containing transcendent parameters::
-
-        sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
-        sage: R = ExactReals(P.base_ring()) # optional: exactreal
-        sage: P(R(1)) # optional: exactreal
-        polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
-        sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
-        polygon(vertices=[(0, 0),])
-                 (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
-                 (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
-                 ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
-        sage: _.base_ring() # optional: exactreal
-        Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
-
-    ::
-
-        sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
-        sage: L
-        A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
-        sage: lengths = L.rays()[0].vector()
-        sage: lengths
-        (1, -1/2*c0 + 1, -1/2*c0 + 1)
-        sage: p = P(*lengths)    # build one polygon with the given lengths
-        sage: p
-        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-        sage: p.angles()
-        (1/16, 1/8, 5/16)
-        sage: P.angles(integral=False)
-        (1/16, 1/8, 5/16)
-
-        sage: P = EquiangularPolygons(1, 2, 1, 2, 2, 1)
-        sage: L = P.lengths_polytope()
-        sage: L
-        A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
-        sage: rays = [r.vector() for r in L.rays()]
-        sage: rays
-        [(1, 0, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, -1/6*c^5 + 5/6*c^3 - 2/3*c),
-         (0, 1, 0, 0, c^2 - 3, c^2 - 2),
-         (1/3*c^4 - 2*c^2 + 3, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
-         (-c^4 + 4*c^2, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
-         (0, 1/3*c^4 - 2*c^2 + 3, c^2 - 3, 0, 0, 1/3*c^4 - c^2),
-         (0, -c^4 + 4*c^2, 0, c^2 - 3, 0, -c^4 + 5*c^2 - 3)]
-        sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
-        sage: p = P(*lengths)
-        sage: p
-        polygon(vertices=[(0, 0),
-                          (-5/3*c^4 + 6*c^2 + 6, 0),
-                          (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
-                          (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
-                          (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
-                          (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)])
-
-        sage: p.angles()
-        (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
-
-        sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-        Category of real projective polygons with angles (1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
-
-    A regular pentagon::
-
-        sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
-        sage: E(1, 1, 1, 1, 1, normalized=True)
-        polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
     """
 
+    def __init__(self, base_ring, angles):
+        self._angles = angles
+
+        super().__init__(base_ring)
+
     def super_categories(self):
+        r"""
+        Return the other categories such polygons are automatically members of,
+        namely, the category of rational real-projective polygons polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import RealProjectivePolygons
+            sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1])
+            sage: C.super_categories()
+            [Category of rational real projective polygons over Rational Field]
+
+        """
         return [RealProjectivePolygons(self.base_ring()).Rational()]
 
     @staticmethod
     def _normalize_angles(angles):
+        r"""
+        Return ``angles`` normalized such that they sum to n/2-1 where ``n`` is
+        the number of angles, i.e., they scale to the angle in an n-gon divided
+        by π.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            sage: RealProjectivePolygonsWithAngles._normalize_angles([1, 1, 1, 1])
+            (1/4, 1/4, 1/4, 1/4)
+            sage: RealProjectivePolygonsWithAngles._normalize_angles([1, 2, 3, 4])
+            (1/10, 1/5, 3/10, 2/5)
+            sage: RealProjectivePolygonsWithAngles._normalize_angles([1, 2, 3])
+            (1/12, 1/6, 1/4)
+
+        """
         n = len(angles)
         if n < 3:
             raise ValueError("there must be at least three angles")
@@ -136,7 +174,22 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         return angles
 
     @staticmethod
-    def _slopes(angles):
+    def __slopes(angles):
+        r"""
+        Return the slopes of the sides of a polygon with ``angles`` in a
+        (possibly non-minimal) number field.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes([1/6, 1/6, 1/6])
+            [(c, 3), (c, 3), (c, 3)]
+            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes([1/4, 1/4, 1/4, 1/4])
+            [(0, 1), (0, 1), (0, 1), (0, 1)]
+            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes([1/10, 2/10, 3/10, 4/10])
+            [(c^3, 5), (3*c^3 - 10*c, 5), (-3*c^3 + 10*c, 5), (-c^3, 5)]
+
+        """
         from sage.all import ZZ, QQ, RIF, lcm, AA, NumberField
         from flatsurf.geometry.subfield import chebyshev_T, cos_minpoly
 
@@ -147,14 +200,15 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         N = lcm(a.denominator() for a in angles)
         # The field containing the cosine and sine of 2π/N might be too small
         # to write down all the slopes when N is not divisible by 4.
-        assert N != 1, "there cannot be a polygon with all angles multiples of 2π"
+        if N == 1:
+            raise ValueError("there cannot be a polygon with all angles multiples of 2π")
         if N == 2:
             pass
         elif N % 4:
             while N % 4:
                 N *= 2
 
-        angles = [ZZ(a * N) for a in angles]
+        angles = [QQ(a * N) for a in angles]
 
         if N == 2:
             base_ring = QQ
@@ -181,13 +235,45 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         from flatsurf.geometry.polygon import projectivization
         return [projectivization(x, y) for x, y in slopes]
 
+    @cached_method
+    def _slopes(self):
+        slopes = RealProjectivePolygonsWithAngles.__slopes(self._angles)
+
+        # We bring the slopes first into the minimal number field in which they
+        # are defined since otherwise conversion from the cosines ring to the
+        # base_ring might fail. E.g., when the base ring is the exact-reals
+        # over the minimal base ring.
+        minimal_base_ring = RealProjectivePolygonsWithAngles._base_ring(self._angles)
+        slopes = [(minimal_base_ring(slope[0]), minimal_base_ring(slope[1])) for slope in slopes]
+        return [(self.base_ring()(slope[0]), self.base_ring()(slope[1])) for slope in slopes]
+
+    @cached_method
+    def _cosines_ring(self):
+        slopes = RealProjectivePolygonsWithAngles.__slopes(self._angles)
+        return slopes[0][0].parent()
+
     @staticmethod
     def _base_ring(angles):
-        slopes = RealProjectivePolygonsWithAngles._slopes(angles)
+        r"""
+        Return a minimal number field containing all the :meth:`_slopes` of a
+        polygon with ``angles``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            sage: RealProjectivePolygonsWithAngles._base_ring([1/6, 1/6, 1/6])
+            Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+            sage: RealProjectivePolygonsWithAngles._base_ring([1/4, 1/4, 1/4, 1/4])
+            Rational Field
+            sage: RealProjectivePolygonsWithAngles._base_ring([1/10, 2/10, 3/10, 4/10])
+            Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
+
+        """
+        slopes = RealProjectivePolygonsWithAngles.__slopes(angles)
         base_ring = slopes[0][0].parent()
 
-        # TODO: It might be the case that the slopes generate a smaller
-        # field. For now we use an ugly workaround via subfield_from_elements.
+        # It might be the case that the slopes generate a smaller field. For
+        # now we use an ugly workaround via subfield_from_elements.
         old_slopes = []
         for v in slopes:
             old_slopes.extend(v)
@@ -195,20 +281,36 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         L, _, _ = subfield_from_elements(base_ring, old_slopes)
         return L
 
-    def __init__(self, base_ring, angles):
-        self._angles = angles
-        self._slopes = RealProjectivePolygonsWithAngles._slopes(angles)
-        self._cosines_ring = self._slopes[0][0].parent()
-        self._slopes = [(base_ring(slope[0]), base_ring(slope[1])) for slope in self._slopes]
-
-        super().__init__(base_ring)
-
     def _repr_object_names(self):
+        r"""
+        Helper method to create the name of this category.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPolygonsWithAngles
+            sage: EuclideanPolygonsWithAngles([1/6, 1/6, 1/6])
+            Category of real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+            sage: EuclideanPolygonsWithAngles([1/4, 1/4, 1/4, 1/4])
+            Category of real projective rectangles over Rational Field
+            sage: EuclideanPolygonsWithAngles([1/10, 2/10, 3/10, 4/10])
+            Category of real projective quadrilaterals with angles (1/10, 1/5, 3/10, 2/5) over Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
+
+        """
         names = super()._repr_object_names()
-        return names.replace("with angles", f"with angles {self.angles(True)}")
+
+        equiangular = len(set(self._angles)) == 1
+
+        from flatsurf.geometry.polygon import EuclideanPolygon
+        _, _, polygons = EuclideanPolygon._describe_polygon(len(self._angles), equiangular=equiangular)
+
+        with_angles = "" if equiangular else f" with angles {self.angles(False)}" 
+
+        return names.replace(" with angles", with_angles).replace("polygons", polygons)
 
     def __call__(self, *lengths, normalized=False, base_ring=None):
         r"""
+        Return a polygon with these angles from ``lengths``.
+
         TESTS::
 
             sage: from flatsurf import EquiangularPolygons
@@ -217,13 +319,42 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             sage: r0, r1 = [r.vector() for r in L.rays()]
             sage: lengths = r0 + r1
             sage: P(*lengths[:-2])
+            doctest:warning
+            ...
+            UserWarning: calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+            polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
+
+            sage: from flatsurf import polygon, EuclideanPolygonsWithAngles
+            sage: P = EuclideanPolygonsWithAngles([1, 2, 1, 2])
+            sage: polygon(angles=[1, 2, 1, 2], lengths=lengths[:-2])
+            polygon(vertices=[(0, 0), (1, 0), (3/2, 1/2*c), (1/2, 1/2*c)])
+            sage: polygon(angles=[1, 2, 1, 2], edges=[length * slope for (length, slope) in zip(lengths[:-2], P.slopes())])
             polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
             sage: P = EquiangularPolygons(2, 2, 3, 13)
             sage: r0, r1 = [r.vector() for r in P.lengths_polytope().rays()]
             sage: P(r0 + r1)
             polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
+
+            sage: P = EuclideanPolygonsWithAngles([2, 2, 3, 13])
+            sage: polygon(angles=[2, 2, 3, 13], lengths=r0 + r1)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon not closed
+            sage: polygon(angles=[2, 2, 3, 13], edges=[length * slope for (length, slope) in zip(r0 + r1, P.slopes())])
+            polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
+
         """
+        # __call__() cannot be properly inherited in subcategories since it
+        # cannot be in SubcategoryMethods; that's why we want to get rid of it.
+        import warnings
+        warning = "calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use polygon(angles=[...], lengths=[...]) instead."
+
+        if not normalized:
+            warning += " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())])."
+
+        warnings.warn(warning)
+
         from sage.structure.element import Vector
         if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
             lengths = lengths[0]
@@ -235,7 +366,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 % (n - 2, n, len(lengths))
             )
 
-        V = self.module()
+        V = self.base_ring()**2
         slopes = self.slopes()
         if normalized:
             V = V.change_ring(self._cosines_ring)
@@ -282,42 +413,96 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             vertices.pop(-1)
 
         category = RealProjectivePolygons(base_ring)
-        if self.convexity():
+        if self.is_convex():
             category = category.Convex()
 
         from flatsurf.geometry.polygon import EuclideanPolygon
         return EuclideanPolygon(base_ring, vertices=vertices, category=category)
 
     class SubcategoryMethods:
+        def is_convex(self, strict=False):
+            r"""
+            Return whether the polygons in this category are convex.
+
+            INPUT:
+
+            - ``strict`` -- a boolean (default: ``False``); whether only to
+              consider polygons convex if all angles are <π.
+
+            EXAMPLES::
+
+                sage: from flatsurf import EquiangularPolygons
+                sage: EquiangularPolygons(1, 2, 5).is_convex()
+                True
+                sage: EquiangularPolygons(2, 2, 3, 13).is_convex()
+                False
+
+            ::
+
+                sage: E = EquiangularPolygons([1, 1, 1, 1, 2])
+                sage: E.angles()
+                (1/4, 1/4, 1/4, 1/4, 1/2)
+                sage: E.is_convex(strict=False)
+                True
+                sage: E.is_convex(strict=True)
+                False
+
+            """
+            if strict:
+                return all(2 * a < 1 for a in self.angles())
+
+            return all(2 * a <= 1 for a in self.angles())
+
         def convexity(self):
             r"""
             EXAMPLES::
 
                 sage: from flatsurf import EquiangularPolygons
                 sage: EquiangularPolygons(1, 2, 5).convexity()
+                doctest:warning
+                ...
+                UserWarning: convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex() instead
                 True
                 sage: EquiangularPolygons(2, 2, 3, 13).convexity()
                 False
+
             """
-            return all(2 * a <= 1 for a in self._angles)
+            import warnings
+            warnings.warn("convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex() instead")
 
-        # def base_ring(self):
-        #     r"""
-        #     Return the number field over which the coordinates of the vertices of
-        #     this family of polygons are represented internally.
+            return self.is_convex()
 
-        #     EXAMPLES::
+        def strict_convexity(self):
+            r"""
+            EXAMPLES::
 
-        #         sage: from flatsurf import EquiangularPolygons
-        #         sage: EquiangularPolygons(1, 2, 5).base_ring()
-        #         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+                sage: from flatsurf import EquiangularPolygons
+                sage: E = EquiangularPolygons([1, 1, 1, 1, 2])
+                sage: E.angles()
+                (1/4, 1/4, 1/4, 1/4, 1/2)
+                sage: E.convexity()
+                True
+                sage: E.strict_convexity()
+                doctest:warning
+                ...
+                UserWarning: strict_convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead
+                False
 
-        #     """
-        #     return self._base_ring
+            """
+            import warnings
+            warnings.warn("strict_convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead")
+
+            return self.is_convex(strict=True)
 
         def angles(self, integral=False):
             r"""
-            Return the interior angles of this polygon as multiples 2π.
+            Return the interior angles of this polygon as multiples of 2π.
+
+            INPUT:
+
+            - ``integral`` -- a boolean (default: ``False``); whether to return
+              the angles not as multiples of 2π but rescaled so that they have
+              no denominators.
 
             EXAMPLES::
 
@@ -336,14 +521,18 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             angles = self.__angles()
             if integral:
                 from sage.all import lcm, ZZ, gcd
-                C = lcm([a.denominator() for a in self._angles]) / gcd(
-                    [a.numerator() for a in self._angles]
+                C = lcm([a.denominator() for a in self.angles()]) / gcd(
+                    [a.numerator() for a in self.angles()]
                 )
                 angles = tuple(ZZ(C * a) for a in angles)
             return angles
 
         @cached_method
         def __angles(self):
+            r"""
+            Helper method for :meth:`angles` to lookup the stored angles if
+            this is a subcategory of :class:`RealProjectivePolygonsWithAngles`.
+            """
             if isinstance(self, RealProjectivePolygonsWithAngles):
                 return self._angles
 
@@ -351,68 +540,25 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 if isinstance(category, RealProjectivePolygonsWithAngles):
                     return category._angles
 
-            raise NotImplementedError
-
-        def strict_convexity(self):
-            r"""
-            EXAMPLES::
-
-                sage: from flatsurf import EquiangularPolygons
-                sage: E = EquiangularPolygons([1, 1, 1, 1, 2])
-                sage: E.angles()
-                (1/4, 1/4, 1/4, 1/4, 1/2)
-                sage: E.convexity()
-                True
-                sage: E.strict_convexity()
-                False
-
-            """
-            return all(2 * a < 1 for a in self._angles)
-
-        @cached_method
-        def module(self):
-            r"""
-            Return the free module of rank 2 in which these polygons embed.
-
-            EXAMPLES::
-
-                sage: from flatsurf import EquiangularPolygons
-                sage: C = EquiangularPolygons(1, 2, 3)
-                sage: C.module()
-                Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
-
-            """
-            from sage.all import FreeModule
-            return FreeModule(self.base_ring(), 2)
-
-        @cached_method
-        def vector_space(self):
-            r"""
-            Return the vector space of dimension 2 in which these polygons embed.
-
-            EXAMPLES::
-
-                sage: from flatsurf import EquiangularPolygons
-                sage: C = EquiangularPolygons(1, 2, 3)
-                sage: C.vector_space()
-                Vector space of dimension 2 over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
-
-            """
-            from sage.all import VectorSpace
-            return VectorSpace(self.base_ring().fraction_field(), 2)
+            assert False, "RealProjectivePolygonsWithAngles should be a supercategory of this category"
 
         def slopes(self, e0=(1, 0)):
             r"""
-            List of slopes of the edges as a list of vectors.
+            Return the slopes of the edges as a list of vectors.
+
+            INPUT:
+
+            - ``e0`` -- the first slope returned (default: ``(1, 0)``)
 
             EXAMPLES::
 
                 sage: from flatsurf import EquiangularPolygons
                 sage: EquiangularPolygons(1, 2, 1, 2).slopes()
                 [(1, 0), (c, 3), (-1, 0), (-c, -3)]
+
             """
-            V = self.module()
-            slopes = self._slopes
+            V = self.base_ring()**2
+            slopes = self.__slopes()
             n = len(slopes)
             cosines = [x[0] for x in slopes]
             sines = [x[1] for x in slopes]
@@ -427,6 +573,21 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 e = projectivization(*e)
                 edges.append(V(e))
             return edges
+
+        @cached_method
+        def __slopes(self):
+            r"""
+            Helper method for :meth:`slopes` to lookup the stored slopes if
+            this is a subcategory of :class:`RealProjectivePolygonsWithAngles`.
+            """
+            if isinstance(self, RealProjectivePolygonsWithAngles):
+                return self._slopes()
+
+            for category in self.super_categories():
+                if isinstance(category, RealProjectivePolygonsWithAngles):
+                    return category._slopes()
+
+            assert False, "RealProjectivePolygonsWithAngles should be a supercategory of this category"
 
         # TODO: rather than lengths, it would be more convenient to have access
         # to the tangent space (that is the space of possible holonomies). However,
@@ -464,9 +625,10 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         def an_element(self):
             r"""
-            Return a polygon in this family.
+            Return a polygon in this category.
 
-            Note that this might fail due to intersection.
+            Since currently polygons must not be self-intersecting, the
+            construction used might fail.
 
             EXAMPLES::
 
@@ -479,11 +641,17 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                                   (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22),
                                   (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)])
             """
-            return self(sum(r.vector() for r in self.lengths_polytope().rays()))
+            from flatsurf import polygon
+            p = polygon(angles=self.angles())
+
+            if p not in self:
+                raise NotImplementedError("cannot create an element in this category yet")
+
+            return p
 
         def random_element(self, ring=None, **kwds):
             r"""
-            Return a random polygon.
+            Return a random polygon in this category.
 
             EXAMPLES::
 
@@ -494,7 +662,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 polygon(vertices=[(0, 0), ...])
                 sage: EquiangularPolygons(1,15,1,15,1,15).random_element()
                 polygon(vertices=[(0, 0), ...])
+
             """
+            # TODO: Check that the result is in this category. Otherwise, throw a NotImplementedError
             if ring is None:
                 from sage.all import QQ
                 ring = QQ
@@ -515,11 +685,19 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                         return coeffs, sol
 
             while True:
-                coeffs, r = random_element()
+                coeffs, lengths = random_element()
+                edges = [length * slope for (length, slope) in zip(lengths, self.slopes())]
+                from flatsurf import polygon
                 try:
-                    return self(*r)
+                    p = polygon(edges=edges, angles=self.angles())
                 except ValueError:
-                    pass
+                    continue
+                break
+
+            if p not in self:
+                raise NotImplementedError("cannot create a random element in this category yet")
+
+            return p
 
         def billiard_unfolding_angles(self, cover_type="translation"):
             r"""

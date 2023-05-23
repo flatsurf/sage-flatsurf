@@ -101,12 +101,12 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
-        sage: from flatsurf import EquiangularPolygons
+        sage: from flatsurf import polygon, EuclideanPolygonsWithAngles
         sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 
-        sage: E = EquiangularPolygons(1, 5, 5, 5)
+        sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
         sage: R = ExactReals(E.base_ring())  # optional: exactreal
-        sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
+        sage: T = polygon(angles=(1, 5, 5, 5), lengths=[1, R.random_element(1/4)])  # optional: exactreal
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
         sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf
@@ -231,16 +231,15 @@ class GL2ROrbitClosure:
 
         EXAMPLES::
 
-            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: from flatsurf import polygon, similarity_surfaces
             sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
-            sage: E = EquiangularPolygons(1, 3, 5)
-            sage: T = E(1)
+            sage: T = polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
             sage: O.dimension() # optional: pyflatsurf
             2
-            sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
+            sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
             sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
@@ -260,10 +259,9 @@ class GL2ROrbitClosure:
 
         EXAMPLES::
 
-            sage: from flatsurf import EquiangularPolygons, similarity_surfaces
+            sage: from flatsurf import polygon, similarity_surfaces
             sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
-            sage: E = EquiangularPolygons(1, 3, 5)
-            sage: T = E(1)
+            sage: T = polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
@@ -294,12 +292,12 @@ class GL2ROrbitClosure:
 
         EXAMPLES::
 
-            sage: from flatsurf import polygons, similarity_surfaces, EquiangularPolygons
+            sage: from flatsurf import polygon, similarity_surfaces, EuclideanPolygonsWithAngles
             sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
             sage: from pyexactreal import ExactReals  # optional: exactreal
-            sage: E = EquiangularPolygons(1, 5, 5, 5)
-            sage: R = ExactReals(E.base_ring())  # optional: exactreal
-            sage: T = E(R(1), R.random_element(1/4))  # optional: exactreal
+            sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
+            sage: R = ExactReals(E.base_ring())
+            sage: T = polygon(angles=(1, 5, 5, 5), lengths=[1, R.random_element(1/4)])
             sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
             sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
             sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf
@@ -313,14 +311,13 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition()  # long time, optional: pyflatsurf
             Rational Field
 
-            sage: E = EquiangularPolygons(1, 3, 5)
-            sage: T = E(1)
+            sage: T = polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
             sage: O.field_of_definition() # optional: pyflatsurf
             Number Field in c0 with defining polynomial x^3 - 3*x - 1 with c0 = 1.879385241571817?
-            sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
+            sage: bound = T.category().billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
             sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf
             ....:     if O.dimension() == bound: break
             ....:     O.update_tangent_space_from_flow_decomposition(decomposition)

@@ -482,6 +482,9 @@ class Surface(OrientedSimilaritySurface):
             sage: S = Surface_dict(QQ)
             sage: P = ConvexPolygons(QQ)
             sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
+            doctest:warning
+            ...
+            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead
             0
             sage: S == S
             True

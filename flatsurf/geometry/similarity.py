@@ -34,8 +34,6 @@ from sage.modules.free_module_element import FreeModuleElement
 
 from sage.structure.element import is_Matrix
 
-from flatsurf.geometry.polygon import ConvexPolygons
-
 ZZ_0 = Integer(0)
 ZZ_1 = Integer(1)
 ZZ_m1 = -ZZ_1
@@ -271,9 +269,8 @@ class Similarity(MultiplicativeGroupElement):
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
             sage: SG = SimilarityGroup(QQ)
-            sage: from flatsurf import ConvexPolygons
-            sage: P = ConvexPolygons(QQ)
-            sage: p = P(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: from flatsurf import polygon
+            sage: p = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: g = SG.an_element()**2
             sage: g
             (x, y) |-> (25*x + 4, 25*y + 10)
@@ -281,6 +278,7 @@ class Similarity(MultiplicativeGroupElement):
             polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).parent()
             Category of convex real projective polygons over Algebraic Real Field
+
         """
         if ring is not None and ring not in Rings():
             raise TypeError("ring must be a ring")
@@ -289,10 +287,11 @@ class Similarity(MultiplicativeGroupElement):
         if isinstance(w, EuclideanPolygon) and w.is_convex():
             if ring is None:
                 ring = self.parent().base_ring()
-            P = ConvexPolygons(ring)
+
+            from flatsurf import polygon
 
             try:
-                return P(vertices=[self(v) for v in w.vertices()])
+                return polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
             except ValueError:
                 if not self._sign.is_one():
                     raise ValueError("Similarity must be orientation preserving.")

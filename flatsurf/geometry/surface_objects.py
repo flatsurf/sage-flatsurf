@@ -32,7 +32,7 @@ from sage.rings.qqbar import AA
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
-from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
+from flatsurf.geometry.polygon import wedge_product
 from flatsurf.geometry.similarity import SimilarityGroup
 
 
@@ -1252,7 +1252,6 @@ class Cylinder(SageObject):
             edge_intersections.append((w1, w2))
 
         polygons = []
-        P = ConvexPolygons(s.base_ring())
         pair1 = edge_intersections[-1]
         l1 = labels[-2][0]
         e1 = edges[-1]
@@ -1267,7 +1266,9 @@ class Cylinder(SageObject):
                 polygon_verts.append(pair2[1])
             if pair2[0] != pair1p[0]:
                 polygon_verts.append(pair2[0])
-            polygons.append((l2, P(vertices=polygon_verts)))
+
+            from flatsurf import polygon
+            polygons.append((l2, polygon(vertices=polygon_verts, base_ring=s.base_ring())))
             l1 = l2
             pair1 = pair2
             e1 = e2

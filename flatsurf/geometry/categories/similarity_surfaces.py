@@ -609,10 +609,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     if not (0 <= v < n):
                         raise ValueError
                     glue = []
-                    from flatsurf.geometry.polygon import ConvexPolygons
 
-                    P = ConvexPolygons(us.base_ring())
-                    pp = P(edges=[p.edge((i + v) % n) for i in range(n)])
+                    from flatsurf import polygon
+
+                    pp = polygon(edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring())
 
                     for i in range(n):
                         e = (v + i) % n
@@ -905,9 +905,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                         ss = MutableOrientedSimilaritySurface(field2)
                         index = 0
-                        from flatsurf.geometry.polygon import ConvexPolygons
 
-                        P = ConvexPolygons(field2)
+                        from flatsurf import polygon
+
                         for label, p in zip(self.labels(), self.polygons()):
                             new_edges = []
                             for i in range(p.num_edges()):
@@ -918,7 +918,7 @@ class SimilaritySurfaces(SurfaceCategory):
                                     )
                                 )
                                 index += 2
-                            pp = P(edges=new_edges)
+                            pp = polygon(edges=new_edges, base_ring=field2)
                             ss.add_polygon(pp, label=label)
                         ss.set_roots(self.roots())
                         for (l1, e1), (l2, e2) in self.gluings():
@@ -1132,8 +1132,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     raise ValueError(
                         "The polygon opposite the provided edge is not a triangle."
                     )
-                P = p1.parent()
-                p2 = P(vertices=[sim(v) for v in p2.vertices()])
+
+                from flatsurf import polygon
+                p2 = polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
 
                 if direction is None:
                     direction = s.vector_space()((0, 1))
@@ -1155,21 +1156,23 @@ class SimilaritySurfaces(SurfaceCategory):
                 new_triangle = []
                 try:
                     new_triangle.append(
-                        P(
+                        polygon(
                             edges=[
                                 p1.edge((e1 + 2) % 3),
                                 p2.edge((e2 + 1) % 3),
                                 -new_diagonal,
-                            ]
+                            ],
+                            base_ring=p1.base_ring(),
                         )
                     )
                     new_triangle.append(
-                        P(
+                        polygon(
                             edges=[
                                 p2.edge((e2 + 2) % 3),
                                 p1.edge((e1 + 1) % 3),
                                 new_diagonal,
-                            ]
+                            ],
+                            base_ring=p1.base_ring(),
                         )
                     )
                     # The above triangles would be glued along edge 2 to form the diagonal of the quadrilateral being removed.
@@ -1202,20 +1205,22 @@ class SimilaritySurfaces(SurfaceCategory):
                 cycle2 = (new_sep[1 - i] - v2 + 3) % 3
 
                 # This will be the new triangle with label l1:
-                tri1 = P(
+                tri1 = polygon(
                     edges=[
                         new_triangle[i].edge(cycle1),
                         new_triangle[i].edge((cycle1 + 1) % 3),
                         new_triangle[i].edge((cycle1 + 2) % 3),
-                    ]
+                    ],
+                    base_ring=p1.base_ring()
                 )
                 # This will be the new triangle with label l2:
-                tri2 = P(
+                tri2 = polygon(
                     edges=[
                         new_triangle[1 - i].edge(cycle2),
                         new_triangle[1 - i].edge((cycle2 + 1) % 3),
                         new_triangle[1 - i].edge((cycle2 + 2) % 3),
-                    ]
+                    ],
+                    base_ring=p1.base_ring(),
                 )
                 # In the above, edge 2-cycle1 of tri1 would be glued to edge 2-cycle2 of tri2
                 diagonal_glue_e1 = 2 - cycle1
@@ -1358,24 +1363,24 @@ class SimilaritySurfaces(SurfaceCategory):
                         raise ValueError("Can't glue polygon to itself.")
                 t = self.edge_transformation(p2, e2)
                 dt = t.derivative()
-                vs = []
+                es = []
                 edge_map = {}  # Store the pairs for the old edges.
                 for i in range(e1):
-                    edge_map[len(vs)] = (p1, i)
-                    vs.append(poly1.edge(i))
+                    edge_map[len(es)] = (p1, i)
+                    es.append(poly1.edge(i))
                 ne = poly2.num_edges()
                 for i in range(1, ne):
                     ee = (e2 + i) % ne
-                    edge_map[len(vs)] = (p2, ee)
-                    vs.append(dt * poly2.edge(ee))
+                    edge_map[len(es)] = (p2, ee)
+                    es.append(dt * poly2.edge(ee))
                 for i in range(e1 + 1, poly1.num_edges()):
-                    edge_map[len(vs)] = (p1, i)
-                    vs.append(poly1.edge(i))
+                    edge_map[len(es)] = (p1, i)
+                    es.append(poly1.edge(i))
 
                 try:
-                    from flatsurf.geometry.polygon import ConvexPolygons
+                    from flatsurf import polygon
 
-                    new_polygon = ConvexPolygons(self.base_ring())(vs)
+                    new_polygon = polygon(edges=es, base_ring=self.base_ring())
                 except (ValueError, TypeError):
                     if test:
                         return False
@@ -1404,7 +1409,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     inv_edge_map[value] = (p1, key)
 
                 glue_list = []
-                for i in range(len(vs)):
+                for i in range(len(es)):
                     p3, e3 = edge_map[i]
                     p4, e4 = self.opposite_edge(p3, e3)
                     if p4 == p1 or p4 == p2:
@@ -1460,14 +1465,15 @@ class SimilaritySurfaces(SurfaceCategory):
                 newedges1 = [poly.vertex(v2) - poly.vertex(v1)]
                 for i in range(v2, v1 + ne):
                     newedges1.append(poly.edge(i))
-                from flatsurf.geometry.polygon import ConvexPolygons
 
-                newpoly1 = ConvexPolygons(self.base_ring())(newedges1)
+                from flatsurf import polygon
+
+                newpoly1 = polygon(edges=newedges1, base_ring=self.base_ring())
 
                 newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
                 for i in range(v1, v2):
                     newedges2.append(poly.edge(i))
-                newpoly2 = ConvexPolygons(self.base_ring())(newedges2)
+                newpoly2 = polygon(edges=newedges2, base_ring=self.base_ring())
 
                 # Store the old gluings
                 old_gluings = {(p, i): self.opposite_edge(p, i) for i in range(ne)}
@@ -2647,11 +2653,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 A surface consisting of a single triangle::
 
                     sage: from flatsurf import MutableOrientedSimilaritySurface
-                    sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+                    sage: from flatsurf.geometry.polygon import polygon
 
                     sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: P = ConvexPolygons(QQ)
-                    sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
+                    sage: S.add_polygon(polygon(edges=[(1, 0), (0, 1), (-1, -1)]), label="Δ")
                     'Δ'
 
                 Subdividing this triangle yields a triangle with marked points along
@@ -2662,7 +2667,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 If we add another polygon to the original surface and glue them, we
                 can see how existing gluings are preserved when subdividing::
 
-                    sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+                    sage: S.add_polygon(polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
                     '□'
 
                     sage: S.glue(("Δ", 0), ("□", 2))

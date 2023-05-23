@@ -540,8 +540,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             % label
                         )
                     # Triangle does not degenerate.
+                    from flatsurf import polygon
                     us.replace_polygon(
-                        label, P(vertices=[vector_space.zero(), a0 + a1, b0 + b1])
+                        label, polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], category=P)
                     )
                 return ss
 
@@ -691,18 +692,16 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
 
-                sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-                sage: E = EquiangularPolygons((10, 8, 3, 1, 1, 1))
-                sage: P = E((1, 1, 2, 4), normalized=True)
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
                 sage: B = similarity_surfaces.billiard(P, rational=True)
                 sage: S = B.minimal_cover(cover_type="translation")
                 sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
 
             ::
 
-                sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-                sage: E = EquiangularPolygons((10, 7, 2, 2, 2, 1))
-                sage: P = E((1, 1, 2, 3), normalized=True)
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
                 sage: B = similarity_surfaces.billiard(P, rational=True)
                 sage: S_mp = B.minimal_cover(cover_type="translation")
                 sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf

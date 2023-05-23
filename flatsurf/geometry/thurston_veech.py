@@ -161,12 +161,12 @@ class ThurstonVeech:
         h = [hcirc[i] * hmult[i] / c for i in range(self._num_hcyls)]
         v = [vcirc[i] * vmult[i] / d for i in range(self._num_vcyls)]
 
-        C = ConvexPolygons(K)
+        from flatsurf import polygon
         P = []
         for i in range(self._origami.nb_squares()):
             hi = h[self._hcycles[i]]
             vi = v[self._vcycles[i]]
-            P.append(C(edges=[(vi, 0), (0, hi), (-vi, 0), (0, -hi)]))
+            P.append(polygon(edges=[(vi, 0), (0, hi), (-vi, 0), (0, -hi)], base_ring=K))
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 

@@ -63,6 +63,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
             sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
             sage: C = RealProjectivePolygonalSurfaces()
             sage: C.super_categories()
+            [Category of polygonal surfaces]
 
         """
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
@@ -77,6 +78,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
         If you want to add functionality for such surfaces you most likely
         want to put it here.
         """
+
         def graphical_surface(self, *args, **kwargs):
             r"""
             Return a graphical representation of this surface.
@@ -93,6 +95,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
                 sage: S.graphical_surface()
+                Graphical representation of Translation Surface in H_1(0) built from a square
 
             """
             if "cached" in kwargs:
@@ -120,6 +123,8 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
                 sage: S.plot()
+                Graphics object consisting of 10 graphics primitives
+
 
             """
             graphical_surface_keywords = {

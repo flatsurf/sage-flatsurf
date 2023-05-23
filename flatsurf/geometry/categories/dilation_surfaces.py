@@ -73,6 +73,7 @@ class DilationSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import DilationSurfaces
             sage: DilationSurfaces().super_categories()
+            [Category of similarity surfaces]
 
         """
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces

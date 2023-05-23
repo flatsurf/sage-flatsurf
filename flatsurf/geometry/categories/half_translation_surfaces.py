@@ -74,6 +74,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
             sage: HalfTranslationSurfaces().super_categories()
+            [Category of dilation surfaces, Category of rational cone surfaces]
 
         """
         from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
@@ -313,10 +314,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?
                         sage: TestSuite(U).run()
 
-                        sage: from flatsurf import EquiangularPolygons
-                        sage: E = EquiangularPolygons(1, 3, 1, 1)
-                        sage: r1, r2 = [r.vector() for r in E.lengths_polytope().rays()]
-                        sage: p = E(r1 + r2)
+                        sage: from flatsurf import polygon, EuclideanPolygonsWithAngles
+                        sage: polygons = EuclideanPolygonsWithAngles((1, 3, 1, 1))
+                        sage: p = polygons.an_element()
                         sage: B = similarity_surfaces.billiard(p)
                         sage: B.minimal_cover("translation")
                         Minimal Translation Cover of Genus 0 Rational Cone Surface built from 2 equilateral triangles
@@ -362,7 +362,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                         K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
-                    from flatsurf.geometry.polygon import ConvexPolygons
+                    from flatsurf.geometry.polygon import ConvexPolygons, polygon
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
@@ -374,11 +374,12 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     for lab in self.labels():
                         m = self.polygon(lab).num_edges()
                         relabelling[lab] = S.add_polygon(
-                            C(
+                            polygon(
                                 edges=[
                                     (new_hols[k + 2 * i], new_hols[k + 2 * i + 1])
                                     for i in range(m)
-                                ]
+                                ],
+                                category=C
                             )
                         )
                         k += 2 * m

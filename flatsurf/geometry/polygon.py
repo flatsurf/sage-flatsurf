@@ -45,6 +45,7 @@ EXAMPLES::
 
 from sage.all import (
     cached_method,
+    cached_function,
     infinity,
     Parent,
     ZZ,
@@ -260,19 +261,21 @@ def projectivization(x, y, signed=True, denominator=None):
         sage: projectivization(-1/2, 0, signed=False, denominator=False)
         (1, 0)
     """
+    from sage.all import Sequence
+    parent = Sequence([x, y]).universe()
     if y:
         z = x / y
         if denominator is True or (denominator is None and hasattr(z, "denominator")):
-            d = z.denominator()
+            d = parent(z.denominator())
         else:
-            d = 1
+            d = parent(1)
         if signed and y < 0:
             d *= -1
         return (z * d, d)
     elif signed and x < 0:
-        return (-1, 0)
+        return (parent(-1), parent(0))
     else:
-        return (1, 0)
+        return (parent(1), parent(0))
 
 
 def triangulate(vertices):
@@ -538,6 +541,7 @@ class PolygonPosition:
         return self._vertex
 
 
+# TODO: Almost all of this should be defined in the category so it can be overridden by subcategories.
 class EuclideanPolygon(Parent):
     r"""
     A (possibly non-convex) simple polygon in the plane `\mathbb{R}^2`.
@@ -555,6 +559,8 @@ class EuclideanPolygon(Parent):
         category &= RealProjectivePolygons(base_ring)
         if self.is_convex():
             category = category.Convex()
+
+        # TODO: Refine category to the correct WithAngles subcategory.
 
         super().__init__(base_ring, category=category)
 
@@ -621,13 +627,13 @@ class EuclideanPolygon(Parent):
 
         det = g.det()
         if det > 0:
-            return x.category()(vertices=[g * v for v in x.vertices()], check=False)
+            return polygon(vertices=[g * v for v in x.vertices()], check=False, category=x.category())
         if det < 0:
             # Note that in this case we reverse the order
             vertices = [g * x.vertex(0)]
             for i in range(x.num_edges() - 1, 0, -1):
                 vertices.append(g * x.vertex(i))
-            return x.category()(vertices=vertices, check=False)
+            return polygon(vertices=vertices, check=False, category=x.category())
         raise ValueError("Can not act on a polygon with matrix with zero determinant")
 
     @cached_method
@@ -731,7 +737,7 @@ class EuclideanPolygon(Parent):
             sage: polygon(vertices=[(0,0), (2,0), (1,1)]).translate((3,-2))
             polygon(vertices=[(3, -2), (5, -2), (4, -1)])
         """
-        u = self.module()(u)
+        u = (self.base_ring()**2)(u)
         return EuclideanPolygon(self.base_ring(), [u + v for v in self._v], check=False, category=self.category())
 
     def change_ring(self, ring):
@@ -842,7 +848,7 @@ class EuclideanPolygon(Parent):
         def augment_if_not(article, attribute, *properties):
             if all(
                 [
-                    not kwargs.get(property, True)
+                    kwargs.get(property, True) is False
                     for property in (properties or [attribute])
                 ]
             ):
@@ -854,7 +860,7 @@ class EuclideanPolygon(Parent):
             return description
 
         if num_edges == 3:
-            augment_if("an", "equilateral") or augment_if(
+            augment_if("an", "equilateral", "equiangular") or augment_if(
                 "an", "isosceles"
             ) or augment_if("a", "right")
 
@@ -955,7 +961,7 @@ class EuclideanPolygon(Parent):
             return self
 
         vertices = [v for v in self.vertices() if v not in marked_vertices]
-        return self.parent()(vertices=vertices)
+        return polygon(vertices=vertices)
 
     def is_equilateral(self):
         return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
@@ -974,7 +980,7 @@ class EuclideanPolygon(Parent):
         if translation is None:
             return self._v
 
-        translation = self.parent().vector_space()(translation)
+        translation = (self.parent().base_ring().fraction_field()**2)(translation)
         return [translation + v for v in self.vertices()]
 
     def vertex(self, i):
@@ -1040,6 +1046,7 @@ class EuclideanPolygon(Parent):
             + point2d(P, **vertex_options)
         )
 
+    # TODO: Move to category to allow override in subcategories.
     @cached_method
     def is_rational(self):
         for e in range(self.num_edges()):
@@ -1054,8 +1061,11 @@ class EuclideanPolygon(Parent):
             if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                 return False
 
+        self._refine_category_(self.category().Rational())
+
         return True
 
+    # TODO: Move to category to allow override in subcategories.
     def angle(self, e, numerical=None, assume_rational=None):
         r"""
         Return the angle at the beginning of the start point of the edge ``e``.
@@ -1098,6 +1108,7 @@ class EuclideanPolygon(Parent):
             numerical=numerical,
         )
 
+    # TODO: Move to category to allow override in subcategories.
     def angles(self, numerical=None, assume_rational=None):
         r"""
         Return the list of angles of this polygon (divided by `2 \pi`).
@@ -1121,7 +1132,12 @@ class EuclideanPolygon(Parent):
                 "assume_rational has been deprecated as a keyword to angles() and will be removed from a future version of sage-flatsurf"
             )
 
-        return tuple(self.angle(i, numerical=numerical) for i in range(self.num_edges()))
+        angles = tuple(self.angle(i, numerical=numerical) for i in range(self.num_edges()))
+
+        if not numerical:
+            self._refine_category_(self.category().WithAngles(angles))
+
+        return angles
 
     def area(self):
         r"""
@@ -1467,7 +1483,7 @@ class PolygonsConstructor:
             sage: polygons.square()
             polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: polygons.square(base_ring=QQbar).category()
-            Category of convex real projective polygons over Algebraic Field
+            Category of convex real projective rectangles over Algebraic Field
 
         """
         return self.rectangle(side, side, **kwds)
@@ -1485,10 +1501,10 @@ class PolygonsConstructor:
             sage: polygons.rectangle(1,sqrt2)
             polygon(vertices=[(0, 0), (1, 0), (1, sqrt2), (0, sqrt2)])
             sage: _.category()
-            Category of convex real projective polygons over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
+            Category of convex real projective rectangles over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
 
         """
-        return polygon(edges=[(width, 0), (0, height), (-width, 0), (0, -height)], **kwds)
+        return polygon(edges=[(width, 0), (0, height), (-width, 0), (0, -height)], angles=(1, 1, 1, 1), **kwds)
 
     def triangle(self, a, b, c):
         """
@@ -1526,7 +1542,7 @@ class PolygonsConstructor:
                                -1/2*c^39 + 19*c^37 - 333*c^35 + 3571*c^33 - 26212*c^31 + 139593*c^29 - 557844*c^27 + 1706678*c^25 - 8085237/2*c^23 + 7449332*c^21 -
                                10671265*c^19 + 11812681*c^17 - 9983946*c^15 + 6317339*c^13 - 5805345/2*c^11 + 1848183/2*c^9 - 378929/2*c^7 + 44543/2*c^5 - 2487/2*c^3 + 43/2*c)])
         """
-        return EquiangularPolygons(a, b, c)([1])
+        return polygon(angles=[a, b, c])
 
     @staticmethod
     def regular_ngon(n, field=None):
@@ -1566,7 +1582,9 @@ class PolygonsConstructor:
             cn, sn = c * cn - s * sn, c * sn + s * cn
             edges.append((cn, sn))
 
-        return polygon(base_ring=field, edges=edges)
+        ngon = polygon(base_ring=field, edges=edges)
+        ngon._refine_category_(ngon.category().WithAngles([1] * n))
+        return ngon
 
     @staticmethod
     def right_triangle(angle, leg0=None, leg1=None, hypotenuse=None):
@@ -1659,7 +1677,7 @@ class PolygonsConstructor:
             sage: polygons(angles=[1,1,1,2], length=2)
             polygon(vertices=[(0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)])
             sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))
-            polygon(vertices=[(0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.2700907567377265?, 0.8312538755549069?)])
+            polygon(vertices=[(0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.270090756737727?, 0.831253875554907?)])
 
             sage: polygons(angles=[1]*5).angles()
             (3/10, 3/10, 3/10, 3/10, 3/10)
@@ -1672,12 +1690,12 @@ class PolygonsConstructor:
             sage: e0 = P.edge(0); assert e0[0]**2 + e0[1]**2 == 3**2
             sage: e1 = P.edge(1); assert e1[0]**2 + e1[1]**2 == 1
 
-            sage: polygons(angles=[1,1,1,2])
-            polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
+            sage: polygons(angles=[1, 1, 1, 2])
+            polygon(vertices=[(0, 0), (1/10*c^3 + c^2 - 1/5*c - 3, 0), (1/20*c^3 + 1/2*c^2 - 1/20*c - 3/2, 1/20*c^2 + 1/2*c), (1/2*c^2 - 3/2, 1/2*c)])
 
             sage: polygons(angles=[1,1,1,8])
-            polygon(vertices=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
-            sage: polygons(angles=[1,1,1,8], lengths=[1,1])
+            polygon(vertices=[(0, 0), (c^6 - 6*c^4 + 8*c^2 + 3, 0), (1/2*c^4 - 3*c^2 + 9/2, 1/2*c^9 - 9/2*c^7 + 13*c^5 - 11*c^3 - 3*c), (1/2*c^6 - 7/2*c^4 + 7*c^2 - 3, 1/2*c^9 - 5*c^7 + 35/2*c^5 - 49/2*c^3 + 21/2*c)])
+            sage: polygons(angles=[1,1,1,8], lengths=[1, 1])
             polygon(vertices=[(0, 0), (1, 0), (-1/2*c^4 + 2*c^2, 1/2*c^7 - 7/2*c^5 + 7*c^3 - 7/2*c), (1/2*c^6 - 7/2*c^4 + 13/2*c^2 - 3/2, 1/2*c^9 - 9/2*c^7 + 27/2*c^5 - 29/2*c^3 + 5/2*c)])
 
         TESTS::
@@ -1689,7 +1707,7 @@ class PolygonsConstructor:
             ....:     T = polygons(angles=[a,b,c])
             ....:     D = 2*(a+b+c)
             ....:     assert T.angles() == [a/D, b/D, c/D]
-            ....:     assert T.edge(0) == T.vector_space()((1,0))
+            ....:     assert T.edge(0) == (T.base_ring()**2)((1,0))
         """
         import warnings
         warnings.warn("calling polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead")
@@ -1701,7 +1719,7 @@ def ConvexPolygons(base_ring):
     return RealProjectivePolygons(base_ring).Convex()
 
 
-def polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ring=None, category=None, **kwds):
+def polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ring=None, category=None, check=True, **kwds):
     if "base_point" in kwds:
         base_point = kwds.pop("base_point")
         import warnings
@@ -1743,56 +1761,149 @@ def polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
     if kwds:
         raise ValueError("keyword argument not supported by polygon()")
 
-    if bool(vertices) + bool(edges) + bool(angles) != 1:
-        raise ValueError("exactly one of 'vertices', 'edges' or 'angles' must be provided")
-
+    # Determine the number of sides of this polygon.
     if angles:
-        if not lengths:
-            lengths = [1] * (len(angles) - 2)
+        n = len(angles)
+    elif edges:
+        n = len(edges)
+    elif vertices:
+        n = len(vertices)
+    else:
+        raise ValueError("one of vertices, edges, or angles must be set")
 
-        vertices = EuclideanPolygonsWithAngles(angles)(lengths, normalized=True)
+    # Determine the base ring of the polygon
+    if base_ring is None:
+        from sage.categories.pushout import pushout
+        base_ring = QQ
 
-    if edges:
-        universe = base_ring or Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe()
+        if angles:
+            from flatsurf import EuclideanPolygonsWithAngles
+            base_ring = pushout(base_ring, EuclideanPolygonsWithAngles(angles).base_ring())
 
-        if isinstance(universe, type):
-            universe = py_scalar_parent(universe)
+        if vertices:
+            base_ring = pushout(base_ring, Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe())
 
-        edges = [vector(universe, edge) for edge in edges]
+        if edges:
+            base_ring = pushout(base_ring, Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe())
 
-        vertices = [edges[0].parent().zero()]
+        if lengths:
+            base_ring = pushout(base_ring, Sequence(lengths).universe())
+
+            if angles and not edges:
+                with_angles = EuclideanPolygonsWithAngles(angles)
+                for slope, length in zip(with_angles.slopes(), lengths):
+                    scale = base_ring(length**2 / (slope[0]**2 + slope[1]**2))
+                    if not scale.is_square():
+                        # Note that this ring might not be minimal.
+                        base_ring = pushout(base_ring, with_angles._cosines_ring())
+
+    if category is None:
+        from flatsurf.geometry.categories import RealProjectivePolygons
+        category = RealProjectivePolygons(base_ring)
+        if angles:
+            category = category.WithAngles(angles)
+
+    # We now rewrite the given data into vertices. Whenever there is
+    # redundancy, we check that things are compatible. Note that much of the
+    # complication of the below comes from the "angles" keyword. When angles
+    # are given, some of the vertex coordinates can be deduced automatically.
+
+    # Track whether we made a choice that possibly is the reason that we fail
+    # to find a polygon with the given data.
+    choice = False
+
+    # Rewrite angles and lengths as angles and edges.
+    if angles and lengths and not edges:
+        edges = []
+        for slope, length in zip(category.slopes(), lengths):
+            scale = base_ring((length**2 / (slope[0]**2 + slope[1]**2)).sqrt())
+            edges.append(scale * slope)
+
+        if len(edges) == n:
+            angles = 0
+
+        lengths = None
+
+    # Deduce edges if only angles are given
+    if angles and not edges and not vertices:
+        assert not lengths
+
+        choice = True
+
+        # We pick the edges such that they form a closed polygon with the
+        # prescribed angles. However, there might be self-intersection which
+        # currently leads to an error.
+        edges = [length * slope for (length, slope) in zip(sum(r.vector() for r in category.lengths_polytope().rays()), category.slopes())]
+
+    # Rewrite edges as vertices.
+    if edges and not vertices:
+        vertices = [vector(base_ring, (0, 0))]
         for edge in edges:
-            vertices.append(vertices[-1] + edge)
+            vertices.append(vertices[-1] + vector(base_ring, edge))
 
-        if vertices[0] != vertices[-1]:
-            raise ValueError("edges do not define a closed polygon")
+        if len(vertices) == n + 1:
+            if vertices[-1]:
+                raise ValueError("polygon not closed")
+            vertices.pop()
 
-        vertices.pop()
+        edges = None
 
     assert vertices
 
-    if base_ring is None:
-        base_ring = Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe()
-
-        if isinstance(base_ring, type):
-            base_ring = py_scalar_parent(universe)
-
-        if base_ring is ZZ:
-            # Typically, we do not want to go to the fraction field of the base
-            # ring, e.g., we do not want to go to FractionField(ExactReals()).
-            # However, manual input of parameters often leads to the
-            # automatically detected base ring ZZ which is essentially never
-            # what the user wanted.
-            base_ring = base_ring.fraction_field()
-
     vertices = [vector(base_ring, vertex) for vertex in vertices]
+
+    # Deduce missing vertices for prescribed angles
+    if angles and len(vertices) != n:
+        if len(vertices) == n - 1:
+            # We do not use category.slopes() since the matrix formed by such
+            # slopes might not be invertible (because exact-reals do not have a
+            # fraction field implemented.)
+            slopes = EuclideanPolygonsWithAngles(angles).slopes()
+
+            # We do not use solve_left() because the vertices might not live in
+            # a ring that has a fraction field implemented (such as an
+            # exact-real ring.)
+            s, t = (vertices[0] - vertices[n - 2]) * matrix([slopes[-1], slopes[n - 2]]).inverse()
+            assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+
+            if s <= 0 or t <= 0:
+                raise (NotImplementedError if choice else ValueError)("cannot determine polygon with these angles from the given data")
+
+            vertices.append(vertices[0] - s * slopes[-1])
+
+        if len(vertices) != n:
+            raise NotImplementedError(f"cannot construct {n}-gon from {n} angles and {len(vertices)} vertices")
+
+        angles = None
+
+    assert len(vertices) == n, f"expected to build an {n}-gon from {n} vertices but found {vertices}"
 
     p = Polygon(
         base_ring=base_ring, vertices=vertices, category=category
     )
 
-    if convex and not p.is_convex():
-        raise ValueError("polygon is not convex")
+    # Check that any redundant data is compatible
+    if check:
+        # TODO: Where is the check for self-intersection?
+        if edges:
+            # Check compatibility of vertices and edges
+            if len(edges) != len(vertices):
+                raise ValueError("vertices and edges must have the same length")
+
+            for i in range(n):
+                if vertices[i - 1] + edge[i - 1] != vertices[i]:
+                    raise ValueError("vertices and edges are not compatible")
+        if angles:
+            # Check that the polygon has the prescribed angles
+            from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            # Use Polygon.angles() so we do not use the precomputed angles set by the category.
+            if RealProjectivePolygonsWithAngles._normalize_angles(angles) != Polygon.angles(p):
+                raise ValueError("polygon does not have the prescribed angles")
+        if lengths:
+            # TODO
+            raise NotImplementedError
+        if convex and not p.is_convex():
+            raise ValueError("polygon is not convex")
 
     return p
 
@@ -1818,8 +1929,113 @@ def EuclideanPolygonsWithAngles(*angles, **kwds):
         angles = angles[0]
 
     angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
+    return _EuclideanPolygonsWithAngles(angles)
+
+@cached_function
+def _EuclideanPolygonsWithAngles(angles):
     base_ring = RealProjectivePolygonsWithAngles._base_ring(angles)
     return RealProjectivePolygons(base_ring).WithAngles(angles)
 
 # TODO: Deprecate
+# TODO: Keep tests from docstring:
+#     EXAMPLES::
+# 
+#         sage: from flatsurf import EquiangularPolygons
+# 
+#     The polygons with inner angles `\pi/4`, `\pi/2`, `5\pi/4`::
+# 
+#         sage: P = EquiangularPolygons(1, 2, 5)
+#         sage: P
+#         Category of real projective polygons with angles (1, 2, 5) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+# 
+#     Internally, polygons are given by their vertices' coordinates over some
+#     number field, in this case a quadratic field::
+# 
+#         sage: P.base_ring()
+#         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+# 
+#     Polygons can also be defined over other number field implementations::
+# 
+#         sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+#         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
+#         sage: P(K(1)) # optional: eantic
+#         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+#         sage: _.base_ring() # optional: eantic
+#         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+# 
+#     However, specific instances of such polygons might be defined over another ring::
+# 
+#         sage: P(1)
+#         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+#         sage: _.base_ring()
+#         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+# 
+#         sage: P(AA(1))
+#         polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
+#         sage: _.base_ring()
+#         Algebraic Real Field
+# 
+#     Polygons can also be defined over a module containing transcendent parameters::
+# 
+#         sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
+#         sage: R = ExactReals(P.base_ring()) # optional: exactreal
+#         sage: P(R(1)) # optional: exactreal
+#         polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
+#         sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
+#         polygon(vertices=[(0, 0),])
+#                  (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
+#                  (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
+#                  ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
+#         sage: _.base_ring() # optional: exactreal
+#         Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
+# 
+#     ::
+# 
+#         sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
+#         sage: L
+#         A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
+#         sage: lengths = L.rays()[0].vector()
+#         sage: lengths
+#         (1, -1/2*c0 + 1, -1/2*c0 + 1)
+#         sage: p = P(*lengths)    # build one polygon with the given lengths
+#         sage: p
+#         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+#         sage: p.angles()
+#         (1/16, 1/8, 5/16)
+#         sage: P.angles(integral=False)
+#         (1/16, 1/8, 5/16)
+# 
+#         sage: P = EquiangularPolygons(1, 2, 1, 2, 2, 1)
+#         sage: L = P.lengths_polytope()
+#         sage: L
+#         A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
+#         sage: rays = [r.vector() for r in L.rays()]
+#         sage: rays
+#         [(1, 0, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+#          (0, 1, 0, 0, c^2 - 3, c^2 - 2),
+#          (1/3*c^4 - 2*c^2 + 3, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+#          (-c^4 + 4*c^2, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+#          (0, 1/3*c^4 - 2*c^2 + 3, c^2 - 3, 0, 0, 1/3*c^4 - c^2),
+#          (0, -c^4 + 4*c^2, 0, c^2 - 3, 0, -c^4 + 5*c^2 - 3)]
+#         sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
+#         sage: p = P(*lengths)
+#         sage: p
+#         polygon(vertices=[(0, 0),
+#                           (-5/3*c^4 + 6*c^2 + 6, 0),
+#                           (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
+#                           (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
+#                           (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
+#                           (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)])
+# 
+#         sage: p.angles()
+#         (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
+# 
+#         sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
+#         Category of real projective polygons with angles (1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
+# 
+#     A regular pentagon::
+# 
+#         sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
+#         sage: E(1, 1, 1, 1, 1, normalized=True)
+#         polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
 EquiangularPolygons = EuclideanPolygonsWithAngles

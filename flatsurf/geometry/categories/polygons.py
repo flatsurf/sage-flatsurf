@@ -38,6 +38,7 @@ EXAMPLES::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
+from sage.misc.cachefunc import cached_method
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring, all_axioms
 
@@ -55,6 +56,7 @@ class Polygons(Category_over_base_ring):
 
         sage: from flatsurf.geometry.categories import Polygons
         sage: Polygons(QQ)
+        Category of polygons over Rational Field
 
     """
     def super_categories(self):
@@ -66,6 +68,7 @@ class Polygons(Category_over_base_ring):
             sage: from flatsurf.geometry.categories import Polygons
             sage: C = Polygons(QQ)
             sage: C.super_categories()
+            [Category of sets]
 
         """
         return [Sets()]
@@ -100,6 +103,7 @@ class Polygons(Category_over_base_ring):
             sage: from flatsurf.geometry.categories import Polygons
             sage: C = Polygons(QQ)
             sage: C.Convex()
+            Category of convex polygons over Rational Field
 
         """
         class ParentMethods:
@@ -109,6 +113,7 @@ class Polygons(Category_over_base_ring):
             If you want to add functionality to all such polygons, you probably
             want to put it here.
             """
+
             def is_convex(self):
                 r"""
                 Return whether this is a convex polygon, which it is.
@@ -140,8 +145,9 @@ class Polygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf.goemetry.categories import Polygons
-                sage: Polygons().Convex()
+                sage: from flatsurf.geometry.categories import Polygons
+                sage: Polygons(QQ).Convex()
+                Category of convex polygons over Rational Field
 
             """
             return self._with_axiom("Convex")
@@ -152,8 +158,9 @@ class Polygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf.goemetry.categories import Polygons
-                sage: Polygons().Rational()
+                sage: from flatsurf.geometry.categories import Polygons
+                sage: Polygons(QQ).Rational()
+                Category of rational polygons over Rational Field
 
             """
             return self._with_axiom("Rational")
@@ -166,10 +173,10 @@ class Polygons(Category_over_base_ring):
 
                 sage: from flatsurf import polygon
                 sage: P = polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
-                sage: P.field()
+                sage: P.category().field()
                 doctest:warning
                 ...
-                UserWarning: field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() instead
+                UserWarning: field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead
                 Rational Field
 
             """
@@ -177,6 +184,20 @@ class Polygons(Category_over_base_ring):
             warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead")
 
             return self.base_ring().fraction_field()
+
+        @cached_method
+        def base_ring(self):
+            # Copied this trick from SageMath's Modules category.
+            for C in self.super_categories():
+                if hasattr(C, "base_ring"):
+                    return C.base_ring()
+            assert False
+
+        def _test_base_ring(self, **options):
+            tester = self._tester(**options)
+
+            from sage.categories.all import Rings
+            tester.assertTrue(self.base_ring() in Rings())
 
 
 # Currently, there is no "Convex" axiom in SageMath so we make it known to the

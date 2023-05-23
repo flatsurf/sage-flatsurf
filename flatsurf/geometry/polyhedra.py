@@ -28,7 +28,6 @@ from sage.modules.free_module_element import vector
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.functions.other import sqrt
 
-from flatsurf.geometry.polygon import ConvexPolygons
 from flatsurf.geometry.straight_line_trajectory import (
     StraightLineTrajectory,
     SegmentInPolygon,
@@ -292,10 +291,10 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
     from flatsurf import MutableOrientedSimilaritySurface
 
     if use_AA is True:
-        Polys = ConvexPolygons(AA)
+        from flatsurf import polygon
         S = MutableOrientedSimilaritySurface(AA)
         for vs in polygon_vertices_AA:
-            S.add_polygon(Polys(vertices=vs))
+            S.add_polygon(polygon(vertices=vs, base_ring=AA))
         for x, y in gluings.items():
             S.glue(x, y)
         return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
@@ -319,9 +318,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     j = j + 2
                 polygon_vertices_field2.append(vs2)
             S = MutableOrientedSimilaritySurface(field)
-            Polys = ConvexPolygons(field)
+            from flatsurf import polygon
             for vs in polygon_vertices_field2:
-                S.add_polygon(Polys(vertices=vs))
+                S.add_polygon(polygon(vertices=vs, base_ring=field))
             for x, y in gluings.items():
                 S.glue(x, y)
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
@@ -344,9 +343,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     j = j + 2
                 polygon_vertices_field2.append(vs2)
             S = MutableOrientedSimilaritySurface(field2)
-            Polys = ConvexPolygons(field2)
+            from flatsurf import polygon
             for vs in polygon_vertices_field2:
-                S.add_polygon(Polys(vertices=vs))
+                S.add_polygon(polygon(vertices=vs, base_ring=field2))
             for x, y in gluings.items():
                 S.glue(x, y)
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)

@@ -19,7 +19,7 @@ r"""Mappings between translation surfaces."""
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
+from flatsurf.geometry.polygon import wedge_product
 
 
 class SurfaceMapping:
@@ -139,7 +139,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: s.set_immutable()
 
         sage: from flatsurf.geometry.mappings import SimilarityJoinPolygonsMapping
-        sage: m=SimilarityJoinPolygonsMapping(s,0,2)
+        sage: m=SimilarityJoinPolygonsMapping(s, 0, 2)
         sage: s2=m.codomain()
         sage: s2.labels()
         (0,)
@@ -192,7 +192,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             s2.set_roots(tuple(p1 if label == p2 else label for label in s.roots()))
 
         s2.remove_polygon(p1)
-        s2.add_polygon(ConvexPolygons(s.base_ring())(vs), label=p1)
+        from flatsurf import polygon
+        s2.add_polygon(polygon(edges=vs, base_ring=s.base_ring()), label=p1)
 
         for i in range(len(vs)):
             p3, e3 = edge_map[i]
@@ -341,15 +342,17 @@ class SplitPolygonsMapping(SurfaceMapping):
             v1 = v2
             v2 = temp
 
-        newvertices1 = [poly.vertex(v2) - poly.vertex(v1)]
+        newedges1 = [poly.vertex(v2) - poly.vertex(v1)]
         for i in range(v2, v1 + ne):
-            newvertices1.append(poly.edge(i))
-        newpoly1 = ConvexPolygons(s.base_ring())(newvertices1)
+            newedges1.append(poly.edge(i))
 
-        newvertices2 = [poly.vertex(v1) - poly.vertex(v2)]
+        from flatsurf import polygon
+        newpoly1 = polygon(edges=newedges1, base_ring=s.base_ring())
+
+        newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
         for i in range(v1, v2):
-            newvertices2.append(poly.edge(i))
-        newpoly2 = ConvexPolygons(s.base_ring())(newvertices2)
+            newedges2.append(poly.edge(i))
+        newpoly2 = polygon(edges=newedges2, base_ring=s.base_ring())
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
@@ -656,7 +659,6 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         from flatsurf.geometry.similarity import SimilarityGroup
 
         T = SimilarityGroup(ring)
-        P = ConvexPolygons(ring)
         cv = {}  # dictionary for canonical vertices
         translations = {}  # translations bringing the canonical vertex to the origin.
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -667,7 +669,9 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             newedges = []
             for i in range(polygon.num_edges()):
                 newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
-            s2.add_polygon(P(newedges), label=label)
+
+            from flatsurf import polygon as make_polygon
+            s2.add_polygon(make_polygon(edges=newedges, base_ring=ring), label=label)
             translations[label] = T(-polygon.vertex(cvcur))
         for l1, polygon in zip(s.labels(), s.polygons()):
             for e1 in range(polygon.num_edges()):

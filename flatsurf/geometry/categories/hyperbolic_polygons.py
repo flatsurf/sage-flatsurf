@@ -14,9 +14,11 @@ EXAMPLES::
     ....: ])
 
     sage: P.category()
+    Category of facade convex hyperbolic polygons over Rational Field
 
     sage: from flatsurf.geometry.categories import HyperbolicPolygons
-    sage: P in HyperbolicPolygons()
+    sage: P in HyperbolicPolygons(QQ)
+    True
 
 """
 # ****************************************************************************
@@ -49,13 +51,14 @@ class HyperbolicPolygons(Category_over_base_ring):
     EXAMPLES::
 
         sage: from flatsurf.geometry.categories import HyperbolicPolygons
-        sage: C = HyperbolicPolygons()
+        sage: C = HyperbolicPolygons(QQ)
 
     TESTS::
 
         sage: TestSuite(C).run()
 
     """
+
     def super_categories(self):
         r"""
         Return the categories that a hyperbolic polygon is also a member of.
@@ -63,9 +66,9 @@ class HyperbolicPolygons(Category_over_base_ring):
         EXAMPLES::
 
             sage: from flatsurf.geometry.categories import HyperbolicPolygons
-            sage: C = HyperbolicPolygons()
+            sage: C = HyperbolicPolygons(QQ)
             sage: C.super_categories()
+            [Category of polygons over Rational Field]
 
         """
         return [Polygons(self.base_ring())]
-

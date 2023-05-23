@@ -79,8 +79,6 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         else:
             base_ring = ring
 
-        self._P = ConvexPolygons(base_ring)
-
         if category is None:
             category = surface.category()
 
@@ -103,11 +101,15 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         if self._det_sign == 1:
             p = self._s.polygon(lab)
             edges = [self._m * p.edge(e) for e in range(p.num_edges())]
-            return self._P(edges)
+
+            from flatsurf import polygon
+            return polygon(edges=edges, base_ring=self.base_ring())
         else:
             p = self._s.polygon(lab)
             edges = [self._m * (-p.edge(e)) for e in range(p.num_edges() - 1, -1, -1)]
-            return self._P(edges)
+
+            from flatsurf import polygon
+            return polygon(edges=edges, base_ring=self.base_ring())
 
     def labels(self):
         return self._s.labels()

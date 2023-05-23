@@ -114,8 +114,11 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def polygon(self, label):
         reference_label, vertices = label
         reference_polygon = self._reference.polygon(reference_label)
-        return reference_polygon.parent()(
-            vertices=[reference_polygon.vertex(v) for v in vertices]
+
+        from flatsurf import polygon
+        return polygon(
+            vertices=[reference_polygon.vertex(v) for v in vertices],
+            category=reference_polygon.category()
         )
 
     def opposite_edge(self, label, edge):
@@ -560,7 +563,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             for edge in edges
         ]
 
-        return self._delaunay_triangulation.polygon(label).parent()(edges=edges)
+        from flatsurf import polygon
+        return polygon(edges=edges, category=self._delaunay_triangulation.polygon(label).parent())
 
     @cached_method
     def _label(self, cell):

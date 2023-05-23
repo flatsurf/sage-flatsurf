@@ -5845,6 +5845,9 @@ class HyperbolicConvexFacade(HyperbolicConvexSet, Parent):
 
         return x
 
+    def base_ring(self):
+        return self.parent().base_ring()
+
 
 class HyperbolicHalfSpace(HyperbolicConvexFacade):
     r"""
