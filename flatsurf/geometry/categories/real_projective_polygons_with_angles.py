@@ -664,7 +664,6 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 polygon(vertices=[(0, 0), ...])
 
             """
-            # TODO: Check that the result is in this category. Otherwise, throw a NotImplementedError
             if ring is None:
                 from sage.all import QQ
                 ring = QQ
