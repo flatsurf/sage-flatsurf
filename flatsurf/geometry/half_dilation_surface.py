@@ -152,6 +152,12 @@ class HalfDilationSurface(SimilaritySurface):
             sage: automorphism.codomain() is L.underlying_surface()
             True
 
+        ::
+
+            sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+            sage: K = L.base_ring()
+            sage: U = matrix(K, 2, [1, 1, 0, 1])
+            sage: L.apply_matrix_automorphism(U)
         """
         from sage.all import matrix
         m = matrix(m)

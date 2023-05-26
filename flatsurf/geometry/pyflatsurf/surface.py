@@ -102,7 +102,13 @@ class Surface_pyflatsurf(Surface):
         return repr(self._flat_triangulation)
 
     def apply_matrix(self, m):
-        deformation = self._flat_triangulation.applyMatrix(*m.list())
+        from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+
+        to_pyflatsurf = RingConversion.from_pyflatsurf_from_flat_triangulation(self._flat_triangulation)
+
+        m = [to_pyflatsurf(x) for x in m.list()]
+
+        deformation = self._flat_triangulation.applyMatrix(*m)
         codomain = Surface_pyflatsurf(deformation.codomain())
 
         from flatsurf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
