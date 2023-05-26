@@ -1469,18 +1469,23 @@ class LabeledCollection:
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.t_fractal()
             sage: S.labels().min()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot determine minimal label of an infinite set
 
         ::
 
             sage: from flatsurf import translation_surfaces
             sage: C = translation_surfaces.cathedral(1,2)
             sage: C.labels().min()
+            0
 
         ::
 
             sage: labels = list(C.labels())[:3]
             sage: from flatsurf.geometry.surface import LabeledView
-            sage: LabeledView(labels).min()
+            sage: LabeledView(C, labels).min()
+            0
 
         """
         if self._finite is False:

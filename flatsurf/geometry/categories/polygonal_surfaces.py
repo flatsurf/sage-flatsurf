@@ -215,7 +215,7 @@ class PolygonalSurfaces(SurfaceCategory):
             """
             from flatsurf.geometry.surface import Labels
 
-            return Labels(self)
+            return Labels(self, finite=self.is_finite_type())
 
         def base_label(self):
             r"""
