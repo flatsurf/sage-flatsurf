@@ -2135,68 +2135,6 @@ class ExtraLabel:
         return "ExtraLabel(" + str(self._label) + ")"
 
 
-class LabelComparator:
-    r"""
-    Implements a total ordering on labels, which may be of varying types.
-
-    We use hashes, so if hash(label1) < hash(label2) we declare label1 < label2.
-
-    For objects with the same hash, we store an arbitrary ordering.
-    """
-
-    def __init__(self):
-        r"""
-        Initialize a label comparator.
-        """
-        self._hash_collision_resolver = {}
-
-    def _get_resolver_index(self, label_hash, label):
-        try:
-            lst = self._hash_collision_resolver[label_hash]
-        except KeyError:
-            lst = []
-            self._hash_collision_resolver[label_hash] = lst
-        for i, stored_label in enumerate(lst):
-            if label == stored_label:
-                return i
-        # At this point we know label is not in lst
-        lst.append(label)
-        return len(lst) - 1
-
-    def lt(self, l1, l2):
-        r"""
-        Return the truth value of l1 < l2.
-        """
-        h1 = hash(l1)
-        h2 = hash(l2)
-        if h1 < h2:
-            return True
-        if h1 > h2:
-            return False
-        # Otherwise the hashes are equal.
-        if l1 == l2:
-            return False
-        return self._get_resolver_index(h1, l1) < self._get_resolver_index(h1, l2)
-
-    def le(self, l1, l2):
-        r"""
-        Return the truth value of l1 <= l2.
-        """
-        return self.lt(l1, l2) or l1 == l2
-
-    def gt(self, l1, l2):
-        r"""
-        Return the truth value of l1 > l2.
-        """
-        return self.lt(l2, l1)
-
-    def ge(self, l1, l2):
-        r"""
-        Return the truth value of l1 >= l2.
-        r"""
-        return self.lt(l2, l1) or l1 == l2
-
-
 class LabelsView(collections.abc.Set):
     def __init__(self, surface):
         self._surface = surface

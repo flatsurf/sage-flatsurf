@@ -557,7 +557,7 @@ def one_delaunay_flip_mapping(s):
     """
     for p, poly in zip(s.labels(), s.polygons()):
         for e in range(poly.num_edges()):
-            if s._edge_needs_flip(p, e):
+            if s._delaunay_edge_needs_flip(p, e):
                 return flip_edge_mapping(s, p, e)
     return None
 
@@ -599,13 +599,19 @@ def delaunay_decomposition_mapping(s):
         s1 = s
     else:
         s1 = m.codomain()
+
+    joins = set()
     edge_vectors = []
-    lc = s._label_comparator()
+
     for p, poly in zip(s1.labels(), s1.polygons()):
         for e in range(poly.num_edges()):
             pp, ee = s1.opposite_edge(p, e)
-            if (lc.lt(p, pp) or (p == pp and e < ee)) and s1._edge_needs_join(p, e):
+            if (pp, ee) in joins:
+                continue
+            if s1._delaunay_edge_needs_join(p, e):
+                joins.add((p, e))
                 edge_vectors.append(s1.tangent_vector(p, poly.vertex(e), poly.edge(e)))
+
     if len(edge_vectors) > 0:
         ev = edge_vectors.pop()
         p, e = ev.edge_pointing_along()
@@ -757,6 +763,7 @@ class ReindexMapping(SurfaceMapping):
         s2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2.relabel(relabler, in_place=True)
         s2.set_roots([new_base_label])
+        s2.set_immutable()
 
         SurfaceMapping.__init__(self, s, s2)
 
@@ -822,8 +829,10 @@ def canonicalize_translation_surface_mapping(s):
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces, polygon
-        sage: s=translation_surfaces.octagon_and_squares().canonicalize()
+        sage: s = translation_surfaces.octagon_and_squares().canonicalize()
+
         sage: TestSuite(s).run()
+
         sage: a = s.base_ring().gen()  # a is the square root of 2.
 
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
@@ -870,8 +879,11 @@ def canonicalize_translation_surface_mapping(s):
         ss.set_roots([label])
         if ss.cmp(s2copy) > 0:
             s2copy.set_roots([label])
+
+    s2copy.set_immutable()
+
     # We now have the base_label correct.
-    # We will use the label walker to generate the canonical labeling of polygons.
+    # We will use the label walk to generate the canonical labeling of polygons.
     labels = {label: i for (i, label) in enumerate(s2copy.labels())}
 
     m3 = ReindexMapping(s2, labels, 0)

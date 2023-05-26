@@ -101,6 +101,10 @@ class ChamanaraSurface(OrientedSimilaritySurface):
     def is_translation_surface(self, positive=True):
         return False
 
+    def labels(self):
+        from flatsurf.geometry.surface import LabelsView
+        return LabelsView(self, ZZ, finite=False)
+
     def roots(self):
         return (ZZ(0),)
 

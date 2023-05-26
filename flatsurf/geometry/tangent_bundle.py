@@ -80,7 +80,7 @@ class SimilaritySurfaceTangentVector:
         self._bundle = tangent_bundle
         p = self.surface().polygon(polygon_label)
         pos = p.get_point_position(point)
-        if vector == self._bundle.vector_space().zero():
+        if not vector:
             raise NotImplementedError("vector must be non-zero")
         if pos.is_in_interior():
             self._polygon_label = polygon_label
@@ -317,7 +317,7 @@ class SimilaritySurfaceTangentVector:
             sage: s.polygon(1)
             polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V = tb.surface().vector_space()
+            sage: V = tb.surface().base_ring()**2
             sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
             sage: v
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (3, -1)
@@ -396,7 +396,7 @@ class SimilaritySurfaceTangentVector:
             sage: v.clockwise_to((1,1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])
         """
-        if w == self.surface().vector_space().zero():
+        if not w:
             raise ValueError("w must be non-zero")
 
         if self.is_based_at_singularity():
@@ -472,7 +472,7 @@ class SimilaritySurfaceTangentVector:
             sage: v.counterclockwise_to((1,1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1), [7, 2, 5])
         """
-        if w == self.surface().vector_space().zero():
+        if not w:
             raise ValueError("w must be non-zero")
 
         if self.is_based_at_singularity():

@@ -1013,6 +1013,7 @@ class PolygonalSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely want
             to put it here.
             """
+
             def is_finite_type(self):
                 r"""
                 Return whether this surface is built from finitely many polygons.
@@ -1067,6 +1068,27 @@ class PolygonalSurfaces(SurfaceCategory):
                             return True
 
                 return False
+
+            def vertices(self):
+                r"""
+                Return the equivalence classes of the vertices of the polygons
+                that make up this surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.vertices()
+                    {Vertex 0 of polygon 0}
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.regular_octagon()
+                    sage: S.vertices()
+                    {Vertex 0 of polygon 0}
+
+                """
+                return set([self(label, vertex) for (label, vertex) in self.edges()])
 
             def _test_labels(self, **options):
                 r"""
@@ -1191,6 +1213,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     If you want to add functionality for such surfaces you most
                     likely want to put it here.
                     """
+
                     def genus(self):
                         r"""
                         Return the genus of this surface.
@@ -1239,6 +1262,7 @@ class PolygonalSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely want
             to put it here.
             """
+
             def _test_gluings_without_boundary(self, **options):
                 r"""
                 Verify that this surface has no unglued edges.
@@ -1312,5 +1336,5 @@ class PolygonalSurfaces(SurfaceCategory):
 
 
 # Currently, there is no "FiniteType", "InfiniteType", and "Oriented"
-# axiom in SageMath so we make it known to the category framework.
+# axiom in SageMath so we make them known to the category framework.
 all_axioms += ("FiniteType", "InfiniteType", "Oriented")

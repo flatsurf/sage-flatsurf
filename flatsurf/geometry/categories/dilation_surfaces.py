@@ -290,9 +290,12 @@ class DilationSurfaces(SurfaceCategory):
                     )
 
                     s = MutableOrientedSimilaritySurface.from_surface(
-                        self.change_ring(field)
+                        self.change_ring(field),
+                        category=DilationSurfaces(),
                     )
-                    return s.apply_matrix(m)
+                    s.apply_matrix(m, in_place=True)
+                    s.set_immutable()
+                    return s
                 else:
                     return m * self
             else:
@@ -334,7 +337,7 @@ class DilationSurfaces(SurfaceCategory):
                         us.glue((p1, e1), (p2, e2))
                 return self
 
-        def _edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
+        def _delaunay_edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
             r"""
             Check whether the provided edge which bounds two triangles should be flipped
             to get closer to the L-infinity Delaunay decomposition.
@@ -351,22 +354,22 @@ class DilationSurfaces(SurfaceCategory):
                 sage: s.glue((0, 1), (1, 1))
                 sage: s.glue((0, 2), (1, 2))
                 sage: s.set_immutable()
-                sage: [s._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+                sage: [s._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [False, False, False]
 
                 sage: ss = matrix(2, [1,1,0,1]) * s
-                sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [False, False, False]
                 sage: ss = matrix(2, [1,0,1,1]) * s
-                sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [False, False, False]
 
                 sage: ss = matrix(2, [1,2,0,1]) * s
-                sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [False, False, True]
 
                 sage: ss = matrix(2, [1,0,2,1]) * s
-                sage: [ss._edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
+                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
                 [True, False, False]
             """
             assert self.opposite_edge(p1, e1) == (p2, e2), "not opposite edges"
@@ -533,11 +536,11 @@ class DilationSurfaces(SurfaceCategory):
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-                self = MutableOrientedSimilaritySurface.from_surface(self)
+                self = MutableOrientedSimilaritySurface.from_surface(self, category=DilationSurfaces())
 
                 if direction is None:
                     base_ring = self.base_ring()
-                    direction = self.vector_space()((base_ring.zero(), base_ring.one()))
+                    direction = (base_ring**2)((base_ring.zero(), base_ring.one()))
 
                 if direction.is_zero():
                     raise ValueError("direction must be non-zero")
@@ -551,11 +554,12 @@ class DilationSurfaces(SurfaceCategory):
                     p1 = triangles.pop()
                     for e1 in range(3):
                         p2, e2 = self.opposite_edge(p1, e1)
-                        if self._edge_needs_flip_Linfinity(p1, e1, p2, e2):
+                        if self._delaunay_edge_needs_flip_Linfinity(p1, e1, p2, e2):
                             self.triangle_flip(p1, e1, in_place=True, direction=direction)
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1
+                self.set_immutable()
                 return self
 
 

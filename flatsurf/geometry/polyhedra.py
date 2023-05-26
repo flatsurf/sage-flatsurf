@@ -297,6 +297,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
             S.add_polygon(polygon(vertices=vs, base_ring=AA))
         for x, y in gluings.items():
             S.glue(x, y)
+        S.set_immutable()
         return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
     else:
         elts = []
@@ -323,6 +324,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 S.add_polygon(polygon(vertices=vs, base_ring=field))
             for x, y in gluings.items():
                 S.glue(x, y)
+            S.set_immutable()
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
         else:
@@ -348,6 +350,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 S.add_polygon(polygon(vertices=vs, base_ring=field2))
             for x, y in gluings.items():
                 S.glue(x, y)
+            S.set_immutable()
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
 
@@ -423,7 +426,7 @@ def platonic_dodecahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_dodecahedron
-        sage: polyhedron,surface,surface_to_polyhedron = platonic_dodecahedron()
+        sage: polyhedron, surface, surface_to_polyhedron = platonic_dodecahedron()
         sage: TestSuite(surface).run()
     """
     vertices = []

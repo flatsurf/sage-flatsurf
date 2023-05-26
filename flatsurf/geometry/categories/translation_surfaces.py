@@ -250,92 +250,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 return SimilaritySurface(LazyStandardizedPolygonSurface(self))
 
-        def cmp(self, s2, limit=None):
-            r"""
-            Compare two surfaces. This is an ordering returning -1, 0, or 1.
-
-            The surfaces will be considered equal if and only if there is a translation automorphism
-            respecting the polygons and the root labels.
-
-            If the two surfaces are infinite, we just examine the first limit polygons.
-            """
-            if self.is_finite_type():
-                if s2.is_finite_type():
-                    if limit is not None:
-                        raise ValueError("limit only enabled for finite surfaces")
-
-                    sign = len(self.polygons()) - len(s2.polygons())
-                    if sign > 0:
-                        return 1
-                    if sign < 0:
-                        return -1
-
-                    lw1 = self.labels()
-                    labels1 = list(lw1)
-
-                    lw2 = s2.labels()
-                    labels2 = list(lw2)
-
-                    for l1, l2 in zip(lw1, lw2):
-                        ret = self.polygon(l1).cmp(self.polygon(l2))
-                        if ret != 0:
-                            return ret
-
-                        for e in range(self.polygon(l1).num_edges()):
-                            ll1, e1 = self.opposite_edge(l1, e)
-                            ll2, e2 = s2.opposite_edge(l2, e)
-                            num1 = labels1.index(ll1)
-                            num2 = labels2.index(ll2)
-
-                            ret = (num1 > num2) - (num1 < num2)
-                            if ret:
-                                return ret
-                            ret = (e1 > e2) - (e1 < e2)
-                            if ret:
-                                return ret
-                    return 0
-                else:
-                    # s1 is finite but s2 is infinite.
-                    return -1
-            else:
-                if s2.is_finite_type():
-                    # s1 is infinite but s2 is finite.
-                    return 1
-                else:
-                    if limit is None:
-                        raise NotImplementedError
-
-                    # both surfaces are infinite.
-                    from itertools import islice
-
-                    lw1 = self.labels()
-                    labels1 = list(islice(lw1, limit))
-
-                    lw2 = s2.labels()
-                    labels2 = list(islice(lw2, limit))
-
-                    count = 0
-                    for l1, l2 in zip(lw1, lw2):
-                        ret = self.polygon(l1).cmp(s2.polygon(l2))
-                        if ret != 0:
-                            return ret
-
-                        for e in range(self.polygon(l1).num_edges()):
-                            ll1, ee1 = self.opposite_edge(l1, e)
-                            ll2, ee2 = s2.opposite_edge(l2, e)
-                            num1 = labels1.index(ll1)
-                            num2 = labels2.index(ll2)
-                            ret = (num1 > num2) - (num1 < num2)
-                            if ret:
-                                return ret
-                            ret = (ee1 > ee2) - (ee1 < ee2)
-                            if ret:
-                                return ret
-                        if count >= limit:
-                            break
-                        count += 1
-                    return 0
-
         def stratum(self):
             r"""
             Return the stratum this surface belongs to.
@@ -363,62 +277,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             )
 
             return canonicalize_translation_surface_mapping(self)
-
-        def canonicalize(self, in_place=False):
-            r"""
-            Return a canonical version of this translation surface.
-
-            EXAMPLES:
-
-            We will check if an element lies in the Veech group::
-
-                sage: from flatsurf import translation_surfaces
-                sage: s = translation_surfaces.octagon_and_squares()
-                sage: s
-                Translation Surface in H_3(4) built from 2 squares and a regular octagon
-                sage: from flatsurf.geometry.categories import TranslationSurfaces
-                sage: s in TranslationSurfaces()
-                True
-                sage: a = s.base_ring().gen()
-                sage: mat = Matrix([[1,2+a],[0,1]])
-                sage: s1 = s.canonicalize()
-                sage: s1.set_immutable()
-                sage: s2 = (mat*s).canonicalize()
-                sage: s2.set_immutable()
-                sage: s1.cmp(s2) == 0
-                True
-                sage: hash(s1) == hash(s2)
-                True
-            """
-            if in_place:
-                if not self.is_mutable():
-                    raise ValueError(
-                        "canonicalize with in_place=True is only defined for mutable translation surfaces."
-                    )
-                s = self
-            else:
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-                s = MutableOrientedSimilaritySurface.from_surface(self)
-            if not s.is_finite_type():
-                raise ValueError(
-                    "canonicalize is only defined for finite translation surfaces."
-                )
-            s.delaunay_decomposition(in_place=True)
-            s.standardize_polygons(in_place=True)
-            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
-            ss = MutableOrientedSimilaritySurface.from_surface(s)
-            for label in ss.labels():
-                ss.set_roots([label])
-                if ss.cmp(s) > 0:
-                    s.set_roots([label])
-            # We now have the root label correct.
-            # We will use the label walker to generate the canonical labeling of polygons.
-            labels = {label: i for (i, label) in enumerate(s.labels())}
-            s.relabel(labels, in_place=True)
-            s.set_immutable()
-            return s
 
         def rel_deformation(self, deformation, local=False, limit=100):
             r"""
@@ -544,6 +402,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     us.replace_polygon(
                         label, polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], category=P)
                     )
+                ss.set_immutable()
                 return ss
 
             else:  # Non local deformation
@@ -575,7 +434,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
 
                         ss = MutableOrientedSimilaritySurface.from_surface(
-                            s.change_ring(field)
+                            s.change_ring(field),
+                            category=TranslationSurfaces(),
                         )
                     else:
                         # In place matrix deformation
@@ -617,6 +477,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                                 assert found is not None
                                 break
                         assert found_start is not None
+
                     try:
                         sss = ss.rel_deformation(deformation2, local=True)
                     except ValueError:
@@ -625,9 +486,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             raise Exception("exceeded limit iterations")
                         continue
 
-                    sss.apply_matrix(mi * g ** (-k) * m)
-                    sss.delaunay_triangulation(direction=nonzero, in_place=True)
-                    return sss
+                    sss = sss.apply_matrix(mi * g ** (-k) * m, in_place=False)
+                    return sss.delaunay_triangulation(direction=nonzero)
 
         def j_invariant(self):
             r"""
@@ -744,3 +604,59 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     self, limit=limit
                 )
             )
+
+    class FiniteType(SurfaceCategoryWithAxiom):
+        class ParentMethods:
+            def canonicalize(self, in_place=None):
+                r"""
+                Return a canonical version of this translation surface.
+
+                EXAMPLES:
+
+                We will check if an element lies in the Veech group::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: s = translation_surfaces.octagon_and_squares()
+                    sage: s
+                    Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                    sage: from flatsurf.geometry.categories import TranslationSurfaces
+                    sage: s in TranslationSurfaces()
+                    True
+                    sage: a = s.base_ring().gen()
+                    sage: mat = Matrix([[1,2+a],[0,1]])
+                    sage: s1 = s.canonicalize()
+                    sage: s1.set_immutable()
+                    sage: s2 = (mat*s).canonicalize()
+                    sage: s2.set_immutable()
+                    sage: s1.cmp(s2) == 0
+                    True
+                    sage: hash(s1) == hash(s2)
+                    True
+                """
+                if in_place is not None:
+                    if in_place:
+                        raise NotImplementedError("calling canonicalize(in_place=True) is not supported anymore")
+
+                    import warnings
+                    warnings.warn("the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf")
+
+                s = self.delaunay_decomposition().standardize_polygons()
+
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                s = MutableOrientedSimilaritySurface.from_surface(s)
+
+                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                ss = MutableOrientedSimilaritySurface.from_surface(s)
+
+                for label in ss.labels():
+                    ss.set_roots([label])
+                    if ss.cmp(s) > 0:
+                        s.set_roots([label])
+
+                # We have chosen the root label such that this surface is minimal.
+                # Now we relabel all the polygons so that they are natural
+                # numbers in the order of the walk on the surface.
+                labels = {label: i for (i, label) in enumerate(s.labels())}
+                s.relabel(labels, in_place=True)
+                s.set_immutable()
+                return s

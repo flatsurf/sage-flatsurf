@@ -416,8 +416,8 @@ class ConeSurfaces(SurfaceCategory):
                                     # edge.
                                     return
 
-                            tester.assertEqual(
+                            tester.assertAlmostEqual(
                                 self.genus(),
-                                sum(a - 1 for a in self.angles(numerical=True)) // 2
+                                sum(a - 1 for a in self.angles(numerical=True)) / 2.0
                                 + 1,
                             )

@@ -1,4 +1,5 @@
 from sage.matrix.constructor import matrix
+from sage.misc.cachefunc import cached_method
 
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 
@@ -129,11 +130,13 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
         return True
 
+    @cached_method
     def polygon(self, lab):
         if not isinstance(lab, tuple) or len(lab) != 3:
             raise ValueError("invalid label {!r}".format(lab))
         return matrix([[lab[1], -lab[2]], [lab[2], lab[1]]]) * self._ss.polygon(lab[0])
 
+    @cached_method
     def opposite_edge(self, p, e):
         pp, a, b = p  # this is the polygon m * ss.polygon(p)
         p2, e2 = self._ss.opposite_edge(pp, e)

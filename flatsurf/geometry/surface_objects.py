@@ -667,7 +667,7 @@ class SaddleConnection(SageObject):
         self._surface = surface
 
         # Sanitize the direction vector:
-        V = self._surface.vector_space()
+        V = self._surface.base_ring().fraction_field()**2
         self._direction = V(direction)
         if self._direction == V.zero():
             raise ValueError("Direction must be nonzero.")
@@ -1421,7 +1421,7 @@ class Cylinder(SageObject):
                 "holonomy currently only computable for translation surfaces"
             )
 
-        V = self._surface.vector_space()
+        V = self._surface.base_ring()**2
         total = V.zero()
         for sc in self._boundary1:
             total += sc.holonomy()

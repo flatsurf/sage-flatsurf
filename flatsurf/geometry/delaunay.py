@@ -26,7 +26,7 @@ surfaces.
 
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface, Labels
+from flatsurf.geometry.surface import MutableOrientedSimilaritySurface_base, OrientedSimilaritySurface, Labels
 
 
 class LazyTriangulatedSurface(OrientedSimilaritySurface):
@@ -188,7 +188,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             return vertices in self._surface._triangulation(reference_label).values()
 
 
-class LazyMutableSurface(OrientedSimilaritySurface):
+class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base):
     def __init__(self, surface, category=None):
         self._reference = surface
 
@@ -289,9 +289,9 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._reference = similarity_surface
 
         # This surface will converge to the Delaunay Triangulation
-        self._surface = LazyMutableSurface(LazyTriangulatedSurface(similarity_surface))
+        self._surface = LazyMutableOrientedSimilaritySurface(LazyTriangulatedSurface(similarity_surface))
 
-        self._direction = self._surface.vector_space()(direction or (0, 1))
+        self._direction = (self._surface.base_ring()**2)(direction or (0, 1))
         self._direction.set_immutable()
 
         # Set of labels corresponding to known delaunay polygons
@@ -404,7 +404,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                     ppp = self._surface.polygon(lll)
                     assert ppp.num_edges() == 3
 
-                    if self._surface._edge_needs_flip(ll, ee):
+                    if self._surface._delaunay_edge_needs_flip(ll, ee):
                         # Perform the flip
                         self._surface.triangle_flip(
                             ll, ee, in_place=True, direction=self._direction
@@ -588,7 +588,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             cell.add(triangle)
 
-            delaunay = self._delaunay_triangulation._edge_needs_join(triangle, edge)
+            delaunay = self._delaunay_triangulation._delaunay_edge_needs_join(triangle, edge)
 
             if not delaunay:
                 edges.append((triangle, edge))
