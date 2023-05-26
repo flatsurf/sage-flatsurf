@@ -1559,6 +1559,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 for l1, p1 in zip(self.labels(), self.polygons()):
                     if limit is not None and count >= limit:
                         break
+
                     count += 1
 
                     try:

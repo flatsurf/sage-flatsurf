@@ -454,6 +454,7 @@ class DilationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
             def l_infinity_delaunay_triangulation(
                 self, triangulated=None, in_place=None, limit=None, direction=None
             ):
