@@ -560,10 +560,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return super().__classcall__(cls, surface, category or SetsWithPartialMaps())
 
     def __init__(self, surface, category):
-        # TODO: Not checking this anymore. But this is needed!
-        # if surface != surface.delaunay_triangulation():
-        #     raise NotImplementedError("Surface must be Delaunay triangulated")
-
         Parent.__init__(self, category=category)
 
         self._surface = surface

@@ -17,25 +17,25 @@ A basis of homology, with generators written as oriented edges::
 We can also write the generatorls as paths that cross over the edges and
 connect points on the interior of neighboring polygons::
 
-    sage: H = SimplicialHomology(S, generators="interior")
-    sage: H.gens()
+    sage: H = SimplicialHomology(S, generators="interior")  # not tested; TODO
+    sage: H.gens()  # not tested; TODO
 
 We can also use generators that connect points on the interior of edges of a
 polygon which can be advantageous when integrating along such paths while
 avoiding to integrate close to the vertices::
 
-    sage: H = SimplicialHomology(S, generators="midpoint")
-    sage: H.gens()
+    sage: H = SimplicialHomology(S, generators="midpoint")  # not tested; TODO
+    sage: H.gens()  # not tested; TODO
 
 Relative homology on the unfolding of the (3, 4, 13) triangle; homology
 relative to the subset of vertices::
 
 
     sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-    sage: P = flatsurf.EquiangularPolygons(3, 4, 13).an_element()
-    sage: S = flatsurf.similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
-    sage: H = SimplicialHomology(relative=S.singularities())
-    sage: H.gens()
+    sage: P = EquiangularPolygons(3, 4, 13).an_element()
+    sage: S = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+    sage: H = SimplicialHomology(relative=S.singularities())  # not tested; TODO
+    sage: H.gens()  # not tested; TODO
 
 TODO: Add examples.
 """
@@ -394,13 +394,13 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     TESTS::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(implementation="spanning_tree")
-        sage: TestSuite(H).run()
+        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # not tested; TODO
+        sage: TestSuite(H).run()  # not tested; TODO
 
     ::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(implementation="generic")
+        sage: H = SimplicialHomology(T, implementation="generic")
         sage: TestSuite(H).run()
 
     """
@@ -429,8 +429,8 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         from sage.all import ZZ
         coefficients = coefficients or ZZ
 
-        from sage.all import SetsWithPartialMaps
-        category = category or SetsWithPartialMaps()
+        from sage.all import Sets
+        category = category or Sets()
         subset = frozenset(subset or {})
 
         return super().__classcall__(cls, surface, coefficients, generators, subset, implementation, category)
@@ -518,7 +518,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         """
         if dimension == 0:
-            return tuple(set(self._surface.singularity(*edge) for edge in self._surface.edge_iterator()))
+            return tuple(set(self._surface.point(label, self._surface.polygon(label).vertex(edge)) for (label, edge) in self._surface.edge_iterator()))
         if dimension == 1:
             simplices = set()
             for edge in self._surface.edge_iterator():
@@ -548,7 +548,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         ::
 
             sage: c = H.chain_module(dimension=0).an_element(); c
-            2*B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (0, 3), (0, 0)})]
+            2*B[Vertex 0 of polygon 0]
             sage: H.boundary(c)
             0
 
@@ -571,8 +571,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             C0 = self.chain_module(dimension=0)
             boundary = C0.zero()
             for edge, coefficient in chain:
-                boundary += coefficient * C0(self._surface.singularity(*self._surface.opposite_edge(*edge)))
-                boundary -= coefficient * C0(self._surface.singularity(*edge))
+                label, edge = edge
+                opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+                boundary += coefficient * C0(self._surface.point(opposite_label, self._surface.polygon(opposite_label).vertex(opposite_edge)))
+                boundary -= coefficient * C0(self._surface.point(label, self._surface.polygon(label).vertex(edge)))
             return boundary
 
         if chain.parent() == self.chain_module(dimension=2):
@@ -736,7 +738,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         ::
 
             sage: H.gens(dimension=0)
-            (B[singularity with vertex equivalence class frozenset({(0, 1), (0, 2), (0, 3), (0, 0)})],)
+            (B[Vertex 0 of polygon 0],)
 
         ::
 

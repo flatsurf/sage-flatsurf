@@ -122,7 +122,7 @@ class Conversion:
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
             sage: FlatTriangulationConversion.from_pyflatsurf(conversion.codomain())
-            <flatsurf.geometry.surface.Surface_dict object at 0x...>
+            Conversion from ... to ...
 
         """
         raise NotImplementedError("this converter does not implement conversion from pyflatsurf yet")
@@ -221,7 +221,7 @@ class Conversion:
             sage: p = SurfacePoint(S, 0, (0, 1/2))
             sage: q = conversion(p)
             sage: conversion.section(q)
-            Surface point located at (0, 1/2) in polygon 0
+            Point (0, 1/2) of polygon 0
 
         """
         raise NotImplementedError(f"{type(self).__name__} does not implement a section yet")
@@ -413,7 +413,32 @@ class RingConversion(Conversion):
             True
 
         """
-        return cls.from_pyflatsurf_from_element(flat_triangulation.fromHalfEdge(1).x(), domain=domain)
+        # libflatsurf might report rational coordinates to live in a different
+        # ring then all the other coordinates, e.g., even though the
+        # coordinates live in a quadratic number field, it might report
+        # coordinates that happen to be rational as living in the number field
+        # with a - 1 = 0.
+        # We therefore go through all the coordinates and try to find a
+        # conversion that works for all of them. (Namely, the one that connects
+        # the largest rings.)
+        conversion = None
+
+        for label in range(1, flat_triangulation.size() + 1):
+            vector = flat_triangulation.fromHalfEdge(label)
+            for codomain_coordinate in [vector.x(), vector.y()]:
+                c = cls.from_pyflatsurf_from_element(codomain_coordinate, domain=domain)
+
+                if conversion is not None:
+                    if conversion.domain() is not c.domain():
+                        if c.domain().is_subring(conversion.domain()):
+                            # This conversion is "smaller" than the best we found before, ignore it.
+                            continue
+
+                        assert conversion.domain().is_subring(c.domain())
+
+                conversion = c
+
+        return conversion
 
     @classmethod
     def from_pyflatsurf_from_element(cls, element, domain=None):
@@ -1105,7 +1130,7 @@ class FlatTriangulationConversion(Conversion):
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
             sage: FlatTriangulationConversion.from_pyflatsurf(conversion.codomain())
-            <flatsurf.geometry.surface.Surface_dict object at 0x...>
+            Conversion from ... to ...
 
         """
         pyflatsurf_feature.require()
@@ -1145,7 +1170,7 @@ class FlatTriangulationConversion(Conversion):
 
         domain.set_immutable()
 
-        return domain
+        return FlatTriangulationConversion(domain, codomain, cls._pyflatsurf_labels(domain))
 
     @cached_method
     def ring_conversion(self):
@@ -1310,7 +1335,7 @@ class FlatTriangulationConversion(Conversion):
             sage: p = SurfacePoint(S, 0, (0, 1/2))
             sage: q = conversion(p)
             sage: conversion._preimage_point(q)
-            Surface point located at (0, 1/2) in polygon 0
+            Point (0, 1/2) of polygon 0
 
         """
         face = q.face()
@@ -1383,121 +1408,7 @@ def to_pyflatsurf(S):
     import warnings
     warnings.warn("to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().underlying_surface()).codomain() instead.")
 
-    return FlatTriangulationConversion.to_pyflatsurf(S).codomain()
-
-
-def sage_ring(surface):
-    r"""
-    Return the SageMath ring over which the pyflatsurf surface ``surface`` can
-    be constructed in sage-flatsurf.
-
-    EXAMPLES::
-
-        sage: from flatsurf import translation_surfaces
-        sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, sage_ring # optional: pyflatsurf
-        sage: S = to_pyflatsurf(translation_surfaces.veech_double_n_gon(5)) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-        sage: sage_ring(S) # optional: pyflatsurf
-        Number Field in a with defining polynomial x^4 - 5*x^2 + 5 with a = 1.902113032590308?
-
-    """
-    # TODO: Remove this method without deprecation. We are almost certain that nobody was using it.
-    from sage.all import Sequence
-
-    vectors = [surface.fromHalfEdge(e.positive()) for e in surface.edges()]
-    return Sequence(
-        [to_sage_ring(v.x()) for v in vectors] + [to_sage_ring(v.y()) for v in vectors]
-    ).universe()
-
-
-def to_sage_ring(x):
-    r"""
-    Given a coordinate of a flatsurf::Vector, return a SageMath element from
-    which :meth:`from_pyflatsurf` can eventually construct a translation surface.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.pyflatsurf_conversion import to_sage_ring  # optional: pyflatsurf
-        sage: to_sage_ring(1R).parent()  # optional: pyflatsurf
-        Integer Ring
-
-    GMP coordinate types::
-
-        sage: import cppyy  # optional: pyflatsurf
-        sage: import pyeantic  # optional: pyflatsurf
-        sage: to_sage_ring(cppyy.gbl.mpz_class(1)).parent()  # optional: pyflatsurf
-        Integer Ring
-        sage: to_sage_ring(cppyy.gbl.mpq_class(1, 2)).parent()  # optional: pyflatsurf
-        Rational Field
-
-    e-antic coordinate types::
-
-        sage: import pyeantic  # optional: pyflatsurf
-        sage: K = pyeantic.eantic.renf_class.make("a^3 - 3*a + 1", "a", "0.34 +/- 0.01", 64R)  # optional: pyflatsurf
-        sage: to_sage_ring(K.gen()).parent()  # optional: pyflatsurf
-        Number Field in a with defining polynomial x^3 - 3*x + 1 with a = 0.3472963553338607?
-
-    exact-real coordinate types::
-
-        sage: from pyexactreal import QQModule, RealNumber  # optional: pyflatsurf
-        sage: M = QQModule(RealNumber.random())   # optional: pyflatsurf
-        sage: to_sage_ring(M.gen(0R)).parent()  # optional: pyflatsurf
-        Real Numbers as (Rational Field)-Module
-
-    """
-    # TODO: Remove this method without deprecation. We are almost certain that nobody was using it.
-    import warnings
-    warnings.warn("to_sage_ring() is deprecated and will be removed in a future version of sage-flaturf. Use RingConversion.from_pyflatsurf_element(x).section(x) instead.")
-
-    return RingConversion.from_pyflatsurf_element(x).section(x)
-
-    from flatsurf.features import cppyy_feature
-
-    cppyy_feature.require()
-    import cppyy
-
-    def maybe_type(t):
-        try:
-            return t()
-        except AttributeError:
-            # The type constructed by t might not exist because the required C++ library has not been loaded.
-            return None
-
-    from sage.all import ZZ
-    if type(x) is int:
-        return ZZ(x)
-    elif type(x) is maybe_type(lambda: cppyy.gbl.mpz_class):
-        return ZZ(str(x))
-    elif type(x) is maybe_type(lambda: cppyy.gbl.mpq_class):
-        from sage.all import QQ
-        return QQ(str(x))
-    elif type(x) is maybe_type(lambda: cppyy.gbl.eantic.renf_elem_class):
-        raise NotImplementedError
-        from pyeantic import RealEmbeddedNumberField
-
-        real_embedded_number_field = RealEmbeddedNumberField(x.parent())
-        return real_embedded_number_field.number_field(real_embedded_number_field(x))
-    elif type(x) is maybe_type(
-        lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.IntegerRing]
-    ):
-        from pyexactreal import ExactReals
-
-        return ExactReals(ZZ)(x)
-    elif type(x) is maybe_type(
-        lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.RationalField]
-    ):
-        from pyexactreal import ExactReals
-
-        return ExactReals(QQ)(x)
-    elif type(x) is maybe_type(
-        lambda: cppyy.gbl.exactreal.Element[cppyy.gbl.exactreal.NumberField]
-    ):
-        from pyexactreal import ExactReals
-
-        return ExactReals(x.module().ring().parameters)(x)
-    else:
-        raise NotImplementedError(
-            f"unknown coordinate ring for element {x} which is a {type(x)}"
-        )
+    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate().underlying_surface()).codomain()
 
 
 def from_pyflatsurf(T):
@@ -1510,7 +1421,13 @@ def from_pyflatsurf(T):
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
-        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
+        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsur
+        doctest:warning
+        ...
+        UserWarning: to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().underlying_surface()).codomain() instead.
+        doctest:warning
+        ...
+        UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
         TranslationSurface built from 6 polygons
 
     TESTS:
@@ -1532,6 +1449,9 @@ def from_pyflatsurf(T):
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
+        doctest:warning
+        ...
+        UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
         TranslationSurface built from 8 polygons
 
     """

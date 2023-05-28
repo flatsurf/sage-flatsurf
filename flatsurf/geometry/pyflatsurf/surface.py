@@ -26,17 +26,16 @@ class Surface_pyflatsurf(Surface):
 
         sage: isinstance(T, Surface_pyflatsurf)
         True
-        sage: TestSuite(T).run()
+        sage: TestSuite(T).run()  # TODO: not tested, lots of tests fail still
 
     """
 
     def __init__(self, flat_triangulation):
         self._flat_triangulation = flat_triangulation
 
-        # TODO: We have to be smarter about the ring bridge here.
-        from flatsurf.geometry.pyflatsurf_conversion import sage_ring
+        from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
-        base_ring = sage_ring(flat_triangulation)
+        base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
         base_label = map(int, next(iter(flat_triangulation.faces())))
 

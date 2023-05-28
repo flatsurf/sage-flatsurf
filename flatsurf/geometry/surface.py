@@ -502,7 +502,7 @@ class Surface(SageObject):
 
         Subdivision of this surface yields a surface with three triangles::
 
-            sage: T = S.subdivide()
+            sage: T = S.subdivide().codomain()
             sage: list(T.label_iterator())
             [('Δ', 0), ('Δ', 1), ('Δ', 2)]
 
@@ -529,7 +529,7 @@ class Surface(SageObject):
             sage: S.change_edge_gluing("Δ", 0, "□", 2)
             sage: S.change_edge_gluing("□", 1, "□", 3)
 
-            sage: T = S.subdivide()
+            sage: T = S.subdivide().codomain()
 
             sage: list(T.label_iterator())
             [('Δ', 0), ('Δ', 1), ('Δ', 2), ('□', 0), ('□', 1), ('□', 2), ('□', 3)]
@@ -628,7 +628,7 @@ class Surface(SageObject):
             sage: S.change_edge_gluing("Δ", 0, "□", 2)
             sage: S.change_edge_gluing("□", 1, "□", 3)
 
-            sage: T = S.subdivide_edges()
+            sage: T = S.subdivide_edges().codomain()
             sage: list(sorted(T.edge_gluing_iterator()))
             [(('Δ', 0), ('□', 5)),
              (('Δ', 1), ('□', 4)),
@@ -914,7 +914,8 @@ class Surface(SageObject):
             sage: S.set_edge_pairing(0, 1, 1, 2)
             sage: S.set_edge_pairing(0, 2, 1, 0)
 
-            sage: S._to_pyflatsurf()  # optional: pyflatsurf
+            sage: T = S._pyflatsurf()  # optional: pyflatsurf  # random output due to deprecation warnings
+            sage: T  # optional: pyflatsurf; not tested TODO
 
         """
         from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf

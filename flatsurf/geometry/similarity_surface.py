@@ -2476,7 +2476,7 @@ class SimilaritySurface(SageObject):
         Equality comparison works with objects that are not surfaces (so we can
         put surfaces into generic dicts)::
 
-            sage: from flatsurf import similarity_surface
+            sage: from flatsurf import similarity_surfaces
             sage: similarity_surfaces.example() == 42
             False
 
