@@ -6,29 +6,26 @@ EXAMPLES:
 We compute harmonic differentials on the square torus::
 
     sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-    sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+    sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
     sage: H = SimplicialHomology(T)
     sage: a, b = H.gens()
 
-First, the harmonic differentials that sends the diagonal `a` to 1 and the negative
-horizontal `b` to zero. Note that integrating the differential given by the
-power series Σa_n z^n along `a` yields `Re(a_0) - Im(a_0)` and along `b` we get
-`-Re(a_0)`. Therefore, this must have Re(a_0) = 0 and Im(a_0) = -1::
+First, the harmonic differentials that sends the horizontal `a` to 1 and the
+vertical `b` to zero::
 
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
     sage: Ω(f)
-    (-1.000000000000000000000*I + O(z0^10), -1.000000000000000000000*I + O(z1^10))
+    (1.00000000000000 + O(z0^10),)
 
-The harmonic differential that integrates as 0 along `a` but 1 along `b` must
-similarly have Re(a_0) = -1 but Im(a_0) = -1::
+The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 
     sage: g = H({b: 1})
     sage: Ω(g)
-    (-1.000000000000000000000 - 1.000000000000000000000*I + O(z0^10), -1.000000000000000000000 - 1.000000000000000000000*I + O(z1^10))
+    (1.00000000000000*I + O(z0^10),)
 
 """
 ######################################################################
@@ -56,7 +53,6 @@ from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
-from sage.all import RR
 
 
 class HarmonicDifferential(Element):
@@ -74,7 +70,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -85,7 +81,7 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
 
             sage: Ω(f) + Ω(f) + Ω(H({a: -2}))
-            (O(z0^10), O(z1^10))
+            (O(z0^10),)
 
         """
         return self.parent()({
@@ -100,7 +96,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -203,7 +199,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -215,7 +211,7 @@ class HarmonicDifferential(Element):
             sage: η = Ω(f)
 
             sage: η.series(0)
-            -1.000000000000000000000*I + O(z0^10)
+            1.00000000000000 + O(z0^10)
 
         """
         return self._series[triangle]
@@ -231,7 +227,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -247,7 +243,7 @@ class HarmonicDifferential(Element):
         ::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.regular_octagon().delaunay_triangulation()
+            sage: T = translation_surfaces.regular_octagon()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -299,7 +295,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -310,13 +306,13 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-        Compute the sum of the constant coefficients::
+        Compute the constant coefficients::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5)
             sage: R = C.symbolic_ring()
-            sage: η._evaluate(R(C.gen(0, 0)) + R(C.gen(1, 0)))  # tol 1e-9
-            -2.0000000000000000*I
+            sage: η._evaluate(R(C.gen(0, 0))) # tol 1e-9
+            1.00000000000000
 
         """
         coefficients = {}
@@ -362,7 +358,7 @@ class HarmonicDifferential(Element):
         differentials have no pole at the vertex::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -373,11 +369,11 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-            sage: vertex = [(0, 1), (1, 0), (0, 2), (1, 1), (0, 0), (1, 2)]
+            sage: vertex = [(0, 0), (0, 1), (0, 2), (0, 3)]
             sage: angle = 1
 
             sage: η.cauchy_residue(vertex, 0, 1)  # tol 1e-9
-            0 - 1.0*I
+            1.0 - 0.0*I
             sage: abs(η.cauchy_residue(vertex, -1, 1)) < 1e-9
             True
             sage: abs(η.cauchy_residue(vertex, -2, 1)) < 1e-9
@@ -427,19 +423,19 @@ class HarmonicDifferential(Element):
 
                 return min(positives)
 
-            for triangle, edge in vertex:
+            for label, edge in vertex:
                 # We integrate on the line segment from the midpoint of edge to
                 # the midpoint of the previous edge in triangle, i.e., the next
                 # edge in counterclockwise order walking around the vertex.
-                edge_ = (edge - 1) % 3 # TODO: Do not hardcode three here.
+                edge_ = (edge - 1) % surface.polygon(label).num_edges()
 
                 # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
 
-                P = complex_field(*self.parent()._geometry.midpoint(triangle, edge))
-                Q = complex_field(*self.parent()._geometry.midpoint(triangle, edge_))
+                P = complex_field(*self.parent()._geometry.midpoint(label, edge))
+                Q = complex_field(*self.parent()._geometry.midpoint(label, edge_))
 
                 # The vector from z=0, the center of the Voronoi cell, to the vertex.
-                δ = P - complex_field(*surface.polygon(triangle).edge(edge)) / 2
+                δ = P - complex_field(*surface.polygon(label).edge(edge)) / 2
 
                 def at(t):
                     z = (1 - t) * P + t * Q
@@ -455,7 +451,7 @@ class HarmonicDifferential(Element):
                     t = complex_field(t)
                     z, root_at_z = at(t)
                     denominator = root_at_z ** (n + 1)
-                    numerator = self.evaluate(triangle, z)
+                    numerator = self.evaluate(label, z)
                     integrand = numerator / denominator * (Q - P)
                     # TODO print(f"evaluating at {z} resp its root {root_at_z} produced ({numerator}) / ({denominator}) * ({Q - P}) = {integrand}")
                     integrand = getattr(integrand, part)()
@@ -481,7 +477,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -517,17 +513,17 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
         sage: T.set_immutable()
 
         sage: Ω = HarmonicDifferentials(T); Ω
-        Ω(TranslationSurface built from 2 polygons)
+        Ω(TranslationSurface built from 1 polygon)
 
     ::
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        (O(z0^10), O(z1^10))
+        (O(z0^10),)
 
     ::
 
@@ -550,7 +546,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         TESTS::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: HarmonicDifferentials(T) is HarmonicDifferentials(T)
@@ -663,55 +659,44 @@ class GeometricPrimitives:
         self._surface = surface
 
     @cached_method
-    def midpoint(self, triangle, edge):
+    def midpoint(self, label, edge):
         r"""
-        Return the vector to go from the center of the circumcircle of
-        ``triangle`` to the midpoint of ``edge``.
+        Return the vector to go from the center of the circumcircle of the
+        polygon with ``label`` to the midpoint of ``edge``.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
             sage: G = GeometricPrimitives(T)
 
             sage: G.midpoint(0, 0)
-            (0, 0)
-            sage: G.midpoint(0, 1)
-            (0, 1/2)
-            sage: G.midpoint(0, 2)
-            (-1/2, 0)
-            sage: G.midpoint(1, 0)
-            (0, 0)
-            sage: G.midpoint(1, 1)
             (0, -1/2)
-            sage: G.midpoint(1, 2)
+            sage: G.midpoint(0, 1)
             (1/2, 0)
+            sage: G.midpoint(0, 2)
+            (0, 1/2)
+            sage: G.midpoint(0, 3)
+            (-1/2, 0)
 
         ::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.regular_octagon().delaunay_triangulation()
+            sage: T = translation_surfaces.regular_octagon()
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
             sage: G = GeometricPrimitives(T)
 
             sage: G.midpoint(0, 0)
-            (-1/4*a - 1/2, -1/4*a)
-            sage: G.midpoint(5, 0)
-            (-1/4*a - 1/2, -1/4*a)
-
-            sage: G.midpoint(0, 2)
-            (-1/4*a - 1/2, -1/4*a - 1/2)
-            sage: G.midpoint(3, 2)
-            (1/4*a + 1/2, 1/4*a + 1/2)
+            (0, -1/2*a - 1/2)
 
         """
-        polygon = self._surface.polygon(triangle)
-        return -self.center(triangle) + polygon.vertex(edge) + polygon.edge(edge) / 2
+        polygon = self._surface.polygon(label)
+        return -self.center(label) + polygon.vertex(edge) + polygon.edge(edge) / 2
 
     @cached_method
     def center(self, triangle):
@@ -731,7 +716,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -759,7 +744,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -833,7 +818,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -864,7 +849,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -895,7 +880,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -933,7 +918,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -954,7 +939,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -981,7 +966,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1022,7 +1007,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1044,7 +1029,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1098,7 +1083,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1119,7 +1104,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1140,7 +1125,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1164,7 +1149,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1203,7 +1188,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1238,7 +1223,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1274,7 +1259,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1311,7 +1296,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1330,7 +1315,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1353,7 +1338,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1385,7 +1370,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1410,7 +1395,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1468,7 +1453,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1507,7 +1492,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         TESTS::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
@@ -1695,14 +1680,15 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: C = PowerSeriesConstraints(T, prec=3)
             sage: C.symbolic_ring()
-            Ring of Power Series Coefficients over Complex Field with 56 bits of precision
+            Ring of Power Series Coefficients over Complex Field with 54 bits of precision
 
         """
+        # TODO: What's the correct precision here?
         # return SymbolicCoefficientRing(self._surface, base_ring=base_ring or self.complex_field())
         from sage.all import ComplexField
         return SymbolicCoefficientRing(self._surface, base_ring=base_ring or ComplexField(54))
@@ -1733,16 +1719,16 @@ class PowerSeriesConstraints:
         return real + i*imag
 
     @cached_method
-    def real(self, triangle, k):
+    def real(self, label, k):
         r"""
         Return the real part of the kth generator of the :meth:`symbolic_ring`
-        for ``triangle``.
+        for the polygon ``label``.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: C = PowerSeriesConstraints(T, prec=3)
@@ -1750,26 +1736,26 @@ class PowerSeriesConstraints:
             Re(a0,0)
             sage: C.real(0, 1)
             Re(a0,1)
-            sage: C.real(1, 2)
+            sage: C.real(0, 2)
             Re(a0,2)
 
         """
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
 
-        gen = self.symbolic_ring().gen(("real", triangle, k))
+        gen = self.symbolic_ring().gen(("real", label, k))
         return self.symbolic_ring().gen(self._representatives()[next(iter(gen._coefficients.keys()))[0]])
 
     @cached_method
-    def imag(self, triangle, k):
+    def imag(self, label, k):
         r"""
         Return the imaginary part of the kth generator of the :meth:`symbolic_ring`
-        for ``triangle``.
+        for the polygon ``label``.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
@@ -1778,14 +1764,14 @@ class PowerSeriesConstraints:
             Im(a0,0)
             sage: C.imag(0, 1)
             Im(a0,1)
-            sage: C.imag(1, 2)
+            sage: C.imag(0, 2)
             Im(a0,2)
 
         """
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
 
-        gen = self.symbolic_ring().gen(("imag", triangle, k))
+        gen = self.symbolic_ring().gen(("imag", label, k))
         return self.symbolic_ring().gen(self._representatives()[next(iter(gen._coefficients.keys()))[0]])
 
     @cached_method
@@ -1816,7 +1802,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: C = PowerSeriesConstraints(T, prec=3)
 
@@ -1849,7 +1835,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: C = PowerSeriesConstraints(T, prec=3)
 
@@ -1862,10 +1848,10 @@ class PowerSeriesConstraints:
 
             sage: C.imaginary_part(C.gen(0, 0))
             Im(a0,0)
-            sage: C.imaginary_part(C.real(0, 0))
-            0.0000000000000000
-            sage: C.imaginary_part(C.imag(0, 0))
-            0.0000000000000000
+            sage: C.imaginary_part(C.real(0, 0))  # tol 1e-9
+            0
+            sage: C.imaginary_part(C.imag(0, 0))  # tol 1e-9
+            0
             sage: C.imaginary_part(2*C.gen(0, 0))  # tol 1e-9
             2*Im(a0,0)
             sage: C.imaginary_part(2*I*C.gen(0, 0))  # tol 1e-9
@@ -1907,26 +1893,26 @@ class PowerSeriesConstraints:
 
         return R([self.gen(triangle, n) for n in range(self._prec)])
 
-    def develop(self, triangle, Δ=0, base_ring=None):
+    def develop(self, label, Δ=0, base_ring=None):
         r"""
         Return the power series obtained by developing at z + Δ.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
-            sage: C.develop(0)
+            sage: C.develop(0)  # tol 1e-9
             Re(a0,0) + 1.000000000000000*I*Im(a0,0) + (Re(a0,1) + 1.000000000000000*I*Im(a0,1))*z + (Re(a0,2) + 1.000000000000000*I*Im(a0,2))*z^2
-            sage: C.develop(1, 1)
+            sage: C.develop(0, 1)  # tol 1e-9
             Re(a0,0) + 1.000000000000000*I*Im(a0,0) + Re(a0,1) + 1.000000000000000*I*Im(a0,1) + Re(a0,2) + 1.000000000000000*I*Im(a0,2) + (Re(a0,1) + 1.000000000000000*I*Im(a0,1) + 2.000000000000000*Re(a0,2) + 2.000000000000000*I*Im(a0,2))*z + (Re(a0,2) + 1.000000000000000*I*Im(a0,2))*z^2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
-        f = self._formal_power_series(triangle, base_ring=base_ring)
+        f = self._formal_power_series(label, base_ring=base_ring)
         return f(f.parent().gen() + Δ)
 
     def integrate(self, cycle):
@@ -1938,7 +1924,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -1951,14 +1937,14 @@ class PowerSeriesConstraints:
 
             sage: a, b = H.gens()
             sage: C.integrate(a)
-            (1.00000000000000 + 1.00000000000000*I)*Re(a0,0) + (-1.00000000000000 + 1.00000000000000*I)*Im(a0,0)
+            Re(a0,0) + 1.00000000000000*I*Im(a0,0)
             sage: C.integrate(b)
-            -Re(a0,0) + (-1.00000000000000*I)*Im(a0,0)
+            (-1.00000000000000*I)*Re(a0,0) + Im(a0,0)
 
             sage: C = PowerSeriesConstraints(T, prec=5)
-            sage: C.integrate(a) + C.integrate(-a)
+            sage: C.integrate(a) + C.integrate(-a)  # tol 1e-9
             0.00000000000000000
-            sage: C.integrate(b) + C.integrate(-b)
+            sage: C.integrate(b) + C.integrate(-b)  # tol 1e-9
             0.00000000000000000
 
         """
@@ -1968,32 +1954,34 @@ class PowerSeriesConstraints:
 
         expression = R.zero()
 
-        for path, multiplicity in cycle.voronoi_path().monomial_coefficients().items():
+        for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items():
+            # Integrate by crossing the edge into the opposite face.
+            P = self.complex_field()(*self._geometry.midpoint(label, edge))
 
-            for S, T in zip((path[-1],) + path, path):
-                # Integrate from the midpoint of the edge of S to the midpoint
-                # of the edge of T by crossing over the face of T.
-                S = surface.opposite_edge(*S)
-                assert S[0] == T[0], f"consecutive elements of a path must be attached to the same face in {path} but {S} and {T} do not have that property"
+            expression -= multiplicity * self.gen(label, 0)
 
-                # Namely we integrate the power series defined around the Voronoi vertex of S by symbolically integrating each monomial term.
+            P_power = P
 
-                # The midpoints of the edges
-                P = self.complex_field()(*self._geometry.midpoint(*S))
-                Q = self.complex_field()(*self._geometry.midpoint(*T))
+            for k in range(self._prec):
+                expression += multiplicity * self.gen(label, k) / (k + 1) * P_power
+                P_power *= P
 
-                P_power = P
-                Q_power = Q
+            opposite_label, opposite_edge = surface.opposite_edge(label, edge)
 
-                for k in range(self._prec):
-                    expression += multiplicity * self.gen(S[0], k) / (k + 1) * (Q_power - P_power)
+            Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge))
 
-                    P_power *= P
-                    Q_power *= Q
+            Q_power = Q
+
+            for k in range(self._prec):
+                expression -= multiplicity * self.gen(opposite_label, k) / (k + 1) * Q_power
+
+                Q_power *= Q
+
+            expression += multiplicity * self.gen(opposite_label, 0)
 
         return expression
 
-    def evaluate(self, triangle, Δ, derivative=0):
+    def evaluate(self, label, Δ, derivative=0):
         r"""
         Return the value of the power series evaluated at Δ in terms of
         symbolic variables.
@@ -2001,16 +1989,14 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, prec=3)
-            sage: C.evaluate(0, 0)
+            sage: C.evaluate(0, 0)  # tol 1e-9
             Re(a0,0) + 1.000000000000000*I*Im(a0,0)
-            sage: C.evaluate(1, 0)
-            Re(a0,0) + 1.000000000000000*I*Im(a0,0)
-            sage: C.evaluate(1, 2)
+            sage: C.evaluate(0, 2)  # tol 1e-9
             Re(a0,0) + 1.000000000000000*I*Im(a0,0) + 2.000000000000000*Re(a0,1) + 2.000000000000000*I*Im(a0,1) + 4.000000000000000*Re(a0,2) + 4.000000000000000*I*Im(a0,2)
 
         """
@@ -2031,7 +2017,7 @@ class PowerSeriesConstraints:
         factor = ComplexField(54)(factorial(derivative))
 
         for k in range(derivative, self._prec):
-            value += factor * self.gen(triangle, k) * z
+            value += factor * self.gen(label, k) * z
 
             factor *= k + 1
             factor /= k - derivative + 1
@@ -2043,47 +2029,41 @@ class PowerSeriesConstraints:
     def require_midpoint_derivatives(self, derivatives):
         r"""
         The radius of convergence of the power series is the distance from the
-        vertex of the Voronoi cell to the closest singularity of the
-        triangulation (since we use a Delaunay triangulation, all vertices are
-        at the same distance in fact.) So the radii of convergence of two
-        neigbhouring cells overlap and the power series must coincide there.
+        vertex of the Voronoi cell to the closest singularity (since we use a
+        Delaunay cell decomposition, all vertices are at the same distance in
+        fact.) So the radii of convergence of two neigbhouring cells overlap
+        and the power series must coincide there.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
-        This example is a bit artificial. Both power series are developed
-        around the same point since a common edge is ambiguous in the Delaunay
-        triangulation. Therefore, we require all coefficients to be identical.
-        However, we also require the power series to be compatible with itself
-        away from the midpoint which cannot be seen in this example because the
-        precision is too low::
+        We require the power series to be compatible with itself away from the
+        midpoint which cannot be seen in this example because the precision is
+        too low::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_midpoint_derivatives(1)
-            sage: C  # TODO: Does this still match the comment above?
+            sage: C
             []
 
-        If we add more coefficients, we get three pairs of contraints for the
-        three edges surrounding a face; for the edge on which the centers of
-        the Voronoi cells fall, we get a more restrictive constraint forcing
-        all the coefficients to be equal (these are the first four constraints
-        recorded below.)::
+        If we add more coefficients, we get that nonconstant coefficients must
+        vanish for compatibility::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
-            sage: C  # TODO: Does this still match the comment above?
-            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            sage: C
+            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(2)
             sage: C  # tol 1e-9
-            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
 
         """
         if derivatives > self._prec:
@@ -2162,7 +2142,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
         This example is a bit artificial. Both power series are developed
@@ -2206,37 +2186,37 @@ class PowerSeriesConstraints:
         return cost
 
     @cached_method
-    def _elementary_line_integrals(self, triangle, n, m):
+    def _elementary_line_integrals(self, label, n, m):
         r"""
         Return the integrals f(z)dx and f(z)dy where f(z) = z^n\overline{z}^m
-        along the boundary of the ``triangle``.
+        along the boundary of the polygon ``label``.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 3)
 
-            sage: C._elementary_line_integrals(0, 0, 0)
+            sage: C._elementary_line_integrals(0, 0, 0)  # tol 1e-9
             (0.0000000000000000, 0.0000000000000000)
             sage: C._elementary_line_integrals(0, 1, 0)  # tol 1e-9
-            (0 - 0.5*I, 0.5 + 0.0*I)
+            (0 - 1.0*I, 1.0 + 0.0*I)
             sage: C._elementary_line_integrals(0, 0, 1)  # tol 1e-9
-            (0.0 + 0.5*I, 0.5 - 0.0*I)
+            (0.0 + 1.0*I, 1.0 - 0.0*I)
             sage: C._elementary_line_integrals(0, 1, 1)  # tol 1e-9
-            (-0.1666666667, -0.1666666667)
+            (0, 0)
 
         """
         ix = self.complex_field().zero()
         iy = self.complex_field().zero()
 
-        triangle = self._surface.polygon(triangle)
-        center = triangle.circumscribing_circle().center()
+        polygon = self._surface.polygon(label)
+        center = polygon.circumscribing_circle().center()
 
-        for v, e in zip(triangle.vertices(), triangle.edges()):
+        for v, e in zip(polygon.vertices(), polygon.edges()):
             Δx, Δy = e
             x0, y0 = -center + v
 
@@ -2266,23 +2246,23 @@ class PowerSeriesConstraints:
         return ix, iy
 
     @cached_method
-    def _elementary_area_integral(self, triangle, n, m):
+    def _elementary_area_integral(self, label, n, m):
         r"""
-        Return the integral of z^n\overline{z}^m on the ``triangle``.
+        Return the integral of z^n\overline{z}^m on the polygon with ``label``.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 3)
             sage: C._elementary_area_integral(0, 0, 0)  # tol 1e-9
-            0.5 + 0.0*I
+            1.0 + 0.0*I
 
             sage: C._elementary_area_integral(0, 1, 0)  # tol 1e-6
-            -0.083333333 + 0.083333333*I
+            0.0
 
         """
         C = self.complex_field()
@@ -2293,7 +2273,7 @@ class PowerSeriesConstraints:
         # on the boundary of the triangle:
         # -i/(2m + 1) f(n, m + 1) dx + 1/(2m + 1) f(n, m + 1) dy
 
-        ix, iy = self._elementary_line_integrals(triangle, n, m+1)
+        ix, iy = self._elementary_line_integrals(label, n, m+1)
 
         from sage.all import I
         return -I/(C(2)*(m + 1)) * ix + C(1)/(2*(m + 1)) * iy
@@ -2305,7 +2285,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialCohomology(T)
@@ -2346,7 +2326,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialCohomology(T)
@@ -2359,12 +2339,11 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: area = PowerSeriesConstraints(T, η.precision())._area_upper_bound()
 
-        The correct area would be 1/π here. However, we are overcounting
-        because we sum the single Voronoi cell twice. And also, we approximate
-        the square with a circle of radius 1/sqrt(2) for another factor π/2::
+        The correct area would be 1/π here. However, we approximate the square
+        with a circle of radius 1/sqrt(2) for a factor π/2::
 
             sage: η._evaluate(area)  # tol 1e-9
-            1.0
+            0.5
 
         """
         # Our upper bound is integrating the quantity over the circumcircles of
@@ -2393,19 +2372,18 @@ class PowerSeriesConstraints:
         TODO: All these examples are a bit pointless::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 1)
             sage: R = C.symbolic_ring()
 
-        We optimize a function that is really in two variables (due to
-        identification of variables with cells that share the Delaunay cell).
-        Since there are no constraints, we do not get any Lagrange multipliers
-        in this optimization but just for roots of the derivative::
+        We optimize a function in two variables. Since there are no
+        constraints, we do not get any Lagrange multipliers in this
+        optimization but just for roots of the derivative::
 
-            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            sage: f = 10*C.real(0, 0)^2 + 16*C.imag(0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
@@ -2417,24 +2395,24 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
-            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            sage: f = 10*C.real(0, 0)^2 + 17*C.imag(0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 20.0000000000000*Re(a0,0), 32.0000000000000*Im(a0,0), λ1 - λ2, -λ0 - λ3]
+            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 20.0000000000000*Re(a0,0), 34.0000000000000*Im(a0,0), -λ1 + λ2 + λ5 - λ6, λ0 + λ3 - λ4 - λ7]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
             sage: f = 3*C.real(0, 1)^2 + 5*C.imag(0, 1)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [-Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 6.00000000000000*Re(a0,1) + λ1 - λ2, 10.0000000000000*Im(a0,1) - λ0 - λ3]
+            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 6.00000000000000*Re(a0,1) - λ1 + λ2 + λ5 - λ6, 10.0000000000000*Im(a0,1) + λ0 + λ3 - λ4 - λ7]
 
         """
         if f:
@@ -2486,7 +2464,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialCohomology(T)
@@ -2503,7 +2481,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 1)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [Re(a0,0) - Im(a0,0), -Re(a0,0) - 1.00000000000000]
+            [Re(a0,0), Im(a0,0) - 1.00000000000000]
 
         If we increase precision, we see additional higher imaginary parts.
         These depend on the choice of base point of the integration and will be
@@ -2512,7 +2490,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [Re(a0,0) - Im(a0,0), -Re(a0,0) - 1.00000000000000]
+            [Re(a0,0), Im(a0,0) - 1.00000000000000]
 
         """
         for cycle in cocycle.parent().homology().gens():
@@ -2526,7 +2504,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: H = SimplicialCohomology(T)
@@ -2539,15 +2517,16 @@ class PowerSeriesConstraints:
             sage: C.matrix()
             ...
             (
-            [   1.00000000000000000   -1.00000000000000000  0.0833333333333333333  0.0833333333333333333  0.0125000000000000000 -0.0125000000000000000]
-            [  -1.00000000000000000   0.000000000000000000 -0.0833333333333333333   0.000000000000000000 -0.0125000000000000000   0.000000000000000000],
-            (1.00000000000000000, 0.000000000000000000), {0: 0, 1: 1, 2: 0, 3: 1, 8: 2, 9: 3, 10: 2, 11: 3, 16: 4, 17: 5, 18: 4, 19: 5}, {4, 5, 6, 7, 12, 13, 14, 15, 20, 21, 22, 23}
+            [   1.00000000000000   0.000000000000000  0.0833333333333333   0.000000000000000  0.0125000000000000   0.000000000000000]
+            [  0.000000000000000    1.00000000000000   0.000000000000000 -0.0833333333333333   0.000000000000000  0.0125000000000000],
+            (1.00000000000000, 0.000000000000000),
+            {0: 0, 1: 1, 4: 2, 5: 3, 8: 4, 9: 5}, {2, 3, 6, 7, 10, 11}
             )
 
         ::
 
             sage: R = C.symbolic_ring()
-            sage: f = 3*C.real(0, 0)^2 + 5*C.imag(0, 0)^2 + 7*C.real(1, 0)^2 + 11*C.imag(1, 0)^2
+            sage: f = 10*C.real(0, 0)^2 + 16*C.imag(0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C.matrix()  # not tested TODO
@@ -2608,7 +2587,7 @@ class PowerSeriesConstraints:
         return A, b, non_lagranges, free
 
     @cached_method
-    def power_series_ring(self, triangle):
+    def power_series_ring(self, label):
         r"""
         Return the power series ring to write down the series describing a
         harmonic differential in a Voronoi cell.
@@ -2617,20 +2596,18 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: Ω = PowerSeriesConstraints(T, 8)
-            sage: Ω.power_series_ring(1)
-            Power Series Ring in z1 over Complex Field with 69 bits of precision
-            sage: Ω.power_series_ring(2)
-            Power Series Ring in z2 over Complex Field with 69 bits of precision
+            sage: Ω.power_series_ring(0)
+            Power Series Ring in z0 over Complex Field with 54 bits of precision
 
         """
         from sage.all import PowerSeriesRing
-        triangle = list(self._surface.label_iterator()).index(triangle)
-        assert triangle != -1
-        return PowerSeriesRing(self.complex_field(), f"z{triangle}")
+        polygon = list(self._surface.label_iterator()).index(label)
+        assert polygon != -1
+        return PowerSeriesRing(self.complex_field(), f"z{polygon}")
 
     def solve(self, algorithm="scipy"):
         r"""
@@ -2639,17 +2616,18 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, 1)
-            sage: C.add_constraint(C.real(0, 0) - C.real(1, 0))
+            sage: C = PowerSeriesConstraints(T, 2)
+            sage: C.add_constraint(C.real(0, 0) - C.real(0, 1))
             sage: C.add_constraint(C.real(0, 0) - 1)
             sage: C.solve()
+            doctest:warning
             ...
-            UserWarning: Power series coefficients [Im(a0,0), Im(a1,0)] are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.
-            ({0: 1.00000000000000 + O(z0), 1: 1.00000000000000 + O(z1)}, 0.000000000000000)
+            UserWarning: Power series coefficients [Im(a0,0), Im(a0,1)] are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.
+            ({0: 1.00000000000000 + 1.00000000000000*z0 + O(z0^2)}, 0.0)
 
         """
         self._optimize_cost()
