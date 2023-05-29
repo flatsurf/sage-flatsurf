@@ -17,8 +17,9 @@ A basis of homology, with generators written as oriented edges::
 We can also write the generatorls as paths that cross over the edges and
 connect points on the interior of neighboring polygons::
 
-    sage: H = SimplicialHomology(S, generators="interior")  # not tested; TODO
-    sage: H.gens()  # not tested; TODO
+    sage: H = SimplicialHomology(S, generators="voronoi")
+    sage: H.gens()
+    (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
 
 We can also use generators that connect points on the interior of edges of a
 polygon which can be advantageous when integrating along such paths while
@@ -162,34 +163,6 @@ class SimplicialHomologyClass(Element):
 
         raise ValueError("gen must be a generator of homology")
 
-    # def voronoi_path(self):
-    #     r"""
-    #     Return this class as a vector over a basis of homology formed by paths
-    #     inside Voronoi cells.
-
-    #     EXAMPLES::
-
-    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-    #         sage: H = SimplicialHomology(T)
-    #         sage: a, b = H.gens()
-
-    #     The cycle ``a`` is the vertical in the square torus.
-
-    #         sage: a.voronoi_path()
-    #         B[((0, 0), (1, 2), (0, 1), (1, 0))]
-    #         sage: b.voronoi_path()
-    #         B[((0, 1), (1, 0), (0, 2), (1, 1))]
-
-    #     """
-    #     # TODO: Don't expose this here but in a separate view that uses different generators.
-    #     from sage.all import FreeModule, vector
-
-    #     homology, _, _ = self.parent()._homology()
-    #     M = FreeModule(self.parent()._coefficients, self.parent()._paths(voronoi=True))
-    #     return M.from_vector(vector(self._homology()))
-
     def _add_(self, other):
         r"""
         Return the formal sum of homology classes.
@@ -226,127 +199,96 @@ class SimplicialHomologyClass(Element):
         """
         return self.parent()(-self._chain)
 
-    # TODO: This probably makes no sense.
-    # def _path(self, voronoi=False):
-    #     r"""
-    #     Return this generator as a path.
-
-    #     If ``voronoi``, the path is formed by walking from midpoints of edges while staying inside Voronoi cells.
-
-    #     EXAMPLES::
-
-    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-    #         sage: H = SimplicialHomology(T)
-    #         sage: a, b = H.gens()
-
-    #     The chosen generators of homology, correspond to the edge (0, 0), i.e.,
-    #     the diagonal with vector (1, 1), and the top horizontal edge (0, 1)
-    #     with vector (-1, 0)::
-
-    #         sage: a._path()
-    #         ((0, 0),)
-    #         sage: b._path()
-    #         ((0, 1),)
-
-    #     Lifting the former to a path in Voronoi cells, we consider the midpoint
-    #     of (0, 0) as the midpoint of (1, 0) and walk across the triangle 1 to
-    #     get to the midpoint of (1, 2). We consider the midpoint of (1, 2) as
-    #     the midpoint of (0, 2) and walk across the triangle 0 to the midpoint
-    #     of (0, 1). Finally, we consider that midpoint to be the midpoint of (1,
-    #     1) and walk across 1 to the midpoint of (1, 0) which is where we
-    #     started::
-
-    #         sage: a._path(voronoi=True)
-    #         ((0, 0), (1, 2), (0, 1), (1, 0))
-
-    #     Similarly, to write the other path as a path inside Voronoi cells, we
-    #     start from the midpoint of (0, 1) and consider it as the midpoint of
-    #     (1, 1). We walk across triangle 1 to get to the midpoint of (1, 0). We
-    #     consider that to be the midpoint of (0, 0) and walk across 0 to the
-    #     midpoint of (0, 2). We consider that to be the midpoint of (1, 2) and
-    #     walk across triangle 1 to get to the midpoint of (1, 1) which closes
-    #     the loop::
-
-    #         sage: b._path(voronoi=True)
-    #         ((0, 1), (1, 0), (0, 2), (1, 1))
-
-    #     TODO: Note from the above discussion that we can have consecutive steps
-    #     in the same triangle; in the above the last and the first. We should
-    #     collapse these.
-
-    #     ::
-
-    #         sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-    #         sage: E = EquiangularPolygons(3, 4, 13)
-    #         sage: P = E.an_element()
-    #         sage: T = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation").erase_marked_points()
-
-    #         sage: H = SimplicialHomology(T)
-    #         sage: a = H.gens()[0]; a
-    #         B[(0, 0)] - B[(30, 1)]
-    #         sage: a._path()
-    #         ((31, 2), (0, 0))
-    #         sage: a._path(voronoi=True)
-    #         ((31, 2), (30, 0), (25, 2), (5, 0), (13, 1), (18, 0), (7, 0), (12, 2), (4, 0), (24, 1), (28, 0), (21, 2), (14, 0), (9, 2), (3, 2),
-    #          (0, 0), (3, 1), (23, 1), (26, 1), (27, 1), (16, 0), (19, 2), (18, 1), (13, 0), (14, 1), (21, 1), (6, 2), (2, 0), (20, 1), (11, 0), (17, 0), (30, 1))
-
-    #     """
-    #     edges = []
-
-    #     for edge in self._chain.support():
-    #         coefficient = self._chain[edge]
-    #         if coefficient == 0:
-    #             continue
-    #         if coefficient < 0:
-    #             coefficient *= -1
-    #             edge = self.parent()._surface.opposite_edge(*edge)
-
-    #         if coefficient != 1:
-    #             raise NotImplementedError
-
-    #         edges.append(edge)
-
-    #     path = [edges.pop()]
-
-    #     surface = self.surface()
-
-    #     while edges:
-    #         # Lengthen the path by searching for an edge that starts at the
-    #         # vertex at which the constructed path ends.
-    #         previous = path[-1]
-    #         vertex = surface.singularity(*surface.opposite_edge(*previous))
-    #         for edge in edges:
-    #             if surface.singularity(*edge) == vertex:
-    #                 path.append(edge)
-    #                 edges.remove(edge)
-    #                 break
-    #         else:
-    #             raise NotImplementedError
-
-    #     if not voronoi:
-    #         return tuple(path)
-
-    #     # Instead of walking the edges of the triangulation, we walk
-    #     # across faces between the midpoints of the edges to construct a path
-    #     # inside Voronoi cells.
-    #     voronoi_path = [path[0]]
-
-    #     for previous, edge in zip(path, path[1:] + path[:1]):
-    #         previous = self.surface().opposite_edge(*previous)
-    #         while previous != edge:
-    #             previous = previous[0], (previous[1] + 2) % 3
-    #             voronoi_path.append(previous)
-    #             previous = self.surface().opposite_edge(*previous)
-    #         voronoi_path.append(edge)
-
-    #     voronoi_path.pop()
-
-    #     return tuple(voronoi_path)
-
     def surface(self):
         return self.parent().surface()
+
+
+class SimplicialHomologyClass_edge(SimplicialHomologyClass):
+    pass
+
+
+class SimplicialHomologyClass_voronoi(SimplicialHomologyClass):
+    r"""
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T.set_immutable()
+        sage: H = SimplicialHomology(T, generators="voronoi")
+        sage: a, b = H.gens()
+
+    The cycle ``a`` is horizontal in the square torus since it
+    crosses the vertical edge 1::
+
+        sage: a
+        B[(0, 1)]
+        sage: b
+        B[(0, 0)]
+
+    """
+    # def safety(self):
+    #     return min(self._safety(label0, edge0) for (label0, edge0) in self._surface.underlying_surface().edge_iterator())
+
+    # def _safety(self, label, edge):
+    #     polygon = self._surface.polygon(label)
+    #     cross_label, cross_edge = self._surface.opposite_edge(label, edge)
+    #     cross_polygon = self._surface.polygon(cross_label)
+    #     cross_polygon = cross_polygon.translate(polygon.vertex(edge) - cross_polygon.vertex((cross_edge + 1) % cross_polygon.num_edges()))
+    #     distance = (polygon.circumscribing_circle().center() - cross_polygon.circumscribing_circle().center()).change_ring(RR).norm()
+    #     if distance == 0:
+    #         from sage.all import infinity
+    #         return infinity
+    #     return self._convergence(label) / distance
+
+    # def _convergence(self, label):
+    #     r"""
+    #     Return the radius of convergence at the point at which we develop the
+    #     series for the polygon ``label``.
+    #     """
+    #     polygon = self._surface.polygon(label)
+    #     center = polygon.circumscribing_circle().center()
+    #     singularities = self._surface.singularities()
+
+    #     from sage.all import infinity
+    #     radius = infinity
+
+    #     if not singularities:
+    #         return radius
+
+    #     closest_edges = []
+    #     polygons = set([polygon])
+
+    #     def distance(polygon, edge):
+    #         # TODO: This is wrong. This is the distance to the endpoints.
+    #         return min((center - polygon.vertex(edge)).change_ring(RR).norm(), (center - polygon.vertex((edge + 1) % polygon.num_edges())).change_ring(RR).norm())
+
+    #     from heapq import heappush, heappop
+    #     for e in range(polygon.num_edges()):
+    #         heappush(closest_edges, (distance(polygon, e), label, str(polygon), polygon, e))
+
+    #     while True:
+    #         d, label, _, polygon, edge = heappop(closest_edges)
+    #         if d >= radius:
+    #             return radius
+
+    #         vertex = self._surface.point(label, self._surface.polygon(label).vertex(edge))
+    #         if vertex in singularities:
+    #             radius = min(radius, (polygon.vertex(edge) - center).change_ring(RR).norm())
+
+    #         cross_label, cross_edge = self._surface.opposite_edge(label, edge)
+    #         cross_polygon = self._surface.polygon(cross_label)
+    #         cross_polygon = cross_polygon.translate(polygon.vertex(edge) - cross_polygon.vertex((cross_edge + 1) % cross_polygon.num_edges()))
+
+    #         if cross_polygon in polygons:
+    #             continue
+
+    #         polygons.add(cross_polygon)
+
+    #         for e in range(cross_polygon.num_edges()):
+    #             if e == cross_label:
+    #                 continue
+
+    #             heappush(closest_edges, (distance(cross_polygon, e), cross_label, str(cross_polygon), cross_polygon, e))
 
 
 class SimplicialHomology(UniqueRepresentation, Parent):
@@ -361,8 +303,8 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
     - ``coefficients`` -- a ring (default: the integers)
 
-    - ``generators`` -- one of ``edge``, ``interior``, ``midpoint`` (default:
-      ``edge``) how generators are represented
+    - ``generators`` -- one of ``edge``, ``voronoi`` (default: ``edge``) how
+      generators are represented
 
     - ``relative`` -- a subset of points of the ``surface`` (default: the empty
       set)
@@ -404,8 +346,6 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         sage: TestSuite(H).run()
 
     """
-    Element = SimplicialHomologyClass
-
     @staticmethod
     # TODO: implementation should default to spanning_tree
     def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
@@ -442,8 +382,12 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         if coefficients not in Rings():
             raise TypeError("coefficients must be a ring")
 
-        if generators not in ["edge",]:
-            raise NotImplementedError("cannot represented homology with these generators yet")
+        if generators == "edge":
+            self.Element = SimplicialHomologyClass_edge
+        elif generators == "voronoi":
+            self.Element = SimplicialHomologyClass_voronoi
+        else:
+            raise NotImplementedError("cannot represent homology with these generators yet")
 
         if subset:
             raise NotImplementedError("cannot compute relative homology yet")
@@ -518,17 +462,52 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         """
         if dimension == 0:
-            return tuple(set(self._surface.point(label, self._surface.polygon(label).vertex(edge)) for (label, edge) in self._surface.edge_iterator()))
+            return self._simplices_points()
+
         if dimension == 1:
+            return self._simplices_segments()
+
+        if dimension == 2:
+            return self._simplices_polygons()
+
+        return tuple()
+
+    def _simplices_points(self):
+        if self._generators == "edge":
+            return tuple(set(self._surface.point(label, self._surface.polygon(label).vertex(edge)) for (label, edge) in self._surface.edge_iterator()))
+
+        if self._generators == "voronoi":
+            for label in self._surface.label_iterator():
+                polygon = self._surface.polygon(label)
+                # TODO: This fails if the center of the circumscribing circle
+                # is not in the polygon; we should be more explicit here and
+                # check this condition properly earlier.
+                self._surface.surface_point(label, polygon.circumscribing_circle().center())
+
+            return tuple(self._surface.label_iterator())
+
+        raise NotImplementedError
+
+    def _simplices_segments(self):
+        if self._generators in ["edge", "voronoi"]:
+            # When "edge", then the edges are the generators.
+            # When "voronoi", then the paths crossing the edges are the generators.
             simplices = set()
             for edge in self._surface.edge_iterator():
                 if self._surface.opposite_edge(*edge) not in simplices:
                     simplices.add(edge)
             return tuple(simplices)
-        if dimension == 2:
+
+        raise NotImplementedError
+
+    def _simplices_polygons(self):
+        if self._generators == "edge":
             return tuple(self._surface.label_iterator())
 
-        return tuple()
+        if self._generators == "voronoi":
+            return tuple(self._surface.edge_iterator())
+
+        raise NotImplementedError
 
     def boundary(self, chain):
         r"""
@@ -570,22 +549,17 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         if chain.parent() == self.chain_module(dimension=1):
             C0 = self.chain_module(dimension=0)
             boundary = C0.zero()
-            for edge, coefficient in chain:
-                label, edge = edge
-                opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-                boundary += coefficient * C0(self._surface.point(opposite_label, self._surface.polygon(opposite_label).vertex(opposite_edge)))
-                boundary -= coefficient * C0(self._surface.point(label, self._surface.polygon(label).vertex(edge)))
+            for gen, coefficient in chain:
+                boundary += coefficient * self._boundary_segment(gen)
+
             return boundary
 
         if chain.parent() == self.chain_module(dimension=2):
             C1 = self.chain_module(dimension=1)
             boundary = C1.zero()
-            for face, coefficient in chain:
-                for edge in range(self._surface.polygon(face).num_edges()):
-                    if (face, edge) in C1.indices():
-                        boundary += coefficient * C1((face, edge))
-                    else:
-                        boundary -= coefficient * C1(self._surface.opposite_edge(face, edge))
+            for gen, coefficient in chain:
+                boundary += coefficient * self._boundary_polygon(gen)
+
             return boundary
 
         if chain.parent() == self.chain_module(dimension=0):
@@ -595,6 +569,54 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         # tell whether the boundary is a 2-dimensional chain (which lives in a
         # non-trivial module) or a chain living in a trivial module.
         raise NotImplementedError("cannot compute boundary of this chain yet")
+
+    def _boundary_segment(self, gen):
+        if self._generators == "edge":
+            C0 = self.chain_module(dimension=0)
+            label, edge = gen
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+            return C0(self._surface.point(opposite_label, self._surface.polygon(opposite_label).vertex(opposite_edge))) - C0(self._surface.point(label, self._surface.polygon(label).vertex(edge)))
+
+        if self._generators == "voronoi":
+            C0 = self.chain_module(dimension=0)
+            label, edge = gen
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+
+            return C0(opposite_label) - C0(label)
+
+        raise NotImplementedError
+
+    def _boundary_polygon(self, gen):
+        if self._generators == "edge":
+            C1 = self.chain_module(dimension=1)
+            boundary = C1.zero()
+            face = gen
+            for edge in range(self._surface.polygon(face).num_edges()):
+                if (face, edge) in C1.indices():
+                    boundary += C1((face, edge))
+                else:
+                    boundary -= C1(self._surface.opposite_edge(face, edge))
+            return boundary
+
+        if self._generators == "voronoi":
+            C1 = self.chain_module(dimension=1)
+            boundary = C1.zero()
+            label, vertex = gen
+            # The counterclockwise walk around "vertex" is a boundary.
+            while True:
+                edge = (vertex - 1) % self._surface.polygon(label).num_edges()
+                opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+                if (label, edge) in C1.indices():
+                    boundary += C1((label, edge))
+                else:
+                    boundary -= C1((opposite_label, opposite_edge))
+
+                if (opposite_label, opposite_edge) == gen:
+                    return boundary
+
+                label, vertex = opposite_label, opposite_edge
+
+        raise NotImplementedError
 
     @cached_method
     def _chain_complex(self):

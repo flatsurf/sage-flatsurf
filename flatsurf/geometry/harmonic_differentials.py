@@ -569,77 +569,12 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     def surface(self):
         return self._surface
 
-    def safety(self):
-        return min(self._safety(label0, edge0) for (label0, edge0) in self._surface.underlying_surface().edge_iterator())
-
-    def _safety(self, label, edge):
-        polygon = self._surface.polygon(label)
-        cross_label, cross_edge = self._surface.opposite_edge(label, edge)
-        cross_polygon = self._surface.polygon(cross_label)
-        cross_polygon = cross_polygon.translate(polygon.vertex(edge) - cross_polygon.vertex((cross_edge + 1) % cross_polygon.num_edges()))
-        distance = (polygon.circumscribing_circle().center() - cross_polygon.circumscribing_circle().center()).change_ring(RR).norm()
-        if distance == 0:
-            from sage.all import infinity
-            return infinity
-        return self._convergence(label) / distance
-
-    def _convergence(self, label):
-        r"""
-        Return the radius of convergence at the point at which we develop the
-        series for the polygon ``label``.
-        """
-        polygon = self._surface.polygon(label)
-        center = polygon.circumscribing_circle().center()
-        singularities = self._surface.singularities()
-
-        from sage.all import infinity
-        radius = infinity
-
-        if not singularities:
-            return radius
-
-        closest_edges = []
-        polygons = set([polygon])
-
-        def distance(polygon, edge):
-            # TODO: This is wrong. This is the distance to the endpoints.
-            return min((center - polygon.vertex(edge)).change_ring(RR).norm(), (center - polygon.vertex((edge + 1) % polygon.num_edges())).change_ring(RR).norm())
-
-        from heapq import heappush, heappop
-        for e in range(polygon.num_edges()):
-            heappush(closest_edges, (distance(polygon, e), label, str(polygon), polygon, e))
-
-        while True:
-            d, label, _, polygon, edge = heappop(closest_edges)
-            if d >= radius:
-                return radius
-
-            vertex = self._surface.point(label, self._surface.polygon(label).vertex(edge))
-            if vertex in singularities:
-                radius = min(radius, (polygon.vertex(edge) - center).change_ring(RR).norm())
-
-            cross_label, cross_edge = self._surface.opposite_edge(label, edge)
-            cross_polygon = self._surface.polygon(cross_label)
-            cross_polygon = cross_polygon.translate(polygon.vertex(edge) - cross_polygon.vertex((cross_edge + 1) % cross_polygon.num_edges()))
-
-            if cross_polygon in polygons:
-                continue
-
-            polygons.add(cross_polygon)
-
-            for e in range(cross_polygon.num_edges()):
-                if e == cross_label:
-                    continue
-
-                heappush(closest_edges, (distance(cross_polygon, e), cross_label, str(cross_polygon), cross_polygon, e))
-
-
     def _repr_(self):
         return f"Ω({self._surface})"
 
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
-            η = self.element_class(self, None, *args, **kwargs)
+            return self.element_class(self, None, *args, **kwargs)
 
         if isinstance(x, dict):
             return self.element_class(self, x, *args, **kwargs)
