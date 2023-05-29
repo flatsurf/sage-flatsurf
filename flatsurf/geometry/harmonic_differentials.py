@@ -1860,7 +1860,7 @@ class PowerSeriesConstraints:
         """
         return self.project(x, "imag")
 
-    def add_constraint(self, expression):
+    def add_constraint(self, expression, rank_check=True):
         total_degree = expression.total_degree()
 
         if total_degree == -1:
@@ -1874,12 +1874,17 @@ class PowerSeriesConstraints:
 
         if expression.parent().base_ring() is self.real_field():
             # TODO: Should we scale?
-            from sage.all import oo
             # self._constraints.append(expression / expression.norm(1))
+            # TODO: This is a very expensive hack to detect dependent conditions.
+            if rank_check:
+                rank = self.matrix(nowarn=True)[0].rank()
             self._constraints.append(expression)
+            if rank_check:
+                if self.matrix(nowarn=True)[0].rank() == rank:
+                    self._constraints.pop()
         elif expression.parent().base_ring() is self.complex_field():
-            self.add_constraint(expression.real())
-            self.add_constraint(expression.imag())
+            self.add_constraint(expression.real(), rank_check=rank_check)
+            self.add_constraint(expression.imag(), rank_check=rank_check)
         else:
             raise NotImplementedError("cannot handle expressions over this base ring")
 
@@ -2069,17 +2074,17 @@ class PowerSeriesConstraints:
         if derivatives > self._prec:
             raise ValueError("derivatives must not exceed global precision")
 
-        for triangle0, edge0 in self._surface.edge_iterator():
-            triangle1, edge1 = self._surface.opposite_edge(triangle0, edge0)
+        for label0, edge0 in self._surface.edge_iterator():
+            label1, edge1 = self._surface.opposite_edge(label0, edge0)
 
-            if triangle1 < triangle0:
+            if label1 < label0:
                 # Add each constraint only once.
                 continue
 
             parent = self.symbolic_ring()
 
-            Δ0 = self.complex_field()(*self._geometry.midpoint(triangle0, edge0))
-            Δ1 = self.complex_field()(*self._geometry.midpoint(triangle1, edge1))
+            Δ0 = self.complex_field()(*self._geometry.midpoint(label0, edge0))
+            Δ1 = self.complex_field()(*self._geometry.midpoint(label1, edge1))
 
             # TODO: Are these good constants?
             if abs(Δ0 - Δ1) < 1e-6:
@@ -2088,7 +2093,7 @@ class PowerSeriesConstraints:
             # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
             for derivative in range(derivatives):
                 self.add_constraint(
-                    parent(self.evaluate(triangle0, Δ0, derivative)) - parent(self.evaluate(triangle1, Δ1, derivative)))
+                    parent(self.evaluate(label0, Δ0, derivative)) - parent(self.evaluate(label1, Δ1, derivative)))
 
     def _L2_consistency_edge(self, triangle0, edge0):
         cost = self.symbolic_ring(self.real_field()).zero()
@@ -2427,6 +2432,10 @@ class PowerSeriesConstraints:
         # imaginary, namely that the partial derivative wrt Re(a_k) and Im(a_k)
         # vanishes. Note that we have one Lagrange multiplier for each affine
         # linear constraint collected so far.
+
+        # TODO: We add lots of lagrange coefficients even if our rank is very
+        # small. We should probably determine the rank here and reduce the
+        # system first.
         lagranges = len(self._constraints)
 
         g = self._constraints
@@ -2448,7 +2457,7 @@ class PowerSeriesConstraints:
             for i in range(lagranges):
                 L += g[i][gen] * self.lagrange(i)
 
-            self.add_constraint(L)
+            self.add_constraint(L, rank_check=False)
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
@@ -2494,12 +2503,12 @@ class PowerSeriesConstraints:
 
         """
         for cycle in cocycle.parent().homology().gens():
-            self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)))
+            self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)), rank_check=False)
 
     def lagrange_variables(self):
         return set(variable for constraint in self._constraints for variable in constraint.variables("lagrange"))
 
-    def matrix(self):
+    def matrix(self, nowarn=False):
         r"""
         EXAMPLES::
 
@@ -2559,8 +2568,9 @@ class PowerSeriesConstraints:
 
         free = set(gen for gen in range(2*len(triangles)*prec) if gen not in non_lagranges)
         if free:
-            from warnings import warn
-            warn(f"Power series coefficients {[self.symbolic_ring().gen(gen) for gen in free]} are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
+            if not nowarn:
+                from warnings import warn
+                warn(f"Power series coefficients {[self.symbolic_ring().gen(gen) for gen in free]} are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
 
         from sage.all import matrix, vector
         A = matrix(self.real_field(), len(self._constraints), len(representatives) + len(self.lagrange_variables()))
@@ -2638,7 +2648,7 @@ class PowerSeriesConstraints:
         rank = A.rank()
         if rank < columns:
             # TODO: Warn?
-            print(f"system undetermined: {rows}×{columns} matrix of rank {rank}")
+            print(f"system underdetermined: {rows}×{columns} matrix of rank {rank}")
 
         if algorithm == "arb":
             from sage.all import ComplexBallField

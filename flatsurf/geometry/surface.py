@@ -1997,6 +1997,9 @@ class Surface_dict(Surface):
                 # Assume on faith we are removing a polygon in the base_surface.
                 self._p[label] = None
 
+    def __hash__(self):
+        return super().__hash__()
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.

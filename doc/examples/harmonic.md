@@ -28,7 +28,7 @@ First, some differentials on a square torus.
 
 ```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+T = translation_surfaces.torus((1, 0), (0, 1))
 T.set_immutable()
 T.plot()
 ```
@@ -36,12 +36,12 @@ T.plot()
 We create differentials with prescribed values on generators of homology. The differential is, modulo some numerical noise, a constant:
 
 ```sage
-H = SimplicialHomology(T)
+H = SimplicialHomology(T, generators="voronoi")
 a, b = H.gens()
 ```
 
 ```sage
-H = SimplicialCohomology(T)
+H = SimplicialCohomology(T, homology=H)
 f = H({a: 1})
 ```
 
@@ -60,7 +60,7 @@ omega.series(0)
 ```
 
 ```sage
-omega.series(1)
+omega.series(0)
 ```
 
 We can ask the differential how well it solves the constraints that were used to created it:
@@ -86,13 +86,13 @@ These strategies can also be mixed and weighted differently (in the case of `mid
 There are checks for obvious errors in the computation, e.g., when the error in the L2 norm gets too big:
 
 ```sage
-Omega(f, prec=10, algorithm={"midpoint_derivatives": 2, "area_upper_bound": 10, "L2": 0})
+Omega(f, prec=10, algorithm={"midpoint_derivatives": 1, "area_upper_bound": 0, "L2": 0})
 ```
 
 These checks can be disabled though:
 
 ```sage
-Omega(f, prec=10, algorithm={"midpoint_derivatives": 2, "area_upper_bound": 10, "L2": 0}, check=False)
+Omega(f, prec=10, algorithm={"midpoint_derivatives": 1, "area_upper_bound": 10, "L2": 0}, check=False)
 ```
 
 There are some other basic operations supported. We can, e.g., ask for the roots of a differential (TODO: This does not include roots at the vertices of the triangulation yet):
@@ -118,12 +118,11 @@ omega.cauchy_residue(vertex, -1)
 ## A Less Trivial Example, the Regular Octagon
 
 ```sage
-from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
 S = translation_surfaces.regular_octagon().copy(mutable=True)
 
 scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
 S = S.apply_matrix(diagonal_matrix([scale, scale]))
-S = S.delaunay_triangulation()
 S = S.underlying_surface()
 S.set_immutable()
 
@@ -131,8 +130,26 @@ TranslationSurface(S).plot()
 ```
 
 ```sage
-HS = SimplicialCohomology(S)
+H = SimplicialHomology(S)
+HS = SimplicialCohomology(S, homology=H)
 a, b, c, d = HS.homology().gens()
+```
+
+```sage
+f = {
+    a: 0,
+    b: 1.64556839529346,
+    c: 0,
+    d: -2.32718514243654,
+}
+print(f)
+f = HS(f)
+f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
+```
+
+```sage
+Omega = HarmonicDifferentials(S)
+omega = Omega(HS(f), prec=30)
 ```
 
 To make computations more stable, we use a finer triangulation on the octagon.
@@ -162,14 +179,7 @@ HT = SimplicialCohomology(T)
 We create a differential whose integral along certain paths (in the original surface) has prescribed values:
 
 ```sage
-f = {
-    a: 0,
-    b: 1.64556839529346,
-    c: 0,
-    d: -2.32718514243654,
-}
-print(f)
-f = deformation(HS(f))
+f = deformation(f)
 print(f)
 ```
 
@@ -183,13 +193,13 @@ f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
 ```sage
 Omega = HarmonicDifferentials(T)
-omega = Omega(f, prec=7, check=False)
+omega = Omega(f, prec=4, check=False)
 ```
 
 We run some basic checks on the differential to determine whether it actually is a good approximation of a harmonic differential.
 
 ```sage
-omega.error(verbose=True)
+omega.error()
 ```
 
 ### An Explicit Series for the Octagon
@@ -205,7 +215,7 @@ g = z^2 - 1/9*z^10 + 20/1377*z^18 - 14/6885*z^26 + 2044/6952473*z^34 - 111097/25
 ```
 
 ```sage
-omega_exact = OmegaExact({triangle: g for triangle in S.label_iterator()})
+omega_exact = OmegaExact({0: g})
 ```
 
 We integrate to find the cohomology class this corresponds to.
@@ -215,7 +225,7 @@ We integrate to find the cohomology class this corresponds to.
 ```
 
 ```sage
-Δ = vector((1/4, -1/2)) - S.polygon(4).circumscribing_circle().center()
+Δ = vector((1/4, 1/2)) - S.polygon(0).circumscribing_circle().center()
 ```
 
 ```sage
@@ -227,17 +237,17 @@ We integrate to find the cohomology class this corresponds to.
 ```
 
 ```sage
-S.polygon(4).plot()
+S.polygon(0).plot()
 ```
 
 ```sage
-omega_exact.evaluate(4, Δ)
+omega_exact.evaluate(0, Δ)
 ```
 
 Measuring the quality of the computed ω.
 
 ```sage
-point = S.point(4, (1/4,-1/2))
+point = S.point(0, (1/4, 1/2))
 ```
 
 ```sage
@@ -287,8 +297,12 @@ T.polygon(qlabel).plot() + T.polygon(qlabel).circumscribing_circle().center().pl
 
 ```sage
 Omega = HarmonicDifferentials(T)
-for prec in range(5, 20):
+for prec in range(3, 20):
     print(f"{prec=}")
     omega = Omega(f, prec=prec, check=False)
-    print(omega.evaluate(qlabel, qΔ))
+    print(omega.evaluate(qlabel, qΔ), "vs. the exact value", omega_exact.evaluate(0, Δ))
+```
+
+```sage
+
 ```

@@ -103,7 +103,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
     Element = SimplicialCohomologyClass
 
     @staticmethod
-    def __classcall__(cls, surface, coefficients=None, category=None):
+    def __classcall__(cls, surface, coefficients=None, homology=None, category=None):
         r"""
         Normalize parameters used to construct cohomology.
 
@@ -119,9 +119,10 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
 
         """
         from sage.all import RR
-        return super().__classcall__(cls, surface, coefficients or RR, category or SetsWithPartialMaps())
+        from flatsurf.geometry.homology import SimplicialHomology
+        return super().__classcall__(cls, surface, coefficients or RR, homology or SimplicialHomology(surface), category or SetsWithPartialMaps())
 
-    def __init__(self, surface, coefficients, category):
+    def __init__(self, surface, coefficients, homology, category):
         # TODO: Not checking this anymore. Do we need it?
         # if surface != surface.delaunay_triangulation():
         #     # TODO: This is a silly limitation in here.
@@ -130,6 +131,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
         Parent.__init__(self, category=category)
 
         self._surface = surface
+        self._homology = homology
         self._coefficients = coefficients
 
     def _repr_(self):
@@ -161,5 +163,4 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
         H₁(TranslationSurface built from 2 polygons; Integer Ring)
 
         """
-        from flatsurf.geometry.homology import SimplicialHomology
-        return SimplicialHomology(self._surface)
+        return self._homology

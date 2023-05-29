@@ -482,7 +482,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
                 # TODO: This fails if the center of the circumscribing circle
                 # is not in the polygon; we should be more explicit here and
                 # check this condition properly earlier.
-                self._surface.surface_point(label, polygon.circumscribing_circle().center())
+                # self._surface.surface_point(label, polygon.circumscribing_circle().center())
 
             return tuple(self._surface.label_iterator())
 
