@@ -699,8 +699,8 @@ class GeometricPrimitives:
         return -self.center(label) + polygon.vertex(edge) + polygon.edge(edge) / 2
 
     @cached_method
-    def center(self, triangle):
-        return self._surface.polygon(triangle).circumscribing_circle().center()
+    def center(self, label):
+        return self._surface.polygon(label).circumscribing_circle().center()
 
 
 class SymbolicCoefficientExpression(CommutativeRingElement):
@@ -2061,14 +2061,14 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            [Im(a0,1), -Re(a0,1)]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(2)
             sage: C  # tol 1e-9
-            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            [Im(a0,1), -Re(a0,1)]
 
         """
         if derivatives > self._prec:
@@ -2400,24 +2400,24 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            [Im(a0,1), -Re(a0,1)]
             sage: f = 10*C.real(0, 0)^2 + 17*C.imag(0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 20.0000000000000*Re(a0,0), 34.0000000000000*Im(a0,0), -λ1 + λ2 + λ5 - λ6, λ0 + λ3 - λ4 - λ7]
+            [Im(a0,1), -Re(a0,1), 20.0000000000000*Re(a0,0), 34.0000000000000*Im(a0,0), -λ1, λ0]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, 2)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1)]
+            [Im(a0,1), -Re(a0,1)]
             sage: f = 3*C.real(0, 1)^2 + 5*C.imag(0, 1)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Im(a0,1), -Re(a0,1), Re(a0,1), Im(a0,1), -Im(a0,1), Re(a0,1), -Re(a0,1), -Im(a0,1), 6.00000000000000*Re(a0,1) - λ1 + λ2 + λ5 - λ6, 10.0000000000000*Im(a0,1) + λ0 + λ3 - λ4 - λ7]
+            [Im(a0,1), -Re(a0,1), 6.00000000000000*Re(a0,1) - λ1, 10.0000000000000*Im(a0,1) + λ0]
 
         """
         if f:

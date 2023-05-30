@@ -302,7 +302,3 @@ for prec in range(3, 20):
     omega = Omega(f, prec=prec, check=False)
     print(omega.evaluate(qlabel, qΔ), "vs. the exact value", omega_exact.evaluate(0, Δ))
 ```
-
-```sage
-
-```
