@@ -1047,6 +1047,27 @@ class Surface(SageObject):
         from flatsurf import TranslationSurface
         return TranslationSurface(self).plot(*args, **kwargs)
 
+    def voronoi(self, points):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.regular_octagon()
+            sage: T.set_immutable()
+
+            sage: T.underlying_surface().voronoi([T.surface_point(0, T.polygon(0).circumscribing_circle().center())])
+
+        ::
+
+            sage: octagon = T.polygon(0)
+            sage: points = [octagon.circumscribing_circle().center()] + [octagon.vertex(n) + octagon.vertex((n + 1) % 8) for n in range(8)]
+            sage: points = [T.surface_point(0, point) for point in points]
+            sage: T.underlying_surface().voronoi(points)
+
+        """
+        from flatsurf.geometry.deformation import VoronoiRefinement
+        return VoronoiRefinement(self, VoronoiRefinement._codomain(self, points), points)
+
 
 class Surface_list(Surface):
     r"""

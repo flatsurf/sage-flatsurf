@@ -302,3 +302,44 @@ for prec in range(3, 20):
     omega = Omega(f, prec=prec, check=False)
     print(omega.evaluate(qlabel, qΔ), "vs. the exact value", omega_exact.evaluate(0, Δ))
 ```
+
+# Experiments (deleteme)
+
+```sage
+from flatsurf import polygons, similarity_surfaces
+p = polygons(angles=[1,3,4])
+s = similarity_surfaces.billiard(p)
+ts=s.minimal_cover(cover_type="translation").copy(relabel=True)
+ts.plot()
+```
+
+```sage
+ts = ts.delaunay_decomposition()
+ts.plot()
+```
+
+```sage
+from flatsurf import translation_surfaces
+T = translation_surfaces.regular_octagon()
+T.plot()
+```
+
+```sage
+T = T.subdivide_edges(2)
+T.plot()
+```
+
+```sage
+T = T.subdivide()
+T.plot()
+```
+
+```sage
+T = T.subdivide_edges(3)
+T.plot()
+```
+
+```sage
+T = T.delaunay_decomposition().copy(relabel=True)
+T.plot()
+```

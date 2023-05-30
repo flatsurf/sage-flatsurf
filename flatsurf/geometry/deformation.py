@@ -421,3 +421,16 @@ class TriangleFlipDeformation(Deformation):
                 return SurfacePoint(self.codomain(), recross_label, recross_position)
 
         raise NotImplementedError
+
+
+class VoronoiRefinement(Deformation):
+    def __init__(self, domain, codomain, points):
+        super().__init__(self, domain, codomain)
+        self._points = points
+
+    @staticmethod
+    def _codomain(domain, points):
+        # TODO: Require the domain to be decomposed into Delaunay cells.
+        # TODO: Check that points contains at least the centers of the Delaunay
+        # cells (otherwise the distance computation is not correct.)
+        raise NotImplementedError
