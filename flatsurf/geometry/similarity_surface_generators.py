@@ -1189,7 +1189,7 @@ class TranslationSurfaceGenerators:
             raise ValueError("w must be positive")
         if not h > 0:
             raise ValueError("h must be positive")
-        if not e + 2*h < w:
+        if not e + 2 * h < w:
             raise ValueError("e + 2h < w must hold")
         if not t >= 0:
             raise ValueError("t must be non-negative")
@@ -1203,6 +1203,7 @@ class TranslationSurfaceGenerators:
 
         if not D.is_square():
             from sage.all import QuadraticField
+
             K = QuadraticField(D)
             D = K(D)
 
@@ -1300,6 +1301,7 @@ class TranslationSurfaceGenerators:
 
         if not D.is_square():
             from sage.all import QuadraticField
+
             K = QuadraticField(D)
             D = K(D)
 
