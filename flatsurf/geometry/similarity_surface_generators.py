@@ -3,6 +3,7 @@
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
 #                      2020-2023 Julian Rüth
+#                           2023 Sam Freedman
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
