@@ -1146,6 +1146,7 @@ class TranslationSurfaceGenerators:
         s.set_immutable()
         return TranslationSurface(s)
 
+    @staticmethod
     def lanneau_nguyen_genus3_prototype(w, h, t, e):
         r"""
         Return the Lanneau--Ngyuen prototype in the stratum H(4) with
