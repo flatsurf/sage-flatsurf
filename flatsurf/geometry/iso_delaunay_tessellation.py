@@ -1118,7 +1118,7 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             from sage.all import ZZ
             assert o in ZZ
 
-            if order != 1 and (order is None or order == o):
+            if o != 1 and (order is None or order == o):
                 # TODO: make fancier, i.e. OrbifoldPoint
                 yield start[1].start()
 
