@@ -1247,6 +1247,7 @@ class TranslationSurfaceGenerators:
         The associated discriminant is `D = e^2 + 4 wh`.
 
         EXAMPLES::
+
             sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.lanneau_nguyen_genus4_prototype(1,1,0,-2)
             sage: T.stratum()
