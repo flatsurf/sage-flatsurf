@@ -1211,7 +1211,7 @@ class TranslationSurfaceGenerators:
 
         λ = (e + d) / 2
 
-        # (l, l) square in the middle
+        # (λ, λ) square in the middle
         # twisted (w, 0), (t, h) on top and bottom
         s = Surface_list(base_ring=K)
         s.add_polygon(
@@ -1315,7 +1315,7 @@ class TranslationSurfaceGenerators:
         if λ == w / 2:
             raise ValueError("λ and w/2 must be distinct")
 
-        # (l/2, l/2) squares on top and bottom
+        # (λ/2, λ/2) squares on top and bottom
         # twisted (w/2, 0), (t/2, h/2) in the middle
         s = Surface_list(base_ring=K)
         s.add_polygon(
