@@ -531,6 +531,20 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             [ 0  0  1  0]
             [-1  0  0  1]
 
+        ::
+
+            sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+            sage: K = L.underlying_surface().base_ring()
+            sage: M = matrix([[1, 1], [0, 1]]).change_ring(K)
+            sage: automorphism = L.apply_matrix_automorphism(M)
+
+            sage: H = SimplicialHomology(L.underlying_surface())
+            sage: H.matrix(automorphism)
+            [1 0 0 0]
+            [0 1 0 0]
+            [1 1 1 0]
+            [0 1 0 1]
+
         """
         homology = homology or SimplicialHomology(deformation.codomain())
 

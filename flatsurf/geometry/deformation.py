@@ -384,6 +384,9 @@ class TrianglesFlipDeformation(Deformation):
     def _image_homology(self,  γ):
         return self._flip_deformation()._image_homology(γ)
 
+    def _image_homology_matrix(self):
+        return self._flip_deformation()._image_homology_matrix()
+
     def _image_point(self, p):
         return self._flip_deformation()(p)
 
