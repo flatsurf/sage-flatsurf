@@ -1208,26 +1208,26 @@ class TranslationSurfaceGenerators:
 
         d = D.sqrt()
 
-        l = (e + d) / 2
+        λ = (e + d) / 2
 
         # (l, l) square in the middle
         # twisted (w, 0), (t, h) on top and bottom
         s = Surface_list(base_ring=K)
         s.add_polygon(
             polygons(
-                vertices=[(0, 0), (l, 0), (w, 0), (w + t, h), (l + t, h), (t, h)],
+                vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
                 ring=K,
             )
         )
-        s.add_polygon(polygons(vertices=[(0, 0), (l, 0), (l, l), (0, l)], ring=K))
+        s.add_polygon(polygons(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], ring=K))
         s.add_polygon(
             polygons(
                 vertices=[
                     (0, 0),
-                    (w - l, 0),
+                    (w - λ, 0),
                     (w, 0),
                     (w + t, h),
-                    (w - l + t, h),
+                    (w - λ + t, h),
                     (t, h),
                 ],
                 ring=K,
@@ -1305,29 +1305,29 @@ class TranslationSurfaceGenerators:
 
         d = D.sqrt()
 
-        l = (e + d) / 2
+        λ = (e + d) / 2
 
-        if not l < w:
+        if not λ < w:
             raise ValueError("λ must be smaller than w")
 
-        if l == w / 2:
+        if λ == w / 2:
             raise ValueError("λ and w/2 must be distinct")
 
         # (l/2, l/2) squares on top and bottom
         # twisted (w/2, 0), (t/2, h/2) in the middle
         s = Surface_list(base_ring=K)
         s.add_polygon(
-            polygons(vertices=[(0, 0), (l / 2, 0), (l / 2, l / 2), (0, l / 2)], ring=K)
+            polygons(vertices=[(0, 0), (λ / 2, 0), (λ / 2, λ / 2), (0, λ / 2)], ring=K)
         )
         s.add_polygon(
             polygons(
                 vertices=[
                     (0, 0),
-                    (w / 2 - l, 0),
-                    (w / 2 - l / 2, 0),
+                    (w / 2 - λ, 0),
+                    (w / 2 - λ / 2, 0),
                     (w / 2, 0),
                     (w / 2 + t / 2, h / 2),
-                    (w / 2 - l + t / 2, h / 2),
+                    (w / 2 - λ + t / 2, h / 2),
                     (t / 2, h / 2),
                 ],
                 ring=K,
@@ -1337,18 +1337,18 @@ class TranslationSurfaceGenerators:
             polygons(
                 vertices=[
                     (0, 0),
-                    (l, 0),
+                    (λ, 0),
                     (w / 2, 0),
                     (w / 2 + t / 2, h / 2),
-                    (l + t / 2, h / 2),
-                    (l / 2 + t / 2, h / 2),
+                    (λ + t / 2, h / 2),
+                    (λ / 2 + t / 2, h / 2),
                     (t / 2, h / 2),
                 ],
                 ring=K,
             )
         )
         s.add_polygon(
-            polygons(vertices=[(0, 0), (l / 2, 0), (l / 2, l / 2), (0, l / 2)], ring=K)
+            polygons(vertices=[(0, 0), (λ / 2, 0), (λ / 2, λ / 2), (0, λ / 2)], ring=K)
         )
         s.set_edge_pairing(0, 0, 2, 4)
         s.set_edge_pairing(0, 1, 0, 3)
