@@ -81,7 +81,7 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
 
             sage: Ω(f) + Ω(f) + Ω(H({a: -2}))
-            (O(z0^10),)
+            (O(z0_0_0^10), O(z0_1_0^10), O(z0_0_1^10), O(z0_0_2^10), O(z0_1_1^10))
 
         """
         return self.parent()({
@@ -523,7 +523,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        (O(z0^10),)
+        (O(z0_0_0^10), O(z0_1_0^10), O(z0_0_1^10), O(z0_0_2^10), O(z0_1_1^10))
 
     ::
 
@@ -711,14 +711,30 @@ class GeometricPrimitives:
             sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
             sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
 
-            sage: G.midpoint(0, 0)
-            (0, -1/2)
-            sage: G.midpoint(0, 1)
-            (1/2, 0)
-            sage: G.midpoint(0, 2)
-            (0, 1/2)
-            sage: G.midpoint(0, 3)
-            (-1/2, 0)
+        Note that the midpoints in this example are not half way between the
+        centers because the radius of convergence is not the same (the vertex
+        of the square is understood to be a singularity)::
+
+            sage: G.midpoint(0, 0, 0, 1/3)
+            (0.000000000000000, -0.142350327708281)
+            sage: G.midpoint(0, 2, 2/3, 1)
+            (0.000000000000000, 0.190983005625053)
+            sage: G.midpoint(0, 2, 2/3, 1) - G.midpoint(0, 0, 0, 1/3)
+            (0.000000000000000, 0.333333333333333)
+
+        Here the midpoints are exactly on the edge of the square::
+
+            sage: G.midpoint(0, 0, 1/3, 2/3)
+            (0.000000000000000, -0.166666666666667)
+            sage: G.midpoint(0, 2, 1/3, 2/3)
+            (0.000000000000000, 0.166666666666667)
+
+        Again, the same as in the first example::
+
+            sage: G.midpoint(0, 0, 2/3, 1)
+            (0.000000000000000, -0.190983005625053)
+            sage: G.midpoint(0, 2, 0, 1/3)
+            (0.000000000000000, 0.142350327708281)
 
         ::
 
@@ -743,7 +759,7 @@ class GeometricPrimitives:
             self.center(label, edge, b),
         )
 
-        return (centers[0] * radii[0] + centers[1] * radii[1]) / sum(radii)
+        return (centers[1] - centers[0]) * radii[1] / (sum(radii))
 
     @cached_method
     def center(self, label, edge, pos):
@@ -765,8 +781,11 @@ class GeometricPrimitives:
             sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
 
             sage: G.center(0, 0, 0)
+            (1/2, 1/2)
             sage: G.center(0, 0, 1/2)
+            (1/2, 0)
             sage: G.center(0, 0, 1)
+            (1/2, -1/2)
 
         """
         polygon = self._surface.polygon(label)
@@ -780,7 +799,7 @@ class GeometricPrimitives:
 
         opposite_polygon_center = opposite_polygon.circumscribing_circle().center()
 
-        return pos * polygon_center + (1 - pos) * opposite_polygon_center
+        return (1 - pos) * polygon_center + pos * opposite_polygon_center
 
     @cached_method
     def _convergence(self, label, edge, pos):
@@ -890,12 +909,11 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
                 return -gen-1,
 
             kind = "Im" if gen % 2 else "Re"
-            gen //= 2
-            polygon = gen % self.parent()._surface.num_polygons()
-            gen //= self.parent()._surface.num_polygons()
-            k = gen
+            index = gen % (2 * len(self.parent()._gens)) // 2
+            label, edge, pos = self.parent()._gens[index]
+            k = gen // (2 * len(self.parent()._gens))
 
-            return kind, polygon, k
+            return kind, label, edge, pos, k
 
         def variable_name(gen):
             gen = decode(gen)
@@ -903,8 +921,9 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             if len(gen) == 1:
                 return f"λ{gen[0]}"
 
-            kind, polygon, k = gen
-            return f"{kind}__open__a{polygon}__comma__{k}__close__"
+            kind, label, edge, pos, k = gen
+            index = self.parent()._gens.index((label, edge, pos))
+            return f"{kind}__open__a{index}__comma__{k}__close__"
 
         def key(gen):
             gen = decode(gen)
@@ -913,8 +932,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
                 n = gen[0]
                 return 1e9, n
 
-            kind, polygon, k = gen
-            return polygon, k, 0 if kind == "Re" else 1
+            kind, label, edge, pos, k = gen
+            return label, edge, pos, k, 0 if kind == "Re" else 1
 
         gens = list({gen for monomial in self._coefficients.keys() for gen in monomial})
         gens.sort(key=key)
@@ -1738,12 +1757,14 @@ class PowerSeriesConstraints:
 
         EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
 
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=None)  # TODO: Should not be None
+            sage: Ω = HarmonicDifferentials(T)
+
+            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
             sage: C.symbolic_ring()
             Ring of Power Series Coefficients over Complex Field with 54 bits of precision
 
@@ -1797,16 +1818,26 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(T)
 
             sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C.real(0, 0)
+            sage: C.real(0, 0, 0, 0)
+            Re(a2,0)
+            sage: C.real(0, 0, 0, 1)
+            Re(a2,1)
+            sage: C.real(0, 0, 1, 0)
+            Re(a2,0)
+            sage: C.real(0, 1, 0, 0)
+            Re(a2,0)
+            sage: C.real(0, 0, 1/3, 0)
             Re(a0,0)
-            sage: C.real(0, 1)
-            Re(a0,1)
-            sage: C.real(0, 2)
-            Re(a0,2)
+            sage: C.real(0, 0, 2/3, 0)
+            Re(a3,0)
+            sage: C.real(0, 1, 1/3, 0)
+            Re(a1,0)
+            sage: C.real(0, 1, 2/3, 0)
+            Re(a4,0)
 
         """
         if k >= self._prec:
-            raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
+            raise ValueError(f"symbolic ring has no {k}-th generator at this point")
 
         return self.symbolic_ring().gen(("real", label, edge, pos, k))
 
@@ -1834,7 +1865,7 @@ class PowerSeriesConstraints:
 
         """
         if k >= self._prec:
-            raise ValueError(f"symbolic ring has no {k}-th generator for this triangle")
+            raise ValueError(f"symbolic ring has no {k}-th generator at this point")
 
         return self.symbolic_ring().gen(("imag", label, edge, pos, k))
 
