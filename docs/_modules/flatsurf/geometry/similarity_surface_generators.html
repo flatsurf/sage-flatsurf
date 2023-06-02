@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
         <title>flatsurf.geometry.similarity_surface_generators - sage-flatsurf 0.4.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
@@ -178,7 +178,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surface.html"><code class="docutils literal notranslate"><span class="pre">cone_surface</span></code></a></li>
@@ -215,7 +215,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/xml.html"><code class="docutils literal notranslate"><span class="pre">xml</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -262,6 +262,7 @@
 <span class="c1">#</span>
 <span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
 <span class="c1">#                      2020-2023 Julian Rüth</span>
+<span class="c1">#                           2023 Sam Freedman</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -1401,6 +1402,227 @@
             <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
             <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TranslationSurfaceGenerators.lanneau_nguyen_genus3_prototype"><a class="viewcode-back" href="../../../geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.lanneau_nguyen_genus3_prototype">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">lanneau_nguyen_genus3_prototype</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Lanneau--Ngyuen prototype in the stratum H(4) with</span>
+<span class="sd">        parameters ``w``, ``h``, ``t``, and ``e``.</span>
+
+<span class="sd">        The associated discriminant is `e^2 + 8 wh`.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``w`` -- a positive integer</span>
+
+<span class="sd">        - ``h`` -- a positive integer</span>
+
+<span class="sd">        - ``t`` -- a non-negative integer strictly less than the gcd of ``w``</span>
+<span class="sd">          and ``h``</span>
+
+<span class="sd">        - ``e`` -- an integer strictly less than ``w - 2h``</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: T = translation_surfaces.lanneau_nguyen_genus3_prototype(2,1,0,-1)</span>
+<span class="sd">            sage: T.stratum()</span>
+<span class="sd">            H_3(4)</span>
+
+<span class="sd">        REFERENCES:</span>
+
+<span class="sd">        - Erwan Lanneau, and Duc-Manh Nguyen, &quot;Teichmüller curves generated by</span>
+<span class="sd">          Weierstrass Prym eigenforms in genus 3 and genus 4&quot;, Journal of</span>
+<span class="sd">          Topology 7.2, 2014, pp.475-522</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">gcd</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">h</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;h must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">h</span> <span class="o">&lt;</span> <span class="n">w</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;e + 2h &lt; w must hold&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t must be non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">gcd</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t must be smaller than the gcd of w and h&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gcd</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w, h, t, e must be coprime&quot;</span><span class="p">)</span>
+
+        <span class="n">K</span> <span class="o">=</span> <span class="n">QQ</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">K</span><span class="p">(</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">D</span><span class="o">.</span><span class="n">is_square</span><span class="p">():</span>
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QuadraticField</span>
+
+            <span class="n">K</span> <span class="o">=</span> <span class="n">QuadraticField</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">K</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+
+        <span class="n">λ</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="c1"># (λ, λ) square in the middle</span>
+        <span class="c1"># twisted (w, 0), (t, h) on top and bottom</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span>
+            <span class="n">polygons</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">h</span><span class="p">)],</span>
+                <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span><span class="p">,</span> <span class="n">λ</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">λ</span><span class="p">)],</span> <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">))</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span>
+            <span class="n">polygons</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">λ</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">λ</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span>
+                <span class="p">],</span>
+                <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TranslationSurfaceGenerators.lanneau_nguyen_genus4_prototype"><a class="viewcode-back" href="../../../geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.lanneau_nguyen_genus4_prototype">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">lanneau_nguyen_genus4_prototype</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Lanneau--Ngyuen prototype in the stratum H(6) with</span>
+<span class="sd">        parameters ``w``, ``h``, ``t``, and ``e``.</span>
+
+<span class="sd">        The associated discriminant is `D = e^2 + 4 wh`.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``w`` -- a positive integer</span>
+
+<span class="sd">        - ``h`` -- a positive integer</span>
+
+<span class="sd">        - ``t`` -- a non-negative integer strictly smaller than the gcd of</span>
+<span class="sd">          ``w`` and ``h``</span>
+
+<span class="sd">        - ``e`` -- a positive integer strictly smaller than `2w - \sqrt{D}`</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: T = translation_surfaces.lanneau_nguyen_genus4_prototype(1,1,0,-2)</span>
+<span class="sd">            sage: T.stratum()</span>
+<span class="sd">            H_4(6)</span>
+
+<span class="sd">        REFERENCES:</span>
+
+<span class="sd">        - Erwan Lanneau, and Duc-Manh Nguyen, &quot;Weierstrass Prym eigenforms in</span>
+<span class="sd">          genus four&quot;, Journal of the Institute of Mathematics of Jussieu,</span>
+<span class="sd">          19.6, 2020, pp.2045-2085</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">gcd</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">h</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;h must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t must be non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">gcd</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;t must be smaller than the gcd of w and h&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gcd</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">e</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;w, h, t, e must be coprime&quot;</span><span class="p">)</span>
+
+        <span class="n">K</span> <span class="o">=</span> <span class="n">QQ</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">K</span><span class="p">(</span><span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">D</span><span class="o">.</span><span class="n">is_square</span><span class="p">():</span>
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QuadraticField</span>
+
+            <span class="n">K</span> <span class="o">=</span> <span class="n">QuadraticField</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">K</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+
+        <span class="n">λ</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">λ</span> <span class="o">&lt;</span> <span class="n">w</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;λ must be smaller than w&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">λ</span> <span class="o">==</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;λ and w/2 must be distinct&quot;</span><span class="p">)</span>
+
+        <span class="c1"># (λ/2, λ/2) squares on top and bottom</span>
+        <span class="c1"># twisted (w/2, 0), (t/2, h/2) in the middle</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">base_ring</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span>
+            <span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span> <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span>
+            <span class="n">polygons</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">λ</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">λ</span> <span class="o">+</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="p">],</span>
+                <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span>
+            <span class="n">polygons</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">λ</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">λ</span> <span class="o">+</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                    <span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="p">],</span>
+                <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span>
+            <span class="n">polygons</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">λ</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span> <span class="n">ring</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">set_edge_pairing</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">TranslationSurface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
 
