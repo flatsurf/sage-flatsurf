@@ -151,16 +151,16 @@ class HarmonicDifferential(Element):
 
         if kind is None or "midpoint_derivatives" in kind:
             C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-            for (triangle, edge) in self.parent().surface().edge_iterator():
-                triangle_, edge_ = self.parent().surface().opposite_edge(triangle, edge)
+            for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
+                opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
                 for derivative in range(self.precision()//3):
-                    expected = self.evaluate(triangle, C.complex_field()(*self.parent()._geometry.midpoint(triangle, edge)), derivative)
-                    other = self.evaluate(triangle_, C.complex_field()(*self.parent()._geometry.midpoint(triangle_, edge_)), derivative)
+                    expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint(label, edge, a, b)), derivative)
+                    other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint(opposite_label, opposite_edge, 1 - b, 1 - a)), derivative)
 
                     abs_error, rel_error = errors(expected, other)
 
                     if abs_error > abs_tol or rel_error > rel_tol:
-                        report = f"Power series defining harmonic differential are not consistent where triangles meet. {derivative}th derivative does not match between {(triangle, edge)} where it is {expected} and {(triangle_, edge_)} where it is {other}, i.e., there is an absolute error of {abs_error} and a relative error of {rel_error}."
+                        report = f"Power series defining harmonic differential are not consistent where triangles meet. {derivative}th derivative does not match between {(label, edge, a)} where it is {expected} and {(label, edge, b)} where it is {other}, i.e., there is an absolute error of {abs_error} and a relative error of {rel_error}."
                         if verbose:
                             print(report)
 
@@ -216,9 +216,9 @@ class HarmonicDifferential(Element):
         """
         return self._series[triangle]
 
-    def evaluate(self, triangle, Δ, derivative=0):
+    def evaluate(self, label, edge, pos, Δ, derivative=0):
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-        return self._evaluate(C.evaluate(triangle, Δ, derivative=derivative))
+        return self._evaluate(C.evaluate(label, edge, pos, Δ, derivative=derivative))
 
     def roots(self):
         r"""
@@ -318,9 +318,9 @@ class HarmonicDifferential(Element):
         coefficients = {}
 
         for variable in expression.variables():
-            kind, triangle, k = variable.describe()
+            kind, label, edge, pos, k = variable.describe()
 
-            coefficient = self._series[triangle][k]
+            coefficient = self._series[(label, edge, pos)][k]
 
             if kind == "real":
                 coefficients[variable] = coefficient.real()
@@ -1302,41 +1302,6 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
         return set(self.parent()((gen,)) for monomial in self._coefficients.keys() for gen in monomial if filter(gen))
 
-    def polygon(self):
-        r"""
-        Return the label of the polygon affected by this variable.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing
-            sage: R = SymbolicCoefficientRing(T, CC)
-            sage: a = R.gen(('imag', 0, 0))
-            sage: b = R.gen(('real', 0, 0))
-            sage: a.polygon()
-            0
-            sage: b.polygon()
-            0
-            sage: (a*b).polygon()
-            Traceback (most recent call last):
-            ...
-            ValueError: element must be a variable
-
-        """
-        if not self.is_variable():
-            raise ValueError("element must be a variable")
-
-        variable = next(iter(self._coefficients.keys()))[0]
-
-        if variable < 0:
-            raise ValueError("Lagrange multipliers are not associated to a polygon")
-
-        index = variable % (2*self.parent()._surface.num_polygons()) // 2
-        return list(self.parent()._surface.label_iterator())[index]
-
     def is_variable(self):
         r"""
         Return the label of the polygon affected by this variable.
@@ -1405,12 +1370,13 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         if variable < 0:
             return ("lagrange", -variable-1)
 
-        triangle = self.polygon()
-        k = variable // (2*self.parent()._surface.num_polygons())
+        index = variable % (2 * len(self.parent()._gens)) // 2
+        label, edge, pos = self.parent()._gens[index]
+        k = variable // (2 * len(self.parent()._gens))
         if variable % 2:
-            return ("imag", triangle, k)
+            return ("imag", label, edge, pos, k)
         else:
-            return ("real", triangle, k)
+            return ("real", label, edge, pos, k)
 
     def real(self):
         r"""
@@ -1626,6 +1592,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         """
         self._surface = surface
         self._base_ring = base_ring
+        self._homology_generators = homology_generators
 
         self._gens = set()
         for (label, edge), a, b in homology_generators:
@@ -1646,7 +1613,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         return f"Ring of Power Series Coefficients over {self.base_ring()}"
 
     def change_ring(self, ring):
-        return SymbolicCoefficientRing(self._surface, ring, category=self.category())
+        return SymbolicCoefficientRing(self._surface, ring, self._homology_generators, category=self.category())
 
     def real_field(self):
         from sage.all import RealField
@@ -1720,20 +1687,20 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                 kind, k = n
 
                 if kind != "lagrange":
-                    raise ValueError
+                    raise ValueError(kind)
                 if k < 0:
-                    raise ValueError
+                    raise ValueError(str(n))
 
                 n = -k-1
             else:
-                raise ValueError
+                raise ValueError(str(n))
 
         from sage.all import parent, ZZ
         if parent(n) is ZZ:
             n = int(n)
 
         if not isinstance(n, int):
-            raise ValueError
+            raise ValueError(str(n))
 
         return self((n,))
 
@@ -2065,33 +2032,41 @@ class PowerSeriesConstraints:
         expression = R.zero()
 
         for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items():
-            # Integrate by crossing the edge into the opposite face.
-            P = self.complex_field()(*self._geometry.midpoint(label, edge))
+            # Integrate along the path crossing the edge into the opposite face.
+            pos = 0
+            while pos != 1:
+                for gen in self._geometry._homology_generators:
+                    if gen[0] == (label, edge) and gen[1] == pos:
+                        break
+                else:
+                    assert False, f"cannot continue path from {label}, {edge}, {pos} with generators {self._geometry._homology_generators}"
 
-            expression -= multiplicity * self.gen(label, 0)
+                a = gen[1]
+                b = gen[2]
+                P = self.complex_field()(*self._geometry.midpoint(label, edge, a, b))
 
-            P_power = P
+                P_power = P
 
-            for k in range(self._prec):
-                expression += multiplicity * self.gen(label, k) / (k + 1) * P_power
-                P_power *= P
+                for k in range(self._prec):
+                    expression += multiplicity * self.gen(label, edge, a, k) / (k + 1) * P_power
+                    P_power *= P
 
-            opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+                opposite_label, opposite_edge = surface.opposite_edge(label, edge)
 
-            Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge))
+                Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1 - b, 1 - a))
 
-            Q_power = Q
+                Q_power = Q
 
-            for k in range(self._prec):
-                expression -= multiplicity * self.gen(opposite_label, k) / (k + 1) * Q_power
+                for k in range(self._prec):
+                    expression -= multiplicity * self.gen(opposite_label, opposite_edge, 1-b, k) / (k + 1) * Q_power
 
-                Q_power *= Q
+                    Q_power *= Q
 
-            expression += multiplicity * self.gen(opposite_label, 0)
+                pos = b
 
         return expression
 
-    def evaluate(self, label, Δ, derivative=0):
+    def evaluate(self, label, edge, pos, Δ, derivative=0):
         r"""
         Return the value of the power series evaluated at Δ in terms of
         symbolic variables.
@@ -2128,7 +2103,7 @@ class PowerSeriesConstraints:
         factor = ComplexField(54)(factorial(derivative))
 
         for k in range(derivative, self._prec):
-            value += factor * self.gen(label, k) * z
+            value += factor * self.gen(label, edge, pos, k) * z
 
             factor *= k + 1
             factor /= k - derivative + 1
@@ -2225,9 +2200,9 @@ class PowerSeriesConstraints:
         # Write b_n for the difference of the n-th coefficient of both power series.
         # We want to minimize the sum of |b_n|^2 r^2n where r is a somewhat
         # randomly chosen small radius around the midpoint.
-        b = (T0 - T1).list()
 
         distance = self._geometry.center(label, edge, b) - self._geometry.center(label, edge, a)
+        b = (T0 - T1).list()
         r2 = (distance[0] ** 2 + distance[1] ** 2) / 4
 
         r2n = r2
@@ -2539,22 +2514,24 @@ class PowerSeriesConstraints:
 
         # We form the partial derivative with respect to the variables Re(a_k)
         # and Im(a_k).
-        for representative in set(self._representatives().values()):
-            gen = self.symbolic_ring().gen(representative)
+        for (label, edge, pos) in self.symbolic_ring()._gens:
+            for k in range(self._prec):
+                for kind in ["imag", "real"]:
+                    gen = self.symbolic_ring().gen((kind, label, edge, pos, k))
 
-            if self._cost.degree(gen) <= 0:
-                # The cost function does not depend on this variable.
-                # That's fine, we still need it for the Lagrange multipliers machinery.
-                pass
+                    if self._cost.degree(gen) <= 0:
+                        # The cost function does not depend on this variable.
+                        # That's fine, we still need it for the Lagrange multipliers machinery.
+                        pass
 
-            gen = self._cost.parent()(gen)
+                    gen = self._cost.parent()(gen)
 
-            L = self._cost.derivative(gen)
+                    L = self._cost.derivative(gen)
 
-            for i in range(lagranges):
-                L += g[i][gen] * self.lagrange(i)
+                    for i in range(lagranges):
+                        L += g[i][gen] * self.lagrange(i)
 
-            self.add_constraint(L, rank_check=False)
+                    self.add_constraint(L, rank_check=False)
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
@@ -2656,23 +2633,16 @@ class PowerSeriesConstraints:
                 if gen >= 0:
                     non_lagranges.add(gen)
 
-        for gen in range(2*len(triangles)*prec):
-            if self._representatives()[gen] in non_lagranges:
-                non_lagranges.add(gen)
+        non_lagranges = {gen: i for (i, gen) in enumerate(non_lagranges)}
 
-        representatives = set(self._representatives()[gen] for gen in non_lagranges)
-        representatives = {representative: i for (i, representative) in enumerate(representatives)}
-
-        non_lagranges = {gen: representatives[self._representatives()[gen]] for gen in non_lagranges}
-
-        free = set(gen for gen in range(2*len(triangles)*prec) if gen not in non_lagranges)
+        free = set(self.symbolic_ring().gen((kind, label, edge, pos, k)) for kind in ["real", "imag"] for (label, edge, pos) in self.symbolic_ring()._gens for k in range(self._prec))
         if free:
             if not nowarn:
                 from warnings import warn
-                warn(f"Power series coefficients {[self.symbolic_ring().gen(gen) for gen in free]} are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
+                warn(f"Power series coefficients {free} are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
 
         from sage.all import matrix, vector
-        A = matrix(self.real_field(), len(self._constraints), len(representatives) + len(self.lagrange_variables()))
+        A = matrix(self.real_field(), len(self._constraints), len(non_lagranges) + len(self.lagrange_variables()))
         b = vector(self.real_field(), len(self._constraints))
 
         for row, constraint in enumerate(self._constraints):
@@ -2686,7 +2656,7 @@ class PowerSeriesConstraints:
                 gen = monomial[0]
                 if gen < 0:
                     if gen not in lagranges:
-                        lagranges[gen] = len(representatives) + len(lagranges)
+                        lagranges[gen] = len(non_lagranges) + len(lagranges)
                     column = lagranges[gen]
                 else:
                     column = non_lagranges[gen]
@@ -2696,7 +2666,7 @@ class PowerSeriesConstraints:
         return A, b, non_lagranges, free
 
     @cached_method
-    def power_series_ring(self, label):
+    def power_series_ring(self, label, edge, pos):
         r"""
         Return the power series ring to write down the series describing a
         harmonic differential in a Voronoi cell.
@@ -2716,8 +2686,9 @@ class PowerSeriesConstraints:
         """
         from sage.all import PowerSeriesRing
         polygon = list(self._surface.label_iterator()).index(label)
-        assert polygon != -1
-        return PowerSeriesRing(self.complex_field(), f"z{polygon}")
+        pos = [p for (lbl, e, p) in self.symbolic_ring()._gens if lbl == label and e == edge].index(pos)
+
+        return PowerSeriesRing(self.complex_field(), f"z{polygon}_{edge}_{pos}")
 
     def solve(self, algorithm="scipy"):
         r"""
@@ -2775,11 +2746,11 @@ class PowerSeriesConstraints:
         if lagranges:
             solution = solution[:-lagranges]
 
-        P = self._surface.num_polygons()
+        P = len(self.symbolic_ring()._gens)
         real_solution = [[solution[decode[2*p + 2*P*prec]] if 2*p + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
         imag_solution = [[solution[decode[2*p + 1 + 2*P*prec]] if 2*p + 1 + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
 
         return {
-            triangle: self.power_series_ring(triangle)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
-            for (p, triangle) in enumerate(self._surface.label_iterator())
+            (label, edge, pos): self.power_series_ring(label, edge, pos)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
+            for (p, (label, edge, pos)) in enumerate(self.symbolic_ring()._gens)
         }, residue
