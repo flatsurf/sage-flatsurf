@@ -288,6 +288,16 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             sage: idt._dual_graph.vertices(sort=True)
             [{2*l*(x^2 + y^2) + (-8*l + 4)*x ≥ 0} ∩ {(-8*l + 4)*x + 4*l - 2 ≥ 0} ∩ {x ≥ 0} ∪ {I}]
 
+        An example with an orbifold point in the interior of a face::
+
+            sage: from flatsurf import translation_surfaces, IsoDelaunayTessellation
+            sage: X = translation_surfaces.lanneau_nguyen_genus3_prototype(5, 1, 0, 0)
+            sage: idt = IsoDelaunayTessellation(X)
+            sage: idt.explore()
+            sage: idt.vertices()
+            sage: idt.insert_orbifold_points()
+            sage: idt.vertices()
+
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
         for tessellation_face in self._dual_graph.vertices(sort=False):
@@ -1086,6 +1096,29 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
         Return the set of orbifold points, i.e., the fixed points of finite-order rotations in Gamma.
 
         When ``order = k``, return only the orbifold points with total angle ``2pi/k``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, IsoDelaunayTessellation
+            sage: X = translation_surfaces.lanneau_nguyen_genus3_prototype(5, 1, 0, 0)
+            sage: idt = IsoDelaunayTessellation(X)
+            sage: idt.explore()
+            sage: list(idt.orbifold_points())
+
+        ::
+
+            sage: X = translation_surfaces.lanneau_nguyen_genus3_prototype(5, 1, 0, -2)
+            sage: idt = IsoDelaunayTessellation(X)
+            sage: idt.explore()
+            sage: list(idt.orbifold_points())
+
+        ::
+
+            sage: X = translation_surfaces.lanneau_nguyen_genus3_prototype(7, 1, 0, -1)
+            sage: idt = IsoDelaunayTessellation(X)
+            sage: idt.explore()
+            sage: list(idt.orbifold_points())
+
         """
         from itertools import chain
         return chain(self._orbifold_points_vertex(order),
