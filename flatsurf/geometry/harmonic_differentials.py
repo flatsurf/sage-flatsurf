@@ -584,12 +584,32 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         from sage.all import QQ
         gens = []
         for path in voronoi_paths:
-            for i in range(3):
-                gens.append((path, QQ(i)/3, QQ(i+1)/3))
+            N = 7
+            for i in range(N):
+                gens.append((path, QQ(i)/N, QQ(i+1)/N))
 
         gens = tuple(gens)
 
         return gens
+
+    def plot(self):
+        S = self._surface
+        G = S.plot()
+        SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
+        for (label, edge, pos) in SR._gens:
+            center = self._geometry.center(label, edge, pos)
+            if not S.polygon(label).contains_point(center):
+                label, edge = S.opposite_edge(label, edge)
+                pos = 1 - pos
+                center = self._geometry.center(label, edge, pos)
+            radius = self._geometry._convergence(label, edge, pos)
+            from flatsurf import TranslationSurface
+            P = TranslationSurface(S).surface_point(label, center)
+            G += P.plot(color="red")
+
+            from sage.all import circle
+            G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.1)
+        return G
 
     def surface(self):
         return self._surface
@@ -2132,6 +2152,18 @@ class PowerSeriesConstraints:
         # factor = self.complex_field()(factorial(derivative))
         from sage.all import ComplexField
         factor = ComplexField(54)(factorial(derivative))
+
+        if edge is None and pos is None:
+            from sage.all import vector
+            Δ = vector((Δ.real(), Δ.imag()))
+            Δ += self._surface.polygon(label).circumscribing_circle().center()
+            edge, pos = min(
+                [(edge, pos) for (lbl, edge, pos) in self.symbolic_ring()._gens if lbl == label],
+                key=lambda edge_pos: (Δ - self._geometry.center(label, *edge_pos)).norm())
+            print(edge, pos)
+            Δ -= self._geometry.center(label, edge, pos)
+            Δ = self.complex_field()(Δ[0], Δ[1])
+            print(Δ)
 
         for k in range(derivative, self._prec):
             value += factor * self.gen(label, edge, pos, k) * z
