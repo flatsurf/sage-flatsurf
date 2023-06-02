@@ -1,1 +1,1 @@
-{"regressions": []}
+{"regressions": [["geometry.hyperbolic.time_HyperbolicPlane_polygon([{(x^2 + y^2) - 14*x + 48 \u2264 0}, \u2026 31 more])", "graphs/arch-x86_64/branch-master/cppyy_=2.0.0,_3/cpu-Standard_DS2_v2/cxx-compiler/gap-defaults/machine-Azure/matplotlib-base/os-Linux/pip+flipper/pyeantic-1.0.3/pyexactreal-2.2.1/pyflatsurf-3.9.3/python/ram-61830880/sagelib-9.4/scipy/surface-dynamics_=0.4.7/geometry.hyperbolic.time_HyperbolicPlane_polygon.json", {}, 1, 0.023314996999943105, 0.016429177000020445, [[null, 1960, 0.016429177000020445, 0.023314996999943105]]]]}
