@@ -15,7 +15,7 @@ We compute harmonic differentials on the square torus::
 First, the harmonic differentials that sends the horizontal `a` to 1 and the
 vertical `b` to zero::
 
-    sage: H = SimplicialCohomology(T)
+   sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
     sage: Ω(f)
@@ -168,13 +168,13 @@ class HarmonicDifferential(Element):
                         if not verbose:
                             return error
 
-        if kind is None or "area" in kind:
-            if verbose:
-                C = PowerSeriesConstraints(self.parent().surface(), self.precision())
-                area = self._evaluate(C._area_upper_bound())
+        # if kind is None or "area" in kind:
+        #     if verbose:
+        #         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
+        #         area = self._evaluate(C._area_upper_bound())
 
-                report = f"Area (upper bound) is {area}."
-                print(report)
+        #         report = f"Area (upper bound) is {area}."
+        #         print(report)
 
         if kind is None or "L2" in kind:
             C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
@@ -564,7 +564,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
     @staticmethod
     def _homology_generators(surface, safety=None):
-        safety = float(safety or .5)
+        # safety = float(safety or 7)
 
         from flatsurf.geometry.homology import SimplicialHomology
         H = SimplicialHomology(surface, generators="voronoi")
@@ -583,10 +583,17 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # TODO: For now, we just add two more equally spaced points to the path.
         from sage.all import QQ
         gens = []
-        for path in voronoi_paths:
-            N = 7
-            for i in range(N):
-                gens.append((path, QQ(i)/N, QQ(i+1)/N))
+        if safety is None:
+            for path in voronoi_paths:
+                # TODO: Hardcoded for the octagon
+                gens.append((path, QQ(0), QQ(274)/964))
+                gens.append((path, QQ(274)/964, QQ(427)/964))
+                gens.append((path, QQ(427)/964, QQ(537)/964))
+                gens.append((path, QQ(537)/964, QQ(690)/964))
+                gens.append((path, QQ(690)/964, QQ(964)/964))
+        else:
+            for path in voronoi_paths:
+                gens.append((path, QQ(0), QQ(1)))
 
         gens = tuple(gens)
 
@@ -2160,10 +2167,8 @@ class PowerSeriesConstraints:
             edge, pos = min(
                 [(edge, pos) for (lbl, edge, pos) in self.symbolic_ring()._gens if lbl == label],
                 key=lambda edge_pos: (Δ - self._geometry.center(label, *edge_pos)).norm())
-            print(edge, pos)
             Δ -= self._geometry.center(label, edge, pos)
             Δ = self.complex_field()(Δ[0], Δ[1])
-            print(Δ)
 
         for k in range(derivative, self._prec):
             value += factor * self.gen(label, edge, pos, k) * z
@@ -2220,33 +2225,20 @@ class PowerSeriesConstraints:
             raise ValueError("derivatives must not exceed global precision")
 
         for (label, edge), a, b in self._geometry._homology_generators:
-            pass
-
-        for label0, edge0 in self._surface.edge_iterator():
-            label1, edge1 = self._surface.opposite_edge(label0, edge0)
-
-            if label1 < label0:
-                # Add each constraint only once.
-                continue
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
 
             parent = self.symbolic_ring()
 
-            Δ0 = self.complex_field()(*self._geometry.midpoint(label0, edge0))
-            Δ1 = self.complex_field()(*self._geometry.midpoint(label1, edge1))
-
-            # TODO: Are these good constants?
-            if abs(Δ0 - Δ1) < 1e-6:
-                continue
+            Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, b))
+            Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, 1-a))
 
             # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
             for derivative in range(derivatives):
                 self.add_constraint(
-                    parent(self.evaluate(label0, Δ0, derivative)) - parent(self.evaluate(label1, Δ1, derivative)))
+                    parent(self.evaluate(label, edge, a, Δ0, derivative)) - parent(self.evaluate(opposite_label, opposite_edge, 1-b, Δ1, derivative)))
 
     def _L2_consistency_edge(self, label, edge, a, b):
         cost = self.symbolic_ring(self.real_field()).zero()
-
-        midpoint = self._geometry.midpoint(label, edge, a ,b)
 
         opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
 
@@ -2698,11 +2690,10 @@ class PowerSeriesConstraints:
 
         non_lagranges = {gen: i for (i, gen) in enumerate(non_lagranges)}
 
-        free = set(self.symbolic_ring().gen((kind, label, edge, pos, k)) for kind in ["real", "imag"] for (label, edge, pos) in self.symbolic_ring()._gens for k in range(self._prec))
-        if free:
+        if len(set(self.symbolic_ring().gen((kind, label, edge, pos, k)) for kind in ["real", "imag"] for (label, edge, pos) in self.symbolic_ring()._gens for k in range(self._prec))) != len(non_lagranges):
             if not nowarn:
                 from warnings import warn
-                warn(f"Power series coefficients {free} are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
+                warn(f"Some power series coefficients are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
 
         from sage.all import matrix, vector
         A = matrix(self.real_field(), len(self._constraints), len(non_lagranges) + len(self.lagrange_variables()))
@@ -2726,7 +2717,7 @@ class PowerSeriesConstraints:
 
                 A[row, column] += coefficient
 
-        return A, b, non_lagranges, free
+        return A, b, non_lagranges, set()
 
     @cached_method
     def power_series_ring(self, label, edge, pos):
@@ -2777,7 +2768,7 @@ class PowerSeriesConstraints:
         """
         self._optimize_cost()
 
-        A, b, decode, free = self.matrix()
+        A, b, decode, _ = self.matrix()
 
         rows, columns = A.dimensions()
         rank = A.rank()

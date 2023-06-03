@@ -47,7 +47,7 @@ f = H({a: 1})
 
 ```sage
 Omega = HarmonicDifferentials(T)
-omega = Omega(f, prec=2)
+omega = Omega(f, prec=20)
 omega
 ```
 
@@ -133,14 +133,15 @@ TranslationSurface(S).plot()
 H = SimplicialHomology(S)
 HS = SimplicialCohomology(S, homology=H)
 a, b, c, d = HS.homology().gens()
+a, b, c, d
 ```
 
 ```sage
 f = {
-    a: 0,
-    b: 1.64556839529346,
-    c: 0,
-    d: -2.32718514243654,
+    d: 0,
+    a: -0.681616747143081,
+    b: 0.963951648150378,
+    c: -0.681616747143081,
 }
 print(f)
 f = HS(f)
@@ -149,64 +150,26 @@ f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
 ```sage
 Omega = HarmonicDifferentials(S)
-omega = Omega(HS(f), prec=30)
-```
-
-To make computations more stable, we use a finer triangulation on the octagon.
-
-```sage
-from flatsurf.geometry.deformation import IdentityDeformation
-
-T = S
-deformation = IdentityDeformation(T)
-deformation = T.subdivide()
-T = deformation.codomain()
-deformation = T.subdivide_edges(3) * deformation
-T = deformation.codomain()
-deformation = T.subdivide() * deformation
-T = deformation.codomain()
-deformation = T.delaunay_triangulation() * deformation
-T = deformation.codomain()
-
-from flatsurf import TranslationSurface
-TranslationSurface(T).plot(polygon_labels=False, edge_labels=False)
+Omega.plot()
 ```
 
 ```sage
-HT = SimplicialCohomology(T)
-```
-
-We create a differential whose integral along certain paths (in the original surface) has prescribed values:
-
-```sage
-f = deformation(f)
-print(f)
+omega = Omega(HS(f), prec=20, check=False)
 ```
 
 ```sage
-values = f._values
+omega.error(verbose=True)
 ```
 
 ```sage
-f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
-```
-
-```sage
-Omega = HarmonicDifferentials(T)
-omega = Omega(f, prec=4, check=False)
-```
-
-We run some basic checks on the differential to determine whether it actually is a good approximation of a harmonic differential.
-
-```sage
-omega.error()
+omega.series((0, 0, 0))
 ```
 
 ### An Explicit Series for the Octagon
 We can provide the series for the Voronoi cells explicitly if we don't want to solve for a cohomology class.
 
 ```sage
-OmegaExact = HarmonicDifferentials(S)
+OmegaExact = HarmonicDifferentials(S, safety=1)
 ```
 
 ```sage
@@ -215,7 +178,7 @@ g = z^2 - 1/9*z^10 + 20/1377*z^18 - 14/6885*z^26 + 2044/6952473*z^34 - 111097/25
 ```
 
 ```sage
-omega_exact = OmegaExact({0: g})
+omega_exact = OmegaExact({(0, 0, 0): g})
 ```
 
 We integrate to find the cohomology class this corresponds to.
@@ -241,7 +204,7 @@ S.polygon(0).plot()
 ```
 
 ```sage
-omega_exact.evaluate(0, Δ)
+omega_exact.evaluate(0, 0, 0, Δ)
 ```
 
 Measuring the quality of the computed ω.
@@ -257,89 +220,16 @@ S.plot() + point.plot(color="black", size=50) + sum([S.point(label, S.polygon(la
 ```
 
 ```sage
-q = deformation(point)
-q = T.point(next(iter(q.labels())), next(iter(q.coordinates(next(iter(q.labels()))))))
+omega.evaluate(0, edge=None, pos=None, Δ=Δ)
 ```
 
 ```sage
-singularities = [edges[0] for (angle, edges) in ConeSurface(T).angles(return_adjacent_edges=True) if angle > 1.5]
-```
-
-```sage
-T.plot(polygon_labels=False, edge_labels=False) + sum([T.point(label, T.polygon(label).vertex(edge)).plot(color="red", size=25) for (label, edge) in singularities]) + q.plot(color="black", size=50)
-```
-
-```sage
-qlabel = next(iter(q.labels()))
-qcoordinates = next(iter(q.coordinates(qlabel)))
-```
-
-```sage
-# qcoordinates = qcoordinatesRealField(54)(qcoordinates[0]) + I*RealField(54)(qcoordinates[1])
-```
-
-```sage
-qΔ = qcoordinates - T.polygon(qlabel).circumscribing_circle().center()
-```
-
-```sage
-qΔ = RealField(54)(qΔ[0]) + I*RealField(54)(qΔ[1])
-```
-
-```sage
-qΔ
-```
-
-```sage
-import sage.all
-T.polygon(qlabel).plot() + T.polygon(qlabel).circumscribing_circle().center().plot() + sage.all.point(qcoordinates.change_ring(RR))
-```
-
-```sage
-Omega = HarmonicDifferentials(T)
-for prec in range(3, 20):
+Omega = HarmonicDifferentials(S)
+for prec in range(20, 100, 10):
+    print("*" * 80)
     print(f"{prec=}")
-    omega = Omega(f, prec=prec, check=False)
-    print(omega.evaluate(qlabel, qΔ), "vs. the exact value", omega_exact.evaluate(0, Δ))
-```
-
-# Experiments (deleteme)
-
-```sage
-from flatsurf import polygons, similarity_surfaces
-p = polygons(angles=[1,3,4])
-s = similarity_surfaces.billiard(p)
-ts=s.minimal_cover(cover_type="translation").copy(relabel=True)
-ts.plot()
-```
-
-```sage
-ts = ts.delaunay_decomposition()
-ts.plot()
-```
-
-```sage
-from flatsurf import translation_surfaces
-T = translation_surfaces.regular_octagon()
-T.plot()
-```
-
-```sage
-T = T.subdivide_edges(2)
-T.plot()
-```
-
-```sage
-T = T.subdivide()
-T.plot()
-```
-
-```sage
-T = T.subdivide_edges(3)
-T.plot()
-```
-
-```sage
-T = T.delaunay_decomposition().copy(relabel=True)
-T.plot()
+    omega = Omega(f, prec=prec, check=False, algorithm=["L2"])
+    print(omega.error())
+    print(omega.evaluate(0, edge=None, pos=None, Δ=Δ), "vs. the exact value", omega_exact.evaluate(0, 0, 0, Δ))
+    print(omega.series((0, 0, 0)))
 ```
