@@ -126,17 +126,11 @@ S = S.apply_matrix(diagonal_matrix([scale, scale]))
 S = S.underlying_surface()
 S.set_immutable()
 
-TranslationSurface(S).plot()
-```
-
-```sage
 H = SimplicialHomology(S)
 HS = SimplicialCohomology(S, homology=H)
 a, b, c, d = HS.homology().gens()
 a, b, c, d
-```
 
-```sage
 f = {
     d: 0,
     a: -0.681616747143081,
@@ -146,19 +140,15 @@ f = {
 print(f)
 f = HS(f)
 f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
-```
 
-```sage
 Omega = HarmonicDifferentials(S)
-Omega.plot()
+# Omega.plot().show()
+
+omega = Omega(HS(f), prec=90, check=False, algorithm={"L2": 1, "midpoint_derivatives": 2})
 ```
 
 ```sage
-omega = Omega(HS(f), prec=20, check=False)
-```
-
-```sage
-omega.error(verbose=True)
+omega.error()
 ```
 
 ```sage

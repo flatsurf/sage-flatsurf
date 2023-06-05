@@ -54,6 +54,59 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
 
+import cppyy
+cppyy.cppdef(r'''
+#include <cassert>
+#include <vector>
+#include <iostream>
+#include "/home/jule/proj/eskin/sage-flatsurf/mpreal-support.h"
+#include <eigen3/Eigen/LU>
+#include <eigen3/Eigen/Sparse>
+#include <eigen3/Eigen/OrderingMethods>
+
+using namespace mpfr;
+using namespace Eigen;
+using std::vector;
+typedef SparseMatrix<mpreal> MatrixXmp;
+typedef Matrix<mpreal,Dynamic,1> VectorXmp;
+
+VectorXmp solve(vector<vector<double>> _A, vector<double> _b)
+{
+  // set precision to ? bits (double has only 53 bits)
+  mpreal::set_default_prec(256);
+  // Declare matrix and vector types with multi-precision scalar type
+
+  const int ROWS = _A.size();
+  const int COLS = _A[0].size();
+  MatrixXmp A = MatrixXmp(ROWS, COLS);
+  VectorXmp b = VectorXmp(ROWS);
+
+  for (int y = 0; y < ROWS; y++) {
+    for (int x = 0; x < COLS; x++) {
+      if (_A[y][x] != 0) {
+        A.insert(y, x) = _A[y][x];
+        
+      }
+      b[y] = _b[y];
+    }
+  }
+
+  A.makeCompressed();
+
+  SparseQR<MatrixXmp, NaturalOrdering<int>> QRd;
+  QRd.compute(A);
+
+  assert(QRd.info() == Success);
+
+  VectorXmp x = QRd.solve(b);
+
+  assert(QRd.info() == Success);
+
+  return x;
+}
+''')
+
+
 
 class HarmonicDifferential(Element):
     def __init__(self, parent, series, residue=None, cocycle=None):
@@ -151,9 +204,9 @@ class HarmonicDifferential(Element):
 
         if kind is None or "midpoint_derivatives" in kind:
             C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-            for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
-                opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
-                for derivative in range(self.precision()//3):
+            for derivative in range(self.precision()//3):
+                for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
+                    opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
                     expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint(label, edge, a, b)), derivative)
                     other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint(opposite_label, opposite_edge, 1 - b, 1 - a)), derivative)
 
@@ -677,6 +730,10 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
             constraints.optimize(weight * constraints._L2_consistency())
+
+        if "squares" in algorithm:
+            weight = get_parameter("squares", 1)
+            constraints.optimize(weight * constraints._squares())
 
         # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
         # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
@@ -2449,6 +2506,16 @@ class PowerSeriesConstraints:
 
         return area
 
+    def _squares(self):
+        cost = self.symbolic_ring().zero()
+
+        for (label, edge, pos) in self.symbolic_ring()._gens:
+            for k in range(1, self._prec):
+                cost += self.real(label, edge, pos, k)**2
+                cost += self.imag(label, edge, pos, k)**2
+
+        return cost
+
     def _area_upper_bound(self):
         r"""
         Return an upper bound for the area 1/π ∫ η \wedge \overline{η}.
@@ -2486,11 +2553,12 @@ class PowerSeriesConstraints:
         # π/(n+1) |a_n|^2 R^(2n+2).
         area = self.symbolic_ring().zero()
 
-        for triangle in self._surface.label_iterator():
-            R2 = self.real_field()(self._surface.polygon(triangle).circumscribing_circle().radius_squared())
+        # TODO: This does not match the above description at all anymore.
+        for (label, edge, pos) in self.symbolic_ring()._gens:
+            R2 = self.real_field()(self._surface.polygon(label).circumscribing_circle().radius_squared())
 
             for k in range(self._prec):
-                area += (self.real(triangle, k)**2 + self.imag(triangle, k)**2) * R2**(k + 1)
+                area += (self.real(label, edge, pos, k)**2 + self.imag(label, edge, pos, k)**2) * R2**(k + 1)
 
         return area
 
@@ -2744,7 +2812,7 @@ class PowerSeriesConstraints:
 
         return PowerSeriesRing(self.complex_field(), f"z{polygon}_{edge}_{pos}")
 
-    def solve(self, algorithm="scipy"):
+    def solve(self, algorithm="eigen+mpfr"):
         r"""
         Return a solution for the system of constraints with minimal error.
 
@@ -2771,6 +2839,7 @@ class PowerSeriesConstraints:
         A, b, decode, _ = self.matrix()
 
         rows, columns = A.dimensions()
+        print(f"Solving {rows}×{columns} system")
         rank = A.rank()
         if rank < columns:
             # TODO: Warn?
@@ -2790,6 +2859,15 @@ class PowerSeriesConstraints:
             CA = A.change_ring(RDF)
             Cb = b.change_ring(RDF)
             solution = CA.solve_right(Cb)
+        elif algorithm == "eigen+mpfr":
+            import cppyy
+
+            cppyy.load_library("mpfr")
+
+            solution = cppyy.gbl.solve(A, b)
+
+            from sage.all import vector
+            solution = vector([self.real_field()(entry) for entry in solution])
         else:
             raise NotImplementedError
 
