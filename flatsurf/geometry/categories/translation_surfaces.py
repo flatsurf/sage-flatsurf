@@ -61,15 +61,53 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
         Category of translation surfaces
 
     """
+    # The category of translation surfaces is identical to the category of
+    # half-translation surfaces with the positive axiom.
     _base_category_class_and_axiom = (HalfTranslationSurfaces, "Positive")
 
     def extra_super_categories(self):
+        r"""
+        Return the other categories that a translation surface is automatically
+        a member of (apart from being a positive half-translation surface, its
+        orientation is compatible with the orientation of the polygons in the
+        real plane, so it's "oriented.")
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import TranslationSurfaces
+            sage: C = TranslationSurfaces()
+            sage: C.extra_super_categories()
+            (Category of oriented polygonal surfaces,)
+
+        """
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
 
         return (PolygonalSurfaces().Oriented(),)
 
     class ParentMethods:
+        r"""
+        Provides methods available to all translation surfaces in
+        sage-flatsurf.
+
+        If you want to add functionality for such surfaces you most likely want
+        to put it here.
+        """
+
         def is_translation_surface(self, positive=True):
+            r"""
+            Return whether this surface is a translation surface, i.e., return
+            ``True``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.is_translation_surface(positive=True)
+                True
+                sage: S.is_translation_surface(positive=False)
+                True
+
+            """
             return True
 
         @staticmethod
@@ -115,7 +153,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             """
             if "Oriented" not in surface.category().axioms():
-                raise NotImplementedError
+                raise NotImplementedError("cannot decide wether a non-oriented surface is a translation surface yet")
 
             labels = surface.labels()
 
@@ -156,99 +194,47 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             return True
 
         def minimal_translation_cover(self):
-            return self
-
-        def edge_matrix(self, p, e=None):
-            if e is None:
-                p, e = p
-            if e < 0 or e >= self.polygon(p).num_edges():
-                raise ValueError
-            from sage.all import identity_matrix
-
-            return identity_matrix(self.base_ring(), 2)
-
-        def standardize_polygons(self, in_place=False):
             r"""
-            Replaces each polygon with a new polygon which differs by
-            translation and reindexing. The new polygon will have the property
-            that vertex zero is the origin, and all vertices lie either in the
-            upper half plane, or on the x-axis with non-negative x-coordinate.
-
-            This is done to the current surface if in_place=True. A mutable
-            copy is created and returned if in_place=False (as default).
+            Return the minimal cover of this surface that makes this surface a
+            translation surface, i.e., return this surface itself.
 
             EXAMPLES::
 
                 sage: from flatsurf import translation_surfaces
-                sage: s=translation_surfaces.veech_double_n_gon(4)
-                sage: s.polygon(1)
-                polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
-                sage: [s.opposite_edge(0,i) for i in range(4)]
-                [(1, 0), (1, 1), (1, 2), (1, 3)]
-                sage: ss=s.standardize_polygons()
-                sage: ss.polygon(1)
-                polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
-                sage: [ss.opposite_edge(0,i) for i in range(4)]
-                [(1, 2), (1, 3), (1, 0), (1, 1)]
-                sage: TestSuite(ss).run()
+                sage: S = translation_surfaces.square_torus()
+                sage: S.minimal_translation_cover() is S
+                True
 
-            Make sure first vertex is sent to origin::
-
-                sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
-                sage: p = polygon(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
-                sage: s = MutableOrientedSimilaritySurface(QQ)
-                sage: s.add_polygon(p)
-                0
-                sage: s.glue((0, 0), (0, 2))
-                sage: s.glue((0, 1), (0, 3))
-                sage: s.set_root(0)
-                sage: s.set_immutable()
-                sage: s.standardize_polygons().polygon(0)
-                polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             """
-            if self.is_finite_type():
-                if in_place:
-                    if not self.is_mutable():
-                        raise ValueError(
-                            "An in_place call for standardize_polygons can only be done for a mutable surface."
-                        )
-                    s = self
-                else:
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
+            return self
 
-                    s = MutableOrientedSimilaritySurface.from_surface(self)
-                cv = {}  # dictionary for non-zero canonical vertices
-                for label, polygon in zip(s.labels(), s.polygons()):
-                    best = 0
-                    best_pt = polygon.vertex(best)
-                    for v in range(1, polygon.num_edges()):
-                        pt = polygon.vertex(v)
-                        if (pt[1] < best_pt[1]) or (
-                            pt[1] == best_pt[1] and pt[0] < best_pt[0]
-                        ):
-                            best = v
-                            best_pt = pt
-                    # We replace the polygon if the best vertex is not the zero vertex, or
-                    # if the coordinates of the best vertex differs from the origin.
-                    if not (best == 0 and best_pt.is_zero()):
-                        cv[label] = best
-                for label, v in cv.items():
-                    s.set_vertex_zero(label, v, in_place=True)
-                return s
-            else:
-                if in_place:
-                    raise NotImplementedError(
-                        "in place standardization only available for finite surfaces"
-                    )
+        def edge_matrix(self, p, e=None):
+            r"""
+            Returns the 2x2 matrix representing a similarity which when
+            applied to the polygon with label `p` makes it so the edge `e`
+            can be glued to its opposite edge by translation.
 
-                from flatsurf.geometry.similarity_surface import SimilaritySurface
-                from flatsurf.geometry.translation_surface import (
-                    LazyStandardizedPolygonSurface,
-                )
+            Since this is a translation surface, this is just the identity.
 
-                return SimilaritySurface(LazyStandardizedPolygonSurface(self))
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.edge_matrix(0, 0)
+                [1 0]
+                [0 1]
+
+            """
+            if e is None:
+                import warnings
+                warnings.warn("passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead")
+                p, e = p
+
+            if e < 0 or e >= self.polygon(p).num_edges():
+                raise ValueError("invalid edge index for this polygon")
+
+            from sage.all import identity_matrix
+            return identity_matrix(self.base_ring(), 2)
 
         def stratum(self):
             r"""
@@ -262,6 +248,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: import flatsurf.geometry.similarity_surface_generators as sfg
                 sage: sfg.translation_surfaces.octagon_and_squares().stratum()
                 H_3(4)
+
             """
             from surface_dynamics import AbelianStratum
             from sage.rings.integer_ring import ZZ
@@ -328,6 +315,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: m = Matrix([[a,0],[0,~a]])
                 sage: s2.cmp((m*s1).canonicalize())
                 0
+
             """
             s = self
             # Find a common field
@@ -606,7 +594,26 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             )
 
     class FiniteType(SurfaceCategoryWithAxiom):
+        r"""
+        The category of translation surfaces built from finitely many polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.octagon_and_squares()
+            sage: s.category()
+            Category of connected without boundary finite type translation surfaces
+
+        """
         class ParentMethods:
+            r"""
+            Provides methods available to all translation surfaces that are
+            built from finitely many polygons.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
             def canonicalize(self, in_place=None):
                 r"""
                 Return a canonical version of this translation surface.
@@ -632,6 +639,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     True
                     sage: hash(s1) == hash(s2)
                     True
+
                 """
                 if in_place is not None:
                     if in_place:

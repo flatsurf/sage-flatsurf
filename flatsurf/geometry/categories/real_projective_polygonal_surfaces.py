@@ -37,7 +37,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory
+from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
 
 
 class RealProjectivePolygonalSurfaces(SurfaceCategory):

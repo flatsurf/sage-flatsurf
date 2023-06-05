@@ -2545,6 +2545,39 @@ class SimilaritySurfaces(SurfaceCategory):
                     s.set_immutable()
                     return s
 
+                def standardize_polygons(self, in_place=False):
+                    r"""
+                    Return a surface with each polygon replaced with a new
+                    polygon which differs by translation and reindexing. The
+                    new polygon will have the property that vertex zero is the
+                    origin, and all vertices lie either in the upper half
+                    plane, or on the x-axis with non-negative x-coordinate.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: s=translation_surfaces.veech_double_n_gon(4)
+                        sage: s.polygon(1)
+                        polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+                        sage: [s.opposite_edge(0,i) for i in range(4)]
+                        [(1, 0), (1, 1), (1, 2), (1, 3)]
+                        sage: ss=s.standardize_polygons()
+                        sage: ss.polygon(1)
+                        polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                        sage: [ss.opposite_edge(0,i) for i in range(4)]
+                        [(1, 2), (1, 3), (1, 0), (1, 1)]
+                        sage: TestSuite(ss).run()
+
+                    """
+                    if in_place:
+                        raise NotImplementedError("cannot standardize polygons in_place anymore on this surface; use in_place=False to create a copy of the surface with standardized polygons")
+
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    S = MutableOrientedSimilaritySurface.from_surface(self, category=self.category())
+                    S.standardize_polygons(in_place=True)
+                    S.set_immutable()
+                    return S
+
                 def fundamental_group(self, base_label=None):
                     r"""
                     Return the fundamental group of this surface.

@@ -562,6 +562,57 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 us.glue((l1, new_glue_e1), (old_opposite2[0], old_opposite2[1]))
         return s
 
+    def standardize_polygons(self, in_place=False):
+        r"""
+        Replace each polygon with a new polygon which differs by
+        translation and reindexing. The new polygon will have the property
+        that vertex zero is the origin, and all vertices lie either in the
+        upper half plane, or on the x-axis with non-negative x-coordinate.
+
+        This is done to the current surface if in_place=True. A mutable
+        copy is created and returned if in_place=False (as default).
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+            sage: p = polygon(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
+            sage: s = MutableOrientedSimilaritySurface(QQ)
+            sage: s.add_polygon(p)
+            0
+            sage: s.glue((0, 0), (0, 2))
+            sage: s.glue((0, 1), (0, 3))
+            sage: s.set_root(0)
+            sage: s.set_immutable()
+
+            sage: s.standardize_polygons().polygon(0)
+            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        """
+        if not in_place:
+            S = MutableOrientedSimilaritySurface.from_surface(self)
+            S.standardize_polygons(in_place=True)
+            return S
+
+        cv = {}  # dictionary for non-zero canonical vertices
+        for label, polygon in zip(self.labels(), self.polygons()):
+            best = 0
+            best_pt = polygon.vertex(best)
+            for v in range(1, polygon.num_edges()):
+                pt = polygon.vertex(v)
+                if (pt[1] < best_pt[1]) or (
+                    pt[1] == best_pt[1] and pt[0] < best_pt[0]
+                ):
+                    best = v
+                    best_pt = pt
+            # We replace the polygon if the best vertex is not the zero vertex, or
+            # if the coordinates of the best vertex differs from the origin.
+            if not (best == 0 and best_pt.is_zero()):
+                cv[label] = best
+        for label, v in cv.items():
+            self.set_vertex_zero(label, v, in_place=True)
+
+        return self
+
 
 class MutableOrientedSimilaritySurface(
     MutableOrientedSimilaritySurface_base, MutablePolygonalSurface

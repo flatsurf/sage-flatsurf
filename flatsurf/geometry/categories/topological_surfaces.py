@@ -74,6 +74,7 @@ class TopologicalSurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import TopologicalSurfaces
             sage: TopologicalSurfaces().super_categories()
+            [Category of topological spaces]
 
         """
         return [TopologicalSpaces()]
@@ -387,7 +388,13 @@ class TopologicalSurfaces(SurfaceCategory):
                 sage: from flatsurf.geometry.categories import TopologicalSurfaces
                 sage: C = TopologicalSurfaces()
                 sage: C.WithBoundary().WithoutBoundary()
+                Traceback (most recent call last):
+                ...
+                TypeError: a surface cannot be both with and without boundary
                 sage: C.WithoutBoundary().WithBoundary()
+                Traceback (most recent call last):
+                ...
+                TypeError: a surface cannot be both with and without boundary
 
             """
 
