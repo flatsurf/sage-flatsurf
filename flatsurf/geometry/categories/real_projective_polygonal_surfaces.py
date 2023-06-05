@@ -5,7 +5,7 @@ See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
 
 Normally, you won't create this (or any other) category directly. The correct
-category is automatically determined for surfaces.
+category is automatically determined for immutable surfaces.
 
 EXAMPLES::
 

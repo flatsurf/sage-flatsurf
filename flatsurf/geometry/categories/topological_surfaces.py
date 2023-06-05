@@ -1,21 +1,21 @@
 r"""
 The category of topological surfaces.
 
-This module provides a base category for all the surfaces in sage-flatsurf.
+This module provides a base category for all surfaces in sage-flatsurf.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
 
 Normally, you won't create this (or any other) category directly. The correct
-category is automatically determined for surfaces.
+category is automatically determined for immutable surfaces.
 
 EXAMPLES::
 
     sage: from flatsurf import MutableOrientedSimilaritySurface
-    sage: C = MutableOrientedSimilaritySurface(QQ).category()
+    sage: S = MutableOrientedSimilaritySurface(QQ)
 
     sage: from flatsurf.geometry.categories import TopologicalSurfaces
-    sage: C.is_subcategory(TopologicalSurfaces())
+    sage: S in TopologicalSurfaces()
     True
 
 """
@@ -55,8 +55,8 @@ class TopologicalSurfaces(SurfaceCategory):
     This category does not provide much functionality but just a common base
     for all the other categories defined in sage-flatsurf.
 
-    In particular, this does not really require a topology since there is no
-    general concept of open subsets of a surface in sage-flatsurf.
+    In particular, this does not require a topology since there is no general
+    concept of open subsets of a surface in sage-flatsurf.
 
     EXAMPLES::
 
@@ -67,9 +67,25 @@ class TopologicalSurfaces(SurfaceCategory):
     """
 
     def super_categories(self):
+        r"""
+        Return the categories a topological surface is also a member of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import TopologicalSurfaces
+            sage: TopologicalSurfaces().super_categories()
+
+        """
         return [TopologicalSpaces()]
 
     class ParentMethods:
+        r"""
+        Provides methods available to all surfaces in sage-flatsurf.
+
+        If you want to add functionality for all surfaces you most likely want
+        to put it here.
+        """
+
         def refined_category(self):
             r"""
             Return the smallest subcategory that this surface is in.
@@ -118,24 +134,61 @@ class TopologicalSurfaces(SurfaceCategory):
             return category
 
         def _test_refined_category(self, **options):
+            r"""
+            Verify that all (immutable) surfaces are contained in their refined
+            category automatically.
+
+            To pass this test, surfaces should either set their ``category``
+            explicitly or ensure to run `_refine_category_(refined_category())`
+            at some point.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_refined_category()
+
+            """
             tester = self._tester(**options)
 
             tester.assertTrue(self.category().is_subcategory(self.refined_category()))
 
         @abstract_method
         def is_mutable(self):
-            pass
+            r"""
+            Return whether this surface allows modifications.
+
+            All surfaces in sage-flatsurf must implement this method.
+
+            .. NOTE::
+
+                We do not specify the interface of such mutations. Any mutable
+                surface should come up with a good interface for its use case. The
+                point of this method is to signal that is likely unsafe to use this
+                surface in caches (since it might change later) and that the
+                category of the surface might still change.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygon, similarity_surfaces
+                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_refined_category()
+            """
 
         @abstract_method
         def is_orientable(self):
             r"""
             Return whether this surface is orientable.
 
+            All surfaces in sage-flatsurf must implement this method.
+
             .. NOTE::
 
                 This method is used by :meth:`refined_category` to determine
                 whether this surface satisfies the axiom :class:`Orientable`.
-                Surfaces can override this method to perform specialized logic,
+                Surfaces must override this method to perform specialized logic,
                 see the note in :mod:`flatsurf.geometry.categories` for
                 performance considerations.
 
@@ -154,11 +207,13 @@ class TopologicalSurfaces(SurfaceCategory):
             r"""
             Return whether this a topological surface with boundary.
 
+            All surfaces in sage-flatsurf must implement this method.
+
             .. NOTE::
 
                 This method is used by :meth:`refined_category` to determine
                 whether this surface satisfies the axiom :class:`WithBoundary`
-                or :class:`WithoutBoundary`. Surfaces can override this method
+                or :class:`WithoutBoundary`. Surfaces must override this method
                 to perform specialized logic, see the note in
                 :mod:`flatsurf.geometry.categories` for performance
                 considerations.
@@ -177,6 +232,8 @@ class TopologicalSurfaces(SurfaceCategory):
         def is_compact(self):
             r"""
             Return whether this surface is compact.
+
+            All surfaces in sage-flatsurf must implement this method.
 
             .. NOTE::
 
@@ -200,6 +257,8 @@ class TopologicalSurfaces(SurfaceCategory):
         def is_connected(self):
             r"""
             Return whether this surface is connected.
+
+            All surfaces in sage-flatsurf must implement this method.
 
             .. NOTE::
 
@@ -249,6 +308,14 @@ class TopologicalSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
+            r"""
+            Provides methods available to all orientable surfaces in
+            sage-flatsurf.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
             def is_orientable(self):
                 r"""
                 Return whether this surface is orientable, i.e., return ``True``.
@@ -284,6 +351,14 @@ class TopologicalSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
+            r"""
+            Provides methods available to all surfaces with boundary in
+            sage-flatsurf.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
             def is_with_boundary(self):
                 r"""
                 Return whether this is a surface with boundary, i.e., return ``True``.
@@ -304,8 +379,20 @@ class TopologicalSurfaces(SurfaceCategory):
                 return True
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
+            r"""
+            An impossible category, the surfaces with and without boundary.
+
+            EXAMPLES::
+
+                sage: from flatsurf.geometry.categories import TopologicalSurfaces
+                sage: C = TopologicalSurfaces()
+                sage: C.WithBoundary().WithoutBoundary()
+                sage: C.WithoutBoundary().WithBoundary()
+
+            """
+
             def __init__(self, *args, **kwargs):
-                raise TypeError
+                raise TypeError("a surface cannot be both with and without boundary")
 
     class WithoutBoundary(SurfaceCategoryWithAxiom):
         r"""
@@ -323,6 +410,14 @@ class TopologicalSurfaces(SurfaceCategory):
         """
 
         class ParentMethods:
+            r"""
+            Provides methods available to all surfaces without boundary in
+            sage-flatsurf.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
             def is_with_boundary(self):
                 r"""
                 Return whether this is a surface with boundary, i.e., return ``False``.
@@ -339,15 +434,68 @@ class TopologicalSurfaces(SurfaceCategory):
                 return False
 
     class Connected(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces that are topologically connected.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygon, similarity_surfaces
+            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: S = similarity_surfaces.self_glued_polygon(P)
+            sage: 'Connected' in S.category().axioms()
+            True
+
+        """
         class ParentMethods:
+            r"""
+            Provides methods available to all connected surfaces in
+            sage-flatsurf.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
             def is_connected(self):
+                r"""
+                Return whether this surface is connected, i.e., return
+                ``True``.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygon, similarity_surfaces
+                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.is_connected()
+                    True
+
+                """
                 return True
 
     class Compact(SurfaceCategoryWithAxiom):
+        r"""
+        The axiom satisfied by surfaces that are compact as topological spaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygon, similarity_surfaces
+            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: S = similarity_surfaces.self_glued_polygon(P)
+            sage: 'Compact' in S.category().axioms()
+            True
+
+        """
         class ParentMethods:
+            r"""
+            Provides methods available to all compact surfaces in
+            sage-flatsurf.
+
+            If you want to add functionality for such surfaces you most likely
+            want to put it here.
+            """
+
             def is_compact(self):
                 r"""
-                Return whether this surface is compact.
+                Return whether this surface is compact, i.e., return ``True``.
 
                 EXAMPLES::
 

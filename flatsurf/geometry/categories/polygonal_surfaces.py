@@ -9,7 +9,7 @@ See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
 
 Normally, you won't create this (or any other) category directly. The correct
-category is automatically determined for surfaces.
+category is automatically determined for immutable surfaces.
 
 EXAMPLES::
 
@@ -89,6 +89,7 @@ class PolygonalSurfaces(SurfaceCategory):
         If you want to add functionality for such surfaces you most likely
         want to put it here.
         """
+
         def refined_category(self):
             r"""
             Return the smallest subcategory that this surface is in by

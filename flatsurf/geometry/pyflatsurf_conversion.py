@@ -262,13 +262,13 @@ def from_pyflatsurf(T):
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
         sage: T = from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
-        sage: T
+        sage: T  # optional: pyflatsurf
         Translation Surface in H_2(2) built from 6 isosceles triangles
 
     TESTS::
 
         sage: from flatsurf.geometry.categories import TranslationSurfaces
-        sage: T in TranslationSurfaces()
+        sage: T in TranslationSurfaces()  # optional: pyflatsurf
         True
 
     Verify that #137 has been resolved::

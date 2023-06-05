@@ -10,6 +10,12 @@ that describe how to transition between pairs of glued edges, see
 In sage-flatsurf, we restrict cone surfaces slightly by requiring that a cone
 surface is given by polygons such that each edge matrix is an isometry.
 
+See :mod:`flatsurf.geometry.categories` for a general description of the
+category framework in sage-flatsurf.
+
+Normally, you won't create this (or any other) category directly. The correct
+category is automatically determined for immutable surfaces.
+
 EXAMPLES:
 
 We glue the sides of a square with a rotation of π/2. Since each gluing is just

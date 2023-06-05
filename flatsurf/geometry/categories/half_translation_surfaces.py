@@ -5,6 +5,12 @@ A half-translation surface is a surface built by gluing Euclidean polygons. The
 sides of the polygons can be glued with translations or half-translations
 (translation followed by a rotation of angle π.)
 
+See :mod:`flatsurf.geometry.categories` for a general description of the
+category framework in sage-flatsurf.
+
+Normally, you won't create this (or any other) category directly. The correct
+category is automatically determined for immutable surfaces.
+
 EXAMPLES:
 
 We glue all the sides of a square to themselves. Since each gluing is just a
