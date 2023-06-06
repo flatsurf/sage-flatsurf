@@ -3055,9 +3055,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             # Extend with points coming from other hyperbolic objects in "remaining[0]"
             else:
                 for pairs in x._isometry_conditions(y):
-                    yield from self._isometry_conditions(
-                        defining[:], pairs + remaining
-                    )
+                    yield from self._isometry_conditions(defining[:], pairs + remaining)
 
         else:
             yield defining
