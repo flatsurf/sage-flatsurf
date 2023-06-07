@@ -92,9 +92,6 @@ class ChamanaraSurface(OrientedSimilaritySurface):
     def is_dilation_surface(self, positive=False):
         return not positive
 
-    def is_rational_surface(self):
-        return True
-
     def is_cone_surface(self):
         return False
 
