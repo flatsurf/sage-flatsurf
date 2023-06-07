@@ -179,11 +179,11 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
         assert tessellation_face.dimension() == 2
         assert tessellation_edge.dimension() == 1
 
-        cross_tessellation_face = self._cross(tessellation_face, tessellation_edge)
+        cross_tessellation_face_edge = self._cross(tessellation_face, tessellation_edge)
 
         # nothing to do if we have already explored across this polygon edge
-        if cross_tessellation_face is not None:
-            return cross_tessellation_face
+        if cross_tessellation_face_edge is not None:
+            return cross_tessellation_face_edge[0]
 
         cross_tessellation_face, target_triangulation = self._develop(
             tessellation_face, tessellation_edge
@@ -241,7 +241,7 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
 
         return cross_tessellation_face, target_triangulation
 
-    def _cross(self, tessellation_face, tessellation_edge):
+    def _cross(self, tessellation_face, tessellation_edge, identify_edges=True):
         r"""
         Return the hyperbolic polygon obtained by crossing from
         ``tessellation_face`` over ``tessellation_edge``.
@@ -252,21 +252,35 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
         """
         mod, _ = self._dual_graph.get_vertex(tessellation_face)
 
-        if mod is not None:
+        if mod is not None and identify_edges:
             edges = list(tessellation_face.edges())
-            edge = set(edges[edges.index(tessellation_edge) % mod :: mod])
+            tessellation_edge_class = set(edges[edges.index(tessellation_edge) % mod :: mod])
         else:
-            edge = {tessellation_edge}
+            tessellation_edge_class = {tessellation_edge}
 
         for v, w, (edges, isometry) in self._dual_graph.edges(
             tessellation_face, labels=True, sort=False
         ):
-            if any(e in edges for e in edge):
+            if any(e in edges for e in tessellation_edge_class):
                 if v == tessellation_face:
-                    return w
-                if w == tessellation_face:
-                    return v
-                assert False
+                    cross_face = w
+                elif w == tessellation_face:
+                    cross_face = v
+                else:
+                    assert False
+
+                if len(edges) == 1:
+                    cross_edge = next(iter(edges))
+                else:
+                    edges = list(edges)
+                    assert len(edges) == 2
+                    if any(e == edges[0] for e in tessellation_edge_class):
+                        cross_edge = edges[1]
+                    else:
+                        assert any(e == edges[1] for e in tessellation_edge_class)
+                        cross_edge = edges[0]
+
+                return cross_face, cross_edge
 
         return None
 
@@ -294,9 +308,10 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             sage: X = translation_surfaces.lanneau_nguyen_genus3_prototype(5, 1, 0, 0)
             sage: idt = IsoDelaunayTessellation(X)
             sage: idt.explore()
-            sage: idt.vertices()
+            sage: len(idt.vertices())
+            75
             sage: idt.insert_orbifold_points()
-            sage: idt.vertices()
+            sage: len(idt.vertices())
 
         """
         # TODO: Should this mutate the tessellation or create a copy instead?
@@ -743,6 +758,15 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             sage: len(idt.vertices())
             3
 
+        An example with an orbifold in the interior of a face; note that that
+        point is not returned as a vertex here::
+
+            sage: X = translation_surfaces.lanneau_nguyen_genus3_prototype(5, 1, 0, 0)
+            sage: idt = IsoDelaunayTessellation(X)
+            sage: idt.explore()
+            sage: len(idt.vertices())
+            75
+
         """
         # TODO: Check that the fundamental domain has been computed.
 
@@ -750,6 +774,7 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
             (tessellation_face, tessellation_edge)
             for tessellation_face in self._dual_graph.vertices(sort=False)
             for tessellation_edge in tessellation_face.edges()
+            if self._cross(tessellation_face, tessellation_edge, identify_edges=False) is not None
         )
 
         vertices = []
@@ -766,39 +791,10 @@ class IsoDelaunayTessellation(HyperbolicTessellation):
                     list(tessellation_face.edges()).index(tessellation_edge) - 1
                 ]
 
-                # TODO: Merge this with the code in _cross maybe.
-                for (
-                    source_tessellation_face,
-                    target_tessellation_face,
-                    (tessellation_edges, isometry),
-                ) in self._dual_graph.edges(tessellation_face, labels=True, sort=False):
+                cross_tessellation_face, cross_tessellation_edge = self._cross(tessellation_face, previous_tessellation_edge)
 
-                    if previous_tessellation_edge in tessellation_edges:
-                        if len(tessellation_edges) == 1:
-                            cross_tessellation_edge = previous_tessellation_edge
-                        else:
-                            tessellation_edges = list(tessellation_edges)
-                            if previous_tessellation_edge == tessellation_edges[0]:
-                                cross_tessellation_edge = tessellation_edges[1]
-                            else:
-                                cross_tessellation_edge = tessellation_edges[0]
-                    else:
-                        continue
-
-                    cross_tessellation_edge = (
-                        target_tessellation_face
-                        if source_tessellation_face == tessellation_face
-                        else source_tessellation_face,
-                        cross_tessellation_edge,
-                    )
-
-                    vertex.append(cross_tessellation_edge)
-                    half_edges.remove(cross_tessellation_edge)
-                    break
-                else:
-                    assert (
-                        False
-                    ), f"{previous_tessellation_edge} of {tessellation_face} not glued to another edge"
+                vertex.append((cross_tessellation_face, cross_tessellation_edge))
+                half_edges.remove((cross_tessellation_face, cross_tessellation_edge))
 
                 if vertex[0] == vertex[-1]:
                     vertex.pop()
