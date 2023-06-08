@@ -138,7 +138,7 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         Return whether this image is indistinguishable from ``other``.
 
         See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of inequality.
+        on this notion of equality.
 
         EXAMPLES::
 

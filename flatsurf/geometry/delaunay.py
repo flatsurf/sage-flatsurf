@@ -159,7 +159,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         Return whether this surface is indistinguishable from ``other``.
 
         See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of inequality.
+        on this notion of equality.
 
         EXAMPLES::
 
@@ -474,7 +474,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         Return whether this surface is indistinguishable from ``other``.
 
         See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of inequality.
+        on this notion of equality.
 
         EXAMPLES::
 
@@ -650,7 +650,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         Return whether this surface is indistinguishable from ``other``.
 
         See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of inequality.
+        on this notion of equality.
 
         EXAMPLES::
 

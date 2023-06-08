@@ -1,7 +1,10 @@
 r"""
-Construction of Chamanara's surfaces which depend on a parameter alpha less than one.
-See the paper "Affine automorphism groups of surfaces of infinite type" in which the surface
-is called $X_\alpha$.
+Chamanara's surfaces which depend on a parameter `\alpha` less than one.
+
+REFERENCES:
+
+- Defined as `X_\alpha` in Chamanara, Reza, "Affine automorphism groups of
+  surfaces of infinite type", City University of New York, 2002.
 
 EXAMPLES::
 
@@ -54,7 +57,7 @@ def ChamanaraPolygon(alpha):
 
 class ChamanaraSurface(OrientedSimilaritySurface):
     r"""
-    The ChamanaraSurface $X_{\alpha}$.
+    The Chamanara surface $X_{\alpha}$.
 
     EXAMPLES::
 
@@ -90,22 +93,102 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         )
 
     def is_dilation_surface(self, positive=False):
+        r"""
+        Return whether this surface is a dilation surface, overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.is_dilation_surface(positive=True)
+            False
+            sage: S.is_dilation_surface(positive=False)
+            True
+
+        """
         return not positive
 
     def is_cone_surface(self):
+        r"""
+        Return whether this surface is a cone surfaces, overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.is_cone_surface()
+            False
+
+        """
         return False
 
     def is_translation_surface(self, positive=True):
+        r"""
+        Return whether this surfaces is a (half-)translation surface, overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.is_translation_surface(positive=True)
+            False
+            sage: S.is_translation_surface(positive=False)
+            False
+
+        """
         return False
 
     def labels(self):
+        r"""
+        Return the labels used to identify the polygons that make up this
+        surface, i.e., the integers.
+
+        This overrides
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.labels()
+            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+        """
         from flatsurf.geometry.surface import LabelsView
         return LabelsView(self, ZZ, finite=False)
 
     def roots(self):
+        r"""
+        Return a label in each connected component of this surface.
+
+        This overrides
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.roots()
+            (0,)
+
+        """
         return (ZZ(0),)
 
     def is_mutable(self):
+        r"""
+        Return whether this surface is mutable which it is not.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: S = ChamanaraSurface(1/2)
+            sage: S.is_mutable()
+            False
+
+        """
         return False
 
     def polygon(self, lab):
@@ -143,6 +226,16 @@ class ChamanaraSurface(OrientedSimilaritySurface):
                 return p + 1, 1
 
     def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with equality testing.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import ChamanaraSurface
+            sage: hash(ChamanaraSurface(1/2)) == hash(ChamanaraSurface(1/2))
+            True
+
+        """
         return hash((self._p, self.base_ring()))
 
     def graphical_surface(self, **kwds):
@@ -157,7 +250,7 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         Return whether this surface is indistinguishable from ``other``.
 
         See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of inequality.
+        on this notion of equality.
 
         EXAMPLES::
 
