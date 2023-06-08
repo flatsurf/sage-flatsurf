@@ -25,15 +25,15 @@ The easiest way to construct a similarity surface is to use the constructions
 from
 :class:`flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators`::
 
-    sage: from flatsurf import polygon, similarity_surfaces
-    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+    sage: from flatsurf import Polygon, similarity_surfaces
+    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
     sage: similarity_surfaces.self_glued_polygon(P)
     Half-Translation Surface in Q_0(0, -1^4) built from a quadrilateral
 
 Another way is to build a surface from scratch (using e.g.
 :class:`flatsurf.geometry.surface.MutableOrientedSimilaritySurface`)::
 
-    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
     sage: S = MutableOrientedSimilaritySurface(QQ)
     sage: S.add_polygon(P)
     0
@@ -88,7 +88,7 @@ than two edges to each other; however, edges get unglued automatically::
 
 If we don't glue all the edges, we get a surface with boundary::
 
-    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
     sage: S = MutableOrientedSimilaritySurface(QQ)
     sage: S.add_polygon(P)
     0
@@ -260,8 +260,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_cone_surface()
                 True
@@ -295,8 +295,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_dilation_surface()
                 True
@@ -336,8 +336,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_translation_surface()
                 False
@@ -371,8 +371,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_rational_surface()
                 True
@@ -397,18 +397,18 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: s2=m*s
                 sage: TestSuite(s2).run()
                 sage: s2.polygon(0)
-                polygon(vertices=[(0, 0), (1, 0), (3, 1), (2, 1)])
+                Polygon(vertices=[(0, 0), (1, 0), (3, 1), (2, 1)])
 
             Testing multiplication by a matrix with negative determinant::
 
                 sage: from flatsurf import dilation_surfaces
                 sage: ds1 = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: ds1.polygon(0)
-                polygon(vertices=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
+                Polygon(vertices=[(0, 0), (1/2, 0), (1, 1/3), (1, 1), (3/4, 1), (0, 4/5)])
                 sage: m = matrix(QQ, [[0, 1], [1, 0]]) # maps (x,y) to (y, x)
                 sage: ds2 = m*ds1
                 sage: ds2.polygon(0)
-                polygon(vertices=[(0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)])
+                Polygon(vertices=[(0, 0), (4/5, 0), (1, 3/4), (1, 1), (1/3, 1), (0, 1/2)])
             """
             if not switch_sides:
                 raise NotImplementedError
@@ -461,9 +461,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
                     sage: s = SimilaritySurfaceGenerators.example()
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+                    Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
                     sage: s.polygon(1)
-                    polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+                    Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
                     sage: s.opposite_edge(0,0)
                     (1, 1)
                     sage: m = s.edge_matrix(0, 0)
@@ -502,10 +502,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 ::
 
-                    sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
 
                     sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
                     0
                     sage: S.glue((0, 0), (0, 2))
                     sage: S.glue((0, 1), (0, 3))
@@ -558,9 +558,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
                     sage: s = SimilaritySurfaceGenerators.example()
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+                    Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
                     sage: s.polygon(1)
-                    polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+                    Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
                     sage: s.opposite_edge(0,0)
                     (1, 1)
                     sage: g = s.edge_transformation(0,0)
@@ -608,12 +608,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import translation_surfaces
                     sage: s = translation_surfaces.veech_double_n_gon(4)
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: [s.opposite_edge(0,i) for i in range(4)]
                     [(1, 0), (1, 1), (1, 2), (1, 3)]
                     sage: ss = s.set_vertex_zero(0,1)
                     sage: ss.polygon(0)
-                    polygon(vertices=[(0, 0), (0, 1), (-1, 1), (-1, 0)])
+                    Polygon(vertices=[(0, 0), (0, 1), (-1, 1), (-1, 0)])
                     sage: [ss.opposite_edge(0,i) for i in range(4)]
                     [(1, 1), (1, 2), (1, 3), (1, 0)]
                     sage: TestSuite(ss).run()
@@ -622,12 +622,12 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: s = translation_surfaces.veech_2n_gon(2)
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: [s.opposite_edge(0,i) for i in range(4)]
                     [(0, 2), (0, 3), (0, 0), (0, 1)]
                     sage: ss = s.set_vertex_zero(0,3)
                     sage: ss.polygon(0)
-                    polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
+                    Polygon(vertices=[(0, 0), (0, -1), (1, -1), (1, 0)])
                     sage: [ss.opposite_edge(0,i) for i in range(4)]
                     [(0, 2), (0, 3), (0, 0), (0, 1)]
                     sage: TestSuite(ss).run()
@@ -835,7 +835,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         ss = MutableOrientedSimilaritySurface(field2)
                         index = 0
 
-                        from flatsurf import polygon
+                        from flatsurf import Polygon
 
                         for label, p in zip(self.labels(), self.polygons()):
                             new_edges = []
@@ -847,7 +847,7 @@ class SimilaritySurfaces(SurfaceCategory):
                                     )
                                 )
                                 index += 2
-                            pp = polygon(edges=new_edges, base_ring=field2)
+                            pp = Polygon(edges=new_edges, base_ring=field2)
                             ss.add_polygon(pp, label=label)
                         ss.set_roots(self.roots())
                         for (l1, e1), (l2, e2) in self.gluings():
@@ -981,11 +981,11 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface, polygon
+                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface, Polygon
 
                     sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
                     sage: s.triangle_flip(0, 0, test=True)
                     False
                     sage: s.triangle_flip(0, 1, test=True)
@@ -1002,9 +1002,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s.triangle_flip(0,1,in_place=True)
                     Rational Cone Surface built from 2 isosceles triangles
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (1, 1), (0, 1)])
                     sage: s.polygon(1)
-                    polygon(vertices=[(0, 0), (-1, -1), (0, -1)])
+                    Polygon(vertices=[(0, 0), (-1, -1), (0, -1)])
                     sage: s.gluings()
                     (((0, 0), (1, 0)), ((0, 1), (0, 2)), ((0, 2), (0, 1)), ((1, 0), (0, 0)), ((1, 1), (1, 2)), ((1, 2), (1, 1)))
                     sage: s.triangle_flip(0,2,in_place=True)
@@ -1012,7 +1012,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     ...
                     ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.
 
-                    sage: p = polygon(edges=[(2,0),(-1,3),(-1,-3)])
+                    sage: p = Polygon(edges=[(2,0),(-1,3),(-1,-3)])
                     sage: s = similarity_surfaces.self_glued_polygon(p)
                     sage: s = MutableOrientedSimilaritySurface.from_surface(s)
                     sage: s.triangle_flip(0,1,in_place=True)
@@ -1026,7 +1026,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s.labels()
                     (0,)
                     sage: s.polygons()
-                    (polygon(vertices=[(0, 0), (-3, -3), (-1, -3)]),)
+                    (Polygon(vertices=[(0, 0), (-3, -3), (-1, -3)]),)
                     sage: s.gluings()
                     (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)))
                     sage: TestSuite(s).run()
@@ -1083,11 +1083,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s.join_polygons(0,0, in_place=True)
                     Translation Surface built from an equilateral triangle and a pentagon with 2 marked vertices
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)])
+                    Polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (0, 2*a), (-1, a)])
                     sage: s.join_polygons(0,4, in_place=True)
                     Translation Surface built from a rhombus
                     sage: s.polygon(0)
-                    polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)])
+                    Polygon(vertices=[(0, 0), (1, -a), (2, 0), (3, a), (2, 2*a), (1, 3*a), (0, 2*a), (-1, a)])
 
                 TESTS::
 
@@ -1133,8 +1133,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     es.append(poly1.edge(i))
 
                 try:
-                    from flatsurf import polygon
-                    polygon(edges=es, base_ring=self.base_ring())
+                    from flatsurf import Polygon
+                    Polygon(edges=es, base_ring=self.base_ring())
                 except (ValueError, TypeError):
                     return False
 
@@ -1311,7 +1311,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: T in TranslationSurfaces()
                     True
                     sage: T.polygon(T.root())
-                    polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+                    Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
 
                 """
                 if cover_type == "translation":
@@ -1445,8 +1445,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 A non-strictly convex example that caused trouble:
 
-                    sage: from flatsurf import similarity_surfaces, polygon
-                    sage: s=similarity_surfaces.self_glued_polygon(polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
+                    sage: from flatsurf import similarity_surfaces, Polygon
+                    sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
                     sage: s=s.triangulate()
                     sage: s.polygon(0).num_edges()
                     3
@@ -1615,7 +1615,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.root()
                     (0, (0, 1, 2))
                     sage: ss.polygon((0, (0, 1, 2)))
-                    polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated(limit=10)
                     True
@@ -1686,7 +1686,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import translation_surfaces, polygon, similarity_surfaces
+                    sage: from flatsurf import translation_surfaces, Polygon, similarity_surfaces
                     sage: s0 = translation_surfaces.octagon_and_squares()
                     sage: a = s0.base_ring().gens()[0]
                     sage: m = Matrix([[1,2+a],[0,1]])
@@ -1696,7 +1696,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: len(ss.polygons())
                     3
 
-                    sage: p = polygon(edges=[(4,0),(-2,1),(-2,-1)])
+                    sage: p = Polygon(edges=[(4,0),(-2,1),(-2,-1)])
                     sage: s0 = similarity_surfaces.self_glued_polygon(p)
                     sage: s = s0.delaunay_decomposition()
                     sage: TestSuite(s).run()
@@ -1707,7 +1707,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.root()
                     (0, (0, 1, 2))
                     sage: ss.polygon(ss.root())
-                    polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_decomposed(limit=10)
                     True
@@ -1987,10 +1987,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 A surface consisting of a single triangle::
 
-                    sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
 
                     sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: S.add_polygon(polygon(edges=[(1, 0), (0, 1), (-1, -1)]), label="Δ")
+                    sage: S.add_polygon(Polygon(edges=[(1, 0), (0, 1), (-1, -1)]), label="Δ")
                     'Δ'
 
                 Subdivision of this surface yields a surface with three triangles::
@@ -2013,7 +2013,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 If we add another polygon to the original surface and glue things, we
                 can see how existing gluings are preserved when subdividing::
 
-                    sage: S.add_polygon(polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+                    sage: S.add_polygon(Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
                     '□'
 
                     sage: S.glue(("Δ", 0), ("□", 2))
@@ -2090,10 +2090,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 A surface consisting of a single triangle::
 
                     sage: from flatsurf import MutableOrientedSimilaritySurface
-                    sage: from flatsurf.geometry.polygon import polygon
+                    sage: from flatsurf.geometry.polygon import Polygon
 
                     sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: S.add_polygon(polygon(edges=[(1, 0), (0, 1), (-1, -1)]), label="Δ")
+                    sage: S.add_polygon(Polygon(edges=[(1, 0), (0, 1), (-1, -1)]), label="Δ")
                     'Δ'
 
                 Subdividing this triangle yields a triangle with marked points along
@@ -2104,7 +2104,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 If we add another polygon to the original surface and glue them, we
                 can see how existing gluings are preserved when subdividing::
 
-                    sage: S.add_polygon(polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
+                    sage: S.add_polygon(Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
                     '□'
 
                     sage: S.glue(("Δ", 0), ("□", 2))
@@ -2286,8 +2286,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
             sage: "FiniteType" in S.category().axioms()
             True
@@ -2317,8 +2317,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_cone_surface()
                     True
@@ -2343,8 +2343,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_dilation_surface()
                     True
@@ -2373,8 +2373,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_translation_surface()
                     False
@@ -2403,8 +2403,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_rational_surface()
                     True
@@ -2474,8 +2474,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S._test_eq_surface()
 
@@ -2503,8 +2503,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: "Oriented" in S.category().axioms()
                 True
@@ -2558,12 +2558,12 @@ class SimilaritySurfaces(SurfaceCategory):
                         sage: from flatsurf import translation_surfaces
                         sage: s=translation_surfaces.veech_double_n_gon(4)
                         sage: s.polygon(1)
-                        polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+                        Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                         sage: [s.opposite_edge(0,i) for i in range(4)]
                         [(1, 0), (1, 1), (1, 2), (1, 3)]
                         sage: ss=s.standardize_polygons()
                         sage: ss.polygon(1)
-                        polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                         sage: [ss.opposite_edge(0,i) for i in range(4)]
                         [(1, 2), (1, 3), (1, 0), (1, 1)]
                         sage: TestSuite(ss).run()

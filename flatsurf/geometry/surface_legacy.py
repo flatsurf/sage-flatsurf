@@ -21,20 +21,20 @@ EXAMPLES:
 
 We built a torus by gluing the opposite sides of a square::
 
-    sage: from flatsurf import polygon
+    sage: from flatsurf import Polygon
     sage: from flatsurf.geometry.surface import Surface_list
 
     sage: S = Surface_list(QQ)
     doctest:warning
     ...
     UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
-    sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
     0
     sage: S.set_edge_pairing(0, 0, 0, 2)
     sage: S.set_edge_pairing(0, 1, 0, 3)
 
     sage: S.polygon(0)
-    polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
     sage: S.opposite_edge(0, 0)
     (0, 2)
 
@@ -484,7 +484,7 @@ class Surface(OrientedSimilaritySurface):
             sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
             doctest:warning
             ...
-            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead
+            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
             0
             sage: S == S
             True
@@ -634,11 +634,11 @@ class Surface(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon
+            sage: from flatsurf import Polygon
             sage: from flatsurf.geometry.surface import Surface_list
 
             sage: S = Surface_list(QQ)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.set_edge_pairing(0, 0, 0, 2)
             sage: S.set_edge_pairing(0, 1, 0, 3)
@@ -655,11 +655,11 @@ class Surface(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon
+            sage: from flatsurf import Polygon
             sage: from flatsurf.geometry.surface import Surface_list
 
             sage: S = Surface_list(QQ)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.set_edge_pairing(0, 0, 0, 2)
             sage: S.set_edge_pairing(0, 1, 0, 3)
@@ -838,7 +838,7 @@ class Surface_list(Surface):
 
     EXAMPLES::
 
-        sage: from flatsurf import polygons, Surface_list, polygon, similarity_surfaces
+        sage: from flatsurf import polygons, Surface_list, Polygon, similarity_surfaces
         sage: p=polygons.regular_ngon(5)
         sage: s=Surface_list(base_ring=p.base_ring())
         doctest:warning
@@ -855,7 +855,7 @@ class Surface_list(Surface):
 
     We surgically add a square into an infinite billiard surface::
 
-        sage: p = polygon(vertices=[(0,0),(4,0),(0,3)])
+        sage: p = Polygon(vertices=[(0,0),(4,0),(0,3)])
         sage: s = similarity_surfaces.billiard(p)
         sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
         doctest:warning
@@ -863,11 +863,11 @@ class Surface_list(Surface):
         UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead. Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels. However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs.
         sage: # Explore the surface a bit
         sage: ts.polygon(0)
-        polygon(vertices=[(0, 0), (4, 0), (0, 3)])
+        Polygon(vertices=[(0, 0), (4, 0), (0, 3)])
         sage: ts.opposite_edge(0,0)
         (1, 2)
         sage: ts.polygon(1)
-        polygon(vertices=[(0, 0), (0, -3), (4, 0)])
+        Polygon(vertices=[(0, 0), (0, -3), (4, 0)])
         sage: s = ts
         sage: l=s.add_polygon(polygons.square(side=4))
         sage: s.change_edge_gluing(0,0,l,2)
@@ -903,12 +903,12 @@ class Surface_list(Surface):
         ....:     count=count+1
         ....:     if count>5:
         ....:         break
-        0 -> polygon(vertices=[(0, 0), (4, 0), (0, 3)])
-        2 -> polygon(vertices=[(0, 0), (4, 0), (4, 4), (0, 4)])
-        3 -> polygon(vertices=[(0, 0), (-72/25, -21/25), (28/25, -96/25)])
-        4 -> polygon(vertices=[(0, 0), (0, 3), (-4, 0)])
-        1 -> polygon(vertices=[(0, 0), (0, -3), (4, 0)])
-        5 -> polygon(vertices=[(0, 0), (-28/25, 96/25), (-72/25, -21/25)])
+        0 -> Polygon(vertices=[(0, 0), (4, 0), (0, 3)])
+        2 -> Polygon(vertices=[(0, 0), (4, 0), (4, 4), (0, 4)])
+        3 -> Polygon(vertices=[(0, 0), (-72/25, -21/25), (28/25, -96/25)])
+        4 -> Polygon(vertices=[(0, 0), (0, 3), (-4, 0)])
+        1 -> Polygon(vertices=[(0, 0), (0, -3), (4, 0)])
+        5 -> Polygon(vertices=[(0, 0), (-28/25, 96/25), (-72/25, -21/25)])
 
     TESTS:
 

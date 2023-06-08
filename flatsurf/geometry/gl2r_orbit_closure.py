@@ -101,12 +101,12 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
-        sage: from flatsurf import polygon, EuclideanPolygonsWithAngles
+        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
         sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 
         sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
         sage: R = ExactReals(E.base_ring())  # optional: exactreal
-        sage: T = polygon(angles=(1, 5, 5, 5), lengths=[1, R.random_element(1/4)])  # optional: exactreal
+        sage: T = Polygon(angles=(1, 5, 5, 5), lengths=[1, R.random_element(1/4)])  # optional: exactreal
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
         sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: exactreal
@@ -231,9 +231,9 @@ class GL2ROrbitClosure:
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
+            sage: from flatsurf import Polygon, similarity_surfaces
             sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
-            sage: T = polygon(angles=(1, 3, 5))
+            sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
@@ -259,9 +259,9 @@ class GL2ROrbitClosure:
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
+            sage: from flatsurf import Polygon, similarity_surfaces
             sage: from flatsurf import GL2ROrbitClosure # optional: pyflatsurf
-            sage: T = polygon(angles=(1, 3, 5))
+            sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
@@ -292,12 +292,12 @@ class GL2ROrbitClosure:
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces, EuclideanPolygonsWithAngles
+            sage: from flatsurf import Polygon, similarity_surfaces, EuclideanPolygonsWithAngles
             sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
             sage: from pyexactreal import ExactReals  # optional: exactreal
             sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
             sage: R = ExactReals(E.base_ring())  # optional: exactreal
-            sage: T = polygon(angles=(1, 5, 5, 5), lengths=[1, R.random_element(1/4)])  # optional: exactreal
+            sage: T = Polygon(angles=(1, 5, 5, 5), lengths=[1, R.random_element(1/4)])  # optional: exactreal
             sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
             sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
             sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: exactreal
@@ -311,7 +311,7 @@ class GL2ROrbitClosure:
             sage: O.field_of_definition()  # long time, optional: pyflatsurf, optional: exactreal
             Rational Field
 
-            sage: T = polygon(angles=(1, 3, 5))
+            sage: T = Polygon(angles=(1, 3, 5))
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf

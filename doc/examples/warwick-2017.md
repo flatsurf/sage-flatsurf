@@ -425,14 +425,14 @@ jupyter:
 ---
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.categories import ConeSurfaces
-from flatsurf.geometry.polygon import polygon
+from flatsurf.geometry.polygon import Polygon
 
 
 class CubeSurf(OrientedSimilaritySurface):
     def __init__(self, F):
-        self._faceA = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        self._faceB = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        self._faceC = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceA = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceB = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceC = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
         super().__init__(
             F,
             category=ConeSurfaces()

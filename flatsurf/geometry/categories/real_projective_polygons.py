@@ -227,9 +227,9 @@ class RealProjectivePolygons(Category_over_base_ring):
             sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
             doctest:warning
             ...
-            UserWarning: Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead
+            UserWarning: Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
             sage: p
-            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: C(p) is p
             False
             sage: C(p) == p
@@ -243,24 +243,24 @@ class RealProjectivePolygons(Category_over_base_ring):
             sage: D(p)
             doctest:warning
             ...
-            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead
-            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+            UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
+            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(vertices=p.vertices())
-            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
             sage: D(edges=p.edges())
-            polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
         """
         # We cannot have a __call__() in SubcategoryMethods so there is no good
         # way to support this in the category framework. Also, this code is
-        # duplicated in several places and the polygon() helper seems to be
+        # duplicated in several places and the Polygon() helper seems to be
         # much more versatile.
         import warnings
-        warnings.warn("Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead")
+        warnings.warn("Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead")
 
         check = kwds.pop("check", True)
 
-        from flatsurf.geometry.polygon import Polygon
-        if len(args) == 1 and isinstance(args[0], Polygon):
+        from flatsurf.geometry.polygon import EuclideanPolygon
+        if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
             if args[0].category() is self:
                 return args[0]
             vertices = map(self.vector_space(), args[0].vertices())
@@ -316,10 +316,10 @@ class RealProjectivePolygons(Category_over_base_ring):
             True
 
             sage: C(vertices=[(0,0), (2,0), (1,1)])
-            polygon(vertices=[(0, 0), (2, 0), (1, 1)])
+            Polygon(vertices=[(0, 0), (2, 0), (1, 1)])
 
             sage: C(edges=[(1,0), (0,1), (-1,0), (0,-1)])
-            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         This axiom can also be created over non-fields::
 
@@ -344,9 +344,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                 sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
                 doctest:warning
                 ...
-                UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead
+                UserWarning: ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead
                 sage: p
-                polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+                Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
                 sage: C(p) is p
                 True
                 sage: C((1,0), (0,1), (-1, 1))
@@ -356,24 +356,24 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 sage: D = ConvexPolygons(QQbar)
                 sage: D(p)
-                polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+                Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
                 sage: D(vertices=p.vertices())
-                polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+                Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
                 sage: D(edges=p.edges())
-                polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
+                Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
 
             """
             # We cannot have a __call__() in SubcategoryMethods so there is no good
             # way to support this in the category framework. Also, this code is
-            # duplicated in several places and the polygon() helper seems to be
+            # duplicated in several places and the Polygon() helper seems to be
             # much more versatile.
             import warnings
-            warnings.warn("ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use polygon() instead")
+            warnings.warn("ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead")
 
             check = kwds.pop("check", True)
 
-            from flatsurf.geometry.polygon import Polygon
-            if len(args) == 1 and isinstance(args[0], Polygon):
+            from flatsurf.geometry.polygon import EuclideanPolygon
+            if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
                 if args[0].category() is self:
                     return args[0]
 
@@ -423,14 +423,14 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 TESTS::
 
-                    sage: from flatsurf import polygon
-                    sage: polygon(vertices=[(0,0),(1,0)])
+                    sage: from flatsurf import Polygon
+                    sage: Polygon(vertices=[(0,0),(1,0)])
                     Traceback (most recent call last):
                     ...
                     ValueError: a polygon should have more than two edges!
-                    sage: polygon(vertices=[(0,0),(1,2),(0,1),(-1,2)])
-                    polygon(vertices=[(0, 0), (1, 2), (0, 1), (-1, 2)])
-                    sage: polygon(vertices=[(0,0),(1,0),(2,0)])
+                    sage: Polygon(vertices=[(0,0),(1,2),(0,1),(-1,2)])
+                    Polygon(vertices=[(0, 0), (1, 2), (0, 1), (-1, 2)])
+                    sage: Polygon(vertices=[(0,0),(1,0),(2,0)])
                     Traceback (most recent call last):
                     ...
                     ValueError: degenerate polygon
@@ -526,7 +526,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 EXAMPLES::
 
-                    sage: from flatsurf.geometry.polygon import polygons, polygon
+                    sage: from flatsurf.geometry.polygon import polygons, Polygon
                     sage: s = polygons.square()
                     sage: V = s.parent().base_ring()**2
                     sage: s.get_point_position(V((1/2,1/2)))
@@ -538,7 +538,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     sage: s.get_point_position(V((1,3/2)))
                     point positioned outside polygon
 
-                    sage: p=polygon(edges=[(1,0),(1,0),(1,0),(0,1),(-3,0),(0,-1)])
+                    sage: p=Polygon(edges=[(1,0),(1,0),(1,0),(0,1),(-3,0),(0,-1)])
                     sage: V = p.base_ring()**2
                     sage: p.get_point_position(V([10,0]))
                     point positioned outside polygon
@@ -667,8 +667,8 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 EXAMPLES::
 
-                    sage: from flatsurf.geometry.polygon import polygon
-                    sage: S = polygon(vertices=[(0,0),(2,0),(2,2),(1,2),(0,2),(0,1)])
+                    sage: from flatsurf.geometry.polygon import Polygon
+                    sage: S = Polygon(vertices=[(0,0),(2,0),(2,2),(1,2),(0,2),(0,1)])
                     sage: S.flow_map((0,1))
                      Flow polygon map:
                       3 2
@@ -856,8 +856,8 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon
-                    sage: P = polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
                     sage: P.circumscribing_circle()
                     Circle((1/2, 3/2), 5/2)
                 """
@@ -882,41 +882,41 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     sage: from flatsurf import polygons
                     sage: P = polygons.regular_ngon(3); P
-                    polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
+                    Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
                     sage: P.subdivide()
-                    [polygon(vertices=[(0, 0), (1, 0), (1/2, 1/6*a)]),
-                     polygon(vertices=[(1, 0), (1/2, 1/2*a), (1/2, 1/6*a)]),
-                     polygon(vertices=[(1/2, 1/2*a), (0, 0), (1/2, 1/6*a)])]
+                    [Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/6*a)]),
+                     Polygon(vertices=[(1, 0), (1/2, 1/2*a), (1/2, 1/6*a)]),
+                     Polygon(vertices=[(1/2, 1/2*a), (0, 0), (1/2, 1/6*a)])]
 
                 ::
 
                     sage: P = polygons.regular_ngon(4)
                     sage: P.subdivide()
-                    [polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2)]),
-                     polygon(vertices=[(1, 0), (1, 1), (1/2, 1/2)]),
-                     polygon(vertices=[(1, 1), (0, 1), (1/2, 1/2)]),
-                     polygon(vertices=[(0, 1), (0, 0), (1/2, 1/2)])]
+                    [Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2)]),
+                     Polygon(vertices=[(1, 0), (1, 1), (1/2, 1/2)]),
+                     Polygon(vertices=[(1, 1), (0, 1), (1/2, 1/2)]),
+                     Polygon(vertices=[(0, 1), (0, 0), (1/2, 1/2)])]
 
                 Sometimes alternating with :meth:`subdivide_edges` can produce a more
                 uniform subdivision::
 
                     sage: P = polygons.regular_ngon(4)
                     sage: P.subdivide_edges(2).subdivide()
-                    [polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2)]),
-                     polygon(vertices=[(1/2, 0), (1, 0), (1/2, 1/2)]),
-                     polygon(vertices=[(1, 0), (1, 1/2), (1/2, 1/2)]),
-                     polygon(vertices=[(1, 1/2), (1, 1), (1/2, 1/2)]),
-                     polygon(vertices=[(1, 1), (1/2, 1), (1/2, 1/2)]),
-                     polygon(vertices=[(1/2, 1), (0, 1), (1/2, 1/2)]),
-                     polygon(vertices=[(0, 1), (0, 1/2), (1/2, 1/2)]),
-                     polygon(vertices=[(0, 1/2), (0, 0), (1/2, 1/2)])]
+                    [Polygon(vertices=[(0, 0), (1/2, 0), (1/2, 1/2)]),
+                     Polygon(vertices=[(1/2, 0), (1, 0), (1/2, 1/2)]),
+                     Polygon(vertices=[(1, 0), (1, 1/2), (1/2, 1/2)]),
+                     Polygon(vertices=[(1, 1/2), (1, 1), (1/2, 1/2)]),
+                     Polygon(vertices=[(1, 1), (1/2, 1), (1/2, 1/2)]),
+                     Polygon(vertices=[(1/2, 1), (0, 1), (1/2, 1/2)]),
+                     Polygon(vertices=[(0, 1), (0, 1/2), (1/2, 1/2)]),
+                     Polygon(vertices=[(0, 1/2), (0, 0), (1/2, 1/2)])]
 
                 """
                 vertices = self.vertices()
                 center = self.centroid()
-                from flatsurf import polygon
+                from flatsurf import Polygon
                 return [
-                    polygon(
+                    Polygon(
                         vertices=(vertices[i], vertices[(i + 1) % len(vertices)], center),
                     )
                     for i in range(len(vertices))
@@ -935,21 +935,21 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     sage: from flatsurf import polygons
                     sage: P = polygons.regular_ngon(3); P
-                    polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
+                    Polygon(vertices=[(0, 0), (1, 0), (1/2, 1/2*a)])
                     sage: P.subdivide_edges(1) == P
                     True
                     sage: P.subdivide_edges(2)
-                    polygon(vertices=[(0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)])
+                    Polygon(vertices=[(0, 0), (1/2, 0), (1, 0), (3/4, 1/4*a), (1/2, 1/2*a), (1/4, 1/4*a)])
                     sage: P.subdivide_edges(3)
-                    polygon(vertices=[(0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)])
+                    Polygon(vertices=[(0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)])
 
                 """
                 if parts < 1:
                     raise ValueError("parts must be a positive integer")
 
                 steps = [e / parts for e in self.edges()]
-                from flatsurf import polygon
-                return polygon(edges=[e for e in steps for p in range(parts)])
+                from flatsurf import Polygon
+                return Polygon(edges=[e for e in steps for p in range(parts)])
 
 
 # For historic reasons, we provide a shortcut to convex polygons in this category.

@@ -4,7 +4,7 @@ Flat Surfaces in SageMath
 from flatsurf.version import version as __version__
 
 from flatsurf.geometry.polygon import (
-    polygon,
+    Polygon,
     polygons,
     EquiangularPolygons,
     EuclideanPolygonsWithAngles,

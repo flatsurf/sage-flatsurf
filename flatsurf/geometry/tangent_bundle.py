@@ -313,9 +313,9 @@ class SimilaritySurfaceTangentVector:
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: s.polygon(0)
-            polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
             sage: V = tb.surface().base_ring()**2
             sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
@@ -602,7 +602,7 @@ class SimilaritySurfaceTangentBundle:
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: s.polygon(0)
-            polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: tb.edge(0,0)
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, -2)
         """
@@ -624,9 +624,9 @@ class SimilaritySurfaceTangentBundle:
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
             sage: s.polygon(0)
-            polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: s.opposite_edge(0, 0)
             (1, 1)
             sage: tb.clockwise_edge(0,0)

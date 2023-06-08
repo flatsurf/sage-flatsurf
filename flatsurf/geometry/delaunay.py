@@ -115,8 +115,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         reference_label, vertices = label
         reference_polygon = self._reference.polygon(reference_label)
 
-        from flatsurf import polygon
-        return polygon(
+        from flatsurf import Polygon
+        return Polygon(
             vertices=[reference_polygon.vertex(v) for v in vertices],
             category=reference_polygon.category()
         )
@@ -507,7 +507,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: m=matrix([[2,1],[1,1]])
         sage: ss=LazyDelaunaySurface(m*s)
         sage: ss.polygon(ss.root())
-        polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+        Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
         sage: ss.is_delaunay_decomposed(limit=100)
         True
         sage: TestSuite(ss).run()
@@ -563,8 +563,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             for edge in edges
         ]
 
-        from flatsurf import polygon
-        return polygon(edges=edges, category=self._delaunay_triangulation.polygon(label).parent())
+        from flatsurf import Polygon
+        return Polygon(edges=edges, category=self._delaunay_triangulation.polygon(label).parent())
 
     @cached_method
     def _label(self, cell):

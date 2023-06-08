@@ -21,8 +21,8 @@ EXAMPLES:
 We glue the sides of a square with a rotation of π/2. Since each gluing is just
 a rotation, this is a cone surface::
 
-    sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
-    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
     sage: S = MutableOrientedSimilaritySurface(QQ)
     sage: S.add_polygon(P, label=0)
     0
@@ -150,8 +150,8 @@ class ConeSurfaces(SurfaceCategory):
 
             ::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
                 sage: ConeSurfaces.ParentMethods._is_cone_surface(S)
@@ -196,8 +196,8 @@ class ConeSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
 
             sage: from flatsurf.geometry.categories import ConeSurfaces
@@ -220,8 +220,8 @@ class ConeSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.area()
                     3
@@ -237,8 +237,8 @@ class ConeSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
                 sage: from flatsurf.geometry.categories import ConeSurfaces
@@ -283,8 +283,8 @@ class ConeSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
 
                     sage: from flatsurf.geometry.categories import ConeSurfaces
@@ -373,8 +373,8 @@ class ConeSurfaces(SurfaceCategory):
 
                     EXAMPLES::
 
-                        sage: from flatsurf import polygon, similarity_surfaces
-                        sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                        sage: from flatsurf import Polygon, similarity_surfaces
+                        sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                         sage: S = similarity_surfaces.self_glued_polygon(P)
 
                         sage: from flatsurf.geometry.categories import ConeSurfaces

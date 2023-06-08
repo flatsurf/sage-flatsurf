@@ -43,8 +43,8 @@ over a minimal number field::
 The category of polygons is automatically determined when using
 :meth:`polygon`::
 
-    sage: from flatsurf import polygon
-    sage: p = polygon(angles=(1, 1, 1))
+    sage: from flatsurf import Polygon
+    sage: p = Polygon(angles=(1, 1, 1))
     sage: p.category()
     Category of convex real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
@@ -52,7 +52,7 @@ However, it can be very costly to determine that a polygon is rational and what
 its actual angles are (the "equilateral" in the previous example.) Therefore,
 the category might get refined once these aspects have been determined::
 
-    sage: p = polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)])
+    sage: p = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)])
     sage: p.category()
     Category of convex real projective polygons over Rational Field
     sage: p.is_rational()
@@ -321,37 +321,37 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             sage: P(*lengths[:-2])
             doctest:warning
             ...
-            UserWarning: calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
-            polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
+            UserWarning: calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+            Polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
-            sage: from flatsurf import polygon, EuclideanPolygonsWithAngles
+            sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
             sage: P = EuclideanPolygonsWithAngles([1, 2, 1, 2])
-            sage: polygon(angles=[1, 2, 1, 2], lengths=lengths[:-2])
-            polygon(vertices=[(0, 0), (1, 0), (3/2, 1/2*c), (1/2, 1/2*c)])
-            sage: polygon(angles=[1, 2, 1, 2], edges=[length * slope for (length, slope) in zip(lengths[:-2], P.slopes())])
-            polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
+            sage: Polygon(angles=[1, 2, 1, 2], lengths=lengths[:-2])
+            Polygon(vertices=[(0, 0), (1, 0), (3/2, 1/2*c), (1/2, 1/2*c)])
+            sage: Polygon(angles=[1, 2, 1, 2], edges=[length * slope for (length, slope) in zip(lengths[:-2], P.slopes())])
+            Polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
             sage: P = EquiangularPolygons(2, 2, 3, 13)
             sage: r0, r1 = [r.vector() for r in P.lengths_polytope().rays()]
             sage: P(r0 + r1)
-            polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
+            Polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
 
             sage: P = EuclideanPolygonsWithAngles([2, 2, 3, 13])
-            sage: polygon(angles=[2, 2, 3, 13], lengths=r0 + r1)
+            sage: Polygon(angles=[2, 2, 3, 13], lengths=r0 + r1)
             Traceback (most recent call last):
             ...
             ValueError: polygon not closed
-            sage: polygon(angles=[2, 2, 3, 13], edges=[length * slope for (length, slope) in zip(r0 + r1, P.slopes())])
-            polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
+            sage: Polygon(angles=[2, 2, 3, 13], edges=[length * slope for (length, slope) in zip(r0 + r1, P.slopes())])
+            Polygon(vertices=[(0, 0), (20, 0), (5, -15*c^3 + 60*c), (5, -5*c^3 + 20*c)])
 
         """
         # __call__() cannot be properly inherited in subcategories since it
         # cannot be in SubcategoryMethods; that's why we want to get rid of it.
         import warnings
-        warning = "calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use polygon(angles=[...], lengths=[...]) instead."
+        warning = "calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead."
 
         if not normalized:
-            warning += " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())])."
+            warning += " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())])."
 
         warnings.warn(warning)
 
@@ -634,15 +634,15 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
                 sage: from flatsurf import EquiangularPolygons
                 sage: EquiangularPolygons(4, 3, 4, 4, 3, 4).an_element()
-                polygon(vertices=[(0, 0),
+                Polygon(vertices=[(0, 0),
                                   (1/22*c + 1, 0),
                                   (9*c^9 + 1/2*c^8 - 88*c^7 - 9/2*c^6 + 297*c^5 + 27/2*c^4 - 396*c^3 - 15*c^2 + 3631/22*c + 11/2, 1/2*c + 11),
                                   (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 4841/22*c + 9, c + 22),
                                   (16*c^9 + c^8 - 154*c^7 - 9*c^6 + 506*c^5 + 27*c^4 - 638*c^3 - 30*c^2 + 220*c + 8, c + 22),
                                   (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)])
             """
-            from flatsurf import polygon
-            p = polygon(angles=self.angles())
+            from flatsurf import Polygon
+            p = Polygon(angles=self.angles())
 
             if p not in self:
                 raise NotImplementedError("cannot create an element in this category yet")
@@ -657,11 +657,11 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
                 sage: from flatsurf import EquiangularPolygons
                 sage: EquiangularPolygons(1, 1, 1, 2, 5).random_element()
-                polygon(vertices=[(0, 0), ...])
+                Polygon(vertices=[(0, 0), ...])
                 sage: EquiangularPolygons(1,1,1,15,15,15).random_element()
-                polygon(vertices=[(0, 0), ...])
+                Polygon(vertices=[(0, 0), ...])
                 sage: EquiangularPolygons(1,15,1,15,1,15).random_element()
-                polygon(vertices=[(0, 0), ...])
+                Polygon(vertices=[(0, 0), ...])
 
             """
             if ring is None:
@@ -686,9 +686,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             while True:
                 coeffs, lengths = random_element()
                 edges = [length * slope for (length, slope) in zip(lengths, self.slopes())]
-                from flatsurf import polygon
+                from flatsurf import Polygon
                 try:
-                    p = polygon(edges=edges, angles=self.angles())
+                    p = Polygon(edges=edges, angles=self.angles())
                 except ValueError:
                     continue
                 break

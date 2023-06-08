@@ -1267,8 +1267,8 @@ class Cylinder(SageObject):
             if pair2[0] != pair1p[0]:
                 polygon_verts.append(pair2[0])
 
-            from flatsurf import polygon
-            polygons.append((l2, polygon(vertices=polygon_verts, base_ring=s.base_ring())))
+            from flatsurf import Polygon
+            polygons.append((l2, Polygon(vertices=polygon_verts, base_ring=s.base_ring())))
             l1 = l2
             pair1 = pair2
             e1 = e2

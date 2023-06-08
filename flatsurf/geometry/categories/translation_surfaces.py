@@ -142,8 +142,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             ::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
                 sage: TranslationSurfaces.ParentMethods._is_translation_surface(S)
@@ -386,9 +386,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             % label
                         )
                     # Triangle does not degenerate.
-                    from flatsurf import polygon
+                    from flatsurf import Polygon
                     us.replace_polygon(
-                        label, polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], category=P)
+                        label, Polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], category=P)
                     )
                 ss.set_immutable()
                 return ss
@@ -540,16 +540,16 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
                 sage: B = similarity_surfaces.billiard(P, rational=True)
                 sage: S = B.minimal_cover(cover_type="translation")
                 sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
 
             ::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
                 sage: B = similarity_surfaces.billiard(P, rational=True)
                 sage: S_mp = B.minimal_cover(cover_type="translation")
                 sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf

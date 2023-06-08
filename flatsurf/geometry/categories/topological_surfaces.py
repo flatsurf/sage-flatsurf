@@ -145,8 +145,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S._test_refined_category()
 
@@ -172,8 +172,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S._test_refined_category()
             """
@@ -195,8 +195,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_orientable()
                 True
@@ -221,8 +221,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_with_boundary()
                 False
@@ -246,8 +246,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_compact()
                 True
@@ -271,8 +271,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S.is_connected()
                 True
@@ -300,8 +300,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
             sage: 'Orientable' in S.category().axioms()
             True
@@ -323,8 +323,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_orientable()
                     True
@@ -408,8 +408,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
             sage: 'WithoutBoundary' in S.category().axioms()
             True
@@ -431,8 +431,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_with_boundary()
                     False
@@ -446,8 +446,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
             sage: 'Connected' in S.category().axioms()
             True
@@ -469,8 +469,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_connected()
                     True
@@ -484,8 +484,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
             sage: 'Compact' in S.category().axioms()
             True
@@ -506,8 +506,8 @@ class TopologicalSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.is_compact()
                     True

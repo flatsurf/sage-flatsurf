@@ -16,8 +16,8 @@ EXAMPLES:
 We glue all the sides of a square to themselves. Since each gluing is just a
 rotation of π, this is a half-translation surface::
 
-    sage: from flatsurf import polygon, similarity_surfaces
-    sage: P = polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
+    sage: from flatsurf import Polygon, similarity_surfaces
+    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
     sage: S = similarity_surfaces.self_glued_polygon(P)
     sage: S.set_immutable()
 
@@ -155,8 +155,8 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 Verify that the stratum is correct for surfaces with self-glued edges::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S.stratum()
                     Q_0(0, -1^4)
@@ -234,8 +234,8 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import polygon, similarity_surfaces
-                    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S._test_half_translation_surface()
 
@@ -320,7 +320,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?
                         sage: TestSuite(U).run()
 
-                        sage: from flatsurf import polygon, EuclideanPolygonsWithAngles
+                        sage: from flatsurf import EuclideanPolygonsWithAngles
                         sage: polygons = EuclideanPolygonsWithAngles((1, 3, 1, 1))
                         sage: p = polygons.an_element()
                         sage: B = similarity_surfaces.billiard(p)
@@ -368,7 +368,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                         K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
-                    from flatsurf.geometry.polygon import ConvexPolygons, polygon
+                    from flatsurf.geometry.polygon import ConvexPolygons, Polygon
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
@@ -380,7 +380,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     for lab in self.labels():
                         m = self.polygon(lab).num_edges()
                         relabelling[lab] = S.add_polygon(
-                            polygon(
+                            Polygon(
                                 edges=[
                                     (new_hols[k + 2 * i], new_hols[k + 2 * i + 1])
                                     for i in range(m)
@@ -468,8 +468,8 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         For self-glued edges, no angle is reported for the
                         "vertex" at the midpoint of the edge::
 
-                            sage: from flatsurf import polygon, similarity_surfaces
-                            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                            sage: from flatsurf import Polygon, similarity_surfaces
+                            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                             sage: S = similarity_surfaces.self_glued_polygon(P)
                             sage: S.angles()
                             [1]

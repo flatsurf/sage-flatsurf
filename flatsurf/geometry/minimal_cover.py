@@ -38,12 +38,12 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import MutableOrientedSimilaritySurface, polygon, similarity_surfaces, polygons
+        sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon, similarity_surfaces, polygons
         sage: from flatsurf.geometry.minimal_cover import MinimalTranslationCover
         sage: s = MutableOrientedSimilaritySurface(QQ)
-        sage: s.add_polygon(polygon(vertices=[(0,0),(5,0),(0,5)]))
+        sage: s.add_polygon(Polygon(vertices=[(0,0),(5,0),(0,5)]))
         0
-        sage: s.add_polygon(polygon(vertices=[(0,0),(3,4),(-4,3)]))
+        sage: s.add_polygon(Polygon(vertices=[(0,0),(3,4),(-4,3)]))
         1
         sage: s.glue((0, 0), (1, 2))
         sage: s.glue((0, 1), (1, 1))
@@ -190,12 +190,12 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
     EXAMPLES::
 
-        sage: from flatsurf import MutableOrientedSimilaritySurface, polygon, similarity_surfaces, polygons
+        sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon, similarity_surfaces, polygons
         sage: from flatsurf.geometry.minimal_cover import MinimalHalfTranslationCover
         sage: s = MutableOrientedSimilaritySurface(QQ)
-        sage: s.add_polygon(polygon(vertices=[(0,0),(5,0),(0,5)]))
+        sage: s.add_polygon(Polygon(vertices=[(0,0),(5,0),(0,5)]))
         0
-        sage: s.add_polygon(polygon(vertices=[(0,0),(3,4),(-4,3)]))
+        sage: s.add_polygon(Polygon(vertices=[(0,0),(3,4),(-4,3)]))
         1
         sage: s.glue((0, 0), (1, 2))
         sage: s.glue((0, 1), (1, 1))

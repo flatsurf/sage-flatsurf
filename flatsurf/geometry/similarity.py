@@ -269,13 +269,13 @@ class Similarity(MultiplicativeGroupElement):
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
             sage: SG = SimilarityGroup(QQ)
-            sage: from flatsurf import polygon
-            sage: p = polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            sage: from flatsurf import Polygon
+            sage: p = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: g = SG.an_element()**2
             sage: g
             (x, y) |-> (25*x + 4, 25*y + 10)
             sage: g(p)
-            polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
+            Polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
             sage: g(p, ring=AA).parent()
             Category of convex real projective polygons over Algebraic Real Field
 
@@ -288,10 +288,10 @@ class Similarity(MultiplicativeGroupElement):
             if ring is None:
                 ring = self.parent().base_ring()
 
-            from flatsurf import polygon
+            from flatsurf import Polygon
 
             try:
-                return polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
+                return Polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
             except ValueError:
                 if not self._sign.is_one():
                     raise ValueError("Similarity must be orientation preserving.")

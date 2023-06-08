@@ -53,9 +53,9 @@ s.plot()
 ## Billiard tables
 
 ```{code-cell} ipython3
-from flatsurf import similarity_surfaces, polygon
+from flatsurf import similarity_surfaces, Polygon
 
-s = similarity_surfaces.billiard(polygon(vertices=[(0, 0), (3, 0), (0, 4)]))
+s = similarity_surfaces.billiard(Polygon(vertices=[(0, 0), (3, 0), (0, 4)]))
 ```
 
 ```{code-cell} ipython3
@@ -338,9 +338,9 @@ class ParabolaSurface(OrientedSimilaritySurface):
             return matrix(QQ, [[-1, 0], [0, -1]]) * self.polygon(-label)
 
         if label == 1:
-            return polygon(vertices=[(0, 0), (1, 1), (-1, 1)], ring=QQ)
+            return Polygon(vertices=[(0, 0), (1, 1), (-1, 1)], ring=QQ)
 
-        return polygon(
+        return Polygon(
             vertices=[
                 (label - 1, (label - 1) ** 2),
                 (label, label**2),

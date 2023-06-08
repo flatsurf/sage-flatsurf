@@ -13,8 +13,8 @@ category is automatically determined for immutable surfaces.
 
 EXAMPLES::
 
-    sage: from flatsurf import polygon, similarity_surfaces
-    sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+    sage: from flatsurf import Polygon, similarity_surfaces
+    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
     sage: S = similarity_surfaces.self_glued_polygon(P)
     sage: C = S.category()
 
@@ -206,8 +206,8 @@ class DilationSurfaces(SurfaceCategory):
 
             ::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
 
                 sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, positive=True)
@@ -344,11 +344,11 @@ class DilationSurfaces(SurfaceCategory):
 
             TESTS::
 
-                sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+                sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
                 sage: s = MutableOrientedSimilaritySurface(QQ)
-                sage: s.add_polygon(polygon(vertices=[(0,0), (1,0), (0,1)]))
+                sage: s.add_polygon(Polygon(vertices=[(0,0), (1,0), (0,1)]))
                 0
-                sage: s.add_polygon(polygon(vertices=[(1,1), (0,1), (1,0)]))
+                sage: s.add_polygon(Polygon(vertices=[(1,1), (0,1), (1,0)]))
                 1
                 sage: s.glue((0, 0), (1, 0))
                 sage: s.glue((0, 1), (1, 1))
@@ -412,8 +412,8 @@ class DilationSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import polygon, similarity_surfaces
-                sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
                 sage: S._test_dilation_surface()
 
@@ -437,8 +437,8 @@ class DilationSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, similarity_surfaces
-            sage: P = polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+            sage: from flatsurf import Polygon, similarity_surfaces
+            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
             sage: S = similarity_surfaces.self_glued_polygon(P)
 
             sage: from flatsurf.geometry.categories import DilationSurfaces

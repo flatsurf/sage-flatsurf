@@ -191,9 +191,9 @@ class SegmentInPolygon:
 
             sage: s = similarity_surfaces.example()
             sage: s.polygon(0)
-            polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: v = s.tangent_vector(0, (0,0), (3,-1))
             sage: seg = SegmentInPolygon(v)
             sage: seg

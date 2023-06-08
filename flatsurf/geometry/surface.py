@@ -376,8 +376,8 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 "The polygon opposite the provided edge is not a triangle."
             )
 
-        from flatsurf import polygon
-        p2 = polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
+        from flatsurf import Polygon
+        p2 = Polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
 
         if direction is None:
             direction = (s.base_ring()**2)((0, 1))
@@ -399,7 +399,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         new_triangle = []
         try:
             new_triangle.append(
-                polygon(
+                Polygon(
                     edges=[
                         p1.edge((e1 + 2) % 3),
                         p2.edge((e2 + 1) % 3),
@@ -409,7 +409,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 )
             )
             new_triangle.append(
-                polygon(
+                Polygon(
                     edges=[
                         p2.edge((e2 + 2) % 3),
                         p1.edge((e1 + 1) % 3),
@@ -448,7 +448,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         cycle2 = (new_sep[1 - i] - v2 + 3) % 3
 
         # This will be the new triangle with label l1:
-        tri1 = polygon(
+        tri1 = Polygon(
             edges=[
                 new_triangle[i].edge(cycle1),
                 new_triangle[i].edge((cycle1 + 1) % 3),
@@ -457,7 +457,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             base_ring=p1.base_ring()
         )
         # This will be the new triangle with label l2:
-        tri2 = polygon(
+        tri2 = Polygon(
             edges=[
                 new_triangle[1 - i].edge(cycle2),
                 new_triangle[1 - i].edge((cycle2 + 1) % 3),
@@ -574,8 +574,8 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         EXAMPLES::
 
-            sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
-            sage: p = polygon(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
+            sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+            sage: p = Polygon(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
             sage: s = MutableOrientedSimilaritySurface(QQ)
             sage: s.add_polygon(p)
             0
@@ -585,7 +585,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             sage: s.set_immutable()
 
             sage: s.standardize_polygons().polygon(0)
-            polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if not in_place:
@@ -735,9 +735,9 @@ class MutableOrientedSimilaritySurface(
         r"""
         TESTS::
 
-            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
             sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.set_edge_pairing(0, 0, 0, 2)
             doctest:warning
@@ -757,9 +757,9 @@ class MutableOrientedSimilaritySurface(
         r"""
         TESTS::
 
-            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
             sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.glue((0, 0), (0, 2))
             sage: S.glue((0, 1), (0, 3))
@@ -776,9 +776,9 @@ class MutableOrientedSimilaritySurface(
         r"""
         TESTS::
 
-            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
             sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.glue((0, 0), (0, 2))
             sage: S.glue((0, 1), (0, 3))
@@ -830,18 +830,18 @@ class MutableOrientedSimilaritySurface(
 
         EXAMPLES::
 
-            sage: from flatsurf import polygon, MutableOrientedSimilaritySurface
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
             sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
             0
             sage: S.glue((0, 0), (0, 2))
             sage: S.glue((0, 1), (0, 3))
 
-            sage: S.replace_polygon(0, polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
 
         The replacement of a polygon must have the same number of sides::
 
-            sage: S.replace_polygon(0, polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
             Traceback (most recent call last):
             ...
             ValueError: polygon must be a quadrilateral
@@ -850,16 +850,16 @@ class MutableOrientedSimilaritySurface(
         first and then add a new one::
 
             sage: S.remove_polygon(0)
-            sage: S.add_polygon(polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
             0
 
         """
         old = self.polygon(label)
 
         if old.num_edges() != polygon.num_edges():
-            from flatsurf.geometry.polygon import Polygon
+            from flatsurf.geometry.polygon import EuclideanPolygon
 
-            article, singular, plural = Polygon._describe_polygon(old.num_edges())
+            article, singular, plural = EuclideanPolygon._describe_polygon(old.num_edges())
             raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
@@ -884,9 +884,9 @@ class MutableOrientedSimilaritySurface(
             raise ValueError
         glue = []
 
-        from flatsurf import polygon
+        from flatsurf import Polygon
 
-        pp = polygon(edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring())
+        pp = Polygon(edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring())
 
         for i in range(n):
             e = (v + i) % n
@@ -1006,9 +1006,9 @@ class MutableOrientedSimilaritySurface(
             edge_map[len(es)] = (p1, i)
             es.append(poly1.edge(i))
 
-        from flatsurf import polygon
+        from flatsurf import Polygon
 
-        new_polygon = polygon(edges=es, base_ring=self.base_ring())
+        new_polygon = Polygon(edges=es, base_ring=self.base_ring())
 
         # Do the gluing.
         ss = self
@@ -1059,14 +1059,14 @@ class MutableOrientedSimilaritySurface(
         for i in range(v2, v1 + ne):
             newedges1.append(poly.edge(i))
 
-        from flatsurf import polygon
+        from flatsurf import Polygon
 
-        newpoly1 = polygon(edges=newedges1, base_ring=self.base_ring())
+        newpoly1 = Polygon(edges=newedges1, base_ring=self.base_ring())
 
         newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
         for i in range(v1, v2):
             newedges2.append(poly.edge(i))
-        newpoly2 = polygon(edges=newedges2, base_ring=self.base_ring())
+        newpoly2 = Polygon(edges=newedges2, base_ring=self.base_ring())
 
         # Store the old gluings
         old_gluings = {(p, i): self.opposite_edge(p, i) for i in range(ne)}

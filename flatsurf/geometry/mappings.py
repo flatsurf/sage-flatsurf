@@ -127,11 +127,11 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
     EXAMPLES::
 
-        sage: from flatsurf import MutableOrientedSimilaritySurface, polygon
+        sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
         sage: s = MutableOrientedSimilaritySurface(QQ)
-        sage: s.add_polygon(polygon(edges=[(1,0),(0,1),(-1,-1)]))
+        sage: s.add_polygon(Polygon(edges=[(1,0),(0,1),(-1,-1)]))
         0
-        sage: s.add_polygon(polygon(edges=[(-1,0),(0,-1),(1,1)]))
+        sage: s.add_polygon(Polygon(edges=[(-1,0),(0,-1),(1,1)]))
         1
         sage: s.glue((0, 0), (1, 0))
         sage: s.glue((0, 1), (1, 1))
@@ -144,7 +144,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         sage: s2.labels()
         (0,)
         sage: s2.polygons()
-        (polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]),)
+        (Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]),)
         sage: s2.gluings()
         (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
 
@@ -192,8 +192,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             s2.set_roots(tuple(p1 if label == p2 else label for label in s.roots()))
 
         s2.remove_polygon(p1)
-        from flatsurf import polygon
-        s2.add_polygon(polygon(edges=vs, base_ring=s.base_ring()), label=p1)
+        from flatsurf import Polygon
+        s2.add_polygon(Polygon(edges=vs, base_ring=s.base_ring()), label=p1)
 
         for i in range(len(vs)):
             p3, e3 = edge_map[i]
@@ -316,7 +316,7 @@ class SplitPolygonsMapping(SurfaceMapping):
         sage: s2.labels()
         (0, 1)
         sage: s2.polygons()
-        (polygon(vertices=[(0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]), polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
+        (Polygon(vertices=[(0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]), Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
         sage: s2.gluings()
         (((0, 0), (1, 0)), ((0, 1), (0, 5)), ((0, 2), (0, 6)), ((0, 3), (1, 1)), ((0, 4), (1, 2)), ((0, 5), (0, 1)), ((0, 6), (0, 2)), ((1, 0), (0, 0)), ((1, 1), (0, 3)), ((1, 2), (0, 4)))
 
@@ -346,13 +346,13 @@ class SplitPolygonsMapping(SurfaceMapping):
         for i in range(v2, v1 + ne):
             newedges1.append(poly.edge(i))
 
-        from flatsurf import polygon
-        newpoly1 = polygon(edges=newedges1, base_ring=s.base_ring())
+        from flatsurf import Polygon
+        newpoly1 = Polygon(edges=newedges1, base_ring=s.base_ring())
 
         newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
         for i in range(v1, v2):
             newedges2.append(poly.edge(i))
-        newpoly2 = polygon(edges=newedges2, base_ring=s.base_ring())
+        newpoly2 = Polygon(edges=newedges2, base_ring=s.base_ring())
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
@@ -515,12 +515,12 @@ def triangulation_mapping(s):
         sage: TestSuite(s2).run()
         sage: for label,polygon in zip(s2.labels(), s2.polygons()):
         ....:     print(str(polygon))
-        polygon(vertices=[(0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
-        polygon(vertices=[(0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)])
-        polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)])
-        polygon(vertices=[(0, 0), (-1, -a - 1), (1/2*a, -1/2*a)])
-        polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)])
-        polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)])
+        Polygon(vertices=[(0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
+        Polygon(vertices=[(0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)])
+        Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)])
+        Polygon(vertices=[(0, 0), (-1, -a - 1), (1/2*a, -1/2*a)])
+        Polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)])
+        Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)])
     """
     if not s.is_finite_type():
         raise NotImplementedError
@@ -676,8 +676,8 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
             for i in range(polygon.num_edges()):
                 newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
 
-            from flatsurf import polygon as make_polygon
-            s2.add_polygon(make_polygon(edges=newedges, base_ring=ring), label=label)
+            from flatsurf import Polygon
+            s2.add_polygon(Polygon(edges=newedges, base_ring=ring), label=label)
             translations[label] = T(-polygon.vertex(cvcur))
         for l1, polygon in zip(s.labels(), s.polygons()):
             for e1 in range(polygon.num_edges()):
@@ -828,7 +828,7 @@ def canonicalize_translation_surface_mapping(s):
 
     EXAMPLES::
 
-        sage: from flatsurf import translation_surfaces, polygon
+        sage: from flatsurf import translation_surfaces
         sage: s = translation_surfaces.octagon_and_squares().canonicalize()
 
         sage: TestSuite(s).run()

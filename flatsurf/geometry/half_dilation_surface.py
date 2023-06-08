@@ -102,14 +102,14 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             p = self._s.polygon(lab)
             edges = [self._m * p.edge(e) for e in range(p.num_edges())]
 
-            from flatsurf import polygon
-            return polygon(edges=edges, base_ring=self.base_ring())
+            from flatsurf import Polygon
+            return Polygon(edges=edges, base_ring=self.base_ring())
         else:
             p = self._s.polygon(lab)
             edges = [self._m * (-p.edge(e)) for e in range(p.num_edges() - 1, -1, -1)]
 
-            from flatsurf import polygon
-            return polygon(edges=edges, base_ring=self.base_ring())
+            from flatsurf import Polygon
+            return Polygon(edges=edges, base_ring=self.base_ring())
 
     def labels(self):
         return self._s.labels()
