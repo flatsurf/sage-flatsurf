@@ -583,6 +583,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return self.real(0)
 
     def some_subsets(self):
+        r"""
+        Return some subsets of the hyperbolic plane for testing.
+
+        Some of the returned sets are elements of the hyperbolic plane (i.e.,
+        points) some are parents themselves, e.g., polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+
+            sage: HyperbolicPlane().some_elements()
+            [∞, 0, 1, -1, ...]
+
+        """
         from sage.all import ZZ
 
         elements = self.some_elements()
@@ -640,7 +654,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
     def some_elements(self):
         r"""
-        Return some representative convex subsets for automated testing.
+        Return some representative elements, i.e., points of the hyperbolic
+        plane for testing.
 
         EXAMPLES::
 
@@ -650,65 +665,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [∞, 0, 1, -1, ...]
 
         """
-        from sage.all import ZZ
-
-        elements = [
-            ## self.empty_set(),
-            # Points
+        return [
             self.infinity(),
             self.real(0),
             self.real(1),
             self.real(-1),
             self.geodesic(0, 2).start(),
-            self.half_circle(0, 2).start(),
-            # # Oriented Geodesics
-            # self.vertical(1),
-            # self.half_circle(0, 1),
-            # self.half_circle(1, 3),
-            # # Unoriented Geodesics
-            # self.vertical(-1).unoriented(),
-            # self.half_circle(-1, 2).unoriented(),
-            # # Half spaces
-            # self.vertical(0).left_half_space(),
-            # self.half_circle(0, 2).left_half_space(),
-        ]
-
-        # # The intersection algorithm is only implemented over exact rings.
-        # elements += [
-        #     # An unbounded polygon
-        #     self.vertical(1)
-        #     .left_half_space()
-        #     .intersection(self.vertical(-1).right_half_space()),
-        #     # An unbounded polygon which is bounded in the Euclidean plane
-        #     self.vertical(1)
-        #     .left_half_space()
-        #     .intersection(self.vertical(-1).right_half_space())
-        #     .intersection(self.geodesic(0, 1).left_half_space())
-        #     .intersection(self.geodesic(0, -1).right_half_space()),
-        #     # A bounded polygon
-        #     self.geodesic(-ZZ(1) / 3, 2)
-        #     .left_half_space()
-        #     .intersection(self.geodesic(ZZ(1) / 3, -2).right_half_space())
-        #     .intersection(self.geodesic(-ZZ(2) / 3, 3).right_half_space())
-        #     .intersection(self.geodesic(ZZ(2) / 3, -3).left_half_space()),
-        #     # An unbounded oriented segment
-        #     self.vertical(0).intersection(self.geodesic(-1, 1).left_half_space()),
-        #     # A bounded oriented segment
-        #     self.vertical(0)
-        #     .intersection(self.geodesic(-2, 2).right_half_space())
-        #     .intersection(self.geodesic(-ZZ(1) / 2, ZZ(1) / 2).left_half_space()),
-        #     # An unbounded unoriented segment
-        #     self.vertical(0)
-        #     .intersection(self.geodesic(-1, 1).left_half_space())
-        #     .unoriented(),
-        #     # A bounded unoriented segment
-        #     self.vertical(0)
-        #     .intersection(self.geodesic(-2, 2).right_half_space())
-        #     .intersection(self.geodesic(-ZZ(1) / 2, ZZ(1) / 2).left_half_space())
-        #     .unoriented(),
-        # ]
-
-        return elements
+            self.half_circle(0, 2).start()]
 
     def _test_some_subsets(self, tester=None, **options):
         r"""
@@ -724,7 +687,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         is_sub_testsuite = tester is not None
         tester = self._tester(tester=tester, **options)
 
-        for x in self.some_subsets():
+        for x in self.some_elements():
             tester.info(f"\n  Running the test suite of {x}")
 
             from sage.all import TestSuite
@@ -812,9 +775,35 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return kinds[kind].random_set(self)
 
     def __call__(self, x):
+        r"""
+        Return ``x`` as an element of the hyperbolic plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+
+            sage: H = HyperbolicPlane()
+
+            sage: H(1)
+            1
+
+        We need to override this method. The normal code path in SageMath
+        requires the argument to be an Element but facade sets are not
+        elements::
+
+            sage: v = H.vertical(0)
+
+            sage: Parent.__call__(H, v)
+            Traceback (most recent call last):
+            ...
+            TypeError: Cannot convert HyperbolicOrientedGeodesic_with_category_with_category to sage.structure.element.Element
+
+            sage: H(v)
+            {-x = 0}
+
+        """
         if isinstance(x, HyperbolicConvexFacade):
-            # TODO: This does not guarantee that the parent is correct. We also need to change the geometry.
-            return x.change_ring(self.base_ring())
+            return self._element_constructor_(x)
 
         return super().__call__(x)
 
@@ -876,8 +865,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return self.real(x)
 
         if isinstance(x, HyperbolicConvexSet):
-            # TODO: We also need to change the geometry to make sure the parent is the same.
-            return x.change_ring(self.base_ring())
+            return x.change(ring=self.base_ring(), geometry=self.geometry)
 
         from sage.categories.all import NumberFields
 
@@ -4439,7 +4427,7 @@ class HyperbolicConvexSet:
         """
         return self.parent().intersection(self, other)
 
-    def _contains_(self, point):
+    def __contains__(self, point):
         r"""
         Return whether ``point`` is contained in this set.
 
@@ -4476,9 +4464,6 @@ class HyperbolicConvexSet:
                 return False
 
         return True
-
-    def __contains__(self, point):
-        return self._contains_(point)
 
     def _test_contains(self, **options):
         r"""
@@ -5280,9 +5265,6 @@ class HyperbolicConvexSet:
 
         return next(iter(vertices))
 
-    def an_element(self):
-        return self._an_element_()
-
     @classmethod
     def _enhance_plot(self, plot, model):
         r"""
@@ -5830,22 +5812,106 @@ class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
 
 
 class HyperbolicConvexFacade(HyperbolicConvexSet, Parent):
+    r"""
+    A convex subset of the hyperbolic plane that is itself a parent.
+
+    This is the base class for all hyperbolic convex sets that are not points.
+    This class solves the problem that we want convex sets to be "elements" of
+    the hyperbolic plane but at the same time, we want these sets to live as
+    parents in the category framework of SageMath; so they have be a Parent
+    with hyperbolic points as their Element class.
+
+    SageMath provides the (not very frequently used and somewhat flaky) facade
+    mechanism for such parents. Such sets being a facade, their points can be
+    both their elements and the elements of the hyperbolic plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: v = H.vertical(0)
+        sage: p = H(0)
+        sage: p in v
+        True
+        sage: p.parent() is H
+        True
+        sage: q = v.an_element()
+        sage: q
+        I
+        sage: q.parent() is H
+        True
+
+    TESTS::
+
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicConvexFacade
+        sage: isinstance(v, HyperbolicConvexFacade)
+        True
+
+    """
+
     def __init__(self, parent, category=None):
         Parent.__init__(self, facade=parent, category=category)
 
     def parent(self):
+        r"""
+        Return the hyperbolic plane this is a subset of.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: v = H.vertical(0)
+            sage: v.parent()
+            Hyperbolic Plane over Rational Field
+
+        """
         return self.facade_for()[0]
 
     def _element_constructor_(self, x):
+        r"""
+        Return ``x`` as a point of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: v = H.vertical(0)
+            sage: v(0)
+            0
+            sage: v(I)
+            I
+            sage: v(oo)
+            ∞
+            sage: v(2)
+            Traceback (most recent call last):
+            ...
+            ValueError: point not contained in this set
+
+            sage: 2 in v
+            False
+
+        """
         x = self.parent()(x)
 
         if isinstance(x, HyperbolicPoint):
             if not self.__contains__(x):
-                raise ValueError
+                raise ValueError("point not contained in this set")
 
         return x
 
     def base_ring(self):
+        r"""
+        Return the ring over which points of this set are defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: v = H.vertical(0)
+            sage: v.base_ring()
+            Rational Field
+
+        """
         return self.parent().base_ring()
 
 
@@ -6038,7 +6104,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         """
         return self._geodesic
 
-    def _contains_(self, point):
+    def __contains__(self, point):
         r"""
         Return whether ``point`` is contained in this half space.
 
@@ -6107,12 +6173,32 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
         return self.parent().geometry._sgn(a + b * x + c * y) >= 0
 
     def __eq__(self, other):
+        r"""
+        Return whether this set is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: h = H.vertical(0).left_half_space()
+
+            sage: h == H.vertical(0).left_half_space()
+            True
+            sage: h == H.vertical(0).right_half_space()
+            False
+
+        ::
+
+            sage: h != H.vertical(0).left_half_space()
+            False
+            sage: h != H.vertical(0).right_half_space()
+            True
+
+        """
         if not isinstance(other, HyperbolicHalfSpace):
             return False
         return self._geodesic == other._geodesic
-
-    def __ne__(self, other):
-        return not (self == other)
 
     def plot(self, model="half_plane", **kwds):
         r"""
@@ -7197,13 +7283,61 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         return self.parent().infinity() in self
 
     def __eq__(self, other):
-        # TODO: Check that parents match (or coerce into the same somehow.)
+        r"""
+        Return whether this geodesic is identical to other up to (orientation
+        preserving) scaling of the defining equation.
+
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.vertical(0) == H.vertical(0)
+            True
+
+        We distinguish oriented and unoriented geodesics::
+
+            sage: H.vertical(0).unoriented() == H.vertical(0)
+            False
+            sage: H.vertical(0).unoriented() != H.vertical(0)
+            True
+
+        We distinguish differently oriented geodesics::
+
+            sage: H.vertical(0) == -H.vertical(0)
+            False
+            sage: H.vertical(0) != -H.vertical(0)
+            True
+
+        We do, however, identify geodesics whose defining equations differ by some scaling::
+
+            sage: g = H.vertical(0)
+            sage: g.equation(model="half_plane")
+            (0, -2, 0)
+            sage: h = H.geodesic(0, -4, 0, model="half_plane")
+            sage: g.equation(model="half_plane") == h.equation(model="half_plane")
+            False
+            sage: g == h
+            True
+            sage: g != h
+            False
+
+        .. NOTE::
+
+            Over inexact rings, this method is not very reliable. To some
+            extent this is inherent to the problem but also the implementation
+            uses generic predicates instead of relying on a specialized
+            implementation in the :class:`HyperbolicGeometry`.
+
+        """
+        if type(self) is not type(other):
+            return False
+
+        other = self.parent()(other)
+
         # See note in the docstring. We should use specialized geometry here.
         equal = self.parent().geometry._equal
         sgn = self.parent().geometry._sgn
-
-        if type(self) is not type(other):
-            return False
 
         if sgn(self._b):
             return (
@@ -7218,10 +7352,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
                 and equal(self._b * other._c, other._b * self._c)
             )
 
-    def __ne__(self, other):
-        return not (self == other)
-
-    def _contains_(self, point):
+    def __contains__(self, point):
         r"""
         Return whether ``point`` lies on this geodesic.
 
@@ -8891,7 +9022,7 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
         equations = λ * vector((x, y, z)) - isometry * vector(R, (fx, fy, fz))
         return equations.list()
 
-    def _contains_(self, point):
+    def __contains__(self, point):
         r"""
         Return whether the set comprised of this point contains ``point``,
         i.e., whether the points are equal.
@@ -11384,15 +11515,33 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         return self
 
     def __eq__(self, other):
+        r"""
+        Return whether this polygon is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()])
+            sage: P == P
+            True
+
+        Marked vertices are taken into account to determine equality::
+
+            sage: Q = H.polygon([H.vertical(1).left_half_space(), H.vertical(-1).right_half_space()], marked_vertices=[I + 1])
+            sage: Q == Q
+            True
+            sage: P == Q
+            False
+
+        """
         if not isinstance(other, HyperbolicConvexPolygon):
             return False
+
         return (
             self._half_spaces == other._half_spaces
             and self._marked_vertices == other._marked_vertices
         )
-
-    def __ne__(self, other):
-        return not (self == other)
 
     def __hash__(self):
         r"""
@@ -12047,15 +12196,33 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         return self._enhance_plot(plot, model=model)
 
     def __eq__(self, other):
+        r"""
+        Return whether this segment is indistinguishable from ``other`` (except
+        for scaling in the defining geodesic's equation.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
+            sage: H = HyperbolicPlane()
+
+        Oriented segments are equal if they have the same start and end points::
+
+            sage: H(I).segment(2*I) == H(2*I).segment(I)
+            False
+
+        For an unoriented segment the endpoints must be the same but order does not matter::
+
+            sage: H(I).segment(2*I).unoriented() == H(2*I).segment(I).unoriented()
+            True
+
+        """
         if type(self) is not type(other):
             return False
         return (
             self.geodesic() == other.geodesic()
             and self.vertices() == other.vertices()
         )
-
-    def __ne__(self, other):
-        return not (self == other)
 
     def change(self, ring=None, geometry=None, oriented=None):
         r"""
@@ -12686,20 +12853,62 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
     """
 
     def __eq__(self, other):
-        # TODO: Check that parents match (or coerce into the same somehow.)
-        return isinstance(other, HyperbolicEmptySet)
+        r"""
+        Return whether this empty set is indistinguishable from ``other``.
 
-    def __ne__(self, other):
-        return not (self == other)
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.empty_set() == H.empty_set()
+            True
+            sage: H.empty_set() == HyperbolicPlane(AA).empty_set()
+            False
+
+        """
+        return isinstance(other, HyperbolicEmptySet) and self.parent() == other.parent()
 
     def some_elements(self):
+        r"""
+        Return some representative points of this set for testing.
+
+        EXAMPLES:
+
+        Since this set is empty, there are no points to return::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H.empty_set().some_elements()
+            []
+
+        """
         return []
 
     def _test_an_element(self, **options):
-        pass
+        r"""
+        Do not run tests on an element of this empty set (disabling the generic
+        tests run by all parents otherwise.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H._test_an_element()
+
+        """
 
     def _test_elements(self, **options):
-        pass
+        r"""
+        Do not run any tests on the elements of this empty set (disabling the
+        generic tests run by all parents otherwise.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: H._test_elements()
+
+        """
 
     def _repr_(self):
         r"""
