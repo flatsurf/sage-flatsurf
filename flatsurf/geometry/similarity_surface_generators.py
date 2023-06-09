@@ -134,15 +134,70 @@ class EInfinitySurface(OrientedSimilaritySurface):
         )
 
     def is_compact(self):
+        r"""
+        Return whether this surface is compact as a topological space, i.e.,
+        return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S.is_compact()
+            False
+
+        """
         return False
 
     def is_mutable(self):
+        r"""
+        Return whether this surface is mutable, i.e., return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S.is_mutable()
+            False
+
+        """
         return False
 
     def roots(self):
+        r"""
+        Return root labels for the polygons forming the connected
+        components of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S.roots()
+            (0,)
+
+        """
         return (ZZ(0),)
 
     def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S
+            EInfinitySurface(r)
+
+        """
         return f"EInfinitySurface({repr(self._lambda_squared)})"
 
     @cached_method
@@ -177,15 +232,28 @@ class EInfinitySurface(OrientedSimilaritySurface):
         r"""
         Return the polygon labeled by ``lab``.
         """
-        if lab not in self.polygon_labels():
+        if lab not in self.labels():
             raise ValueError("lab (=%s) not a valid label" % lab)
         return polygons.rectangle(2 * self.get_black(lab), self.get_white(lab))
 
-    def polygon_labels(self):
+    def labels(self):
         r"""
-        The set of labels used for the polygons.
+        Return the labels of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.e_infinity_surface()
+            sage: S.labels()
+            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
         """
-        return ZZ
+        from flatsurf.geometry.surface import LabelsView
+
+        return LabelsView(self, ZZ)
 
     def opposite_edge(self, p, e):
         r"""
@@ -239,6 +307,17 @@ class EInfinitySurface(OrientedSimilaritySurface):
                 return 1 - p, (e + 2) % 4
 
     def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: hash(translation_surfaces.e_infinity_surface()) == hash(translation_surfaces.e_infinity_surface())
+            True
+
+        """
         return hash((self.base_ring(), self._lambda_squared))
 
     def __eq__(self, other):
@@ -299,17 +378,6 @@ class TFractalSurface(OrientedSimilaritySurface):
         field = Sequence([w, r, h1, h2]).universe()
         if not field.is_field():
             field = field.fraction_field()
-        self._w = field(w)
-        self._r = field(r)
-        self._h1 = field(h1)
-        self._h2 = field(h2)
-        self._words = Words("LR", finite=True, infinite=False)
-        self._wL = self._words("L")
-        self._wR = self._words("R")
-
-        self._root = self.polygon_labels()._cartesian_product_of_elements(
-            (self._words(""), 0)
-        )
 
         from flatsurf.geometry.categories import TranslationSurfaces
 
@@ -322,10 +390,49 @@ class TFractalSurface(OrientedSimilaritySurface):
             .Connected(),
         )
 
+        self._w = field(w)
+        self._r = field(r)
+        self._h1 = field(h1)
+        self._h2 = field(h2)
+        self._words = Words("LR", finite=True, infinite=False)
+        self._wL = self._words("L")
+        self._wR = self._words("R")
+
+        self._root = (self._words(""), 0)
+
     def roots(self):
+        r"""
+        Return root labels for the polygons forming the connected
+        components of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.t_fractal()
+            sage: S.roots()
+            ((word: , 0),)
+
+        """
         return (self._root,)
 
     def is_mutable(self):
+        r"""
+        Return whether this surface is mutable, i.e., return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.t_fractal()
+            sage: S.is_mutable()
+            False
+
+        """
         return False
 
     def _repr_(self):
@@ -337,11 +444,29 @@ class TFractalSurface(OrientedSimilaritySurface):
         )
 
     @cached_method
-    def polygon_labels(self):
+    def labels(self):
+        r"""
+        Return the labels of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.t_fractal()
+            sage: S.labels()
+            ((word: , 0), (word: , 2), (word: , 3), (word: , 1), (word: R, 2), (word: R, 0), (word: L, 2), (word: L, 0), (word: R, 3), (word: R, 1), (word: L, 3), (word: L, 1), (word: RR, 2), (word: RR, 0), (word: RL, 2), (word: RL, 0), …)
+
+        """
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
         from sage.categories.cartesian_product import cartesian_product
 
-        return cartesian_product([self._words, FiniteEnumeratedSet([0, 1, 2, 3])])
+        labels = cartesian_product([self._words, FiniteEnumeratedSet([0, 1, 2, 3])])
+
+        from flatsurf.geometry.surface import LabelsView
+
+        return LabelsView(self, labels)
 
     def opposite_edge(self, p, e):
         r"""
@@ -442,7 +567,6 @@ class TFractalSurface(OrientedSimilaritySurface):
             raise ValueError("i (={!r}) must be either 0,1,2 or 3".format(i))
 
         # the fastest label constructor
-        lab = self.polygon_labels()._cartesian_product_of_elements(lab)
         return lab, f
 
     def polygon(self, lab):
@@ -484,9 +608,33 @@ class TFractalSurface(OrientedSimilaritySurface):
         return Polygon(base_ring=self.base_ring(), edges=[(w, 0), (0, h), (-w, 0), (0, -h)])
 
     def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: hash(translation_surfaces.t_fractal()) == hash(translation_surfaces.t_fractal())
+            True
+
+        """
         return hash((self._w, self._h1, self._r, self._h2))
 
     def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of equality.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: translation_surfaces.t_fractal() == translation_surfaces.t_fractal()
+            True
+
+        """
         if not isinstance(other, TFractalSurface):
             return False
 

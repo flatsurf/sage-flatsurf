@@ -549,6 +549,22 @@ class SurfacePoint(Element):
         return self._representatives == other._representatives
 
     def _test_category(self, **options):
+        r"""
+        Check that this point inherits from the element class of its surface's
+        category.
+
+        Overridden to disable these tests when this is a point of a mutable
+        surface since the category might then change as the surface becomes
+        immutable.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (1/2, 1/2))
+            sage: p._test_category()
+
+        """
         if self.surface().is_mutable():
             return
 
