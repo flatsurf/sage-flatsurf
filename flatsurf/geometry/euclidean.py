@@ -26,10 +26,6 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
-from sage.rings.all import AA, QQbar, RR
-
-from sage.modules.free_module_element import vector
-
 
 def similarity_from_vectors(u, v, matrix_space=None):
     r"""
@@ -108,6 +104,15 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
 
+    INPUT:
+
+    - ``cos`` -- a number
+
+    - ``sin`` -- a number
+
+    - ``scaled`` -- a boolean (default: ``False``); whether to allow ``cos``
+      and ``sin`` to be scaled by the same positive algebraic number
+
     EXAMPLES::
 
         sage: from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
@@ -141,6 +146,8 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
         True
 
     """
+    from sage.all import AA
+
     if cos not in AA:
         return False
     if sin not in AA:
@@ -207,7 +214,8 @@ def angle(u, v, numerical=False):
 
     - ``u``, ``v`` - vectors
 
-    - ``numerical`` - boolean, whether to return floating point numbers
+    - ``numerical`` - boolean (default: ``False``), whether to return floating
+      point numbers
 
     EXAMPLES::
 
@@ -254,6 +262,7 @@ def angle(u, v, numerical=False):
         0.632455532033676 + 0.774596669241483*I
         sage: v / v.norm()
         (0.6324555320336758?, 0.774596669241484?)
+
     """
     import math
 
@@ -276,8 +285,10 @@ def angle(u, v, numerical=False):
 
     # fast and dirty way using floating point approximation
     # (see below for a slow but exact method)
+    from sage.all import RR
+
     angle_rat = RR(angle).nearby_rational(0.00000001)
-    if angle_rat.denominator() > 100:
+    if angle_rat.denominator() > 256:
         raise NotImplementedError(
             "cannot recover a rational angle from these numerical results"
         )

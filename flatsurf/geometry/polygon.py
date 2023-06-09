@@ -1542,7 +1542,7 @@ class PolygonsConstructor:
                                -1/2*c^39 + 19*c^37 - 333*c^35 + 3571*c^33 - 26212*c^31 + 139593*c^29 - 557844*c^27 + 1706678*c^25 - 8085237/2*c^23 + 7449332*c^21 -
                                10671265*c^19 + 11812681*c^17 - 9983946*c^15 + 6317339*c^13 - 5805345/2*c^11 + 1848183/2*c^9 - 378929/2*c^7 + 44543/2*c^5 - 2487/2*c^3 + 43/2*c)])
         """
-        return Polygon(angles=[a, b, c])
+        return Polygon(angles=[a, b, c], check=False)
 
     @staticmethod
     def regular_ngon(n, field=None):
