@@ -344,7 +344,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     deformed_labels.add(label)
                     assert s.polygon(label).num_edges() == 3
 
-            from flatsurf.geometry.polygon import wedge_product, ConvexPolygons
+            from flatsurf.geometry.euclidean import ccw
+            from flatsurf.geometry.polygon import ConvexPolygons
 
             if local:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -368,14 +369,14 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # We worry that the triangle degenerates along the way.
                     # The area of the deforming triangle has the form
                     # A0 + A1*t + A2*t^2.
-                    A0 = wedge_product(a0, b0)
-                    A1 = wedge_product(a0, b1) + wedge_product(a1, b0)
-                    A2 = wedge_product(a1, b1)
-                    if A2 != field.zero():
+                    A0 = ccw(a0, b0)
+                    A1 = ccw(a0, b1) + ccw(a1, b0)
+                    A2 = ccw(a1, b1)
+                    if A2:
                         # Critical point of area function
                         c = A1 / (-2 * A2)
-                        if field.zero() < c and c < field.one():
-                            if A0 + A1 * c + A2 * c**2 <= field.zero():
+                        if field.zero() < c and c < 1:
+                            if A0 + A1 * c + A2 * c**2 <= 0:
                                 raise ValueError(
                                     "Triangle with label %r degenerates at critical point before endpoint"
                                     % label
@@ -404,7 +405,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             nonzero = vvect
                         else:
                             assert (
-                                wedge_product(nonzero, vvect) == 0
+                                ccw(nonzero, vvect) == 0
                             ), "In non-local deformation all deformation vectos must be parallel"
                 assert nonzero is not None, "Deformation appears to be trivial."
                 from sage.matrix.constructor import Matrix
@@ -439,8 +440,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                                 .get_vertex()
                             )
                             if (
-                                wedge_product(s.polygon(label).edge(v), nonzero) >= 0
-                                and wedge_product(
+                                ccw(s.polygon(label).edge(v), nonzero) >= 0
+                                and ccw(
                                     nonzero, -s.polygon(label).edge((v + 2) % 3)
                                 )
                                 > 0
@@ -449,11 +450,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                                 found = None
                                 for vv in range(3):
                                     if (
-                                        wedge_product(
+                                        ccw(
                                             ss.polygon(label).edge(vv), nonzero
                                         )
                                         >= 0
-                                        and wedge_product(
+                                        and ccw(
                                             nonzero,
                                             -ss.polygon(label).edge((vv + 2) % 3),
                                         )

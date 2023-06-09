@@ -32,7 +32,6 @@ from sage.rings.qqbar import AA
 from sage.structure.sage_object import SageObject
 from sage.structure.element import Element
 
-from flatsurf.geometry.polygon import wedge_product
 from flatsurf.geometry.similarity import SimilarityGroup
 
 
@@ -698,9 +697,10 @@ class SaddleConnection(SageObject):
                 end_direction = -self._direction
             elif self._surface in DilationSurfaces() and end_data is not None:
                 p = self._surface.polygon(end_data[0])
+                from flatsurf.geometry.euclidean import ccw
                 if (
-                    wedge_product(p.edge(end_data[1]), self._direction) >= 0
-                    and wedge_product(
+                    ccw(p.edge(end_data[1]), self._direction) >= 0
+                    and ccw(
                         p.edge((p.num_edges() + end_data[1] - 1) % p.num_edges()),
                         self._direction,
                     )
@@ -1114,12 +1114,12 @@ class Cylinder(SageObject):
             )
         m = trans.matrix()
         v = vector(s.base_ring(), (m[0][2], m[1][2]))  # translation vector
-        from flatsurf.geometry.polygon import wedge_product
+        from flatsurf.geometry.euclidean import ccw
 
         p = ss.polygon(labels[0])
         e = edges[0]
-        min_y = wedge_product(v, p.vertex(e))
-        max_y = wedge_product(v, p.vertex((e + 1) % p.num_edges()))
+        min_y = ccw(v, p.vertex(e))
+        max_y = ccw(v, p.vertex((e + 1) % p.num_edges()))
         if min_y >= max_y:
             raise ValueError("Combinatorial data does not represent a cylinder")
 
@@ -1130,7 +1130,7 @@ class Cylinder(SageObject):
         for i in range(1, len(edges)):
             e = edges[i]
             p = ss.polygon(labels[i])
-            y = wedge_product(v, p.vertex(e))
+            y = ccw(v, p.vertex(e))
             if y == min_y:
                 min_list.append(i)
             elif y > min_y:
@@ -1138,7 +1138,7 @@ class Cylinder(SageObject):
                 min_y = y
                 if min_y >= max_y:
                     raise ValueError("Combinatorial data does not represent a cylinder")
-            y = wedge_product(v, p.vertex((e + 1) % p.num_edges()))
+            y = ccw(v, p.vertex((e + 1) % p.num_edges()))
             if y == max_y:
                 max_list.append(i)
             elif y < max_y:
@@ -1380,13 +1380,13 @@ class Cylinder(SageObject):
 
         v = sc.end_tangent_vector()
         v = v.clockwise_to(-v.vector())
-        from flatsurf.geometry.polygon import is_same_direction
+        from flatsurf.geometry.euclidean import is_parallel
 
         for sc2 in self._boundary:
             if sc2.start_data() == (
                 v.polygon_label(),
                 v.vertex(),
-            ) and is_same_direction(sc2.direction(), v.vector()):
+            ) and is_parallel(sc2.direction(), v.vector()):
                 return sc2
         raise ValueError("Failed to find next saddle connection in boundary set.")
 
@@ -1399,10 +1399,10 @@ class Cylinder(SageObject):
             raise ValueError
         v = sc.start_tangent_vector()
         v = v.counterclockwise_to(-v.vector())
-        from flatsurf.geometry.polygon import is_same_direction
+        from flatsurf.geometry.euclidean import is_parallel
 
         for sc2 in self._boundary:
-            if sc2.end_data() == (v.polygon_label(), v.vertex()) and is_same_direction(
+            if sc2.end_data() == (v.polygon_label(), v.vertex()) and is_parallel(
                 sc2.end_direction(), v.vector()
             ):
                 return sc2

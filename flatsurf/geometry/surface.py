@@ -1173,7 +1173,7 @@ class MutableOrientedSimilaritySurface(
         else:
             # This polygon is already a triangle.
             return self
-        from flatsurf.geometry.polygon import wedge_product
+        from flatsurf.geometry.euclidean import ccw
 
         for i in range(n - 3):
             poly = s.polygon(label)
@@ -1181,10 +1181,10 @@ class MutableOrientedSimilaritySurface(
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
-                if wedge_product(e1, e2) != 0:
+                if ccw(e1, e2) != 0:
                     # This is in case the polygon is a triangle with subdivided edge.
                     e3 = poly.edge((i + 2) % n)
-                    if wedge_product(e1 + e2, e3) != 0:
+                    if ccw(e1 + e2, e3) != 0:
                         s.subdivide_polygon(label, i, (i + 2) % n)
                         break
         return s

@@ -27,79 +27,6 @@ A loose collection of tools for Euclidean geometry in the plane.
 ######################################################################
 
 
-def similarity_from_vectors(u, v, matrix_space=None):
-    r"""
-    Return the unique similarity matrix that maps ``u`` to ``v``.
-
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.euclidean import similarity_from_vectors
-
-        sage: V = VectorSpace(QQ,2)
-        sage: u = V((1,0))
-        sage: v = V((0,1))
-        sage: m = similarity_from_vectors(u,v); m
-        [ 0 -1]
-        [ 1  0]
-        sage: m*u == v
-        True
-
-        sage: u = V((2,1))
-        sage: v = V((1,-2))
-        sage: m = similarity_from_vectors(u,v); m
-        [ 0  1]
-        [-1  0]
-        sage: m * u == v
-        True
-
-    An example built from the Pythagorean triple 3^2 + 4^2 = 5^2::
-
-        sage: u2 = V((5,0))
-        sage: v2 = V((3,4))
-        sage: m = similarity_from_vectors(u2,v2); m
-        [ 3/5 -4/5]
-        [ 4/5  3/5]
-        sage: m * u2 == v2
-        True
-
-    Some test over number fields::
-
-        sage: K.<sqrt2> = NumberField(x^2-2, embedding=1.4142)
-        sage: V = VectorSpace(K,2)
-        sage: u = V((sqrt2,0))
-        sage: v = V((1, 1))
-        sage: m = similarity_from_vectors(u,v); m
-        [ 1/2*sqrt2 -1/2*sqrt2]
-        [ 1/2*sqrt2  1/2*sqrt2]
-        sage: m*u == v
-        True
-
-        sage: m = similarity_from_vectors(u, 2*v); m
-        [ sqrt2 -sqrt2]
-        [ sqrt2  sqrt2]
-        sage: m*u == 2*v
-        True
-    """
-    if u.parent() is not v.parent():
-        raise ValueError
-
-    if matrix_space is None:
-        from sage.matrix.matrix_space import MatrixSpace
-
-        matrix_space = MatrixSpace(u.base_ring(), 2)
-
-    if u == v:
-        return matrix_space.one()
-
-    sqnorm_u = u[0] * u[0] + u[1] * u[1]
-    cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
-    sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
-
-    m = matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
-    m.set_immutable()
-    return m
-
-
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.
@@ -311,135 +238,134 @@ def angle(u, v, numerical=False):
     # sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
 
 
-def parallel(v, w):
-    if v[0] * w[1] != v[1] * w[0]:
-        return False
+def ccw(v, w):
+    r"""
+    Return a positive number if the turn from ``v`` to ``w`` is
+    counterclockwise, a negative number if it is clockwise, and zero if the two
+    vectors are collinear.
 
-    if v[0] * w[0] + v[1] * w[1] <= 0:
-        return False
+    .. NOTE::
 
-    return True
+        This function is sometimes also referred to as the wedge product or
+        simply the determinant. We chose the more customary name ``ccw`` from
+        computational geometry here.
 
+    EXAMPLES::
 
-def wedge_product(v, w):
+        sage: from flatsurf.geometry.euclidean import ccw
+        sage: ccw((1, 0), (0, 1))
+        1
+        sage: ccw((1, 0), (-1, 0))
+        0
+        sage: ccw((1, 0), (0, -1))
+        -1
+        sage: ccw((1, 0), (1, 0))
+        0
+
+    """
     return v[0] * w[1] - v[1] * w[0]
 
 
-def wedge(u, v):
+def is_parallel(v, w):
     r"""
-    General wedge product of two vectors.
+    Return whether the vectors ``v`` and ``w`` are parallel (but not
+    anti-parallel.)
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import is_parallel
+        sage: is_parallel((0, 1), (0, 1))
+        True
+        sage: is_parallel((0, 1), (0, 2))
+        True
+        sage: is_parallel((0, 1), (0, -2))
+        False
+        sage: is_parallel((0, 1), (0, 0))
+        False
+        sage: is_parallel((0, 1), (1, 0))
+        False
+
+    TESTS::
+
+        sage: V = QQ**2
+
+        sage: is_parallel(V((0,1)), V((0,2)))
+        True
+        sage: is_parallel(V((1,-1)), V((2,-2)))
+        True
+        sage: is_parallel(V((4,-2)), V((2,-1)))
+        True
+        sage: is_parallel(V((1,2)), V((2,4)))
+        True
+        sage: is_parallel(V((0,2)), V((0,1)))
+        True
+
+        sage: is_parallel(V((1,1)), V((1,2)))
+        False
+        sage: is_parallel(V((1,2)), V((2,1)))
+        False
+        sage: is_parallel(V((1,2)), V((1,-2)))
+        False
+        sage: is_parallel(V((1,2)), V((-1,-2)))
+        False
+        sage: is_parallel(V((2,-1)), V((-2,1)))
+        False
+
     """
-    d = len(u)
-    R = u.base_ring()
-    assert len(u) == len(v) and v.base_ring() == R
-    from sage.all import free_module_element
-    return free_module_element(
-        R,
-        d * (d - 1) // 2,
-        [(u[i] * v[j] - u[j] * v[i]) for i in range(d - 1) for j in range(i + 1, d)],
-    )
+    if ccw(v, w) != 0:
+        # vectors are not collinear
+        return False
+
+    return v[0] * w[0] + v[1] * w[1] > 0
 
 
-def tensor(u, v):
+def is_anti_parallel(v, w):
     r"""
-    General tensor product of two vectors.
+    Return whether the vectors ``v`` and ``w`` are anti-parallel, i.e., whether
+    ``v`` and ``-w`` are parallel.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import is_anti_parallel
+        sage: V = QQ**2
+
+        sage: is_anti_parallel(V((0,1)), V((0,-2)))
+        True
+        sage: is_anti_parallel(V((1,-1)), V((-2,2)))
+        True
+        sage: is_anti_parallel(V((4,-2)), V((-2,1)))
+        True
+        sage: is_anti_parallel(V((-1,-2)), V((2,4)))
+        True
+
+        sage: is_anti_parallel(V((1,1)), V((1,2)))
+        False
+        sage: is_anti_parallel(V((1,2)), V((2,1)))
+        False
+        sage: is_anti_parallel(V((0,2)), V((0,1)))
+        False
+        sage: is_anti_parallel(V((1,2)), V((1,-2)))
+        False
+        sage: is_anti_parallel(V((1,2)), V((-1,2)))
+        False
+        sage: is_anti_parallel(V((2,-1)), V((-2,-1)))
+        False
+
     """
-    d = len(u)
-    R = u.base_ring()
-    assert len(u) == len(v) and v.base_ring() == R
-    from sage.all import matrix
-    return matrix(R, d, [u[i] * v[j] for j in range(d) for i in range(d)])
+    return is_parallel(v, -w)
 
 
 def line_intersection(p1, p2, q1, q2):
     r"""
     Return the point of intersection between the line joining p1 to p2
-    and the line joining q1 to q2. If the lines are parallel we return
-    None. Here p1, p2, q1 and q2 should be vectors in the plane.
+    and the line joining q1 to q2. If the lines do not have a single point of
+    intersection, we return None. Here p1, p2, q1 and q2 should be vectors in
+    the plane.
     """
-    if wedge_product(p2 - p1, q2 - q1) == 0:
+    if ccw(p2 - p1, q2 - q1) == 0:
         return None
+
     # Since the wedge product is non-zero, the following is invertible:
     from sage.all import matrix
     m = matrix([[p2[0] - p1[0], q1[0] - q2[0]], [p2[1] - p1[1], q1[1] - q2[1]]])
     return p1 + (m.inverse() * (q1 - p1))[0] * (p2 - p1)
-
-
-def is_same_direction(v, w, zero=None):
-    r"""
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.euclidean import is_same_direction
-        sage: V = QQ**2
-
-        sage: is_same_direction(V((0,1)), V((0,2)))
-        True
-        sage: is_same_direction(V((1,-1)), V((2,-2)))
-        True
-        sage: is_same_direction(V((4,-2)), V((2,-1)))
-        True
-        sage: is_same_direction(V((1,2)), V((2,4)))
-        True
-        sage: is_same_direction(V((0,2)), V((0,1)))
-        True
-
-        sage: is_same_direction(V((1,1)), V((1,2)))
-        False
-        sage: is_same_direction(V((1,2)), V((2,1)))
-        False
-        sage: is_same_direction(V((1,2)), V((1,-2)))
-        False
-        sage: is_same_direction(V((1,2)), V((-1,-2)))
-        False
-        sage: is_same_direction(V((2,-1)), V((-2,1)))
-        False
-
-        sage: is_same_direction(V((1,0)), V.zero())
-        Traceback (most recent call last):
-        ...
-        TypeError: zero vector has no direction
-
-    """
-    if not v or not w:
-        raise TypeError("zero vector has no direction")
-    return not wedge_product(v, w) and (v[0] * w[0] > 0 or v[1] * w[1] > 0)
-
-
-def is_opposite_direction(v, w):
-    r"""
-    EXAMPLES::
-
-        sage: from flatsurf.geometry.euclidean import is_opposite_direction
-        sage: V = QQ**2
-
-        sage: is_opposite_direction(V((0,1)), V((0,-2)))
-        True
-        sage: is_opposite_direction(V((1,-1)), V((-2,2)))
-        True
-        sage: is_opposite_direction(V((4,-2)), V((-2,1)))
-        True
-        sage: is_opposite_direction(V((-1,-2)), V((2,4)))
-        True
-
-        sage: is_opposite_direction(V((1,1)), V((1,2)))
-        False
-        sage: is_opposite_direction(V((1,2)), V((2,1)))
-        False
-        sage: is_opposite_direction(V((0,2)), V((0,1)))
-        False
-        sage: is_opposite_direction(V((1,2)), V((1,-2)))
-        False
-        sage: is_opposite_direction(V((1,2)), V((-1,2)))
-        False
-        sage: is_opposite_direction(V((2,-1)), V((-2,-1)))
-        False
-
-        sage: is_opposite_direction(V((1,0)), V.zero())
-        Traceback (most recent call last):
-        ...
-        TypeError: zero vector has no direction
-
-    """
-    if not v or not w:
-        raise TypeError("zero vector has no direction")
-    return not wedge_product(v, w) and (v[0] * w[0] < 0 or v[1] * w[1] < 0)

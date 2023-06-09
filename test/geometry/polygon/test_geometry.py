@@ -26,8 +26,8 @@ from sage.all import QQ, randint
 
 
 @pytest.mark.repeat(1024)
-def test_is_same_direction():
-    from flatsurf.geometry.matrix_2x2 import is_same_direction
+def test_is_parallel():
+    from flatsurf.geometry.euclidean import is_parallel
 
     V = QQ**2
 
@@ -35,13 +35,13 @@ def test_is_same_direction():
         v = V.random_element()
         if v:
             break
-    assert is_same_direction(v, 2 * v)
-    assert not is_same_direction(v, -v)
+    assert is_parallel(v, 2 * v)
+    assert not is_parallel(v, -v)
 
 
 @pytest.mark.repeat(100)
-def test_is_opposite_direction():
-    from flatsurf.geometry.matrix_2x2 import is_opposite_direction
+def test_is_anti_parallel():
+    from flatsurf.geometry.matrix_2x2 import is_anti_parallel
 
     V = QQ**2
 
@@ -50,9 +50,9 @@ def test_is_opposite_direction():
         if v:
             break
 
-    assert not is_opposite_direction(v, v)
-    assert not is_opposite_direction(v, 2 * v)
-    assert is_opposite_direction(v, -v)
+    assert not is_anti_parallel(v, v)
+    assert not is_anti_parallel(v, 2 * v)
+    assert is_anti_parallel(v, -v)
 
 
 @pytest.mark.repeat(4096)

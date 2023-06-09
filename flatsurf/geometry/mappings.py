@@ -19,7 +19,6 @@ r"""Mappings between translation surfaces."""
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from flatsurf.geometry.polygon import wedge_product
 
 
 class SurfaceMapping:
@@ -256,9 +255,9 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             p = tangent_vector.point()
             v = self._domain.polygon(self._saved_label).vertex(self._glued_edge)
             e = self._domain.polygon(self._saved_label).edge(self._glued_edge)
-            from flatsurf.geometry.polygon import wedge_product
+            from flatsurf.geometry.euclidean import ccw
 
-            wp = wedge_product(p - v, e)
+            wp = ccw(p - v, e)
             if wp > 0:
                 # in polygon with the removed label
                 return self.domain().tangent_vector(
@@ -277,7 +276,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
                 )
             # Otherwise wp==0
             w = tangent_vector.vector()
-            wp = wedge_product(w, e)
+            wp = ccw(w, e)
             if wp > 0:
                 # in polygon with the removed label
                 return self.domain().tangent_vector(
@@ -406,7 +405,8 @@ class SplitPolygonsMapping(SurfaceMapping):
             vertex1 = self._domain.polygon(self._p).vertex(self._v1)
             vertex2 = self._domain.polygon(self._p).vertex(self._v2)
 
-            wp = wedge_product(vertex2 - vertex1, point - vertex1)
+            from flatsurf.geometry.euclidean import ccw
+            wp = ccw(vertex2 - vertex1, point - vertex1)
 
             if wp > 0:
                 # in new polygon 1
@@ -427,7 +427,7 @@ class SplitPolygonsMapping(SurfaceMapping):
 
             # Otherwise wp==0
             w = tangent_vector.vector()
-            wp = wedge_product(vertex2 - vertex1, w)
+            wp = ccw(vertex2 - vertex1, w)
             if wp > 0:
                 # in new polygon 1
                 return self.codomain().tangent_vector(
@@ -483,7 +483,7 @@ def subdivide_a_polygon(s):
     r"""
     Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
-    from flatsurf.geometry.polygon import wedge_product
+    from flatsurf.geometry.euclidean import ccw
 
     for label, poly in zip(s.labels(), s.polygons()):
         n = poly.num_edges()
@@ -491,7 +491,7 @@ def subdivide_a_polygon(s):
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
-                if wedge_product(e1, e2) != 0:
+                if ccw(e1, e2) != 0:
                     return SplitPolygonsMapping(s, label, i, (i + 2) % n)
             raise ValueError(
                 "Unable to triangulate polygon with label "

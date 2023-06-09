@@ -64,7 +64,6 @@ from flatsurf.geometry.euclidean import angle
 from flatsurf.geometry.subfield import (
     number_field_elements_from_algebraics,
 )
-from flatsurf.geometry.euclidean import wedge_product, wedge, tensor
 
 from flatsurf.geometry.categories import RealProjectivePolygons
 from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
@@ -759,8 +758,9 @@ class EuclideanPolygon(Parent):
         return Polygon(base_ring=ring, vertices=self._v)
 
     def is_convex(self):
+        from flatsurf.geometry.euclidean import ccw
         for i in range(self.num_edges()):
-            if wedge_product(self.edge(i), self.edge(i + 1)) < 0:
+            if ccw(self.edge(i), self.edge(i + 1)) < 0:
                 return False
         return True
 
@@ -776,8 +776,9 @@ class EuclideanPolygon(Parent):
             sage: Polygon(vertices=[(0,0), (1,0), (2,0), (1,1)]).is_strictly_convex()
             False
         """
+        from flatsurf.geometry.euclidean import ccw
         for i in range(self.num_edges()):
-            if wedge_product(self.edge(i), self.edge(i + 1)).is_zero():
+            if ccw(self.edge(i), self.edge(i + 1)) == 0:
                 return False
         return True
 
@@ -926,23 +927,23 @@ class EuclideanPolygon(Parent):
             slopes = self.slopes(relative=True)
             properties["right"] = any(slope[0] == 0 for slope in slopes)
 
-            from flatsurf.geometry.euclidean import parallel
+            from flatsurf.geometry.euclidean import is_parallel
 
             properties["isosceles"] = (
-                parallel(slopes[0], slopes[1])
-                or parallel(slopes[0], slopes[2])
-                or parallel(slopes[1], slopes[2])
+                is_parallel(slopes[0], slopes[1])
+                or is_parallel(slopes[0], slopes[2])
+                or is_parallel(slopes[1], slopes[2])
             )
 
         return EuclideanPolygon._describe_polygon(self.num_edges(), **properties)
 
     def marked_vertices(self):
-        from flatsurf.geometry.euclidean import parallel
+        from flatsurf.geometry.euclidean import is_parallel
 
         return [
             vertex
             for (i, vertex) in enumerate(self.vertices())
-            if parallel(self.edge(i), self.edge((i - 1) % self.num_edges()))
+            if is_parallel(self.edge(i), self.edge((i - 1) % self.num_edges()))
         ]
 
     def is_degenerate(self):
@@ -969,9 +970,9 @@ class EuclideanPolygon(Parent):
     def is_equiangular(self):
         slopes = self.slopes(relative=True)
 
-        from flatsurf.geometry.euclidean import parallel
+        from flatsurf.geometry.euclidean import is_parallel
 
-        return all(parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes)))
+        return all(is_parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes)))
 
     def vertices(self, translation=None):
         r"""
@@ -1065,7 +1066,7 @@ class EuclideanPolygon(Parent):
 
         return True
 
-    # TODO: Move to category to allow override in subcategories.
+    # TODO: Move to category to allow override in subcategories. Ensure that if the angles are known the result is immediate.
     def angle(self, e, numerical=None, assume_rational=None):
         r"""
         Return the angle at the beginning of the start point of the edge ``e``.
@@ -1256,7 +1257,7 @@ class EuclideanPolygon(Parent):
 
         Some extra debugging::
 
-            sage: from flatsurf.geometry.polygon import wedge
+            sage: from flatsurf.geometry.polygon import EuclideanPolygon
             sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
             sage: ux = 1 + a + a**2
             sage: uy = -2/3 + a
@@ -1266,9 +1267,9 @@ class EuclideanPolygon(Parent):
             sage: from flatsurf import Polygon
             sage: p = Polygon(edges=[(ux, uy), (vx,vy), (-ux-vx,-uy-vy)], base_ring=K)
             sage: Jxx, Jyy, Jxy = p.j_invariant()
-            sage: wedge(ux.vector(), vx.vector()) == Jxx
+            sage: EuclideanPolygon._wedge_product(ux.vector(), vx.vector()) == Jxx
             True
-            sage: wedge(uy.vector(), vy.vector()) == Jyy
+            sage: EuclideanPolygon._wedge_product(uy.vector(), vy.vector()) == Jyy
             True
 
         """
@@ -1282,21 +1283,83 @@ class EuclideanPolygon(Parent):
             raise ValueError("the surface needs to be define over a number field")
 
         dim = K.degree()
-        Jxx = Jyy = free_module_element(K, dim * (dim - 1) // 2)
+        M = K**(dim * (dim - 1) // 2)
+        Jxx = Jyy = M.zero()
         Jxy = matrix(K, dim)
         vertices = list(self.vertices())
         vertices.append(vertices[0])
+
         for i in range(len(vertices) - 1):
             a = to_V(vertices[i][0])
             b = to_V(vertices[i][1])
             c = to_V(vertices[i + 1][0])
             d = to_V(vertices[i + 1][1])
-            Jxx += wedge(a, c)
-            Jyy += wedge(b, d)
-            Jxy += tensor(a, d)
-            Jxy -= tensor(c, b)
+            Jxx += EuclideanPolygon._wedge_product(a, c)
+            Jyy += EuclideanPolygon._wedge_product(b, d)
+            Jxy += EuclideanPolygon._tensor_product(a, d)
+            Jxy -= EuclideanPolygon._tensor_product(c, b)
 
         return (Jxx, Jyy, Jxy)
+
+    @staticmethod
+    def _wedge_product(v, w):
+        r"""
+        Return the wedge product of ``v`` and ``w``.
+
+        This is a helper method for :meth:`j_invariant`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import EuclideanPolygon
+
+            sage: EuclideanPolygon._wedge_product(vector((1, 2)), vector((1, 2)))
+            (0)
+            sage: EuclideanPolygon._wedge_product(vector((1, 2)), vector((2, 1)))
+            (-3)
+
+            sage: EuclideanPolygon._wedge_product(vector((1, 2, 3)), vector((2, 3, 4)))
+            (-1, -2, -1)
+
+        """
+        d = len(v)
+
+        assert len(w) == d
+
+        R = v.base_ring()
+
+        return free_module_element(
+            R,
+            d * (d - 1) // 2,
+            [(v[i] * w[j] - v[j] * w[i]) for i in range(d - 1) for j in range(i + 1, d)],
+        )
+
+    @staticmethod
+    def _tensor_product(u, v):
+        r"""
+        Return the tensor product of ``u`` and ``v``.
+
+        This is a helper method for :meth:`j_invariant`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polygon import EuclideanPolygon
+            sage: EuclideanPolygon._tensor_product(vector((2, 3, 5)), vector((7, 11, 13)))
+            [14 21 35]
+            [22 33 55]
+            [26 39 65]
+
+        """
+        from sage.all import vector
+
+        u = vector(u)
+        v = vector(v)
+
+        d = len(u)
+        R = u.base_ring()
+
+        assert len(u) == len(v) and v.base_ring() == R
+        from sage.all import matrix
+        return matrix(R, d, [u[i] * v[j] for j in range(d) for i in range(d)])
 
     def is_isometric(self, other, certificate=False):
         r"""

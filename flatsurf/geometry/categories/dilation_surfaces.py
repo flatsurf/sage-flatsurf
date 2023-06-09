@@ -395,9 +395,9 @@ class DilationSurfaces(SurfaceCategory):
                 edge2R = m * edge2R
 
             # convexity check of the quadrilateral
-            from flatsurf.geometry.polygon import wedge_product
+            from flatsurf.geometry.euclidean import ccw
 
-            if wedge_product(edge2L, edge1R) <= 0 or wedge_product(edge1L, edge2R) <= 0:
+            if ccw(edge2L, edge1R) <= 0 or ccw(edge1L, edge2R) <= 0:
                 return False
 
             # compare the norms

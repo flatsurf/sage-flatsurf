@@ -756,12 +756,12 @@ class GraphicalSurface:
                     vertex = pos.get_vertex()
                     polygon = surface.polygon(label)
 
-                    from flatsurf.geometry.polygon import wedge_product
+                    from flatsurf.geometry.euclidean import ccw
 
-                    if wedge_product(polygon.edge(vertex), direction) < 0:
+                    if ccw(polygon.edge(vertex), direction) < 0:
                         continue
                     if (
-                        wedge_product(
+                        ccw(
                             polygon.edge((vertex - 1) % polygon.num_edges()), direction
                         )
                         < 0

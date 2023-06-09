@@ -42,7 +42,7 @@ from sage.misc.cachefunc import cached_method
 from sage.all import FreeModule
 
 from flatsurf.geometry.categories.polygons import Polygons
-from flatsurf.geometry.euclidean import wedge_product
+from flatsurf.geometry.euclidean import ccw
 
 from sage.structure.element import get_coercion_model
 cm = get_coercion_model()
@@ -445,10 +445,10 @@ class RealProjectivePolygons(Category_over_base_ring):
                 for i in range(self.num_edges()):
                     if self.edge(i).is_zero():
                         raise ValueError("zero edge")
-                    if wedge_product(self.edge(i), self.edge(i + 1)) < 0:
+                    if ccw(self.edge(i), self.edge(i + 1)) < 0:
                         raise ValueError("not convex")
-                    from flatsurf.geometry.euclidean import is_opposite_direction
-                    if is_opposite_direction(self.edge(i), self.edge(i + 1)):
+                    from flatsurf.geometry.euclidean import is_anti_parallel
+                    if is_anti_parallel(self.edge(i), self.edge(i + 1)):
                         raise ValueError("degenerate polygon")
 
                 Polygons.ParentMethods._check(self)
@@ -489,16 +489,15 @@ class RealProjectivePolygons(Category_over_base_ring):
                     assert not direction.is_zero()
                 v = start_vertex
                 n = self.num_edges()
-                zero = self.base_ring().zero()
                 for i in range(self.num_edges()):
                     if (
-                        wedge_product(self.edge(v), direction) >= zero
-                        and wedge_product(self.edge(v + n - 1), direction) > zero
+                        ccw(self.edge(v), direction) >= 0
+                        and ccw(self.edge(v + n - 1), direction) > 0
                     ):
                         return v, True
                     if (
-                        wedge_product(self.edge(v), direction) <= zero
-                        and wedge_product(self.edge(v + n - 1), direction) < zero
+                        ccw(self.edge(v), direction) <= 0
+                        and ccw(self.edge(v + n - 1), direction) < 0
                     ):
                         return v, False
                     v = v + 1 % n
@@ -566,7 +565,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     v0 = v1
                     e = self.edge(i)
                     v1 = v0 + e
-                    w = wedge_product(e, point - v0)
+                    w = ccw(e, point - v0)
                     if w < 0:
                         return PolygonPosition(PolygonPosition.OUTSIDE)
                     if w == 0:
@@ -638,11 +637,11 @@ class RealProjectivePolygons(Category_over_base_ring):
                             )
                     except ZeroDivisionError:
                         # Here we know the edge and the direction are parallel
-                        if wedge_product(e, point - v0) == 0:
+                        if ccw(e, point - v0) == 0:
                             # In this case point lies on the edge.
                             # We need to work out which direction to move in.
-                            from flatsurf.geometry.euclidean import is_same_direction
-                            if (point - v0).is_zero() or is_same_direction(e, point - v0):
+                            from flatsurf.geometry.euclidean import is_parallel
+                            if (point - v0).is_zero() or is_parallel(e, point - v0):
                                 # exits through vertex i+1
                                 return self.vertex(i + 1), PolygonPosition(
                                     PolygonPosition.VERTEX, vertex=(i + 1) % self.num_edges()

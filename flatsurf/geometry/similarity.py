@@ -612,3 +612,77 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
     def base_ring(self):
         return self._ring
+
+
+def similarity_from_vectors(u, v, matrix_space=None):
+    r"""
+    Return the unique similarity matrix that maps ``u`` to ``v``.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.similarity import similarity_from_vectors
+
+        sage: V = VectorSpace(QQ,2)
+        sage: u = V((1,0))
+        sage: v = V((0,1))
+        sage: m = similarity_from_vectors(u,v); m
+        [ 0 -1]
+        [ 1  0]
+        sage: m*u == v
+        True
+
+        sage: u = V((2,1))
+        sage: v = V((1,-2))
+        sage: m = similarity_from_vectors(u,v); m
+        [ 0  1]
+        [-1  0]
+        sage: m * u == v
+        True
+
+    An example built from the Pythagorean triple 3^2 + 4^2 = 5^2::
+
+        sage: u2 = V((5,0))
+        sage: v2 = V((3,4))
+        sage: m = similarity_from_vectors(u2,v2); m
+        [ 3/5 -4/5]
+        [ 4/5  3/5]
+        sage: m * u2 == v2
+        True
+
+    Some test over number fields::
+
+        sage: K.<sqrt2> = NumberField(x^2-2, embedding=1.4142)
+        sage: V = VectorSpace(K,2)
+        sage: u = V((sqrt2,0))
+        sage: v = V((1, 1))
+        sage: m = similarity_from_vectors(u,v); m
+        [ 1/2*sqrt2 -1/2*sqrt2]
+        [ 1/2*sqrt2  1/2*sqrt2]
+        sage: m*u == v
+        True
+
+        sage: m = similarity_from_vectors(u, 2*v); m
+        [ sqrt2 -sqrt2]
+        [ sqrt2  sqrt2]
+        sage: m*u == 2*v
+        True
+
+    """
+    if u.parent() is not v.parent():
+        raise ValueError
+
+    if matrix_space is None:
+        from sage.matrix.matrix_space import MatrixSpace
+
+        matrix_space = MatrixSpace(u.base_ring(), 2)
+
+    if u == v:
+        return matrix_space.one()
+
+    sqnorm_u = u[0] * u[0] + u[1] * u[1]
+    cos_uv = (u[0] * v[0] + u[1] * v[1]) / sqnorm_u
+    sin_uv = (u[0] * v[1] - u[1] * v[0]) / sqnorm_u
+
+    m = matrix_space([cos_uv, -sin_uv, sin_uv, cos_uv])
+    m.set_immutable()
+    return m

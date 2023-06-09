@@ -165,9 +165,9 @@ class SegmentInPolygon:
         vv = self.start().vector()
         vertex = self.start().vertex()
         ww = self.start().polygon().edge(vertex)
-        from flatsurf.geometry.euclidean import is_same_direction
+        from flatsurf.geometry.euclidean import is_parallel
 
-        return is_same_direction(vv, ww)
+        return is_parallel(vv, ww)
 
     def edge(self):
         if not self.is_edge():

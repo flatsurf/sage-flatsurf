@@ -18,7 +18,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from flatsurf.geometry.euclidean import wedge_product, is_same_direction, is_opposite_direction
 
 # Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
 rotate_limit = 100
@@ -77,6 +76,8 @@ class SimilaritySurfaceTangentVector:
     """
 
     def __init__(self, tangent_bundle, polygon_label, point, vector):
+        from flatsurf.geometry.euclidean import ccw, is_anti_parallel
+
         self._bundle = tangent_bundle
         p = self.surface().polygon(polygon_label)
         pos = p.get_point_position(point)
@@ -90,7 +91,8 @@ class SimilaritySurfaceTangentVector:
         elif pos.is_in_edge_interior():
             e = pos.get_edge()
             edge_v = p.edge(e)
-            if wedge_product(edge_v, vector) < 0 or is_opposite_direction(
+
+            if ccw(edge_v, vector) < 0 or is_anti_parallel(
                 edge_v, vector
             ):
                 # Need to move point and vector to opposite edge.
@@ -116,8 +118,8 @@ class SimilaritySurfaceTangentVector:
             edge1 = p.edge(v)
             # prior edge:
             edge0 = p.edge((v - 1) % p.num_edges())
-            wp1 = wedge_product(edge1, vector)
-            wp0 = wedge_product(edge0, vector)
+            wp1 = ccw(edge1, vector)
+            wp0 = ccw(edge0, vector)
             if wp1 < 0 or wp0 < 0:
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
@@ -278,10 +280,11 @@ class SimilaritySurfaceTangentVector:
         Returns true if the other vector just differs by scaling. This means they should lie
         in the same polygon, be based at the same point, and point in the same direction.
         """
+        from flatsurf.geometry.euclidean import is_parallel
         return (
             self.polygon_label() == another_tangent_vector.polygon_label()
             and self.point() == another_tangent_vector.point()
-            and is_same_direction(self.vector(), another_tangent_vector.vector())
+            and is_parallel(self.vector(), another_tangent_vector.vector())
         )
 
     def invert(self):
@@ -410,8 +413,10 @@ class SimilaritySurfaceTangentVector:
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
             if code:
                 codes = []
+
+            from flatsurf.geometry.euclidean import ccw
             for count in range(rotate_limit):
-                if wedge_product(v2, w) >= 0 and wedge_product(w, v1) > 0:
+                if ccw(v2, w) >= 0 and ccw(w, v1) > 0:
                     # We've found it!
                     break
                 if code:
@@ -489,7 +494,9 @@ class SimilaritySurfaceTangentVector:
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
             if code:
                 codes = []
-            if not (wedge_product(v1, w) > 0 and wedge_product(w, v2) > 0):
+
+            from flatsurf.geometry.euclidean import ccw
+            if not (ccw(v1, w) > 0 and ccw(w, v2) > 0):
                 for count in range(rotate_limit):
                     label2, edge2 = s.opposite_edge(label, previous_vertex)
                     if code:
@@ -502,7 +509,7 @@ class SimilaritySurfaceTangentVector:
                     ) % s.polygon(label).num_edges()
                     v1 = der * (s.polygon(label).edge(vertex))
                     v2 = der * (-s.polygon(label).edge(previous_vertex))
-                    if wedge_product(v1, w) >= 0 and wedge_product(w, v2) > 0:
+                    if ccw(v1, w) >= 0 and ccw(w, v2) > 0:
                         # We've found it!
                         break
                 assert count < rotate_limit, "Reached limit!"

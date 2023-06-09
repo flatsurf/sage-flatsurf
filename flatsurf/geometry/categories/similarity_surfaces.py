@@ -484,7 +484,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 v = self.polygon(pp).edge(ee)
 
                 # note the orientation, it is -v and not v
-                from flatsurf.geometry.euclidean import similarity_from_vectors
+                from flatsurf.geometry.similarity import similarity_from_vectors
                 from sage.matrix.matrix_space import MatrixSpace
 
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
@@ -1043,11 +1043,11 @@ class SimilaritySurfaces(SurfaceCategory):
                         return False
                     sim = self.edge_transformation(l2, e2)
                     hol = sim(p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3))
-                    from flatsurf.geometry.polygon import wedge_product
+                    from flatsurf.geometry.euclidean import ccw
 
                     return (
-                        wedge_product(p1.edge((e1 + 2) % 3), hol) > 0
-                        and wedge_product(p1.edge((e1 + 1) % 3), hol) > 0
+                        ccw(p1.edge((e1 + 2) % 3), hol) > 0
+                        and ccw(p1.edge((e1 + 1) % 3), hol) > 0
                     )
 
                 if in_place:
@@ -1484,7 +1484,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 poly2 = self.polygon(p2)
                 if poly1.num_edges() != 3 or poly2.num_edges() != 3:
                     raise ValueError("Edge must be adjacent to two triangles.")
-                from flatsurf.geometry.euclidean import similarity_from_vectors
+                from flatsurf.geometry.similarity import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(poly1.edge(e1 + 2), -poly1.edge(e1 + 1))
                 sim2 = similarity_from_vectors(poly2.edge(e2 + 2), -poly2.edge(e2 + 1))
@@ -1500,7 +1500,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
                 poly2 = self.polygon(p2)
-                from flatsurf.geometry.euclidean import similarity_from_vectors
+                from flatsurf.geometry.similarity import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(
                     poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge(e1 + 1)
@@ -1854,11 +1854,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     p = self.polygon(label)
                     # First check the vertex
                     vert_position = sim(p.vertex(vert))
-                    from flatsurf.geometry.polygon import wedge_product
+                    from flatsurf.geometry.euclidean import ccw
 
                     if (
-                        wedge_product(wedge[0], vert_position) > 0
-                        and wedge_product(vert_position, wedge[1]) > 0
+                        ccw(wedge[0], vert_position) > 0
+                        and ccw(vert_position, wedge[1]) > 0
                         and vert_position[0] ** 2 + vert_position[1] ** 2
                         <= squared_length_bound
                     ):
@@ -1877,20 +1877,20 @@ class SimilaritySurfaces(SurfaceCategory):
                     # Now check if we should develop across the edge
                     vert_position2 = sim(p.vertex((vert + 1) % p.num_edges()))
                     if (
-                        wedge_product(vert_position, vert_position2) > 0
-                        and wedge_product(wedge[0], vert_position2) > 0
-                        and wedge_product(vert_position, wedge[1]) > 0
+                        ccw(vert_position, vert_position2) > 0
+                        and ccw(wedge[0], vert_position2) > 0
+                        and ccw(vert_position, wedge[1]) > 0
                         and circle.line_segment_position(vert_position, vert_position2)
                         == 1
                     ):
-                        if wedge_product(wedge[0], vert_position) > 0:
+                        if ccw(wedge[0], vert_position) > 0:
                             # First in new_wedge should be vert_position
-                            if wedge_product(vert_position2, wedge[1]) > 0:
+                            if ccw(vert_position2, wedge[1]) > 0:
                                 new_wedge = (vert_position, vert_position2)
                             else:
                                 new_wedge = (vert_position, wedge[1])
                         else:
-                            if wedge_product(vert_position2, wedge[1]) > 0:
+                            if ccw(vert_position2, wedge[1]) > 0:
                                 new_wedge = (wedge[0], vert_position2)
                             else:
                                 new_wedge = wedge

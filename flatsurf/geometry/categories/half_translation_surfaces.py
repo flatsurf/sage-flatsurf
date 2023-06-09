@@ -342,9 +342,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     u = p.edge(1)
                     v = -p.edge(0)
                     i = 1
-                    from flatsurf.geometry.polygon import wedge_product
+                    from flatsurf.geometry.euclidean import ccw
 
-                    while wedge_product(u, v) == 0:
+                    while ccw(u, v) == 0:
                         i += 1
                         u = p.edge(i)
                         v = -p.edge(i - 1)
