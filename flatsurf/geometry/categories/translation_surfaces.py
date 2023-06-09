@@ -236,25 +236,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             from sage.all import identity_matrix
             return identity_matrix(self.base_ring(), 2)
 
-        def stratum(self):
-            r"""
-            Return the stratum this surface belongs to.
-
-            This uses the package ``surface-dynamics``
-            (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
-
-            EXAMPLES::
-
-                sage: import flatsurf.geometry.similarity_surface_generators as sfg
-                sage: sfg.translation_surfaces.octagon_and_squares().stratum()
-                H_3(4)
-
-            """
-            from surface_dynamics import AbelianStratum
-            from sage.rings.integer_ring import ZZ
-
-            return AbelianStratum([ZZ(a - 1) for a in self.angles()])
-
         def canonicalize_mapping(self):
             r"""
             Return a SurfaceMapping canonicalizing this translation surface.
@@ -614,6 +595,25 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
+            def stratum(self):
+                r"""
+                Return the stratum this surface belongs to.
+
+                This uses the package ``surface-dynamics``
+                (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
+
+                EXAMPLES::
+
+                    sage: import flatsurf.geometry.similarity_surface_generators as sfg
+                    sage: sfg.translation_surfaces.octagon_and_squares().stratum()
+                    H_3(4)
+
+                """
+                from surface_dynamics import AbelianStratum
+                from sage.rings.integer_ring import ZZ
+
+                return AbelianStratum([ZZ(a - 1) for a in self.angles()])
 
             def canonicalize(self, in_place=None):
                 r"""
