@@ -1,11 +1,16 @@
 r"""
-Some tools for 2x2 matrices and planar geometry.
+A loose collection of tools for Euclidean geometry in the plane.
+
+.. SEEALSO::
+
+    :mod:`flatsurf.geometry.circle` for everything specific to circles in the plane
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2022 Julian Rüth
+#                      2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,7 +25,6 @@ Some tools for 2x2 matrices and planar geometry.
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
-# TODO: Rename this module.
 
 from sage.rings.all import AA, QQbar, RR
 
@@ -33,7 +37,7 @@ def similarity_from_vectors(u, v, matrix_space=None):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+        sage: from flatsurf.geometry.euclidean import similarity_from_vectors
 
         sage: V = VectorSpace(QQ,2)
         sage: u = V((1,0))
@@ -106,7 +110,7 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+        sage: from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
 
         sage: c = s = AA(sqrt(2))/2
         sage: is_cosine_sine_of_rational(c,s)
@@ -207,7 +211,7 @@ def angle(u, v, numerical=False):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.matrix_2x2 import angle
+        sage: from flatsurf.geometry.euclidean import angle
 
     As the implementation is dirty, we at least check that it works for all
     denominator up to 20::
@@ -354,7 +358,7 @@ def is_same_direction(v, w, zero=None):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf.geometry.matrix_2x2 import is_same_direction
+        sage: from flatsurf.geometry.euclidean import is_same_direction
         sage: V = QQ**2
 
         sage: is_same_direction(V((0,1)), V((0,2)))
@@ -394,7 +398,7 @@ def is_opposite_direction(v, w):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf.geometry.matrix_2x2 import is_opposite_direction
+        sage: from flatsurf.geometry.euclidean import is_opposite_direction
         sage: V = QQ**2
 
         sage: is_opposite_direction(V((0,1)), V((0,-2)))

@@ -18,7 +18,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from flatsurf.geometry.matrix_2x2 import wedge_product, is_same_direction, is_opposite_direction
+from flatsurf.geometry.euclidean import wedge_product, is_same_direction, is_opposite_direction
 
 # Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
 rotate_limit = 100

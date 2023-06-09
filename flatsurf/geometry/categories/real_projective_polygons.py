@@ -42,7 +42,7 @@ from sage.misc.cachefunc import cached_method
 from sage.all import FreeModule
 
 from flatsurf.geometry.categories.polygons import Polygons
-from flatsurf.geometry.matrix_2x2 import wedge_product
+from flatsurf.geometry.euclidean import wedge_product
 
 from sage.structure.element import get_coercion_model
 cm = get_coercion_model()
@@ -447,7 +447,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                         raise ValueError("zero edge")
                     if wedge_product(self.edge(i), self.edge(i + 1)) < 0:
                         raise ValueError("not convex")
-                    from flatsurf.geometry.matrix_2x2 import is_opposite_direction
+                    from flatsurf.geometry.euclidean import is_opposite_direction
                     if is_opposite_direction(self.edge(i), self.edge(i + 1)):
                         raise ValueError("degenerate polygon")
 
@@ -641,7 +641,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                         if wedge_product(e, point - v0) == 0:
                             # In this case point lies on the edge.
                             # We need to work out which direction to move in.
-                            from flatsurf.geometry.matrix_2x2 import is_same_direction
+                            from flatsurf.geometry.euclidean import is_same_direction
                             if (point - v0).is_zero() or is_same_direction(e, point - v0):
                                 # exits through vertex i+1
                                 return self.vertex(i + 1), PolygonPosition(

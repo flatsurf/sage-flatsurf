@@ -24,7 +24,7 @@ def _is_finite(surface):
         for e in range(polygon.num_edges()):
             m = surface.edge_matrix(label, e)
 
-            from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+            from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
 
             if not is_cosine_sine_of_rational(m[0][0], m[0][1]):
                 return False

@@ -484,7 +484,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 v = self.polygon(pp).edge(ee)
 
                 # note the orientation, it is -v and not v
-                from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+                from flatsurf.geometry.euclidean import similarity_from_vectors
                 from sage.matrix.matrix_space import MatrixSpace
 
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
@@ -1484,7 +1484,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 poly2 = self.polygon(p2)
                 if poly1.num_edges() != 3 or poly2.num_edges() != 3:
                     raise ValueError("Edge must be adjacent to two triangles.")
-                from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+                from flatsurf.geometry.euclidean import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(poly1.edge(e1 + 2), -poly1.edge(e1 + 1))
                 sim2 = similarity_from_vectors(poly2.edge(e2 + 2), -poly2.edge(e2 + 1))
@@ -1500,7 +1500,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
                 poly2 = self.polygon(p2)
-                from flatsurf.geometry.matrix_2x2 import similarity_from_vectors
+                from flatsurf.geometry.euclidean import similarity_from_vectors
 
                 sim1 = similarity_from_vectors(
                     poly1.vertex(e1) - poly1.vertex(e1 + 2), -poly1.edge(e1 + 1)
@@ -2231,7 +2231,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         b = AA(matrix[1, 0])
                         q = (a**2 + b**2).sqrt()
 
-                        from flatsurf.geometry.matrix_2x2 import (
+                        from flatsurf.geometry.euclidean import (
                             is_cosine_sine_of_rational,
                         )
 

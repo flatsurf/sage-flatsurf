@@ -20,7 +20,7 @@
 # *********************************************************************
 from collections import deque
 
-from flatsurf.geometry.matrix_2x2 import line_intersection
+from flatsurf.geometry.euclidean import line_intersection
 from flatsurf.geometry.surface_objects import SaddleConnection
 
 # Vincent question:
@@ -165,7 +165,7 @@ class SegmentInPolygon:
         vv = self.start().vector()
         vertex = self.start().vertex()
         ww = self.start().polygon().edge(vertex)
-        from flatsurf.geometry.matrix_2x2 import is_same_direction
+        from flatsurf.geometry.euclidean import is_same_direction
 
         return is_same_direction(vv, ww)
 

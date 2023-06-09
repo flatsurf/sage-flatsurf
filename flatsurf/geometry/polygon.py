@@ -60,11 +60,11 @@ from sage.structure.coerce import py_scalar_parent
 from sage.structure.element import Element
 from sage.structure.sequence import Sequence
 
-from flatsurf.geometry.matrix_2x2 import angle
+from flatsurf.geometry.euclidean import angle
 from flatsurf.geometry.subfield import (
     number_field_elements_from_algebraics,
 )
-from flatsurf.geometry.matrix_2x2 import wedge_product, wedge, tensor
+from flatsurf.geometry.euclidean import wedge_product, wedge, tensor
 
 from flatsurf.geometry.categories import RealProjectivePolygons
 from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
@@ -926,7 +926,7 @@ class EuclideanPolygon(Parent):
             slopes = self.slopes(relative=True)
             properties["right"] = any(slope[0] == 0 for slope in slopes)
 
-            from flatsurf.geometry.matrix_2x2 import parallel
+            from flatsurf.geometry.euclidean import parallel
 
             properties["isosceles"] = (
                 parallel(slopes[0], slopes[1])
@@ -937,7 +937,7 @@ class EuclideanPolygon(Parent):
         return EuclideanPolygon._describe_polygon(self.num_edges(), **properties)
 
     def marked_vertices(self):
-        from flatsurf.geometry.matrix_2x2 import parallel
+        from flatsurf.geometry.euclidean import parallel
 
         return [
             vertex
@@ -969,7 +969,7 @@ class EuclideanPolygon(Parent):
     def is_equiangular(self):
         slopes = self.slopes(relative=True)
 
-        from flatsurf.geometry.matrix_2x2 import parallel
+        from flatsurf.geometry.euclidean import parallel
 
         return all(parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes)))
 
@@ -1056,7 +1056,7 @@ class EuclideanPolygon(Parent):
             cos = u.dot_product(v)
             sin = u[0] * v[1] - u[1] * v[0]
 
-            from flatsurf.geometry.matrix_2x2 import is_cosine_sine_of_rational
+            from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
 
             if not is_cosine_sine_of_rational(cos, sin, scaled=True):
                 return False
