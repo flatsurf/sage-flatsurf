@@ -253,7 +253,7 @@ class EInfinitySurface(OrientedSimilaritySurface):
         """
         from flatsurf.geometry.surface import LabelsView
 
-        return LabelsView(self, ZZ)
+        return LabelsView(self, ZZ, finite=False)
 
     def opposite_edge(self, p, e):
         r"""
@@ -466,7 +466,7 @@ class TFractalSurface(OrientedSimilaritySurface):
 
         from flatsurf.geometry.surface import LabelsView
 
-        return LabelsView(self, labels)
+        return LabelsView(self, labels, finite=False)
 
     def opposite_edge(self, p, e):
         r"""
