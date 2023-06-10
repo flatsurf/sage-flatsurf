@@ -35,7 +35,7 @@ from flatsurf.geometry.surface import (
     OrientedSimilaritySurface,
     MutableOrientedSimilaritySurface,
 )
-from flatsurf.geometry.translation_surface import Origami
+from flatsurf.geometry.origami import Origami
 
 
 ZZ_1 = ZZ(1)
@@ -1824,8 +1824,6 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(o).run()
 
         """
-        from flatsurf.geometry.translation_surface import Origami
-
         return Origami(r, u, rr, uu, domain)
 
     @staticmethod

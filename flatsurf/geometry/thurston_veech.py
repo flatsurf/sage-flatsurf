@@ -45,8 +45,6 @@ from sage.rings.qqbar import do_polred
 from surface_dynamics.flat_surfaces.origamis.origami import Origami
 from surface_dynamics.misc.permutation import perm_dense_cycles
 
-from flatsurf.geometry.polygon import ConvexPolygons
-
 
 class ThurstonVeech:
     def __init__(self, hp, vp):

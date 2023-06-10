@@ -25,7 +25,7 @@ from sage.structure.element import MultiplicativeGroupElement
 from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
 from sage.rings.integer_ring import ZZ
 
-from .translation_surface import AbstractOrigami
+from flatsurf.geometry.origami import AbstractOrigami
 
 _Q = QuaternionAlgebra(-1, -1)
 _i, _j, _k = _Q.gens()
