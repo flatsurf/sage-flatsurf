@@ -28,7 +28,6 @@ from flatsurf.geometry.polygon import (
     polygons,
     EuclideanPolygon,
     Polygon,
-    build_faces,
 )
 
 from flatsurf.geometry.surface import (
@@ -786,7 +785,7 @@ class SimilaritySurfaceGenerators:
             base_ring = P.base_ring()
             comb_edges = P.triangulation()
             vertices = P.vertices()
-            comb_triangles = build_faces(len(vertices), comb_edges)
+            comb_triangles = SimilaritySurfaceGenerators._billiard_build_faces(len(vertices), comb_edges)
             triangles = []
             internal_edges = []  # list (p1, e1, p2, e2)
             external_edges = []  # list (p1, e1)
@@ -841,6 +840,50 @@ class SimilaritySurfaceGenerators:
         surface.set_immutable()
 
         return surface
+
+    @staticmethod
+    def _billiard_build_faces(n, edges):
+        r"""
+        Given a combinatorial list of pairs ``edges`` forming a cell-decomposition
+        of a polygon (with vertices labeled from ``0`` to ``n-1``) return the list
+        of cells.
+
+        This is a helper method for :meth:`billiard`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
+            sage: SimilaritySurfaceGenerators._billiard_build_faces(4, [(0,2)])
+            [[0, 1, 2], [2, 3, 0]]
+            sage: SimilaritySurfaceGenerators._billiard_build_faces(4, [(1,3)])
+            [[1, 2, 3], [3, 0, 1]]
+            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(0,2), (0,3)])
+            [[0, 1, 2], [3, 4, 0], [0, 2, 3]]
+            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(0,2)])
+            [[0, 1, 2], [2, 3, 4, 0]]
+            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(1,4)])
+            [[1, 2, 3, 4], [4, 0, 1]]
+            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(1,3),(3,0)])
+            [[1, 2, 3], [3, 4, 0], [0, 1, 3]]
+        """
+        polygons = [list(range(n))]
+        for u, v in edges:
+            j = None
+            for i, p in enumerate(polygons):
+                if u in p and v in p:
+                    if j is not None:
+                        raise RuntimeError
+                    j = i
+            if j is None:
+                raise RuntimeError
+            p = polygons[j]
+            i0 = p.index(u)
+            i1 = p.index(v)
+            if i0 > i1:
+                i0, i1 = i1, i0
+            polygons[j] = p[i0: i1 + 1]
+            polygons.append(p[i1:] + p[: i0 + 1])
+        return polygons
 
     @staticmethod
     def polygon_double(P):

@@ -1253,7 +1253,7 @@ class Cylinder(SageObject):
         label = labels[i]
         p = ss.polygon(label)
         left_point = p.vertex((edges[i] + 1) % p.num_edges())
-        from flatsurf.geometry.polygon import solve
+        from flatsurf.geometry.euclidean import solve
 
         for i in range(len(edges)):
             label = labels[i]

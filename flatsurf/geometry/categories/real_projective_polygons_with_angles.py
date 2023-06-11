@@ -232,7 +232,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         assert all((x**2 + y**2).is_one() for x, y in slopes)
 
-        from flatsurf.geometry.polygon import projectivization
+        from flatsurf.geometry.euclidean import projectivization
         return [projectivization(x, y) for x, y in slopes]
 
     @cached_method
@@ -569,7 +569,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                     -cosines[i + 1] * e[0] - sines[i + 1] * e[1],
                     sines[i + 1] * e[0] - cosines[i + 1] * e[1],
                 )
-                from flatsurf.geometry.polygon import projectivization
+                from flatsurf.geometry.euclidean import projectivization
                 e = projectivization(*e)
                 edges.append(V(e))
             return edges
