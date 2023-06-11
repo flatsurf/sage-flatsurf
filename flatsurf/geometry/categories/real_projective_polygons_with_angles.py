@@ -369,9 +369,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         V = self.base_ring()**2
         slopes = self.slopes()
         if normalized:
-            V = V.change_ring(self._cosines_ring)
+            V = V.change_ring(self._cosines_ring())
             for i, s in enumerate(slopes):
-                x, y = map(self._cosines_ring, s)
+                x, y = map(self._cosines_ring(), s)
                 norm2 = (x**2 + y**2).sqrt()
                 slopes[i] = V((x / norm2, y / norm2))
 
@@ -383,7 +383,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             from sage.categories.pushout import pushout
 
             if normalized:
-                base_ring = pushout(base_ring, self._cosines_ring)
+                base_ring = pushout(base_ring, self._cosines_ring())
             else:
                 base_ring = pushout(base_ring, self.base_ring())
 

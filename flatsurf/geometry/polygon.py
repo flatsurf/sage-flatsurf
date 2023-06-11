@@ -400,7 +400,7 @@ def triangulate(vertices):
                     assert k == (i - 1) % n or k == i or k == (j - 1) % n or k == j
 
             if good:
-                part0 = [(s + i, t + i) for s, t in triangulate(vertices[i : j + 1])]
+                part0 = [(s + i, t + i) for s, t in triangulate(vertices[i: j + 1])]
                 part1 = []
                 for s, t in triangulate(vertices[j:] + vertices[: i + 1]):
                     if s < n - j:
@@ -453,7 +453,7 @@ def build_faces(n, edges):
         i1 = p.index(v)
         if i0 > i1:
             i0, i1 = i1, i0
-        polygons[j] = p[i0 : i1 + 1]
+        polygons[j] = p[i0: i1 + 1]
         polygons.append(p[i1:] + p[: i0 + 1])
     return polygons
 
@@ -1956,15 +1956,19 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
             for i in range(n):
                 if vertices[i - 1] + edge[i - 1] != vertices[i]:
                     raise ValueError("vertices and edges are not compatible")
+
+        # TODO: Do not check angles if we are sure that they are correct already.
         if angles:
             # Check that the polygon has the prescribed angles
             from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
             # Use EuclideanPolygon.angles() so we do not use the precomputed angles set by the category.
             if RealProjectivePolygonsWithAngles._normalize_angles(angles) != EuclideanPolygon.angles(p):
                 raise ValueError("polygon does not have the prescribed angles")
+
         if lengths:
             # TODO
             raise NotImplementedError
+
         if convex and not p.is_convex():
             raise ValueError("polygon is not convex")
 
@@ -1975,6 +1979,113 @@ polygons = PolygonsConstructor()
 
 
 def EuclideanPolygonsWithAngles(*angles, **kwds):
+    r"""
+    TODO: Document
+
+    TESTS::
+
+        sage: from flatsurf import EquiangularPolygons
+
+    The polygons with inner angles `\pi/4`, `\pi/2`, `5\pi/4`::
+
+        sage: P = EquiangularPolygons(1, 2, 5)
+        sage: P
+        Category of real projective triangles with angles (1/16, 1/8, 5/16) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+    Internally, polygons are given by their vertices' coordinates over some
+    number field, in this case a quadratic field::
+
+        sage: P.base_ring()
+        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+    Polygons can also be defined over other number field implementations::
+
+        sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+        sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
+        sage: P(K(1)) # optional: eantic
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        sage: _.base_ring() # optional: eantic
+        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+    However, specific instances of such polygons might be defined over another ring::
+
+        sage: P(1)
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        sage: _.base_ring()
+        Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+
+        sage: P(AA(1))
+        polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
+        sage: _.base_ring()
+        Algebraic Real Field
+
+    Polygons can also be defined over a module containing transcendent parameters::
+
+        sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
+        sage: R = ExactReals(P.base_ring()) # optional: exactreal
+        sage: P(R(1)) # optional: exactreal
+        polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
+        sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
+        polygon(vertices=[(0, 0),])
+                 (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
+                 (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
+                 ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
+        sage: _.base_ring() # optional: exactreal
+        Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
+
+    ::
+
+        sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
+        sage: L
+        A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
+        sage: lengths = L.rays()[0].vector()
+        sage: lengths
+        (1, -1/2*c0 + 1, -1/2*c0 + 1)
+        sage: p = P(*lengths)    # build one polygon with the given lengths
+        sage: p
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+        sage: p.angles()
+        (1/16, 1/8, 5/16)
+        sage: P.angles(integral=False)
+        (1/16, 1/8, 5/16)
+        sage: P.angles(integral=True)
+        (1, 2, 5)
+
+        sage: P = EquiangularPolygons(1, 2, 1, 2, 2, 1)
+        sage: L = P.lengths_polytope()
+        sage: L
+        A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
+        sage: rays = [r.vector() for r in L.rays()]
+        sage: rays
+        [(1, 0, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+         (0, 1, 0, 0, c^2 - 3, c^2 - 2),
+         (1/3*c^4 - 2*c^2 + 3, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+         (-c^4 + 4*c^2, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
+         (0, 1/3*c^4 - 2*c^2 + 3, c^2 - 3, 0, 0, 1/3*c^4 - c^2),
+         (0, -c^4 + 4*c^2, 0, c^2 - 3, 0, -c^4 + 5*c^2 - 3)]
+        sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
+        sage: p = P(*lengths)
+        sage: p
+        polygon(vertices=[(0, 0),
+                          (-5/3*c^4 + 6*c^2 + 6, 0),
+                          (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
+                          (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
+                          (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
+                          (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)])
+
+        sage: p.angles()
+        (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
+
+        sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
+        Category of real projective pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
+
+    A regular pentagon::
+
+        sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
+        sage: E(1, 1, 1, 1, 1, normalized=True)
+        polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
+
+    """
     if "number_field" in kwds:
         from warnings import warn
 
@@ -1993,111 +2104,11 @@ def EuclideanPolygonsWithAngles(*angles, **kwds):
     angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
     return _EuclideanPolygonsWithAngles(angles)
 
+
 @cached_function
 def _EuclideanPolygonsWithAngles(angles):
     base_ring = RealProjectivePolygonsWithAngles._base_ring(angles)
     return RealProjectivePolygons(base_ring).WithAngles(angles)
 
-# TODO: Deprecate
-# TODO: Keep tests from docstring:
-#     EXAMPLES::
-# 
-#         sage: from flatsurf import EquiangularPolygons
-# 
-#     The polygons with inner angles `\pi/4`, `\pi/2`, `5\pi/4`::
-# 
-#         sage: P = EquiangularPolygons(1, 2, 5)
-#         sage: P
-#         Category of real projective polygons with angles (1, 2, 5) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-# 
-#     Internally, polygons are given by their vertices' coordinates over some
-#     number field, in this case a quadratic field::
-# 
-#         sage: P.base_ring()
-#         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-# 
-#     Polygons can also be defined over other number field implementations::
-# 
-#         sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-#         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
-#         sage: P(K(1)) # optional: eantic
-#         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-#         sage: _.base_ring() # optional: eantic
-#         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-# 
-#     However, specific instances of such polygons might be defined over another ring::
-# 
-#         sage: P(1)
-#         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-#         sage: _.base_ring()
-#         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-# 
-#         sage: P(AA(1))
-#         polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
-#         sage: _.base_ring()
-#         Algebraic Real Field
-# 
-#     Polygons can also be defined over a module containing transcendent parameters::
-# 
-#         sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
-#         sage: R = ExactReals(P.base_ring()) # optional: exactreal
-#         sage: P(R(1)) # optional: exactreal
-#         polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
-#         sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
-#         polygon(vertices=[(0, 0),])
-#                  (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
-#                  (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
-#                  ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
-#         sage: _.base_ring() # optional: exactreal
-#         Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
-# 
-#     ::
-# 
-#         sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
-#         sage: L
-#         A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
-#         sage: lengths = L.rays()[0].vector()
-#         sage: lengths
-#         (1, -1/2*c0 + 1, -1/2*c0 + 1)
-#         sage: p = P(*lengths)    # build one polygon with the given lengths
-#         sage: p
-#         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-#         sage: p.angles()
-#         (1/16, 1/8, 5/16)
-#         sage: P.angles(integral=False)
-#         (1/16, 1/8, 5/16)
-# 
-#         sage: P = EquiangularPolygons(1, 2, 1, 2, 2, 1)
-#         sage: L = P.lengths_polytope()
-#         sage: L
-#         A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
-#         sage: rays = [r.vector() for r in L.rays()]
-#         sage: rays
-#         [(1, 0, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, -1/6*c^5 + 5/6*c^3 - 2/3*c),
-#          (0, 1, 0, 0, c^2 - 3, c^2 - 2),
-#          (1/3*c^4 - 2*c^2 + 3, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
-#          (-c^4 + 4*c^2, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
-#          (0, 1/3*c^4 - 2*c^2 + 3, c^2 - 3, 0, 0, 1/3*c^4 - c^2),
-#          (0, -c^4 + 4*c^2, 0, c^2 - 3, 0, -c^4 + 5*c^2 - 3)]
-#         sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
-#         sage: p = P(*lengths)
-#         sage: p
-#         polygon(vertices=[(0, 0),
-#                           (-5/3*c^4 + 6*c^2 + 6, 0),
-#                           (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
-#                           (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
-#                           (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
-#                           (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)])
-# 
-#         sage: p.angles()
-#         (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
-# 
-#         sage: EquiangularPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-#         Category of real projective polygons with angles (1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
-# 
-#     A regular pentagon::
-# 
-#         sage: E = EquiangularPolygons(1, 1, 1, 1, 1)
-#         sage: E(1, 1, 1, 1, 1, normalized=True)
-#         polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
+
 EquiangularPolygons = EuclideanPolygonsWithAngles
