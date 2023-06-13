@@ -1239,7 +1239,7 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: P(1)
         doctest:warning
         ...
-        UserWarning: calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
         Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: _.base_ring()
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
@@ -1281,7 +1281,7 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: P.angles(integral=True)
         (1, 2, 5)
 
-        sage: P = EuclideanPolygons(1, 2, 1, 2, 2, 1)
+        sage: P = EuclideanPolygonsWithAngles(1, 2, 1, 2, 2, 1)
         sage: L = P.lengths_polytope()
         sage: L
         A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
@@ -1306,16 +1306,16 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: p.angles()
         (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
 
-        sage: EuclideanPolygons(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
+        sage: EuclideanPolygonsWithAngles(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
         Category of simple real projective pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
 
     A regular pentagon::
 
-        sage: E = EuclideanPolygons(1, 1, 1, 1, 1)
+        sage: E = EuclideanPolygonsWithAngles(1, 1, 1, 1, 1)
         sage: E(1, 1, 1, 1, 1, normalized=True)
         doctest:warning
         ...
-        UserWarning: calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
+        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
         Polygon(vertices=[(0, 0), (1, 0), (1/2*c^2 - 1/2, 1/2*c), (1/2, 1/2*c^3 - c), (-1/2*c^2 + 3/2, 1/2*c)])
 
     """
@@ -1333,6 +1333,10 @@ def EquiangularPolygons(*angles, **kwds):
 
         sage: from flatsurf import EquiangularPolygons
         sage: EquiangularPolygons(1, 1, 1)
+        doctest:warning
+        ...
+        UserWarning: EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use EuclideanPolygonsWithAngles() instead
+        Category of simple real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
     """
     import warnings

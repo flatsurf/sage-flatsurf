@@ -2173,7 +2173,7 @@ def SurfaceClass(surface, name, category, *args, **kwargs):
     if surface.is_finite_type():
         message += f" Calling set_immutable() on this surface should determine the category of this surface automatically so calling {name} should not be necessary in this case."
     else:
-        message += f" For this surface of infinite type, you should create a subclass of OrientedSimilaritySurface and set the category in the __init__ method; see flatsurf.geometry.similarity_surface_generators.EInfinitySurface for an example of this approach"
+        message += " For this surface of infinite type, you should create a subclass of OrientedSimilaritySurface and set the category in the __init__ method; see flatsurf.geometry.similarity_surface_generators.EInfinitySurface for an example of this approach"
 
     message += f" You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the {category}."
 
@@ -2189,35 +2189,206 @@ def SurfaceClass(surface, name, category, *args, **kwargs):
 
 
 def SimilaritySurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, SimilaritySurface
+        sage: S = Surface_list(QQ)
+        doctest:warning
+        ...
+        UserWarning: Surface_list has been deprecated and will be removed in a future version of sage-flatsurf; use MutableOrientedSimilaritySurface instead
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = SimilaritySurface(S)
+        doctest:warning
+        ...
+        UserWarning: SimilaritySurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling SimilaritySurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented similarity surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type oriented similarity surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import SimilaritySurfaces
     return SurfaceClass(surface, "SimilaritySurface()", SimilaritySurfaces(), *args, **kwargs)
 
 
 def HalfDilationSurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, HalfDilationSurface
+        sage: S = Surface_list(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = HalfDilationSurface(S)
+        doctest:warning
+        ...
+        UserWarning: HalfDilationSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling HalfDilationSurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented dilation surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type oriented dilation surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import DilationSurfaces
     return SurfaceClass(surface, "HalfDilationSurface()", DilationSurfaces(), *args, **kwargs)
 
 
 def DilationSurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, DilationSurface
+        sage: S = Surface_list(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = DilationSurface(S)
+        doctest:warning
+        ...
+        UserWarning: DilationSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling DilationSurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented positive dilation surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type oriented positive dilation surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import DilationSurfaces
     return SurfaceClass(surface, "DilationSurface()", DilationSurfaces().Positive(), *args, **kwargs)
 
 
 def ConeSurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, ConeSurface
+        sage: S = Surface_list(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = ConeSurface(S)
+        doctest:warning
+        ...
+        UserWarning: ConeSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling ConeSurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented cone surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type oriented cone surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import ConeSurfaces
     return SurfaceClass(surface, "ConeSurface()", ConeSurfaces(), *args, **kwargs)
 
 
 def RationalConeSurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, RationalConeSurface
+        sage: S = Surface_list(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = RationalConeSurface(S)
+        doctest:warning
+        ...
+        UserWarning: RationalConeSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling RationalConeSurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented rational cone surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type oriented rational cone surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import ConeSurfaces
     return SurfaceClass(surface, "RationalConeSurface()", ConeSurfaces().Rational(), *args, **kwargs)
 
 
 def HalfTranslationSurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, HalfTranslationSurface
+        sage: S = Surface_list(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = HalfTranslationSurface(S)
+        doctest:warning
+        ...
+        UserWarning: HalfTranslationSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling HalfTranslationSurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary oriented half translation surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type oriented half translation surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import HalfTranslationSurfaces
     return SurfaceClass(surface, "HalfTranslationSurface()", HalfTranslationSurfaces(), *args, **kwargs)
 
 
 def TranslationSurface(surface, *args, **kwargs):
+    r"""
+    Refine the category of ``surface``.
+
+    This function is deprecated and should not be used anymore.
+
+    EXAMPLES::
+
+        sage: from flatsurf import Surface_list, polygons, TranslationSurface
+        sage: S = Surface_list(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.set_edge_pairing(0, 0, 0, 2)
+        sage: S.set_edge_pairing(0, 1, 0, 3)
+        sage: S = TranslationSurface(S)
+        doctest:warning
+        ...
+        UserWarning: TranslationSurface() has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore. Calling set_immutable() on this surface should determine the category of this surface automatically so calling TranslationSurface() should not be necessary in this case. You can still explicitly refine the category of a surface with _refine_category_() but this is not recommended. We will now refine the category of this surface to make sure that it is in the Category of connected without boundary translation surfaces.
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+        sage: S.set_immutable()
+        sage: S.category()
+        Category of connected without boundary finite type translation surfaces
+
+    """
     from flatsurf.geometry.categories import TranslationSurfaces
     return SurfaceClass(surface, "TranslationSurface()", TranslationSurfaces(), *args, **kwargs)
