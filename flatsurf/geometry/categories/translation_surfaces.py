@@ -163,7 +163,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 labels = islice(labels, limit)
 
             for label in labels:
-                for edge in range(surface.polygon(label).num_edges()):
+                for edge in range(len(surface.polygon(label).vertices())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:
@@ -230,7 +230,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 warnings.warn("passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead")
                 p, e = p
 
-            if e < 0 or e >= self.polygon(p).num_edges():
+            if e < 0 or e >= len(self.polygon(p).vertices()):
                 raise ValueError("invalid edge index for this polygon")
 
             from sage.all import identity_matrix
@@ -323,10 +323,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     v = self.polygon(label).get_point_position(coordinates).get_vertex()
                     vertex_deformation[(label, v)] = vect
                     deformed_labels.add(label)
-                    assert s.polygon(label).num_edges() == 3
+                    assert len(s.polygon(label).vertices()) == 3
 
             from flatsurf.geometry.euclidean import ccw
-            from flatsurf.geometry.polygon import ConvexPolygons
 
             if local:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -334,7 +333,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
                 us = ss
 
-                P = ConvexPolygons(field)
                 for label in deformed_labels:
                     polygon = s.polygon(label)
                     a0 = vector_space(polygon.vertex(1))
@@ -370,7 +368,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # Triangle does not degenerate.
                     from flatsurf import Polygon
                     us.replace_polygon(
-                        label, Polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], category=P)
+                        label, Polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], base_ring=field)
                     )
                 ss.set_immutable()
                 return ss

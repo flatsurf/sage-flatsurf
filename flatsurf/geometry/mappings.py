@@ -173,12 +173,12 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         for i in range(e1):
             edge_map[len(vs)] = (p1, i)
             vs.append(poly1.edge(i))
-        ne = poly2.num_edges()
+        ne = len(poly2.vertices())
         for i in range(1, ne):
             ee = (e2 + i) % ne
             edge_map[len(vs)] = (p2, ee)
             vs.append(dt * poly2.edge(ee))
-        for i in range(e1 + 1, poly1.num_edges()):
+        for i in range(e1 + 1, len(poly1.vertices())):
             edge_map[len(vs)] = (p1, i)
             vs.append(poly1.edge(i))
 
@@ -225,7 +225,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         """
         return (
             self._glued_edge,
-            self._glued_edge + self._domain.polygon(self._removed_label).num_edges(),
+            self._glued_edge + len(self._domain.polygon(self._removed_label).vertices()),
         )
 
     def push_vector_forward(self, tangent_vector):
@@ -331,7 +331,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             raise ValueError("The surface should be immutable.")
 
         poly = s.polygon(p)
-        ne = poly.num_edges()
+        ne = len(poly.vertices())
         if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
             raise ValueError("Provided vertices out of bounds.")
         if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
@@ -486,7 +486,7 @@ def subdivide_a_polygon(s):
     from flatsurf.geometry.euclidean import ccw
 
     for label, poly in zip(s.labels(), s.polygons()):
-        n = poly.num_edges()
+        n = len(poly.vertices())
         if n > 3:
             for i in range(n):
                 e1 = poly.edge(i)
@@ -552,7 +552,7 @@ def one_delaunay_flip_mapping(s):
     Returns one delaunay flip, or none if no flips are needed.
     """
     for p, poly in zip(s.labels(), s.polygons()):
-        for e in range(poly.num_edges()):
+        for e in range(len(poly.vertices())):
             if s._delaunay_edge_needs_flip(p, e):
                 return flip_edge_mapping(s, p, e)
     return None
@@ -600,7 +600,7 @@ def delaunay_decomposition_mapping(s):
     edge_vectors = []
 
     for p, poly in zip(s1.labels(), s1.polygons()):
-        for e in range(poly.num_edges()):
+        for e in range(len(poly.vertices())):
             pp, ee = s1.opposite_edge(p, e)
             if (pp, ee) in joins:
                 continue
@@ -634,7 +634,7 @@ def canonical_first_vertex(polygon):
     """
     best = 0
     best_pt = polygon.vertex(best)
-    for v in range(1, polygon.num_edges()):
+    for v in range(1, len(polygon.vertices())):
         pt = polygon.vertex(v)
         if pt[1] < best_pt[1]:
             best = v
@@ -669,18 +669,18 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         for label, polygon in zip(s.labels(), s.polygons()):
             cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
-            for i in range(polygon.num_edges()):
-                newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
+            for i in range(len(polygon.vertices())):
+                newedges.append(polygon.edge((i + cvcur) % len(polygon.vertices())))
 
             from flatsurf import Polygon
             s2.add_polygon(Polygon(edges=newedges, base_ring=ring), label=label)
             translations[label] = T(-polygon.vertex(cvcur))
         for l1, polygon in zip(s.labels(), s.polygons()):
-            for e1 in range(polygon.num_edges()):
+            for e1 in range(len(polygon.vertices())):
                 l2, e2 = s.opposite_edge(l1, e1)
-                ee1 = (e1 - cv[l1] + polygon.num_edges()) % polygon.num_edges()
+                ee1 = (e1 - cv[l1] + len(polygon.vertices())) % len(polygon.vertices())
                 polygon2 = s.polygon(l2)
-                ee2 = (e2 - cv[l2] + polygon2.num_edges()) % polygon2.num_edges()
+                ee2 = (e2 - cv[l2] + len(polygon2.vertices())) % len(polygon2.vertices())
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
                 s2.glue((l1, ee1), (l2, ee2))
         s2.set_roots(s.roots())
@@ -803,10 +803,10 @@ def polygon_compare(poly1, poly2):
     res = my_sgn(-poly1.area() + poly2.area())
     if res != 0:
         return res
-    res = my_sgn(poly1.num_edges() - poly2.num_edges())
+    res = my_sgn(len(poly1.vertices()) - len(poly2.vertices()))
     if res != 0:
         return res
-    ne = poly1.num_edges()
+    ne = len(poly1.vertices())
     for i in range(0, ne - 1):
         edge_diff = poly1.edge(i) - poly2.edge(i)
         res = my_sgn(edge_diff[0])

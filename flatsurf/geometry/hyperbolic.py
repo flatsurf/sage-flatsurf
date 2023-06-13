@@ -9915,7 +9915,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         """
         if category is None:
             from flatsurf.geometry.categories import HyperbolicPolygons
-            category = HyperbolicPolygons(parent.base_ring()).Convex()
+            category = HyperbolicPolygons(parent.base_ring()).Convex().Simple()
 
         super().__init__(parent, category=category)
 
@@ -11740,6 +11740,65 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
             if isinstance(polygon, HyperbolicConvexPolygon):
                 return polygon
+
+    def is_degenerate(self):
+        r"""
+        Return whether this is considered to be a degenerate polygon.
+
+        EXAMPLES:
+
+        We consider polygons of area zero as degenerate::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(0).left_half_space(),
+            ....:     H.half_circle(0, 1).left_half_space(),
+            ....:     H.half_circle(0, 2).right_half_space(),
+            ....:     H.vertical(0).right_half_space()
+            ....: ], check=False, assume_minimal=True)
+            sage: P.is_degenerate()
+            True
+
+        We also consider polygons with marked points as degenerate::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space(),
+            ....:     H.half_circle(0, 4).right_half_space(),
+            ....:     H.vertical(-1).right_half_space()
+            ....: ], marked_vertices=[2*I])
+            sage: P.is_degenerate()
+            True
+
+            sage: H.polygon(P.half_spaces()).is_degenerate()
+            False
+
+        Finally, we consider polygons with ideal points as degenerate::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.vertical(-1).right_half_space()
+            ....: ])
+            sage: P.is_degenerate()
+            True
+
+        .. NOTE::
+
+            This is not a terribly meaningful notion. This exists mostly
+            because degenerate polygons have a more obvious meaning in
+            Euclidean geometry where this check is used when rendering a
+            polygon as a string.
+
+        """
+        if self.parent().polygon(self.half_spaces()) != self:
+            return True
+
+        return not self.is_finite()
 
 
 class HyperbolicSegment(HyperbolicConvexFacade):

@@ -276,8 +276,8 @@ class Similarity(MultiplicativeGroupElement):
             (x, y) |-> (25*x + 4, 25*y + 10)
             sage: g(p)
             Polygon(vertices=[(4, 10), (29, 10), (29, 35), (4, 35)])
-            sage: g(p, ring=AA).parent()
-            Category of convex real projective polygons over Algebraic Real Field
+            sage: g(p, ring=AA).category()
+            Category of convex simple real projective polygons over Algebraic Real Field
 
         """
         if ring is not None and ring not in Rings():

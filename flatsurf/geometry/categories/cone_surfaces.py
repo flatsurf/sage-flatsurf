@@ -169,7 +169,7 @@ class ConeSurfaces(SurfaceCategory):
                 labels = islice(labels, limit)
 
             for label in labels:
-                for edge in range(surface.polygon(label).num_edges()):
+                for edge in range(len(surface.polygon(label).vertices())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:
@@ -336,7 +336,7 @@ class ConeSurfaces(SurfaceCategory):
                                 adjacent_edges = [(p, e)]
                                 angle = self.polygon(p).angle(e, numerical=numerical)
                                 pp, ee = self.opposite_edge(
-                                    p, (e - 1) % self.polygon(p).num_edges()
+                                    p, (e - 1) % len(self.polygon(p).vertices())
                                 )
                                 while pp != p or ee != e:
                                     edges.remove((pp, ee))
@@ -345,7 +345,7 @@ class ConeSurfaces(SurfaceCategory):
                                         ee, numerical=numerical
                                     )
                                     pp, ee = self.opposite_edge(
-                                        pp, (ee - 1) % self.polygon(pp).num_edges()
+                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
                                     )
                                 angles.append((angle, adjacent_edges))
                         else:
@@ -353,7 +353,7 @@ class ConeSurfaces(SurfaceCategory):
                                 p, e = edges.pop()
                                 angle = self.polygon(p).angle(e, numerical=numerical)
                                 pp, ee = self.opposite_edge(
-                                    p, (e - 1) % self.polygon(p).num_edges()
+                                    p, (e - 1) % len(self.polygon(p).vertices())
                                 )
                                 while pp != p or ee != e:
                                     edges.remove((pp, ee))
@@ -361,7 +361,7 @@ class ConeSurfaces(SurfaceCategory):
                                         ee, numerical=numerical
                                     )
                                     pp, ee = self.opposite_edge(
-                                        pp, (ee - 1) % self.polygon(pp).num_edges()
+                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
                                     )
                                 angles.append(angle)
 

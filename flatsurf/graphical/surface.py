@@ -420,7 +420,7 @@ class GraphicalSurface:
                 raise NotImplementedError
             if adjacent:
                 for label, poly in zip(self._ss.labels(), self._ss.polygons()):
-                    for e in range(poly.num_edges()):
+                    for e in range(len(poly.vertices())):
                         l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
                             self.make_adjacent(label, e)
@@ -448,7 +448,7 @@ class GraphicalSurface:
             if adjacent:
                 i = 0
                 for label, poly in zip(self._ss.labels(), self._ss.polygons()):
-                    for e in range(poly.num_edges()):
+                    for e in range(len(poly.vertices())):
                         l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
                             self.make_adjacent(label, e)
@@ -762,7 +762,7 @@ class GraphicalSurface:
                         continue
                     if (
                         ccw(
-                            polygon.edge((vertex - 1) % polygon.num_edges()), direction
+                            polygon.edge((vertex - 1) % len(polygon.vertices())), direction
                         )
                         < 0
                     ):
@@ -869,24 +869,24 @@ class GraphicalSurface:
 
         if self._edge_labels == "gluings":
             labels = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 if self.is_adjacent(lab, e):
                     labels.append(None)
                 else:
                     llab, ee = s.opposite_edge(lab, e)
                     labels.append(str(llab))
         elif self._edge_labels == "number":
-            labels = list(map(str, range(p.num_edges())))
+            labels = list(map(str, range(len(p.vertices()))))
         elif self._edge_labels == "gluings and number":
             labels = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 if self.is_adjacent(lab, e):
                     labels.append(str(e))
                 else:
                     labels.append("{} -> {}".format(e, s.opposite_edge(lab, e)))
         elif self._edge_labels == "letter":
             labels = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 llab, ee = s.opposite_edge(lab, e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
                     labels.append(None)
@@ -1116,7 +1116,7 @@ class GraphicalSurface:
 
             # Plot the edges
             if self.will_plot_edges:
-                for i in range(self._ss.polygon(label).num_edges()):
+                for i in range(len(self._ss.polygon(label).vertices())):
                     if self.is_adjacent(label, i):
                         if (
                             self.will_plot_adjacent_edges
@@ -1137,7 +1137,7 @@ class GraphicalSurface:
                 # get the edge labels
                 edge_labels = self.edge_labels(label)
                 if edge_labels is not None:
-                    for i in range(self._ss.polygon(label).num_edges()):
+                    for i in range(len(self._ss.polygon(label).vertices())):
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p

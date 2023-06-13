@@ -14,7 +14,7 @@ EXAMPLES::
     ....: ])
 
     sage: P.category()
-    Category of facade convex hyperbolic polygons over Rational Field
+    Category of facade convex simple hyperbolic polygons over Rational Field
 
     sage: from flatsurf.geometry.categories import HyperbolicPolygons
     sage: P in HyperbolicPolygons(QQ)

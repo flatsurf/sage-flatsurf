@@ -150,7 +150,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 return True
 
             for root in roots:
-                if self.polygon(root).num_edges() != 3:
+                if len(self.polygon(root).vertices()) != 3:
                     return False
 
             raise NotImplementedError("cannot decide whether this (potentially infinite type) surface is triangulated")
@@ -464,7 +464,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 warnings.warn(
                     "edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead"
                 )
-                for edge in range(polygon.num_edges()):
+                for edge in range(len(polygon.vertices())):
                     yield label, edge
 
         def edges(self):
@@ -561,12 +561,12 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: from flatsurf import Polygon, similarity_surfaces
                 sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
                 sage: S = similarity_surfaces.self_glued_polygon(P)
-                sage: list(S.label_polygon_iterator())
+                sage: print(list(S.label_polygon_iterator()))
                 doctest:warning
                 ...
                 UserWarning: label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead
                 [(0, Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
-                sage: list(zip(S.labels(), S.polygons()))
+                sage: print(list(zip(S.labels(), S.polygons())))
                 [(0, Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]
 
             """
@@ -685,15 +685,15 @@ class PolygonalSurfaces(SurfaceCategory):
                 sage: S.num_edges()
                 doctest:warning
                 ...
-                UserWarning: num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(p.num_edges() for p in polygons()) instead
+                UserWarning: num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(len(p.vertices()) for p in polygons()) instead
                 4
 
             """
             import warnings
-            warnings.warn("num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(p.num_edges() for p in polygons()) instead")
+            warnings.warn("num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(len(p.vertices()) for p in polygons()) instead")
 
             if self.is_finite_type():
-                return sum(p.num_edges() for p in self.polygons())
+                return sum(len(p.vertices()) for p in self.polygons())
 
             from sage.rings.infinity import Infinity
 
@@ -722,7 +722,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             for lab in it:
                 p = self.polygon(lab)
-                for k in range(p.num_edges()):
+                for k in range(len(p.vertices())):
                     e = (lab, k)
                     f = self.opposite_edge(lab, k)
                     if f is None:
@@ -979,7 +979,7 @@ class PolygonalSurfaces(SurfaceCategory):
                         return parent
 
                     for label, edge in self.edges():
-                        previous = (edge - 1) % self.polygon(label).num_edges()
+                        previous = (edge - 1) % len(self.polygon(label).vertices())
                         cross = self.opposite_edge(label, previous)
                         if cross is None:
                             continue
@@ -1044,7 +1044,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 """
                 for p in self.polygons():
-                    if p.num_edges() != 3:
+                    if len(p.vertices()) != 3:
                         return False
 
                 return True
@@ -1063,7 +1063,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 """
                 for label in self.labels():
-                    for edge in range(self.polygon(label).num_edges()):
+                    for edge in range(len(self.polygon(label).vertices())):
                         cross = self.opposite_edge(label, edge)
                         if cross is None:
                             return True
@@ -1286,7 +1286,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
                 for lab in it:
                     p = self.polygon(lab)
-                    for k in range(p.num_edges()):
+                    for k in range(len(p.vertices())):
                         f = self.opposite_edge(lab, k)
                         tester.assertFalse(
                             f is None, "edge ({}, {}) is not glued".format(lab, k)

@@ -701,7 +701,7 @@ class SimilaritySurfaceGenerators:
         """
         s = MutableOrientedSimilaritySurface(P.base_ring())
         s.add_polygon(P)
-        for i in range(P.num_edges()):
+        for i in range(len(P.vertices())):
             s.glue((0, i), (0, i))
         s.set_immutable()
         return s
@@ -814,7 +814,7 @@ class SimilaritySurfaceGenerators:
             P = triangles
         else:
             internal_edges = []
-            external_edges = [(0, i) for i in range(P.num_edges())]
+            external_edges = [(0, i) for i in range(len(P.vertices()))]
             base_ring = P.base_ring()
             P = [P]
 
@@ -828,11 +828,11 @@ class SimilaritySurfaceGenerators:
             )
         for p1, e1, p2, e2 in internal_edges:
             surface.glue((p1, e1), (p2, e2))
-            ne1 = surface.polygon(p1).num_edges()
-            ne2 = surface.polygon(p2).num_edges()
+            ne1 = len(surface.polygon(p1).vertices())
+            ne2 = len(surface.polygon(p2).vertices())
             surface.glue((m + p1, ne1 - e1 - 1), (m + p2, ne2 - e2 - 1))
         for p, e in external_edges:
-            ne = surface.polygon(p).num_edges()
+            ne = len(surface.polygon(p).vertices())
             surface.glue((p, e), (m + p, ne - e - 1))
 
         if rational:
@@ -894,7 +894,7 @@ class SimilaritySurfaceGenerators:
         """
         from sage.matrix.constructor import matrix
 
-        n = P.num_edges()
+        n = len(P.vertices())
         r = matrix(2, [-1, 0, 0, 1])
         Q = Polygon(edges=[r * v for v in reversed(P.edges())])
 

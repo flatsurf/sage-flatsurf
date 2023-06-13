@@ -117,7 +117,7 @@ class SimilaritySurfaceTangentVector:
             # subsequent edge:
             edge1 = p.edge(v)
             # prior edge:
-            edge0 = p.edge((v - 1) % p.num_edges())
+            edge0 = p.edge((v - 1) % len(p.vertices()))
             wp1 = ccw(edge1, vector)
             wp0 = ccw(edge0, vector)
             if wp1 < 0 or wp0 < 0:
@@ -127,10 +127,10 @@ class SimilaritySurfaceTangentVector:
             if wp0 == 0:
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
-                    polygon_label, (v - 1) % p.num_edges()
+                    polygon_label, (v - 1) % len(p.vertices())
                 )
                 similarity = self.surface().edge_transformation(
-                    polygon_label, (v - 1) % p.num_edges()
+                    polygon_label, (v - 1) % len(p.vertices())
                 )
                 point2 = similarity(point)
                 vector2 = similarity.derivative() * vector
@@ -425,7 +425,7 @@ class SimilaritySurfaceTangentVector:
                 der = der * s.edge_matrix(label2, edge2)
                 v1 = der * (-s.polygon(label2).edge(edge2))
                 label = label2
-                vertex = (edge2 + 1) % s.polygon(label2).num_edges()
+                vertex = (edge2 + 1) % len(s.polygon(label2).vertices())
                 v2 = der * (s.polygon(label2).edge(vertex))
             assert count < rotate_limit, "Reached limit!"
             if code:
@@ -485,9 +485,9 @@ class SimilaritySurfaceTangentVector:
             v1 = self.vector()
             label = self.polygon_label()
             vertex = self.vertex()
-            previous_vertex = (vertex - 1 + s.polygon(label).num_edges()) % s.polygon(
+            previous_vertex = (vertex - 1 + len(s.polygon(label).vertices())) % len(s.polygon(
                 label
-            ).num_edges()
+            ).vertices())
             v2 = -s.polygon(label).edge(previous_vertex)
             from sage.matrix.constructor import Matrix
 
@@ -505,8 +505,8 @@ class SimilaritySurfaceTangentVector:
                     label = label2
                     vertex = edge2
                     previous_vertex = (
-                        vertex - 1 + s.polygon(label).num_edges()
-                    ) % s.polygon(label).num_edges()
+                        vertex - 1 + len(s.polygon(label).vertices())
+                    ) % len(s.polygon(label).vertices())
                     v1 = der * (s.polygon(label).edge(vertex))
                     v2 = der * (-s.polygon(label).edge(previous_vertex))
                     if ccw(v1, w) >= 0 and ccw(w, v2) > 0:

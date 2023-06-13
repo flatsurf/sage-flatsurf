@@ -58,7 +58,7 @@ def _is_finite(surface):
     for label in surface.labels():
         polygon = surface.polygon(label)
 
-        for e in range(polygon.num_edges()):
+        for e in range(len(polygon.vertices())):
             m = surface.edge_matrix(label, e)
 
             from flatsurf.geometry.euclidean import is_cosine_sine_of_rational

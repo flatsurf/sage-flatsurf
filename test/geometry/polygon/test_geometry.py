@@ -57,7 +57,7 @@ def test_is_anti_parallel():
 
 @pytest.mark.repeat(4096)
 def test_segment_intersect():
-    from flatsurf.geometry.polygon import segment_intersect
+    from flatsurf.geometry.polygon import segment_intersection
 
     while True:
         us = (randint(-4, 4), randint(-4, 4))
@@ -67,14 +67,14 @@ def test_segment_intersect():
         if us != ut and vs != vt:
             break
 
-    ans1 = segment_intersect((us, ut), (vs, vt))
-    ans2 = segment_intersect((ut, us), (vs, vt))
-    ans3 = segment_intersect((us, ut), (vt, vs))
-    ans4 = segment_intersect((ut, us), (vt, vs))
-    ans5 = segment_intersect((vs, vt), (us, ut))
-    ans6 = segment_intersect((vt, vs), (us, ut))
-    ans7 = segment_intersect((vs, vt), (ut, us))
-    ans8 = segment_intersect((vt, vs), (ut, us))
+    ans1 = segment_intersection((us, ut), (vs, vt))
+    ans2 = segment_intersection((ut, us), (vs, vt))
+    ans3 = segment_intersection((us, ut), (vt, vs))
+    ans4 = segment_intersection((ut, us), (vt, vs))
+    ans5 = segment_intersection((vs, vt), (us, ut))
+    ans6 = segment_intersection((vt, vs), (us, ut))
+    ans7 = segment_intersection((vs, vt), (ut, us))
+    ans8 = segment_intersection((vt, vs), (ut, us))
     assert ans1 == ans2 == ans3 == ans4 == ans5 == ans6 == ans7 == ans8, (
         us,
         ut,

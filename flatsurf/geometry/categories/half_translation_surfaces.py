@@ -353,7 +353,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     hols = []
                     for lab in self.labels():
                         p = self.polygon(lab)
-                        for e in range(p.num_edges()):
+                        for e in range(len(p.vertices())):
                             w = M * p.edge(e)
                             hols.append(w[0])
                             hols.append(w[1])
@@ -368,24 +368,23 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                         K, new_hols, _ = subfield_from_elements(self.base_ring(), hols)
 
-                    from flatsurf.geometry.polygon import ConvexPolygons, Polygon
+                    from flatsurf.geometry.polygon import Polygon
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
 
                     S = MutableOrientedSimilaritySurface(K)
-                    C = ConvexPolygons(K)
                     relabelling = {}
                     k = 0
                     for lab in self.labels():
-                        m = self.polygon(lab).num_edges()
+                        m = len(self.polygon(lab).vertices())
                         relabelling[lab] = S.add_polygon(
                             Polygon(
                                 edges=[
                                     (new_hols[k + 2 * i], new_hols[k + 2 * i + 1])
                                     for i in range(m)
                                 ],
-                                category=C
+                                base_ring=K
                             )
                         )
                         k += 2 * m
@@ -490,7 +489,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                                 while pair in edges:
                                     adjacent_edges.append(pair)
                                     edges.remove(pair)
-                                    f = (e - 1) % self.polygon(p).num_edges()
+                                    f = (e - 1) % len(self.polygon(p).vertices())
                                     ve = self.polygon(p).edge(e)
                                     vf = -self.polygon(p).edge(f)
                                     ppair = pp, ff = self.opposite_edge(p, f)
@@ -510,7 +509,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                                 angle = 0
                                 while pair in edges:
                                     edges.remove(pair)
-                                    f = (e - 1) % self.polygon(p).num_edges()
+                                    f = (e - 1) % len(self.polygon(p).vertices())
                                     ve = self.polygon(p).edge(e)
                                     vf = -self.polygon(p).edge(f)
                                     ppair = pp, ff = self.opposite_edge(p, f)

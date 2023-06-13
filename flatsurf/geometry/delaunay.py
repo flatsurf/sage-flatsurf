@@ -166,8 +166,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         reference_polygon = self._reference.polygon(reference_label)
 
         outer_edges = [
-            (vertex, (vertex + 1) % reference_polygon.num_edges())
-            for vertex in range(reference_polygon.num_edges())
+            (vertex, (vertex + 1) % len(reference_polygon.vertices()))
+            for vertex in range(len(reference_polygon.vertices()))
         ]
         inner_edges = reference_polygon.triangulation()
         inner_edges.extend([(w, v) for (v, w) in inner_edges])
@@ -241,7 +241,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         if (
             vertices[(edge + 1) % 3]
-            == (vertices[edge] + 1) % reference_polygon.num_edges()
+            == (vertices[edge] + 1) % len(reference_polygon.vertices())
         ):
             # This is an edge of the reference surface
             cross_reference_label, cross_reference_edge = self._reference.opposite_edge(
@@ -251,7 +251,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             cross_vertices = self._triangulation(cross_reference_label)[
                 (
                     cross_reference_edge,
-                    (cross_reference_edge + 1) % cross_reference_polygon.num_edges(),
+                    (cross_reference_edge + 1) % len(cross_reference_polygon.vertices()),
                 )
             ]
 
@@ -523,7 +523,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
 
         """
         self._ensure_polygon(label)
-        for edge in range(self._surface.polygon(label).num_edges()):
+        for edge in range(len(self._surface.polygon(label).vertices())):
             cross = self._surface.opposite_edge(label, edge)
             if cross is None:
                 cross_label, cross_edge = self._reference.opposite_edge(label, edge)
@@ -610,7 +610,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
-        sage: S.polygon(S.root()).num_edges()
+        sage: len(S.polygon(S.root()).vertices())
         3
         sage: TestSuite(S).run()
         sage: S.is_delaunay_triangulated(limit=10)
@@ -821,7 +821,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             # Already certified.
             return True
         p = self._surface.polygon(label)
-        assert p.num_edges() == 3
+        assert len(p.vertices()) == 3
 
         c = p.circumscribing_circle()
 
@@ -845,7 +845,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
                 if lll not in self._certified_labels:
                     ppp = self._surface.polygon(lll)
-                    assert ppp.num_edges() == 3
+                    assert len(ppp.vertices()) == 3
 
                     if self._surface._delaunay_edge_needs_flip(ll, ee):
                         # Perform the flip
@@ -1068,7 +1068,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         ]
 
         from flatsurf import Polygon
-        return Polygon(edges=edges, category=self._delaunay_triangulation.polygon(label).parent())
+        return Polygon(edges=edges)
 
     @cached_method
     def _label(self, cell):

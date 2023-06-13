@@ -224,7 +224,7 @@ class GraphicalPolygon:
         Options are processed as in sage.plot.line.line2d.
         """
         return line2d(
-            [self._v[e], self._v[(e + 1) % self.base_polygon().num_edges()]], **options
+            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]], **options
         )
 
     def plot_edge_label(self, i, label, **options):
@@ -244,7 +244,7 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        e = self._v[(i + 1) % self.base_polygon().num_edges()] - self._v[i]
+        e = self._v[(i + 1) % len(self.base_polygon().vertices())] - self._v[i]
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:

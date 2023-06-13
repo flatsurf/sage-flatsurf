@@ -52,9 +52,9 @@ Let us verify that the (7, 7, 16) triangle indeed fails the assertion of the con
 First, we construct a triangle with angles (7, 7, 16).
 
 ```{code-cell} ipython3
-from flatsurf import EquiangularPolygons
+from flatsurf import EuclideanPolygonsWithAngles
 
-Δ = EquiangularPolygons(7, 7, 16).an_element()
+Δ = EuclideanPolygonsWithAngles(7, 7, 16).an_element()
 Δ
 ```
 
@@ -108,9 +108,9 @@ We can use sage-flatsurf to verify that this assertion does indeed hold. Let us 
 We start by constructing the unfolding of that triangle:
 
 ```{code-cell} ipython3
-from flatsurf import EquiangularPolygons, similarity_surfaces
+from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces
 
-Δ = EquiangularPolygons(1, 1, 10).an_element()
+Δ = EuclideanPolygonsWithAngles(1, 1, 10).an_element()
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
 ```
 
@@ -140,19 +140,19 @@ As indicated in the conjecture, (2, 3, 6) is exceptional, i.e., there is such a 
 Again, we can ask sage-flatsurf to compute the flow decomposition of the unfolding of the (2, 3, 6) triangle. It turns out that in vertical direction (1, 0), it does not fully decompose into cylinders:
 
 ```{code-cell} ipython3
-from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
+from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
 
-Δ = EquiangularPolygons(2, 3, 6).an_element()
+Δ = EuclideanPolygonsWithAngles(2, 3, 6).an_element()
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
 D = GL2ROrbitClosure(S).decomposition(vector(Δ.base_ring(), (1, 0)))
 D
 ```
 
 ```{code-cell} ipython3
-from flatsurf import polygons, similarity_surfaces, EquiangularPolygons
+from flatsurf import polygons, similarity_surfaces, EuclideanPolygonsWithAngles
 from flatsurf import GL2ROrbitClosure
 
-E = EquiangularPolygons(2, 3, 6)
+E = EuclideanPolygonsWithAngles(2, 3, 6)
 T = E.random_element()
 S = similarity_surfaces.billiard(T)
 S = S.minimal_cover(cover_type="translation")
@@ -312,9 +312,9 @@ Assertion (d) can be phrased as
 We can use sage-flatsurf to check this assertion for some small triangles. Let us consider the (2, 2, 3) triangle.
 
 ```{code-cell} ipython3
-from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
+from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
 
-Δ = EquiangularPolygons(2, 2, 3).an_element()
+Δ = EuclideanPolygonsWithAngles(2, 2, 3).an_element()
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
 ```
 
@@ -359,9 +359,9 @@ Assertion (e) can be phrased as
 The (7,8,15) triangle which is also a counterexample to (a) works here as well.
 
 ```{code-cell} ipython3
-from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
+from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
 
-Δ = EquiangularPolygons(7, 8, 15).an_element()
+Δ = EuclideanPolygonsWithAngles(7, 8, 15).an_element()
 S = similarity_surfaces.billiard(Δ).minimal_cover(cover_type="translation")
 ```
 

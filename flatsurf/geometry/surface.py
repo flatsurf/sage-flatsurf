@@ -170,7 +170,7 @@ class MutablePolygonalSurface(Surface_base):
 
     def _describe_polygons(self):
         polygons = [
-            (-p.erase_marked_vertices().num_edges(), p.describe_polygon())
+            (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
             for p in self.polygons()
         ]
         polygons.sort()
@@ -348,7 +348,7 @@ class OrientedSimilaritySurface(Surface_base):
                 return False
             if polygon != polygon2:
                 return False
-            for edge in range(polygon.num_edges()):
+            for edge in range(len(polygon.vertices())):
                 if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
                     return False
 
@@ -363,7 +363,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         s = self
 
         p1 = s.polygon(l1)
-        if not p1.num_edges() == 3:
+        if not len(p1.vertices()) == 3:
             raise ValueError(
                 "The polygon with the provided label is not a triangle."
             )
@@ -371,7 +371,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         sim = s.edge_transformation(l2, e2)
         p2 = s.polygon(l2)
-        if not p2.num_edges() == 3:
+        if not len(p2.vertices()) == 3:
             raise ValueError(
                 "The polygon opposite the provided edge is not a triangle."
             )
@@ -597,7 +597,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         for label, polygon in zip(self.labels(), self.polygons()):
             best = 0
             best_pt = polygon.vertex(best)
-            for v in range(1, polygon.num_edges()):
+            for v in range(1, len(polygon.vertices())):
                 pt = polygon.vertex(v)
                 if (pt[1] < best_pt[1]) or (
                     pt[1] == best_pt[1] and pt[0] < best_pt[0]
@@ -640,7 +640,7 @@ class MutableOrientedSimilaritySurface(
             self.add_polygon(surface.polygon(label), label=label)
 
         for label in surface.labels():
-            for edge in range(surface.polygon(label).num_edges()):
+            for edge in range(len(surface.polygon(label).vertices())):
                 cross = surface.opposite_edge(label, edge)
                 if cross:
                     self.glue((label, edge), cross)
@@ -656,7 +656,7 @@ class MutableOrientedSimilaritySurface(
     def add_polygon(self, polygon, *, label=None):
         label = super().add_polygon(polygon, label=label)
         assert label not in self._gluings
-        self._gluings[label] = [None] * polygon.num_edges()
+        self._gluings[label] = [None] * len(polygon.vertices())
 
         if self._roots:
             self._roots = self._roots + (label,)
@@ -701,7 +701,7 @@ class MutableOrientedSimilaritySurface(
                 continue
             cross_label, cross_edge = cross
             self._gluings[cross_label][cross_edge] = None
-        self._gluings[label] = [None] * self.polygon(label).num_edges()
+        self._gluings[label] = [None] * len(self.polygon(label).vertices())
 
     def glue(self, x, y):
         if not self._mutable:
@@ -807,9 +807,9 @@ class MutableOrientedSimilaritySurface(
             raise Exception("cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()")
 
         # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
-        if polygon.num_edges() != self.polygon(label).num_edges():
+        if len(polygon.vertices()) != len(self.polygon(label).vertices()):
             self._unglue_polygon(label)
-            self._gluings[label] = [None] * polygon.num_edges()
+            self._gluings[label] = [None] * len(polygon.vertices())
 
         self._polygons[label] = polygon
 
@@ -856,10 +856,10 @@ class MutableOrientedSimilaritySurface(
         """
         old = self.polygon(label)
 
-        if old.num_edges() != polygon.num_edges():
-            from flatsurf.geometry.polygon import EuclideanPolygon
+        if len(old.vertices()) != len(polygon.vertices()):
+            from flatsurf.geometry.categories.polygons import Polygons
 
-            article, singular, plural = EuclideanPolygon._describe_polygon(old.num_edges())
+            article, singular, plural = Polygons._describe_polygon(len(old.vertices()))
             raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
@@ -879,7 +879,7 @@ class MutableOrientedSimilaritySurface(
                 "set_vertex_zero can only be done in_place for a mutable surface."
             )
         p = us.polygon(label)
-        n = p.num_edges()
+        n = len(p.vertices())
         if not (0 <= v < n):
             raise ValueError
         glue = []
@@ -916,7 +916,7 @@ class MutableOrientedSimilaritySurface(
         for l1, l2 in relabeling_map.items():
             p = us.polygon(l1)
             glue = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 ll, ee = us.opposite_edge(l1, e)
                 try:
                     lll = relabeling_map[ll]
@@ -968,7 +968,7 @@ class MutableOrientedSimilaritySurface(
             # Use the gluings provided by relabel_errors when necessary
             for l2 in codomain:
                 p, glue = data[l2]
-                for e in range(p.num_edges()):
+                for e in range(len(p.vertices())):
                     ll, ee = glue[e]
                     try:
                         # First try the error dictionary
@@ -997,12 +997,12 @@ class MutableOrientedSimilaritySurface(
         for i in range(e1):
             edge_map[len(es)] = (p1, i)
             es.append(poly1.edge(i))
-        ne = poly2.num_edges()
+        ne = len(poly2.vertices())
         for i in range(1, ne):
             ee = (e2 + i) % ne
             edge_map[len(es)] = (p2, ee)
             es.append(dt * poly2.edge(ee))
-        for i in range(e1 + 1, poly1.num_edges()):
+        for i in range(e1 + 1, len(poly1.vertices())):
             edge_map[len(es)] = (p1, i)
             es.append(poly1.edge(i))
 
@@ -1044,7 +1044,7 @@ class MutableOrientedSimilaritySurface(
             return super().subdivide_polygon(p=p, v1=v1, v2=v2, test=test, new_label=new_label)
 
         poly = self.polygon(p)
-        ne = poly.num_edges()
+        ne = len(poly.vertices())
         if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
             raise ValueError("Provided vertices out of bounds.")
         if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
@@ -1088,13 +1088,13 @@ class MutableOrientedSimilaritySurface(
         for i in range(v2, ne + v1):
             old_to_new_labels[(p, i % ne)] = (p, i - v2 + 1)
 
-        for e in range(1, newpoly1.num_edges()):
+        for e in range(1, len(newpoly1.vertices())):
             pair = old_gluings[(p, (v2 + e - 1) % ne)]
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
             self.glue((p, e), (pair[0], pair[1]))
 
-        for e in range(1, newpoly2.num_edges()):
+        for e in range(1, len(newpoly2.vertices())):
             pair = old_gluings[(p, (v1 + e - 1) % ne)]
             if pair in old_to_new_labels:
                 pair = old_to_new_labels[pair]
@@ -1130,7 +1130,7 @@ class MutableOrientedSimilaritySurface(
             polygon = self.polygon(label)
             adjacencies = {
                 edge: self.opposite_edge(label, edge)[0]
-                for edge in range(polygon.num_edges())
+                for edge in range(len(polygon.vertices()))
             }
             edge = min(
                 adjacencies, key=lambda edge: labels.index(adjacencies[edge])
@@ -1167,7 +1167,7 @@ class MutableOrientedSimilaritySurface(
             return s
 
         poly = self.polygon(label)
-        n = poly.num_edges()
+        n = len(poly.vertices())
         if n > 3:
             s = self
         else:
@@ -1177,7 +1177,7 @@ class MutableOrientedSimilaritySurface(
 
         for i in range(n - 3):
             poly = s.polygon(label)
-            n = poly.num_edges()
+            n = len(poly.vertices())
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
@@ -1333,7 +1333,7 @@ class MutableOrientedSimilaritySurface(
                     if ret != 0:
                         return ret
 
-                    for e in range(self.polygon(l1).num_edges()):
+                    for e in range(len(self.polygon(l1).vertices())):
                         ll1, e1 = self.opposite_edge(l1, e)
                         ll2, e2 = s2.opposite_edge(l2, e)
                         num1 = labels1.index(ll1)
@@ -1372,7 +1372,7 @@ class MutableOrientedSimilaritySurface(
                     if ret != 0:
                         return ret
 
-                    for e in range(self.polygon(l1).num_edges()):
+                    for e in range(len(self.polygon(l1).vertices())):
                         ll1, ee1 = self.opposite_edge(l1, e)
                         ll2, ee2 = s2.opposite_edge(l2, e)
                         num1 = labels1.index(ll1)
@@ -1584,7 +1584,7 @@ class ComponentLabels(LabeledCollection):
             seen.add(label)
 
             yield label
-            for e in range(self._surface.polygon(label).num_edges()):
+            for e in range(len(self._surface.polygon(label).vertices())):
                 cross = self._surface.opposite_edge(label, e)
                 if cross is not None:
                     pending.append(cross[0])
@@ -1623,7 +1623,7 @@ class Polygons_MutableOrientedSimilaritySurface(Polygons):
 class Edges(LabeledCollection, collections.abc.Set):
     def __iter__(self):
         for label, polygon in zip(self._surface.labels(), self._surface.polygons()):
-            for edge in range(polygon.num_edges()):
+            for edge in range(len(polygon.vertices())):
                 yield (label, edge)
 
     def __contains__(self, x):
@@ -1632,7 +1632,7 @@ class Edges(LabeledCollection, collections.abc.Set):
             return False
 
         polygon = self._surface.polygon(label)
-        return 0 <= polygon.num_edges() < edge
+        return 0 <= len(polygon.vertices()) < edge
 
 
 class Gluings(LabeledCollection, collections.abc.Set):

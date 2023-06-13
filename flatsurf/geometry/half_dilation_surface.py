@@ -194,13 +194,13 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         """
         if self._det_sign == 1:
             p = self._s.polygon(lab)
-            edges = [self._m * p.edge(e) for e in range(p.num_edges())]
+            edges = [self._m * p.edge(e) for e in range(len(p.vertices()))]
 
             from flatsurf import Polygon
             return Polygon(edges=edges, base_ring=self.base_ring())
         else:
             p = self._s.polygon(lab)
-            edges = [self._m * (-p.edge(e)) for e in range(p.num_edges() - 1, -1, -1)]
+            edges = [self._m * (-p.edge(e)) for e in range(len(p.vertices()) - 1, -1, -1)]
 
             from flatsurf import Polygon
             return Polygon(edges=edges, base_ring=self.base_ring())
@@ -248,9 +248,9 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             return self._s.opposite_edge(p, e)
         else:
             polygon = self._s.polygon(p)
-            pp, ee = self._s.opposite_edge(p, polygon.num_edges() - 1 - e)
+            pp, ee = self._s.opposite_edge(p, len(polygon.vertices()) - 1 - e)
             polygon2 = self._s.polygon(pp)
-            return pp, polygon2.num_edges() - 1 - ee
+            return pp, len(polygon2.vertices()) - 1 - ee
 
     def __repr__(self):
         r"""

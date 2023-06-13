@@ -839,7 +839,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                         for label, p in zip(self.labels(), self.polygons()):
                             new_edges = []
-                            for i in range(p.num_edges()):
+                            for i in range(len(p.vertices())):
                                 new_edges.append(
                                     (
                                         hom2(coordinates_NF[index]),
@@ -1035,11 +1035,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 if test:
                     # Just test if the flip would be successful
                     p1 = self.polygon(l1)
-                    if not p1.num_edges() == 3:
+                    if not len(p1.vertices()) == 3:
                         return False
                     l2, e2 = self.opposite_edge(l1, e1)
                     p2 = self.polygon(l2)
-                    if not p2.num_edges() == 3:
+                    if not len(p2.vertices()) == 3:
                         return False
                     sim = self.edge_transformation(l2, e2)
                     hol = sim(p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3))
@@ -1125,11 +1125,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 es = []
                 for i in range(e1):
                     es.append(poly1.edge(i))
-                ne = poly2.num_edges()
+                ne = len(poly2.vertices())
                 for i in range(1, ne):
                     ee = (e2 + i) % ne
                     es.append(dt * poly2.edge(ee))
-                for i in range(e1 + 1, poly1.num_edges()):
+                for i in range(e1 + 1, len(poly1.vertices())):
                     es.append(poly1.edge(i))
 
                 try:
@@ -1160,7 +1160,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     raise NotImplementedError("this surface does not implement subdivide_polygon(test=False) yet")
 
                 poly = self.polygon(p)
-                ne = poly.num_edges()
+                ne = len(poly.vertices())
                 if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
                     return False
                 if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
@@ -1448,7 +1448,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import similarity_surfaces, Polygon
                     sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
                     sage: s=s.triangulate()
-                    sage: s.polygon(0).num_edges()
+                    sage: len(s.polygon(0).vertices())
                     3
                 """
                 if relabel is not None:
@@ -1482,7 +1482,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 p2, e2 = self.opposite_edge(p1, e1)
                 poly1 = self.polygon(p1)
                 poly2 = self.polygon(p2)
-                if poly1.num_edges() != 3 or poly2.num_edges() != 3:
+                if len(poly1.vertices()) != 3 or len(poly2.vertices()) != 3:
                     raise ValueError("Edge must be adjacent to two triangles.")
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
@@ -1532,9 +1532,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     if limit is not None and count >= limit:
                         break
                     count += 1
-                    if self.polygon(l1).num_edges() != 3:
+                    if len(self.polygon(l1).vertices()) != 3:
                         return False
-                    if self.polygon(l2).num_edges() != 3:
+                    if len(self.polygon(l2).vertices()) != 3:
                         return False
                     if self._delaunay_edge_needs_flip(l1, e1):
                         return False
@@ -1568,7 +1568,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         # p1 is not circumscribed
                         return False
 
-                    for e1 in range(p1.num_edges()):
+                    for e1 in range(len(p1.vertices())):
                         c2 = self.edge_transformation(l1, e1) * c1
                         l2, e2 = self.opposite_edge(l1, e1)
                         if c2.point_position(self.polygon(l2).vertex(e2 + 2)) != -1:
@@ -1791,7 +1791,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
                     return sc_list
                 if initial_vertex is None:
-                    for vertex in range(self.polygon(initial_label).num_edges()):
+                    for vertex in range(len(self.polygon(initial_label).vertices())):
                         self.saddle_connections(
                             squared_length_bound,
                             initial_label=initial_label,
@@ -1825,9 +1825,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 # Represents the bounds of the beam of trajectories we are sending out.
                 wedge = (
-                    last_sim(p.vertex((initial_vertex + 1) % p.num_edges())),
+                    last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
                     last_sim(
-                        p.vertex((initial_vertex + p.num_edges() - 1) % p.num_edges())
+                        p.vertex((initial_vertex + len(p.vertices()) - 1) % len(p.vertices()))
                     ),
                 )
 
@@ -1838,8 +1838,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         initial_label,
                         wedge,
                         [
-                            (initial_vertex + p.num_edges() - i) % p.num_edges()
-                            for i in range(2, p.num_edges())
+                            (initial_vertex + len(p.vertices()) - i) % len(p.vertices())
+                            for i in range(2, len(p.vertices()))
                         ],
                     )
                 ]
@@ -1875,7 +1875,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             )
                         )
                     # Now check if we should develop across the edge
-                    vert_position2 = sim(p.vertex((vert + 1) % p.num_edges()))
+                    vert_position2 = sim(p.vertex((vert + 1) % len(p.vertices())))
                     if (
                         ccw(vert_position, vert_position2) > 0
                         and ccw(wedge[0], vert_position2) > 0
@@ -1903,8 +1903,8 @@ class SimilaritySurfaces(SurfaceCategory):
                                 new_label,
                                 new_wedge,
                                 [
-                                    (new_edge + p.num_edges() - i) % p.num_edges()
-                                    for i in range(1, p.num_edges())
+                                    (new_edge + len(p.vertices()) - i) % len(p.vertices())
+                                    for i in range(1, len(p.vertices()))
                                 ],
                             )
                         )
@@ -2139,7 +2139,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 # Reestablish gluings between polygons
                 for label, polygon, subdivided in zip(labels, polygons, subdivideds):
-                    for e in range(polygon.num_edges()):
+                    for e in range(len(polygon.vertices())):
                         opposite = self.opposite_edge(label, e)
                         if opposite is not None:
                             for p in range(parts):
@@ -2211,7 +2211,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     labels = islice(labels, limit)
 
                 for label in labels:
-                    for edge in range(surface.polygon(label).num_edges()):
+                    for edge in range(len(surface.polygon(label).vertices())):
                         cross = surface.opposite_edge(label, edge)
 
                         if cross is None:

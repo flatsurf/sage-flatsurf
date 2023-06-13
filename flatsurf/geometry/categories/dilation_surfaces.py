@@ -227,7 +227,7 @@ class DilationSurfaces(SurfaceCategory):
                 labels = islice(labels, limit)
 
             for label in labels:
-                for edge in range(surface.polygon(label).num_edges()):
+                for edge in range(len(surface.polygon(label).vertices())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:
@@ -321,10 +321,10 @@ class DilationSurfaces(SurfaceCategory):
                     new_glue = {}
                     seen_labels = set()
                     for p1 in self.labels():
-                        n1 = self.polygon(p1).num_edges()
+                        n1 = len(self.polygon(p1).vertices())
                         for e1 in range(n1):
                             p2, e2 = self.opposite_edge(p1, e1)
-                            n2 = self.polygon(p2).num_edges()
+                            n2 = len(self.polygon(p2).vertices())
                             if p2 in seen_labels:
                                 pass
                             elif p1 == p2 and e1 > e2:
@@ -377,7 +377,7 @@ class DilationSurfaces(SurfaceCategory):
             # triangles
             poly1 = self.polygon(p1)
             poly2 = self.polygon(p2)
-            if poly1.num_edges() != 3 or poly2.num_edges() != 3:
+            if len(poly1.vertices()) != 3 or len(poly2.vertices()) != 3:
                 raise ValueError("edge must be adjacent to two triangles")
 
             edge1 = poly1.edge(e1)

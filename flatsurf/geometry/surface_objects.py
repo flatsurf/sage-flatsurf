@@ -171,7 +171,7 @@ class SurfacePoint(Element):
 
                 # Rotate to the next edge that is leaving at the vertex
                 label, source_edge = surface.opposite_edge(label, source_edge)
-                source_edge = (source_edge + 1) % surface.polygon(label).num_edges()
+                source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
 
                 if limit is not None:
                     limit -= 1
@@ -717,7 +717,7 @@ class SaddleConnection(SageObject):
                 if (
                     ccw(p.edge(end_data[1]), self._direction) >= 0
                     and ccw(
-                        p.edge((p.num_edges() + end_data[1] - 1) % p.num_edges()),
+                        p.edge((len(p.vertices()) + end_data[1] - 1) % len(p.vertices())),
                         self._direction,
                     )
                     > 0
@@ -1135,7 +1135,7 @@ class Cylinder(SageObject):
         p = ss.polygon(labels[0])
         e = edges[0]
         min_y = ccw(v, p.vertex(e))
-        max_y = ccw(v, p.vertex((e + 1) % p.num_edges()))
+        max_y = ccw(v, p.vertex((e + 1) % len(p.vertices())))
         if min_y >= max_y:
             raise ValueError("Combinatorial data does not represent a cylinder")
 
@@ -1154,7 +1154,7 @@ class Cylinder(SageObject):
                 min_y = y
                 if min_y >= max_y:
                     raise ValueError("Combinatorial data does not represent a cylinder")
-            y = ccw(v, p.vertex((e + 1) % p.num_edges()))
+            y = ccw(v, p.vertex((e + 1) % len(p.vertices())))
             if y == max_y:
                 max_list.append(i)
             elif y < max_y:
@@ -1182,7 +1182,7 @@ class Cylinder(SageObject):
             lj = labels[j]
             sc = SaddleConnection(
                 s,
-                (lio[0][0], (lio[1] + 1) % ss.polygon(lio[0]).num_edges()),
+                (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
                 (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
             )
             sc_set_right.add(sc)
@@ -1196,7 +1196,7 @@ class Cylinder(SageObject):
                 lj = labels[j]
                 sc = SaddleConnection(
                     s,
-                    (lio[0][0], (lio[1] + 1) % ss.polygon(lio[0]).num_edges()),
+                    (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
                     (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
                     limit=j - i,
                 )
@@ -1210,7 +1210,7 @@ class Cylinder(SageObject):
         for i in max_list:
             label = labels[i]
             p = ss.polygon(label)
-            vertices.append((i, p.vertex((edges[i] + 1) % p.num_edges())))
+            vertices.append((i, p.vertex((edges[i] + 1) % len(p.vertices()))))
         i, vert_i = vertices[-1]
         vert_i = vert_i - v
         j, vert_j = vertices[0]
@@ -1221,7 +1221,7 @@ class Cylinder(SageObject):
             lj = labels[j]
             sc = SaddleConnection(
                 s,
-                (lj[0], (edges[j] + 1) % ss.polygon(lj).num_edges()),
+                (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
                 (~lj[1])(vert_i) - (~lj[1])(vert_j),
             )
             sc_set_left.add(sc)
@@ -1234,7 +1234,7 @@ class Cylinder(SageObject):
                 lj = labels[j]
                 sc = SaddleConnection(
                     s,
-                    (lj[0], (edges[j] + 1) % ss.polygon(lj).num_edges()),
+                    (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
                     (~lj[1])(vert_i) - (~lj[1])(vert_j),
                 )
                 sc_set_left.add(sc)
@@ -1252,7 +1252,7 @@ class Cylinder(SageObject):
         i = max_list[0]
         label = labels[i]
         p = ss.polygon(label)
-        left_point = p.vertex((edges[i] + 1) % p.num_edges())
+        left_point = p.vertex((edges[i] + 1) % len(p.vertices()))
         from flatsurf.geometry.euclidean import solve
 
         for i in range(len(edges)):
@@ -1260,7 +1260,7 @@ class Cylinder(SageObject):
             p = ss.polygon(label)
             e = edges[i]
             v1 = p.vertex(e)
-            v2 = p.vertex((e + 1) % p.num_edges())
+            v2 = p.vertex((e + 1) % len(p.vertices()))
             a, b = solve(left_point, v, v1, v2 - v1)
             w1 = (~(label[1]))(v1 + b * (v2 - v1))
             a, b = solve(right_point, v, v1, v2 - v1)

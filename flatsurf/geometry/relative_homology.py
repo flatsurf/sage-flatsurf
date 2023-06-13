@@ -176,7 +176,7 @@ class RelativeHomology(Module):
             return self._cached_edges[(label, e)]
         except KeyError:
             # not cached!
-            num_edges = self._s.polygon(label).num_edges()
+            num_edges = len(self._s.polygon(label).vertices())
             # Check to see if all other edges of the polygon are cached.
             has_all_others = True
             for i in range(1, num_edges):

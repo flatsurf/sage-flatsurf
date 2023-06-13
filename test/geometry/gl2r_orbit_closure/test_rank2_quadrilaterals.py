@@ -31,7 +31,7 @@ import itertools
 pytest.importorskip("pyflatsurf")  # noqa
 
 from sage.all import AA, QQ
-from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
+from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
 
 
 # TODO: the test for field of definition with is_isomorphic() does not check
@@ -51,7 +51,7 @@ from flatsurf import EquiangularPolygons, similarity_surfaces, GL2ROrbitClosure
     ],
 )
 def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, discriminant):
-    E = EquiangularPolygons(a, b, c, d)
+    E = EuclideanPolygonsWithAngles(a, b, c, d)
     P = E([l1, l2], normalized=True)
     B = similarity_surfaces.billiard(P, rational=True)
     S = B.minimal_cover(cover_type="translation")

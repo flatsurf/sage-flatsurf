@@ -233,7 +233,7 @@ class Surface(OrientedSimilaritySurface):
 
                 it = islice(it, limit)
         for p in it:
-            if self.polygon(p).num_edges() != 3:
+            if len(self.polygon(p).vertices()) != 3:
                 return False
         return True
 
@@ -372,7 +372,7 @@ class Surface(OrientedSimilaritySurface):
         of pairs of length equal to number of edges of the polygon).
         """
         self.__mutate()
-        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
+        if not (gluing_list is None or len(new_polygon.vertices()) == len(gluing_list)):
             raise ValueError
         self._change_polygon(label, new_polygon, gluing_list)
 
@@ -397,12 +397,12 @@ class Surface(OrientedSimilaritySurface):
         """
         self.__mutate()
         p = self.polygon(label)
-        if p.num_edges() != len(glue_list):
+        if len(p.vertices()) != len(glue_list):
             raise ValueError(
                 "len(glue_list)="
                 + str(len(glue_list))
                 + " and number of sides of polygon="
-                + str(p.num_edges())
+                + str(len(p.vertices()))
                 + " should be the same."
             )
         for e, (pp, ee) in enumerate(glue_list):
@@ -426,7 +426,7 @@ class Surface(OrientedSimilaritySurface):
         from the label provided).
         """
         self.__mutate()
-        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
+        if not (gluing_list is None or len(new_polygon.vertices()) == len(gluing_list)):
             raise ValueError
         label = self._add_polygon(new_polygon, gluing_list, label)
         if self._base_label is None:
@@ -481,6 +481,9 @@ class Surface(OrientedSimilaritySurface):
 
             sage: S = Surface_dict(QQ)
             sage: P = ConvexPolygons(QQ)
+            doctest:warning
+            ...
+            UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons. If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.
             sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
             doctest:warning
             ...
@@ -1071,7 +1074,7 @@ class Surface_list(Surface):
             return self._ref_to_int[ref_label]
         except KeyError:
             polygon = self._reference_surface.polygon(ref_label)
-            data = [polygon, [None for i in range(polygon.num_edges())]]
+            data = [polygon, [None for i in range(len(polygon.vertices()))]]
             if len(self._removed_labels) > 0:
                 i = self._removed_labels.pop()
                 self._p[i] = data
@@ -1175,8 +1178,8 @@ class Surface_list(Surface):
         if data is None:
             raise ValueError("Provided label was removed from the surface.")
         data[0] = new_polygon
-        if data[1] is None or new_polygon.num_edges() != len(data[1]):
-            data[1] = [None for e in range(new_polygon.num_edges())]
+        if data[1] is None or len(new_polygon.vertices()) != len(data[1]):
+            data[1] = [None for e in range(len(new_polygon.vertices()))]
         if gluing_list is not None:
             self.change_polygon_gluings(label, gluing_list)
 
@@ -1239,7 +1242,7 @@ class Surface_list(Surface):
         if new_polygon is None:
             data = [None, None]
         else:
-            data = [new_polygon, [None for i in range(new_polygon.num_edges())]]
+            data = [new_polygon, [None for i in range(len(new_polygon.vertices()))]]
         if label is None:
             if len(self._removed_labels) > 0:
                 new_label = self._removed_labels.pop()
@@ -1618,7 +1621,7 @@ class Surface_dict(Surface):
                 self._reference_surface.polygon(lab),
                 [
                     self._reference_surface.opposite_edge(lab, e)
-                    for e in range(polygon.num_edges())
+                    for e in range(len(polygon.vertices()))
                 ],
             ]
             self._p[lab] = data
@@ -1669,20 +1672,20 @@ class Surface_dict(Surface):
             else:
                 # Ensure the reference surface had a polygon with the provided label:
                 old_polygon = self._reference_surface.polygon(label)
-                if old_polygon.num_edges() == new_polygon.num_edges():
+                if len(old_polygon.vertices()) == len(new_polygon.vertices()):
                     data = [
                         new_polygon,
                         [
                             self._reference_surface.opposite_edge(label, e)
-                            for e in range(new_polygon.num_edges())
+                            for e in range(len(new_polygon.vertices()))
                         ],
                     ]
                     self._p[label] = data
                 else:
-                    data = [new_polygon, [None for e in range(new_polygon.num_edges())]]
+                    data = [new_polygon, [None for e in range(len(new_polygon.vertices()))]]
                     self._p[label] = data
-        if len(data[1]) != new_polygon.num_edges():
-            data[1] = [None for e in range(new_polygon.num_edges())]
+        if len(data[1]) != len(new_polygon.vertices()):
+            data[1] = [None for e in range(len(new_polygon.vertices()))]
         if gluing_list is not None:
             self.change_polygon_gluings(label, gluing_list)
 
@@ -1705,7 +1708,7 @@ class Surface_dict(Surface):
                     polygon,
                     [
                         self._reference_surface.opposite_edge(label1, e)
-                        for e in range(polygon.num_edges())
+                        for e in range(len(polygon.vertices()))
                     ],
                 ]
                 self._p[label1] = data
@@ -1737,7 +1740,7 @@ class Surface_dict(Surface):
                     polygon,
                     [
                         self._reference_surface.opposite_edge(label2, e)
-                        for e in range(polygon.num_edges())
+                        for e in range(len(polygon.vertices()))
                     ],
                 ]
                 self._p[label2] = data
@@ -1763,7 +1766,7 @@ class Surface_dict(Surface):
         r"""
         Internal method used by add_polygon(). Should not be called directly.
         """
-        data = [new_polygon, [None for i in range(new_polygon.num_edges())]]
+        data = [new_polygon, [None for i in range(len(new_polygon.vertices()))]]
         if label is None:
             new_label = ExtraLabel()
         else:
@@ -2023,7 +2026,7 @@ class LabelWalker:
                 yield entry
             return
         for label, polygon in self.label_polygon_iterator():
-            for e in range(polygon.num_edges()):
+            for e in range(len(polygon.vertices())):
                 yield label, e
 
     def __len__(self):
@@ -2040,7 +2043,7 @@ class LabelWalker:
             label, e = self._walk.popleft()
             opposite_label, opposite_edge = self._s.opposite_edge(label, e)
             e = e + 1
-            if e < self._s.polygon(label).num_edges():
+            if e < len(self._s.polygon(label).vertices()):
                 self._walk.appendleft((label, e))
             if opposite_label not in self._label_dict:
                 n = len(self._labels)
