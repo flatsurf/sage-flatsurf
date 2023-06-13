@@ -106,6 +106,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
                 )
 
                 kwargs.pop("cached")
+
             from flatsurf.graphical.surface import GraphicalSurface
 
             return GraphicalSurface(self, *args, **kwargs)

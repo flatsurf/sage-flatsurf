@@ -585,85 +585,98 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             Category of connected without boundary finite type translation surfaces
 
         """
-        class ParentMethods:
+        class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
-            Provides methods available to all translation surfaces that are
-            built from finitely many polygons.
+            The category of translation surfaces without boundary built from
+            finitely many polygons.
 
-            If you want to add functionality for such surfaces you most likely
-            want to put it here.
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: s = translation_surfaces.octagon_and_squares()
+                sage: s.category()
+                Category of connected without boundary finite type translation surfaces
+
             """
-
-            def stratum(self):
+            class ParentMethods:
                 r"""
-                Return the stratum this surface belongs to.
+                Provides methods available to all translation surfaces that are
+                built from finitely many polygons.
 
-                This uses the package ``surface-dynamics``
-                (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
-
-                EXAMPLES::
-
-                    sage: import flatsurf.geometry.similarity_surface_generators as sfg
-                    sage: sfg.translation_surfaces.octagon_and_squares().stratum()
-                    H_3(4)
-
+                If you want to add functionality for such surfaces you most likely
+                want to put it here.
                 """
-                from surface_dynamics import AbelianStratum
-                from sage.rings.integer_ring import ZZ
 
-                return AbelianStratum([ZZ(a - 1) for a in self.angles()])
+                def stratum(self):
+                    r"""
+                    Return the stratum this surface belongs to.
 
-            def canonicalize(self, in_place=None):
-                r"""
-                Return a canonical version of this translation surface.
+                    This uses the package ``surface-dynamics``
+                    (see http://www.labri.fr/perso/vdelecro/flatsurf_sage.html)
 
-                EXAMPLES:
+                    EXAMPLES::
 
-                We will check if an element lies in the Veech group::
+                        sage: import flatsurf.geometry.similarity_surface_generators as sfg
+                        sage: sfg.translation_surfaces.octagon_and_squares().stratum()
+                        H_3(4)
 
-                    sage: from flatsurf import translation_surfaces
-                    sage: s = translation_surfaces.octagon_and_squares()
-                    sage: s
-                    Translation Surface in H_3(4) built from 2 squares and a regular octagon
-                    sage: from flatsurf.geometry.categories import TranslationSurfaces
-                    sage: s in TranslationSurfaces()
-                    True
-                    sage: a = s.base_ring().gen()
-                    sage: mat = Matrix([[1,2+a],[0,1]])
-                    sage: s1 = s.canonicalize()
-                    sage: s1.set_immutable()
-                    sage: s2 = (mat*s).canonicalize()
-                    sage: s2.set_immutable()
-                    sage: s1.cmp(s2) == 0
-                    True
-                    sage: hash(s1) == hash(s2)
-                    True
+                    """
+                    from surface_dynamics import AbelianStratum
+                    from sage.rings.integer_ring import ZZ
 
-                """
-                if in_place is not None:
-                    if in_place:
-                        raise NotImplementedError("calling canonicalize(in_place=True) is not supported anymore")
+                    return AbelianStratum([ZZ(a - 1) for a in self.angles()])
 
-                    import warnings
-                    warnings.warn("the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf")
+                def canonicalize(self, in_place=None):
+                    r"""
+                    Return a canonical version of this translation surface.
 
-                s = self.delaunay_decomposition().standardize_polygons()
+                    EXAMPLES:
 
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-                s = MutableOrientedSimilaritySurface.from_surface(s)
+                    We will check if an element lies in the Veech group::
 
-                from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-                ss = MutableOrientedSimilaritySurface.from_surface(s)
+                        sage: from flatsurf import translation_surfaces
+                        sage: s = translation_surfaces.octagon_and_squares()
+                        sage: s
+                        Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                        sage: from flatsurf.geometry.categories import TranslationSurfaces
+                        sage: s in TranslationSurfaces()
+                        True
+                        sage: a = s.base_ring().gen()
+                        sage: mat = Matrix([[1,2+a],[0,1]])
+                        sage: s1 = s.canonicalize()
+                        sage: s1.set_immutable()
+                        sage: s2 = (mat*s).canonicalize()
+                        sage: s2.set_immutable()
+                        sage: s1.cmp(s2) == 0
+                        True
+                        sage: hash(s1) == hash(s2)
+                        True
 
-                for label in ss.labels():
-                    ss.set_roots([label])
-                    if ss.cmp(s) > 0:
-                        s.set_roots([label])
+                    """
+                    if in_place is not None:
+                        if in_place:
+                            raise NotImplementedError("calling canonicalize(in_place=True) is not supported anymore")
 
-                # We have chosen the root label such that this surface is minimal.
-                # Now we relabel all the polygons so that they are natural
-                # numbers in the order of the walk on the surface.
-                labels = {label: i for (i, label) in enumerate(s.labels())}
-                s.relabel(labels, in_place=True)
-                s.set_immutable()
-                return s
+                        import warnings
+                        warnings.warn("the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf")
+
+                    s = self.delaunay_decomposition().standardize_polygons()
+
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    s = MutableOrientedSimilaritySurface.from_surface(s)
+
+                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    ss = MutableOrientedSimilaritySurface.from_surface(s)
+
+                    for label in ss.labels():
+                        ss.set_roots([label])
+                        if ss.cmp(s) > 0:
+                            s.set_roots([label])
+
+                    # We have chosen the root label such that this surface is minimal.
+                    # Now we relabel all the polygons so that they are natural
+                    # numbers in the order of the walk on the surface.
+                    labels = {label: i for (i, label) in enumerate(s.labels())}
+                    s.relabel(labels, in_place=True)
+                    s.set_immutable()
+                    return s

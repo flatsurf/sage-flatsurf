@@ -133,47 +133,62 @@ class HalfTranslationSurfaces(SurfaceCategory):
             True
 
         """
-        class ParentMethods:
+        class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
-            Provides methods available to all orientable half-translation
-            surfaces.
+            The category of orientable half-translation surfaces without boundary.
 
-            If you want to add functionality for such surfaces you most likely
-            want to put it here.
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                sage: H = B.minimal_cover(cover_type="half-translation")
+
+                sage: from flatsurf.geometry.categories import HalfTranslationSurfaces
+                sage: H in HalfTranslationSurfaces().Orientable().WithoutBoundary()
+                True
+
             """
-            def stratum(self):
+            class ParentMethods:
                 r"""
-                EXAMPLES::
+                Provides methods available to all orientable half-translation
+                surfaces.
 
-                    sage: from flatsurf import polygons, similarity_surfaces
-                    sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
-                    sage: H = B.minimal_cover(cover_type="half-translation")
-                    sage: H.stratum()
-                    Q_1(3, -1^3)
-
-                TESTS:
-
-                Verify that the stratum is correct for surfaces with self-glued edges::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.stratum()
-                    Q_0(0, -1^4)
-
+                If you want to add functionality for such surfaces you most likely
+                want to put it here.
                 """
-                angles = self.angles()
+                def stratum(self):
+                    r"""
+                    EXAMPLES::
 
-                for a, b in self.gluings():
-                    if a == b:
-                        angles.append(QQ(1 / 2))
+                        sage: from flatsurf import polygons, similarity_surfaces
+                        sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                        sage: H = B.minimal_cover(cover_type="half-translation")
+                        sage: H.stratum()
+                        Q_1(3, -1^3)
 
-                if all(x.denominator() == 1 for x in angles):
-                    raise NotImplementedError
+                    TESTS:
 
-                from surface_dynamics import QuadraticStratum
+                    Verify that the stratum is correct for surfaces with self-glued edges::
 
-                return QuadraticStratum(*[2 * a - 2 for a in angles])
+                        sage: from flatsurf import Polygon, similarity_surfaces
+                        sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                        sage: S = similarity_surfaces.self_glued_polygon(P)
+                        sage: S.stratum()
+                        Q_0(0, -1^4)
+
+                    """
+                    angles = self.angles()
+
+                    for a, b in self.gluings():
+                        if a == b:
+                            angles.append(QQ(1 / 2))
+
+                    if all(x.denominator() == 1 for x in angles):
+                        raise NotImplementedError
+
+                    from surface_dynamics import QuadraticStratum
+
+                    return QuadraticStratum(*[2 * a - 2 for a in angles])
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""

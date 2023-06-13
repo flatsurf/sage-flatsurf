@@ -526,6 +526,55 @@ class Surface(OrientedSimilaritySurface):
     def __ne__(self, other):
         return not self == other
 
+    def _eq_oriented_similarity_surfaces(self, other):
+        # Whether this surface equals other in terms of oriented similarity surfaces
+        if self is other:
+            return True
+
+        if not isinstance(other, OrientedSimilaritySurface):
+            return False
+
+        if self.base_ring() != other.base_ring():
+            return False
+
+        if self.category() != other.category():
+            return False
+
+        if self.is_finite_type() != other.is_finite_type():
+            return False
+
+        if self.is_finite_type():
+            if len(self.polygons()) == 0:
+                return len(other.polygons()) == 0
+            if len(other.polygons()) == 0:
+                return False
+
+        if self.roots() != other.roots():
+            return False
+
+        for label in self.roots():
+            if self.polygon(label) != other.polygon(label):
+                return False
+
+        if not self.is_finite_type():
+            raise NotImplementedError("cannot compare these infinite surfaces yet")
+
+        if len(self.polygons()) != len(other.polygons()):
+            return False
+
+        for label, polygon in zip(self.labels(), self.polygons()):
+            try:
+                polygon2 = other.polygon(label)
+            except ValueError:
+                return False
+            if polygon != polygon2:
+                return False
+            for edge in range(len(polygon.vertices())):
+                if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
+                    return False
+
+        return True
+
     def _test_base_ring(self, **options):
         # Test that the base_label is associated to a polygon
         tester = self._tester(**options)

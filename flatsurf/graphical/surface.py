@@ -159,7 +159,11 @@ class GraphicalSurface:
         self._ss = surface
         self._default_position_function = default_position_function
         self._polygons = {}
-        self._visible = set([self._ss.root()])
+
+        if not self._ss.is_connected():
+            raise NotImplementedError("cannot plot disconnected surfaces yet")
+
+        self._visible = set(self._ss.roots())
 
         if adjacencies is None:
             if self._ss.is_finite_type():

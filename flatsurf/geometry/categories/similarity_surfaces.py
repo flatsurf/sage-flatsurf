@@ -121,7 +121,7 @@ from flatsurf.geometry.categories.surface_category import (
 )
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_method
-from sage.all import ZZ, QQ, AA
+from sage.all import QQ, AA
 
 
 class SimilaritySurfaces(SurfaceCategory):
