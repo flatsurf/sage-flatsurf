@@ -859,9 +859,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             return s
                         # Otherwise we are supposed to relabel. We will make a relabeled copy of s below.
                 if new_field is not None:
-                    from flatsurf.geometry.surface import BaseRingChangedSurface
-
-                    s = BaseRingChangedSurface(self, new_field)
+                    s = self.change_ring(new_field)
                 if s is None:
                     s = self
                 if s.is_finite_type():

@@ -284,6 +284,8 @@ class MutablePolygonalSurface(Surface_base):
         r"""
         Return a label for each connected component on this surface.
 
+        This implements :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
         EXAMPLES::
 
             sage: from flatsurf import MutableOrientedSimilaritySurface
@@ -2312,21 +2314,143 @@ class MutableOrientedSimilaritySurface(
 
 
 class BaseRingChangedSurface(OrientedSimilaritySurface):
+    r"""
+    Changes the ring over which a surface is defined.
+
+    EXAMPLES:
+
+    This class is used in the implementation of
+    :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring`::
+
+        sage: from flatsurf import translation_surfaces
+        sage: T = translation_surfaces.square_torus()
+        sage: S = T.change_ring(AA)
+
+        sage: from flatsurf.geometry.surface import BaseRingChangedSurface
+        sage: isinstance(S, BaseRingChangedSurface)
+        True
+
+        sage: TestSuite(S).run()
+
+    """
+
     def __init__(self, surface, ring, category=None):
+        if surface.is_mutable():
+            raise NotImplementedError("surface must be immutable")
+
         self._reference = surface
         super().__init__(ring, category=category or surface.category())
 
     def is_mutable(self):
+        r"""
+        Return whether this surface can be modified, i.e., return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: S.is_mutable()
+            False
+
+        """
         return False
 
     def roots(self):
+        r"""
+        Return a label for each connected component on this surface.
+
+        This implements :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: S.roots()
+            (0,)
+
+        """
         return self._reference.roots()
 
     def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: p = S.polygon(0)
+            sage: p.base_ring()
+            Algebraic Real Field
+
+        """
         return self._reference.polygon(label).change_ring(self.base_ring())
 
     def opposite_edge(self, label, edge):
+        r"""
+        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: S.opposite_edge(0, 0)
+            (0, 2)
+
+        """
         return self._reference.opposite_edge(label, edge)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of equality.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: T.change_ring(AA) == T.change_ring(AA)
+            True
+
+        """
+        if not isinstance(other, BaseRingChangedSurface):
+            return False
+
+        return self._reference == other._reference and self.base() == other.base()
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: hash(T.change_ring(AA)) == hash(T.change_ring(AA))
+            True
+
+        """
+        return hash((self._reference, self.base()))
 
 
 class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):

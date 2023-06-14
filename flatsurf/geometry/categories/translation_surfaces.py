@@ -330,7 +330,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if local:
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-                ss = MutableOrientedSimilaritySurface.from_surface(s.change_ring(field))
+                ss = MutableOrientedSimilaritySurface.from_surface(s)
+                ss.set_immutable()
+                ss = MutableOrientedSimilaritySurface.from_surface(ss.change_ring(field))
                 us = ss
 
                 for label in deformed_labels:
