@@ -106,7 +106,7 @@
 
 * Removed undocumented and untested method ``delaunay_single_join()`` from surfaces.
 
-* Removed the ``_label_comparator`` from surfaces since it did not produce a consistent ordering on different architectures. There is now a ``min`` on labels, e.g., on a ``LabeledView`` which just uses the builtin ``min`` when it works and otherwise compares the ``repr`` of the labels. This approach also has problems (see documentation) but at least it is not platform dependent on the most common inputs such as polygons labeled by strings or numbers.
+* Removed the ``_label_comparator`` from surfaces since it did not produce a consistent ordering on different architectures. There is now a ``min`` on labels, e.g., on a ``LabelView`` which just uses the builtin ``min`` when it works and otherwise compares the ``repr`` of the labels. This approach also has problems (see documentation) but at least it is not platform dependent on the most common inputs such as polygons labeled by strings or numbers.
 
 * Removed the untested ``standardize_polygons()`` for infinite type surfaces.
 

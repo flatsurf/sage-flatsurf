@@ -62,9 +62,9 @@ class AbstractOrigami(OrientedSimilaritySurface):
         return (self._root,)
 
     def labels(self):
-        from flatsurf.geometry.surface import LabelsView
+        from flatsurf.geometry.surface import LabelsFromView
 
-        return LabelsView(self, self._domain)
+        return LabelsFromView(self, self._domain)
 
     def is_mutable(self):
         return False

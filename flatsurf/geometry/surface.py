@@ -64,7 +64,6 @@ from sage.misc.cachefunc import cached_method
 
 from flatsurf.geometry.surface_objects import SurfacePoint
 
-
 class Surface_base(Parent):
     r"""
     A base class for all surfaces in sage-flatsurf.
@@ -836,7 +835,7 @@ class MutablePolygonalSurface(Surface_base):
             :meth:`polygons` for the corresponding sequence of polygons
 
         """
-        return LabelsView(self, self._polygons.keys(), finite=True)
+        return LabelsFromView(self, self._polygons.keys(), finite=True)
 
     @cached_method
     def polygons(self):
@@ -2360,6 +2359,21 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
         """
         return False
 
+    def labels(self):
+        r"""
+        Return the labels of the polygons of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+            sage: S.labels()
+            (0,)
+
+        """
+        return self._reference.labels()
+
     def roots(self):
         r"""
         Return a label for each connected component on this surface.
@@ -2454,13 +2468,83 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
 
 
 class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
+    r"""
+    Connected components of a :class:`MutablePolygonalSurface`.
+
+    The components are represented as a mapping that maps the root labels to
+    the labels of the corresponding component.
+
+    This is a helper method for :meth:`MutablePolygonalSurface.components` and
+    :meth:`MutablePolygonalSurface.roots`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+
+        sage: from flatsurf import polygons
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.add_polygon(polygons.square())
+        1
+
+        sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+        sage: components = RootedComponents_MutablePolygonalSurface(S)
+
+    """
+
     def __init__(self, surface):
         self._surface = surface
 
     def __getitem__(self, root):
+        r"""
+        Return the labels of the connected component rooted at the label
+        ``root``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+            sage: components = RootedComponents_MutablePolygonalSurface(S)
+            sage: components[0]
+            (0, 1)
+
+        """
         return self._surface.component(root)
 
     def __iter__(self):
+        r"""
+        Iterate over the keys of this mapping, i.e., the root labels of the
+        connected components.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+            sage: components = RootedComponents_MutablePolygonalSurface(S)
+            sage: list(components)
+            [0]
+
+        """
+        # Shortcut enumeration if this is known to be a connected surface.
         connected = "Connected" in self._surface.category().axioms()
 
         for root in self._surface._roots:
@@ -2483,6 +2567,27 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
                 labels.remove(label)
 
     def __len__(self):
+        r"""
+        Return the number of connected components of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+            sage: components = RootedComponents_MutablePolygonalSurface(S)
+            sage: len(components)
+            1
+
+        """
         components = 0
         for root in self:
             components += 1
@@ -2490,6 +2595,36 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
 
 
 class LabeledCollection:
+    r"""
+    Abstract base class for collection of labels as returned by ``labels()``
+    methods of surfaces.
+
+    This also serves as a base clas for things such as ``polygons()`` that are
+    tied to labels.
+
+    INPUT:
+
+    - ``surface`` -- a polygonal surface, the labels are taken from that
+      surface; subclasses might change this to only represent a subset of the
+      labels of this surface
+
+    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
+      a finite set; if ``None``, it is not known whether the set is finite
+      (some operations might not be supported in that case or not terminate if
+      the set is actually infinite.)
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: labels = S.labels()
+
+        sage: from flatsurf.geometry.surface import LabeledCollection
+        sage: isinstance(labels, LabeledCollection)
+        True
+
+    """
+
     def __init__(self, surface, finite=None):
         if finite is None and surface.is_finite_type():
             finite = True
@@ -2498,6 +2633,21 @@ class LabeledCollection:
         self._finite = finite
 
     def __repr__(self):
+        r"""
+        Return a printable representation of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.labels()
+            (0,)
+
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S.labels()
+            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+        """
         from itertools import islice
         items = list(islice(self, 17))
 
@@ -2507,6 +2657,26 @@ class LabeledCollection:
         return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
 
     def __len__(self):
+        r"""
+        Return the size of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: len(S.labels())
+            1
+
+        Python does not allow ``__len__`` to return anything but an integer, so
+        we cannot return infinity::
+
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: len(S.labels())
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: len() of an infinite set
+
+        """
         if self._finite is False:
             raise TypeError("infinite set has no integer length")
 
@@ -2517,27 +2687,88 @@ class LabeledCollection:
         return length
 
     def __contains__(self, x):
-        for label in self:
-            if x == label:
+        r"""
+        Return whether ``x`` is contained in this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: labels = S.labels()
+            sage: 0 in labels
+            True
+            sage: 1 in labels
+            False
+
+        """
+        for item in self:
+            if x == item:
                 return True
 
         return False
 
+
+class LabeledView(LabeledCollection):
+    r"""
+    A set of labels (or something ressembling labels such as ``polygons()``)
+    backed by another collection ``view``.
+
+    INPUT:
+
+    - ``surface`` -- a polygonal surface, the labels in ``view`` are labels of
+      that surface
+
+    - ``view`` -- a collection that all queries are going to be redirected to.
+      Note that ``labels()`` guarantees that iteration over labels happens in a
+      breadth-first-search so iteration over ``view`` must follow that same
+      order. However, subclasses can remove this requirement by overriding
+      :meth:`__iter__`.
+
+    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
+      a finite set; if ``None``, it is not known whether the set is finite
+      (some operations might not be supported in that case or not terminate if
+      the set is actually infinite.)
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.t_fractal()
+        sage: labels = S.labels()
+
+        sage: from flatsurf.geometry.surface import LabeledView
+        sage: isinstance(labels, LabeledView)
+        True
+
+    """
+
+    def __init__(self, surface, view, finite=None):
+        super().__init__(surface, finite=finite)
+        self._view = view
+
+    def __iter__(self):
+        return iter(self._view)
+
+    def __contains__(self, x):
+        return x in self._view
+
+    def __len__(self):
+        return len(self._view)
+
     def min(self):
         r"""
-        Return a minimal label in this set.
+        Return a minimal item in this set.
 
-        If the labels can be compared, this is just the actual ``min`` of the
-        labels.
+        If the items can be compared, this is just the actual ``min`` of the
+        items.
 
         Otherwise, we take the one with minimal ``repr``.
 
         .. NOTE::
 
-            If the labels cannot be compared, and there are clashes in the
-            ``repr``, the this method will fail.
+            If the items cannot be compared, and there are clashes in the
+            ``repr``, this method will fail.
 
-            Also, if comparison of labels is not consistent, then this can
+            Also, if comparison of items is not consistent, then this can
             produce somewhat random output.
 
             Finally, note with this approach the min of a set is not the always
@@ -2550,7 +2781,7 @@ class LabeledCollection:
             sage: S.labels().min()
             Traceback (most recent call last):
             ...
-            NotImplementedError: cannot determine minimal label of an infinite set
+            NotImplementedError: cannot determine minimum of an infinite set
 
         ::
 
@@ -2568,37 +2799,63 @@ class LabeledCollection:
 
         """
         if self._finite is False:
-            raise NotImplementedError("cannot determine minimal label of an infinite set")
+            raise NotImplementedError("cannot determine minimum of an infinite set")
 
         try:
             return min(self)
         except TypeError:
-            reprs = {repr(label): label for label in self}
+            reprs = {repr(item): item for item in self}
             if len(reprs) != len(self):
-                raise TypeError("cannot determine minimum of labels without ordering and with non-unique repr()")
+                raise TypeError("cannot determine minimum of tset without ordering and with non-unique repr()")
             return reprs[min(reprs)]
-
-class LabeledView(LabeledCollection):
-    def __init__(self, surface, view, finite=None):
-        super().__init__(surface, finite=finite)
-        self._view = view
-
-    def __iter__(self):
-        return iter(self._view)
-
-    def __contains__(self, x):
-        return x in self._view
-
-    def __len__(self):
-        return len(self._view)
 
 
 class ComponentLabels(LabeledCollection):
+    r"""
+    The labels of a connected component.
+
+    INPUT:
+
+    - ``surface`` -- a polygonal surface
+
+    - ``root`` -- a label of the connected component from which enumeration of
+      the component starts.
+
+    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
+      a finite component; if ``None``, it is not known whether the component is
+      finite (some operations might not be supported in that case or not
+      terminate if the component is actually infinite.)
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.t_fractal()
+        sage: component = S.component(0)
+
+        sage: from flatsurf.geometry.surface import ComponentLabels
+        sage: isinstance(component, ComponentLabels)
+        True
+
+    """
+
     def __init__(self, surface, root, finite=None):
         super().__init__(surface, finite=finite)
         self._root = root
 
     def __iter__(self):
+        r"""
+        Return an iterator of this component that enumerates labels starting
+        from the root label in a breadth-first-search.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: component = C.component(0)
+            sage: list(component)
+            [0, 1, 3, 2]
+
+        """
         from collections import deque
 
         seen = set()
@@ -2619,26 +2876,146 @@ class ComponentLabels(LabeledCollection):
 
 
 class Labels(LabeledCollection, collections.abc.Set):
+    r"""
+    The labels of a surface.
+
+    .. NOTE::
+
+        This is a generic implementation that represents the set of labels of a
+        surface in a breadth-first iteration starting from the root labels of the
+        connected components.
+
+        This implementation makes no assumption on the surface and can be very
+        slow to answer, e.g., containment or compute the number of labels in
+        the surface (because it needs to iterate over the entire surface.)
+
+        When possible, a faster implementation should be used such as
+        :class:`LabelsFromView`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import polygons, similarity_surfaces
+        sage: T = polygons.triangle(1, 2, 5)
+        sage: S = similarity_surfaces.billiard(T)
+        sage: S = S.minimal_cover("translation")
+
+        sage: labels = S.labels()
+        sage: labels
+        ((0, 1, 0), (1, 1, 0), (1, 0, -1), (1, 1/2*c0, 1/2*c0), (0, 1/2*c0, -1/2*c0), (0, 0, 1), (0, -1/2*c0, -1/2*c0), (0, 0, -1), (0, -1/2*c0, 1/2*c0), (0, 1/2*c0, 1/2*c0), (1, 1/2*c0, -1/2*c0), (1, -1/2*c0, -1/2*c0), (1, 0, 1), (1, -1/2*c0, 1/2*c0), (1, -1, 0), (0, -1, 0))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.surface import Labels
+        sage: type(labels) == Labels
+        True
+
+    """
+
     def __iter__(self):
         for component in self._surface.components():
             for label in component:
                 yield label
 
 
-class LabelsView(Labels, LabeledView):
-    pass
+class LabelsFromView(Labels, LabeledView):
+    r"""
+    The labels of a surface backed by another set that can quickly compute the
+    length of the labels and decide containment in the set.
+
+    .. NOTE::
+
+        Iteration of the view collection does not have to be in breadth-first
+        search order in the surface since this class is picking up the generic
+        :meth:`Labels.__iter__`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: labels = C.labels()
+
+        sage: from flatsurf.geometry.surface import LabelsFromView
+        sage: type(labels) == LabelsFromView
+        True
+
+    """
 
 
 class Polygons(LabeledCollection, collections.abc.Collection):
+    r"""
+    The collection of polygons of a surface.
+
+    The polygons are returned in the same order as labels of the surface are
+    returned by :class:`Labels`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: polygons = C.polygons()
+
+        sage: from flatsurf.geometry.surface import Polygons
+        sage: isinstance(polygons, Polygons)
+        True
+
+    """
+
     def __iter__(self):
+        r"""
+        Iterate over the polygons in the same order as ``labels()`` does.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: labels = C.labels()
+            sage: polygons = C.polygons()
+
+            sage: for entry in zip(labels, polygons):
+            ....:     print(entry)
+            (0, Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            (1, Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)]))
+            (3, Polygon(vertices=[(3, 0), (7/2, -1/2), (11/2, -1/2), (6, 0), (6, 1), (11/2, 3/2), (7/2, 3/2), (3, 1)]))
+            (2, Polygon(vertices=[(2, 0), (3, 0), (3, 1), (2, 1)]))
+
+        """
         for label in self._surface.labels():
             yield self._surface.polygon(label)
 
     def __len__(self):
+        r"""
+        Return the number of polygons in this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: polygons = C.polygons()
+            sage: len(polygons)
+            4
+
+        """
         return len(self._surface.labels())
 
 
 class Polygons_MutableOrientedSimilaritySurface(Polygons):
+    r"""
+    The collection of polygons of a :class:`MutableOrientedSimilaritySurface`.
+
+    This is a faster version of :class:`Polygons`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: polygons = C.polygons()
+
+        sage: from flatsurf.geometry.surface import Polygons_MutableOrientedSimilaritySurface
+        sage: isinstance(polygons, Polygons_MutableOrientedSimilaritySurface)
+        True
+
+    """
+
     def __init__(self, surface):
         # This hack makes __len__ 20% faster (it saves one attribute lookup.)
         self._polygons = surface._polygons
@@ -2649,6 +3026,28 @@ class Polygons_MutableOrientedSimilaritySurface(Polygons):
 
 
 class Edges(LabeledCollection, collections.abc.Set):
+    r"""
+    The set of edges of a surface.
+
+    The set of edges contains of pairs (label, index) with the labels of the
+    polygons and the actual edges indexed from 0 in the second component.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: edges = C.edges()
+        sage: edges
+        ((0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (2, 0), (2, 1), (2, 2), (2, 3))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.surface import Edges
+        sage: isinstance(edges, Edges)
+        True
+
+    """
+
     def __iter__(self):
         for label, polygon in zip(self._surface.labels(), self._surface.polygons()):
             for edge in range(len(polygon.vertices())):
@@ -2664,6 +3063,30 @@ class Edges(LabeledCollection, collections.abc.Set):
 
 
 class Gluings(LabeledCollection, collections.abc.Set):
+    r"""
+    The set of gluings of the surface.
+
+    Each gluing consists of two pairs (label, index) that describe the edges
+    being glued.
+
+    Note that each gluing (that is not a self-gluing) is reported twice.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: gluings = S.gluings()
+        sage: gluings
+        (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.surface import Gluings
+        sage: isinstance(gluings, Gluings)
+        True
+
+    """
+
     def __iter__(self):
         for label, edge in self._surface.edges():
             cross = self._surface.opposite_edge(label, edge)
