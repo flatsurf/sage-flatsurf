@@ -723,7 +723,7 @@ class RealProjectivePolygons(Category_over_base_ring):
             This category must be defined here to make SageMath's test suite
             pass. Otherwise we get "The super categories of a category over
             base should be a category over base (or the related Bimodules) or a
-            singleton category"; we did not investigate what exactly is goin on
+            singleton category"; we did not investigate what exactly is going on
             here.
 
         """

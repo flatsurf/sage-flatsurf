@@ -534,7 +534,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
 
                 assert self._surface.opposite_edge(cross_label, cross_edge) is None, "surface must not have a boundary"
 
-                # Note that we cannot detect wether something has been
+                # Note that we cannot detect whether something has been
                 # explicitly unglued. So we just reestablish any gluings of
                 # this edge.
                 self._surface.glue((label, edge), (cross_label, cross_edge))

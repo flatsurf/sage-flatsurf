@@ -1029,7 +1029,7 @@ class HyperbolicPathPlotCommand:
             # epsilon.
             if (start_x - end_x).abs() < (start_y - end_y).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
-                # vertical to avoid numeric issus.
+                # vertical to avoid numeric issues.
                 return [CartesianPathPlotCommand("LINETO", (end_x, end_y))]
 
             real_hyperbolic_plane = HyperbolicPlane(RR)

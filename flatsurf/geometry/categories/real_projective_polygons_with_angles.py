@@ -64,7 +64,7 @@ the category might get refined once these aspects have been determined::
     sage: p.category()
     Category of convex simple real projective rectangles over Rational Field
 
-Note that SageMath applies the same strategy when determining wether the
+Note that SageMath applies the same strategy when determining whether the
 integers modulo N are a field::
 
     sage: K = Zmod(1361)

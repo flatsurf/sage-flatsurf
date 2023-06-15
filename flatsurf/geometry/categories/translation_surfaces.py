@@ -153,7 +153,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             """
             if "Oriented" not in surface.category().axioms():
-                raise NotImplementedError("cannot decide wether a non-oriented surface is a translation surface yet")
+                raise NotImplementedError("cannot decide whether a non-oriented surface is a translation surface yet")
 
             labels = surface.labels()
 

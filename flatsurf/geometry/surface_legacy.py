@@ -1984,8 +1984,8 @@ class LabelWalker:
     We start at the base_label().
     Then the labels are visited in order involving the combinatorial distance from the base_label(),
     where combinatorial distance measures the minimal number of edges which need to be crossed to reach the
-    polygon with a givel label. Ties are broken using lexigraphical order on the numbers associated to edges crossed
-    (labels are not used in this lexigraphical ordering).
+    polygon with a givel label. Ties are broken using lexicographical order on the numbers associated to edges crossed
+    (labels are not used in this lexicographical ordering).
     """
 
     class LabelWalkerIterator:

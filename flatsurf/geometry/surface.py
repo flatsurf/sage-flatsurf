@@ -2711,7 +2711,7 @@ class LabeledCollection:
 
 class LabeledView(LabeledCollection):
     r"""
-    A set of labels (or something ressembling labels such as ``polygons()``)
+    A set of labels (or something resembling labels such as ``polygons()``)
     backed by another collection ``view``.
 
     INPUT:
