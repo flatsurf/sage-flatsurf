@@ -515,7 +515,12 @@ def triangulation_mapping(s):
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
         sage: s2.polygons()
-        (Polygon(vertices=[(0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]), Polygon(vertices=[(0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)]), Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)]), Polygon(vertices=[(0, 0), (-1, -a - 1), (1/2*a, -1/2*a)]), Polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)]), Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
+        (Polygon(vertices=[(0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]),
+         Polygon(vertices=[(0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)]),
+         Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)]),
+         Polygon(vertices=[(0, 0), (-1, -a - 1), (1/2*a, -1/2*a)]),
+         Polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)]),
+         Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
 
     """
     if not s.is_finite_type():

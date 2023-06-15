@@ -26,6 +26,7 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
 
+
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""
     Check whether the given pair is a cosine and sine of a same rational angle.

@@ -746,7 +746,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss=s.copy(mutable=False,new_field=AA)
                     doctest:warning
                     ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead. Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
+                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
+                    Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
                     sage: TestSuite(ss).run()
                     sage: ss.base_ring()
                     Algebraic Real Field
@@ -757,10 +758,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss = s.copy(new_field=AA).copy(optimal_number_field=True)
                     doctest:warning
                     ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead. Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
+                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
+                    Use set_immutable() to make the resulting surface immutable. Use change_ring() to change the field over which the surface is defined.
                     doctest:warning
                     ...
-                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead. Use set_immutable() to make the resulting surface immutable. There is currently no replacement for optimal number field. If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again.
+                    UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
+                    Use set_immutable() to make the resulting surface immutable. There is currently no replacement for optimal number field.
+                    If you are relying on this features, let the authors of sage-flatsurf know and we will try to make it available again.
                     sage: TestSuite(ss).run()
                     sage: ss.base_ring().discriminant()
                     -44

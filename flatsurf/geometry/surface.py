@@ -64,6 +64,7 @@ from sage.misc.cachefunc import cached_method
 
 from flatsurf.geometry.surface_objects import SurfacePoint
 
+
 class Surface_base(Parent):
     r"""
     A base class for all surfaces in sage-flatsurf.
@@ -2901,7 +2902,8 @@ class Labels(LabeledCollection, collections.abc.Set):
 
         sage: labels = S.labels()
         sage: labels
-        ((0, 1, 0), (1, 1, 0), (1, 0, -1), (1, 1/2*c0, 1/2*c0), (0, 1/2*c0, -1/2*c0), (0, 0, 1), (0, -1/2*c0, -1/2*c0), (0, 0, -1), (0, -1/2*c0, 1/2*c0), (0, 1/2*c0, 1/2*c0), (1, 1/2*c0, -1/2*c0), (1, -1/2*c0, -1/2*c0), (1, 0, 1), (1, -1/2*c0, 1/2*c0), (1, -1, 0), (0, -1, 0))
+        ((0, 1, 0), (1, 1, 0), (1, 0, -1), (1, 1/2*c0, 1/2*c0), (0, 1/2*c0, -1/2*c0), (0, 0, 1), (0, -1/2*c0, -1/2*c0), (0, 0, -1), (0, -1/2*c0, 1/2*c0), (0, 1/2*c0, 1/2*c0),
+         (1, 1/2*c0, -1/2*c0), (1, -1/2*c0, -1/2*c0), (1, 0, 1), (1, -1/2*c0, 1/2*c0), (1, -1, 0), (0, -1, 0))
 
     TESTS::
 
@@ -3108,7 +3110,7 @@ class Gluings(LabeledCollection, collections.abc.Set):
 
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
-from flatsurf.geometry.surface_legacy import (
+from flatsurf.geometry.surface_legacy import (  # noqa, we import at the bottom of the file to break a circular import
     Surface,
     Surface_list,
     Surface_dict,

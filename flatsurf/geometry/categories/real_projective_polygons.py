@@ -832,7 +832,8 @@ class RealProjectivePolygons(Category_over_base_ring):
             sage: D = ConvexPolygons(QQbar)
             doctest:warning
             ...
-            UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons. If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.
+            UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons.
+            If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.
             sage: D(p)
             doctest:warning
             ...

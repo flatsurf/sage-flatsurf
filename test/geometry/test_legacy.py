@@ -35,7 +35,7 @@ def test_apisa_wright():
 
     K = QuadraticField(2)
     c = K.gen()
-    h24, h3, l15, l6, l7, l8 = 1, 1+c, 1, c, 1+c, 2*c-1
+    h24, h3, l15, l6, l7, l8 = 1, 1 + c, 1, c, 1 + c, 2 * c - 1
 
     from flatsurf import ConvexPolygons, HalfTranslationSurface, Surface_list
     params = [h24, h3, l15, l6, l7, l8]
@@ -47,8 +47,8 @@ def test_apisa_wright():
     v7 = vector(K, (l7, 0))
     v8 = vector(K, (l8, 0))
     C = ConvexPolygons(K)
-    P0 = C(edges=[v15, v15, v24, -2*v15, -v24])
-    P1 = C(edges=[2*v15, v8, v7, v6, v3, -v8, -v7, -v6, -v15, -v15, -v3])
+    P0 = C(edges=[v15, v15, v24, -2 * v15, -v24])
+    P1 = C(edges=[2 * v15, v8, v7, v6, v3, -v8, -v7, -v6, -v15, -v15, -v3])
     P2 = C(edges=[v15, v24, -v15, -v24])
     S = Surface_list(base_ring=C.base_ring())
     S.rename("ApisaWrightSurface({})".format(', '.join(map(str, params))))

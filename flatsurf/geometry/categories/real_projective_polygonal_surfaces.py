@@ -37,7 +37,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from flatsurf.geometry.categories.surface_category import SurfaceCategory, SurfaceCategoryWithAxiom
+from flatsurf.geometry.categories.surface_category import SurfaceCategory
 
 
 class RealProjectivePolygonalSurfaces(SurfaceCategory):
@@ -102,7 +102,8 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
                 import warnings
 
                 warnings.warn(
-                    "The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. The result of graphical_surface() is never cached now."
+                    "The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. "
+                    "The result of graphical_surface() is never cached anymore."
                 )
 
                 kwargs.pop("cached")

@@ -133,10 +133,14 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             sage: C.super_categories()
             [Category of rational real projective polygons over Rational Field]
 
-        """
-        return [RealProjectivePolygons(self.base_ring()).Rational()]
+            sage: C = RealProjectivePolygons(QQ).WithAngles([2, 2, 1, 6, 1])
+            sage: C.super_categories()
 
-    # TODO: Add extra_uper_categories. For some angles there is an implication Simple → Convex.
+        """
+        if all(2 * a <= 1 for a in self._angles):
+            return [RealProjectivePolygons(self.base_ring()).Rational().Convex()]
+        else:
+            return [RealProjectivePolygons(self.base_ring()).Rational()]
 
     @staticmethod
     def _normalize_angles(angles):
@@ -193,7 +197,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             [(c^3, 5), (3*c^3 - 10*c, 5), (-3*c^3 + 10*c, 5), (-c^3, 5)]
 
         """
-        from sage.all import ZZ, QQ, RIF, lcm, AA, NumberField
+        from sage.all import QQ, RIF, lcm, AA, NumberField
         from flatsurf.geometry.subfield import chebyshev_T, cos_minpoly
 
         # We determine the number field that contains the slopes of the sides,
@@ -306,7 +310,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         from flatsurf.geometry.categories.polygons import Polygons
         _, _, polygons = Polygons._describe_polygon(len(self._angles), equiangular=equiangular)
 
-        with_angles = "" if equiangular else f" with angles {self.angles(False)}" 
+        with_angles = "" if equiangular else f" with angles {self.angles(False)}"
 
         return names.replace(" with angles", with_angles).replace("polygons", polygons)
 
@@ -989,7 +993,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 sage: P(*lengths[:-2])
                 doctest:warning
                 ...
-                UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+                UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
+                To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors,
+                use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
                 Polygon(vertices=[(0, 0), (1, 0), (c + 1, 3), (c, 3)])
 
                 sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
@@ -1019,7 +1025,8 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             warning = "calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead."
 
             if not normalized:
-                warning += " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())])."
+                warning += " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use "\
+                    "Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())])."
 
             warnings.warn(warning)
 
