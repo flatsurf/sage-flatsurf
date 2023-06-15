@@ -632,7 +632,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
             p = Polygon(angles=self.angles())
 
-            if p not in self:
+            if p not in self:  # pylint: disable=unsupported-membership-test
                 raise NotImplementedError(
                     "cannot create an element in this category yet"
                 )
@@ -692,7 +692,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 p = Polygon(edges=edges, angles=self.angles(), check=False)
                 break
 
-            if p not in self:
+            if p not in self:  # pylint: disable=unsupported-membership-test
                 raise NotImplementedError(
                     "cannot create a random element in this category yet"
                 )

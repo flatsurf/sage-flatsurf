@@ -732,7 +732,7 @@ class SaddleConnection(SageObject):
 
         if end_holonomy is None and holonomy is not None:
             # Attempt to infer the end_holonomy:
-            from flatsurf.categories import HalfTranslationSurfaces, TranslationSurfaces
+            from flatsurf.geometry.categories import HalfTranslationSurfaces, TranslationSurfaces
 
             if self._surface in TranslationSurfaces():
                 end_holonomy = -holonomy

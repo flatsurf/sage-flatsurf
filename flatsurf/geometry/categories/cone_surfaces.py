@@ -184,7 +184,7 @@ class ConeSurfaces(SurfaceCategory):
                     # edges instead.
                     from flatsurf.geometry.categories import SimilaritySurfaces
 
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
                         surface, label, edge
                     )
 

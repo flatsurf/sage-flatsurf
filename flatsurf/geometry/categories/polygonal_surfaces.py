@@ -1106,7 +1106,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     {Vertex 0 of polygon 0}
 
                 """
-                return set([self(label, vertex) for (label, vertex) in self.edges()])
+                return set([self(label, vertex) for (label, vertex) in self.edges()])  # pylint: disable=not-callable
 
             def _test_labels(self, **options):
                 r"""

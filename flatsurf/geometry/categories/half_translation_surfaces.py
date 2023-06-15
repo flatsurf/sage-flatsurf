@@ -108,6 +108,18 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
             This overrides
             :meth:`SimilaritySurfaces.ParentMethods.is_translation_surface`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                sage: H = B.minimal_cover(cover_type="half-translation")
+
+                sage: H.is_translation_surface(positive=False)
+                True
+                sage: H.is_translation_surface(positive=True)
+                False
+
             """
             if not positive:
                 return True
@@ -115,7 +127,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
             # If this is not explicitly a translation surface, we have to
             # decide with the generic checks whether it is a positive
             # half-translation surface.
-            return super(
+            return super(  # pylint: disable=bad-super-call
                 HalfTranslationSurfaces().parent_class, self
             ).is_translation_surface(positive=positive)
 

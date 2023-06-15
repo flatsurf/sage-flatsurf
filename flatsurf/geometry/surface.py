@@ -1998,7 +1998,7 @@ class MutableOrientedSimilaritySurface(
                 edge: self.opposite_edge(label, edge)[0]
                 for edge in range(len(polygon.vertices()))
             }
-            edge = min(adjacencies, key=lambda edge: labels.index(adjacencies[edge]))
+            edge = min(adjacencies, key=lambda edge: labels.index(adjacencies[edge]))  # pylint: disable=cell-var-from-loop
             label2, edge2 = s.opposite_edge(label, edge)
             changes[label] = changes[label2] * s.edge_transformation(label, edge)
         it = iter(labels)
@@ -2714,7 +2714,7 @@ class LabeledCollection:
             raise TypeError("infinite set has no integer length")
 
         length = 0
-        for x in self:
+        for x in self:  # pylint: disable=not-an-iterable
             length += 1
 
         return length
@@ -2734,7 +2734,7 @@ class LabeledCollection:
             False
 
         """
-        for item in self:
+        for item in self:  # pylint: disable=not-an-iterable
             if x == item:
                 return True
 
@@ -3144,7 +3144,7 @@ class Gluings(LabeledCollection, collections.abc.Set):
 
 
 # Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
-from flatsurf.geometry.surface_legacy import (  # noqa, we import at the bottom of the file to break a circular import
+from flatsurf.geometry.surface_legacy import (  # noqa, we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position
     Surface,
     Surface_list,
     Surface_dict,

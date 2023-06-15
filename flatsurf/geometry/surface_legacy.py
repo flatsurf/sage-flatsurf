@@ -2077,7 +2077,7 @@ class LabelWalker:
 
     def edge_iterator(self, gluings=False):
         if gluings:
-            for entry in self.gluings():
+            for entry in self._s.gluings():
                 yield entry
             return
         for label, polygon in self.label_polygon_iterator():

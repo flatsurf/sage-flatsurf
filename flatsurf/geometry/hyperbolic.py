@@ -211,6 +211,7 @@ We can also intersect objects that are not half spaces::
 
 import collections.abc
 
+from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
@@ -4211,7 +4212,7 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"
 
 
-class HyperbolicConvexSet:
+class HyperbolicConvexSet(SageObject):
     r"""
     Base class for convex subsets of :class:`HyperbolicPlane`.
 
@@ -4256,6 +4257,20 @@ class HyperbolicConvexSet:
         True
 
     """
+    def parent(self):
+        r"""
+        Return the hyperbolic plane this is a subset of.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: v = H.vertical(0)
+            sage: v.parent()
+            Hyperbolic Plane over Rational Field
+
+        """
+        raise NotImplementedError(f"{type(self)} does not implement parent()")
 
     def half_spaces(self):
         r"""

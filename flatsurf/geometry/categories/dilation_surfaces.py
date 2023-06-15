@@ -166,6 +166,17 @@ class DilationSurfaces(SurfaceCategory):
 
             See :meth:`SimilaritySurfaces.ParentMethods.is_dilation_surface`
             for details.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+
+                sage: S.is_dilation_surface(positive=True)
+                True
+                sage: S.is_dilation_surface(positive=False)
+                True
+
             """
             if not positive:
                 return True
@@ -173,7 +184,7 @@ class DilationSurfaces(SurfaceCategory):
             # We do not know whether this surface is a positive dilation
             # surface or not so we have to rely on the generic implementation
             # of this.
-            return super(DilationSurfaces().parent_class, self).is_dilation_surface(
+            return super(DilationSurfaces().parent_class, self).is_dilation_surface(  # pylint: disable=bad-super-call
                 positive=positive
             )
 
@@ -243,7 +254,7 @@ class DilationSurfaces(SurfaceCategory):
                     # edges instead.
                     from flatsurf.geometry.categories import SimilaritySurfaces
 
-                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(
+                    matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
                         surface, label, edge
                     )
 
@@ -274,13 +285,15 @@ class DilationSurfaces(SurfaceCategory):
                 sage: S = translation_surfaces.square_torus()
                 sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)
 
+                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False, mapping=True)
+
             """
             if mapping is True:
                 if in_place:
                     raise NotImplementedError(
                         "can not modify in place and return a mapping"
                     )
-                from flatsurf.geometry.dilation_surface import GL2RMapping
+                from flatsurf.geometry.mappings import GL2RMapping
 
                 return GL2RMapping(self, m)
             if not in_place:

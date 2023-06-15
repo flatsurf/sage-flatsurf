@@ -529,7 +529,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     # Sometimes, this is not implemented because it requires the edge
                     # transformation to be known, so we prefer the centroid.
                     coordinates = polygon.edge(0) / 2
-                return self(label, coordinates)
+                return self(label, coordinates)  # pylint: disable=not-callable
 
             def underlying_surface(self):
                 r"""
@@ -1262,7 +1262,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     Vertex 0 of polygon 1
 
                 """
-                return self(label, point, limit=limit, ring=ring)
+                return self(label, point, limit=limit, ring=ring)  # pylint: disable=not-callable
 
             def surface_point(self, *args, **kwargs):
                 r"""
@@ -2276,7 +2276,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         # and we want to deduce the matrix from the attached polygon
                         # edges instead.
                         matrix = (
-                            SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(
+                            SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
                                 surface, label, edge
                             )
                         )

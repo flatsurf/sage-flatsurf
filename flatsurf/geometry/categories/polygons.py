@@ -172,9 +172,9 @@ class Polygons(Category_over_base_ring):
             return description
 
         if num_edges == 3:
-            augment_if("an", "equilateral", "equiangular") or augment_if(
-                "an", "isosceles"
-            ) or augment_if("a", "right")
+            if not augment_if("an", "equilateral", "equiangular"):
+                if not augment_if("an", "isosceles"):
+                    augment_if("a", "right")
 
             return description
 

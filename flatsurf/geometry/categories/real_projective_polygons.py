@@ -41,11 +41,10 @@ from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.misc.cachefunc import cached_method
 from sage.all import FreeModule
 from sage.misc.abstract_method import abstract_method
+from sage.structure.element import get_coercion_model
 
 from flatsurf.geometry.categories.polygons import Polygons
 from flatsurf.geometry.euclidean import ccw
-
-from sage.structure.element import get_coercion_model
 
 cm = get_coercion_model()
 
