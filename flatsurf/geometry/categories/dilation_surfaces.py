@@ -184,7 +184,8 @@ class DilationSurfaces(SurfaceCategory):
             # We do not know whether this surface is a positive dilation
             # surface or not so we have to rely on the generic implementation
             # of this.
-            return super(DilationSurfaces().parent_class, self).is_dilation_surface(  # pylint: disable=bad-super-call
+            # pylint: disable-next=bad-super-call
+            return super(DilationSurfaces().parent_class, self).is_dilation_surface(
                 positive=positive
             )
 

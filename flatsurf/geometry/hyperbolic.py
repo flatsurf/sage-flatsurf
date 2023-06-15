@@ -4257,6 +4257,7 @@ class HyperbolicConvexSet(SageObject):
         True
 
     """
+
     def parent(self):
         r"""
         Return the hyperbolic plane this is a subset of.

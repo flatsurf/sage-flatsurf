@@ -1998,7 +1998,11 @@ class MutableOrientedSimilaritySurface(
                 edge: self.opposite_edge(label, edge)[0]
                 for edge in range(len(polygon.vertices()))
             }
-            edge = min(adjacencies, key=lambda edge: labels.index(adjacencies[edge]))  # pylint: disable=cell-var-from-loop
+            edge = min(
+                adjacencies,
+                # pylint: disable-next=cell-var-from-loop
+                key=lambda edge: labels.index(adjacencies[edge]),
+            )
             label2, edge2 = s.opposite_edge(label, edge)
             changes[label] = changes[label2] * s.edge_transformation(label, edge)
         it = iter(labels)

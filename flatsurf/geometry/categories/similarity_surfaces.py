@@ -1262,7 +1262,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     Vertex 0 of polygon 1
 
                 """
-                return self(label, point, limit=limit, ring=ring)  # pylint: disable=not-callable
+                # pylint: disable-next=not-callable
+                return self(label, point, limit=limit, ring=ring)
 
             def surface_point(self, *args, **kwargs):
                 r"""
@@ -2275,10 +2276,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         # have overridden this (just returning the identity matrix e.g.)
                         # and we want to deduce the matrix from the attached polygon
                         # edges instead.
-                        matrix = (
-                            SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
-                                surface, label, edge
-                            )
+                        matrix = SimilaritySurfaces.Oriented.ParentMethods.edge_matrix.f(  # pylint: disable=no-member
+                            surface, label, edge
                         )
 
                         a = AA(matrix[0, 0])
