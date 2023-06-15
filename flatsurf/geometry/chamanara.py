@@ -158,6 +158,7 @@ class ChamanaraSurface(OrientedSimilaritySurface):
 
         """
         from flatsurf.geometry.surface import LabelsFromView
+
         return LabelsFromView(self, ZZ, finite=False)
 
     def roots(self):

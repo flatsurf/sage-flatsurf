@@ -101,6 +101,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
         If you want to add functionality for such surfaces you most likely want
         to put it here.
         """
+
         def is_translation_surface(self, positive=True):
             r"""
             Return whether this surface is a (half-)translation surface.
@@ -133,6 +134,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
             True
 
         """
+
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
             The category of orientable half-translation surfaces without boundary.
@@ -148,6 +150,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 True
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all orientable half-translation
@@ -156,6 +159,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 If you want to add functionality for such surfaces you most likely
                 want to put it here.
                 """
+
                 def stratum(self):
                     r"""
                     EXAMPLES::
@@ -207,6 +211,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all oriented half-translation
@@ -215,6 +220,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
             def holonomy_field(self):
                 r"""
                 Return the relative holonomy field of this translation or half-translation surface.
@@ -286,6 +292,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 True
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all oriented half-translation
@@ -294,6 +301,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 If you want to add functionality for such surfaces you most
                 likely want to put it here.
                 """
+
                 def normalized_coordinates(self):
                     r"""
                     Return a pair ``(new_surface, matrix)`` where ``new_surface`` is defined over the
@@ -399,7 +407,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                                     (new_hols[k + 2 * i], new_hols[k + 2 * i + 1])
                                     for i in range(m)
                                 ],
-                                base_ring=K
+                                base_ring=K,
                             )
                         )
                         k += 2 * m
@@ -426,6 +434,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     True
 
                 """
+
                 class ParentMethods:
                     r"""
                     Provides methods available to all oriented half-translation
@@ -435,6 +444,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     If you want to add functionality for such surfaces you most
                     likely want to put it here.
                     """
+
                     def angles(self, numerical=False, return_adjacent_edges=False):
                         r"""
                         Return the set of angles around the vertices of the surface.

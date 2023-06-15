@@ -101,6 +101,7 @@ class DilationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
             def is_dilation_surface(self, positive=False):
                 r"""
                 Return whether this surface is a dilation surface.
@@ -158,6 +159,7 @@ class DilationSurfaces(SurfaceCategory):
         If you want to add functionality for such surfaces you most likely want
         to put it here.
         """
+
         def is_dilation_surface(self, positive=False):
             r"""
             Return whether this surface is a dilation surface.
@@ -217,7 +219,9 @@ class DilationSurfaces(SurfaceCategory):
 
             """
             if "Oriented" not in surface.category().axioms():
-                raise NotImplementedError("cannot decide whether a non-oriented surface is dilation surface yet")
+                raise NotImplementedError(
+                    "cannot decide whether a non-oriented surface is dilation surface yet"
+                )
 
             labels = surface.labels()
 
@@ -446,6 +450,7 @@ class DilationSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all dilation surfaces built from
@@ -537,7 +542,9 @@ class DilationSurfaces(SurfaceCategory):
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-                self = MutableOrientedSimilaritySurface.from_surface(self, category=DilationSurfaces())
+                self = MutableOrientedSimilaritySurface.from_surface(
+                    self, category=DilationSurfaces()
+                )
 
                 if direction is None:
                     base_ring = self.base_ring()
@@ -556,7 +563,9 @@ class DilationSurfaces(SurfaceCategory):
                     for e1 in range(3):
                         p2, e2 = self.opposite_edge(p1, e1)
                         if self._delaunay_edge_needs_flip_Linfinity(p1, e1, p2, e2):
-                            self.triangle_flip(p1, e1, in_place=True, direction=direction)
+                            self.triangle_flip(
+                                p1, e1, in_place=True, direction=direction
+                            )
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1

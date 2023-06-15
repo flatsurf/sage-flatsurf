@@ -766,7 +766,8 @@ class GraphicalSurface:
                         continue
                     if (
                         ccw(
-                            polygon.edge((vertex - 1) % len(polygon.vertices())), direction
+                            polygon.edge((vertex - 1) % len(polygon.vertices())),
+                            direction,
                         )
                         < 0
                     ):

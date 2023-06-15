@@ -103,6 +103,7 @@ class ConeSurfaces(SurfaceCategory):
         If you want to add functionality for such surfaces you most likely want
         to put it here.
         """
+
         def is_cone_surface(self):
             r"""
             Return whether this surface is a cone surface, i.e., whether its
@@ -159,7 +160,9 @@ class ConeSurfaces(SurfaceCategory):
 
             """
             if "Oriented" not in surface.category().axioms():
-                raise NotImplementedError("cannot check whether a non-oriented surface is a cone surface yet")
+                raise NotImplementedError(
+                    "cannot check whether a non-oriented surface is a cone surface yet"
+                )
 
             labels = surface.labels()
 
@@ -205,6 +208,7 @@ class ConeSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all cone surfaces built from finitely
@@ -246,6 +250,7 @@ class ConeSurfaces(SurfaceCategory):
                 True
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all oriented cone surfaces.
@@ -292,6 +297,7 @@ class ConeSurfaces(SurfaceCategory):
                     True
 
                 """
+
                 class ParentMethods:
                     r"""
                     Provides methods available to all oriented cone surfaces
@@ -382,6 +388,7 @@ class ConeSurfaces(SurfaceCategory):
                         True
 
                     """
+
                     class ParentMethods:
                         r"""
                         Provides methods available to all oriented connected

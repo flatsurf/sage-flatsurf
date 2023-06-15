@@ -671,7 +671,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             self.real(1),
             self.real(-1),
             self.geodesic(0, 2).start(),
-            self.half_circle(0, 2).start()]
+            self.half_circle(0, 2).start(),
+        ]
 
     def _test_some_subsets(self, tester=None, **options):
         r"""
@@ -6163,7 +6164,9 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             if point in self.boundary():
                 return True
 
-            raise NotImplementedError("cannot decide whether this ideal point is contained in the half space yet")
+            raise NotImplementedError(
+                "cannot decide whether this ideal point is contained in the half space yet"
+            )
 
         a, b, c = self.equation(model="klein")
 
@@ -9915,6 +9918,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         """
         if category is None:
             from flatsurf.geometry.categories import HyperbolicPolygons
+
             category = HyperbolicPolygons(parent.base_ring()).Convex().Simple()
 
         super().__init__(parent, category=category)
@@ -11502,7 +11506,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                     check=False,
                     assume_sorted=True,
                     assume_minimal=True,
-                    marked_vertices=[vertex.change(ring=ring, geometry=geometry) for vertex in self._marked_vertices],
+                    marked_vertices=[
+                        vertex.change(ring=ring, geometry=geometry)
+                        for vertex in self._marked_vertices
+                    ],
                 )
             )
 
@@ -12279,8 +12286,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         if type(self) is not type(other):
             return False
         return (
-            self.geodesic() == other.geodesic()
-            and self.vertices() == other.vertices()
+            self.geodesic() == other.geodesic() and self.vertices() == other.vertices()
         )
 
     def change(self, ring=None, geometry=None, oriented=None):

@@ -224,7 +224,8 @@ class GraphicalPolygon:
         Options are processed as in sage.plot.line.line2d.
         """
         return line2d(
-            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]], **options
+            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
+            **options
         )
 
     def plot_edge_label(self, i, label, **options):

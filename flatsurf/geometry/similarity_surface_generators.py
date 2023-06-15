@@ -605,7 +605,9 @@ class TFractalSurface(OrientedSimilaritySurface):
         if i == 2:
             w = self._w
             h = self._h2
-        return Polygon(base_ring=self.base_ring(), edges=[(w, 0), (0, h), (-w, 0), (0, -h)])
+        return Polygon(
+            base_ring=self.base_ring(), edges=[(w, 0), (0, h), (-w, 0), (0, -h)]
+        )
 
     def __hash__(self):
         r"""
@@ -677,7 +679,9 @@ class SimilaritySurfaceGenerators:
         """
         s = MutableOrientedSimilaritySurface(QQ)
 
-        s.add_polygon(Polygon(vertices=[(0, 0), (2, -2), (2, 0)], base_ring=QQ), label=0)
+        s.add_polygon(
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)], base_ring=QQ), label=0
+        )
         s.add_polygon(Polygon(vertices=[(0, 0), (2, 0), (1, 3)], base_ring=QQ), label=1)
         s.glue((0, 0), (1, 1))
         s.glue((0, 1), (1, 2))
@@ -779,20 +783,27 @@ class SimilaritySurfaceGenerators:
         if not isinstance(P, EuclideanPolygon):
             raise TypeError("invalid input")
 
-        V = P.base_ring()**2
+        V = P.base_ring() ** 2
 
         if not P.is_convex():
             # triangulate non-convex ones
             base_ring = P.base_ring()
             comb_edges = P.triangulation()
             vertices = P.vertices()
-            comb_triangles = SimilaritySurfaceGenerators._billiard_build_faces(len(vertices), comb_edges)
+            comb_triangles = SimilaritySurfaceGenerators._billiard_build_faces(
+                len(vertices), comb_edges
+            )
             triangles = []
             internal_edges = []  # list (p1, e1, p2, e2)
             external_edges = []  # list (p1, e1)
             edge_to_lab = {}
             for num, (i, j, k) in enumerate(comb_triangles):
-                triangles.append(Polygon(vertices=[vertices[i], vertices[j], vertices[k]], base_ring=base_ring))
+                triangles.append(
+                    Polygon(
+                        vertices=[vertices[i], vertices[j], vertices[k]],
+                        base_ring=base_ring,
+                    )
+                )
                 edge_to_lab[(i, j)] = (num, 0)
                 edge_to_lab[(j, k)] = (num, 1)
                 edge_to_lab[(k, i)] = (num, 2)
@@ -882,7 +893,7 @@ class SimilaritySurfaceGenerators:
             i1 = p.index(v)
             if i0 > i1:
                 i0, i1 = i1, i0
-            polygons[j] = p[i0: i1 + 1]
+            polygons[j] = p[i0 : i1 + 1]
             polygons.append(p[i1:] + p[: i0 + 1])
         return polygons
 
@@ -927,8 +938,12 @@ class SimilaritySurfaceGenerators:
             F = F.fraction_field()
         V = VectorSpace(F, 2)
         s = MutableOrientedSimilaritySurface(F)
-        s.add_polygon(Polygon(base_ring=F, edges=[V((w, 0)), V((-w, h)), V((0, -h))]), label=0)
-        s.add_polygon(Polygon(base_ring=F, edges=[V((0, h)), V((-w, -h)), V((w, 0))]), label=1)
+        s.add_polygon(
+            Polygon(base_ring=F, edges=[V((w, 0)), V((-w, h)), V((0, -h))]), label=0
+        )
+        s.add_polygon(
+            Polygon(base_ring=F, edges=[V((0, h)), V((-w, -h)), V((w, 0))]), label=1
+        )
         s.glue((0, 0), (1, 2))
         s.glue((0, 1), (1, 1))
         s.glue((0, 2), (1, 0))
@@ -969,8 +984,14 @@ class DilationSurfaceGenerators:
 
         """
         s = MutableOrientedSimilaritySurface(a.parent().fraction_field())
-        s.add_polygon(Polygon(base_ring=s.base_ring(), edges=[(0, 1), (-1, 0), (0, -1), (1, 0)]), label=0)
-        s.add_polygon(Polygon(base_ring=s.base_ring(), edges=[(0, 1), (-a, 0), (0, -1), (a, 0)]), label=1)
+        s.add_polygon(
+            Polygon(base_ring=s.base_ring(), edges=[(0, 1), (-1, 0), (0, -1), (1, 0)]),
+            label=0,
+        )
+        s.add_polygon(
+            Polygon(base_ring=s.base_ring(), edges=[(0, 1), (-a, 0), (0, -1), (a, 0)]),
+            label=1,
+        )
         # label 1
         s.glue((0, 0), (1, 2))
         s.glue((0, 1), (1, 3))
@@ -1023,7 +1044,7 @@ class DilationSurfaceGenerators:
 
         hexagon = Polygon(
             edges=[(a, 0), (1 - a, b), (0, 1 - b), (-c, 0), (c - 1, -d), (0, d - 1)],
-            base_ring=field
+            base_ring=field,
         )
         s.add_polygon(hexagon, label=0)
         s.set_roots([0])
@@ -1095,9 +1116,20 @@ class HalfTranslationSurfaceGenerators:
             y -= h[i]
         assert x == W - w[-1]
         assert y == h[-1]
-        P.append(Polygon(vertices=[(x, 0), (x + w[-1], 0), (x + w[-1], y), (x, y)], base_ring=base_ring))
+        P.append(
+            Polygon(
+                vertices=[(x, 0), (x + w[-1], 0), (x + w[-1], y), (x, y)],
+                base_ring=base_ring,
+            )
+        )
 
-        Prev = [Polygon(vertices=[(x, -y) for x, y in reversed(p.vertices())], base_ring=base_ring) for p in P]
+        Prev = [
+            Polygon(
+                vertices=[(x, -y) for x, y in reversed(p.vertices())],
+                base_ring=base_ring,
+            )
+            for p in P
+        ]
 
         S = MutableOrientedSimilaritySurface(base_ring)
         S.rename(
@@ -1417,7 +1449,9 @@ class TranslationSurfaceGenerators:
             s.glue((1, 3), (1, 7))
             s.glue((1, 0), (1, 5))
         else:
-            s.add_polygon(Polygon(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], base_ring=K))
+            s.add_polygon(
+                Polygon(vertices=[(0, 0), (λ, 0), (λ, λ), (0, λ)], base_ring=K)
+            )
             s.add_polygon(
                 Polygon(
                     vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
@@ -1503,6 +1537,7 @@ class TranslationSurfaceGenerators:
         s = MutableOrientedSimilaritySurface(K)
 
         from flatsurf import Polygon
+
         s.add_polygon(
             Polygon(
                 vertices=[(0, 0), (λ, 0), (w, 0), (w + t, h), (λ + t, h), (t, h)],
@@ -1609,8 +1644,11 @@ class TranslationSurfaceGenerators:
         s = MutableOrientedSimilaritySurface(K)
 
         from flatsurf import Polygon
+
         s.add_polygon(
-            Polygon(vertices=[(0, 0), (λ / 2, 0), (λ / 2, λ / 2), (0, λ / 2)], base_ring=K)
+            Polygon(
+                vertices=[(0, 0), (λ / 2, 0), (λ / 2, λ / 2), (0, λ / 2)], base_ring=K
+            )
         )
         s.add_polygon(
             Polygon(
@@ -1641,7 +1679,9 @@ class TranslationSurfaceGenerators:
             )
         )
         s.add_polygon(
-            Polygon(vertices=[(0, 0), (λ / 2, 0), (λ / 2, λ / 2), (0, λ / 2)], base_ring=K)
+            Polygon(
+                vertices=[(0, 0), (λ / 2, 0), (λ / 2, λ / 2), (0, λ / 2)], base_ring=K
+            )
         )
         s.glue((0, 0), (2, 4))
         s.glue((0, 1), (0, 3))
@@ -1699,9 +1739,15 @@ class TranslationSurfaceGenerators:
             field = field.fraction_field()
 
         s = MutableOrientedSimilaritySurface(field)
-        s.add_polygon(Polygon(edges=[(l3, 0), (0, l2), (-l3, 0), (0, -l2)], base_ring=field))
-        s.add_polygon(Polygon(edges=[(l3, 0), (0, l1), (-l3, 0), (0, -l1)], base_ring=field))
-        s.add_polygon(Polygon(edges=[(l4, 0), (0, l2), (-l4, 0), (0, -l2)], base_ring=field))
+        s.add_polygon(
+            Polygon(edges=[(l3, 0), (0, l2), (-l3, 0), (0, -l2)], base_ring=field)
+        )
+        s.add_polygon(
+            Polygon(edges=[(l3, 0), (0, l1), (-l3, 0), (0, -l1)], base_ring=field)
+        )
+        s.add_polygon(
+            Polygon(edges=[(l4, 0), (0, l2), (-l4, 0), (0, -l2)], base_ring=field)
+        )
         s.glue((0, 0), (1, 2))
         s.glue((0, 1), (2, 3))
         s.glue((0, 2), (1, 0))
@@ -1833,9 +1879,12 @@ class TranslationSurfaceGenerators:
                 (a + half, b + 1 + half),
                 (a, b + 1),
                 (a, 1),
-            ]
+            ],
         )
-        p2 = Polygon(base_ring=ring, vertices=[(a + 1, 0), (2 * a + 1, 0), (2 * a + 1, 1), (a + 1, 1)])
+        p2 = Polygon(
+            base_ring=ring,
+            vertices=[(a + 1, 0), (2 * a + 1, 0), (2 * a + 1, 1), (a + 1, 1)],
+        )
         p3 = Polygon(
             base_ring=ring,
             vertices=[
@@ -1847,7 +1896,7 @@ class TranslationSurfaceGenerators:
                 (4 * a + 1 + half, 1 + half),
                 (2 * a + 1 + half, 1 + half),
                 (2 * a + 1, 1),
-            ]
+            ],
         )
         s.add_polygon(p0)
         s.add_polygon(p1)
@@ -1955,11 +2004,17 @@ class TranslationSurfaceGenerators:
         for i in range(1, g + 1):
             # T_i is (P_0,Q_i,Q_{i-1})
             T[i] = s.add_polygon(
-                Polygon(base_ring=field, edges=[q[i] - p[0], q[i - 1] - q[i], p[0] - q[i - 1]])
+                Polygon(
+                    base_ring=field,
+                    edges=[q[i] - p[0], q[i - 1] - q[i], p[0] - q[i - 1]],
+                )
             )
             # T_{g+i} is (P_i,Q_{i-1},Q_{i})
             T[g + i] = s.add_polygon(
-                Polygon(base_ring=field, edges=[q[i - 1] - p[i], q[i] - q[i - 1], p[i] - q[i]])
+                Polygon(
+                    base_ring=field,
+                    edges=[q[i - 1] - p[i], q[i] - q[i - 1], p[i] - q[i]],
+                )
             )
             # T'_i is (P'_0,Q'_{i-1},Q'_i)
             Tp[i] = s.add_polygon(m * s.polygon(T[i]))

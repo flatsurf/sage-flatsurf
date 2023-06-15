@@ -115,9 +115,13 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
             if similarity_surface.is_finite_type():
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-                similarity_surface = MutableOrientedSimilaritySurface.from_surface(similarity_surface)
+                similarity_surface = MutableOrientedSimilaritySurface.from_surface(
+                    similarity_surface
+                )
             else:
-                raise NotImplementedError("can not construct MinimalTranslationCover of a surface that is mutable and infinite")
+                raise NotImplementedError(
+                    "can not construct MinimalTranslationCover of a surface that is mutable and infinite"
+                )
 
         if similarity_surface.is_with_boundary():
             raise TypeError("surface must be without boundary")
@@ -165,7 +169,9 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
         """
         self._F = self._ss.base_ring()
-        return tuple((label, self._F.one(), self._F.zero()) for label in self._ss.roots())
+        return tuple(
+            (label, self._F.one(), self._F.zero()) for label in self._ss.roots()
+        )
 
     def is_mutable(self):
         r"""
@@ -233,7 +239,9 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         """
         if not isinstance(label, tuple) or len(label) != 3:
             raise ValueError("invalid label {!r}".format(label))
-        return matrix([[label[1], -label[2]], [label[2], label[1]]]) * self._ss.polygon(label[0])
+        return matrix([[label[1], -label[2]], [label[2], label[1]]]) * self._ss.polygon(
+            label[0]
+        )
 
     @cached_method
     def opposite_edge(self, label, edge):
@@ -421,7 +429,9 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
         """
         self._F = self._ss.base_ring()
-        return tuple((label, self._F.one(), self._F.zero()) for label in self._ss.roots())
+        return tuple(
+            (label, self._F.one(), self._F.zero()) for label in self._ss.roots()
+        )
 
     def is_mutable(self):
         r"""
@@ -473,7 +483,9 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
         """
         if not isinstance(label, tuple) or len(label) != 3:
             raise ValueError("invalid label {!r}".format(label))
-        return matrix([[label[1], -label[2]], [label[2], label[1]]]) * self._ss.polygon(label[0])
+        return matrix([[label[1], -label[2]], [label[2], label[1]]]) * self._ss.polygon(
+            label[0]
+        )
 
     def opposite_edge(self, label, edge):
         r"""
@@ -595,10 +607,15 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
 
         if base_label is not None:
             import warnings
-            warnings.warn("the keyword argument base_label of a minimal planar cover is ignored and will be removed in a future version of sage-flatsurf; it had no effect in previous versions of sage-flatsurf")
+
+            warnings.warn(
+                "the keyword argument base_label of a minimal planar cover is ignored and will be removed in a future version of sage-flatsurf; it had no effect in previous versions of sage-flatsurf"
+            )
 
         if not self._ss.is_connected():
-            raise NotImplementedError("can only create a minimal planar cover of connected surfaces")
+            raise NotImplementedError(
+                "can only create a minimal planar cover of connected surfaces"
+            )
 
         # The similarity group containing edge identifications.
         self._sg = self._ss.edge_transformation(self._ss.root(), 0).parent()

@@ -202,7 +202,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         # The field containing the cosine and sine of 2π/N might be too small
         # to write down all the slopes when N is not divisible by 4.
         if N == 1:
-            raise ValueError("there cannot be a polygon with all angles multiples of 2π")
+            raise ValueError(
+                "there cannot be a polygon with all angles multiples of 2π"
+            )
         if N == 2:
             pass
         elif N % 4:
@@ -234,6 +236,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         assert all((x**2 + y**2).is_one() for x, y in slopes)
 
         from flatsurf.geometry.euclidean import projectivization
+
         return [projectivization(x, y) for x, y in slopes]
 
     @cached_method
@@ -245,8 +248,13 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         # base_ring might fail. E.g., when the base ring is the exact-reals
         # over the minimal base ring.
         minimal_base_ring = RealProjectivePolygonsWithAngles._base_ring(self._angles)
-        slopes = [(minimal_base_ring(slope[0]), minimal_base_ring(slope[1])) for slope in slopes]
-        return [(self.base_ring()(slope[0]), self.base_ring()(slope[1])) for slope in slopes]
+        slopes = [
+            (minimal_base_ring(slope[0]), minimal_base_ring(slope[1]))
+            for slope in slopes
+        ]
+        return [
+            (self.base_ring()(slope[0]), self.base_ring()(slope[1])) for slope in slopes
+        ]
 
     @cached_method
     def _cosines_ring(self):
@@ -279,6 +287,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         for v in slopes:
             old_slopes.extend(v)
         from flatsurf.geometry.subfield import subfield_from_elements
+
         L, _, _ = subfield_from_elements(base_ring, old_slopes)
         return L
 
@@ -302,7 +311,10 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         equiangular = len(set(self._angles)) == 1
 
         from flatsurf.geometry.categories.polygons import Polygons
-        _, _, polygons = Polygons._describe_polygon(len(self._angles), equiangular=equiangular)
+
+        _, _, polygons = Polygons._describe_polygon(
+            len(self._angles), equiangular=equiangular
+        )
 
         with_angles = "" if equiangular else f" with angles {self.angles(False)}"
 
@@ -377,6 +389,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             angle = self.category().angles()[e]
             if numerical:
                 from sage.all import RR
+
                 angle = RR(angle)
 
             return angle
@@ -430,7 +443,10 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex() instead")
+
+            warnings.warn(
+                "convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex() instead"
+            )
 
             return self.is_convex()
 
@@ -452,7 +468,10 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("strict_convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead")
+
+            warnings.warn(
+                "strict_convexity() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead"
+            )
 
             return self.is_convex(strict=True)
 
@@ -483,6 +502,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             angles = self.__angles()
             if integral:
                 from sage.all import lcm, ZZ, gcd
+
                 C = lcm([a.denominator() for a in self.angles()]) / gcd(
                     [a.numerator() for a in self.angles()]
                 )
@@ -502,7 +522,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 if isinstance(category, RealProjectivePolygonsWithAngles):
                     return category._angles
 
-            assert False, "RealProjectivePolygonsWithAngles should be a supercategory of this category"
+            assert (
+                False
+            ), "RealProjectivePolygonsWithAngles should be a supercategory of this category"
 
         def slopes(self, e0=(1, 0)):
             r"""
@@ -519,7 +541,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 [(1, 0), (c, 3), (-1, 0), (-c, -3)]
 
             """
-            V = self.base_ring()**2
+            V = self.base_ring() ** 2
             slopes = self.__slopes()
             n = len(slopes)
             cosines = [x[0] for x in slopes]
@@ -532,6 +554,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                     sines[i + 1] * e[0] - cosines[i + 1] * e[1],
                 )
                 from flatsurf.geometry.euclidean import projectivization
+
                 e = projectivization(*e)
                 edges.append(V(e))
             return edges
@@ -549,7 +572,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 if isinstance(category, RealProjectivePolygonsWithAngles):
                     return category._slopes()
 
-            assert False, "RealProjectivePolygonsWithAngles should be a supercategory of this category"
+            assert (
+                False
+            ), "RealProjectivePolygonsWithAngles should be a supercategory of this category"
 
         # TODO: rather than lengths, it would be more convenient to have access
         # to the tangent space (that is the space of possible holonomies). However,
@@ -604,10 +629,13 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                                   (7*c^9 + 1/2*c^8 - 66*c^7 - 9/2*c^6 + 209*c^5 + 27/2*c^4 - 242*c^3 - 15*c^2 + 55*c + 7/2, 1/2*c + 11)])
             """
             from flatsurf import Polygon
+
             p = Polygon(angles=self.angles())
 
             if p not in self:
-                raise NotImplementedError("cannot create an element in this category yet")
+                raise NotImplementedError(
+                    "cannot create an element in this category yet"
+                )
 
             return p
 
@@ -628,6 +656,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             """
             if ring is None:
                 from sage.all import QQ
+
                 ring = QQ
 
             rays = [r.vector() for r in self.lengths_polytope().rays()]
@@ -647,12 +676,16 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
             while True:
                 coeffs, lengths = random_element()
-                edges = [length * slope for (length, slope) in zip(lengths, self.slopes())]
+                edges = [
+                    length * slope for (length, slope) in zip(lengths, self.slopes())
+                ]
 
                 from flatsurf import Polygon
+
                 p = Polygon(edges=edges, check=False)
 
                 from flatsurf.geometry.categories import RealProjectivePolygons
+
                 if not RealProjectivePolygons.ParentMethods.is_simple(p):
                     continue
 
@@ -660,7 +693,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 break
 
             if p not in self:
-                raise NotImplementedError("cannot create a random element in this category yet")
+                raise NotImplementedError(
+                    "cannot create a random element in this category yet"
+                )
 
             return p
 
@@ -727,6 +762,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 return rat_angles
 
             from sage.all import lcm
+
             N = lcm([x.denominator() for x in rat_angles])
             if N % 2:
                 N *= 2
@@ -760,7 +796,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             else:
                 raise ValueError("unknown 'cover_type' {!r}".format(cover_type))
 
-        def billiard_unfolding_stratum(self, cover_type="translation", marked_points=False):
+        def billiard_unfolding_stratum(
+            self, cover_type="translation", marked_points=False
+        ):
             r"""
             Return the stratum of quadratic or Abelian differential obtained by
             unfolding a billiard in a polygon of this equiangular family.
@@ -1046,15 +1084,19 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             # __call__() cannot be properly inherited in subcategories since it
             # cannot be in SubcategoryMethods; that's why we want to get rid of it.
             import warnings
+
             warning = "calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead."
 
             if not normalized:
-                warning += " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use "\
+                warning += (
+                    " To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use "
                     "Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())])."
+                )
 
             warnings.warn(warning)
 
             from sage.structure.element import Vector
+
             if len(lengths) == 1 and isinstance(lengths[0], (tuple, list, Vector)):
                 lengths = lengths[0]
 
@@ -1065,10 +1107,14 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                     % (n - 2, n, len(lengths))
                 )
 
-            V = self.base_ring()**2
+            V = self.base_ring() ** 2
             slopes = self.slopes()
             if normalized:
-                cosines_ring = self._without_axiom("Simple")._without_axiom("Convex")._cosines_ring()
+                cosines_ring = (
+                    self._without_axiom("Simple")
+                    ._without_axiom("Convex")
+                    ._cosines_ring()
+                )
                 V = V.change_ring(cosines_ring)
                 for i, s in enumerate(slopes):
                     x, y = map(cosines_ring, s)
@@ -1091,6 +1137,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             vertices = [v]
 
             from sage.all import vector, matrix
+
             if len(lengths) == n - 2:
                 for i in range(n - 2):
                     v += lengths[i] * slopes[i]
@@ -1099,9 +1146,13 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                     vector(vertices[0] - vertices[n - 2])
                     * matrix([slopes[-1], slopes[n - 2]]).inverse()
                 )
-                assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+                assert (
+                    vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+                )
                 if s <= 0 or t <= 0:
-                    raise ValueError("the provided lengths do not give rise to a polygon")
+                    raise ValueError(
+                        "the provided lengths do not give rise to a polygon"
+                    )
                 vertices.append(vertices[0] - s * slopes[-1])
 
             elif len(lengths) == n:
@@ -1109,7 +1160,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                     v += lengths[i] * slopes[i]
                     vertices.append(v)
                 if not vertices[-1].is_zero():
-                    raise ValueError("the provided lengths do not give rise to a polygon")
+                    raise ValueError(
+                        "the provided lengths do not give rise to a polygon"
+                    )
                 vertices.pop(-1)
 
             category = RealProjectivePolygons(base_ring)
@@ -1117,4 +1170,5 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                 category = category.Convex()
 
             from flatsurf.geometry.polygon import Polygon
+
             return Polygon(base_ring=base_ring, vertices=vertices, category=category)

@@ -32,7 +32,10 @@ class AbstractOrigami(OrientedSimilaritySurface):
 
         if base_label is not None:
             import warnings
-            warnings.warn("base_label has been deprecated as a keyword argument for AbstractOrigami and will be removed in a future version of sage-flatsurf; use root instead")
+
+            warnings.warn(
+                "base_label has been deprecated as a keyword argument for AbstractOrigami and will be removed in a future version of sage-flatsurf; use root instead"
+            )
             root = base_label
             base_label = None
 
@@ -54,6 +57,7 @@ class AbstractOrigami(OrientedSimilaritySurface):
             category &= category.InfiniteType()
 
         from flatsurf.geometry.polygon import polygons
+
         self._square = polygons.square()
 
         super().__init__(QQ, category=category)
@@ -110,7 +114,15 @@ class AbstractOrigami(OrientedSimilaritySurface):
 
 class Origami(AbstractOrigami):
     def __init__(
-        self, r, u, rr=None, uu=None, domain=None, root=None, base_label=None, category=None
+        self,
+        r,
+        u,
+        rr=None,
+        uu=None,
+        domain=None,
+        root=None,
+        base_label=None,
+        category=None,
     ):
         if domain is None:
             domain = r.parent().domain()
@@ -135,7 +147,9 @@ class Origami(AbstractOrigami):
                     raise ValueError("uu o u is not identity on %s" % a)
 
         self._perms = [uu, r, u, rr]  # down,right,up,left
-        AbstractOrigami.__init__(self, domain, root=root, base_label=base_label, category=category)
+        AbstractOrigami.__init__(
+            self, domain, root=root, base_label=base_label, category=category
+        )
 
     def opposite_edge(self, p, e):
         if p not in self._domain:

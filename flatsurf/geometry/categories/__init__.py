@@ -113,4 +113,6 @@ from flatsurf.geometry.categories.polygons import Polygons
 from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
 from flatsurf.geometry.categories.hyperbolic_polygons import HyperbolicPolygons
 from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
-from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+    RealProjectivePolygonsWithAngles,
+)

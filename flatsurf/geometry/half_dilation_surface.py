@@ -71,6 +71,7 @@ class GL2RImageSurface(OrientedSimilaritySurface):
 
         if m.is_mutable():
             from sage.all import matrix
+
             m = matrix(m, immutable=True)
 
         self._m = m
@@ -197,12 +198,16 @@ class GL2RImageSurface(OrientedSimilaritySurface):
             edges = [self._m * p.edge(e) for e in range(len(p.vertices()))]
 
             from flatsurf import Polygon
+
             return Polygon(edges=edges, base_ring=self.base_ring())
         else:
             p = self._s.polygon(lab)
-            edges = [self._m * (-p.edge(e)) for e in range(len(p.vertices()) - 1, -1, -1)]
+            edges = [
+                self._m * (-p.edge(e)) for e in range(len(p.vertices()) - 1, -1, -1)
+            ]
 
             from flatsurf import Polygon
+
             return Polygon(edges=edges, base_ring=self.base_ring())
 
     def labels(self):
@@ -268,6 +273,7 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         """
         if self.is_finite_type():
             from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
             S = MutableOrientedSimilaritySurface.from_surface(self)
             S.set_immutable()
             return repr(S)
@@ -310,7 +316,11 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         if not isinstance(other, GL2RImageSurface):
             return False
 
-        return self._s == other._s and self._m == other._m and self.base_ring() == other.base_ring()
+        return (
+            self._s == other._s
+            and self._m == other._m
+            and self.base_ring() == other.base_ring()
+        )
 
 
 class GL2RMapping(SurfaceMapping):

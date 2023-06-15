@@ -421,6 +421,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 raise NotImplementedError("only implemented for 2x2 matrices")
 
             from flatsurf.geometry.half_dilation_surface import GL2RImageSurface
+
             return GL2RImageSurface(self, matrix)
 
     class Oriented(SurfaceCategoryWithAxiom):
@@ -476,7 +477,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if e is None:
                     import warnings
-                    warnings.warn("passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead")
+
+                    warnings.warn(
+                        "passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead"
+                    )
                     p, e = p
 
                 u = self.polygon(p).edge(e)
@@ -543,6 +547,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 import warnings
+
                 warnings.warn(
                     "underlying_surface() has been deprecated and will be removed in a future version of sage-flatsurf; this function has no effect anymore since there is no distinction between a surface and its underlying surface anymore"
                 )
@@ -634,15 +639,15 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if in_place:
-                    raise NotImplementedError("this surface does not support set_vertex_zero(mutable=True)")
+                    raise NotImplementedError(
+                        "this surface does not support set_vertex_zero(mutable=True)"
+                    )
 
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
                 )
 
-                s = MutableOrientedSimilaritySurface.from_surface(
-                    self
-                )
+                s = MutableOrientedSimilaritySurface.from_surface(self)
                 s.set_vertex_zero(label, v, in_place=True)
                 s.set_immutable()
                 return s
@@ -683,16 +688,16 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if in_place:
-                    raise NotImplementedError("this surface does not implement relabel(in_place=True) yet")
+                    raise NotImplementedError(
+                        "this surface does not implement relabel(in_place=True) yet"
+                    )
 
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s, valid = s.relabel(
-                    relabeling_map=relabeling_map, in_place=True
-                )
+                s, valid = s.relabel(relabeling_map=relabeling_map, in_place=True)
                 s.set_immutable()
                 return s, valid
 
@@ -1053,14 +1058,18 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
 
                 if in_place:
-                    raise NotImplementedError("this surface does not support triangle_flip(in_place=True) yet")
+                    raise NotImplementedError(
+                        "this surface does not support triangle_flip(in_place=True) yet"
+                    )
 
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.triangle_flip(l1=l1, e1=e1, in_place=True, test=test, direction=direction)
+                s.triangle_flip(
+                    l1=l1, e1=e1, in_place=True, test=test, direction=direction
+                )
                 s.set_immutable()
                 return s
 
@@ -1103,7 +1112,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     in_place = False
 
                 if in_place:
-                    raise NotImplementedError("this surface does not implement join_polygons(in_place=True) yet")
+                    raise NotImplementedError(
+                        "this surface does not implement join_polygons(in_place=True) yet"
+                    )
 
                 if not test:
                     from flatsurf.geometry.surface import (
@@ -1136,6 +1147,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 try:
                     from flatsurf import Polygon
+
                     Polygon(edges=es, base_ring=self.base_ring())
                 except (ValueError, TypeError):
                     return False
@@ -1159,7 +1171,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 The change will be done in place.
                 """
                 if not test:
-                    raise NotImplementedError("this surface does not implement subdivide_polygon(test=False) yet")
+                    raise NotImplementedError(
+                        "this surface does not implement subdivide_polygon(test=False) yet"
+                    )
 
                 poly = self.polygon(p)
                 ne = len(poly.vertices())
@@ -1354,9 +1368,13 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 import warnings
-                warnings.warn("vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 or base_ring().fraction_field()**2 instead")
+
+                warnings.warn(
+                    "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 or base_ring().fraction_field()**2 instead"
+                )
 
                 from sage.modules.free_module import VectorSpace
+
                 return VectorSpace(self.base_ring(), 2)
 
             @cached_method(key=lambda self, ring: ring or self.base_ring())
@@ -1373,7 +1391,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     ring = self.base_ring()
 
                 if self.is_mutable():
-                    raise NotImplementedError("cannot compute the tangent bundle of a mutable surface")
+                    raise NotImplementedError(
+                        "cannot compute the tangent bundle of a mutable surface"
+                    )
 
                 from flatsurf.geometry.tangent_bundle import (
                     SimilaritySurfaceTangentBundle,
@@ -1455,10 +1475,15 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if relabel is not None:
                     import warnings
-                    warnings.warn("the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf")
+
+                    warnings.warn(
+                        "the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf"
+                    )
 
                 if in_place:
-                    raise NotImplementedError("this surface does not implement triangulate(in_place=True) yet")
+                    raise NotImplementedError(
+                        "this surface does not implement triangulate(in_place=True) yet"
+                    )
 
                 if self.is_finite_type():
                     from flatsurf.geometry.surface import (
@@ -1471,9 +1496,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     return s
 
                 if label is not None:
-                    raise NotImplementedError("triangulate(label=) not implemented for infinite type surfaces")
+                    raise NotImplementedError(
+                        "triangulate(label=) not implemented for infinite type surfaces"
+                    )
 
                 from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+
                 return LazyTriangulatedSurface(self)
 
             def _delaunay_edge_needs_flip(self, p1, e1):
@@ -1526,7 +1554,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if not self.is_finite_type() and limit is None:
-                    raise NotImplementedError("a limit must be set for infinite surfaces.")
+                    raise NotImplementedError(
+                        "a limit must be set for infinite surfaces."
+                    )
 
                 count = 0
 
@@ -1554,7 +1584,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if not self.is_finite_type() and limit is None:
-                    raise NotImplementedError("a limit must be set for infinite surfaces.")
+                    raise NotImplementedError(
+                        "a limit must be set for infinite surfaces."
+                    )
 
                 count = 0
 
@@ -1623,7 +1655,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
                 """
                 if in_place:
-                    raise NotImplementedError("this surface does not implement delaunay_triangulation(in_place=True) yet")
+                    raise NotImplementedError(
+                        "this surface does not implement delaunay_triangulation(in_place=True) yet"
+                    )
 
                 if relabel is not None:
                     if relabel:
@@ -1643,7 +1677,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
 
                     s = MutableOrientedSimilaritySurface.from_surface(self)
-                    s.delaunay_triangulation(triangulated=triangulated, in_place=True, direction=direction, relabel=relabel)
+                    s.delaunay_triangulation(
+                        triangulated=triangulated,
+                        in_place=True,
+                        direction=direction,
+                        relabel=relabel,
+                    )
                     s.set_immutable()
                     return s
 
@@ -1716,7 +1755,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if in_place:
-                    raise NotImplementedError("this surface does not implement delaunay_decomposition(in_place=True) yet")
+                    raise NotImplementedError(
+                        "this surface does not implement delaunay_decomposition(in_place=True) yet"
+                    )
 
                 if relabel is not None:
                     if relabel:
@@ -1742,7 +1783,13 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.delaunay_decomposition(triangulated=triangulated, delaunay_triangulated=delaunay_triangulated, in_place=True, direction=direction, relabel=relabel)
+                s.delaunay_decomposition(
+                    triangulated=triangulated,
+                    delaunay_triangulated=delaunay_triangulated,
+                    in_place=True,
+                    direction=direction,
+                    relabel=relabel,
+                )
                 s.set_immutable()
                 return s
 
@@ -1829,7 +1876,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 wedge = (
                     last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
                     last_sim(
-                        p.vertex((initial_vertex + len(p.vertices()) - 1) % len(p.vertices()))
+                        p.vertex(
+                            (initial_vertex + len(p.vertices()) - 1) % len(p.vertices())
+                        )
                     ),
                 )
 
@@ -1905,7 +1954,8 @@ class SimilaritySurfaces(SurfaceCategory):
                                 new_label,
                                 new_wedge,
                                 [
-                                    (new_edge + len(p.vertices()) - i) % len(p.vertices())
+                                    (new_edge + len(p.vertices()) - i)
+                                    % len(p.vertices())
                                     for i in range(1, len(p.vertices()))
                                 ],
                             )
@@ -2169,6 +2219,7 @@ class SimilaritySurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all surfaces built from Euclidean
@@ -2177,6 +2228,7 @@ class SimilaritySurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
             @staticmethod
             def _is_rational_surface(surface, limit=None):
                 r"""
@@ -2295,6 +2347,7 @@ class SimilaritySurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all surfaces that are built from
@@ -2441,7 +2494,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     4
                 """
                 import warnings
-                warnings.warn("num_singularities() has been deprecated and will be removed in a future version of sage-flatsurf; use len(vertices()) instead")
+
+                warnings.warn(
+                    "num_singularities() has been deprecated and will be removed in a future version of sage-flatsurf; use len(vertices()) instead"
+                )
 
                 return len(self.vertices())
 
@@ -2485,6 +2541,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 tester = self._tester(**options)
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
                 copy = MutableOrientedSimilaritySurface.from_surface(self)
                 if not self.is_mutable():
                     copy.set_immutable()
@@ -2512,6 +2569,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all surfaces that are built from
@@ -2536,7 +2594,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     change it will be representable as a translation surface.
                     """
                     if in_place:
-                        raise NotImplementedError("this surface does not implement reposition_polygons(in_place=True) yet")
+                        raise NotImplementedError(
+                            "this surface does not implement reposition_polygons(in_place=True) yet"
+                        )
 
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
@@ -2572,10 +2632,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     """
                     if in_place:
-                        raise NotImplementedError("cannot standardize polygons in_place anymore on this surface; use in_place=False to create a copy of the surface with standardized polygons")
+                        raise NotImplementedError(
+                            "cannot standardize polygons in_place anymore on this surface; use in_place=False to create a copy of the surface with standardized polygons"
+                        )
 
-                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-                    S = MutableOrientedSimilaritySurface.from_surface(self, category=self.category())
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
+
+                    S = MutableOrientedSimilaritySurface.from_surface(
+                        self, category=self.category()
+                    )
                     S.standardize_polygons(in_place=True)
                     S.set_immutable()
                     return S
@@ -2588,6 +2655,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         base_label = self.root()
 
                     from flatsurf.geometry.fundamental_group import FundamentalGroup
+
                     return FundamentalGroup(self, base_label)
 
     class SubcategoryMethods:

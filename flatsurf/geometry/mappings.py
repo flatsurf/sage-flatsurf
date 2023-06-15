@@ -192,6 +192,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
 
         s2.remove_polygon(p1)
         from flatsurf import Polygon
+
         s2.add_polygon(Polygon(edges=vs, base_ring=s.base_ring()), label=p1)
 
         for i in range(len(vs)):
@@ -225,7 +226,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         """
         return (
             self._glued_edge,
-            self._glued_edge + len(self._domain.polygon(self._removed_label).vertices()),
+            self._glued_edge
+            + len(self._domain.polygon(self._removed_label).vertices()),
         )
 
     def push_vector_forward(self, tangent_vector):
@@ -346,6 +348,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             newedges1.append(poly.edge(i))
 
         from flatsurf import Polygon
+
         newpoly1 = Polygon(edges=newedges1, base_ring=s.base_ring())
 
         newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
@@ -406,6 +409,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             vertex2 = self._domain.polygon(self._p).vertex(self._v2)
 
             from flatsurf.geometry.euclidean import ccw
+
             wp = ccw(vertex2 - vertex1, point - vertex1)
 
             if wp > 0:
@@ -678,6 +682,7 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 newedges.append(polygon.edge((i + cvcur) % len(polygon.vertices())))
 
             from flatsurf import Polygon
+
             s2.add_polygon(Polygon(edges=newedges, base_ring=ring), label=label)
             translations[label] = T(-polygon.vertex(cvcur))
         for l1, polygon in zip(s.labels(), s.polygons()):
@@ -685,7 +690,9 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
                 l2, e2 = s.opposite_edge(l1, e1)
                 ee1 = (e1 - cv[l1] + len(polygon.vertices())) % len(polygon.vertices())
                 polygon2 = s.polygon(l2)
-                ee2 = (e2 - cv[l2] + len(polygon2.vertices())) % len(polygon2.vertices())
+                ee2 = (e2 - cv[l2] + len(polygon2.vertices())) % len(
+                    polygon2.vertices()
+                )
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
                 s2.glue((l1, ee1), (l2, ee2))
         s2.set_roots(s.roots())

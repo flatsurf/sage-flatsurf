@@ -92,9 +92,7 @@ class SimilaritySurfaceTangentVector:
             e = pos.get_edge()
             edge_v = p.edge(e)
 
-            if ccw(edge_v, vector) < 0 or is_anti_parallel(
-                edge_v, vector
-            ):
+            if ccw(edge_v, vector) < 0 or is_anti_parallel(edge_v, vector):
                 # Need to move point and vector to opposite edge.
                 label2, e2 = self.surface().opposite_edge(polygon_label, e)
                 similarity = self.surface().edge_transformation(polygon_label, e)
@@ -281,6 +279,7 @@ class SimilaritySurfaceTangentVector:
         in the same polygon, be based at the same point, and point in the same direction.
         """
         from flatsurf.geometry.euclidean import is_parallel
+
         return (
             self.polygon_label() == another_tangent_vector.polygon_label()
             and self.point() == another_tangent_vector.point()
@@ -415,6 +414,7 @@ class SimilaritySurfaceTangentVector:
                 codes = []
 
             from flatsurf.geometry.euclidean import ccw
+
             for count in range(rotate_limit):
                 if ccw(v2, w) >= 0 and ccw(w, v1) > 0:
                     # We've found it!
@@ -485,9 +485,9 @@ class SimilaritySurfaceTangentVector:
             v1 = self.vector()
             label = self.polygon_label()
             vertex = self.vertex()
-            previous_vertex = (vertex - 1 + len(s.polygon(label).vertices())) % len(s.polygon(
-                label
-            ).vertices())
+            previous_vertex = (vertex - 1 + len(s.polygon(label).vertices())) % len(
+                s.polygon(label).vertices()
+            )
             v2 = -s.polygon(label).edge(previous_vertex)
             from sage.matrix.constructor import Matrix
 
@@ -496,6 +496,7 @@ class SimilaritySurfaceTangentVector:
                 codes = []
 
             from flatsurf.geometry.euclidean import ccw
+
             if not (ccw(v1, w) > 0 and ccw(w, v2) > 0):
                 for count in range(rotate_limit):
                     label2, edge2 = s.opposite_edge(label, previous_vertex)

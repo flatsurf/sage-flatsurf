@@ -1734,7 +1734,10 @@ class Surface_dict(Surface):
                     ]
                     self._p[label] = data
                 else:
-                    data = [new_polygon, [None for e in range(len(new_polygon.vertices()))]]
+                    data = [
+                        new_polygon,
+                        [None for e in range(len(new_polygon.vertices()))],
+                    ]
                     self._p[label] = data
         if len(data[1]) != len(new_polygon.vertices()):
             data[1] = [None for e in range(len(new_polygon.vertices()))]
@@ -2233,6 +2236,7 @@ def SurfaceClass(surface, name, category, *args, **kwargs):
         message += " Note that we are ignoring any other parameters that were passed to this function."
 
     import warnings
+
     warnings.warn(message)
 
     surface._refine_category_(category)
@@ -2272,7 +2276,10 @@ def SimilaritySurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import SimilaritySurfaces
-    return SurfaceClass(surface, "SimilaritySurface()", SimilaritySurfaces(), *args, **kwargs)
+
+    return SurfaceClass(
+        surface, "SimilaritySurface()", SimilaritySurfaces(), *args, **kwargs
+    )
 
 
 def HalfDilationSurface(surface, *args, **kwargs):
@@ -2304,7 +2311,10 @@ def HalfDilationSurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import DilationSurfaces
-    return SurfaceClass(surface, "HalfDilationSurface()", DilationSurfaces(), *args, **kwargs)
+
+    return SurfaceClass(
+        surface, "HalfDilationSurface()", DilationSurfaces(), *args, **kwargs
+    )
 
 
 def DilationSurface(surface, *args, **kwargs):
@@ -2336,7 +2346,10 @@ def DilationSurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import DilationSurfaces
-    return SurfaceClass(surface, "DilationSurface()", DilationSurfaces().Positive(), *args, **kwargs)
+
+    return SurfaceClass(
+        surface, "DilationSurface()", DilationSurfaces().Positive(), *args, **kwargs
+    )
 
 
 def ConeSurface(surface, *args, **kwargs):
@@ -2368,6 +2381,7 @@ def ConeSurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import ConeSurfaces
+
     return SurfaceClass(surface, "ConeSurface()", ConeSurfaces(), *args, **kwargs)
 
 
@@ -2400,7 +2414,10 @@ def RationalConeSurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import ConeSurfaces
-    return SurfaceClass(surface, "RationalConeSurface()", ConeSurfaces().Rational(), *args, **kwargs)
+
+    return SurfaceClass(
+        surface, "RationalConeSurface()", ConeSurfaces().Rational(), *args, **kwargs
+    )
 
 
 def HalfTranslationSurface(surface, *args, **kwargs):
@@ -2432,7 +2449,10 @@ def HalfTranslationSurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import HalfTranslationSurfaces
-    return SurfaceClass(surface, "HalfTranslationSurface()", HalfTranslationSurfaces(), *args, **kwargs)
+
+    return SurfaceClass(
+        surface, "HalfTranslationSurface()", HalfTranslationSurfaces(), *args, **kwargs
+    )
 
 
 def TranslationSurface(surface, *args, **kwargs):
@@ -2464,4 +2484,7 @@ def TranslationSurface(surface, *args, **kwargs):
 
     """
     from flatsurf.geometry.categories import TranslationSurfaces
-    return SurfaceClass(surface, "TranslationSurface()", TranslationSurfaces(), *args, **kwargs)
+
+    return SurfaceClass(
+        surface, "TranslationSurface()", TranslationSurfaces(), *args, **kwargs
+    )

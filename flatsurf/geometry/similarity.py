@@ -284,6 +284,7 @@ class Similarity(MultiplicativeGroupElement):
             raise TypeError("ring must be a ring")
 
         from flatsurf.geometry.polygon import EuclideanPolygon
+
         if isinstance(w, EuclideanPolygon) and w.is_convex():
             if ring is None:
                 ring = self.parent().base_ring()

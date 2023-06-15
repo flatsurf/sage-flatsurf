@@ -55,7 +55,9 @@ from flatsurf.geometry.subfield import (
 )
 
 from flatsurf.geometry.categories import RealProjectivePolygons
-from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+    RealProjectivePolygonsWithAngles,
+)
 
 
 class EuclideanPolygonPoint(Element):
@@ -335,7 +337,10 @@ class EuclideanPolygon(Parent):
 
         """
         import warnings
-        warnings.warn("parent() of a polygon has been deprecated and will be removed in a future version of sage-flatsurf; use category() instead")
+
+        warnings.warn(
+            "parent() of a polygon has been deprecated and will be removed in a future version of sage-flatsurf; use category() instead"
+        )
 
         return self.category()
 
@@ -420,8 +425,13 @@ class EuclideanPolygon(Parent):
             Polygon(vertices=[(3, -2), (5, -2), (4, -1)])
 
         """
-        u = (self.base_ring()**2)(u)
-        return Polygon(base_ring=self.base_ring(), vertices=[u + v for v in self._v], check=False, category=self.category())
+        u = (self.base_ring() ** 2)(u)
+        return Polygon(
+            base_ring=self.base_ring(),
+            vertices=[u + v for v in self._v],
+            check=False,
+            category=self.category(),
+        )
 
     def change_ring(self, ring):
         r"""
@@ -442,7 +452,9 @@ class EuclideanPolygon(Parent):
         if ring is self.base_ring():
             return self
 
-        return Polygon(base_ring=ring, vertices=self._v, category=self.category().change_ring(ring))
+        return Polygon(
+            base_ring=ring, vertices=self._v, category=self.category().change_ring(ring)
+        )
 
     def is_strictly_convex(self):
         r"""
@@ -466,7 +478,10 @@ class EuclideanPolygon(Parent):
 
         """
         import warnings
-        warnings.warn("is_strictly_convex() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead")
+
+        warnings.warn(
+            "is_strictly_convex() has been deprecated and will be removed in a future version of sage-flatsurf; use is_convex(strict=True) instead"
+        )
 
         return self.is_convex(strict=True)
 
@@ -486,7 +501,10 @@ class EuclideanPolygon(Parent):
 
         """
         import warnings
-        warnings.warn("num_edges() has been deprecated and will be removed in a future version of sage-flatsurf; use len(vertices()) instead")
+
+        warnings.warn(
+            "num_edges() has been deprecated and will be removed in a future version of sage-flatsurf; use len(vertices()) instead"
+        )
 
         return len(self.vertices())
 
@@ -524,18 +542,28 @@ class EuclideanPolygon(Parent):
         """
         if translation is not None:
             import warnings
-            warnings.warn("the translation keyword of vertices() has been deprecated and will be removed in a future version of sage-flatsurf; use translate().vertices() instead")
+
+            warnings.warn(
+                "the translation keyword of vertices() has been deprecated and will be removed in a future version of sage-flatsurf; use translate().vertices() instead"
+            )
 
             return self.translate(translation).vertices(marked_vertices=marked_vertices)
 
         if not marked_vertices:
-            return tuple(vertex for (vertex, slope) in zip(self._v, self.slopes(relative=True)) if slope[1] != 0)
+            return tuple(
+                vertex
+                for (vertex, slope) in zip(self._v, self.slopes(relative=True))
+                if slope[1] != 0
+            )
 
         return self._v
 
     def __iter__(self):
         import warnings
-        warnings.warn("iterating over the vertices of a polygon implicitly has been deprecated, this functionality will be removed in a future version of sage-flatsurf; iterate over vertices() instead")
+
+        warnings.warn(
+            "iterating over the vertices of a polygon implicitly has been deprecated, this functionality will be removed in a future version of sage-flatsurf; iterate over vertices() instead"
+        )
         return iter(self.vertices())
 
 
@@ -570,7 +598,11 @@ class PolygonsConstructor:
             Category of convex simple real projective rectangles over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
 
         """
-        return Polygon(edges=[(width, 0), (0, height), (-width, 0), (0, -height)], angles=(1, 1, 1, 1), **kwds)
+        return Polygon(
+            edges=[(width, 0), (0, height), (-width, 0), (0, -height)],
+            angles=(1, 1, 1, 1),
+            **kwds,
+        )
 
     def triangle(self, a, b, c):
         """
@@ -702,8 +734,8 @@ class PolygonsConstructor:
         field, (c, s) = number_field_elements_from_algebraics((c, s))
 
         return Polygon(
-            base_ring=field,
-            edges=[(c, field.zero()), (field.zero(), s), (-c, -s)])
+            base_ring=field, edges=[(c, field.zero()), (field.zero(), s), (-c, -s)]
+        )
 
     def __call__(self, *args, **kwargs):
         r"""
@@ -776,7 +808,10 @@ class PolygonsConstructor:
             ....:     assert T.edge(0) == (T.base_ring()**2)((1,0))
         """
         import warnings
-        warnings.warn("calling polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead")
+
+        warnings.warn(
+            "calling polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
+        )
         return Polygon(*args, **kwargs)
 
 
@@ -801,13 +836,26 @@ def ConvexPolygons(base_ring):
 
     """
     import warnings
-    warnings.warn("ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons. "
-                  "If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.")
+
+    warnings.warn(
+        "ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons. "
+        "If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead."
+    )
     return RealProjectivePolygons(base_ring).Simple().Convex()
 
 
 # TODO: Chop this monster into smaller bits.
-def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ring=None, category=None, check=True, **kwds):
+def Polygon(
+    *args,
+    vertices=None,
+    edges=None,
+    angles=None,
+    lengths=None,
+    base_ring=None,
+    category=None,
+    check=True,
+    **kwds,
+):
     r"""
     Return a polygon from the given ``vertices``, ``edges``, or ``angles``.
 
@@ -987,38 +1035,67 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
     if "base_point" in kwds:
         base_point = kwds.pop("base_point")
         import warnings
-        warnings.warn("base_point has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead")
-        return Polygon(*args, vertices=vertices, edges=edges, angles=angles, lengths=lengths, base_ring=base_ring, category=category, **kwds).translate(base_point)
+
+        warnings.warn(
+            "base_point has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use .translate() on the resulting polygon instead"
+        )
+        return Polygon(
+            *args,
+            vertices=vertices,
+            edges=edges,
+            angles=angles,
+            lengths=lengths,
+            base_ring=base_ring,
+            category=category,
+            **kwds,
+        ).translate(base_point)
 
     if "ring" in kwds:
         import warnings
-        warnings.warn("ring has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead")
+
+        warnings.warn(
+            "ring has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead"
+        )
         base_ring = kwds.pop("ring")
 
     if "field" in kwds:
         import warnings
-        warnings.warn("field has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead")
+
+        warnings.warn(
+            "field has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead"
+        )
         base_ring = kwds.pop("field")
 
     convex = None
     if "convex" in kwds:
         convex = kwds.pop("convex")
         import warnings
+
         if convex:
-            warnings.warn("convex has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; it has no effect other than checking the input for convexity so you may just drop it")
+            warnings.warn(
+                "convex has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; it has no effect other than checking the input for convexity so you may just drop it"
+            )
         else:
-            warnings.warn("convex has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; it has no effect anymore, polygons are always allowed to be non-convex")
+            warnings.warn(
+                "convex has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; it has no effect anymore, polygons are always allowed to be non-convex"
+            )
 
     if args:
         import warnings
-        warnings.warn("calling Polygon() with positional arguments has been deprecated and will not be supported in a future version of sage-flatsurf; use edges= or vertices= explicitly instead")
+
+        warnings.warn(
+            "calling Polygon() with positional arguments has been deprecated and will not be supported in a future version of sage-flatsurf; use edges= or vertices= explicitly instead"
+        )
 
         edges = args
 
     if angles:
         if "length" in kwds:
             import warnings
-            warnings.warn("length has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use lengths instead")
+
+            warnings.warn(
+                "length has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use lengths instead"
+            )
 
             lengths = [kwds.pop("length")] * (len(angles) - 2)
 
@@ -1041,31 +1118,48 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
     # Determine the base ring of the polygon
     if base_ring is None:
         from sage.categories.pushout import pushout
+
         base_ring = QQ
 
         if angles:
             from flatsurf import EuclideanPolygonsWithAngles
-            base_ring = pushout(base_ring, EuclideanPolygonsWithAngles(angles).base_ring())
+
+            base_ring = pushout(
+                base_ring, EuclideanPolygonsWithAngles(angles).base_ring()
+            )
 
         if vertices:
-            base_ring = pushout(base_ring, Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe())
+            base_ring = pushout(
+                base_ring,
+                Sequence(
+                    [v[0] for v in vertices] + [v[1] for v in vertices]
+                ).universe(),
+            )
 
         if edges:
-            base_ring = pushout(base_ring, Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe())
+            base_ring = pushout(
+                base_ring,
+                Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe(),
+            )
 
         if lengths:
             base_ring = pushout(base_ring, Sequence(lengths).universe())
 
             if angles and not edges:
-                with_angles = EuclideanPolygonsWithAngles(angles)._without_axiom("Simple")._without_axiom("Convex")
+                with_angles = (
+                    EuclideanPolygonsWithAngles(angles)
+                    ._without_axiom("Simple")
+                    ._without_axiom("Convex")
+                )
                 for slope, length in zip(with_angles.slopes(), lengths):
-                    scale = base_ring(length**2 / (slope[0]**2 + slope[1]**2))
+                    scale = base_ring(length**2 / (slope[0] ** 2 + slope[1] ** 2))
                     if not scale.is_square():
                         # Note that this ring might not be minimal.
                         base_ring = pushout(base_ring, with_angles._cosines_ring())
 
     if category is None:
         from flatsurf.geometry.categories import RealProjectivePolygons
+
         # Currently, all polygons are assumed to be without self-intersection, i.e., simple.
         category = RealProjectivePolygons(base_ring).Simple()
         if angles:
@@ -1084,7 +1178,7 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
     if angles and lengths and not edges:
         edges = []
         for slope, length in zip(category.slopes(), lengths):
-            scale = base_ring((length**2 / (slope[0]**2 + slope[1]**2)).sqrt())
+            scale = base_ring((length**2 / (slope[0] ** 2 + slope[1] ** 2)).sqrt())
             edges.append(scale * slope)
 
         if len(edges) == n:
@@ -1101,7 +1195,13 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
         # We pick the edges such that they form a closed polygon with the
         # prescribed angles. However, there might be self-intersection which
         # currently leads to an error.
-        edges = [length * slope for (length, slope) in zip(sum(r.vector() for r in category.lengths_polytope().rays()), category.slopes())]
+        edges = [
+            length * slope
+            for (length, slope) in zip(
+                sum(r.vector() for r in category.lengths_polytope().rays()),
+                category.slopes(),
+            )
+        ]
 
         angles = None
 
@@ -1133,32 +1233,41 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
             # We do not use solve_left() because the vertices might not live in
             # a ring that has a fraction field implemented (such as an
             # exact-real ring.)
-            s, t = (vertices[0] - vertices[n - 2]) * matrix([slopes[-1], slopes[n - 2]]).inverse()
+            s, t = (vertices[0] - vertices[n - 2]) * matrix(
+                [slopes[-1], slopes[n - 2]]
+            ).inverse()
             assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
 
             if s <= 0 or t <= 0:
-                raise (NotImplementedError if choice else ValueError)("cannot determine polygon with these angles from the given data")
+                raise (NotImplementedError if choice else ValueError)(
+                    "cannot determine polygon with these angles from the given data"
+                )
 
             vertices.append(vertices[0] - s * slopes[-1])
 
         if len(vertices) != n:
             from flatsurf.geometry.categories import Polygons
-            raise NotImplementedError(f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(vertices)} vertices")
+
+            raise NotImplementedError(
+                f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(vertices)} vertices"
+            )
 
         angles = None
 
-    assert len(vertices) == n, f"expected to build {n}-gon from {n} vertices but found {vertices}"
+    assert (
+        len(vertices) == n
+    ), f"expected to build {n}-gon from {n} vertices but found {vertices}"
 
-    p = EuclideanPolygon(
-        base_ring=base_ring, vertices=vertices, category=category
-    )
+    p = EuclideanPolygon(base_ring=base_ring, vertices=vertices, category=category)
 
     # Check that the polygon satisfies the assumptions of EuclideanPolygon
     if check:
         area = p.area()
 
         if area < 0:
-            raise ValueError("polygon has negative area; probably the vertices are not in counter-clockwise order")
+            raise ValueError(
+                "polygon has negative area; probably the vertices are not in counter-clockwise order"
+            )
 
         if area == 0:
             raise ValueError("polygon has zero area")
@@ -1168,10 +1277,12 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
 
         for i in range(len(p.vertices())):
             from flatsurf.geometry.euclidean import is_anti_parallel
+
             if is_anti_parallel(p.edge(i), p.edge(i + 1)):
                 raise ValueError("polygon has anti-parallel edges")
 
         from flatsurf.geometry.categories import RealProjectivePolygons
+
         if not RealProjectivePolygons.ParentMethods.is_simple(p):
             raise NotImplementedError("polygon self-intersects")
 
@@ -1189,10 +1300,17 @@ def Polygon(*args, vertices=None, edges=None, angles=None, lengths=None, base_ri
 
         if angles:
             # Check that the polygon has the prescribed angles
-            from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
-            from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
+            from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+                RealProjectivePolygonsWithAngles,
+            )
+            from flatsurf.geometry.categories.real_projective_polygons import (
+                RealProjectivePolygons,
+            )
+
             # Use RealProjectivePolygon's angle() so we do not use the precomputed angles set by the category.
-            if RealProjectivePolygonsWithAngles._normalize_angles(angles) != tuple(RealProjectivePolygons.ParentMethods.angle(p, i) for i in range(n)):
+            if RealProjectivePolygonsWithAngles._normalize_angles(angles) != tuple(
+                RealProjectivePolygons.ParentMethods.angle(p, i) for i in range(n)
+            ):
                 raise ValueError("polygon does not have the prescribed angles")
 
         if lengths:
@@ -1344,7 +1462,10 @@ def EquiangularPolygons(*angles, **kwds):
 
     """
     import warnings
-    warnings.warn("EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use EuclideanPolygonsWithAngles() instead")
+
+    warnings.warn(
+        "EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use EuclideanPolygonsWithAngles() instead"
+    )
 
     if "number_field" in kwds:
         from warnings import warn

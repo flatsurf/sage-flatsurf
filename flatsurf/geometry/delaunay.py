@@ -42,7 +42,11 @@ by invoking methods on the underlying surfaces::
 
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.surface import MutableOrientedSimilaritySurface_base, OrientedSimilaritySurface, Labels
+from flatsurf.geometry.surface import (
+    MutableOrientedSimilaritySurface_base,
+    OrientedSimilaritySurface,
+    Labels,
+)
 
 
 class LazyTriangulatedSurface(OrientedSimilaritySurface):
@@ -138,7 +142,10 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             ((0, (0, 1, 2)),)
 
         """
-        return tuple((reference_label, self._triangulation(reference_label)[(0, 1)]) for reference_label in self._reference.roots())
+        return tuple(
+            (reference_label, self._triangulation(reference_label)[(0, 1)])
+            for reference_label in self._reference.roots()
+        )
 
     def _triangulation(self, reference_label):
         r"""
@@ -215,9 +222,10 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         reference_polygon = self._reference.polygon(reference_label)
 
         from flatsurf import Polygon
+
         return Polygon(
             vertices=[reference_polygon.vertex(v) for v in vertices],
-            category=reference_polygon.category()
+            category=reference_polygon.category(),
         )
 
     def opposite_edge(self, label, edge):
@@ -239,9 +247,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         reference_label, vertices = label
         reference_polygon = self._reference.polygon(reference_label)
 
-        if (
-            vertices[(edge + 1) % 3]
-            == (vertices[edge] + 1) % len(reference_polygon.vertices())
+        if vertices[(edge + 1) % 3] == (vertices[edge] + 1) % len(
+            reference_polygon.vertices()
         ):
             # This is an edge of the reference surface
             cross_reference_label, cross_reference_edge = self._reference.opposite_edge(
@@ -251,7 +258,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             cross_vertices = self._triangulation(cross_reference_label)[
                 (
                     cross_reference_edge,
-                    (cross_reference_edge + 1) % len(cross_reference_polygon.vertices()),
+                    (cross_reference_edge + 1)
+                    % len(cross_reference_polygon.vertices()),
                 )
             ]
 
@@ -316,13 +324,16 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
              (-2, (0, 2, 3)), (-3, (0, 2, 3)), (3, (0, 1, 2)), (4, (0, 1, 2)), (-3, (0, 1, 2)), (-4, (0, 1, 2)), …)
 
         """
+
         class LazyLabels(Labels):
             def __contains__(self, label):
                 reference_label, vertices = label
                 if reference_label not in self._surface._reference.labels():
                     return False
 
-                return vertices in self._surface._triangulation(reference_label).values()
+                return (
+                    vertices in self._surface._triangulation(reference_label).values()
+                )
 
         return LazyLabels(self, finite=self._reference.is_finite_type())
 
@@ -532,7 +543,9 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
                 cross_label, cross_edge = self._reference.opposite_edge(label, edge)
                 self._ensure_polygon(cross_label)
 
-                assert self._surface.opposite_edge(cross_label, cross_edge) is None, "surface must not have a boundary"
+                assert (
+                    self._surface.opposite_edge(cross_label, cross_edge) is None
+                ), "surface must not have a boundary"
 
                 # Note that we cannot detect whether something has been
                 # explicitly unglued. So we just reestablish any gluings of
@@ -662,9 +675,11 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._reference = similarity_surface
 
         # This surface will converge to the Delaunay Triangulation
-        self._surface = LazyMutableOrientedSimilaritySurface(LazyTriangulatedSurface(similarity_surface))
+        self._surface = LazyMutableOrientedSimilaritySurface(
+            LazyTriangulatedSurface(similarity_surface)
+        )
 
-        self._direction = (self._surface.base_ring()**2)(direction or (0, 1))
+        self._direction = (self._surface.base_ring() ** 2)(direction or (0, 1))
         self._direction.set_immutable()
 
         # Set of labels corresponding to known delaunay polygons
@@ -960,7 +975,9 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if not isinstance(other, LazyDelaunayTriangulatedSurface):
             return False
 
-        return self._reference == other._reference and self._direction == other._direction
+        return (
+            self._reference == other._reference and self._direction == other._direction
+        )
 
     def __repr__(self):
         r"""
@@ -1072,6 +1089,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         ]
 
         from flatsurf import Polygon
+
         return Polygon(edges=edges)
 
     @cached_method
@@ -1144,7 +1162,9 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             cell.add(triangle)
 
-            delaunay = self._delaunay_triangulation._delaunay_edge_needs_join(triangle, edge)
+            delaunay = self._delaunay_triangulation._delaunay_edge_needs_join(
+                triangle, edge
+            )
 
             if not delaunay:
                 edges.append((triangle, edge))

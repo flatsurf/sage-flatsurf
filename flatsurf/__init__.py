@@ -34,5 +34,5 @@ from flatsurf.geometry.surface_legacy import (
     ConeSurface,
     RationalConeSurface,
     HalfTranslationSurface,
-    TranslationSurface
+    TranslationSurface,
 )

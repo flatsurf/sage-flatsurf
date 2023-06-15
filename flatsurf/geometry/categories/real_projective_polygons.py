@@ -46,6 +46,7 @@ from flatsurf.geometry.categories.polygons import Polygons
 from flatsurf.geometry.euclidean import ccw
 
 from sage.structure.element import get_coercion_model
+
 cm = get_coercion_model()
 
 
@@ -100,7 +101,10 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead")
+
+            warnings.warn(
+                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            )
 
             return self.base_ring().fraction_field() ** 2
 
@@ -120,7 +124,10 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead")
+
+            warnings.warn(
+                "module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead"
+            )
 
             return self.base_ring() ** 2
 
@@ -138,7 +145,10 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead")
+
+            warnings.warn(
+                "field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead"
+            )
 
             return self.base_ring().fraction_field()
 
@@ -168,11 +178,14 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             if g in self.base_ring():
                 from sage.all import MatrixSpace
+
                 g = MatrixSpace(self.base_ring(), 2)(g)
 
             det = g.det()
             if det == 0:
-                raise ValueError("Can not act on a polygon with matrix with zero determinant")
+                raise ValueError(
+                    "Can not act on a polygon with matrix with zero determinant"
+                )
             if det < 0:
                 # Note that in this case we reverse the order
                 vertices = [g * self.vertex(0)]
@@ -247,6 +260,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     ej = (self.vertex(j), self.vertex(j + 1))
 
                     from flatsurf.geometry.euclidean import is_segment_intersecting
+
                     if is_segment_intersecting(ei, ej):
                         return False
 
@@ -364,6 +378,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             from flatsurf.geometry.euclidean import ccw
+
             for i in range(len(self.vertices())):
                 consecutive_ccw = ccw(self.edge(i), self.edge(i + 1))
                 if strict:
@@ -389,7 +404,10 @@ class RealProjectivePolygons(Category_over_base_ring):
             tester = self._tester(**options)
 
             if self.is_convex():
-                tester.assertEqual(self.is_convex(strict=True), self.vertices() == self.vertices(marked_vertices=False))
+                tester.assertEqual(
+                    self.is_convex(strict=True),
+                    self.vertices() == self.vertices(marked_vertices=False),
+                )
 
         def is_degenerate(self):
             r"""
@@ -466,6 +484,7 @@ class RealProjectivePolygons(Category_over_base_ring):
             sin = [u[0] * v[1] - u[1] * v[0] for (u, v) in edges]
 
             from sage.all import vector
+
             return [vector((c, s)) for (c, s) in zip(cos, sin)]
 
         def erase_marked_vertices(self):
@@ -481,6 +500,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             from flatsurf import Polygon
+
             return Polygon(vertices=self.vertices(marked_vertices=False))
 
         def is_equilateral(self):
@@ -513,10 +533,16 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             from flatsurf.geometry.euclidean import is_parallel
 
-            return all(is_parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes)))
+            return all(
+                is_parallel(slopes[i - 1], slopes[i]) for i in range(len(slopes))
+            )
 
         def plot(
-            self, translation=None, polygon_options={}, edge_options={}, vertex_options={}
+            self,
+            translation=None,
+            polygon_options={},
+            edge_options={},
+            vertex_options={},
         ):
             r"""
             Return a plot of this polygon with the origin at ``translation``.
@@ -580,7 +606,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                     "assume_rational has been deprecated as a keyword to angles() and will be removed from a future version of sage-flatsurf"
                 )
 
-            angles = tuple(self.angle(i, numerical=numerical) for i in range(len(self.vertices())))
+            angles = tuple(
+                self.angle(i, numerical=numerical) for i in range(len(self.vertices()))
+            )
 
             if not numerical:
                 self._refine_category_(self.category().WithAngles(angles))
@@ -624,6 +652,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     )
 
             from flatsurf.geometry.euclidean import angle
+
             return angle(
                 self.edge(e),
                 -self.edge((e - 1) % len(self.vertices())),
@@ -657,6 +686,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                 total += (self.vertex(i)[0] + self.vertex(i + 1)[0]) * self.edge(i)[1]
 
             from sage.all import ZZ
+
             return total / ZZ(2)
 
         def centroid(self):
@@ -753,7 +783,10 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead")
+
+            warnings.warn(
+                "module() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring()**2 instead"
+            )
 
             return FreeModule(self.base_ring(), 2)
 
@@ -781,9 +814,13 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead")
+
+            warnings.warn(
+                "vector_space() has been deprecated and will be removed in a future version of sage-flatsurf; use base_ring().fraction_field()**2 instead"
+            )
 
             from sage.all import VectorSpace
+
             return VectorSpace(self.base_ring().fraction_field(), 2)
 
         def WithAngles(self, angles):
@@ -803,7 +840,10 @@ class RealProjectivePolygons(Category_over_base_ring):
                 Category of real projective triangles with angles (1/12, 1/6, 1/4) over Algebraic Real Field
 
             """
-            from flatsurf.geometry.categories.real_projective_polygons_with_angles import RealProjectivePolygonsWithAngles
+            from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+                RealProjectivePolygonsWithAngles,
+            )
+
             angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
             return RealProjectivePolygonsWithAngles(self.base_ring(), angles) & self
 
@@ -849,11 +889,15 @@ class RealProjectivePolygons(Category_over_base_ring):
         # duplicated in several places and the Polygon() helper seems to be
         # much more versatile.
         import warnings
-        warnings.warn("Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead")
+
+        warnings.warn(
+            "Polygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
+        )
 
         check = kwds.pop("check", True)
 
         from flatsurf.geometry.polygon import EuclideanPolygon
+
         if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
             if args[0].category() is self:
                 return args[0]
@@ -887,7 +931,10 @@ class RealProjectivePolygons(Category_over_base_ring):
                     raise ValueError("the polygon does not close up")
 
         from flatsurf.geometry.polygon import Polygon
-        return Polygon(base_ring=self.base(), vertices=vertices, category=self, check=check)
+
+        return Polygon(
+            base_ring=self.base(), vertices=vertices, category=self, check=check
+        )
 
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""
@@ -957,7 +1004,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                 if not strict:
                     return True
 
-                return RealProjectivePolygons.ParentMethods.is_convex(self, strict=strict)
+                return RealProjectivePolygons.ParentMethods.is_convex(
+                    self, strict=strict
+                )
 
     class Simple(CategoryWithAxiom_over_base_ring):
         r"""
@@ -971,6 +1020,7 @@ class RealProjectivePolygons(Category_over_base_ring):
             Category of simple real projective polygons over Rational Field
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all simple Euclidean polygons.
@@ -1123,19 +1173,35 @@ class RealProjectivePolygons(Category_over_base_ring):
                         for k in range(n):
                             f = (vertices[k], vertices[(k + 1) % n])
 
-                            from flatsurf.geometry.euclidean import is_segment_intersecting
+                            from flatsurf.geometry.euclidean import (
+                                is_segment_intersecting,
+                            )
+
                             res = is_segment_intersecting(e, f)
                             if res == 2:
                                 good = False
                                 break
                             elif res == 1:
-                                assert k == (i - 1) % n or k == i or k == (j - 1) % n or k == j
+                                assert (
+                                    k == (i - 1) % n
+                                    or k == i
+                                    or k == (j - 1) % n
+                                    or k == j
+                                )
 
                         if good:
                             from flatsurf import Polygon
-                            part0 = [(s + i, t + i) for s, t in Polygon(vertices=vertices[i: j + 1], check=False).triangulation()]
+
+                            part0 = [
+                                (s + i, t + i)
+                                for s, t in Polygon(
+                                    vertices=vertices[i : j + 1], check=False
+                                ).triangulation()
+                            ]
                             part1 = []
-                            for s, t in Polygon(vertices=vertices[j:] + vertices[: i + 1], check=False).triangulation():
+                            for s, t in Polygon(
+                                vertices=vertices[j:] + vertices[: i + 1], check=False
+                            ).triangulation():
                                 if s < n - j:
                                     s += j
                                 else:
@@ -1195,11 +1261,15 @@ class RealProjectivePolygons(Category_over_base_ring):
                 # duplicated in several places and the Polygon() helper seems to be
                 # much more versatile.
                 import warnings
-                warnings.warn("ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead")
+
+                warnings.warn(
+                    "ConvexPolygons(…)(…) has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon() instead"
+                )
 
                 check = kwds.pop("check", True)
 
                 from flatsurf.geometry.polygon import EuclideanPolygon
+
                 if len(args) == 1 and isinstance(args[0], EuclideanPolygon):
                     if args[0].category() is self:
                         return args[0]
@@ -1222,19 +1292,24 @@ class RealProjectivePolygons(Category_over_base_ring):
                                 "exactly one of 'vertices' or 'edges' must be provided"
                             )
                     if kwds:
-                        raise ValueError("invalid keyword {!r}".format(next(iter(kwds))))
+                        raise ValueError(
+                            "invalid keyword {!r}".format(next(iter(kwds)))
+                        )
 
                     if edges is not None:
-                        v = (self.base_ring()**2)(base_point)
+                        v = (self.base_ring() ** 2)(base_point)
                         vertices = []
-                        for e in map(self.base_ring()**2, edges):
+                        for e in map(self.base_ring() ** 2, edges):
                             vertices.append(v)
                             v += e
                         if v != vertices[0]:
                             raise ValueError("the polygon does not close up")
 
                 from flatsurf.geometry.polygon import Polygon
-                return Polygon(base_ring=self.base(), vertices=vertices, category=self, check=check)
+
+                return Polygon(
+                    base_ring=self.base(), vertices=vertices, category=self, check=check
+                )
 
             class ParentMethods:
                 r"""
@@ -1275,7 +1350,9 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     """
                     if direction is None:
-                        direction = (self.base_ring()**2)((self.base_ring().zero(), self.base_ring().one()))
+                        direction = (self.base_ring() ** 2)(
+                            (self.base_ring().zero(), self.base_ring().one())
+                        )
                     else:
                         assert not direction.is_zero()
                     v = start_vertex
@@ -1298,7 +1375,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                     r"""
                     Return whether the point is within the polygon (after the polygon is possibly translated)
                     """
-                    return self.get_point_position(point, translation=translation).is_inside()
+                    return self.get_point_position(
+                        point, translation=translation
+                    ).is_inside()
 
                 def get_point_position(self, point, translation=None):
                     r"""
@@ -1366,7 +1445,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                                 return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
                             dp2 = e.dot_product(e)
                             if 0 < dp1 and dp1 < dp2:
-                                return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+                                return PolygonPosition(
+                                    PolygonPosition.EDGE_INTERIOR, edge=i
+                                )
                     # Loop terminated (on inside of each edge)
                     return PolygonPosition(PolygonPosition.INTERIOR)
 
@@ -1391,13 +1472,14 @@ class RealProjectivePolygons(Category_over_base_ring):
                     """
                     from flatsurf.geometry.polygon import PolygonPosition
 
-                    V = self.base_ring().fraction_field()**2
+                    V = self.base_ring().fraction_field() ** 2
                     if direction == V.zero():
                         raise ValueError("Zero vector provided as direction.")
                     v0 = self.vertex(0)
                     for i in range(len(self.vertices())):
                         e = self.edge(i)
                         from sage.all import matrix
+
                         m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
                         try:
                             ret = m.inverse() * (point - v0)
@@ -1415,11 +1497,14 @@ class RealProjectivePolygons(Category_over_base_ring):
                                     # exits through vertex i+1
                                     v0 = v0 + e
                                     return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=(i + 1) % len(self.vertices())
+                                        PolygonPosition.VERTEX,
+                                        vertex=(i + 1) % len(self.vertices()),
                                     )
                                 if s == 0:
                                     # exits through vertex i
-                                    return v0, PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+                                    return v0, PolygonPosition(
+                                        PolygonPosition.VERTEX, vertex=i
+                                    )
                                     # exits through vertex i
                                 # exits through interior of edge i
                                 prod = t * direction
@@ -1432,14 +1517,18 @@ class RealProjectivePolygons(Category_over_base_ring):
                                 # In this case point lies on the edge.
                                 # We need to work out which direction to move in.
                                 from flatsurf.geometry.euclidean import is_parallel
+
                                 if (point - v0).is_zero() or is_parallel(e, point - v0):
                                     # exits through vertex i+1
                                     return self.vertex(i + 1), PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=(i + 1) % len(self.vertices())
+                                        PolygonPosition.VERTEX,
+                                        vertex=(i + 1) % len(self.vertices()),
                                     )
                                 else:
                                     # exits through vertex i
-                                    return v0, PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+                                    return v0, PolygonPosition(
+                                        PolygonPosition.VERTEX, vertex=i
+                                    )
                             pass
                         v0 = v0 + e
                     # Our loop has terminated. This can mean one of several errors...
@@ -1487,9 +1576,10 @@ class RealProjectivePolygons(Category_over_base_ring):
                         bot lengths: [sqrt2, sqrt2, 2]
                     """
                     from sage.all import vector
+
                     direction = vector(direction)
                     DP = direction.parent()
-                    P = self.base_ring().fraction_field()**2
+                    P = self.base_ring().fraction_field() ** 2
                     if DP != P:
                         P = cm.common_parent(DP, P)
                         ring = P.base_ring()
@@ -1530,9 +1620,13 @@ class RealProjectivePolygons(Category_over_base_ring):
                         bot_lengths = lengths[lb:] + lengths[:rb]
                         bot_labels = list(range(lb, n)) + list(range(rb))
 
-                    from flatsurf.geometry.interval_exchange_transformation import FlowPolygonMap
+                    from flatsurf.geometry.interval_exchange_transformation import (
+                        FlowPolygonMap,
+                    )
 
-                    return FlowPolygonMap(ring, bot_labels, bot_lengths, top_labels, top_lengths)
+                    return FlowPolygonMap(
+                        ring, bot_labels, bot_lengths, top_labels, top_lengths
+                    )
 
                 def flow(self, point, holonomy, translation=None):
                     r"""
@@ -1569,7 +1663,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     """
                     from flatsurf.geometry.polygon import PolygonPosition
 
-                    V = self.base_ring().fraction_field()**2
+                    V = self.base_ring().fraction_field() ** 2
                     if holonomy == V.zero():
                         # not flowing at all!
                         return (
@@ -1584,6 +1678,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     for i in range(len(self.vertices())):
                         e = self.edge(i)
                         from sage.all import matrix
+
                         m = matrix([[e[0], -holonomy[0]], [e[1], -holonomy[1]]])
                         try:
                             ret = m.inverse() * (point - v0)
@@ -1617,7 +1712,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                                     return (
                                         v0,
                                         point + holonomy - v0,
-                                        PolygonPosition(PolygonPosition.VERTEX, vertex=i),
+                                        PolygonPosition(
+                                            PolygonPosition.VERTEX, vertex=i
+                                        ),
                                     )
                                     # exits through vertex i
                                 # exits through interior of edge i
@@ -1625,7 +1722,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                                 return (
                                     point + prod,
                                     holonomy - prod,
-                                    PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i),
+                                    PolygonPosition(
+                                        PolygonPosition.EDGE_INTERIOR, edge=i
+                                    ),
                                 )
                         except ZeroDivisionError:
                             # can safely ignore this error. It means that the edge and the holonomy are parallel.
@@ -1658,7 +1757,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                     )
                     for i in range(3, len(self.vertices())):
                         if not circle.point_position(self.vertex(i)) == 0:
-                            raise ValueError("Vertex " + str(i) + " is not on the circle.")
+                            raise ValueError(
+                                "Vertex " + str(i) + " is not on the circle."
+                            )
                     return circle
 
                 def subdivide(self):
@@ -1705,9 +1806,14 @@ class RealProjectivePolygons(Category_over_base_ring):
                     vertices = self.vertices()
                     center = self.centroid()
                     from flatsurf import Polygon
+
                     return [
                         Polygon(
-                            vertices=(vertices[i], vertices[(i + 1) % len(vertices)], center),
+                            vertices=(
+                                vertices[i],
+                                vertices[(i + 1) % len(vertices)],
+                                center,
+                            ),
                         )
                         for i in range(len(vertices))
                     ]
@@ -1739,6 +1845,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     steps = [e / parts for e in self.edges()]
                     from flatsurf import Polygon
+
                     return Polygon(edges=[e for e in steps for p in range(parts)])
 
                 def j_invariant(self):
@@ -1794,6 +1901,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     """
                     from sage.all import QQ, matrix
+
                     if self.base_ring() is QQ:
                         raise NotImplementedError
 
@@ -1801,10 +1909,12 @@ class RealProjectivePolygons(Category_over_base_ring):
                     try:
                         V, from_V, to_V = K.vector_space()
                     except (AttributeError, ValueError):
-                        raise ValueError("the surface needs to be define over a number field")
+                        raise ValueError(
+                            "the surface needs to be define over a number field"
+                        )
 
                     dim = K.degree()
-                    M = K**(dim * (dim - 1) // 2)
+                    M = K ** (dim * (dim - 1) // 2)
                     Jxx = Jyy = M.zero()
                     Jxy = matrix(K, dim)
                     vertices = list(self.vertices())
@@ -1849,10 +1959,15 @@ class RealProjectivePolygons(Category_over_base_ring):
                     R = v.base_ring()
 
                     from sage.all import free_module_element
+
                     return free_module_element(
                         R,
                         d * (d - 1) // 2,
-                        [(v[i] * w[j] - v[j] * w[i]) for i in range(d - 1) for j in range(i + 1, d)],
+                        [
+                            (v[i] * w[j] - v[j] * w[i])
+                            for i in range(d - 1)
+                            for j in range(i + 1, d)
+                        ],
                     )
 
                 @staticmethod
@@ -1881,7 +1996,10 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     assert len(u) == len(v) and v.base_ring() == R
                     from sage.all import matrix
-                    return matrix(R, d, [u[i] * v[j] for j in range(d) for i in range(d)])
+
+                    return matrix(
+                        R, d, [u[i] * v[j] for j in range(d) for i in range(d)]
+                    )
 
                 def is_isometric(self, other, certificate=False):
                     r"""
@@ -1937,6 +2055,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                         True
                     """
                     from flatsurf.geometry.polygon import EuclideanPolygon
+
                     if not isinstance(other, EuclideanPolygon):
                         raise TypeError("other must be a polygon")
 
@@ -1957,6 +2076,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                             xs, ys = sedges[0]
                             xo, yo = oedges[0]
                             from sage.all import matrix
+
                             ms = matrix(2, [xs, -ys, ys, xs])
                             mo = matrix(2, [xo, -yo, yo, xo])
                             rot = mo * ~ms
@@ -1964,7 +2084,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                             assert oedges[0] == rot * sedges[0]
                             if all(oedges[i] == rot * sedges[i] for i in range(1, n)):
                                 return (
-                                    (True, (0 if i == 0 else n - i, rot)) if certificate else True
+                                    (True, (0 if i == 0 else n - i, rot))
+                                    if certificate
+                                    else True
                                 )
                         olengths.append(olengths.pop(0))
                         oedges.append(oedges.pop(0))
@@ -2057,7 +2179,11 @@ class RealProjectivePolygons(Category_over_base_ring):
                     oedges = [-e for e in oedges]
                     for i in range(n):
                         if sedges == oedges:
-                            return (True, (0 if i == 0 else n - i, -1)) if certificate else True
+                            return (
+                                (True, (0 if i == 0 else n - i, -1))
+                                if certificate
+                                else True
+                            )
                         oedges.append(oedges.pop(0))
 
                     return (False, None) if certificate else False

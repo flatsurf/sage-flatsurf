@@ -139,6 +139,7 @@ class SurfacePoint(Element):
         from sage.modules.free_module import VectorSpace
 
         from sage.all import ZZ
+
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
@@ -682,7 +683,7 @@ class SaddleConnection(SageObject):
         self._surface = surface
 
         # Sanitize the direction vector:
-        V = self._surface.base_ring().fraction_field()**2
+        V = self._surface.base_ring().fraction_field() ** 2
         self._direction = V(direction)
         if self._direction == V.zero():
             raise ValueError("Direction must be nonzero.")
@@ -714,10 +715,13 @@ class SaddleConnection(SageObject):
             elif self._surface in DilationSurfaces() and end_data is not None:
                 p = self._surface.polygon(end_data[0])
                 from flatsurf.geometry.euclidean import ccw
+
                 if (
                     ccw(p.edge(end_data[1]), self._direction) >= 0
                     and ccw(
-                        p.edge((len(p.vertices()) + end_data[1] - 1) % len(p.vertices())),
+                        p.edge(
+                            (len(p.vertices()) + end_data[1] - 1) % len(p.vertices())
+                        ),
                         self._direction,
                     )
                     > 0
@@ -1284,7 +1288,10 @@ class Cylinder(SageObject):
                 polygon_verts.append(pair2[0])
 
             from flatsurf import Polygon
-            polygons.append((l2, Polygon(vertices=polygon_verts, base_ring=s.base_ring())))
+
+            polygons.append(
+                (l2, Polygon(vertices=polygon_verts, base_ring=s.base_ring()))
+            )
             l1 = l2
             pair1 = pair2
             e1 = e2
@@ -1437,7 +1444,7 @@ class Cylinder(SageObject):
                 "holonomy currently only computable for translation surfaces"
             )
 
-        V = self._surface.base_ring()**2
+        V = self._surface.base_ring() ** 2
         total = V.zero()
         for sc in self._boundary1:
             total += sc.holonomy()

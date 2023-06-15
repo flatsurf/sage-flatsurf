@@ -153,7 +153,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             """
             if "Oriented" not in surface.category().axioms():
-                raise NotImplementedError("cannot decide whether a non-oriented surface is a translation surface yet")
+                raise NotImplementedError(
+                    "cannot decide whether a non-oriented surface is a translation surface yet"
+                )
 
             labels = surface.labels()
 
@@ -227,13 +229,17 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             """
             if e is None:
                 import warnings
-                warnings.warn("passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead")
+
+                warnings.warn(
+                    "passing only a single tuple argument to edge_matrix() has been deprecated and will be deprecated in a future version of sage-flatsurf; pass the label and edge index as separate arguments instead"
+                )
                 p, e = p
 
             if e < 0 or e >= len(self.polygon(p).vertices()):
                 raise ValueError("invalid edge index for this polygon")
 
             from sage.all import identity_matrix
+
             return identity_matrix(self.base_ring(), 2)
 
         def canonicalize_mapping(self):
@@ -332,7 +338,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 ss = MutableOrientedSimilaritySurface.from_surface(s)
                 ss.set_immutable()
-                ss = MutableOrientedSimilaritySurface.from_surface(ss.change_ring(field))
+                ss = MutableOrientedSimilaritySurface.from_surface(
+                    ss.change_ring(field)
+                )
                 us = ss
 
                 for label in deformed_labels:
@@ -369,8 +377,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
                     # Triangle does not degenerate.
                     from flatsurf import Polygon
+
                     us.replace_polygon(
-                        label, Polygon(vertices=[vector_space.zero(), a0 + a1, b0 + b1], base_ring=field)
+                        label,
+                        Polygon(
+                            vertices=[vector_space.zero(), a0 + a1, b0 + b1],
+                            base_ring=field,
+                        ),
                     )
                 ss.set_immutable()
                 return ss
@@ -422,19 +435,14 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             )
                             if (
                                 ccw(s.polygon(label).edge(v), nonzero) >= 0
-                                and ccw(
-                                    nonzero, -s.polygon(label).edge((v + 2) % 3)
-                                )
+                                and ccw(nonzero, -s.polygon(label).edge((v + 2) % 3))
                                 > 0
                             ):
                                 found_start = (label, v)
                                 found = None
                                 for vv in range(3):
                                     if (
-                                        ccw(
-                                            ss.polygon(label).edge(vv), nonzero
-                                        )
-                                        >= 0
+                                        ccw(ss.polygon(label).edge(vv), nonzero) >= 0
                                         and ccw(
                                             nonzero,
                                             -ss.polygon(label).edge((vv + 2) % 3),
@@ -442,7 +450,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                                         > 0
                                     ):
                                         found = vv
-                                        deformation2[ss.point(label, ss.polygon(label).vertex(vv))] = vect
+                                        deformation2[
+                                            ss.point(
+                                                label, ss.polygon(label).vertex(vv)
+                                            )
+                                        ] = vect
                                         break
                                 assert found is not None
                                 break
@@ -587,6 +599,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             Category of connected without boundary finite type translation surfaces
 
         """
+
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
             The category of translation surfaces without boundary built from
@@ -600,6 +613,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 Category of connected without boundary finite type translation surfaces
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all translation surfaces that are
@@ -657,17 +671,28 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     """
                     if in_place is not None:
                         if in_place:
-                            raise NotImplementedError("calling canonicalize(in_place=True) is not supported anymore")
+                            raise NotImplementedError(
+                                "calling canonicalize(in_place=True) is not supported anymore"
+                            )
 
                         import warnings
-                        warnings.warn("the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf")
+
+                        warnings.warn(
+                            "the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf"
+                        )
 
                     s = self.delaunay_decomposition().standardize_polygons()
 
-                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
+
                     s = MutableOrientedSimilaritySurface.from_surface(s)
 
-                    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
+
                     ss = MutableOrientedSimilaritySurface.from_surface(s)
 
                     for label in ss.labels():

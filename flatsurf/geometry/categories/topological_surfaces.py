@@ -453,6 +453,7 @@ class TopologicalSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all connected surfaces in
@@ -491,6 +492,7 @@ class TopologicalSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all compact surfaces in

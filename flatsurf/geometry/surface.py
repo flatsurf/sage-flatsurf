@@ -317,7 +317,9 @@ class MutablePolygonalSurface(Surface_base):
             :meth:`components`
 
         """
-        return LabeledView(self, RootedComponents_MutablePolygonalSurface(self).keys(), finite=True)
+        return LabeledView(
+            self, RootedComponents_MutablePolygonalSurface(self).keys(), finite=True
+        )
 
     def components(self):
         r"""
@@ -351,7 +353,9 @@ class MutablePolygonalSurface(Surface_base):
             ((0, 1),)
 
         """
-        return LabeledView(self, RootedComponents_MutablePolygonalSurface(self).values(), finite=True)
+        return LabeledView(
+            self, RootedComponents_MutablePolygonalSurface(self).values(), finite=True
+        )
 
     def polygon(self, label):
         r"""
@@ -774,7 +778,9 @@ class MutablePolygonalSurface(Surface_base):
 
         for component in self.components():
             if len([root for root in roots if root in component]) > 1:
-                raise ValueError("there must be at most one root label for each connected component")
+                raise ValueError(
+                    "there must be at most one root label for each connected component"
+                )
 
         self._roots = tuple(roots)
 
@@ -976,15 +982,15 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         See that method for details.
         """
         if not in_place:
-            return super().triangle_flip(l1=l1, e1=e1, in_place=in_place, test=test, direction=direction)
+            return super().triangle_flip(
+                l1=l1, e1=e1, in_place=in_place, test=test, direction=direction
+            )
 
         s = self
 
         p1 = s.polygon(l1)
         if not len(p1.vertices()) == 3:
-            raise ValueError(
-                "The polygon with the provided label is not a triangle."
-            )
+            raise ValueError("The polygon with the provided label is not a triangle.")
         l2, e2 = s.opposite_edge(l1, e1)
 
         sim = s.edge_transformation(l2, e2)
@@ -995,10 +1001,11 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             )
 
         from flatsurf import Polygon
+
         p2 = Polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
 
         if direction is None:
-            direction = (s.base_ring()**2)((0, 1))
+            direction = (s.base_ring() ** 2)((0, 1))
         # Get vertices corresponding to separatices in the provided direction.
         v1 = p1.find_separatrix(direction=direction)[0]
         v2 = p2.find_separatrix(direction=direction)[0]
@@ -1070,7 +1077,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 new_triangle[i].edge((cycle1 + 1) % 3),
                 new_triangle[i].edge((cycle1 + 2) % 3),
             ],
-            base_ring=p1.base_ring()
+            base_ring=p1.base_ring(),
         )
         # This will be the new triangle with label l2:
         tri2 = Polygon(
@@ -1106,9 +1113,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 3 - diagonal_glue_e1 - v1
             )  # returns the edge which is neither diagonal_glue_e1 nor v1.
             # This corresponded to the following old edge:
-            old_e1 = (
-                3 - e1 - v1
-            )  # Again this finds the edge which is neither e1 nor v1
+            old_e1 = 3 - e1 - v1  # Again this finds the edge which is neither e1 nor v1
         else:
             temp = (v1 + 2) % 3
             assert p1.edge(temp) == tri1.edge(temp)
@@ -1128,9 +1133,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 3 - diagonal_glue_e2 - v2
             )  # returns the edge which is neither diagonal_glue_e2 nor v2.
             # This corresponded to the following old edge:
-            old_e2 = (
-                3 - e2 - v2
-            )  # Again this finds the edge which is neither e2 nor v2
+            old_e2 = 3 - e2 - v2  # Again this finds the edge which is neither e2 nor v2
         else:
             temp = (v2 + 2) % 3
             assert p2.edge(temp) == tri2.edge(temp)
@@ -1219,9 +1222,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             best_pt = polygon.vertex(best)
             for v in range(1, len(polygon.vertices())):
                 pt = polygon.vertex(v)
-                if (pt[1] < best_pt[1]) or (
-                    pt[1] == best_pt[1] and pt[0] < best_pt[0]
-                ):
+                if (pt[1] < best_pt[1]) or (pt[1] == best_pt[1] and pt[0] < best_pt[0]):
                     best = v
                     best_pt = pt
             # We replace the polygon if the best vertex is not the zero vertex, or
@@ -1306,8 +1307,7 @@ class MutableOrientedSimilaritySurface(
         """
         if not surface.is_finite_type():
             raise TypeError
-        self = MutableOrientedSimilaritySurface(
-            surface.base_ring(), category=category)
+        self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category)
 
         for label in surface.labels():
             self.add_polygon(surface.polygon(label), label=label)
@@ -1384,7 +1384,9 @@ class MutableOrientedSimilaritySurface(
 
         """
         if not self._mutable:
-            raise Exception("cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()")
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
 
         if x[0] not in self._polygons:
             raise ValueError
@@ -1433,7 +1435,9 @@ class MutableOrientedSimilaritySurface(
 
         """
         if not self._mutable:
-            raise Exception("cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()")
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
 
         cross = self._gluings[label][edge]
         if cross is not None:
@@ -1449,10 +1453,18 @@ class MutableOrientedSimilaritySurface(
                 assert label not in cross_component
                 for root in self._roots:
                     if root in component:
-                        self._roots = self._roots + (LabeledView(surface=self, view=cross_component, finite=True).min(),)
+                        self._roots = self._roots + (
+                            LabeledView(
+                                surface=self, view=cross_component, finite=True
+                            ).min(),
+                        )
                         break
                     if root in cross_component:
-                        self._roots = self._roots + (LabeledView(surface=self, view=component, finite=True).min(),)
+                        self._roots = self._roots + (
+                            LabeledView(
+                                surface=self, view=component, finite=True
+                            ).min(),
+                        )
                         break
                 else:
                     assert False, "did not find any root to split"
@@ -1587,7 +1599,9 @@ class MutableOrientedSimilaritySurface(
         )
 
         if not self._mutable:
-            raise Exception("cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()")
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
 
         # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
         if len(polygon.vertices()) != len(self.polygon(label).vertices()):
@@ -1688,7 +1702,10 @@ class MutableOrientedSimilaritySurface(
         """
         if edge is None:
             import warnings
-            warnings.warn("calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead")
+
+            warnings.warn(
+                "calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead"
+            )
             label, edge = label
         return self._gluings[label][edge]
 
@@ -1714,7 +1731,9 @@ class MutableOrientedSimilaritySurface(
 
         from flatsurf import Polygon
 
-        pp = Polygon(edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring())
+        pp = Polygon(
+            edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring()
+        )
 
         for i in range(n):
             e = (v + i) % n
@@ -1761,8 +1780,7 @@ class MutableOrientedSimilaritySurface(
             codomain.add(l2)
         if len(domain) != len(codomain):
             raise ValueError(
-                "The relabeling_map must be injective. Received "
-                + str(relabeling_map)
+                "The relabeling_map must be injective. Received " + str(relabeling_map)
             )
         changed_labels = domain.intersection(codomain)
         added_labels = codomain.difference(domain)
@@ -1884,16 +1902,16 @@ class MutableOrientedSimilaritySurface(
         to allow subdividing in-place.
         """
         if test:
-            return super().subdivide_polygon(p=p, v1=v1, v2=v2, test=test, new_label=new_label)
+            return super().subdivide_polygon(
+                p=p, v1=v1, v2=v2, test=test, new_label=new_label
+            )
 
         poly = self.polygon(p)
         ne = len(poly.vertices())
         if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
             raise ValueError("Provided vertices out of bounds.")
         if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
-            raise ValueError(
-                "Provided diagonal is not actually a diagonal."
-            )
+            raise ValueError("Provided diagonal is not actually a diagonal.")
 
         if v2 < v1:
             v2 = v2 + ne
@@ -1980,13 +1998,9 @@ class MutableOrientedSimilaritySurface(
                 edge: self.opposite_edge(label, edge)[0]
                 for edge in range(len(polygon.vertices()))
             }
-            edge = min(
-                adjacencies, key=lambda edge: labels.index(adjacencies[edge])
-            )
+            edge = min(adjacencies, key=lambda edge: labels.index(adjacencies[edge]))
             label2, edge2 = s.opposite_edge(label, edge)
-            changes[label] = changes[label2] * s.edge_transformation(
-                label, edge
-            )
+            changes[label] = changes[label2] * s.edge_transformation(label, edge)
         it = iter(labels)
         # Skip the base label:
         label = next(it)
@@ -2004,7 +2018,10 @@ class MutableOrientedSimilaritySurface(
         """
         if relabel is not None:
             import warnings
-            warnings.warn("the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf")
+
+            warnings.warn(
+                "the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf"
+            )
 
         if not in_place:
             return super().triangulate(in_place=in_place, label=label)
@@ -2069,7 +2086,12 @@ class MutableOrientedSimilaritySurface(
         to allow triangulating in-place.
         """
         if not in_place:
-            return super().delaunay_triangulation(triangulated=triangulated, in_place=in_place, direction=direction, relabel=relabel)
+            return super().delaunay_triangulation(
+                triangulated=triangulated,
+                in_place=in_place,
+                direction=direction,
+                relabel=relabel,
+            )
 
         if relabel is not None:
             if relabel:
@@ -2090,7 +2112,7 @@ class MutableOrientedSimilaritySurface(
             self.triangulate(in_place=True)
 
         if direction is None:
-            direction = (self.base_ring()**2)((0, 1))
+            direction = (self.base_ring() ** 2)((0, 1))
 
         if direction.is_zero():
             raise ValueError
@@ -2107,9 +2129,7 @@ class MutableOrientedSimilaritySurface(
                     # Record the current opposite edge:
                     label2, edge2 = s.opposite_edge(label, edge)
                     # Perform the flip.
-                    s.triangle_flip(
-                        label, edge, in_place=True, direction=direction
-                    )
+                    s.triangle_flip(label, edge, in_place=True, direction=direction)
                     # Move the opposite polygon to the list of labels we need to check.
                     if label2 != label:
                         try:
@@ -2140,7 +2160,13 @@ class MutableOrientedSimilaritySurface(
         to allow normalizing in-place.
         """
         if not in_place:
-            return super().delaunay_decomposition(triangulated=triangulated, delaunay_triangulated=delaunay_triangulated, in_place=in_place, direction=direction, relabel=relabel)
+            return super().delaunay_decomposition(
+                triangulated=triangulated,
+                delaunay_triangulated=delaunay_triangulated,
+                in_place=in_place,
+                direction=direction,
+                relabel=relabel,
+            )
 
         if relabel is not None:
             if relabel:
@@ -2156,7 +2182,12 @@ class MutableOrientedSimilaritySurface(
 
         s = self
         if not delaunay_triangulated:
-            s = s.delaunay_triangulation(triangulated=triangulated, in_place=True, direction=direction, relabel=relabel)
+            s = s.delaunay_triangulation(
+                triangulated=triangulated,
+                in_place=True,
+                direction=direction,
+                relabel=relabel,
+            )
 
         while True:
             for (l1, e1), (l2, e2) in s.gluings():
@@ -2650,6 +2681,7 @@ class LabeledCollection:
 
         """
         from itertools import islice
+
         items = list(islice(self, 17))
 
         if self._finite is True or len(items) < 17:
@@ -2807,7 +2839,9 @@ class LabeledView(LabeledCollection):
         except TypeError:
             reprs = {repr(item): item for item in self}
             if len(reprs) != len(self):
-                raise TypeError("cannot determine minimum of tset without ordering and with non-unique repr()")
+                raise TypeError(
+                    "cannot determine minimum of tset without ordering and with non-unique repr()"
+                )
             return reprs[min(reprs)]
 
 

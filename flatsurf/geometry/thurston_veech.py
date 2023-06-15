@@ -160,6 +160,7 @@ class ThurstonVeech:
         v = [vcirc[i] * vmult[i] / d for i in range(self._num_vcyls)]
 
         from flatsurf import Polygon
+
         P = []
         for i in range(self._origami.nb_squares()):
             hi = h[self._hcycles[i]]

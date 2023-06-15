@@ -367,6 +367,7 @@ def line_intersection(p1, p2, q1, q2):
 
     # Since the wedge product is non-zero, the following is invertible:
     from sage.all import matrix
+
     m = matrix([[p2[0] - p1[0], q1[0] - q2[0]], [p2[1] - p1[1], q1[1] - q2[1]]])
     return p1 + (m.inverse() * (q1 - p1))[0] * (p2 - p1)
 
@@ -402,14 +403,17 @@ def is_segment_intersecting(e1, e2):
     elts = [e[i][j] for e in (e1, e2) for i in (0, 1) for j in (0, 1)]
 
     from sage.structure.element import get_coercion_model
+
     cm = get_coercion_model()
 
     base_ring = cm.common_parent(*elts)
     if isinstance(base_ring, type):
         from sage.structure.coerce import py_scalar_parent
+
         base_ring = py_scalar_parent(base_ring)
 
     from sage.all import matrix
+
     m = matrix(base_ring, 3)
     xs1, ys1 = map(base_ring, e1[0])
     xt1, yt1 = map(base_ring, e1[1])
@@ -577,6 +581,7 @@ def projectivization(x, y, signed=True, denominator=None):
 
     """
     from sage.all import Sequence
+
     parent = Sequence([x, y]).universe()
     if y:
         z = x / y

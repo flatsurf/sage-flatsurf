@@ -153,7 +153,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 if len(self.polygon(root).vertices()) != 3:
                     return False
 
-            raise NotImplementedError("cannot decide whether this (potentially infinite type) surface is triangulated")
+            raise NotImplementedError(
+                "cannot decide whether this (potentially infinite type) surface is triangulated"
+            )
 
         def walker(self):
             r"""
@@ -235,7 +237,10 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             import warnings
-            warnings.warn("base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general")
+
+            warnings.warn(
+                "base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general"
+            )
 
             return self.root()
 
@@ -272,10 +277,14 @@ class PolygonalSurfaces(SurfaceCategory):
             roots = self.roots()
 
             if not roots:
-                raise Exception("cannot return a root label for the connected component on an empty surface, use roots() instead")
+                raise Exception(
+                    "cannot return a root label for the connected component on an empty surface, use roots() instead"
+                )
 
             if len(roots) > 1:
-                raise Exception("surface has more than one root label, use roots() instead")
+                raise Exception(
+                    "surface has more than one root label, use roots() instead"
+                )
 
             return next(iter(roots))
 
@@ -690,7 +699,10 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             import warnings
-            warnings.warn("num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(len(p.vertices()) for p in polygons()) instead")
+
+            warnings.warn(
+                "num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(len(p.vertices()) for p in polygons()) instead"
+            )
 
             if self.is_finite_type():
                 return sum(len(p.vertices()) for p in self.polygons())
@@ -785,6 +797,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             from flatsurf.geometry.surface import ComponentLabels
+
             return ComponentLabels(self, root)
 
         def components(self):
@@ -897,6 +910,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 Category of connected finite type polygonal surfaces
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all connected surfaces built from
@@ -905,6 +919,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 If you want to add functionality for such surfaces you most likely want
                 to put it here.
                 """
+
                 def _test_roots(self, **options):
                     r"""
                     Verify that :meth:`roots` only reports a single connected
@@ -948,6 +963,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 True
 
             """
+
             class ParentMethods:
                 r"""
                 Provides methods available to all surfaces built from finitely
@@ -956,6 +972,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 If you want to add functionality for such surfaces you most likely want
                 to put it here.
                 """
+
                 def euler_characteristic(self):
                     r"""
                     Return the Euler characteristic of this surface.
@@ -1106,7 +1123,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 """
                 tester = self._tester(**options)
 
-                tester.assertEqual(len([label for label in self.labels()]), len(self.labels()))
+                tester.assertEqual(
+                    len([label for label in self.labels()]), len(self.labels())
+                )
 
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""
@@ -1129,6 +1148,7 @@ class PolygonalSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely want
             to put it here.
             """
+
             def is_finite_type(self):
                 r"""
                 Return whether this surfaces has been built from finitely many
@@ -1192,6 +1212,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 True
 
             """
+
             class Connected(SurfaceCategoryWithAxiom):
                 r"""
                 The axiom satisfied by oriented connected surfaces built from
@@ -1206,6 +1227,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     True
 
                 """
+
                 class ParentMethods:
                     r"""
                     Provides methods available to all oriented connected
@@ -1255,6 +1277,7 @@ class PolygonalSurfaces(SurfaceCategory):
             True
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all surfaces that are built from

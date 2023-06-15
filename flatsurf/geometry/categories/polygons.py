@@ -40,7 +40,10 @@ EXAMPLES::
 # ****************************************************************************
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_types import Category_over_base_ring
-from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring, all_axioms
+from sage.categories.category_with_axiom import (
+    CategoryWithAxiom_over_base_ring,
+    all_axioms,
+)
 from sage.misc.abstract_method import abstract_method
 
 from sage.categories.all import Sets
@@ -314,7 +317,9 @@ class Polygons(Category_over_base_ring):
                 ('a', 'square', 'squares')
 
             """
-            marked_vertices = set(self.vertices()).difference(self.vertices(marked_vertices=False))
+            marked_vertices = set(self.vertices()).difference(
+                self.vertices(marked_vertices=False)
+            )
 
             if marked_vertices and self.area() != 0:
                 self = self.erase_marked_vertices()
@@ -376,6 +381,7 @@ class Polygons(Category_over_base_ring):
             Category of convex polygons over Rational Field
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all convex polygons.
@@ -397,7 +403,9 @@ class Polygons(Category_over_base_ring):
 
                 """
                 if strict:
-                    raise NotImplementedError("cannot decide strict convexity for this polygon yet")
+                    raise NotImplementedError(
+                        "cannot decide strict convexity for this polygon yet"
+                    )
 
                 return True
 
@@ -413,6 +421,7 @@ class Polygons(Category_over_base_ring):
             Category of simple polygons over Rational Field
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all simple polygons.
@@ -449,6 +458,7 @@ class Polygons(Category_over_base_ring):
             Category of rational polygons over Rational Field
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all rational polygons.
@@ -528,7 +538,10 @@ class Polygons(Category_over_base_ring):
 
             """
             import warnings
-            warnings.warn("field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead")
+
+            warnings.warn(
+                "field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead"
+            )
 
             return self.base_ring().fraction_field()
 
@@ -555,6 +568,7 @@ class Polygons(Category_over_base_ring):
             tester = self._tester(**options)
 
             from sage.categories.all import Rings
+
             tester.assertTrue(self.base_ring() in Rings())
 
         def change_ring(self, ring):
@@ -573,9 +587,13 @@ class Polygons(Category_over_base_ring):
 
             """
             from sage.categories.category import JoinCategory
+
             if isinstance(self, JoinCategory):
                 from sage.categories.category import Category
-                return Category.join([S.change_ring(ring) for S in self.super_categories()])
+
+                return Category.join(
+                    [S.change_ring(ring) for S in self.super_categories()]
+                )
 
             # This is a hack to make the change ring of _RealProjectivePolygonsWithAngles subcategories work
             if hasattr(self, "angles"):
@@ -590,4 +608,7 @@ class Polygons(Category_over_base_ring):
 # Currently, there is no "Convex" and "Simple" axiom in SageMath so we make it
 # known to the category framework. Note that "Rational" is already defined by
 # topological surfaces so we don't need to declare it here again.
-all_axioms += ("Convex", "Simple", )
+all_axioms += (
+    "Convex",
+    "Simple",
+)

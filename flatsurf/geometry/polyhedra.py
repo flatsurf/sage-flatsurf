@@ -292,6 +292,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
 
     if use_AA is True:
         from flatsurf import Polygon
+
         S = MutableOrientedSimilaritySurface(AA)
         for vs in polygon_vertices_AA:
             S.add_polygon(Polygon(vertices=vs, base_ring=AA))
@@ -320,6 +321,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 polygon_vertices_field2.append(vs2)
             S = MutableOrientedSimilaritySurface(field)
             from flatsurf import Polygon
+
             for vs in polygon_vertices_field2:
                 S.add_polygon(Polygon(vertices=vs, base_ring=field))
             for x, y in gluings.items():
@@ -346,6 +348,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                 polygon_vertices_field2.append(vs2)
             S = MutableOrientedSimilaritySurface(field2)
             from flatsurf import Polygon
+
             for vs in polygon_vertices_field2:
                 S.add_polygon(Polygon(vertices=vs, base_ring=field2))
             for x, y in gluings.items():
