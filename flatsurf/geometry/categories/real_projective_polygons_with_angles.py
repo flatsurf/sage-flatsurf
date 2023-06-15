@@ -133,14 +133,8 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             sage: C.super_categories()
             [Category of rational real projective polygons over Rational Field]
 
-            sage: C = RealProjectivePolygons(QQ).WithAngles([2, 2, 1, 6, 1])
-            sage: C.super_categories()
-
         """
-        if all(2 * a <= 1 for a in self._angles):
-            return [RealProjectivePolygons(self.base_ring()).Rational().Convex()]
-        else:
-            return [RealProjectivePolygons(self.base_ring()).Rational()]
+        return [RealProjectivePolygons(self.base_ring()).Rational()]
 
     @staticmethod
     def _normalize_angles(angles):
@@ -979,6 +973,36 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         """
 
+        # Due to some limitations in SageMath this does not work. Apparently,
+        # extra_super_categories cannot depend on parameters of the category.
+        # With this code, some polygons are randomly declared as convex.
+        # Unfortunately, this means that the category prints as "convex simple
+        # rectangles" and not just "rectangles".
+        # def extra_super_categories(self):
+        #     r"""
+        #     Return the categories that simple polygons with prescribed angles
+        #     are additionally contained in; namely, in some cases the category
+        #     of convex polygons.
+
+        #     EXAMPLES::
+
+        #         sage: from flatsurf.geometry.categories import RealProjectivePolygons
+        #         sage: C = RealProjectivePolygons(QQ).Simple().WithAngles([1, 1, 1, 1])
+        #         sage: "Convex" in C.axioms()
+        #         True
+
+        #         sage: C = RealProjectivePolygons(QQ).Simple().WithAngles([2, 2, 1, 6, 1])
+        #         sage: "Convex" in C.axioms()
+        #         False
+
+        #     """
+        #     # We cannot call is_convex() yet because the SubcategoryMethods
+        #     # have not been established yet.
+        #     if self._base_category.is_convex():
+        #         return (self._base_category.Convex(),)
+
+        #     return ()
+
         def __call__(self, *lengths, normalized=False, base_ring=None):
             r"""
             Return a polygon with these angles from ``lengths``.
@@ -1044,7 +1068,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             V = self.base_ring()**2
             slopes = self.slopes()
             if normalized:
-                cosines_ring = self._without_axiom("Simple")._cosines_ring()
+                cosines_ring = self._without_axiom("Simple")._without_axiom("Convex")._cosines_ring()
                 V = V.change_ring(cosines_ring)
                 for i, s in enumerate(slopes):
                     x, y = map(cosines_ring, s)

@@ -341,6 +341,29 @@ class Polygons(Category_over_base_ring):
 
             return Polygons._describe_polygon(len(self.vertices()), **properties)
 
+        def _test_refined_category(self, **options):
+            r"""
+            Verify that the polygon is in the smallest category that can be
+            easily determined.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons
+                sage: P = polygons.square()
+                sage: P._test_refined_category()
+
+            """
+            tester = self._tester(**options)
+
+            if self.is_convex():
+                tester.assertTrue("Convex" in self.category().axioms())
+
+            if self.is_simple():
+                tester.assertTrue("Simple" in self.category().axioms())
+
+            # We do not test for Rational and WithAngles since these are only
+            # determined on demand (computing angles can be very costly.)
+
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""
         The axiom satisfied by convex polygons.

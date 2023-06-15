@@ -1311,7 +1311,7 @@ def EuclideanPolygonsWithAngles(*angles):
         (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
 
         sage: EuclideanPolygonsWithAngles(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-        Category of simple real projective pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial x^22 - 23*x^20 + 230*x^18 - 1311*x^16 + 4692*x^14 - 10948*x^12 + 16744*x^10 - 16445*x^8 + 9867*x^6 - 3289*x^4 + 506*x^2 - 23 with c = 1.995337538381079?
+        Category of simple real projective pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial ...
 
     A regular pentagon::
 
