@@ -35,7 +35,7 @@ translation surfaces, actually add a method to
     self.category().axioms(): return True`` before actually performing any
     computation.
 
-EXAMPLES::
+EXAMPLES:
 
 A single square without any gluings::
 

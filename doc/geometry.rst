@@ -6,6 +6,7 @@ The flatsurf.geometry Package
 .. toctree::
    :maxdepth: 1
 
+   geometry/categories
    geometry/chamanara
    geometry/circle
    geometry/cone_surfaces

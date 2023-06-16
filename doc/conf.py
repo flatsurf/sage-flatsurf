@@ -3,7 +3,10 @@ import sage_docbuild.conf
 
 # -- General configuration ------------------------------------------------
 extensions = [
-    "sphinx.ext.autodoc",
+    # We need to use SageMath's autodoc to render nested classes in categories
+    # correctly. Otherwise they just render as "alias for" in the
+    # documentation.
+    "sage_docbuild.ext.sage_autodoc",
     "sphinx.ext.todo",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
