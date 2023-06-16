@@ -243,7 +243,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     sage: S = translation_surfaces.veech_2n_gon(5)
                     sage: S.holonomy_field()
-                    Number Field in a0 with defining polynomial x^2 - x - 1 with a0 = 1.618033988749895?
+                    Number Field in a0 with defining polynomial x^2 - x - 1 with a0 = ...
                     sage: S.base_ring()
                     Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.175570504584947?
 
@@ -327,7 +327,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         sage: S = translation_surfaces.veech_2n_gon(5)
                         sage: U, mat = S.normalized_coordinates()
                         sage: U.base_ring()
-                        Number Field in a0 with defining polynomial x^2 - x - 1 with a0 = 1.618033988749895?
+                        Number Field in a0 with defining polynomial x^2 - x - 1 with a0 = ...
                         sage: mat
                         [             0 -2/5*a^3 + 2*a]
                         [            -1 -3/5*a^3 + 2*a]

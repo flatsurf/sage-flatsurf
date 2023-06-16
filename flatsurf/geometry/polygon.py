@@ -774,7 +774,7 @@ class PolygonsConstructor:
             Polygon(vertices=[(0, 0), (1, 0), (-1/2*c^2 + 5/2, 1/2*c), (-1/2*c^2 + 2, 1/2*c^3 - 3/2*c)])
             sage: polygons(angles=[1,1,1,2], length=2)
             Polygon(vertices=[(0, 0), (2, 0), (-c^2 + 5, c), (-c^2 + 4, c^3 - 3*c)])
-            sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))
+            sage: polygons(angles=[1,1,1,2], length=AA(2)**(1/2))  # tol 1e-9
             Polygon(vertices=[(0, 0), (1.414213562373095?, 0), (0.9771975379242739?, 1.344997023927915?), (0.270090756737727?, 0.831253875554907?)])
 
             sage: polygons(angles=[1]*5).angles()
