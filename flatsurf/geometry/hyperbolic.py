@@ -4258,21 +4258,6 @@ class HyperbolicConvexSet(SageObject):
 
     """
 
-    def parent(self):
-        r"""
-        Return the hyperbolic plane this is a subset of.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: v = H.vertical(0)
-            sage: v.parent()
-            Hyperbolic Plane over Rational Field
-
-        """
-        raise NotImplementedError(f"{type(self)} does not implement parent()")
-
     def half_spaces(self):
         r"""
         Return a minimal set of half spaces whose intersection is this convex set.
