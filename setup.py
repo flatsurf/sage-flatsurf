@@ -32,7 +32,12 @@ setup(
     version="0.4.7",
     url="https://github.com/flatsurf/sage-flatsurf",
     license="GNU General Public License, version 2",
-    packages=["flatsurf", "flatsurf.geometry", "flatsurf.geometry.categories", "flatsurf.graphical"],
+    packages=[
+        "flatsurf",
+        "flatsurf.geometry",
+        "flatsurf.geometry.categories",
+        "flatsurf.graphical",
+    ],
     install_requires=["surface-dynamics"],
     setup_requires=["wheel"],
     include_package_data=True,
