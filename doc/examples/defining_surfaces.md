@@ -171,10 +171,13 @@ The field containing the vertices:
 surface.base_ring()
 ```
 
-Computations in the Algebraic Real Field (AA) are slow. It is better to use a NumberField. The following finds the smallest embedding into a NumberField:
+Computations in the Algebraic Real Field (AA) are slow. It is better to use a NumberField. The following finds a smaller number field::
 
 ```{code-cell} ipython3
-ss = surface.copy(optimal_number_field=True)
+vertices = [surface.polygon(p).vertex(v) for (p, v) in surface.edges()]
+vertices = [vertex[0] for vertex in vertices] + [vertex[1] for vertex in vertices]
+base_ring = Sequence([coordinate.as_number_field_element()[1] for coordinate in vertices]).universe()
+ss = surface.change_ring(base_ring)
 ```
 
 ```{code-cell} ipython3
@@ -338,7 +341,7 @@ class ParabolaSurface(OrientedSimilaritySurface):
             return matrix(QQ, [[-1, 0], [0, -1]]) * self.polygon(-label)
 
         if label == 1:
-            return Polygon(vertices=[(0, 0), (1, 1), (-1, 1)], ring=QQ)
+            return Polygon(vertices=[(0, 0), (1, 1), (-1, 1)], base_ring=QQ)
 
         return Polygon(
             vertices=[
@@ -347,7 +350,7 @@ class ParabolaSurface(OrientedSimilaritySurface):
                 (-label, label**2),
                 (-label + 1, (label - 1) ** 2),
             ],
-            ring=QQ,
+            base_ring=QQ,
         )
 
     def opposite_edge(self, label, e):

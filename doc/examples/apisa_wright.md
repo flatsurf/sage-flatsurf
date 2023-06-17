@@ -62,7 +62,7 @@ def apisa_wright_surface(h24, h3, l15, l6, l7, l8):
     S.add_polygon(
         Polygon(edges=[2 * v15, v8, v7, v6, v3, -v8, -v7, -v6, -v15, -v15, -v3])
     )
-    S.add_polygon(Polygon(edges=[v15, v24, -v15, -v24], ring=K))
+    S.add_polygon(Polygon(edges=[v15, v24, -v15, -v24], base_ring=K))
 
     S.glue((0, 0), (0, 1))
     S.glue((0, 2), (0, 4))
