@@ -1344,26 +1344,25 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: P.base_ring()
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
+        sage: P(1)
+        doctest:warning
+        ...
+        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
+        To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+
     Polygons can also be defined over other number field implementations::
 
         sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
         sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
         sage: P(K(1)) # optional: eantic
-        UserWarning: calling EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
-         To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: _.base_ring() # optional: eantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
     However, specific instances of such polygons might be defined over another ring::
 
-        sage: P(1)
-        doctest:warning
-        ...
-        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
-         To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
-        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-        sage: _.base_ring()
+        sage: P(1).base_ring()
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
         sage: P(AA(1))

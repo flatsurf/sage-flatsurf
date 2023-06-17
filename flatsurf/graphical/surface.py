@@ -412,7 +412,7 @@ class GraphicalSurface:
             ...Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(cached=False, adjacencies=[])
+            sage: g = s.graphical_surface(adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
             sage: g.plot()
             ...Graphics object consisting of 16 graphics primitives
@@ -674,7 +674,7 @@ class GraphicalSurface:
             surface is infinite. In this case, the singularity should be
             returned but it could be infinite. Then singularity_limit controls
             how far we look for the singularity to close. This value is passed
-            to ``SimilaritySurface.surface_point``.
+            to the ``point()`` method on the surface.
 
         - ``search_all`` -- (default ``False``) By default we look just in
             polygons with visible label. If set to ``True``, then we instead
@@ -695,6 +695,7 @@ class GraphicalSurface:
             sage: gs.to_surface((1,-2), v=(1,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
 
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.infinite_staircase()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((4,4), (1,1), search_all=True, search_limit=20)
@@ -715,7 +716,7 @@ class GraphicalSurface:
             Vector space of dimension 2 over Algebraic Real Field
             sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
             sage: v.bundle()
-            Tangent bundle of MinimalPlanarCover(Surface built from 1 polygon) defined over Algebraic Real Field
+            Tangent bundle of Minimal Planar Cover of Translation Surface in H_1(0) built from a square defined over Algebraic Real Field
 
         """
         surface = self.get_surface()
@@ -750,7 +751,7 @@ class GraphicalSurface:
 
             if v is None:
                 points.add(
-                    surface.surface_point(
+                    surface.point(
                         label, coords, ring=ring, limit=singularity_limit
                     )
                 )
@@ -840,7 +841,7 @@ class GraphicalSurface:
 
             sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(cached=False, adjacencies=[])
+            sage: g = s.graphical_surface(adjacencies=[])
             sage: g.edge_labels(0)
             ['1', '1', '1']
             sage: g.make_all_visible(adjacent=True)
@@ -854,11 +855,11 @@ class GraphicalSurface:
             ['0', None, '0']
 
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels='number')
+            sage: g = s.graphical_surface(adjacencies=[], edge_labels='number')
             sage: g.edge_labels(0)
             ['0', '1', '2']
 
-            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels='gluings and number')
+            sage: g = s.graphical_surface(adjacencies=[], edge_labels='gluings and number')
             sage: g.edge_labels(0)
             ['0 -> (1, 1)', '1 -> (1, 2)', '2 -> (1, 0)']
             sage: g.make_all_visible(adjacent=True)
@@ -1058,6 +1059,7 @@ class GraphicalSurface:
 
         Check that label options are handled correctly::
 
+            sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
             sage: S.plot(polygon_labels=True, edge_labels=True)
             ...Graphics object consisting of 10 graphics primitives
