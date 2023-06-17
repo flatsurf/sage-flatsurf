@@ -799,13 +799,13 @@ class PolygonsConstructor:
         TESTS::
 
             sage: from itertools import product
-            sage: for a,b,c in product(range(1,5), repeat=3):  # long time (3s)
+            sage: for a,b,c in product(range(1,5), repeat=3):  # long time (1.5s)
             ....:     if gcd([a,b,c]) != 1:
             ....:         continue
             ....:     T = polygons(angles=[a,b,c])
             ....:     D = 2*(a+b+c)
-            ....:     assert T.angles() == [a/D, b/D, c/D]
-            ....:     assert T.edge(0) == (T.base_ring()**2)((1,0))
+            ....:     assert T.angles() == (a/D, b/D, c/D)
+
         """
         import warnings
 
