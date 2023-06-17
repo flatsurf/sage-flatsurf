@@ -751,9 +751,7 @@ class GraphicalSurface:
 
             if v is None:
                 points.add(
-                    surface.point(
-                        label, coords, ring=ring, limit=singularity_limit
-                    )
+                    surface.point(label, coords, ring=ring, limit=singularity_limit)
                 )
             else:
                 direction = (~(gp.transformation().derivative())) * vector(v)
