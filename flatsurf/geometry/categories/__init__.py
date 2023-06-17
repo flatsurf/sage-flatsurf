@@ -1,5 +1,5 @@
 r"""
-Categories of Surfaces.
+Categories of Surfaces and Polygons.
 
 sage-flatsurf uses SageMath categories to distinguish different kinds of
 surfaces such as hyperbolic surfaces, translation surfaces, …. See
@@ -17,6 +17,9 @@ you don't need to know about them. As a developer of sage-flatsurf, they
 provide entry points to place your code; e.g., to add a method to all
 translation surfaces, actually add a method to
 :class:`translation_surfaces.TranslationSurfaces.ParentMethods`.
+
+A similar but smaller hierarchy of categories exists for polygons, Euclidean
+polygons, Hyperbolic polygons.
 
 .. NOTE::
 
