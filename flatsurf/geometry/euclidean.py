@@ -152,7 +152,7 @@ def angle(u, v, numerical=False):
     denominator up to 20::
 
         sage: u = vector((AA(1),AA(0)))
-        sage: for n in xsrange(1,20):       # long time  (10 sec)
+        sage: for n in xsrange(1,20):       # long time  (1.5s)
         ....:     for k in xsrange(1,n):
         ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))
         ....:         assert angle(u,v) == k/n
@@ -166,13 +166,6 @@ def angle(u, v, numerical=False):
         ....:         a = 2 * k * math.pi / n
         ....:         v = (math.cos(a), math.sin(a))
         ....:         assert abs(angle(u,v,numerical=True) * 2 * math.pi - a) < 1.e-10
-
-    And we test up to 50 when setting ``assume_rational`` to ``True``::
-
-        sage: for n in xsrange(1,20):       # long time
-        ....:     for k in xsrange(1,n):
-        ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))
-        ....:         assert angle(u,v,assume_rational=True) == k/n
 
     If the angle is not rational, then the method returns an element in the real
     lazy field::
