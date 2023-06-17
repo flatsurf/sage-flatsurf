@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -23,19 +23,19 @@ our installation instructions if this library is not available on your system ye
 
 We start by creating a surface with [sage-flatsurf](https://github.com/flatsurf/sage-flatsurf).
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import translation_surfaces
 
 S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 S.plot()
 ```
 
 Decomposition of a surface into cylinders is implemented in [pyflatsurf](https://github.com/flatsurf/flatsurf). We triangulate our surface and make sure that its vertices are singularities.
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
 
 S = to_pyflatsurf(S)
@@ -44,7 +44,7 @@ S = S.eliminateMarkedPoints().surface()
 
 We will iterate over all directions coming from saddle connections of length at most L (ignoring connections that have the same slope.)
 
-```{code-cell} ipython3
+```{code-cell}
 L = int(16)
 
 directions = S.connections().bound(L).slopes()
@@ -54,7 +54,7 @@ For each direction we want to compute a decomposition into cylinders and minimal
 
 Here we define the target of the decomposition, i.e., a predicate that determines when a decomposition of a component can be stopped:
 
-```{code-cell} ipython3
+```{code-cell}
 def target(component):
     if component.cylinder():
         # This component is a cylinder. No further decomposition needed.
@@ -78,7 +78,7 @@ def target(component):
 
 Now we perform the actual decomposition and collect the cylinders of circumference $≤L$:
 
-```{code-cell} ipython3
+```{code-cell}
 circumferences = []
 
 for direction in directions:
@@ -96,7 +96,7 @@ for direction in directions:
 
 We will plot a histogram of all the cylinders that we found ordered by their length. It would be easy to plot this differently, weighted by the area, …
 
-```{code-cell} ipython3
+```{code-cell}
 lengths = [sqrt(float(v.x()) ** 2 + float(v.y()) ** 2) for v in circumferences]
 
 import matplotlib.pyplot as plot

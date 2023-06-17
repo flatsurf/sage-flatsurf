@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -18,7 +18,7 @@ kernelspec:
 
 Veech's double n-gon surfaces:
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import translation_surfaces
 
 s = translation_surfaces.veech_double_n_gon(5)
@@ -27,38 +27,38 @@ s.plot()
 
 The Arnoux-Yoccoz surface of arbitrary genus is built in:
 
-```{code-cell} ipython3
+```{code-cell}
 s = translation_surfaces.arnoux_yoccoz(3)
 s.plot()
 ```
 
 Chamanara's infinite translation surface:
 
-```{code-cell} ipython3
+```{code-cell}
 s = translation_surfaces.chamanara(1 / 2)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot(polygon_labels=False, edge_labels=False)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s = translation_surfaces.infinite_staircase()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot()
 ```
 
 ## Billiard tables
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import similarity_surfaces, Polygon
 
 s = similarity_surfaces.billiard(Polygon(vertices=[(0, 0), (3, 0), (0, 4)]))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot()
 ```
 
@@ -66,19 +66,19 @@ s.plot()
 
 Continuing the billiard example above, we get an infinite translation surface below:
 
-```{code-cell} ipython3
+```{code-cell}
 ss = s.minimal_cover(cover_type="translation")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 gs = ss.graphical_surface()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 gs.make_all_visible(limit=12)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 gs.plot()
 ```
 
@@ -86,14 +86,14 @@ gs.plot()
 
 This defines a regular 12-gon with algebraic real coordinates (AA) with first vector given by (1,0):
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import polygons
 
 p0 = polygons.regular_ngon(12, field=AA)
 p1 = polygons.regular_ngon(3, field=AA)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 p0.plot() + p1.plot()
 ```
 
@@ -101,18 +101,18 @@ The vertices of n-gons are numbered by $\{0,...,n-1\}$, with the $0$-th vertex a
 
 We can act on polygon with $2 \times 2$ matrices. We define the rotation by $\frac{\pi}{6}$ below:
 
-```{code-cell} ipython3
+```{code-cell}
 R = matrix(AA, [[cos(pi / 6), -sin(pi / 6)], [sin(pi / 6), cos(pi / 6)]])
 show(R)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 R * p1
 ```
 
 Define a surface over the field <code>AA</code> of algebraic reals.
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import MutableOrientedSimilaritySurface
 
 surface = MutableOrientedSimilaritySurface(AA)
@@ -120,17 +120,17 @@ surface = MutableOrientedSimilaritySurface(AA)
 
 Add two polygons to the surface with labels 0 and 1:
 
-```{code-cell} ipython3
+```{code-cell}
 surface.add_polygon(p0, label=0)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 surface.add_polygon(p1, label=1)
 ```
 
 Glue the edges of polygon 0 to the parallel edges of polygon 1.
 
-```{code-cell} ipython3
+```{code-cell}
 surface.glue((0, 6), (1, 0))
 surface.glue((0, 10), (1, 1))
 surface.glue((0, 2), (1, 2))
@@ -138,7 +138,7 @@ surface.glue((0, 2), (1, 2))
 
 Add three more rotated triangles and glue them appropriately.
 
-```{code-cell} ipython3
+```{code-cell}
 for i in range(1, 4):
     surface.add_polygon((R**i) * p1, label=i + 1)
     surface.glue((0, 6 + i), (i + 1, 0))
@@ -148,39 +148,41 @@ for i in range(1, 4):
 
 Now we have a closed surface. In fact this is a translation surface:
 
-```{code-cell} ipython3
+```{code-cell}
 surface
 ```
 
 Once we are done building the surface, it is recommended to make the surface immutable. This lets sage-flatsurf speed up many operations on the surface and makes it possible to compute invariants such as the stratum:
 
-```{code-cell} ipython3
+```{code-cell}
 surface.set_immutable()
 surface
 ```
 
 We can plot the surface. Edges are labeled according to the polygon they are glued to.
 
-```{code-cell} ipython3
+```{code-cell}
 surface.plot()
 ```
 
 The field containing the vertices:
 
-```{code-cell} ipython3
+```{code-cell}
 surface.base_ring()
 ```
 
 Computations in the Algebraic Real Field (AA) are slow. It is better to use a NumberField. The following finds a smaller number field::
 
-```{code-cell} ipython3
+```{code-cell}
 vertices = [surface.polygon(p).vertex(v) for (p, v) in surface.edges()]
 vertices = [vertex[0] for vertex in vertices] + [vertex[1] for vertex in vertices]
-base_ring = Sequence([coordinate.as_number_field_element()[1] for coordinate in vertices]).universe()
+base_ring = Sequence(
+    [coordinate.as_number_field_element()[1] for coordinate in vertices]
+).universe()
 ss = surface.change_ring(base_ring)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ss.base_ring()
 ```
 
@@ -194,39 +196,39 @@ Then within the shell execute:
 <code>python -m pip install flipper --user --upgrade</code>
 More information including pitfalls are described in <a href="http://flipper.readthedocs.io/en/latest/start.html#installation">Flipper's installation instructions</a>.
 
-```{code-cell} ipython3
+```{code-cell}
 import flipper
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 T = flipper.load("SB_4")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 h = T.mapping_class("s_0S_1s_2S_3s_1S_2")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 h.is_pseudo_anosov()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s = translation_surfaces.from_flipper(h)
 ```
 
 The surface s is actually a half translation surface
 
-```{code-cell} ipython3
+```{code-cell}
 s
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot()
 ```
 
 ## From polyhedra
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf.geometry.polyhedra import platonic_dodecahedron
 
 polyhedron, s, mapping = platonic_dodecahedron()
@@ -234,34 +236,34 @@ polyhedron, s, mapping = platonic_dodecahedron()
 
 The surface $s$ is a Euclidean cone surface.
 
-```{code-cell} ipython3
+```{code-cell}
 s
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot()
 ```
 
 Sage has a built in polyhedron class. You can build a polyhedron as a convex hull of a list of vertices.
 
-```{code-cell} ipython3
+```{code-cell}
 polyhedron = Polyhedron([(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)])
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 polyhedron.plot()
 ```
 
 The following computes the boundary surface as a Euclidean cone surface. It also provides a map from the surface to the polyhedron.
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf.geometry.polyhedra import polyhedron_to_cone_surface
 
 s, mapping = polyhedron_to_cone_surface(polyhedron)
 s
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot()
 ```
 
@@ -269,7 +271,7 @@ s.plot()
 
 Finite surfaces can be built by gluing polygons into a ``MutableOrientedSimilaritySurface``. For an infinite surface, we need to subclass ``OrientedSimilaritySurface`` and implement a few methods ourselves:
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.categories import TranslationSurfaces
 
@@ -373,17 +375,17 @@ class ParabolaSurface(OrientedSimilaritySurface):
         return label - label.sign(), 1
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s = ParabolaSurface()
 s
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s.plot()
 ```
 
 We can run a test suite to ensure that we have implemented everything that is needed to make this a fully functional surface.
 
-```{code-cell} ipython3
+```{code-cell}
 TestSuite(s).run(verbose=True)
 ```

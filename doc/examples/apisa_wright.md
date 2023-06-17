@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -42,7 +42,7 @@ We consider the following half-translation surface
 
 It belongs to $Q_3(10, -1^2)$.
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import Polygon, MutableOrientedSimilaritySurface
 
 
@@ -80,20 +80,20 @@ def apisa_wright_surface(h24, h3, l15, l6, l7, l8):
 
 We use some simple parameters:
 
-```{code-cell} ipython3
+```{code-cell}
 K = QuadraticField(2)
 a = K.gen()
 S = apisa_wright_surface(1, 1 + a, 1, a, 1 + a, 2 * a - 1)
 S.plot(edge_labels=False)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 S
 ```
 
 Now build the canonical double cover and orbit closure:
 
-```{code-cell} ipython3
+```{code-cell}
 U = S.minimal_cover("translation")
 U.stratum()
 ```
@@ -103,7 +103,7 @@ length 16 looking for cylinders. Each decomposition into cylinders and minimal
 components provides a new tangent direction in the `GL(2,R)`-orbit closure of
 the surface via A. Wright's cylinder deformation.
 
-```{code-cell} ipython3
+```{code-cell}
 from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
 
 O = GL2ROrbitClosure(U)  # optional: pyflatsurf
@@ -113,7 +113,7 @@ O.dimension()  # optional: pyflatsurf
 The above dimension is just the current dimension. At initialization it only
 consists of the `GL(2,R)`-direction.
 
-```{code-cell} ipython3
+```{code-cell}
 old_dim = O.dimension()  # optional: pyflatsurf
 for i, dec in enumerate(O.decompositions(16, bfs=True)):  # optional: pyflatsurf
     O.update_tangent_space_from_flow_decomposition(dec)

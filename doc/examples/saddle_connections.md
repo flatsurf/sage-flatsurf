@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -14,7 +14,7 @@ kernelspec:
 
 # Working with Saddle Connections
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -24,7 +24,7 @@ from flatsurf import translation_surfaces
 s = translation_surfaces.veech_double_n_gon(5)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -34,7 +34,7 @@ s.plot()
 
 We get a list of all saddle connections of length less than 10.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -45,7 +45,7 @@ len(sc_list)
 
 The following removes duplicate saddle connections which appear with opposite orientations.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -60,7 +60,7 @@ len(sc_list2)
 
 We pick two saddle connections:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -71,7 +71,7 @@ sc2 = sc_list2[-12]
 
 We can find their holonomies and other information about them using methods.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -80,7 +80,7 @@ print("Holonomy of sc1 is" + str(sc1.holonomy()) + " = " + str(sc1.holonomy().n(
 print("Holonomy of sc2 is" + str(sc2.holonomy()) + " = " + str(sc2.holonomy().n()))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -90,7 +90,7 @@ s.plot() + sc1.plot(color="orange") + sc2.plot(color="green")
 
 We can test that they intersect. By default the singularity does not count.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -100,7 +100,7 @@ sc1.intersects(sc2)
 
 We can get an iterator over the set of intersection points:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -111,7 +111,7 @@ for p in sc1.intersections(sc2):
 
 It is a good idea to store the intersections in a list if you want to reuse them:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -121,7 +121,7 @@ intersections = [p for p in sc1.intersections(sc2)]
 
 We can plot the intersection points:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -134,7 +134,7 @@ plot
 
 We can plot all the saddle connections:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -147,7 +147,7 @@ plot
 
 We will build a subset of the saddle connection graph where vertices are saddle connections and two vertices are joined by an edge if and only if the saddle connections do not intersect (on their interiors).
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -171,7 +171,7 @@ g = Graph(d)
 
 We place the vertex of a saddle connection with holonomy $z \in {\mathbb C}$ at the point $z^2$.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -185,7 +185,7 @@ for i in range(len(sc_list2)):
     pos[i] = (w.real(), w.imag())
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false

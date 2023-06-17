@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -16,7 +16,7 @@ kernelspec:
 
 ## The Arnoux-Yoccoz surface
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -26,7 +26,7 @@ from flatsurf import translation_surfaces
 s = translation_surfaces.arnoux_yoccoz(3).canonicalize()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -34,7 +34,7 @@ jupyter:
 s.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -43,7 +43,7 @@ field = s.base_ring()
 field
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -52,7 +52,7 @@ alpha = field.gen()
 AA(alpha)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -63,7 +63,7 @@ show(m)
 
 Check that $m$ is the derivative of a pseudo-Anosov of $s$.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -75,7 +75,7 @@ jupyter:
 
 A singularity of the surface is an equivalence class of vertices of the polygons making up the surface.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -85,7 +85,7 @@ s.point(0, 0)
 
 We'll move this singularity to the right by two different amounts:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -95,7 +95,7 @@ s1 = s.rel_deformation(
 ).canonicalize()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -109,7 +109,7 @@ s2 = s.rel_deformation(
 
 Note that by the action of the derivative of the pseudo-Anosov we have:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -119,7 +119,7 @@ s1 == (m * s2).canonicalize()
 
 By a Theorem of Barak Weiss and the author of this notebook, these surfaces are all periodic in the vertical direction. You can see the vertical cylinders:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false

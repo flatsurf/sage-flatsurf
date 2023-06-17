@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -16,7 +16,7 @@ kernelspec:
 
 ## Acting on surfaces by matrices.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -26,7 +26,7 @@ from flatsurf import translation_surfaces
 s = translation_surfaces.veech_double_n_gon(5)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -34,7 +34,7 @@ jupyter:
 s.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -44,7 +44,7 @@ m = matrix([[2, 1], [1, 1]])
 
 You can act on surfaces with the $GL(2,R)$ action
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -53,7 +53,7 @@ ss = m * s
 ss
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -63,7 +63,7 @@ ss.plot()
 
 To "renormalize" you can improve the presentation using the Delaunay decomposition.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -72,7 +72,7 @@ sss = ss.delaunay_decomposition()
 sss
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -84,7 +84,7 @@ sss.plot()
 
 Set $s$ to be the double pentagon again.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -94,7 +94,7 @@ s = translation_surfaces.veech_double_n_gon(5)
 
 The surface has a horizontal cylinder decomposition all of whose moduli are given as below
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -104,7 +104,7 @@ modulus = (p.vertex(3)[1] - p.vertex(2)[1]) / (p.vertex(2)[0] - p.vertex(4)[0])
 AA(modulus)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -113,7 +113,7 @@ m = matrix(s.base_ring(), [[1, 1 / modulus], [0, 1]])
 show(m)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -123,7 +123,7 @@ show(matrix(AA, m))
 
 The following can be used to check that $m$ is in the Veech group of $s$.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -135,7 +135,7 @@ s.canonicalize() == (m * s).canonicalize()
 
 Infinite surfaces support multiplication by matrices and computing the Delaunay decomposition. (Computation is done "lazily")
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -143,7 +143,7 @@ jupyter:
 s = translation_surfaces.chamanara(1 / 2)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -151,7 +151,7 @@ jupyter:
 s.plot(edge_labels=False, polygon_labels=False)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -159,7 +159,7 @@ jupyter:
 ss = s.delaunay_decomposition()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -168,7 +168,7 @@ gs = ss.graphical_surface(edge_labels=False, polygon_labels=False)
 gs.make_all_visible(limit=20)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -176,7 +176,7 @@ jupyter:
 gs.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -184,7 +184,7 @@ jupyter:
 m = matrix([[2, 0], [0, 1 / 2]])
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -192,7 +192,7 @@ jupyter:
 ms = m * s
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -202,7 +202,7 @@ gs.make_all_visible(limit=20)
 gs.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -210,7 +210,7 @@ jupyter:
 mss = ms.delaunay_decomposition()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false

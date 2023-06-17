@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.14.6
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -18,7 +18,7 @@ kernelspec:
 
 Veech's double n-gon surfaces:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -29,7 +29,7 @@ s = translation_surfaces.veech_double_n_gon(5).canonicalize()
 s.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -39,7 +39,7 @@ modulus = (p.vertex(3)[1] - p.vertex(2)[1]) / (p.vertex(2)[0] - p.vertex(4)[0])
 AA(modulus)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -50,14 +50,14 @@ ss = m * s
 ss.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ss = ss.delaunay_decomposition()
 ss.plot()
 ```
 
 The following checks that the matrix m stabilizes s; actually, it does not, see [#230](https://github.com/flatsurf/sage-flatsurf/issues/230):
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -67,7 +67,7 @@ ss.canonicalize() == s
 
 ## Geodesics
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -77,7 +77,7 @@ s = translation_surfaces.veech_double_n_gon(5)
 
 The tangent bundle of the surface:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -87,7 +87,7 @@ TB = s.tangent_bundle()
 
 Define a tangent vector in polygon $0$ starting at $(\frac{1}{2}, 0)$ and pointed in some direction:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -98,7 +98,7 @@ v = TB(0, (1 / 2, 0), direction)
 
 Convert the vector to a straight-line trajectory.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -106,7 +106,7 @@ jupyter:
 traj = v.straight_line_trajectory()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -114,7 +114,7 @@ jupyter:
 s.plot() + traj.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -130,7 +130,7 @@ s.plot() + traj.plot()
 Polyhedra are built into Sage and you can use them to build a translation surface.
 In this demo we only use a built-in function for a Platonic Solid.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -140,7 +140,7 @@ from flatsurf.geometry.polyhedra import platonic_dodecahedron
 polyhedron, s, mapping = platonic_dodecahedron()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -148,7 +148,7 @@ jupyter:
 polyhedron.plot(frame=False)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -156,7 +156,7 @@ jupyter:
 s.plot(polygon_labels=False, edge_labels=False)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -170,7 +170,7 @@ print(traj.is_closed())
 print(traj.combinatorial_length())
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -178,7 +178,7 @@ jupyter:
 s.plot() + traj.plot()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -188,7 +188,7 @@ G += line3d(mapping(traj), radius=0.02, frame=False)
 G
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -202,7 +202,7 @@ print(traj.is_closed())
 print(traj.combinatorial_length())
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -210,7 +210,7 @@ jupyter:
 show(s.plot() + traj.plot())
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -222,7 +222,7 @@ p.show(viewer="tachyon", frame=False)
 
 ## Relative period deformations
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -233,7 +233,7 @@ s.plot(edge_labels=False, polygon_labels=False)
 
 Currently we have to triangulate to do a rel deformation.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -243,7 +243,7 @@ s = s.triangulate()
 
 A singularity is an equivalence class of vertices of polygons.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -255,7 +255,7 @@ sing
 We can now deform by moving one singularity relative to the others.
 Here is a small deformation in the slope one direction.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -266,7 +266,7 @@ ss.plot()
 
 A larger deformation:
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -280,7 +280,7 @@ ss.plot()
 I'm demonstrating a result (in progress) of Pavel Javornik,
 an undergraduate at City College of New York.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -418,7 +418,7 @@ class SurfaceToSpaceMapping(SageObject):
         raise ValueError("Failed to recognize type of passed object")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -507,15 +507,15 @@ class CubeSurf(OrientedSimilaritySurface):
                 return ((x - 1, y + 1, l + 2), 0)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 s = CubeSurf(QQ)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 TestSuite(s).run()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -547,7 +547,7 @@ def label_to_color(label):
         return "beige"
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -562,7 +562,7 @@ A trajectory of rational slope (measured on one of the squares interpreted to
 have horizontal and vertical sides) on the Necker Cube Surface closes up
 if and only if the slope can be expressed as the ratio of two odd integers.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
@@ -573,7 +573,7 @@ B = s.tangent_bundle()
 The following builds a trajectory starting in the base polygon at the point
 $(\frac{1}{4}, \frac{1}{4})$ and traveling in a direction of slope one.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -589,7 +589,7 @@ m.plot(labels, label_to_color=label_to_color) + line3d(m(traj), radius=0.02)
 
 A trajectory of slope $5/4$.
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
@@ -607,7 +607,7 @@ p
 
 A trajectory of slope $11/9$
 
-```{code-cell} ipython3
+```{code-cell}
 ---
 jupyter:
   outputs_hidden: false
