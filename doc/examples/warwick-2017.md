@@ -430,9 +430,9 @@ from flatsurf.geometry.polygon import Polygon
 
 class CubeSurf(OrientedSimilaritySurface):
     def __init__(self, F):
-        self._faceA = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        self._faceB = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
-        self._faceC = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], ring=F)
+        self._faceA = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], base_ring=F)
+        self._faceB = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], base_ring=F)
+        self._faceC = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)], base_ring=F)
         super().__init__(
             F,
             category=ConeSurfaces()

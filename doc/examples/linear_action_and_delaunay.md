@@ -99,6 +99,7 @@ The surface has a horizontal cylinder decomposition all of whose moduli are give
 jupyter:
   outputs_hidden: false
 ---
+p = s.polygon(0)
 modulus = (p.vertex(3)[1] - p.vertex(2)[1]) / (p.vertex(2)[0] - p.vertex(4)[0])
 AA(modulus)
 ```
