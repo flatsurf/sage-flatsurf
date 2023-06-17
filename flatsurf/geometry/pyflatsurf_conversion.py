@@ -301,9 +301,7 @@ def from_pyflatsurf(T):
 
     S = MutableOrientedSimilaritySurface(ring)
 
-    from flatsurf.geometry.polygon import ConvexPolygons, Polygon
-
-    P = ConvexPolygons(ring)
+    from flatsurf.geometry.polygon import Polygon
 
     V = ring**2
 
@@ -316,7 +314,7 @@ def from_pyflatsurf(T):
         vectors = [
             V([ring(to_sage_ring(v.x())), ring(to_sage_ring(v.y()))]) for v in vectors
         ]
-        triangle = Polygon(edges=vectors, category=P)
+        triangle = Polygon(edges=vectors)
         face_id = S.add_polygon(triangle)
 
         assert a not in half_edges
