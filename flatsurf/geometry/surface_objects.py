@@ -135,14 +135,12 @@ class SurfacePoint(Element):
 
         polygon = surface.polygon(label)
 
-        from sage.modules.free_module import VectorSpace
-
         from sage.all import ZZ
 
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
-        point = VectorSpace(ring, 2)(point)
+        point = (ring**2)(point)
         point.set_immutable()
 
         position = polygon.get_point_position(point)
