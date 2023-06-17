@@ -1326,7 +1326,18 @@ def Polygon(
 
 def EuclideanPolygonsWithAngles(*angles):
     r"""
-    TODO: Document
+    Return the category of real projective polygons with prescribed ``angles``
+    over a (minimal) number field.
+
+    This method is a convenience to interact with that category. To create
+    polygons with prescribed angles over such a field, one should just use
+    ``Polygon()`` directly, see below.
+
+    INPUT:
+
+    - ``angles`` -- a sequence of integers or rationals describing the angles
+      of the polygon (the number get normalized so that they sum to (n-2)π
+      automatically.
 
     TESTS::
 
@@ -1344,11 +1355,26 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: P.base_ring()
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
+    Polygons with these angles can be created by providing a single length,
+    however this feature is deprecated::
+
         sage: P(1)
         doctest:warning
         ...
         UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
         To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+
+    Instead, one should use :func:`Polygon`::
+
+        from flatsurf import Polygon
+        sage: Polygon(angles=[1, 2, 5], lengths=[1])
+        Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
+
+    It is actually faster not to specify lengths since normalization can be
+    costly (only relevant for polygons living in big number fields)::
+
+        sage: Polygon(angles=[1, 2, 5])
         Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
 
     Polygons can also be defined over other number field implementations::
