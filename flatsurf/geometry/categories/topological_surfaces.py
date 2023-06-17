@@ -188,10 +188,11 @@ class TopologicalSurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used by :meth:`refined_category` to determine
-                whether this surface satisfies the axiom :class:`Orientable`.
-                Surfaces must override this method to perform specialized logic,
-                see the note in :mod:`flatsurf.geometry.categories` for
-                performance considerations.
+                whether this surface satisfies the axiom
+                :class:`.TopologicalSurfaces.Orientable`. Surfaces must
+                override this method to perform specialized logic, see the note
+                in :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             EXAMPLES::
 
@@ -213,10 +214,10 @@ class TopologicalSurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used by :meth:`refined_category` to determine
-                whether this surface satisfies the axiom :class:`WithBoundary`
-                or :class:`WithoutBoundary`. Surfaces must override this method
-                to perform specialized logic, see the note in
-                :mod:`flatsurf.geometry.categories` for performance
+                whether this surface satisfies the axiom :class:`.WithBoundary`
+                or :class:`.TopologicalSurfaces.WithoutBoundary`. Surfaces must
+                override this method to perform specialized logic, see the note
+                in :mod:`flatsurf.geometry.categories` for performance
                 considerations.
 
             EXAMPLES::

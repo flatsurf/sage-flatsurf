@@ -248,15 +248,16 @@ class SimilaritySurfaces(SurfaceCategory):
             .. NOTE::
 
                 This is a stronger requirement than the usual
-                definition of a cone surface, see :mod:`ConeSurfaces` for
+                definition of a cone surface, see :mod:`.cone_surfaces` for
                 details.
 
             .. NOTE::
 
                 This method is used to determine whether this surface is in the
-                category of :class:`ConeSurfaces`. Surfaces can override this
-                method to perform specialized logic, see the note in
-                :mod:`flatsurf.geometry.categories` for performance considerations.
+                category of :class:`~.cone_surfaces.ConeSurfaces`. Surfaces can
+                override this method to perform specialized logic, see the note
+                in :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             EXAMPLES::
 
@@ -281,11 +282,11 @@ class SimilaritySurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used to determine whether this surface is in the
-                category of :class:`DilationSurfaces` or
-                :class:`DilationSurfaces.Positive`. Surfaces can override this
-                method to perform specialized logic, see the note in
-                :mod:`flatsurf.geometry.categories` for performance
-                considerations.
+                category of :class:`~.dilation_surfaces.DilationSurfaces` or
+                :class:`~.dilation_surfaces.DilationSurfaces.Positive`.
+                Surfaces can override this method to perform specialized logic,
+                see the note in :mod:`~flatsurf.geometry.categories` for
+                performance considerations.
 
             INPUT:
 
@@ -321,10 +322,11 @@ class SimilaritySurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used to determine whether this surface is in the
-                category of :class:`HalfTranslationSurfaces` or
-                :class:`TranslationSurfaces`. Surfaces can override this method
-                to perform specialized logic, see the note in
-                :mod:`flatsurf.geometry.categories` for performance
+                category of
+                :class:`~.half_translation_surfaces.HalfTranslationSurfaces` or
+                :class:`~.translation_surfaces.TranslationSurfaces`. Surfaces
+                can override this method to perform specialized logic, see the
+                note in :mod:`~flatsurf.geometry.categories` for performance
                 considerations.
 
             INPUT:
@@ -364,7 +366,7 @@ class SimilaritySurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used to determine whether this surface satisfies
-                the :class:`Rational` axiom. Surfaces can override this method
+                the :class:`~.SimilaritySurfaces.Rational` axiom. Surfaces can override this method
                 to perform specialized logic, see the note in
                 :mod:`flatsurf.geometry.categories` for performance
                 considerations.
@@ -2034,7 +2036,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 r"""
                 Return a copy of this surface whose polygons have been partitioned into
                 smaller triangles with
-                :meth:`.polygon.ConvexPolygon.subdivide`.
+                :meth:`~.real_projective_polygons.RealProjectivePolygons.Simple.Convex.ParentMethods.subdivide`.
 
                 EXAMPLES:
 
@@ -2366,7 +2368,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 .. NOTE::
 
                     This is a stronger requirement than the usual
-                    definition of a cone surface, see :mod:`ConeSurfaces` for
+                    definition of a cone surface, see :mod:`.cone_surfaces` for
                     details.
 
                 EXAMPLES::
@@ -2535,6 +2537,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
                     sage: S = similarity_surfaces.self_glued_polygon(P)
                     sage: S._test_eq_surface()
+
+                :meta public:
 
                 """
                 tester = self._tester(**options)

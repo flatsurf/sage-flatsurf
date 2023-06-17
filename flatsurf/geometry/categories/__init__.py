@@ -16,15 +16,22 @@ think of categories as an implementation detail. As a user of sage-flatsurf,
 you don't need to know about them. As a developer of sage-flatsurf, they
 provide entry points to place your code; e.g., to add a method to all
 translation surfaces, actually add a method to
-:class:`TranslationSurfaces.ParentMethods`.
+:class:`translation_surfaces.TranslationSurfaces.ParentMethods`.
 
 .. NOTE::
 
-    Categories are deduced by calling methods such as :meth:`is_orientable`,
-    :meth:`is_with_boundary`, :meth:`is_compact`, :meth:`is_connected`,
-    :meth:`is_finite_type`, :meth:`is_cone_surface`,
-    :meth:`is_dilation_surface`, :meth:`is_translation_surface`, and
-    :meth:`is_rational`. There are default implementations for these for finite
+    Categories are deduced by calling methods such as
+    :meth:`~topological_surfaces.TopologicalSurfaces.ParentMethods.is_orientable`,
+    :meth:`~topological_surfaces.TopologicalSurfaces.ParentMethods.is_with_boundary`,
+    :meth:`~topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`,
+    :meth:`~topological_surfaces.TopologicalSurfaces.ParentMethods.is_connected`,
+    :meth:`~polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type`,
+    :meth:`~similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface`,
+    :meth:`~similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`,
+    :meth:`~similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface`,
+    and
+    :meth:`~similarity_surfaces.SimilaritySurfaces.ParentMethods.is_rational_surface`.
+    There are default implementations for these for finite
     type surfaces. Once a surfaces has been found to be in a certain
     subcategory, these methods are replaced to simply return ``True`` instead
     of computing anything. If a class explicitly overrides these methods, then

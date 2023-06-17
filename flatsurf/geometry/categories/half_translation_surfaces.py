@@ -107,7 +107,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
             Return whether this surface is a (half-)translation surface.
 
             This overrides
-            :meth:`SimilaritySurfaces.ParentMethods.is_translation_surface`.
+            :meth:`.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface`.
 
             EXAMPLES::
 

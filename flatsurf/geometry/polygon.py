@@ -111,7 +111,7 @@ class EuclideanPolygonPoint(Element):
 
         .. SEEALSO::
 
-            :meth:`flatsurf.geometry.categories.real_projective_polygons.RealProjectivePolygons.ParentMethods.get_point_position`
+            :meth:`~.categories.real_projective_polygons.RealProjectivePolygons.Simple.Convex.ParentMethods.get_point_position`
 
         """
         return self.parent().get_point_position(self._xy)

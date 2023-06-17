@@ -77,8 +77,8 @@ class Surface(OrientedSimilaritySurface):
     :meth:`polygon` and :meth:`opposite_edge`.
 
     To be able to modify a surface, subclasses should also implement
-    :meth:`_change_polygon`, :meth:`_set_edge_pairing`, :meth:`_add_polygon`,
-    :meth:`_remove_polygon`.
+    ``_change_polygon``, ``_set_edge_pairing``, ``_add_polygon``,
+    ``_remove_polygon``.
 
     For concrete implementations of a Surface, see, e.g., :class:`Surface_list`
     and :class:`Surface_dict`.
@@ -89,12 +89,12 @@ class Surface(OrientedSimilaritySurface):
       the polygons
 
     - ``base_label`` -- the label of a chosen special polygon in the surface,
-      see :meth:`base_label`
+      see :meth:`.base_label`
 
-    - ``finite`` -- whether this is a finite surface, see :meth:`is_finite`
+    - ``finite`` -- whether this is a finite surface, see :meth:`is_finite_type`
 
     - ``mutable`` -- whether this is a mutable surface; can be changed later
-      with :meth:`set_immutable`
+      with :meth:`.set_immutable`
 
     EXAMPLES::
 
@@ -683,7 +683,7 @@ class Surface(OrientedSimilaritySurface):
 
         - ``label`` -- a label of a polygon in this surface, see :meth:`label_iterator`
 
-        - ``position`` -- a vector with coordinates in this surface's :meth:`base_ring`
+        - ``position`` -- a vector with coordinates in this surface's base ring
 
         EXAMPLES::
 
@@ -873,12 +873,11 @@ class Surface_list(Surface):
 
     - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
       containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`Surface.base_ring` will be the one of ``surface``.
+      the base ring will be the one of ``surface``.
 
-    - ``surface`` -- :class:`Surface`,
-      :class:`.similarity_surface.SimilaritySurface`, or ``None`` (default:
-      ``None``); a surface to be copied or referenced (see ``copy``). If
-      ``None``, the surface is initially empty.
+    - ``surface`` -- a surface or ``None`` (default: ``None``); a surface to be
+      copied or referenced (see ``copy``). If ``None``, the surface is
+      initially empty.
 
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to
@@ -1532,11 +1531,11 @@ class Surface_dict(Surface):
 
     - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
       containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`Surface.base_ring` will be the one of ``surface``.
+      the base ring will be the one of ``surface``.
 
-    - ``surface`` -- :class:`Surface`, :class:`.similarity_surface.SimilaritySurface`, or
-      ``None`` (default: ``None``); a surface to be copied or referenced (see
-      ``copy``). If ``None``, the surface is initially empty.
+    - ``surface`` -- a surface or ``None`` (default: ``None``); a surface to be
+      copied or referenced (see ``copy``). If ``None``, the surface is
+      initially empty.
 
     - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
       underlying ``surface`` is copied into this surface or just a reference to

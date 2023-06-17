@@ -471,8 +471,9 @@ class MutablePolygonalSurface(Surface_base):
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
-        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of equality.
+        See
+        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
+        for details on this notion of equality.
 
         EXAMPLES::
 
@@ -850,7 +851,7 @@ class MutablePolygonalSurface(Surface_base):
         Return the polygons that make up this surface.
 
         The order the polygons are returned is guaranteed to be compatible with
-        the order of the labels in :meth:`labels`.
+        the order of the labels in :meth:`~.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
 
         This replaces the generic
         :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons`
@@ -976,7 +977,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
     def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
         Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimliaritySurfaces.Oriented.ParentMethods.triangle_flip`
+        :meth:`.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip`
         to provide in-place flipping of triangles.
 
         See that method for details.
@@ -1621,7 +1622,7 @@ class MutableOrientedSimilaritySurface(
 
         INPUT:
 
-        - ``label`` -- an element of :meth:`labels`
+        - ``label`` -- an element of :meth:`~.MutablePolygonalSurface.labels`
 
         - ``polygon`` -- a Euclidean polygon
 
@@ -1670,7 +1671,7 @@ class MutableOrientedSimilaritySurface(
 
         INPUT:
 
-        - ``label`` -- one of the labels included in :meth:`labels`
+        - ``label`` -- one of the labels included in :meth:`~.MutablePolygonalSurface.labels`
 
         - ``edge`` -- a non-negative integer to specify an edge (the edges
           of a polygon are numbered starting from zero.)
@@ -2291,8 +2292,9 @@ class MutableOrientedSimilaritySurface(
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
-        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of equality.
+        See
+        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
+        for details on this notion of equality.
 
         EXAMPLES::
 
@@ -2471,8 +2473,9 @@ class BaseRingChangedSurface(OrientedSimilaritySurface):
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
-        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
-        on this notion of equality.
+        See
+        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
+        for details on this notion of equality.
 
         EXAMPLES::
 
@@ -2986,7 +2989,7 @@ class Polygons(LabeledCollection, collections.abc.Collection):
     The collection of polygons of a surface.
 
     The polygons are returned in the same order as labels of the surface are
-    returned by :class:`Labels`.
+    returned by :class:`.Labels`.
 
     EXAMPLES::
 

@@ -5252,7 +5252,7 @@ class HyperbolicConvexSet(SageObject):
             Exception: empty set has no points
 
         We get an element for geodesics without end points in the base ring,
-        see :meth:`HyperbolicGeodesic.an_element`::
+        see :meth:`HyperbolicGeodesic._an_element_`::
 
             sage: H.half_circle(0, 2).an_element()
             (0, 1/3)
@@ -5508,9 +5508,9 @@ class HyperbolicConvexSet(SageObject):
 
             :meth:`change` to pick an orientation on an unoriented set
 
-            :meth:`HyperbolicHalfSpace._neg_`,
-            :meth:`HyperbolicOrientedGeodesic._neg_`,
-            :meth:`HyperbolicOrientedSegment._neg_` i.e., the ``-`` operator,
+            :meth:`HyperbolicHalfSpace.__neg__`,
+            :meth:`HyperbolicOrientedGeodesic.__neg__`,
+            :meth:`HyperbolicOrientedSegment.__neg__` i.e., the ``-`` operator,
             to invert the orientation of a set
 
         """
@@ -13169,7 +13169,7 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
         Return a point in this set, i.e., raise an exception since there are no
         points.
 
-        See :meth:`HyperbolicConvexSet.an_element` for more interesting
+        See :meth:`HyperbolicConvexSet._an_element_` for more interesting
         examples of this method.
 
         EXAMPLES::

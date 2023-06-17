@@ -5,7 +5,7 @@ A cone surface is a surface that can be built by gluing Euclidean polygons
 along their edges such that the matrix describing monodromy along a closed path
 is an isometry; that matrix is given by multiplying the individual matrices
 that describe how to transition between pairs of glued edges, see
-:meth:`edge_matrix`.
+:meth:`~.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix`.
 
 In sage-flatsurf, we restrict cone surfaces slightly by requiring that a cone
 surface is given by polygons such that each edge matrix is an isometry.
@@ -69,9 +69,9 @@ class ConeSurfaces(SurfaceCategory):
     The category of surfaces built by gluing (Euclidean) polygons with
     isometries on the edges.
 
-    See :mod:`flatsurf.geometry.categories.cone_surfaces` and
-    :meth:`is_cone_surface` on how this differs slightly from the customary
-    definition of a cone surface.
+    See :mod:`~flatsurf.geometry.categories.cone_surfaces` and
+    :meth:`~ParentMethods.is_cone_surface` on how this differs slightly from
+    the customary definition of a cone surface.
 
     EXAMPLES::
 
@@ -112,7 +112,8 @@ class ConeSurfaces(SurfaceCategory):
             .. NOTE::
 
                 This is a stronger requirement than the usual definition of a
-                cone surface, see :mod:`ConeSurfaces` for details.
+                cone surface, see
+                :mod:`~flatsurf.geometry.categories.cone_surfaces` for details.
 
             EXAMPLES::
 

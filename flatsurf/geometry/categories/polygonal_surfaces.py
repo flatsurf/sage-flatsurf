@@ -52,9 +52,7 @@ class PolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing polygons defined in some space
     such as the projective plane (see
-    :mod:`flatsurf.geometry.categories.real_projective_polygonal_surfaces`) or
-    the hyperbolic plane (see
-    :mod:`flatsurf.geometry.categories.hyperbolic_polygonal_surfaces`.)
+    :mod:`~flatsurf.geometry.categories.real_projective_polygonal_surfaces`.)
 
     EXAMPLES::
 
@@ -667,10 +665,11 @@ class PolygonalSurfaces(SurfaceCategory):
             .. NOTE::
 
                 This method is used to determine whether this surface satisfies
-                the :class:`FiniteType` axiom or the :class:`InfiniteType`
-                axiom. Surfaces can override this method to perform specialized
-                logic, see the note in :mod:`flatsurf.geometry.categories` for
-                performance considerations.
+                the :class:`~.PolygonalSurfaces.FiniteType` axiom or the
+                :class:`~.PolygonalSurfaces.InfiniteType` axiom. Surfaces can
+                override this method to perform specialized logic, see the note
+                in :mod:`flatsurf.geometry.categories` for performance
+                considerations.
 
             EXAMPLES::
 

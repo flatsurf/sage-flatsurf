@@ -32,7 +32,7 @@ angles::
     sage: C.slopes()
     [(1, 0), (-0.5773502691896258?, 1), (-0.5773502691896258?, -1)]
 
-Instead, we can use :meth:`EuclideanPolygonsWithAngles` to create this category
+Instead, we can use :func:`~.polygon.EuclideanPolygonsWithAngles` to create this category
 over a minimal number field::
 
     sage: from flatsurf import EuclideanPolygonsWithAngles
@@ -41,7 +41,7 @@ over a minimal number field::
     [(1, 0), (-c, 3), (-c, -3)]
 
 The category of polygons is automatically determined when using
-:meth:`polygon`::
+:func:`~.polygon.Polygon`::
 
     sage: from flatsurf import Polygon
     sage: p = Polygon(angles=(1, 1, 1))

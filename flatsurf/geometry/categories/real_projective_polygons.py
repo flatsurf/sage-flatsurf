@@ -1766,7 +1766,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                     Return a list of triangles that partition this polygon.
 
                     For each edge of the polygon one triangle is created that joins this
-                    edge to the :meth:`centroid <Polygon.centroid>` of this polygon.
+                    edge to the
+                    :meth:`~.RealProjectivePolygons.ParentMethods.centroid` of
+                    this polygon.
 
                     EXAMPLES::
 

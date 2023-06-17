@@ -74,8 +74,7 @@ class SurfacePoint(Element):
 
     INPUT:
 
-    - ``surface`` -- a :class:`flatsurf.geometry.surface.Surface` or a
-      :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
+    - ``surface`` -- a similarity surface
 
     - ``label`` -- a polygon label for the polygon with respect to which the
       ``point`` coordinates can be made sense of
@@ -193,10 +192,6 @@ class SurfacePoint(Element):
     def surface(self):
         r"""
         Return the surface containing this point.
-
-        Depending on how this point was created, this can be either a
-        :class:`flatsurf.geometry.surface.Surface` or a
-        :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
 
         EXAMPLES::
 

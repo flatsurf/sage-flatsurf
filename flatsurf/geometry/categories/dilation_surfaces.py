@@ -107,7 +107,7 @@ class DilationSurfaces(SurfaceCategory):
                 Return whether this surface is a dilation surface.
 
                 See
-                :meth:`SimilaritySurfaces.ParentMethods.is_dilation_surface`
+                :meth:`.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`
                 for details.
                 """
                 return True
@@ -164,7 +164,7 @@ class DilationSurfaces(SurfaceCategory):
             r"""
             Return whether this surface is a dilation surface.
 
-            See :meth:`SimilaritySurfaces.ParentMethods.is_dilation_surface`
+            See :meth:`.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`
             for details.
 
             EXAMPLES::
@@ -196,7 +196,7 @@ class DilationSurfaces(SurfaceCategory):
             its polygons are glued.
 
             This is a helper method for
-            :meth:`flatsurf.geometry.categories.simililarity_surfaces.ParentMethods.is_dilation_surface`.
+            :meth:`~.similarity_surfaces.ParentMethods.is_dilation_surface`.
 
             INPUT:
 
