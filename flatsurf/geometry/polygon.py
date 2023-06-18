@@ -40,7 +40,6 @@ EXAMPLES::
 
 from sage.all import (
     cached_method,
-    cached_function,
     Parent,
     QQ,
     matrix,
@@ -844,7 +843,6 @@ def ConvexPolygons(base_ring):
     return RealProjectivePolygons(base_ring).Simple().Convex()
 
 
-# TODO: Chop this monster into smaller bits.
 def Polygon(
     *args,
     vertices=None,
@@ -1117,45 +1115,7 @@ def Polygon(
 
     # Determine the base ring of the polygon
     if base_ring is None:
-        from sage.categories.pushout import pushout
-
-        base_ring = QQ
-
-        if angles:
-            from flatsurf import EuclideanPolygonsWithAngles
-
-            base_ring = pushout(
-                base_ring, EuclideanPolygonsWithAngles(angles).base_ring()
-            )
-
-        if vertices:
-            base_ring = pushout(
-                base_ring,
-                Sequence(
-                    [v[0] for v in vertices] + [v[1] for v in vertices]
-                ).universe(),
-            )
-
-        if edges:
-            base_ring = pushout(
-                base_ring,
-                Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe(),
-            )
-
-        if lengths:
-            base_ring = pushout(base_ring, Sequence(lengths).universe())
-
-            if angles and not edges:
-                with_angles = (
-                    EuclideanPolygonsWithAngles(angles)
-                    ._without_axiom("Simple")
-                    ._without_axiom("Convex")
-                )
-                for slope, length in zip(with_angles.slopes(), lengths):
-                    scale = base_ring(length**2 / (slope[0] ** 2 + slope[1] ** 2))
-                    if not scale.is_square():
-                        # Note that this ring might not be minimal.
-                        base_ring = pushout(base_ring, with_angles._cosines_ring())
+        base_ring = _Polygon_base_ring(vertices, edges, angles, lengths)
 
     if category is None:
         from flatsurf.geometry.categories import RealProjectivePolygons
@@ -1169,6 +1129,122 @@ def Polygon(
     # redundancy, we check that things are compatible. Note that much of the
     # complication of the below comes from the "angles" keyword. When angles
     # are given, some of the vertex coordinates can be deduced automatically.
+
+    choice, vertices, edges, angles, lengths = _Polygon_normalize_arguments(category, n, vertices, edges, angles, lengths)
+
+    assert vertices
+
+    vertices = [vector(base_ring, vertex) for vertex in vertices]
+
+    # Deduce missing vertices for prescribed angles
+    if angles and len(vertices) != n:
+        vertices = _Polygon_complete_vertices(n, vertices, angles, choice=choice)
+        angles = None
+
+    assert (
+        len(vertices) == n
+    ), f"expected to build {n}-gon from {n} vertices but found {vertices}"
+
+    p = EuclideanPolygon(base_ring=base_ring, vertices=vertices, category=category)
+
+    if check:
+        _Polygon_check(p, vertices, edges, angles, lengths, convex)
+
+    return p
+
+
+def _Polygon_base_ring(vertices, edges, angles, lengths):
+    r"""
+    Return the base ring a polygon can be defined over.
+
+    This is a helper function for :func:`Polygon`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import _Polygon_base_ring
+        sage: _Polygon_base_ring(vertices=[(0, 0), (1, 0), (0, 1)], edges=None, angles=None, lengths=None)
+        Rational Field
+        sage: _Polygon_base_ring(vertices=None, edges=[(1, 0), (-1, 1), (0, -1)], angles=None, lengths=None)
+        Rational Field
+        sage: _Polygon_base_ring(vertices=None, edges=None, angles=[1, 1, 1], lengths=None)
+        Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+        sage: _Polygon_base_ring(vertices=None, edges=None, angles=[1, 1, 1], lengths=[AA(2).sqrt(), 1])
+        Algebraic Real Field
+
+    """
+    from sage.categories.pushout import pushout
+
+    base_ring = QQ
+
+    if angles:
+        from flatsurf import EuclideanPolygonsWithAngles
+
+        base_ring = pushout(
+            base_ring, EuclideanPolygonsWithAngles(angles).base_ring()
+        )
+
+    if vertices:
+        base_ring = pushout(
+            base_ring,
+            Sequence(
+                [v[0] for v in vertices] + [v[1] for v in vertices]
+            ).universe(),
+        )
+
+    if edges:
+        base_ring = pushout(
+            base_ring,
+            Sequence([e[0] for e in edges] + [e[1] for e in edges]).universe(),
+        )
+
+    if lengths:
+        base_ring = pushout(base_ring, Sequence(lengths).universe())
+
+        if angles and not edges:
+            with_angles = (
+                EuclideanPolygonsWithAngles(angles)
+                ._without_axiom("Simple")
+                ._without_axiom("Convex")
+            )
+            for slope, length in zip(with_angles.slopes(), lengths):
+                scale = base_ring(length**2 / (slope[0] ** 2 + slope[1] ** 2))
+                if not scale.is_square():
+                    # Note that this ring might not be minimal.
+                    base_ring = pushout(base_ring, with_angles._cosines_ring())
+
+    return base_ring
+
+
+def _Polygon_normalize_arguments(category, n, vertices, edges, angles, lengths):
+    r"""
+    Return the normalized arguments defining a polygon. Additionally, a flag is
+    returned that indicates whether we made a choice in normalizing these
+    arguments.
+
+    This is a helper function for :func:`Polygon`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import _Polygon_normalize_arguments
+        sage: from flatsurf.geometry.categories import RealProjectivePolygons
+        sage: category = RealProjectivePolygons(AA)
+        sage: _Polygon_normalize_arguments(category=category, n=3, vertices=[(0, 0), (1, 0), (0, 1)], edges=None, angles=None, lengths=None)
+        (False, [(0, 0), (1, 0), (0, 1)], None, None, None)
+        sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=[(1, 0), (-1, 1), (0, -1)], angles=None, lengths=None)
+        (False, [(0, 0), (1, 0), (0, 1)], None, None, None)
+
+        sage: category = category.WithAngles([1, 1, 1])
+        sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=None, angles=[1, 1, 1], lengths=None)
+        (True, [(0, 0), (1, 0), (1/2, 0.866025403784439?)], None, None, None)
+        sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=None, angles=[1, 1, 1], lengths=[AA(2).sqrt(), 1])
+        (False,
+         [(0, 0), (1.414213562373095?, 0), (0.9142135623730951?, 0.866025403784439?)],
+         None,
+         [1, 1, 1],
+         None)
+
+    """
+    base_ring = category.base_ring()
 
     # Track whether we made a choice that possibly is the reason that we fail
     # to find a polygon with the given data.
@@ -1218,110 +1294,126 @@ def Polygon(
 
         edges = None
 
-    assert vertices
+    return choice, vertices, edges, angles, lengths
 
-    vertices = [vector(base_ring, vertex) for vertex in vertices]
 
-    # Deduce missing vertices for prescribed angles
-    if angles and len(vertices) != n:
-        if len(vertices) == n - 1:
-            # We do not use category.slopes() since the matrix formed by such
-            # slopes might not be invertible (because exact-reals do not have a
-            # fraction field implemented.)
-            slopes = EuclideanPolygonsWithAngles(angles).slopes()
+def _Polygon_complete_vertices(n, vertices, angles, choice):
+    r"""
+    Return vertices that define a polygon by completing the ``vertices`` to an
+    ``n``-gon with ``angles``.
 
-            # We do not use solve_left() because the vertices might not live in
-            # a ring that has a fraction field implemented (such as an
-            # exact-real ring.)
-            s, t = (vertices[0] - vertices[n - 2]) * matrix(
-                [slopes[-1], slopes[n - 2]]
-            ).inverse()
-            assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+    This is a helper function for :func:`Polygon`.
 
-            if s <= 0 or t <= 0:
-                raise (NotImplementedError if choice else ValueError)(
-                    "cannot determine polygon with these angles from the given data"
-                )
+    EXAMPLES::
 
-            vertices.append(vertices[0] - s * slopes[-1])
+        sage: from flatsurf.geometry.polygon import _Polygon_complete_vertices
+        sage: _Polygon_complete_vertices(3, [vector((0, 0)), vector((1, 0))], [1, 1, 1], choice=False)
+        [(0, 0), (1, 0), (1/2, 1/2*c)]
 
-        if len(vertices) != n:
-            from flatsurf.geometry.categories import Polygons
+    """
+    if len(vertices) == n - 1:
+        # We do not use category.slopes() since the matrix formed by such
+        # slopes might not be invertible (because exact-reals do not have a
+        # fraction field implemented.)
+        slopes = EuclideanPolygonsWithAngles(angles).slopes()
 
-            raise NotImplementedError(
-                f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(vertices)} vertices"
+        # We do not use solve_left() because the vertices might not live in
+        # a ring that has a fraction field implemented (such as an
+        # exact-real ring.)
+        s, t = (vertices[0] - vertices[n - 2]) * matrix(
+            [slopes[-1], slopes[n - 2]]
+        ).inverse()
+        assert vertices[0] - s * slopes[-1] == vertices[n - 2] + t * slopes[n - 2]
+
+        if s <= 0 or t <= 0:
+            raise (NotImplementedError if choice else ValueError)(
+                "cannot determine polygon with these angles from the given data"
             )
 
-        angles = None
+        vertices.append(vertices[0] - s * slopes[-1])
 
-    assert (
-        len(vertices) == n
-    ), f"expected to build {n}-gon from {n} vertices but found {vertices}"
+    if len(vertices) != n:
+        from flatsurf.geometry.categories import Polygons
 
-    p = EuclideanPolygon(base_ring=base_ring, vertices=vertices, category=category)
+        raise NotImplementedError(
+            f"cannot construct {' '.join(Polygons._describe_polygon(n)[:2])} from {n} angles and {len(vertices)} vertices"
+        )
 
+    return vertices
+
+
+def _Polygon_check(p, vertices, edges, angles, lengths, convex):
+    r"""
+    Verify that ``p`` is a valid polygon and that it satisfies the constraints
+    given.
+
+    This is a helper function for :func:`Polygon`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.polygon import _Polygon_check, Polygon
+        sage: p = Polygon(angles=[1, 1, 1])
+        sage: _Polygon_check(p, vertices=None, edges=None, angles=[1, 1, 1], lengths=None, convex=None)
+
+    """
     # Check that the polygon satisfies the assumptions of EuclideanPolygon
-    if check:
-        area = p.area()
+    area = p.area()
 
-        if area < 0:
-            raise ValueError(
-                "polygon has negative area; probably the vertices are not in counter-clockwise order"
-            )
+    if area < 0:
+        raise ValueError(
+            "polygon has negative area; probably the vertices are not in counter-clockwise order"
+        )
 
-        if area == 0:
-            raise ValueError("polygon has zero area")
+    if area == 0:
+        raise ValueError("polygon has zero area")
 
-        if any(edge == 0 for edge in p.edges()):
-            raise ValueError("polygon has zero edge")
+    if any(edge == 0 for edge in p.edges()):
+        raise ValueError("polygon has zero edge")
 
-        for i in range(len(p.vertices())):
-            from flatsurf.geometry.euclidean import is_anti_parallel
+    for i in range(len(p.vertices())):
+        from flatsurf.geometry.euclidean import is_anti_parallel
 
-            if is_anti_parallel(p.edge(i), p.edge(i + 1)):
-                raise ValueError("polygon has anti-parallel edges")
+        if is_anti_parallel(p.edge(i), p.edge(i + 1)):
+            raise ValueError("polygon has anti-parallel edges")
 
-        from flatsurf.geometry.categories import RealProjectivePolygons
+    from flatsurf.geometry.categories import RealProjectivePolygons
 
-        if not RealProjectivePolygons.ParentMethods.is_simple(p):
-            raise NotImplementedError("polygon self-intersects")
+    if not RealProjectivePolygons.ParentMethods.is_simple(p):
+        raise NotImplementedError("polygon self-intersects")
 
     # Check that any redundant data is compatible
-    if check:
-        if edges:
-            # Check compatibility of vertices and edges
-            edges = [vector(base_ring, edge) for edge in edges]
-            if len(edges) != len(vertices):
-                raise ValueError("vertices and edges must have the same length")
+    if edges:
+        # Check compatibility of vertices and edges
+        edges = [vector(p.base_ring(), edge) for edge in edges]
+        if len(edges) != len(vertices):
+            raise ValueError("vertices and edges must have the same length")
 
-            for i in range(n):
-                if vertices[i - 1] + edges[i - 1] != vertices[i]:
-                    raise ValueError("vertices and edges are not compatible")
+        for i in range(len(p.vertices())):
+            if vertices[i - 1] + edges[i - 1] != vertices[i]:
+                raise ValueError("vertices and edges are not compatible")
 
-        if angles:
-            # Check that the polygon has the prescribed angles
-            from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
-                RealProjectivePolygonsWithAngles,
-            )
-            from flatsurf.geometry.categories.real_projective_polygons import (
-                RealProjectivePolygons,
-            )
+    if angles:
+        # Check that the polygon has the prescribed angles
+        from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+            RealProjectivePolygonsWithAngles,
+        )
+        from flatsurf.geometry.categories.real_projective_polygons import (
+            RealProjectivePolygons,
+        )
 
-            # Use RealProjectivePolygon's angle() so we do not use the precomputed angles set by the category.
-            if RealProjectivePolygonsWithAngles._normalize_angles(angles) != tuple(
-                RealProjectivePolygons.ParentMethods.angle(p, i) for i in range(n)
-            ):
-                raise ValueError("polygon does not have the prescribed angles")
+        # Use RealProjectivePolygon's angle() so we do not use the precomputed angles set by the category.
+        if RealProjectivePolygonsWithAngles._normalize_angles(angles) != tuple(
+            RealProjectivePolygons.ParentMethods.angle(p, i) for i in range(len(p.vertices()))
+        ):
+            raise ValueError("polygon does not have the prescribed angles")
 
-        if lengths:
-            for edge, length in zip(p.edges(), lengths):
-                if edge.norm() != length:
-                    raise ValueError("polygon does not have the prescribed lengths")
+    if lengths:
+        for edge, length in zip(p.edges(), lengths):
+            if edge.norm() != length:
+                raise ValueError("polygon does not have the prescribed lengths")
 
-        if convex and not p.is_convex():
-            raise ValueError("polygon is not convex")
-
-    return p
+    if convex and not p.is_convex():
+        raise ValueError("polygon is not convex")
 
 
 def EuclideanPolygonsWithAngles(*angles):
@@ -1367,7 +1459,7 @@ def EuclideanPolygonsWithAngles(*angles):
 
     Instead, one should use :func:`Polygon`::
 
-        from flatsurf import Polygon
+        sage: from flatsurf import Polygon
         sage: Polygon(angles=[1, 2, 5], lengths=[1])
         Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
 
@@ -1384,7 +1476,8 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: P(K(1)) # optional: eantic
         doctest:warning
         ...
-        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead. To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
+        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
+        To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
         polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
         sage: _.base_ring() # optional: eantic
         Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
