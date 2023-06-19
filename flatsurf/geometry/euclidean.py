@@ -75,10 +75,12 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
     """
     from sage.all import AA
 
-    if cos not in AA:
-        return False
-    if sin not in AA:
-        return False
+    # We cannot check in AA due to https://github.com/flatsurf/exact-real/issues/172
+    # We just trust that non-algebraic elements won't allow conversion to AA.
+    # if cos not in AA:
+    #     return False
+    # if sin not in AA:
+    #     return False
 
     if not scaled:
         if cos**2 + sin**2 != 1:

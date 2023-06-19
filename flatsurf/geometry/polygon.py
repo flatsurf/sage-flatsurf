@@ -1130,7 +1130,9 @@ def Polygon(
     # complication of the below comes from the "angles" keyword. When angles
     # are given, some of the vertex coordinates can be deduced automatically.
 
-    choice, vertices, edges, angles, lengths = _Polygon_normalize_arguments(category, n, vertices, edges, angles, lengths)
+    choice, vertices, edges, angles, lengths = _Polygon_normalize_arguments(
+        category, n, vertices, edges, angles, lengths
+    )
 
     assert vertices
 
@@ -1179,16 +1181,12 @@ def _Polygon_base_ring(vertices, edges, angles, lengths):
     if angles:
         from flatsurf import EuclideanPolygonsWithAngles
 
-        base_ring = pushout(
-            base_ring, EuclideanPolygonsWithAngles(angles).base_ring()
-        )
+        base_ring = pushout(base_ring, EuclideanPolygonsWithAngles(angles).base_ring())
 
     if vertices:
         base_ring = pushout(
             base_ring,
-            Sequence(
-                [v[0] for v in vertices] + [v[1] for v in vertices]
-            ).universe(),
+            Sequence([v[0] for v in vertices] + [v[1] for v in vertices]).universe(),
         )
 
     if edges:
@@ -1403,7 +1401,8 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
 
         # Use RealProjectivePolygon's angle() so we do not use the precomputed angles set by the category.
         if RealProjectivePolygonsWithAngles._normalize_angles(angles) != tuple(
-            RealProjectivePolygons.ParentMethods.angle(p, i) for i in range(len(p.vertices()))
+            RealProjectivePolygons.ParentMethods.angle(p, i)
+            for i in range(len(p.vertices()))
         ):
             raise ValueError("polygon does not have the prescribed angles")
 
