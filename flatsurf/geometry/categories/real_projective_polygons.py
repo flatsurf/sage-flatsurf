@@ -1171,6 +1171,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                         e = (vertices[i], vertices[j])
                         good = True
                         for k in range(n):
+                            if k == i or k == j or k == (i - 1) % n or k == (j - 1) % n:
+                                continue
+
                             f = (vertices[k], vertices[(k + 1) % n])
 
                             from flatsurf.geometry.euclidean import (
@@ -1178,16 +1181,12 @@ class RealProjectivePolygons(Category_over_base_ring):
                             )
 
                             res = is_segment_intersecting(e, f)
+
+                            assert res != 1
+
                             if res == 2:
                                 good = False
                                 break
-                            elif res == 1:
-                                assert (
-                                    k == (i - 1) % n
-                                    or k == i
-                                    or k == (j - 1) % n
-                                    or k == j
-                                )
 
                         if good:
                             from flatsurf import Polygon
