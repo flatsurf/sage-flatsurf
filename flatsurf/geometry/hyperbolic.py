@@ -863,11 +863,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         if x is Infinity:
             return self.infinity()
 
-        if x in self.base_ring():
-            return self.real(x)
-
         if isinstance(x, HyperbolicConvexSet):
             return x.change(ring=self.base_ring(), geometry=self.geometry)
+
+        if x in self.base_ring():
+            return self.real(x)
 
         from sage.categories.all import NumberFields
 
