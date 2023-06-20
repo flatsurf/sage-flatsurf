@@ -95,7 +95,7 @@ integers modulo N are a field::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_method, cached_function
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
@@ -174,20 +174,31 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         return angles
 
+    @cached_function
     @staticmethod
     def __slopes(angles):
         r"""
         Return the slopes of the sides of a polygon with ``angles`` in a
         (possibly non-minimal) number field.
 
+        .. NOTE::
+
+            This function gets called a lot from the other functions here. We
+            could refactor things and make sure that the function is only
+            invoked once. However, it seems easier to just cache its output.
+            Also, this speeds up the relative common case when multiple
+            polygons with the same angles are created. (If lots of polygons
+            with different angles get created then we pay this cache with RAM
+            of course but in our experiments it has not been an issue.)
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.categories import RealProjectivePolygonsWithAngles
-            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes([1/6, 1/6, 1/6])
+            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes((1/6, 1/6, 1/6))
             [(c, 3), (c, 3), (c, 3)]
-            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes([1/4, 1/4, 1/4, 1/4])
+            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes((1/4, 1/4, 1/4, 1/4))
             [(0, 1), (0, 1), (0, 1), (0, 1)]
-            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes([1/10, 2/10, 3/10, 4/10])
+            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes((1/10, 2/10, 3/10, 4/10))
             [(c^3, 5), (3*c^3 - 10*c, 5), (-3*c^3 + 10*c, 5), (-c^3, 5)]
 
         """
