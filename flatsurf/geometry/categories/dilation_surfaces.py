@@ -518,12 +518,12 @@ class DilationSurfaces(SurfaceCategory):
                     sage: TestSuite(s).run()
 
                     sage: s = (m**2)*s0
-                    sage: s = s.l_infinity_delaunay_triangulation()
-                    sage: TestSuite(s).run()
+                    sage: s = s.l_infinity_delaunay_triangulation()  # long time (.5s)
+                    sage: TestSuite(s).run()  # long time (see above)
 
                     sage: s = (m**3)*s0
-                    sage: s = s.l_infinity_delaunay_triangulation()
-                    sage: TestSuite(s).run()
+                    sage: s = s.l_infinity_delaunay_triangulation()  # long time (.8s)
+                    sage: TestSuite(s).run()  # long time (see above)
 
                 TESTS:
 
