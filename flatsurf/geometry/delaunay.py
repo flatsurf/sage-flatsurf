@@ -64,7 +64,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
         sage: isinstance(S, LazyTriangulatedSurface)
         True
-        sage: TestSuite(S).run()
+        sage: TestSuite(S).run()  # long time (1s)
 
     """
 
@@ -628,7 +628,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
         sage: len(S.polygon(S.root()).vertices())
         3
-        sage: TestSuite(S).run()
+        sage: TestSuite(S).run()  # long time (.8s)
         sage: S.is_delaunay_triangulated(limit=10)
         True
 
@@ -642,10 +642,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: S = chamanara_surface(QQ(1/2))
         sage: m = matrix([[2,1],[1,1]])**4
         sage: S = (m*S).delaunay_triangulation()
-        sage: TestSuite(S).run()
+        sage: TestSuite(S).run()  # long time (1s)
         sage: S.is_delaunay_triangulated(limit=10)
         True
-        sage: TestSuite(S).run()
+        sage: TestSuite(S).run()  # long time (.5s)
 
         sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
         sage: isinstance(S, LazyDelaunayTriangulatedSurface)
@@ -1006,10 +1006,10 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: S.polygon(S.root())
         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
-        sage: S.is_delaunay_decomposed(limit=10)
+        sage: S.is_delaunay_decomposed(limit=10)  # long time (.7s)
         True
 
-        sage: TestSuite(S).run()
+        sage: TestSuite(S).run()  # long time (2s)
 
         sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
         sage: isinstance(S, LazyDelaunaySurface)
@@ -1021,10 +1021,10 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: S = chamanara_surface(QQ(1/2))
         sage: m = matrix([[3, 4], [-4, 3]]) * matrix([[4, 0],[0, 1/4]])
         sage: S = (m * S).delaunay_decomposition()
-        sage: S.is_delaunay_decomposed(limit=10)
+        sage: S.is_delaunay_decomposed(limit=10)  # long time (.5s)
         True
 
-        sage: TestSuite(S).run()
+        sage: TestSuite(S).run()  # long time (1.5s)
 
         sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
         sage: isinstance(S, LazyDelaunaySurface)
