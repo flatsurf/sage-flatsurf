@@ -281,11 +281,11 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         EXAMPLES::
 
             sage: from flatsurf.geometry.categories import RealProjectivePolygonsWithAngles
-            sage: RealProjectivePolygonsWithAngles._base_ring([1/6, 1/6, 1/6])
+            sage: RealProjectivePolygonsWithAngles._base_ring((1/6, 1/6, 1/6))
             Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
-            sage: RealProjectivePolygonsWithAngles._base_ring([1/4, 1/4, 1/4, 1/4])
+            sage: RealProjectivePolygonsWithAngles._base_ring((1/4, 1/4, 1/4, 1/4))
             Rational Field
-            sage: RealProjectivePolygonsWithAngles._base_ring([1/10, 2/10, 3/10, 4/10])
+            sage: RealProjectivePolygonsWithAngles._base_ring((1/10, 2/10, 3/10, 4/10))
             Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
 
         """
