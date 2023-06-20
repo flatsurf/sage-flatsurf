@@ -99,9 +99,9 @@ class ConeSurfaceToPolyhedronMap(SageObject):
             ....:     for j in range(-1,3,2):
             ....:         vertices.append(j*temp)
             sage: octahedron=Polyhedron(vertices=vertices)
-            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
+            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))  # long time (.5s)
 
-            sage: surface_to_octahedron == surface_to_octahedron
+            sage: surface_to_octahedron == surface_to_octahedron  # long time (see above)
             True
 
         """
@@ -122,9 +122,9 @@ class ConeSurfaceToPolyhedronMap(SageObject):
             ....:     for j in range(-1,3,2):
             ....:         vertices.append(j*temp)
             sage: octahedron=Polyhedron(vertices=vertices)
-            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
+            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))  # long time (.3s)
 
-            sage: surface_to_octahedron != surface_to_octahedron
+            sage: surface_to_octahedron != surface_to_octahedron  # long time (see above)
             False
 
         """
@@ -407,8 +407,8 @@ def platonic_octahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_octahedron
-        sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()
-        sage: TestSuite(surface).run()
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()  # long time (.3s)
+        sage: TestSuite(surface).run()  # long time (see above)
     """
     vertices = []
     for i in range(3):
@@ -430,8 +430,8 @@ def platonic_dodecahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_dodecahedron
-        sage: polyhedron, surface, surface_to_polyhedron = platonic_dodecahedron()
-        sage: TestSuite(surface).run()
+        sage: polyhedron, surface, surface_to_polyhedron = platonic_dodecahedron()  # long time (1s)
+        sage: TestSuite(surface).run()  # long time (.8s)
     """
     vertices = []
     phi = AA(1 + sqrt(5)) / 2
@@ -460,8 +460,8 @@ def platonic_icosahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_icosahedron
-        sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()
-        sage: TestSuite(surface).run()
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()  # long time (.9s)
+        sage: TestSuite(surface).run()  # long time (see above)
     """
     vertices = []
     phi = AA(1 + sqrt(5)) / 2
