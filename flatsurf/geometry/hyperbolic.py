@@ -2310,20 +2310,20 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ValueError: no isometry can map these objects to each other
 
             sage: Q = H.polygon(P.half_spaces(), marked_vertices=[1 + 2*I])
-            sage: H.isometry(P, Q)
+            sage: H.isometry(P, Q)  # long time (1s)
             Traceback (most recent call last):
             ...
             ValueError: no isometry can map these objects to each other
 
             sage: Q = H.polygon(P.half_spaces(), marked_vertices=[-1 + I])
-            sage: H.isometry(P, Q)
+            sage: H.isometry(P, Q)  # long time (1s)
             [ 1  0]
             [ 0 -1]
 
         We can explicitly ask for an isometry in the Klein model, given by a
         3×3 matrix::
 
-            sage: H.isometry(P, Q, model="klein")
+            sage: H.isometry(P, Q, model="klein")  # long time (1s)
             [-1  0  0]
             [ 0  1  0]
             [ 0  0  1]
@@ -2476,7 +2476,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: x = H(I/2 - 1)
             sage: y = H(I/3 - 1)
             sage: z = H(5/19 * I - 1/3)
-            sage: H.isometry((x, y, z), (x.apply_isometry(isometry), y.apply_isometry(isometry), z.apply_isometry(isometry)))
+            sage: H.isometry((x, y, z), (x.apply_isometry(isometry), y.apply_isometry(isometry), z.apply_isometry(isometry)))  # long time (.3s)
             [-2  0]
             [ 0  1]
 
@@ -2530,7 +2530,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ....:    H.geodesic(1, -120, -137, model="half_plane").right_half_space()])
             sage: isometry = matrix([[0, -2], [1, 2]])
             sage: Q = P.apply_isometry(isometry)
-            sage: H.isometry(P, Q)
+            sage: H.isometry(P, Q)  # long time (.4s)
             [  0  -1]
             [1/2   1]
 
@@ -4890,7 +4890,7 @@ class HyperbolicConvexSet(SageObject):
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
 
-            sage: H.vertical(0).plot()
+            sage: H.vertical(0).plot()  # long time (.5s)
             ...Graphics object consisting of 1 graphics primitive
 
         """
@@ -12234,7 +12234,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: H = HyperbolicPlane()
 
             sage: segment = H.segment(H.half_circle(0, 1), end=I)
-            sage: segment.plot()
+            sage: segment.plot()  # long time (.25s)
             ...Graphics object consisting of 1 graphics primitive
 
         """
