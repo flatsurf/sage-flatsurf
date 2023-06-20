@@ -78,7 +78,7 @@ class DilationSurfaces(SurfaceCategory):
         """
         from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 
-        return [SimilaritySurfaces()]
+        return [SimilaritySurfaces().Rational()]
 
     class Positive(SurfaceCategoryWithAxiom):
         r"""

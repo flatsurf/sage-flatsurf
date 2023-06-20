@@ -271,7 +271,9 @@ class SimilaritySurfaces(SurfaceCategory):
             if self.is_translation_surface():
                 return True
 
-            raise NotImplementedError("surface does not implement is_cone_surface()")
+            from flatsurf.geometry.categories import ConeSurfaces
+
+            return ConeSurfaces.ParentMethods._is_cone_surface(self)
 
         def is_dilation_surface(self, positive=False):
             r"""
@@ -308,8 +310,10 @@ class SimilaritySurfaces(SurfaceCategory):
             if self.is_translation_surface(positive=positive):
                 return True
 
-            raise NotImplementedError(
-                "surface does not implement is_dilation_surface()"
+            from flatsurf.geometry.categories import DilationSurfaces
+
+            return DilationSurfaces.ParentMethods._is_dilation_surface(
+                self, positive=positive
             )
 
         def is_translation_surface(self, positive=True):
@@ -354,21 +358,23 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            raise NotImplementedError(
-                "surface does not implement is_translation_surface()"
+            from flatsurf.geometry.categories import TranslationSurfaces
+
+            return TranslationSurfaces.ParentMethods._is_translation_surface(
+                self, positive=positive
             )
 
         def is_rational_surface(self):
             r"""
-            Return whether this surface is a rational surface, i.e., all the
+            Return whether this surface is a rational surface, i.e., the
             rotational part of all gluings is a rational multiple of π.
 
             .. NOTE::
 
                 This method is used to determine whether this surface satisfies
-                the :class:`~.SimilaritySurfaces.Rational` axiom. Surfaces can override this method
-                to perform specialized logic, see the note in
-                :mod:`flatsurf.geometry.categories` for performance
+                the :class:`~.SimilaritySurfaces.Rational` axiom. Surfaces can
+                override this method to perform specialized logic, see the note
+                in :mod:`flatsurf.geometry.categories` for performance
                 considerations.
 
             EXAMPLES::
@@ -380,11 +386,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 True
 
             """
-            if self.is_translation_surface():
+            if self.is_dilation_surface(positive=False):
                 return True
 
-            raise NotImplementedError(
-                "surface does not implement is_rational_surface()"
+            return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(
+                self
             )
 
         def _mul_(self, matrix, switch_sides=True):
@@ -2210,9 +2216,14 @@ class SimilaritySurfaces(SurfaceCategory):
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""
-        The axiom satisfied by similarity surfaces with rational monodromy,
-        i.e., a walk around a point leads to a turn by a rational multiple of
-        π.
+        The axiom satisfied by similarity surfaces where all similarities that
+        describe how edges are glued only use rational rotations, i.e.,
+        rotations by a rational multiple of π.
+
+        Note that this differs slightly from the usual definition of
+        "rational". Normally, a surface would be rational if it can be
+        described using only such similarities. Here we require that the
+        similarities used are actually of that kind.
 
         EXAMPLES::
 
@@ -2236,8 +2247,9 @@ class SimilaritySurfaces(SurfaceCategory):
             def _is_rational_surface(surface, limit=None):
                 r"""
                 Return whether the gluings of this surface lead to a rational
-                surface, i.e., whether the rotational part of all gluings is a
-                rational multiple of π.
+                surface, i.e., whether all gluings use similarities whose
+                rotational part uses only a rational multiple of π as a
+                rotation.
 
                 This is a helper method for
                 :meth:`flatsurf.geometry.categories.similarity_surfaces.ParentMethods.is_rational_surface`.
@@ -2267,11 +2279,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     labels = islice(labels, limit)
 
+                checked = set()
+
                 for label in labels:
                     for edge in range(len(surface.polygon(label).vertices())):
+
                         cross = surface.opposite_edge(label, edge)
 
                         if cross is None:
+                            continue
+
+                        if cross in checked:
                             continue
 
                         # We do not call self.edge_matrix() since the surface might
@@ -2282,23 +2300,27 @@ class SimilaritySurfaces(SurfaceCategory):
                             surface, label, edge
                         )
 
-                        a = AA(matrix[0, 0])
-                        b = AA(matrix[1, 0])
-                        q = (a**2 + b**2).sqrt()
+                        if not matrix.is_diagonal():
+                            a = AA(matrix[0, 0])
+                            b = AA(matrix[1, 0])
+                            q = (a**2 + b**2).sqrt()
 
-                        from flatsurf.geometry.euclidean import (
-                            is_cosine_sine_of_rational,
-                        )
+                            from flatsurf.geometry.euclidean import (
+                                is_cosine_sine_of_rational,
+                            )
 
-                        if not is_cosine_sine_of_rational(a / q, b / q):
-                            return False
+                            if not is_cosine_sine_of_rational(a / q, b / q):
+                                return False
+
+                        checked.add((label, edge))
 
                 return True
 
             def is_rational_surface(self):
                 r"""
-                Return whether the monodromy at the vertices of this surface is
-                rational, i.e., return ``True`` since this is a rational surface.
+                Return whether all edges of this surface are glued with
+                similarities whose rotational part is by a rational multiple of
+                π, i.e., return ``True`` since this is a rational surface.
 
                 EXAMPLES::
 
@@ -2358,117 +2380,6 @@ class SimilaritySurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
-
-            def is_cone_surface(self):
-                r"""
-                Return whether this finite type surface is a cone surface,
-                i.e., glued edges can be transformed into each other with
-                isometries.
-
-                .. NOTE::
-
-                    This is a stronger requirement than the usual
-                    definition of a cone surface, see :mod:`.cone_surfaces` for
-                    details.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_cone_surface()
-                    True
-
-                """
-                from flatsurf.geometry.categories import ConeSurfaces
-
-                return ConeSurfaces.ParentMethods._is_cone_surface(self)
-
-            def is_dilation_surface(self, positive=False):
-                r"""
-                Return whether this finite type surface is a dilation surface,
-                i.e., whether glued edges can be transformed into each other by
-                translation followed by a dilation (multiplication by a
-                diagonal matrix.)
-
-                INPUT:
-
-                - ``positive`` -- a boolean (default: ``False``); whether the
-                  entries of the diagonal matrix must be positive or are allowed to
-                  be negative.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_dilation_surface()
-                    True
-                    sage: S.is_dilation_surface(positive=True)
-                    False
-
-                """
-                from flatsurf.geometry.categories import DilationSurfaces
-
-                return DilationSurfaces.ParentMethods._is_dilation_surface(
-                    self, positive=positive
-                )
-
-            def is_translation_surface(self, positive=True):
-                r"""
-                Return whether this finite type surface is a translation
-                surface, i.e., glued edges can be transformed into each other
-                by translations.
-
-                INPUT:
-
-                - ``positive`` -- a boolean (default: ``True``); whether the
-                  transformation must be a translation or is allowed to be a
-                  half-translation, i.e., a translation followed by a reflection in
-                  a point (equivalently, a rotation by π.)
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_translation_surface()
-                    False
-                    sage: S.is_translation_surface(False)
-                    True
-
-                ::
-
-                    sage: from flatsurf import translation_surfaces
-                    sage: S = translation_surfaces.square_torus()
-                    sage: S.is_translation_surface()
-                    True
-
-                """
-                from flatsurf.geometry.categories import TranslationSurfaces
-
-                return TranslationSurfaces.ParentMethods._is_translation_surface(
-                    self, positive=positive
-                )
-
-            def is_rational_surface(self):
-                r"""
-                Return whether this finite type surface is a rational surface,
-                i.e., all the rotational part of all gluings is a rational
-                multiple of π.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S.is_rational_surface()
-                    True
-
-                """
-                return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(
-                    self
-                )
 
             def num_singularities(self):
                 r"""
