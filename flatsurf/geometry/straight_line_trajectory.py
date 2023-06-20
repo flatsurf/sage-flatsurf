@@ -368,7 +368,7 @@ class AbstractStraightLineTrajectory:
         Check that the saddle connections that are obtained in the torus get the
         expected coding::
 
-            sage: for _ in range(10):
+            sage: for _ in range(10):  # long time (.6s)
             ....:     x = ZZ.random_element(1,30)
             ....:     y = ZZ.random_element(1,30)
             ....:     x,y = x/gcd(x,y), y/gcd(x,y)

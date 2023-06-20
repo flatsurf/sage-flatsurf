@@ -389,7 +389,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: from flatsurf import HyperbolicPlane
 
             sage: TestSuite(HyperbolicPlane(QQ)).run()
-            sage: TestSuite(HyperbolicPlane(AA)).run()
+            sage: TestSuite(HyperbolicPlane(AA)).run()  # long time (.5s)
             sage: TestSuite(HyperbolicPlane(RR)).run()
 
         """
@@ -2279,7 +2279,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: no isometry can map these objects to each other
 
-            sage: H.isometry([0, 1, oo, I], [0, 1, oo, I + 1])
+            sage: H.isometry([0, 1, oo, I], [0, 1, oo, I + 1])  # long time (.4s)
             Traceback (most recent call last):
             ...
             ValueError: no isometry can map these objects to each other

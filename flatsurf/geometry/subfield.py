@@ -154,7 +154,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         sage: R.<x> = QQ[]
         sage: p1 = x^3 - x - 1
         sage: roots1 = p1.roots(QQbar, False)
-        sage: for _ in range(10):
+        sage: for _ in range(10):  # long time (1.5s)
         ....:     p2 = R.random_element(degree=2)
         ....:     while not p2.is_irreducible(): p2 = R.random_element(degree=2)
         ....:     roots2 = p2.roots(QQbar, False)

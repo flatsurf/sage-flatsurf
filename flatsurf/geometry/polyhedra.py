@@ -160,7 +160,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         sage: surface,surface_to_octahedron = \
         ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
         sage: TestSuite(surface).run()
-        sage: TestSuite(surface_to_octahedron).run()
+        sage: TestSuite(surface_to_octahedron).run()  # long time (.4s)
         sage: len(surface.polygons())
         8
         sage: surface.base_ring()
