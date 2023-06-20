@@ -597,6 +597,16 @@ class PolygonsConstructor:
             Category of convex simple real projective rectangles over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
 
         """
+        if width <= 0:
+            raise ValueError("width must be positive")
+
+        if height <= 0:
+            raise ValueError("height must be positive")
+
+        if not kwds:
+            # No need to verify that the edges and the angles are consistent.
+            kwds = {"check": False}
+
         return Polygon(
             edges=[(width, 0), (0, height), (-width, 0), (0, -height)],
             angles=(1, 1, 1, 1),
