@@ -286,9 +286,8 @@ class EuclideanPolygon(Parent):
 
         super().__init__(base_ring, category=category)
 
-        if self.is_convex():
-            category = category.Convex()
-            self._refine_category_(category)
+        if "Convex" not in category.axioms() and self.is_convex():
+            self._refine_category_(category.Convex())
 
         # The category is not refined automatically to the WithAngles()
         # subcategory since computation of angles can be very costly.
@@ -1134,6 +1133,9 @@ def Polygon(
         category = RealProjectivePolygons(base_ring).Simple()
         if angles:
             category = category.WithAngles(angles)
+
+        if n == 3:
+            category = category.Convex()
 
     # We now rewrite the given data into vertices. Whenever there is
     # redundancy, we check that things are compatible. Note that much of the

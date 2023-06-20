@@ -185,6 +185,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                 raise ValueError(
                     "Can not act on a polygon with matrix with zero determinant"
                 )
+
             if det < 0:
                 # Note that in this case we reverse the order
                 vertices = [g * self.vertex(0)]
@@ -193,7 +194,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 return Polygon(vertices=vertices, check=False)
 
-            return Polygon(vertices=[g * v for v in self.vertices()], check=False)
+            return Polygon(vertices=[g * v for v in self.vertices()], check=False, category=self.category())
 
         @cached_method
         def is_rational(self):
