@@ -529,12 +529,12 @@ class DilationSurfaces(SurfaceCategory):
 
                 Verify that deprecated keywords do not cause errors::
 
-                    sage: s.l_infinity_delaunay_triangulation(triangulated=True)
+                    sage: s.l_infinity_delaunay_triangulation(triangulated=True)  # long time (.8s)
                     doctest:warning
                     ...
                     UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.
                     Translation Surface in H_2(2) built from 6 triangles
-                    sage: s.l_infinity_delaunay_triangulation(triangulated=False)
+                    sage: s.l_infinity_delaunay_triangulation(triangulated=False)  # long time (.9s)
                     doctest:warning
                     ...
                     UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.

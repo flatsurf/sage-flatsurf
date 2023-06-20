@@ -303,11 +303,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 doctest:warning
                 ...
                 UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
-                sage: s1 = s.rel_deformation(deformation1).canonicalize()
-                sage: deformation2 = {s.singularity(0,0):V((a,0))}
-                sage: s2 = s.rel_deformation(deformation2).canonicalize()
+                sage: s1 = s.rel_deformation(deformation1).canonicalize()  # long time (.8s)
+                sage: deformation2 = {s.singularity(0,0):V((a,0))}  # long time (see above)
+                sage: s2 = s.rel_deformation(deformation2).canonicalize()  # long time (.6s)
                 sage: m = Matrix([[a,0],[0,~a]])
-                sage: s2.cmp((m*s1).canonicalize())
+                sage: s2.cmp((m*s1).canonicalize())  # long time (see above)
                 0
 
             """
