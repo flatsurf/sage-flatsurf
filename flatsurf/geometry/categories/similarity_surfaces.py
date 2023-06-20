@@ -2292,6 +2292,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         if cross in checked:
                             continue
 
+                        checked.add((label, edge))
+
                         # We do not call self.edge_matrix() since the surface might
                         # have overridden this (just returning the identity matrix e.g.)
                         # and we want to deduce the matrix from the attached polygon
@@ -2300,19 +2302,19 @@ class SimilaritySurfaces(SurfaceCategory):
                             surface, label, edge
                         )
 
-                        if not matrix.is_diagonal():
-                            a = AA(matrix[0, 0])
-                            b = AA(matrix[1, 0])
-                            q = (a**2 + b**2).sqrt()
+                        if matrix.is_diagonal():
+                            continue
 
-                            from flatsurf.geometry.euclidean import (
-                                is_cosine_sine_of_rational,
-                            )
+                        a = AA(matrix[0, 0])
+                        b = AA(matrix[1, 0])
+                        q = (a**2 + b**2).sqrt()
 
-                            if not is_cosine_sine_of_rational(a / q, b / q):
-                                return False
+                        from flatsurf.geometry.euclidean import (
+                            is_cosine_sine_of_rational,
+                        )
 
-                        checked.add((label, edge))
+                        if not is_cosine_sine_of_rational(a / q, b / q):
+                            return False
 
                 return True
 

@@ -172,12 +172,19 @@ class ConeSurfaces(SurfaceCategory):
 
                 labels = islice(labels, limit)
 
+            checked = set()
+
             for label in labels:
                 for edge in range(len(surface.polygon(label).vertices())):
                     cross = surface.opposite_edge(label, edge)
 
                     if cross is None:
                         continue
+
+                    if cross in checked:
+                        continue
+
+                    checked.add((label, edge))
 
                     # We do not call self.edge_matrix() since the surface might
                     # have overridden this (just returning the identity matrix e.g.)
