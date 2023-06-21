@@ -1159,7 +1159,6 @@ def _slopes(angles):
 
 
 @cached_function
-@staticmethod
 def _base_ring(angles):
     r"""
     Return a minimal number field containing all the :meth:`_slopes` of a
