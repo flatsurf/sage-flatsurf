@@ -729,6 +729,9 @@ class SimilaritySurfaceGenerators:
 
             sage: P = Polygon(vertices=[(0,0), (1,0), (0,1)])
             sage: Q = similarity_surfaces.billiard(P, rational=True)
+            doctest:warning
+            ...
+            UserWarning: the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore
             sage: Q
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: from flatsurf.geometry.categories import ConeSurfaces
@@ -1346,7 +1349,7 @@ class TranslationSurfaceGenerators:
             ....:     24: [(1,2,0,-4), (2,1,0,-4), (3,2,0,0)],
             ....:     25: [(2,2,0,-3), (2,2,1,-3), (3,2,0,-1), (4,1,0,-3)]}
 
-            sage: for D in sorted(prototypes):
+            sage: for D in sorted(prototypes):  # long time (.5s)
             ....:     for w,h,t,e in prototypes[D]:
             ....:          T = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
             ....:          assert T.stratum() == AbelianStratum(2)
@@ -2249,7 +2252,7 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: tf = translation_surfaces.t_fractal()
+            sage: tf = translation_surfaces.t_fractal()  # long time (.4s)
             sage: tf
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
             sage: TestSuite(tf).run()
@@ -2277,7 +2280,7 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.e_infinity_surface()
-            sage: TestSuite(s).run()
+            sage: TestSuite(s).run()  # long time (1s)
         """
         return EInfinitySurface(lambda_squared, field)
 

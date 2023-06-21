@@ -309,7 +309,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
 
             sage: from flatsurf import polygons, similarity_surfaces
             sage: T = polygons.triangle(2, 13, 26)
-            sage: S = similarity_surfaces.billiard(T, rational=True)
+            sage: S = similarity_surfaces.billiard(T)
             sage: S.minimal_cover("translation") == S.minimal_cover("translation")
             True
 
@@ -357,7 +357,7 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
     in https://github.com/flatsurf/sage-flatsurf/issues/47::
 
         sage: T = polygons.triangle(2, 13, 26)
-        sage: S = similarity_surfaces.billiard(T, rational=True)
+        sage: S = similarity_surfaces.billiard(T)
         sage: S = S.minimal_cover("half-translation")
         sage: S
         Minimal Half-Translation Cover of Genus 0 Rational Cone Surface built from 2 triangles
@@ -779,7 +779,7 @@ class MinimalPlanarCover(OrientedSimilaritySurface):
 
             sage: from flatsurf import polygons, similarity_surfaces
             sage: T = polygons.triangle(2, 13, 26)
-            sage: S = similarity_surfaces.billiard(T, rational=True)
+            sage: S = similarity_surfaces.billiard(T)
             sage: S.minimal_cover("planar") == S.minimal_cover("planar")
             True
 

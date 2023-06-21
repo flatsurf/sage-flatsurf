@@ -543,7 +543,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 sage: from flatsurf import Polygon, similarity_surfaces
                 sage: P = Polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
-                sage: B = similarity_surfaces.billiard(P, rational=True)
+                sage: B = similarity_surfaces.billiard(P)
                 sage: S = B.minimal_cover(cover_type="translation")
                 sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
 
@@ -551,7 +551,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 sage: from flatsurf import Polygon, similarity_surfaces
                 sage: P = Polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
-                sage: B = similarity_surfaces.billiard(P, rational=True)
+                sage: B = similarity_surfaces.billiard(P)
                 sage: S_mp = B.minimal_cover(cover_type="translation")
                 sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
 
