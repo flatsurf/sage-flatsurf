@@ -243,13 +243,13 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         w = w / AA(w.norm())
         m = 1 / scaling_factor * matrix(AA, [w, n.cross_product(w), n]).transpose()
         mi = ~m
-        mis = mi.submatrix(0, 0, 2, 3)
+        mi_submatrix = mi.submatrix(0, 0, 2, 3)
         face_map_data.append(
             (
                 v0,  # translation to bring origin in plane to v0
                 m.submatrix(0, 0, 3, 2),
-                -mis * v0,
-                mis,
+                -mi_submatrix * v0,
+                mi_submatrix,
             )
         )
 

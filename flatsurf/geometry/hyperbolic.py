@@ -4344,7 +4344,7 @@ class HyperbolicConvexSet(SageObject):
         This method is only relevant for sets created with ``check=False``.
         Such sets might have been created in a non-canonical way, e.g., when
         creating a :class:`HyperbolicOrientedSegment` whose start and end point are ideal,
-        then this is actually a geodesic and it shuold be described as such.
+        then this is actually a geodesic and it should be described as such.
 
         EXAMPLES::
 
