@@ -148,4 +148,4 @@
 
 **Performance:**
 
-* Improved performance of computations related to angles (e.g., ``polygons.triangle(26, 48, 75)`` takes 50ms instead of 6s now,  asking that polygon for its angles is immediate now, ``%timeit similarity_surfaces.billiard(polygons.triangle(2, 13, 26)).minimal_cover("translation")`` takes 200ms instead of 15s now.)
+* Improved performance of computations related to angles (asking a triangle for its angles is immediate now, ``%timeit similarity_surfaces.billiard(polygons.triangle(2, 13, 26)).minimal_cover("translation")`` takes 200ms instead of 15s now.)

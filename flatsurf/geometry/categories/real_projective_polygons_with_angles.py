@@ -272,11 +272,18 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         slopes = RealProjectivePolygonsWithAngles.__slopes(self._angles)
         return slopes[0][0].parent()
 
+    @cached_function
     @staticmethod
     def _base_ring(angles):
         r"""
         Return a minimal number field containing all the :meth:`_slopes` of a
         polygon with ``angles``.
+
+        .. NOTE::
+
+            Internally, this uses
+            :func:`~flatsurf.geometry.subfield.subfield_from_element` which is
+            very slow. We therefore cache the result currently.
 
         EXAMPLES::
 

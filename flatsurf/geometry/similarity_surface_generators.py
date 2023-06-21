@@ -712,16 +712,16 @@ class SimilaritySurfaceGenerators:
         return s
 
     @staticmethod
-    def billiard(P, rational=False):
+    def billiard(P, rational=None):
         r"""
         Return the ConeSurface associated to the billiard in the polygon ``P``.
 
         INPUT:
 
-        - ``P`` - a polygon
+        - ``P`` -- a polygon
 
-        - ``rational`` (boolean, default ``False``) - whether to assume that the polygon
-          has all its angle rational multiple of pi.
+        - ``rational`` -- a boolean or ``None`` (default: ``None``) -- whether
+          to assume that all the angles of ``P`` are a rational multiple of π.
 
         EXAMPLES::
 
@@ -783,6 +783,15 @@ class SimilaritySurfaceGenerators:
         if not isinstance(P, EuclideanPolygon):
             raise TypeError("invalid input")
 
+        if rational is not None:
+            import warnings
+            warnings.warn("the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore")
+
+        from flatsurf.geometry.categories import ConeSurfaces
+        category = ConeSurfaces()
+        if P.is_rational():
+            category = category.Rational()
+
         V = P.base_ring() ** 2
 
         if not P.is_convex():
@@ -830,8 +839,10 @@ class SimilaritySurfaceGenerators:
             base_ring = P.base_ring()
             P = [P]
 
+        surface = MutableOrientedSimilaritySurface(base_ring, category=category)
+
         m = len(P)
-        surface = MutableOrientedSimilaritySurface(base_ring)
+
         for p in P:
             surface.add_polygon(p)
         for p in P:
@@ -847,8 +858,6 @@ class SimilaritySurfaceGenerators:
             ne = len(surface.polygon(p).vertices())
             surface.glue((p, e), (m + p, ne - e - 1))
 
-        if rational:
-            surface._refine_category_(surface.category().Rational())
         surface.set_immutable()
 
         return surface
