@@ -194,7 +194,11 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 return Polygon(vertices=vertices, check=False)
 
-            return Polygon(vertices=[g * v for v in self.vertices()], check=False, category=self.category())
+            return Polygon(
+                vertices=[g * v for v in self.vertices()],
+                check=False,
+                category=self.category(),
+            )
 
         @cached_method
         def is_rational(self):

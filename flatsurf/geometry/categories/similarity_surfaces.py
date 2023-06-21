@@ -389,9 +389,7 @@ class SimilaritySurfaces(SurfaceCategory):
             if self.is_dilation_surface(positive=False):
                 return True
 
-            return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(
-                self
-            )
+            return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
 
         def _mul_(self, matrix, switch_sides=True):
             r"""

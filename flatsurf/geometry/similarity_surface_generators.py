@@ -788,9 +788,13 @@ class SimilaritySurfaceGenerators:
 
         if rational is not None:
             import warnings
-            warnings.warn("the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore")
+
+            warnings.warn(
+                "the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore"
+            )
 
         from flatsurf.geometry.categories import ConeSurfaces
+
         category = ConeSurfaces()
         if P.is_rational():
             category = category.Rational()
