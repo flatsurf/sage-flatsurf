@@ -174,91 +174,15 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         return angles
 
-    @cached_function
-    @staticmethod
-    def __slopes(angles):
-        r"""
-        Return the slopes of the sides of a polygon with ``angles`` in a
-        (possibly non-minimal) number field.
-
-        .. NOTE::
-
-            This function gets called a lot from the other functions here. We
-            could refactor things and make sure that the function is only
-            invoked once. However, it seems easier to just cache its output.
-            Also, this speeds up the relative common case when multiple
-            polygons with the same angles are created. (If lots of polygons
-            with different angles get created then we pay this cache with RAM
-            of course but in our experiments it has not been an issue.)
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.categories import RealProjectivePolygonsWithAngles
-            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes((1/6, 1/6, 1/6))
-            [(c, 3), (c, 3), (c, 3)]
-            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes((1/4, 1/4, 1/4, 1/4))
-            [(0, 1), (0, 1), (0, 1), (0, 1)]
-            sage: RealProjectivePolygonsWithAngles._RealProjectivePolygonsWithAngles__slopes((1/10, 2/10, 3/10, 4/10))
-            [(c^3, 5), (3*c^3 - 10*c, 5), (-3*c^3 + 10*c, 5), (-c^3, 5)]
-
-        """
-        from sage.all import QQ, RIF, lcm, AA, NumberField
-        from flatsurf.geometry.subfield import chebyshev_T, cos_minpoly
-
-        # We determine the number field that contains the slopes of the sides,
-        # i.e., the cosines and sines of the inner angles of the polygon.
-        # Let us first write all angles as multiples of 2π/N with the smallest
-        # possible common N.
-        N = lcm(a.denominator() for a in angles)
-        # The field containing the cosine and sine of 2π/N might be too small
-        # to write down all the slopes when N is not divisible by 4.
-        if N == 1:
-            raise ValueError(
-                "there cannot be a polygon with all angles multiples of 2π"
-            )
-        if N == 2:
-            pass
-        elif N % 4:
-            while N % 4:
-                N *= 2
-
-        angles = [QQ(a * N) for a in angles]
-
-        if N == 2:
-            base_ring = QQ
-            c = QQ.zero()
-        else:
-            # Construct the minimal polynomial f(x) of c = 2 cos(2π / N)
-            f = cos_minpoly(N // 2)
-            emb = AA.polynomial_root(f, 2 * (2 * RIF.pi() / N).cos())
-            base_ring = NumberField(f, "c", embedding=emb)
-            c = base_ring.gen()
-
-        # Construct the cosine and sine of each angle as an element of our number field.
-        def cosine(a):
-            return chebyshev_T(abs(a), c) / 2
-
-        def sine(a):
-            # Use sin(x) = cos(π/2 - x)
-            return cosine(N // 4 - a)
-
-        slopes = [(cosine(a), sine(a)) for a in angles]
-
-        assert all((x**2 + y**2).is_one() for x, y in slopes)
-
-        from flatsurf.geometry.euclidean import projectivization
-
-        return [projectivization(x, y) for x, y in slopes]
-
     @cached_method
     def _slopes(self):
-        slopes = RealProjectivePolygonsWithAngles.__slopes(self._angles)
+        slopes = _slopes(self._angles)
 
         # We bring the slopes first into the minimal number field in which they
         # are defined since otherwise conversion from the cosines ring to the
         # base_ring might fail. E.g., when the base ring is the exact-reals
         # over the minimal base ring.
-        minimal_base_ring = RealProjectivePolygonsWithAngles._base_ring(self._angles)
+        minimal_base_ring = _base_ring(self._angles)
         slopes = [
             (minimal_base_ring(slope[0]), minimal_base_ring(slope[1]))
             for slope in slopes
@@ -269,45 +193,8 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
     @cached_method
     def _cosines_ring(self):
-        slopes = RealProjectivePolygonsWithAngles.__slopes(self._angles)
+        slopes = _slopes(self._angles)
         return slopes[0][0].parent()
-
-    @cached_function
-    @staticmethod
-    def _base_ring(angles):
-        r"""
-        Return a minimal number field containing all the :meth:`_slopes` of a
-        polygon with ``angles``.
-
-        .. NOTE::
-
-            Internally, this uses
-            :func:`~flatsurf.geometry.subfield.subfield_from_element` which is
-            very slow. We therefore cache the result currently.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.categories import RealProjectivePolygonsWithAngles
-            sage: RealProjectivePolygonsWithAngles._base_ring((1/6, 1/6, 1/6))
-            Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
-            sage: RealProjectivePolygonsWithAngles._base_ring((1/4, 1/4, 1/4, 1/4))
-            Rational Field
-            sage: RealProjectivePolygonsWithAngles._base_ring((1/10, 2/10, 3/10, 4/10))
-            Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
-
-        """
-        slopes = RealProjectivePolygonsWithAngles.__slopes(angles)
-        base_ring = slopes[0][0].parent()
-
-        # It might be the case that the slopes generate a smaller field. For
-        # now we use an ugly workaround via subfield_from_elements.
-        old_slopes = []
-        for v in slopes:
-            old_slopes.extend(v)
-        from flatsurf.geometry.subfield import subfield_from_elements
-
-        L, _, _ = subfield_from_elements(base_ring, old_slopes)
-        return L
 
     def _repr_object_names(self):
         r"""
@@ -1190,3 +1077,128 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
             from flatsurf.geometry.polygon import Polygon
 
             return Polygon(base_ring=base_ring, vertices=vertices, category=category)
+
+
+@cached_function
+def _slopes(angles):
+    r"""
+    Return the slopes of the sides of a polygon with ``angles`` in a
+    (possibly non-minimal) number field.
+
+    .. NOTE::
+
+        This function gets called a lot from the other functions here. We
+        could refactor things and make sure that the function is only
+        invoked once. However, it seems easier to just cache its output.
+        Also, this speeds up the relative common case when multiple
+        polygons with the same angles are created. (If lots of polygons
+        with different angles get created then we pay this cache with RAM
+        of course but in our experiments it has not been an issue.)
+
+    .. NOTE::
+
+        SageMath 9.1 does not support cached functions that are staticmethods.
+        Therefore we define this function at the module level.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import _slopes
+        sage: _slopes((1/6, 1/6, 1/6))
+        [(c, 3), (c, 3), (c, 3)]
+        sage: _slopes((1/4, 1/4, 1/4, 1/4))
+        [(0, 1), (0, 1), (0, 1), (0, 1)]
+        sage: _slopes((1/10, 2/10, 3/10, 4/10))
+        [(c^3, 5), (3*c^3 - 10*c, 5), (-3*c^3 + 10*c, 5), (-c^3, 5)]
+
+    """
+    from sage.all import QQ, RIF, lcm, AA, NumberField
+    from flatsurf.geometry.subfield import chebyshev_T, cos_minpoly
+
+    # We determine the number field that contains the slopes of the sides,
+    # i.e., the cosines and sines of the inner angles of the polygon.
+    # Let us first write all angles as multiples of 2π/N with the smallest
+    # possible common N.
+    N = lcm(a.denominator() for a in angles)
+    # The field containing the cosine and sine of 2π/N might be too small
+    # to write down all the slopes when N is not divisible by 4.
+    if N == 1:
+        raise ValueError(
+            "there cannot be a polygon with all angles multiples of 2π"
+        )
+    if N == 2:
+        pass
+    elif N % 4:
+        while N % 4:
+            N *= 2
+
+    angles = [QQ(a * N) for a in angles]
+
+    if N == 2:
+        base_ring = QQ
+        c = QQ.zero()
+    else:
+        # Construct the minimal polynomial f(x) of c = 2 cos(2π / N)
+        f = cos_minpoly(N // 2)
+        emb = AA.polynomial_root(f, 2 * (2 * RIF.pi() / N).cos())
+        base_ring = NumberField(f, "c", embedding=emb)
+        c = base_ring.gen()
+
+    # Construct the cosine and sine of each angle as an element of our number field.
+    def cosine(a):
+        return chebyshev_T(abs(a), c) / 2
+
+    def sine(a):
+        # Use sin(x) = cos(π/2 - x)
+        return cosine(N // 4 - a)
+
+    slopes = [(cosine(a), sine(a)) for a in angles]
+
+    assert all((x**2 + y**2).is_one() for x, y in slopes)
+
+    from flatsurf.geometry.euclidean import projectivization
+
+    return [projectivization(x, y) for x, y in slopes]
+
+
+@cached_function
+@staticmethod
+def _base_ring(angles):
+    r"""
+    Return a minimal number field containing all the :meth:`_slopes` of a
+    polygon with ``angles``.
+
+    .. NOTE::
+
+        Internally, this uses
+        :func:`~flatsurf.geometry.subfield.subfield_from_element` which is
+        very slow. We therefore cache the result currently.
+
+    .. NOTE::
+
+        SageMath 9.1 does not support cached functions that are staticmethods.
+        Therefore we define this function at the module level.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import _base_ring
+        sage: _base_ring((1/6, 1/6, 1/6))
+        Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+        sage: _base_ring((1/4, 1/4, 1/4, 1/4))
+        Rational Field
+        sage: _base_ring((1/10, 2/10, 3/10, 4/10))
+        Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
+
+    """
+    slopes = _slopes(angles)
+    base_ring = slopes[0][0].parent()
+
+    # It might be the case that the slopes generate a smaller field. For
+    # now we use an ugly workaround via subfield_from_elements.
+    old_slopes = []
+    for v in slopes:
+        old_slopes.extend(v)
+    from flatsurf.geometry.subfield import subfield_from_elements
+
+    L, _, _ = subfield_from_elements(base_ring, old_slopes)
+    return L
+
