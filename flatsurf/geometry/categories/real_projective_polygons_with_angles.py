@@ -1122,9 +1122,7 @@ def _slopes(angles):
     # The field containing the cosine and sine of 2π/N might be too small
     # to write down all the slopes when N is not divisible by 4.
     if N == 1:
-        raise ValueError(
-            "there cannot be a polygon with all angles multiples of 2π"
-        )
+        raise ValueError("there cannot be a polygon with all angles multiples of 2π")
     if N == 2:
         pass
     elif N % 4:
@@ -1201,4 +1199,3 @@ def _base_ring(angles):
 
     L, _, _ = subfield_from_elements(base_ring, old_slopes)
     return L
-

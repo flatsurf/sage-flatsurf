@@ -1578,7 +1578,10 @@ def EuclideanPolygonsWithAngles(*angles):
 
     angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
 
-    from flatsurf.geometry.categories.real_projective_polygons_with_angles import _base_ring
+    from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+        _base_ring,
+    )
+
     base_ring = _base_ring(angles)
 
     return RealProjectivePolygons(base_ring).WithAngles(angles).Simple()
