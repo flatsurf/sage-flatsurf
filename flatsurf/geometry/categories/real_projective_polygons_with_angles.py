@@ -1070,7 +1070,7 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
                     )
                 vertices.pop(-1)
 
-            category = RealProjectivePolygons(base_ring)
+            category = self.change_ring(base_ring)
             if self.is_convex():
                 category = category.Convex()
 
