@@ -4,7 +4,7 @@ Test basic geometry methods used in polygon construction.
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2020 Julian Rüth
+#        Copyright (C) 2020-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ def test_is_anti_parallel():
 
 @pytest.mark.repeat(4096)
 def test_segment_intersect():
-    from flatsurf.geometry.polygon import segment_intersection
+    from flatsurf.geometry.euclidean import segment_intersection
 
     while True:
         us = (randint(-4, 4), randint(-4, 4))
