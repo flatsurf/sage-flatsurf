@@ -45,24 +45,28 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
         sage: from flatsurf.geometry.euclidean import is_cosine_sine_of_rational
 
         sage: c = s = AA(sqrt(2))/2
-        sage: is_cosine_sine_of_rational(c,s)
-        True
-        sage: c = AA(sqrt(3))/2; s = AA(1/2)
-        sage: is_cosine_sine_of_rational(c,s)
+        sage: is_cosine_sine_of_rational(c, s)
         True
 
-        sage: c = AA(sqrt(5)/2); s = (1 - c**2).sqrt()
+        sage: c = AA(sqrt(3))/2
+        sage: s = AA(1/2)
+        sage: is_cosine_sine_of_rational(c, s)
+        True
+
+        sage: c = AA(sqrt(5)/2)
+        sage: s = (1 - c**2).sqrt()
         sage: c**2 + s**2
         1.000000000000000?
-        sage: is_cosine_sine_of_rational(c,s)
+        sage: is_cosine_sine_of_rational(c, s)
         False
 
-        sage: c = (AA(sqrt(5)) + 1)/4; s = (1 - c**2).sqrt()
-        sage: is_cosine_sine_of_rational(c,s)
+        sage: c = (AA(sqrt(5)) + 1)/4
+        sage: s = (1 - c**2).sqrt()
+        sage: is_cosine_sine_of_rational(c, s)
         True
 
         sage: K.<sqrt2> = NumberField(x**2 - 2, embedding=1.414)
-        sage: is_cosine_sine_of_rational(K.zero(),-K.one())
+        sage: is_cosine_sine_of_rational(K.zero(), -K.one())
         True
 
     TESTS::
@@ -86,10 +90,22 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
         if cos**2 + sin**2 != 1:
             return False
 
-    cos = AA(cos).as_number_field_element(embedded=True)
+    try:
+        cos = AA(cos)
+    except ValueError:
+        # This is a replacement for the "in AA" checked disabled above.
+        return False
+
+    cos = cos.as_number_field_element(embedded=True)
     # We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613
     cos = cos[0](cos[1])
-    sin = AA(sin).as_number_field_element(embedded=True)
+
+    try:
+        sin = AA(sin)
+    except ValueError:
+        # This is a replacement for the "in AA" checked disabled above.
+        return False
+    sin = sin.as_number_field_element(embedded=True)
     # We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613
     sin = sin[0](sin[1])
 

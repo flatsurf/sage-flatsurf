@@ -748,7 +748,7 @@ class SimilaritySurfaceGenerators:
         A non-convex examples (L-shape polygon)::
 
             sage: P = Polygon(vertices=[(0,0), (2,0), (2,1), (1,1), (1,2), (0,2)])
-            sage: Q = similarity_surfaces.billiard(P, rational=True)
+            sage: Q = similarity_surfaces.billiard(P)
             sage: TestSuite(Q).run()
             sage: M = Q.minimal_cover(cover_type="translation")
             sage: TestSuite(M).run()
@@ -2253,9 +2253,9 @@ class TranslationSurfaceGenerators:
 
             sage: from flatsurf import translation_surfaces
             sage: tf = translation_surfaces.t_fractal()  # long time (.4s)
-            sage: tf
+            sage: tf  # long time (see above)
             The T-fractal surface with parameters w=1, r=2, h1=1, h2=1
-            sage: TestSuite(tf).run()
+            sage: TestSuite(tf).run()  # long time (see above)
         """
         return tfractal_surface(w, r, h1, h2)
 

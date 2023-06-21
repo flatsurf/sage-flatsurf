@@ -316,7 +316,7 @@ class MinimalTranslationCover(OrientedSimilaritySurface):
         ::
 
             sage: TT = polygons.triangle(2, 15, 26)
-            sage: SS = similarity_surfaces.billiard(TT, rational=True)
+            sage: SS = similarity_surfaces.billiard(TT)
             sage: SS = SS.minimal_cover("translation")
 
             sage: S == SS
@@ -540,14 +540,14 @@ class MinimalHalfTranslationCover(OrientedSimilaritySurface):
 
             sage: from flatsurf import polygons, similarity_surfaces
             sage: T = polygons.triangle(2, 13, 26)
-            sage: S = similarity_surfaces.billiard(T, rational=True)
+            sage: S = similarity_surfaces.billiard(T)
             sage: S.minimal_cover("half-translation") == S.minimal_cover("half-translation")
             True
 
         ::
 
             sage: TT = polygons.triangle(2, 15, 26)
-            sage: SS = similarity_surfaces.billiard(TT, rational=True)
+            sage: SS = similarity_surfaces.billiard(TT)
             sage: SS = SS.minimal_cover("half-translation")
 
             sage: S == SS
