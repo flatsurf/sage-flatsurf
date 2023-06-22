@@ -64,6 +64,7 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
+          mamba upgrade --all --yes  # mamba 1.4.1 segfaults sometimes, make sure we use a later version
           mamba install -n test sagelib=${{ matrix.sagelib }}
           echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
           while read; do
