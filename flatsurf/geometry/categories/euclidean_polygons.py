@@ -1007,9 +1007,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 if not strict:
                     return True
 
-                return EuclideanPolygons.ParentMethods.is_convex(
-                    self, strict=strict
-                )
+                return EuclideanPolygons.ParentMethods.is_convex(self, strict=strict)
 
     class Simple(CategoryWithAxiom_over_base_ring):
         r"""
