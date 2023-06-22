@@ -1,11 +1,21 @@
 # ****************************************************************************
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#  This file is part of sage-flatsurf.
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#       Copyright (C) 2013-2019 Vincent Delecroix
+#                     2013-2019 W. Patrick Hooper
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
 from sage.misc.cachefunc import cached_method
@@ -81,7 +91,7 @@ class Path(MultiplicativeGroupElement):
         pass
 
     def _poly_cross_dict(self):
-        d = {p: [] for p in self.parent()._s.label_iterator()}
+        d = {p: [] for p in self.parent()._s.labels()}
         d[self._polys[0]].append((self._edges_rev[-1], self._edges[0]))
         for i in range(1, len(self._polys) - 1):
             p = self._polys[i]
@@ -91,13 +101,13 @@ class Path(MultiplicativeGroupElement):
         return d
 
     def __hash__(self):
-        return hash(self._polys) ^ hash(self._edges)
+        return hash((self._polys, self._edges))
 
     def __eq__(self, other):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: F = t.fundamental_group()
             sage: a,b = F.gens()
@@ -118,7 +128,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: F = t.fundamental_group()
             sage: a,b = F.gens()
@@ -156,7 +166,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: a,b = t.fundamental_group().gens()
             sage: a*b
@@ -189,7 +199,7 @@ class Path(MultiplicativeGroupElement):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: o = translation_surfaces.octagon_and_squares()
             sage: F = o.fundamental_group()
             sage: a1,a2,a3,a4,a5,a6 = F.gens()
@@ -209,7 +219,7 @@ class Path(MultiplicativeGroupElement):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
             sage: a,b = t.fundamental_group().gens()
             sage: a.intersection(b)
@@ -269,7 +279,7 @@ class Path(MultiplicativeGroupElement):
         si = self._poly_cross_dict()
         oi = other._poly_cross_dict()
         n = 0
-        for p in self.parent()._s.label_iterator():
+        for p in self.parent()._s.labels():
             for e0, e1 in si[p]:
                 for f0, f1 in oi[p]:
                     n += intersection(e0, e1, f0, f1)
@@ -282,14 +292,14 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: t = translation_surfaces.square_torus()
         sage: TestSuite(t.fundamental_group()).run()
     """
     Element = Path
 
     def __init__(self, surface, base):
-        if not surface.is_finite():
+        if not surface.is_finite_type():
             raise ValueError("the method only work for finite surfaces")
         self._s = surface
         self._b = base
@@ -300,7 +310,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: S = SymmetricGroup(4)
             sage: r = S('(1,2)(3,4)')
             sage: u = S('(2,3)')
@@ -323,7 +333,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         e = []
         er = []
         for i in args:
-            i = int(i) % s.polygon(p[-1]).num_edges()
+            i = int(i) % len(s.polygon(p[-1]).vertices())
             q, j = s.opposite_edge(p[-1], i)
             p.append(q)
             e.append(i)
@@ -344,7 +354,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: S = SymmetricGroup(8)
             sage: r = S('(1,2,3,4,5,6,7,8)')
             sage: u = S('(1,8,5,4)(2,3)(6,7)')
@@ -360,7 +370,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
         tree[p] = (None, None, None)
 
         wait = []  # list of edges of the dual graph, ie p1 -- (e1,e2) --> p2
-        for e in range(s.polygon(p).num_edges()):
+        for e in range(len(s.polygon(p).vertices())):
             pp, ee = s.opposite_edge(p, e)
             wait.append((pp, ee, p, e))
         while wait:
@@ -398,7 +408,7 @@ class FundamentalGroup(UniqueRepresentation, Group):
 
             else:  # new branch
                 tree[p1] = (p2, e1, e2)
-                for e in range(s.polygon(p1).num_edges()):
+                for e in range(len(s.polygon(p1).vertices())):
                     if e != e1:
                         pp, ee = s.opposite_edge(p1, e)
                         wait.append((pp, ee, p1, e))

@@ -25,7 +25,7 @@ hyperbolic sets internally uses these primitives::
     needed to plot subsets of the hyperbolic plane in the upper half plane model.
 
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2022-2023 Julian Rüth
@@ -42,7 +42,7 @@ hyperbolic sets internally uses these primitives::
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 from dataclasses import dataclass
 
@@ -1029,7 +1029,7 @@ class HyperbolicPathPlotCommand:
             # epsilon.
             if (start_x - end_x).abs() < (start_y - end_y).abs() * 1e-6:
                 # This segment is (almost) vertical. We plot it as if it were
-                # vertical to avoid numeric issus.
+                # vertical to avoid numeric issues.
                 return [CartesianPathPlotCommand("LINETO", (end_x, end_y))]
 
             real_hyperbolic_plane = HyperbolicPlane(RR)
