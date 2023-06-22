@@ -1,7 +1,7 @@
 r"""
 Test functionality of the HyperbolicPlane.
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2022 Julian Rüth
@@ -18,7 +18,7 @@ Test functionality of the HyperbolicPlane.
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 

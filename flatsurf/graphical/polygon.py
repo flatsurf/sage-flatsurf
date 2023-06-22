@@ -1,13 +1,23 @@
 # ****************************************************************************
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#  This file is part of sage-flatsurf.
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#       Copyright (C) 2016-2019 Vincent Delecroix
+#                     2016-2018 W. Patrick Hooper
+#                     2022-2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License along
+#  with sage-flatsurf. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
-
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace
 from sage.plot.polygon import polygon2d
@@ -61,7 +71,7 @@ class GraphicalPolygon:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
@@ -214,7 +224,8 @@ class GraphicalPolygon:
         Options are processed as in sage.plot.line.line2d.
         """
         return line2d(
-            [self._v[e], self._v[(e + 1) % self.base_polygon().num_edges()]], **options
+            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
+            **options
         )
 
     def plot_edge_label(self, i, label, **options):
@@ -234,7 +245,7 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        e = self._v[(i + 1) % self.base_polygon().num_edges()] - self._v[i]
+        e = self._v[(i + 1) % len(self.base_polygon().vertices())] - self._v[i]
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:
