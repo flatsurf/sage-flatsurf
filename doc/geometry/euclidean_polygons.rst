@@ -3,6 +3,6 @@
 
 .. automodule:: flatsurf.geometry.categories.euclidean_polygons
 
-.. autoclass:: flatsurf.geometry.categories.euclidean_polygons.RealProjectivePolygons
+.. autoclass:: flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons
    :members:
    :undoc-members:
