@@ -27,7 +27,7 @@ from sage.misc.cachefunc import cached_method
 
 class GL2RImageSurface(OrientedSimilaritySurface):
     r"""
-    The SL(2,R) image of an oriented similarity surface.
+    The GL(2,R) image of an oriented similarity surface.
 
     EXAMPLE::
 
