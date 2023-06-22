@@ -168,8 +168,8 @@ So this approach is quite brittle and might need a mix with the above to work::
 
 from flatsurf.geometry.categories.topological_surfaces import TopologicalSurfaces
 from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
-from flatsurf.geometry.categories.real_projective_polygonal_surfaces import (
-    RealProjectivePolygonalSurfaces,
+from flatsurf.geometry.categories.euclidean_polygonal_surfaces import (
+    EuclideanPolygonalSurfaces,
 )
 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
 from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
@@ -180,9 +180,9 @@ from flatsurf.geometry.categories.half_translation_surfaces import (
 from flatsurf.geometry.categories.translation_surfaces import TranslationSurfaces
 
 from flatsurf.geometry.categories.polygons import Polygons
-from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
+from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
 from flatsurf.geometry.categories.hyperbolic_polygons import HyperbolicPolygons
-from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
-from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
-    RealProjectivePolygonsWithAngles,
+from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
+from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+    EuclideanPolygonsWithAngles,
 )

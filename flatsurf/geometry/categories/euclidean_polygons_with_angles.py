@@ -1,5 +1,5 @@
 r"""
-The category of polygons in the real projective plane with fixed rational
+The category of polygons in the real plane with fixed rational
 angles.
 
 This module provides a common structure for all polygons with certain fixed
@@ -15,20 +15,20 @@ EXAMPLES:
 
 The category of rectangles::
 
-    sage: from flatsurf.geometry.categories import RealProjectivePolygons
-    sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1])
+    sage: from flatsurf.geometry.categories import EuclideanPolygons
+    sage: C = EuclideanPolygons(QQ).WithAngles([1, 1, 1, 1])
 
 It is often tedious to create this category manually, since you need to
 determine a base ring that can describe the coordinates of polygons with such
 angles::
 
-    sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1])
+    sage: C = EuclideanPolygons(QQ).WithAngles([1, 1, 1])
     sage: C.slopes()
     Traceback (most recent call last):
     ...
     TypeError: Unable to coerce c to a rational
 
-    sage: C = RealProjectivePolygons(AA).WithAngles([1, 1, 1])
+    sage: C = EuclideanPolygons(AA).WithAngles([1, 1, 1])
     sage: C.slopes()
     [(1, 0), (-0.5773502691896258?, 1), (-0.5773502691896258?, -1)]
 
@@ -46,7 +46,7 @@ The category of polygons is automatically determined when using
     sage: from flatsurf import Polygon
     sage: p = Polygon(angles=(1, 1, 1))
     sage: p.category()
-    Category of convex simple real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+    Category of convex simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
 However, it can be very costly to determine that a polygon is rational and what
 its actual angles are (the "equilateral" in the previous example.) Therefore,
@@ -54,15 +54,15 @@ the category might get refined once these aspects have been determined::
 
     sage: p = Polygon(edges=[(1, 0), (0, 1), (-1, 0), (0, -1)])
     sage: p.category()
-    Category of convex simple real projective polygons over Rational Field
+    Category of convex simple euclidean polygons over Rational Field
     sage: p.is_rational()
     True
     sage: p.category()
-    Category of rational convex simple real projective polygons over Rational Field
+    Category of rational convex simple euclidean polygons over Rational Field
     sage: p.angles()
     (1/4, 1/4, 1/4, 1/4)
     sage: p.category()
-    Category of convex simple real projective rectangles over Rational Field
+    Category of convex simple euclidean rectangles over Rational Field
 
 Note that SageMath applies the same strategy when determining whether the
 integers modulo N are a field::
@@ -98,17 +98,17 @@ integers modulo N are a field::
 from sage.misc.cachefunc import cached_method, cached_function
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
-from flatsurf.geometry.categories.real_projective_polygons import RealProjectivePolygons
+from flatsurf.geometry.categories.euclidean_polygons import EuclideanPolygons
 
 
-class RealProjectivePolygonsWithAngles(Category_over_base_ring):
+class EuclideanPolygonsWithAngles(Category_over_base_ring):
     r"""
-    The category of real projective polygons with fixed rational angles.
+    The category of euclidean polygons with fixed rational angles.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories import RealProjectivePolygons
-        sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1])
+        sage: from flatsurf.geometry.categories import EuclideanPolygons
+        sage: C = EuclideanPolygons(QQ).WithAngles([1, 1, 1, 1])
 
     TESTS::
 
@@ -124,17 +124,17 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
     def super_categories(self):
         r"""
         Return the other categories such polygons are automatically members of,
-        namely, the category of rational real-projective polygons polygons.
+        namely, the category of rational euclidean polygons polygons.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygons
-            sage: C = RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1])
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: C = EuclideanPolygons(QQ).WithAngles([1, 1, 1, 1])
             sage: C.super_categories()
-            [Category of rational real projective polygons over Rational Field]
+            [Category of rational euclidean polygons over Rational Field]
 
         """
-        return [RealProjectivePolygons(self.base_ring()).Rational()]
+        return [EuclideanPolygons(self.base_ring()).Rational()]
 
     @staticmethod
     def _normalize_angles(angles):
@@ -145,12 +145,12 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygonsWithAngles
-            sage: RealProjectivePolygonsWithAngles._normalize_angles([1, 1, 1, 1])
+            sage: from flatsurf.geometry.categories import EuclideanPolygonsWithAngles
+            sage: EuclideanPolygonsWithAngles._normalize_angles([1, 1, 1, 1])
             (1/4, 1/4, 1/4, 1/4)
-            sage: RealProjectivePolygonsWithAngles._normalize_angles([1, 2, 3, 4])
+            sage: EuclideanPolygonsWithAngles._normalize_angles([1, 2, 3, 4])
             (1/10, 1/5, 3/10, 2/5)
-            sage: RealProjectivePolygonsWithAngles._normalize_angles([1, 2, 3])
+            sage: EuclideanPolygonsWithAngles._normalize_angles([1, 2, 3])
             (1/12, 1/6, 1/4)
 
         """
@@ -204,11 +204,11 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
             sage: from flatsurf import EuclideanPolygonsWithAngles
             sage: EuclideanPolygonsWithAngles([1/6, 1/6, 1/6])
-            Category of simple real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+            Category of simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
             sage: EuclideanPolygonsWithAngles([1/4, 1/4, 1/4, 1/4])
-            Category of simple real projective rectangles over Rational Field
+            Category of simple euclidean rectangles over Rational Field
             sage: EuclideanPolygonsWithAngles([1/10, 2/10, 3/10, 4/10])
-            Category of simple real projective quadrilaterals with angles (1/10, 1/5, 3/10, 2/5) over Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
+            Category of simple euclidean quadrilaterals with angles (1/10, 1/5, 3/10, 2/5) over Number Field in c with defining polynomial x^4 - 5*x^2 + 5 with c = 1.902113032590308?
 
         """
         names = super()._repr_object_names()
@@ -418,18 +418,18 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         def __angles(self):
             r"""
             Helper method for :meth:`angles` to lookup the stored angles if
-            this is a subcategory of :class:`RealProjectivePolygonsWithAngles`.
+            this is a subcategory of :class:`EuclideanPolygonsWithAngles`.
             """
-            if isinstance(self, RealProjectivePolygonsWithAngles):
+            if isinstance(self, EuclideanPolygonsWithAngles):
                 return self._angles
 
             for category in self.all_super_categories():
-                if isinstance(category, RealProjectivePolygonsWithAngles):
+                if isinstance(category, EuclideanPolygonsWithAngles):
                     return category._angles
 
             assert (
                 False
-            ), "RealProjectivePolygonsWithAngles should be a supercategory of this category"
+            ), "EuclideanPolygonsWithAngles should be a supercategory of this category"
 
         def slopes(self, e0=(1, 0)):
             r"""
@@ -468,18 +468,18 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
         def __slopes(self):
             r"""
             Helper method for :meth:`slopes` to lookup the stored slopes if
-            this is a subcategory of :class:`RealProjectivePolygonsWithAngles`.
+            this is a subcategory of :class:`EuclideanPolygonsWithAngles`.
             """
-            if isinstance(self, RealProjectivePolygonsWithAngles):
+            if isinstance(self, EuclideanPolygonsWithAngles):
                 return self._slopes()
 
             for category in self.all_super_categories():
-                if isinstance(category, RealProjectivePolygonsWithAngles):
+                if isinstance(category, EuclideanPolygonsWithAngles):
                     return category._slopes()
 
             assert (
                 False
-            ), "RealProjectivePolygonsWithAngles should be a supercategory of this category"
+            ), "EuclideanPolygonsWithAngles should be a supercategory of this category"
 
         # TODO: rather than lengths, it would be more convenient to have access
         # to the tangent space (that is the space of possible holonomies). However,
@@ -589,9 +589,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
                 p = Polygon(edges=edges, check=False)
 
-                from flatsurf.geometry.categories import RealProjectivePolygons
+                from flatsurf.geometry.categories import EuclideanPolygons
 
-                if not RealProjectivePolygons.ParentMethods.is_simple(p):
+                if not EuclideanPolygons.ParentMethods.is_simple(p):
                     continue
 
                 p = Polygon(edges=edges, angles=self.angles(), check=False)
@@ -910,9 +910,9 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygons
-            sage: RealProjectivePolygons(QQ).WithAngles([1, 1, 1, 1]).Simple()
-            Category of simple real projective rectangles over Rational Field
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: EuclideanPolygons(QQ).WithAngles([1, 1, 1, 1]).Simple()
+            Category of simple euclidean rectangles over Rational Field
 
         """
 
@@ -929,12 +929,12 @@ class RealProjectivePolygonsWithAngles(Category_over_base_ring):
 
         #     EXAMPLES::
 
-        #         sage: from flatsurf.geometry.categories import RealProjectivePolygons
-        #         sage: C = RealProjectivePolygons(QQ).Simple().WithAngles([1, 1, 1, 1])
+        #         sage: from flatsurf.geometry.categories import EuclideanPolygons
+        #         sage: C = EuclideanPolygons(QQ).Simple().WithAngles([1, 1, 1, 1])
         #         sage: "Convex" in C.axioms()
         #         True
 
-        #         sage: C = RealProjectivePolygons(QQ).Simple().WithAngles([2, 2, 1, 6, 1])
+        #         sage: C = EuclideanPolygons(QQ).Simple().WithAngles([2, 2, 1, 6, 1])
         #         sage: "Convex" in C.axioms()
         #         False
 
@@ -1102,7 +1102,7 @@ def _slopes(angles):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import _slopes
+        sage: from flatsurf.geometry.categories.euclidean_polygons_with_angles import _slopes
         sage: _slopes((1/6, 1/6, 1/6))
         [(c, 3), (c, 3), (c, 3)]
         sage: _slopes((1/4, 1/4, 1/4, 1/4))
@@ -1177,7 +1177,7 @@ def _base_ring(angles):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories.real_projective_polygons_with_angles import _base_ring
+        sage: from flatsurf.geometry.categories.euclidean_polygons_with_angles import _base_ring
         sage: _base_ring((1/6, 1/6, 1/6))
         Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
         sage: _base_ring((1/4, 1/4, 1/4, 1/4))

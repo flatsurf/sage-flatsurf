@@ -1,5 +1,5 @@
 r"""
-The category of Euclidean polygons defined in the real projective plane.
+The category of Euclidean polygons defined in the real plane.
 
 See :mod:`flatsurf.geometry.categories` for a general description of the
 category framework in sage-flatsurf.
@@ -9,8 +9,8 @@ category of a polygon is automatically determined.
 
 EXAMPLES::
 
-    sage: from flatsurf.geometry.categories import RealProjectivePolygons
-    sage: C = RealProjectivePolygons(QQ)
+    sage: from flatsurf.geometry.categories import EuclideanPolygons
+    sage: C = EuclideanPolygons(QQ)
 
     sage: from flatsurf import polygons
     sage: polygons.square() in C
@@ -49,28 +49,28 @@ from flatsurf.geometry.euclidean import ccw
 cm = get_coercion_model()
 
 
-class RealProjectivePolygons(Category_over_base_ring):
+class EuclideanPolygons(Category_over_base_ring):
     r"""
-    The category of Euclidean polygons defined in the real projective plane
+    The category of Euclidean polygons defined in the real plane
     over a fixed base ring.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories import RealProjectivePolygons
-        sage: RealProjectivePolygons(QQ)
-        Category of real projective polygons over Rational Field
+        sage: from flatsurf.geometry.categories import EuclideanPolygons
+        sage: EuclideanPolygons(QQ)
+        Category of euclidean polygons over Rational Field
 
     """
 
     def super_categories(self):
         r"""
-        Return the categories Euclidean real projective polygons are also
-        contained in, namely the polygons.
+        Return the categories Euclidean polygons are also contained in, namely
+        the polygons.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygons
-            sage: RealProjectivePolygons(QQ).super_categories()
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: EuclideanPolygons(QQ).super_categories()
             [Category of polygons over Rational Field]
 
         """
@@ -78,7 +78,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
     class ParentMethods:
         r"""
-        Provides methods available to all Euclidean polygons in the real projective plane.
+        Provides methods available to all Euclidean polygons in the real plane.
 
         If you want to add functionality to such polygons, you probably want to
         put it here.
@@ -218,11 +218,11 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                 sage: p = Polygon(vertices = [(0, 0), (1, 0), (0, 1)])
                 sage: p.category()
-                Category of convex simple real projective polygons over Rational Field
+                Category of convex simple euclidean polygons over Rational Field
                 sage: p.is_rational()
                 True
                 sage: p.category()
-                Category of rational convex simple real projective polygons over Rational Field
+                Category of rational convex simple euclidean polygons over Rational Field
 
             """
             for e in range(len(self.vertices())):
@@ -839,17 +839,17 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories import RealProjectivePolygons
-                sage: RealProjectivePolygons(AA).WithAngles([1, 2, 3])
-                Category of real projective triangles with angles (1/12, 1/6, 1/4) over Algebraic Real Field
+                sage: from flatsurf.geometry.categories import EuclideanPolygons
+                sage: EuclideanPolygons(AA).WithAngles([1, 2, 3])
+                Category of euclidean triangles with angles (1/12, 1/6, 1/4) over Algebraic Real Field
 
             """
-            from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
-                RealProjectivePolygonsWithAngles,
+            from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+                EuclideanPolygonsWithAngles,
             )
 
-            angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
-            return RealProjectivePolygonsWithAngles(self.base_ring(), angles) & self
+            angles = EuclideanPolygonsWithAngles._normalize_angles(angles)
+            return EuclideanPolygonsWithAngles(self.base_ring(), angles) & self
 
     def __call__(self, *args, **kwds):
         r"""
@@ -877,7 +877,7 @@ class RealProjectivePolygons(Category_over_base_ring):
             doctest:warning
             ...
             UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons.
-            If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.
+            If you really need the category of convex polygons over a ring use EuclideanPolygons(ring).Simple().Convex() instead.
             sage: D(p)
             doctest:warning
             ...
@@ -942,19 +942,18 @@ class RealProjectivePolygons(Category_over_base_ring):
 
     class Convex(CategoryWithAxiom_over_base_ring):
         r"""
-        The subcategory of convex Euclidean polygons in the real projective
-        plane.
+        The subcategory of convex Euclidean polygons in the real plane.
 
         EXAMPLES:
 
         For historic reasons, there is the shortcut ``ConvexPolygons`` to get
-        the real projective Euclidean convex polygons::
+        the Euclidean convex polygons::
 
             sage: from flatsurf import ConvexPolygons
             sage: C = ConvexPolygons(QQ)
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygons
-            sage: C is RealProjectivePolygons(QQ).Convex().Simple()
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: C is EuclideanPolygons(QQ).Convex().Simple()
             True
 
             sage: C(vertices=[(0,0), (2,0), (1,1)])
@@ -966,21 +965,21 @@ class RealProjectivePolygons(Category_over_base_ring):
         This axiom can also be created over non-fields::
 
             sage: ConvexPolygons(ZZ)
-            Category of convex simple real projective polygons over Integer Ring
+            Category of convex simple euclidean polygons over Integer Ring
 
         TESTS::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygons
-            sage: TestSuite(RealProjectivePolygons(QQ).Convex()).run()
-            sage: TestSuite(RealProjectivePolygons(QQbar).Convex()).run()
-            sage: TestSuite(RealProjectivePolygons(ZZ).Convex()).run()
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: TestSuite(EuclideanPolygons(QQ).Convex()).run()
+            sage: TestSuite(EuclideanPolygons(QQbar).Convex()).run()
+            sage: TestSuite(EuclideanPolygons(ZZ).Convex()).run()
 
         """
 
         class ParentMethods:
             r"""
             Provides methods available to all convex Euclidean polygons in the
-            real projective plane.
+            real plane.
 
             If you want to add functionality to such polygons, you probably
             want to put it here.
@@ -1008,20 +1007,20 @@ class RealProjectivePolygons(Category_over_base_ring):
                 if not strict:
                     return True
 
-                return RealProjectivePolygons.ParentMethods.is_convex(
+                return EuclideanPolygons.ParentMethods.is_convex(
                     self, strict=strict
                 )
 
     class Simple(CategoryWithAxiom_over_base_ring):
         r"""
         The subcategory of Euclidean polygons without self-intersection in the
-        real projective plane.
+        real plane.
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygons
-            sage: RealProjectivePolygons(QQ).Simple()
-            Category of simple real projective polygons over Rational Field
+            sage: from flatsurf.geometry.categories import EuclideanPolygons
+            sage: EuclideanPolygons(QQ).Simple()
+            Category of simple euclidean polygons over Rational Field
 
         """
 
@@ -1224,9 +1223,9 @@ class RealProjectivePolygons(Category_over_base_ring):
 
             EXAMPLES::
 
-                sage: from flatsurf.geometry.categories import RealProjectivePolygons
-                sage: RealProjectivePolygons(QQ).Simple().Convex()
-                Category of convex simple real projective polygons over Rational Field
+                sage: from flatsurf.geometry.categories import EuclideanPolygons
+                sage: EuclideanPolygons(QQ).Simple().Convex()
+                Category of convex simple euclidean polygons over Rational Field
 
             """
 
@@ -1234,9 +1233,9 @@ class RealProjectivePolygons(Category_over_base_ring):
                 r"""
                 TESTS::
 
-                    sage: from flatsurf.geometry.categories import RealProjectivePolygons
+                    sage: from flatsurf.geometry.categories import EuclideanPolygons
 
-                    sage: C = RealProjectivePolygons(QQ).Convex().Simple()
+                    sage: C = EuclideanPolygons(QQ).Convex().Simple()
                     sage: p = C(vertices=[(0,0),(1,0),(2,0),(1,1)])
                     doctest:warning
                     ...
@@ -1250,7 +1249,7 @@ class RealProjectivePolygons(Category_over_base_ring):
                     ...
                     ValueError: the polygon does not close up
 
-                    sage: D = RealProjectivePolygons(QQbar).Convex().Simple()
+                    sage: D = EuclideanPolygons(QQbar).Convex().Simple()
                     sage: D(p)
                     Polygon(vertices=[(0, 0), (1, 0), (2, 0), (1, 1)])
                     sage: D(vertices=p.vertices())
@@ -1771,7 +1770,7 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     For each edge of the polygon one triangle is created that joins this
                     edge to the
-                    :meth:`~.RealProjectivePolygons.ParentMethods.centroid` of
+                    :meth:`~.EuclideanPolygons.ParentMethods.centroid` of
                     this polygon.
 
                     EXAMPLES::
@@ -1898,10 +1897,10 @@ class RealProjectivePolygons(Category_over_base_ring):
                         sage: p = Polygon(edges=[(ux, uy), (vx,vy), (-ux-vx,-uy-vy)], base_ring=K)
                         sage: Jxx, Jyy, Jxy = p.j_invariant()
 
-                        sage: from flatsurf.geometry.categories import RealProjectivePolygons
-                        sage: RealProjectivePolygons.Simple.Convex.ParentMethods._wedge_product(ux.vector(), vx.vector()) == Jxx
+                        sage: from flatsurf.geometry.categories import EuclideanPolygons
+                        sage: EuclideanPolygons.Simple.Convex.ParentMethods._wedge_product(ux.vector(), vx.vector()) == Jxx
                         True
-                        sage: RealProjectivePolygons.Simple.Convex.ParentMethods._wedge_product(uy.vector(), vy.vector()) == Jyy
+                        sage: EuclideanPolygons.Simple.Convex.ParentMethods._wedge_product(uy.vector(), vy.vector()) == Jyy
                         True
 
                     """
@@ -1946,14 +1945,14 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     EXAMPLES::
 
-                        sage: from flatsurf.geometry.categories import RealProjectivePolygons
+                        sage: from flatsurf.geometry.categories import EuclideanPolygons
 
-                        sage: RealProjectivePolygons.Simple.Convex.ParentMethods._wedge_product(vector((1, 2)), vector((1, 2)))
+                        sage: EuclideanPolygons.Simple.Convex.ParentMethods._wedge_product(vector((1, 2)), vector((1, 2)))
                         (0)
-                        sage: RealProjectivePolygons.Simple.Convex.ParentMethods._wedge_product(vector((1, 2)), vector((2, 1)))
+                        sage: EuclideanPolygons.Simple.Convex.ParentMethods._wedge_product(vector((1, 2)), vector((2, 1)))
                         (-3)
 
-                        sage: RealProjectivePolygons.Simple.Convex.ParentMethods._wedge_product(vector((1, 2, 3)), vector((2, 3, 4)))
+                        sage: EuclideanPolygons.Simple.Convex.ParentMethods._wedge_product(vector((1, 2, 3)), vector((2, 3, 4)))
                         (-1, -2, -1)
 
                     """
@@ -1984,8 +1983,8 @@ class RealProjectivePolygons(Category_over_base_ring):
 
                     EXAMPLES::
 
-                        sage: from flatsurf.geometry.categories import RealProjectivePolygons
-                        sage: RealProjectivePolygons.Simple.Convex.ParentMethods._tensor_product(vector((2, 3, 5)), vector((7, 11, 13)))
+                        sage: from flatsurf.geometry.categories import EuclideanPolygons
+                        sage: EuclideanPolygons.Simple.Convex.ParentMethods._tensor_product(vector((2, 3, 5)), vector((7, 11, 13)))
                         [14 21 35]
                         [22 33 55]
                         [26 39 65]

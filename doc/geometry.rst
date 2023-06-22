@@ -31,9 +31,9 @@ The flatsurf.geometry Package
    geometry/polygons
    geometry/polyhedra
    geometry/pyflatsurf_conversion
-   geometry/real_projective_polygonal_surfaces
-   geometry/real_projective_polygons
-   geometry/real_projective_polygons_with_angles
+   geometry/euclidean_polygonal_surfaces
+   geometry/euclidean_polygons
+   geometry/euclidean_polygons_with_angles
    geometry/relative_homology
    geometry/similarity
    geometry/similarity_surfaces

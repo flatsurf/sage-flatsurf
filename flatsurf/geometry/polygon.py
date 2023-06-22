@@ -53,9 +53,9 @@ from flatsurf.geometry.subfield import (
     number_field_elements_from_algebraics,
 )
 
-from flatsurf.geometry.categories import RealProjectivePolygons
-from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
-    RealProjectivePolygonsWithAngles,
+from flatsurf.geometry.categories import EuclideanPolygons
+from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+    EuclideanPolygonsWithAngles,
 )
 
 
@@ -110,7 +110,7 @@ class EuclideanPolygonPoint(Element):
 
         .. SEEALSO::
 
-            :meth:`~.categories.real_projective_polygons.RealProjectivePolygons.Simple.Convex.ParentMethods.get_point_position`
+            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position`
 
         """
         return self.parent().get_point_position(self._xy)
@@ -280,9 +280,9 @@ class EuclideanPolygon(Parent):
         for vv in self._v:
             vv.set_immutable()
         if category is None:
-            category = RealProjectivePolygons(base_ring)
+            category = EuclideanPolygons(base_ring)
 
-        category &= RealProjectivePolygons(base_ring)
+        category &= EuclideanPolygons(base_ring)
 
         super().__init__(base_ring, category=category)
 
@@ -319,7 +319,7 @@ class EuclideanPolygon(Parent):
             doctest:warning
             ...
             UserWarning: parent() of a polygon has been deprecated and will be removed in a future version of sage-flatsurf; use category() instead
-            Category of convex simple real projective rectangles over Rational Field
+            Category of convex simple euclidean rectangles over Rational Field
 
         Note that the parent may change during the lifetime of a polygon as
         more of its features are discovered::
@@ -327,11 +327,11 @@ class EuclideanPolygon(Parent):
             sage: from flatsurf import Polygon
             sage: p = Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
             sage: p.parent()
-            Category of convex simple real projective polygons over Rational Field
+            Category of convex simple euclidean polygons over Rational Field
             sage: p.angles()
             (1/8, 1/4, 1/8)
             sage: p.parent()
-            Category of convex simple real projective triangles with angles (1/8, 1/4, 1/8) over Rational Field
+            Category of convex simple euclidean triangles with angles (1/8, 1/4, 1/8) over Rational Field
 
         """
         import warnings
@@ -575,7 +575,7 @@ class PolygonsConstructor:
             sage: polygons.square()
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: polygons.square(base_ring=QQbar).category()
-            Category of convex simple real projective rectangles over Algebraic Field
+            Category of convex simple euclidean rectangles over Algebraic Field
 
         """
         return self.rectangle(side, side, **kwds)
@@ -593,7 +593,7 @@ class PolygonsConstructor:
             sage: polygons.rectangle(1,sqrt2)
             Polygon(vertices=[(0, 0), (1, 0), (1, sqrt2), (0, sqrt2)])
             sage: _.category()
-            Category of convex simple real projective rectangles over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
+            Category of convex simple euclidean rectangles over Number Field in sqrt2 with defining polynomial x^2 - 2 with sqrt2 = 1.414213562373095?
 
         """
         if width <= 0:
@@ -762,7 +762,7 @@ class PolygonsConstructor:
             UserWarning: ring has been deprecated as a keyword argument to Polygon() and will be removed in a future version of sage-flatsurf; use base_ring instead
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
             sage: _.category()
-            Category of convex simple real projective polygons over Algebraic Field
+            Category of convex simple euclidean polygons over Algebraic Field
 
             sage: polygons(vertices=[(0,0), (1,0), (0,1)])
             Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
@@ -835,7 +835,7 @@ def ConvexPolygons(base_ring):
         doctest:warning
         ...
         UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons.
-        If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.
+        If you really need the category of convex polygons over a ring use EuclideanPolygons(ring).Simple().Convex() instead.
         sage: P(vertices=[(0, 0), (1, 0), (0, 1)])
         doctest:warning
         ...
@@ -847,9 +847,9 @@ def ConvexPolygons(base_ring):
 
     warnings.warn(
         "ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons. "
-        "If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead."
+        "If you really need the category of convex polygons over a ring use EuclideanPolygons(ring).Simple().Convex() instead."
     )
-    return RealProjectivePolygons(base_ring).Simple().Convex()
+    return EuclideanPolygons(base_ring).Simple().Convex()
 
 
 def Polygon(
@@ -1127,10 +1127,10 @@ def Polygon(
         base_ring = _Polygon_base_ring(vertices, edges, angles, lengths)
 
     if category is None:
-        from flatsurf.geometry.categories import RealProjectivePolygons
+        from flatsurf.geometry.categories import EuclideanPolygons
 
         # Currently, all polygons are assumed to be without self-intersection, i.e., simple.
-        category = RealProjectivePolygons(base_ring).Simple()
+        category = EuclideanPolygons(base_ring).Simple()
         if angles:
             category = category.WithAngles(angles)
 
@@ -1236,8 +1236,8 @@ def _Polygon_normalize_arguments(category, n, vertices, edges, angles, lengths):
     EXAMPLES::
 
         sage: from flatsurf.geometry.polygon import _Polygon_normalize_arguments
-        sage: from flatsurf.geometry.categories import RealProjectivePolygons
-        sage: category = RealProjectivePolygons(AA)
+        sage: from flatsurf.geometry.categories import EuclideanPolygons
+        sage: category = EuclideanPolygons(AA)
         sage: _Polygon_normalize_arguments(category=category, n=3, vertices=[(0, 0), (1, 0), (0, 1)], edges=None, angles=None, lengths=None)
         (False, [(0, 0), (1, 0), (0, 1)], None, None, None)
         sage: _Polygon_normalize_arguments(category=category, n=3, vertices=None, edges=[(1, 0), (-1, 1), (0, -1)], angles=None, lengths=None)
@@ -1386,9 +1386,9 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
         if is_anti_parallel(p.edge(i), p.edge(i + 1)):
             raise ValueError("polygon has anti-parallel edges")
 
-    from flatsurf.geometry.categories import RealProjectivePolygons
+    from flatsurf.geometry.categories import EuclideanPolygons
 
-    if not RealProjectivePolygons.ParentMethods.is_simple(p):
+    if not EuclideanPolygons.ParentMethods.is_simple(p):
         raise NotImplementedError("polygon self-intersects")
 
     # Check that any redundant data is compatible
@@ -1404,16 +1404,16 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
 
     if angles:
         # Check that the polygon has the prescribed angles
-        from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
-            RealProjectivePolygonsWithAngles,
+        from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
+            EuclideanPolygonsWithAngles,
         )
-        from flatsurf.geometry.categories.real_projective_polygons import (
-            RealProjectivePolygons,
+        from flatsurf.geometry.categories.euclidean_polygons import (
+            EuclideanPolygons,
         )
 
-        # Use RealProjectivePolygon's angle() so we do not use the precomputed angles set by the category.
-        if RealProjectivePolygonsWithAngles._normalize_angles(angles) != tuple(
-            RealProjectivePolygons.ParentMethods.angle(p, i)
+        # Use EuclideanPolygon's angle() so we do not use the precomputed angles set by the category.
+        if EuclideanPolygonsWithAngles._normalize_angles(angles) != tuple(
+            EuclideanPolygons.ParentMethods.angle(p, i)
             for i in range(len(p.vertices()))
         ):
             raise ValueError("polygon does not have the prescribed angles")
@@ -1429,7 +1429,7 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
 
 def EuclideanPolygonsWithAngles(*angles):
     r"""
-    Return the category of real projective polygons with prescribed ``angles``
+    Return the category of Euclidean polygons with prescribed ``angles``
     over a (minimal) number field.
 
     This method is a convenience to interact with that category. To create
@@ -1450,7 +1450,7 @@ def EuclideanPolygonsWithAngles(*angles):
 
         sage: P = EuclideanPolygonsWithAngles(1, 2, 5)
         sage: P
-        Category of simple real projective triangles with angles (1/16, 1/8, 5/16) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
+        Category of simple euclidean triangles with angles (1/16, 1/8, 5/16) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
 
     Internally, polygons are given by their vertices' coordinates over some
     number field, in this case a quadratic field::
@@ -1561,7 +1561,7 @@ def EuclideanPolygonsWithAngles(*angles):
         (2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
 
         sage: EuclideanPolygonsWithAngles(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-        Category of simple real projective pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial ...
+        Category of simple euclidean pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial ...
 
     A regular pentagon::
 
@@ -1576,15 +1576,15 @@ def EuclideanPolygonsWithAngles(*angles):
     if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
         angles = angles[0]
 
-    angles = RealProjectivePolygonsWithAngles._normalize_angles(angles)
+    angles = EuclideanPolygonsWithAngles._normalize_angles(angles)
 
-    from flatsurf.geometry.categories.real_projective_polygons_with_angles import (
+    from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
         _base_ring,
     )
 
     base_ring = _base_ring(angles)
 
-    return RealProjectivePolygons(base_ring).WithAngles(angles).Simple()
+    return EuclideanPolygons(base_ring).WithAngles(angles).Simple()
 
 
 def EquiangularPolygons(*angles, **kwds):
@@ -1596,7 +1596,7 @@ def EquiangularPolygons(*angles, **kwds):
         doctest:warning
         ...
         UserWarning: EquiangularPolygons() has been deprecated and will be removed in a future version of sage-flatsurf; use EuclideanPolygonsWithAngles() instead
-        Category of simple real projective equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+        Category of simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 
     """
     import warnings

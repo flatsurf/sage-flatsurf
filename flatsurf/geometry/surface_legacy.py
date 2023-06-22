@@ -484,7 +484,7 @@ class Surface(OrientedSimilaritySurface):
             doctest:warning
             ...
             UserWarning: ConvexPolygons() has been deprecated and will be removed from a future version of sage-flatsurf; use Polygon() to create polygons.
-            If you really need the category of convex polygons over a ring use RealProjectivePolygons(ring).Simple().Convex() instead.
+            If you really need the category of convex polygons over a ring use EuclideanPolygons(ring).Simple().Convex() instead.
             sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
             doctest:warning
             ...

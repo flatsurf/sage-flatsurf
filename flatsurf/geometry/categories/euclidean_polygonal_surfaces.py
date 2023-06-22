@@ -12,8 +12,8 @@ EXAMPLES::
     sage: from flatsurf import MutableOrientedSimilaritySurface
     sage: C = MutableOrientedSimilaritySurface(QQ).category()
 
-    sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
-    sage: C.is_subcategory(RealProjectivePolygonalSurfaces())
+    sage: from flatsurf.geometry.categories import EuclideanPolygonalSurfaces
+    sage: C.is_subcategory(EuclideanPolygonalSurfaces())
     True
 
 """
@@ -40,16 +40,16 @@ EXAMPLES::
 from flatsurf.geometry.categories.surface_category import SurfaceCategory
 
 
-class RealProjectivePolygonalSurfaces(SurfaceCategory):
+class EuclideanPolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing Euclidean polygons (or more
-    generally, polygons in two-dimensional real-projective space.)
+    generally, polygons in two-dimensional real space.)
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
-        sage: RealProjectivePolygonalSurfaces()
-        Category of real projective polygonal surfaces
+        sage: from flatsurf.geometry.categories import EuclideanPolygonalSurfaces
+        sage: EuclideanPolygonalSurfaces()
+        Category of euclidean polygonal surfaces
 
     """
 
@@ -60,8 +60,8 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
 
         EXAMPLES::
 
-            sage: from flatsurf.geometry.categories import RealProjectivePolygonalSurfaces
-            sage: C = RealProjectivePolygonalSurfaces()
+            sage: from flatsurf.geometry.categories import EuclideanPolygonalSurfaces
+            sage: C = EuclideanPolygonalSurfaces()
             sage: C.super_categories()
             [Category of polygonal surfaces]
 
@@ -73,7 +73,7 @@ class RealProjectivePolygonalSurfaces(SurfaceCategory):
     class ParentMethods:
         r"""
         Provides methods available to all surfaces that are built from polygons
-        in the real projective plane.
+        in the real plane.
 
         If you want to add functionality for such surfaces you most likely
         want to put it here.

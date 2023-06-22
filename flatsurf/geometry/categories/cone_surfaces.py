@@ -246,7 +246,7 @@ class ConeSurfaces(SurfaceCategory):
             r"""
             The category of oriented cone surfaces, i.e., orientable cone surfaces
             whose orientation can be chosen to be compatible with the embedding of
-            its polygons in the real projective plane.
+            its polygons in the real plane.
 
             EXAMPLES::
 

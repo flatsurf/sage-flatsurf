@@ -51,8 +51,8 @@ from sage.misc.abstract_method import abstract_method
 class PolygonalSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing polygons defined in some space
-    such as the projective plane (see
-    :mod:`~flatsurf.geometry.categories.real_projective_polygonal_surfaces`.)
+    such as the real plane (see
+    :mod:`~flatsurf.geometry.categories.euclidean_polygonal_surfaces`.)
 
     EXAMPLES::
 

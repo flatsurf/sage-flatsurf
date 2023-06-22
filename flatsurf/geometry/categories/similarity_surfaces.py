@@ -146,14 +146,14 @@ class SimilaritySurfaces(SurfaceCategory):
 
             sage: from flatsurf.geometry.categories import SimilaritySurfaces
             sage: SimilaritySurfaces().super_categories()
-            [Category of real projective polygonal surfaces]
+            [Category of euclidean polygonal surfaces]
 
         """
-        from flatsurf.geometry.categories.real_projective_polygonal_surfaces import (
-            RealProjectivePolygonalSurfaces,
+        from flatsurf.geometry.categories.euclidean_polygonal_surfaces import (
+            EuclideanPolygonalSurfaces,
         )
 
-        return [RealProjectivePolygonalSurfaces()]
+        return [EuclideanPolygonalSurfaces()]
 
     class ParentMethods:
         r"""
@@ -434,7 +434,7 @@ class SimilaritySurfaces(SurfaceCategory):
         r"""
         The category of oriented surfaces built from Euclidean polygons that
         are glued by similarities with the orientation compatible with the
-        orientation of real projective space that polygons are defined in.
+        orientation of the real plane that polygons are defined in.
 
         EXAMPLES::
 
@@ -2040,7 +2040,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 r"""
                 Return a copy of this surface whose polygons have been partitioned into
                 smaller triangles with
-                :meth:`~.real_projective_polygons.RealProjectivePolygons.Simple.Convex.ParentMethods.subdivide`.
+                :meth:`~.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide`.
 
                 EXAMPLES:
 
@@ -2377,8 +2377,7 @@ class SimilaritySurfaces(SurfaceCategory):
         class ParentMethods:
             r"""
             Provides methods available to all surfaces that are built from
-            finitely many polygons in the real projective plane glued with
-            similarities.
+            finitely many polygons in the real plane glued with similarities.
 
             If you want to add functionality for such surfaces you most likely
             want to put it here.
@@ -2475,7 +2474,7 @@ class SimilaritySurfaces(SurfaceCategory):
             The category of surfaces built from finitely many Euclidean
             polygons glued with singularities with an orientation that is
             compatible with the embedding that the polygons inherit from the
-            real projective plane.
+            real plane.
 
             EXAMPLES::
 
@@ -2492,7 +2491,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Provides methods available to all surfaces that are built from
                 finitely many Euclidean polygons that are glued by similarities
                 and are oriented with the natural orientation of the polygons
-                in the real projective plane.
+                in the real plane.
 
                 If you want to add functionality for such surfaces you most likely
                 want to put it here.

@@ -210,7 +210,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
         r"""
         The category of oriented half-translation surfaces, i.e., orientable
         half-translation surfaces which can be oriented in a way compatible
-        with the embedding of their polygons in the real projective plane.
+        with the embedding of their polygons in the real plane.
 
         EXAMPLES::
 

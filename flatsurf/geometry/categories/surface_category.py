@@ -42,7 +42,7 @@ flags = {
         [
             "TopologicalSurfaces",
             "PolygonalSurfaces",
-            "RealProjectivePolygonalSurfaces",
+            "EuclideanPolygonalSurfaces",
             "SimilaritySurfaces",
             "ConeSurfaces",
             "DilationSurfaces",
