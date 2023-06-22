@@ -152,12 +152,14 @@ Now we have a closed surface. In fact this is a translation surface:
 surface
 ```
 
-Once we are done building the surface, it is recommended to make the surface immutable. This lets sage-flatsurf speed up many operations on the surface and makes it possible to compute invariants such as the stratum:
+Once we are done building the surface, it is recommended to make the surface immutable. This lets sage-flatsurf figure out of which nature this surface is, e.g., that it is a translation surface. This speeds up many operations on the surface and makes it possible to compute things that are only defined or implemented for some types of surfaces:
 
 ```{code-cell}
 surface.set_immutable()
 surface
 ```
+
+If you want to compute things, such as the stratum without making a surface immutable, please refer to the details in the documentation of the ``flatsurf.geometry.categories`` module in the module reference.
 
 We can plot the surface. Edges are labeled according to the polygon they are glued to.
 

@@ -86,6 +86,66 @@ Since this is now a translation surface, we can ask for its stratum again::
     sage: S.stratum()
     H_1(0)
 
+There are a number of workarounds if you want to compute things such as
+``.stratum()`` on a mutable surface. For the sake of this demonstration, lets
+make our surface mutable again::
+
+    sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+
+The recommended approach is to create a copy of the surface, make it immutable
+and then call the methods you need::
+
+    sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+    sage: T.set_immutable()
+    sage: T.stratum()
+    H_1(0)
+
+You might be worried about the performance implications but most of the time
+that might be a `premature optimization
+<https://en.wikipedia.org/wiki/Program_optimization#When_to_optimize>`_.
+
+Often enough, the copy is actually not the problem but the time that is spent
+to figure out that that copy is actually a translation surface. If you already
+know that to be true, you can simplify things to::
+
+    sage: from flatsurf.geometry.categories import TranslationSurfaces
+    sage: T = MutableOrientedSimilaritySurface.from_surface(S, category=TranslationSurfaces().WithoutBoundary())
+    sage: T.stratum()
+    H_1(0)
+
+You can also change the category of a mutable surface to provide all the
+functionality that is available to surfaces in that category::
+
+    sage: S._refine_category_(TranslationSurfaces().WithoutBoundary())
+    sage: S.stratum()
+    H_1(0)
+
+Note however, that the category of a surface cannot be generalized anymore.
+This surface is now at least a "translation surface", no matter what mutations
+you make to it. (And the system will not check that it is indeed a translation
+surface.) That approach might still be beneficial if you make lots of minor
+changes to the surface, e.g., lots of edge flips, and want to query such
+methods frequently.
+
+Finally, we can try to call the
+:meth:`~flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum`
+method directly but it might have dependencies on other methods that are not
+available::
+
+    sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+
+    sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
+    Traceback (most recent call last):
+    ...
+    AttributeError: ... no attribute 'angles'
+
+So this approach is quite brittle and might need a mix with the above to work::
+
+    sage: from flatsurf.geometry.categories import ConeSurfaces
+    sage: S._refine_category_(ConeSurfaces().WithoutBoundary())
+    sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
+    H_1(0)
+
 """
 # ####################################################################
 #  This file is part of sage-flatsurf.
