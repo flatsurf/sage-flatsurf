@@ -56,6 +56,8 @@
 
 * Changed the label parameter of ``add_polygon()``. It is now required to be a keyword argument.
 
+* Changed the meaning of the ``lengths`` parameter when creating a polygon from lengths and angles. Before, the slopes of a generic polygon with such angles were scaled by ``lengths`` (the slopes are a somewhat random implementation detail.) Now, the ``lengths`` are actually, the Euclidean lengths of the sides. Specifying ``lengths`` and ``angles`` might therefore lead to some square roots having to be computed. To get the old behaviour, one can specify angles and edges and use the slopes scaled by lengths as edges.
+
 **Deprecated:**
 
 * Deprecated the ``walker()`` method on surfaces. The ``labels()`` are now always guaranteed to be iterated in a canonical order (starting from the ``roots()``, a breadth-first search is performed.)

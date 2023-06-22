@@ -774,7 +774,9 @@ class SimilaritySurfaceGenerators:
             sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
             sage: from pyexactreal import ExactReals # optional: exactreal
             sage: R = ExactReals(E.base_ring()) # optional: exactreal
-            sage: P = Polygon(angles=(3, 3, 5), lengths=[R.random_element()])  # optional: exactreal
+            sage: angles = (3, 3, 5)
+            sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
+            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
             sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: TestSuite(S).run() # long time (6s), optional: exactreal
