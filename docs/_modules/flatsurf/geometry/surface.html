@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
-        <title>flatsurf.geometry.surface - sage-flatsurf 0.4.7 documentation</title>
+        <title>flatsurf.geometry.surface - sage-flatsurf 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -126,7 +126,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -153,7 +153,7 @@
     <img class="sidebar-logo only-dark" src="../../../_static/logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  <span class="sidebar-brand-text">sage-flatsurf 0.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -3223,8 +3223,7 @@
 
 <div class="viewcode-block" id="Labels.__iter__"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Labels.__iter__">[docs]</a>    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">components</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">label</span></div></div>
+            <span class="k">yield from</span> <span class="n">component</span></div></div>
 
 
 <div class="viewcode-block" id="LabelsFromView"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.LabelsFromView">[docs]</a><span class="k">class</span> <span class="nc">LabelsFromView</span><span class="p">(</span><span class="n">Labels</span><span class="p">,</span> <span class="n">LabeledView</span><span class="p">):</span>

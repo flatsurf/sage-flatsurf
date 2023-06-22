@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
-        <title>flatsurf.geometry.categories.polygonal_surfaces - sage-flatsurf 0.4.7 documentation</title>
+        <title>flatsurf.geometry.categories.polygonal_surfaces - sage-flatsurf 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -126,7 +126,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -153,7 +153,7 @@
     <img class="sidebar-logo only-dark" src="../../../../_static/logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  <span class="sidebar-brand-text">sage-flatsurf 0.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -680,14 +680,12 @@
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use zip(labels(), polygons()) instead&quot;</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
-                    <span class="k">yield</span> <span class="n">entry</span>
+                <span class="k">yield from</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">())</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead&quot;</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
-                    <span class="k">yield</span> <span class="n">entry</span></div>
+                <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.edge_iterator"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_iterator">[docs]</a>        <span class="k">def</span> <span class="nf">edge_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gluings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -731,8 +729,7 @@
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use gluings() instead&quot;</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gluings</span><span class="p">():</span>
-                    <span class="k">yield</span> <span class="n">entry</span>
+                <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">gluings</span><span class="p">()</span>
                 <span class="k">return</span>
             <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>

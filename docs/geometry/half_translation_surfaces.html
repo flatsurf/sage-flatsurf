@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="hyperbolic" href="hyperbolic.html" /><link rel="prev" title="half_dilation_surface" href="half_dilation_surface.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
-        <title>half_translation_surfaces - sage-flatsurf 0.4.7 documentation</title>
+        <title>half_translation_surfaces - sage-flatsurf 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -127,7 +127,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -154,7 +154,7 @@
     <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  <span class="sidebar-brand-text">sage-flatsurf 0.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -454,6 +454,18 @@ sage: S = B.minimal_cover(&quot;translation&quot;)
 sage: S, _ = S.normalized_coordinates()
 sage: S
 Translation Surface in H_1(0^6) built from 6 right triangles
+</pre></div>
+</div>
+<p>TESTS:</p>
+<p>Verify that #89 has been resolved:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">pyexactreal</span> <span class="kn">import</span> <span class="n">ExactReals</span>  <span class="c1"># optional: exactreal  # random output due to pkg_resources deprecation warnings</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">ExactReals</span><span class="p">())</span>  <span class="c1"># optional: exactreal</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">normalized_coordinates</span><span class="p">()</span>  <span class="c1"># optional: exactreal</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">base</span> <span class="n">ring</span> <span class="n">must</span> <span class="n">be</span> <span class="n">a</span> <span class="n">field</span> <span class="n">to</span> <span class="n">normalize</span> <span class="n">coordinates</span> <span class="n">of</span> <span class="n">the</span> <span class="n">surface</span>
 </pre></div>
 </div>
 </dd></dl>

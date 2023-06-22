@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
-        <title>flatsurf.geometry.categories.half_translation_surfaces - sage-flatsurf 0.4.7 documentation</title>
+        <title>flatsurf.geometry.categories.half_translation_surfaces - sage-flatsurf 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -126,7 +126,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.5.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -153,7 +153,7 @@
     <img class="sidebar-logo only-dark" src="../../../../_static/logo.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  <span class="sidebar-brand-text">sage-flatsurf 0.5.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -633,11 +633,32 @@
 <span class="sd">                        sage: S</span>
 <span class="sd">                        Translation Surface in H_1(0^6) built from 6 right triangles</span>
 
+<span class="sd">                    TESTS:</span>
+
+<span class="sd">                    Verify that #89 has been resolved::</span>
+
+<span class="sd">                        sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to pkg_resources deprecation warnings</span>
+<span class="sd">                        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                        sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                        sage: S = S.change_ring(ExactReals())  # optional: exactreal</span>
+<span class="sd">                        sage: S.normalized_coordinates()  # optional: exactreal</span>
+<span class="sd">                        Traceback (most recent call last):</span>
+<span class="sd">                        ...</span>
+<span class="sd">                        NotImplementedError: base ring must be a field to normalize coordinates of the surface</span>
+
+
 <span class="sd">                    &quot;&quot;&quot;</span>
                     <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
 
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="n">QQ</span><span class="p">:</span>
                         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">(</span><span class="n">QQ</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+                    <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                            <span class="s2">&quot;base ring must be a field to normalize coordinates of the surface&quot;</span>
+                        <span class="p">)</span>
 
                     <span class="n">lab</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()))</span>
                     <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
