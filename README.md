@@ -33,7 +33,7 @@ for detailed installation instructions.
 
 You can try out sage-flatsurf in an environment online; unfortunately it might
 take a long time for this environment to start:
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.4.6?filepath=doc%2Fexamples)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/0.5.0?filepath=doc%2Fexamples)
 
 ## Developing sage-flatsurf
 
