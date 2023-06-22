@@ -523,13 +523,32 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.an_element()
                     Point (1/2, 1/2) of polygon 0
 
+                TESTS:
+
+                Verify that this method works over non-fields (if 2 is
+                invertible)::
+
+                  sage: from flatsurf import similarity_surfaces
+                  sage: from flatsurf import EuclideanPolygonsWithAngles
+                  sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
+                  sage: from pyexactreal import ExactReals # optional: exactreal
+                  sage: R = ExactReals(E.base_ring()) # optional: exactreal
+                  sage: angles = (3, 3, 5)
+                  sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
+                  sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
+                  sage: S = similarity_surfaces.billiard(P) # optional: exactreal
+                  sage: S.an_element()  # optional: exactreal
+                  Point ((1/2 ~ 0.50000000)*ℝ(0.303644…), 0) of polygon 0
+
                 """
                 label = next(iter(self.labels()))
                 polygon = self.polygon(label)
 
+                from sage.categories.all import Fields
+
                 # We use a point that can be constructed without problems on an
                 # infinite surface.
-                if polygon.is_convex():
+                if polygon.is_convex() and self.base_ring() in Fields():
                     coordinates = polygon.centroid()
                 else:
                     # Sometimes, this is not implemented because it requires the edge
