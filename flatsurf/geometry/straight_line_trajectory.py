@@ -20,8 +20,8 @@
 # *********************************************************************
 from collections import deque
 
-from .polygon import line_intersection
-from .surface_objects import SaddleConnection
+from flatsurf.geometry.euclidean import line_intersection
+from flatsurf.geometry.surface_objects import SaddleConnection
 
 # Vincent question:
 # using deque has the disadvantage of losing the initial points
@@ -82,7 +82,7 @@ class SegmentInPolygon:
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import similarity_surfaces
         sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
         sage: s = similarity_surfaces.example()
         sage: v = s.tangent_vector(0, (1/3,-1/4), (0,1))
@@ -130,7 +130,7 @@ class SegmentInPolygon:
         r"""
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
             sage: s = similarity_surfaces.example()
             sage: v = s.tangent_vector(0, (0,0), (3,-1))
@@ -165,9 +165,9 @@ class SegmentInPolygon:
         vv = self.start().vector()
         vertex = self.start().vertex()
         ww = self.start().polygon().edge(vertex)
-        from flatsurf.geometry.polygon import is_same_direction
+        from flatsurf.geometry.euclidean import is_parallel
 
-        return is_same_direction(vv, ww)
+        return is_parallel(vv, ww)
 
     def edge(self):
         if not self.is_edge():
@@ -186,14 +186,14 @@ class SegmentInPolygon:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import SegmentInPolygon
 
             sage: s = similarity_surfaces.example()
             sage: s.polygon(0)
-            Polygon: (0, 0), (2, -2), (2, 0)
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
             sage: s.polygon(1)
-            Polygon: (0, 0), (2, 0), (1, 3)
+            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: v = s.tangent_vector(0, (0,0), (3,-1))
             sage: seg = SegmentInPolygon(v)
             sage: seg
@@ -249,7 +249,7 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.square_torus()
             sage: v = T.tangent_vector(0, (0,0), (5,7))
             sage: L = v.straight_line_trajectory()
@@ -292,7 +292,7 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.regular_octagon()
             sage: v = s.tangent_vector(0,(1/2,0),(sqrt(2),1))
             sage: traj = v.straight_line_trajectory()
@@ -332,7 +332,7 @@ class AbstractStraightLineTrajectory:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: t = translation_surfaces.square_torus()
 
             sage: v = t.tangent_vector(0, (1/2,0), (5,6))
@@ -368,7 +368,7 @@ class AbstractStraightLineTrajectory:
         Check that the saddle connections that are obtained in the torus get the
         expected coding::
 
-            sage: for _ in range(10):
+            sage: for _ in range(10):  # long time (.6s)
             ....:     x = ZZ.random_element(1,30)
             ....:     y = ZZ.random_element(1,30)
             ....:     x,y = x/gcd(x,y), y/gcd(x,y)
@@ -508,7 +508,7 @@ class AbstractStraightLineTrajectory:
                             if pos.is_inside() and (
                                 count_singularities or not pos.is_vertex()
                             ):
-                                new_point = self.surface().surface_point(
+                                new_point = self.surface().point(
                                     seg1.polygon_label(), x
                                 )
                                 if new_point not in intersection_points:
@@ -531,7 +531,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
     EXAMPLES::
 
         # Demonstrate the handling of edges
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
         sage: p = SymmetricGroup(2)('(1,2)')
         sage: s = translation_surfaces.origami(p,p)
@@ -562,7 +562,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
 
             sage: O = translation_surfaces.regular_octagon()
             sage: v = O.tangent_vector(0, (1,1), (33,45))
@@ -625,13 +625,15 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
         An example in a cone surface covered by the torus::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
             sage: p = polygons.square()
-            sage: s = Surface_list(base_ring=p.base_ring())
-            sage: s.add_polygon(p,[(0,3),(0,2),(0,1),(0,0)])
+            sage: s = MutableOrientedSimilaritySurface(p.base_ring())
+            sage: s.add_polygon(p)
             0
+            sage: s.glue((0, 0), (0, 3))
+            sage: s.glue((0, 1), (0, 2))
             sage: s.set_immutable()
-            sage: t = RationalConeSurface(s)
+            sage: t = s
 
             sage: v = t.tangent_vector(0, (1/2,0), (1/3,7/5))
             sage: l = v.straight_line_trajectory()
@@ -665,7 +667,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
 
             sage: s = similarity_surfaces.example()
             sage: v = s.tangent_vector(0, (1,-1/2), (3,-1))
@@ -750,7 +752,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
             sage: S = SymmetricGroup(3)
             sage: r = S('(1,2)')
@@ -797,7 +799,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: O = translation_surfaces.regular_octagon()
@@ -839,7 +841,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: s = translation_surfaces.square_torus()
@@ -871,7 +873,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         r"""
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectoryTranslation
 
             sage: torus = translation_surfaces.square_torus()

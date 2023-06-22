@@ -18,7 +18,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from .polygon import wedge_product, is_same_direction, is_opposite_direction
 
 # Limit for clockwise_to and counter_clockwise_to in SimilaritySurfaceTangentVector.
 rotate_limit = 100
@@ -30,52 +29,59 @@ class SimilaritySurfaceTangentVector:
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
 
     Examples on edges in direction of edges::
 
         sage: s = translation_surfaces.square_torus()
-        sage: for y in [0,1]:
-        ....:     for d in [1,-1]:
-        ....:         print(s.tangent_vector(0, (1/2, y), (d, 0)))
+        sage: s.tangent_vector(0, (1/2, 0), (1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 0) with vector (1, 0)
+        sage: s.tangent_vector(0, (1/2, 0), (-1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 1) with vector (-1, 0)
+        sage: s.tangent_vector(0, (1/2, 1), (1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 0) with vector (1, 0)
+        sage: s.tangent_vector(0, (1/2, 1), (-1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 1) with vector (-1, 0)
 
-        sage: for x in [0,1]:
-        ....:     for d in [1,-1]:
-        ....:         print(s.tangent_vector(0, (x, 1/2), (0, d)))
+        sage: s.tangent_vector(0, (0, 1/2), (0, 1))
         SimilaritySurfaceTangentVector in polygon 0 based at (1, 1/2) with vector (0, 1)
+        sage: s.tangent_vector(0, (0, 1/2), (0, -1))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 1/2) with vector (0, -1)
+        sage: s.tangent_vector(0, (1, 1/2), (0, 1))
         SimilaritySurfaceTangentVector in polygon 0 based at (1, 1/2) with vector (0, 1)
+        sage: s.tangent_vector(0, (1, 1/2), (0, -1))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 1/2) with vector (0, -1)
 
     Examples on vertices in direction of edges::
 
         sage: s = translation_surfaces.square_torus()
-        sage: for y in [0,1]:
-        ....:     print(s.tangent_vector(0, (0, y), (1, 0)))
-        ....:     print(s.tangent_vector(0, (1, y), (-1, 0)))
+        sage: s.tangent_vector(0, (0, 0), (1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (1, 0)
+        sage: s.tangent_vector(0, (1, 0), (-1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (1, 1) with vector (-1, 0)
+        sage: s.tangent_vector(0, (0, 1), (1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (1, 0)
+        sage: s.tangent_vector(0, (1, 1), (-1, 0))
         SimilaritySurfaceTangentVector in polygon 0 based at (1, 1) with vector (-1, 0)
 
-        sage: for x in [0,1]:
-        ....:     print(s.tangent_vector(0, (x, 0), (0, 1)))
-        ....:     print(s.tangent_vector(0, (x, 1), (0, -1)))
+        sage: s.tangent_vector(0, (0, 0), (0, 1))
         SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (0, 1)
+        sage: s.tangent_vector(0, (0, 1), (0, -1))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (0, -1)
+        sage: s.tangent_vector(0, (1, 0), (0, 1))
         SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (0, 1)
+        sage: s.tangent_vector(0, (1, 1), (0, -1))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (0, -1)
+
     """
 
     def __init__(self, tangent_bundle, polygon_label, point, vector):
+        from flatsurf.geometry.euclidean import ccw, is_anti_parallel
+
         self._bundle = tangent_bundle
         p = self.surface().polygon(polygon_label)
         pos = p.get_point_position(point)
-        if vector == self._bundle.vector_space().zero():
+        if not vector:
             raise NotImplementedError("vector must be non-zero")
         if pos.is_in_interior():
             self._polygon_label = polygon_label
@@ -85,9 +91,8 @@ class SimilaritySurfaceTangentVector:
         elif pos.is_in_edge_interior():
             e = pos.get_edge()
             edge_v = p.edge(e)
-            if wedge_product(edge_v, vector) < 0 or is_opposite_direction(
-                edge_v, vector
-            ):
+
+            if ccw(edge_v, vector) < 0 or is_anti_parallel(edge_v, vector):
                 # Need to move point and vector to opposite edge.
                 label2, e2 = self.surface().opposite_edge(polygon_label, e)
                 similarity = self.surface().edge_transformation(polygon_label, e)
@@ -110,9 +115,9 @@ class SimilaritySurfaceTangentVector:
             # subsequent edge:
             edge1 = p.edge(v)
             # prior edge:
-            edge0 = p.edge((v - 1) % p.num_edges())
-            wp1 = wedge_product(edge1, vector)
-            wp0 = wedge_product(edge0, vector)
+            edge0 = p.edge((v - 1) % len(p.vertices()))
+            wp1 = ccw(edge1, vector)
+            wp0 = ccw(edge0, vector)
             if wp1 < 0 or wp0 < 0:
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
@@ -120,10 +125,10 @@ class SimilaritySurfaceTangentVector:
             if wp0 == 0:
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
-                    polygon_label, (v - 1) % p.num_edges()
+                    polygon_label, (v - 1) % len(p.vertices())
                 )
                 similarity = self.surface().edge_transformation(
-                    polygon_label, (v - 1) % p.num_edges()
+                    polygon_label, (v - 1) % len(p.vertices())
                 )
                 point2 = similarity(point)
                 vector2 = similarity.derivative() * vector
@@ -273,10 +278,12 @@ class SimilaritySurfaceTangentVector:
         Returns true if the other vector just differs by scaling. This means they should lie
         in the same polygon, be based at the same point, and point in the same direction.
         """
+        from flatsurf.geometry.euclidean import is_parallel
+
         return (
             self.polygon_label() == another_tangent_vector.polygon_label()
             and self.point() == another_tangent_vector.point()
-            and is_same_direction(self.vector(), another_tangent_vector.vector())
+            and is_parallel(self.vector(), another_tangent_vector.vector())
         )
 
     def invert(self):
@@ -307,19 +314,19 @@ class SimilaritySurfaceTangentVector:
             sage: s = SimilaritySurfaceGenerators.example()
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
-            sage: print("Polygon 0 is "+str(s.polygon(0)))
-            Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
-            sage: print("Polygon 1 is "+str(s.polygon(1)))
-            Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
+            sage: s.polygon(0)
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            sage: s.polygon(1)
+            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
-            sage: V = tb.surface().vector_space()
+            sage: V = tb.surface().base_ring()**2
             sage: v = SimilaritySurfaceTangentVector(tb, 0, V((0,0)), V((3,-1)))
-            sage: print(v)
+            sage: v
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (3, -1)
             sage: v2 = v.forward_to_polygon_boundary()
-            sage: print(v2)
+            sage: v2
             SimilaritySurfaceTangentVector in polygon 0 based at (2, -2/3) with vector (-3, 1)
-            sage: print(v2.invert())
+            sage: v2.invert()
             SimilaritySurfaceTangentVector in polygon 1 based at (2/3, 2) with vector (4, -3)
         """
         p = self.polygon()
@@ -336,7 +343,7 @@ class SimilaritySurfaceTangentVector:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
 
             sage: s = translation_surfaces.square_torus()
             sage: v = s.tangent_vector(0, (0,0), (1,1))
@@ -381,7 +388,7 @@ class SimilaritySurfaceTangentVector:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s=translation_surfaces.regular_octagon()
             sage: v=s.tangent_vector(0,(0,0),(1,1))
             sage: v.clockwise_to((-1,-1))
@@ -391,7 +398,7 @@ class SimilaritySurfaceTangentVector:
             sage: v.clockwise_to((1,1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (-1/2*a, 1/2*a) with vector (1, 1), [0, 5, 2])
         """
-        if w == self.surface().vector_space().zero():
+        if not w:
             raise ValueError("w must be non-zero")
 
         if self.is_based_at_singularity():
@@ -405,8 +412,11 @@ class SimilaritySurfaceTangentVector:
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
             if code:
                 codes = []
+
+            from flatsurf.geometry.euclidean import ccw
+
             for count in range(rotate_limit):
-                if wedge_product(v2, w) >= 0 and wedge_product(w, v1) > 0:
+                if ccw(v2, w) >= 0 and ccw(w, v1) > 0:
                     # We've found it!
                     break
                 if code:
@@ -415,7 +425,7 @@ class SimilaritySurfaceTangentVector:
                 der = der * s.edge_matrix(label2, edge2)
                 v1 = der * (-s.polygon(label2).edge(edge2))
                 label = label2
-                vertex = (edge2 + 1) % s.polygon(label2).num_edges()
+                vertex = (edge2 + 1) % len(s.polygon(label2).vertices())
                 v2 = der * (s.polygon(label2).edge(vertex))
             assert count < rotate_limit, "Reached limit!"
             if code:
@@ -457,7 +467,7 @@ class SimilaritySurfaceTangentVector:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s=translation_surfaces.regular_octagon()
             sage: v=s.tangent_vector(0,(0,0),(1,1))
             sage: v.counterclockwise_to((-1,-1))
@@ -467,7 +477,7 @@ class SimilaritySurfaceTangentVector:
             sage: v.counterclockwise_to((1,1), code=True)
             (SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (1, 1), [7, 2, 5])
         """
-        if w == self.surface().vector_space().zero():
+        if not w:
             raise ValueError("w must be non-zero")
 
         if self.is_based_at_singularity():
@@ -475,16 +485,19 @@ class SimilaritySurfaceTangentVector:
             v1 = self.vector()
             label = self.polygon_label()
             vertex = self.vertex()
-            previous_vertex = (vertex - 1 + s.polygon(label).num_edges()) % s.polygon(
-                label
-            ).num_edges()
+            previous_vertex = (vertex - 1 + len(s.polygon(label).vertices())) % len(
+                s.polygon(label).vertices()
+            )
             v2 = -s.polygon(label).edge(previous_vertex)
             from sage.matrix.constructor import Matrix
 
             der = Matrix(s.base_ring(), [[1, 0], [0, 1]])
             if code:
                 codes = []
-            if not (wedge_product(v1, w) > 0 and wedge_product(w, v2) > 0):
+
+            from flatsurf.geometry.euclidean import ccw
+
+            if not (ccw(v1, w) > 0 and ccw(w, v2) > 0):
                 for count in range(rotate_limit):
                     label2, edge2 = s.opposite_edge(label, previous_vertex)
                     if code:
@@ -493,11 +506,11 @@ class SimilaritySurfaceTangentVector:
                     label = label2
                     vertex = edge2
                     previous_vertex = (
-                        vertex - 1 + s.polygon(label).num_edges()
-                    ) % s.polygon(label).num_edges()
+                        vertex - 1 + len(s.polygon(label).vertices())
+                    ) % len(s.polygon(label).vertices())
                     v1 = der * (s.polygon(label).edge(vertex))
                     v2 = der * (-s.polygon(label).edge(previous_vertex))
-                    if wedge_product(v1, w) >= 0 and wedge_product(w, v2) > 0:
+                    if ccw(v1, w) >= 0 and ccw(w, v2) > 0:
                         # We've found it!
                         break
                 assert count < rotate_limit, "Reached limit!"
@@ -596,9 +609,9 @@ class SimilaritySurfaceTangentBundle:
             sage: s = SimilaritySurfaceGenerators.example()
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
-            sage: print(s.polygon(0))
-            Polygon: (0, 0), (2, -2), (2, 0)
-            sage: print(tb.edge(0,0))
+            sage: s.polygon(0)
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            sage: tb.edge(0,0)
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, -2)
         """
         polygon = self.surface().polygon(polygon_label)
@@ -618,13 +631,13 @@ class SimilaritySurfaceTangentBundle:
             sage: s = SimilaritySurfaceGenerators.example()
             sage: from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentBundle
             sage: tb = SimilaritySurfaceTangentBundle(s)
-            sage: print("Polygon 0 is "+str(s.polygon(0)))
-            Polygon 0 is Polygon: (0, 0), (2, -2), (2, 0)
-            sage: print("Polygon 1 is "+str(s.polygon(1)))
-            Polygon 1 is Polygon: (0, 0), (2, 0), (1, 3)
-            sage: print("Opposite edge to (0,0) is "+repr(s.opposite_edge(0,0)))
-            Opposite edge to (0,0) is (1, 1)
-            sage: print(tb.clockwise_edge(0,0))
+            sage: s.polygon(0)
+            Polygon(vertices=[(0, 0), (2, -2), (2, 0)])
+            sage: s.polygon(1)
+            Polygon(vertices=[(0, 0), (2, 0), (1, 3)])
+            sage: s.opposite_edge(0, 0)
+            (1, 1)
+            sage: tb.clockwise_edge(0,0)
             SimilaritySurfaceTangentVector in polygon 1 based at (2, 0) with vector (-1, 3)
         """
         polygon = self.surface().polygon(polygon_label)
