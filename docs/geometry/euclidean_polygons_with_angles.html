@@ -1,0 +1,898 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="relative_homology" href="relative_homology.html" /><link rel="prev" title="euclidean_polygons" href="euclidean_polygons.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+        <title>euclidean_polygons_with_angles - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-flatsurf.geometry.categories.euclidean_polygons_with_angles">
+<span id="euclidean-polygons-with-angles"></span><h1><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code><a class="headerlink" href="#module-flatsurf.geometry.categories.euclidean_polygons_with_angles" title="Permalink to this heading">#</a></h1>
+<p>The category of polygons in the real plane with fixed rational
+angles.</p>
+<p>This module provides a common structure for all polygons with certain fixed
+angles.</p>
+<p>See <a class="reference internal" href="categories.html#module-flatsurf.geometry.categories" title="flatsurf.geometry.categories"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.geometry.categories</span></code></a> for a general description of the
+category framework in sage-flatsurf.</p>
+<p>Normally, you won’t create this (or any other) category directly. The correct
+category is automatically determined for polygons.</p>
+<p>EXAMPLES:</p>
+<p>The category of rectangles:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">EuclideanPolygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">WithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>It is often tedious to create this category manually, since you need to
+determine a base ring that can describe the coordinates of polygons with such
+angles:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: C = EuclideanPolygons(QQ).WithAngles([1, 1, 1])
+sage: C.slopes()
+Traceback (most recent call last):
+...
+TypeError: Unable to coerce c to a rational
+
+sage: C = EuclideanPolygons(AA).WithAngles([1, 1, 1])
+sage: C.slopes()
+[(1, 0), (-0.5773502691896258?, 1), (-0.5773502691896258?, -1)]
+</pre></div>
+</div>
+<p>Instead, we can use <a class="reference internal" href="polygon.html#flatsurf.geometry.polygon.EuclideanPolygonsWithAngles" title="flatsurf.geometry.polygon.EuclideanPolygonsWithAngles"><code class="xref py py-func docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles()</span></code></a> to create this category
+over a minimal number field:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">slopes</span><span class="p">()</span>
+<span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>The category of polygons is automatically determined when using
+<a class="reference internal" href="polygon.html#flatsurf.geometry.polygon.Polygon" title="flatsurf.geometry.polygon.Polygon"><code class="xref py py-func docutils literal notranslate"><span class="pre">Polygon()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import Polygon
+sage: p = Polygon(angles=(1, 1, 1))
+sage: p.category()
+Category of convex simple euclidean equilateral triangles over Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
+</pre></div>
+</div>
+<p>However, it can be very costly to determine that a polygon is rational and what
+its actual angles are (the “equilateral” in the previous example.) Therefore,
+the category might get refined once these aspects have been determined:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">convex</span> <span class="n">simple</span> <span class="n">euclidean</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">is_rational</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">rational</span> <span class="n">convex</span> <span class="n">simple</span> <span class="n">euclidean</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">angles</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">convex</span> <span class="n">simple</span> <span class="n">euclidean</span> <span class="n">rectangles</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
+</pre></div>
+</div>
+<p>Note that SageMath applies the same strategy when determining whether the
+integers modulo N are a field:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">K</span> <span class="o">=</span> <span class="n">Zmod</span><span class="p">(</span><span class="mi">1361</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">K</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+<span class="n">Join</span> <span class="n">of</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">finite</span> <span class="n">commutative</span> <span class="n">rings</span> <span class="ow">and</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">subquotients</span> <span class="n">of</span> <span class="n">monoids</span> <span class="ow">and</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">quotients</span> <span class="n">of</span> <span class="n">semigroups</span> <span class="ow">and</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">finite</span> <span class="n">enumerated</span> <span class="n">sets</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">K</span><span class="o">.</span><span class="n">is_field</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">K</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+<span class="n">Join</span> <span class="n">of</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">finite</span> <span class="n">enumerated</span> <span class="n">fields</span> <span class="ow">and</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">subquotients</span> <span class="n">of</span> <span class="n">monoids</span> <span class="ow">and</span> <span class="n">Category</span> <span class="n">of</span> <span class="n">quotients</span> <span class="n">of</span> <span class="n">semigroups</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.categories.euclidean_polygons_with_angles.</span></span><span class="sig-name descname"><span class="pre">EuclideanPolygonsWithAngles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles" title="Permalink to this definition">#</a></dt>
+<dd><p>The category of euclidean polygons with fixed rational angles.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">EuclideanPolygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">WithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all polygons with known angles.</p>
+<p>If you want to add functionality to all such polygons, you probably
+want to put it here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods.angle">
+<span class="sig-name descname"><span class="pre">angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_rational</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.ParentMethods.angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods.angle" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the angle at the beginning of the start point of the edge <code class="docutils literal notranslate"><span class="pre">e</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">/</span><span class="mi">4</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">polygons</span><span class="o">.</span><span class="n">regular_ngon</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">3</span><span class="o">/</span><span class="mi">8</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>  <span class="c1"># abs tol 1e-13</span>
+<span class="p">[</span><span class="mf">0.16737532973071603</span><span class="p">,</span> <span class="mf">0.22741638234956674</span><span class="p">,</span> <span class="mf">0.10520828791971722</span><span class="p">]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>   <span class="c1"># abs tol 1e-13</span>
+<span class="mf">0.5</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods.is_convex">
+<span class="sig-name descname"><span class="pre">is_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.ParentMethods.is_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods.is_convex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this is a convex polygon.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">strict</span></code> – whether to check for strict convexity, i.e., a
+polygon with a π angle is not considered convex.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.Simple">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Simple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.Simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.Simple" title="Permalink to this definition">#</a></dt>
+<dd><p>The subcategory of simple Euclidean polygons with prescribed angles.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">WithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">Simple</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">simple</span> <span class="n">euclidean</span> <span class="n">rectangles</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SubcategoryMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.an_element">
+<span class="sig-name descname"><span class="pre">an_element</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.an_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.an_element" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a polygon in this category.</p>
+<p>Since currently polygons must not be self-intersecting, the
+construction used might fail.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">22</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">9</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">9</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">88</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">7</span> <span class="o">-</span> <span class="mi">9</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">297</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">27</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">396</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3631</span><span class="o">/</span><span class="mi">22</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">11</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">11</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">9</span> <span class="o">+</span> <span class="n">c</span><span class="o">^</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">154</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">7</span> <span class="o">-</span> <span class="mi">9</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">506</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">27</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">638</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">4841</span><span class="o">/</span><span class="mi">22</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">9</span><span class="p">,</span> <span class="n">c</span> <span class="o">+</span> <span class="mi">22</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">9</span> <span class="o">+</span> <span class="n">c</span><span class="o">^</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">154</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">7</span> <span class="o">-</span> <span class="mi">9</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">506</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">27</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">638</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">30</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">220</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">c</span> <span class="o">+</span> <span class="mi">22</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">7</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">9</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">66</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">7</span> <span class="o">-</span> <span class="mi">9</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">6</span> <span class="o">+</span> <span class="mi">209</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">27</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">242</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">3</span> <span class="o">-</span> <span class="mi">15</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">55</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">7</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span> <span class="o">+</span> <span class="mi">11</span><span class="p">)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.angles">
+<span class="sig-name descname"><span class="pre">angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.angles" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the interior angles of this polygon as multiples of 2π.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">integral</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>); whether to return
+the angles not as multiples of 2π but rescaled so that they have
+no denominators.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">angles</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">22</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">22</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">22</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">11</span><span class="p">,</span> <span class="mi">9</span><span class="o">/</span><span class="mi">11</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">integral</span></code> is set, the output is scaled to eliminate
+denominators:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">angles</span><span class="p">(</span><span class="n">integral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_angles">
+<span class="sig-name descname"><span class="pre">billiard_unfolding_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cover_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'translation'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_angles" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the angles of the unfolding rational, half-translation or translation surface.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cover_type</span></code> (optional, default <code class="docutils literal notranslate"><span class="pre">&quot;translation&quot;</span></code>) - either <code class="docutils literal notranslate"><span class="pre">&quot;rational&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;half-translation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;translation&quot;</span></code></p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;rational&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Euler characteristic (of the sphere)</span>
+<span class="o">-</span><span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;rational&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="o">/</span><span class="mi">6</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">6</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">7</span><span class="o">/</span><span class="mi">6</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Euler characteristic</span>
+<span class="o">-</span><span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;rational&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="o">/</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">7</span><span class="o">/</span><span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Euler characteristic</span>
+<span class="o">-</span><span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;rational&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="o">/</span><span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">/</span><span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="o">/</span><span class="mi">11</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">11</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">11</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">8</span><span class="o">/</span><span class="mi">11</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># Euler characteristic</span>
+<span class="o">-</span><span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_angles</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum">
+<span class="sig-name descname"><span class="pre">billiard_unfolding_stratum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cover_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'translation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the stratum of quadratic or Abelian differential obtained by
+unfolding a billiard in a polygon of this equiangular family.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cover_type</span></code> (optional, default <code class="docutils literal notranslate"><span class="pre">&quot;translation&quot;</span></code>) - either <code class="docutils literal notranslate"><span class="pre">&quot;rational&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;half-translation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;translation&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">marked_poins</span></code> (optional, default <code class="docutils literal notranslate"><span class="pre">False</span></code>) - whether the stratum should
+have regular marked points</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="n">Q_1</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">H_3</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">Q_1</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">H_3</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="n">Q_1</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">H_4</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">Q_1</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">H_4</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">Q_1</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_4</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="n">Q_3</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">H_7</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">Q_3</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_7</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="n">H_5</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="n">H_5</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">H_5</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">H_5</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">B</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">Q_4</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">Q_4</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">stratum</span><span class="p">()</span>
+<span class="n">H_8</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="o">^</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">H_8</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="o">^</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum_dimension">
+<span class="sig-name descname"><span class="pre">billiard_unfolding_stratum_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cover_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'translation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum_dimension" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the dimension of the stratum of quadratic or Abelian differential
+obtained by unfolding a billiard in a polygon of this equiangular family.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cover_type</span></code> (optional, default <code class="docutils literal notranslate"><span class="pre">&quot;translation&quot;</span></code>) - either <code class="docutils literal notranslate"><span class="pre">&quot;rational&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;half-translation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;translation&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">marked_poins</span></code> (optional, default <code class="docutils literal notranslate"><span class="pre">False</span></code>) - whether the stratum should
+have marked regular points</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="mi">4</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="mi">4</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="mi">4</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">4</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="mi">9</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">9</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span>
+<span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">6</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="mi">6</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="s2">&quot;half-translation&quot;</span><span class="p">)</span>
+<span class="mi">8</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">()</span>
+<span class="mi">11</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">()</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">11</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum_dimension</span><span class="p">(</span><span class="n">marked_points</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="mi">12</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">billiard_unfolding_stratum</span><span class="p">(</span><span class="n">marked_points</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span>
+<span class="mi">12</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.convexity">
+<span class="sig-name descname"><span class="pre">convexity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.convexity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.convexity" title="Permalink to this definition">#</a></dt>
+<dd><p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">convexity</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">convexity</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">is_convex</span><span class="p">()</span> <span class="n">instead</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span><span class="o">.</span><span class="n">convexity</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.is_convex">
+<span class="sig-name descname"><span class="pre">is_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.is_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.is_convex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether the polygons in this category are convex.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">strict</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>); whether only to
+consider polygons convex if all angles are &lt;π.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">angles</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.lengths_polytope">
+<span class="sig-name descname"><span class="pre">lengths_polytope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.lengths_polytope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.lengths_polytope" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polytope parametrizing the admissible vectors data.</p>
+<p>This polytope parametrizes the tangent space to the set of these
+equiangular polygons. Be careful that even though the lengths are
+admissible, they may not define a polygon without intersection.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import EuclideanPolygonsWithAngles
+sage: EuclideanPolygonsWithAngles(1, 2, 1, 2).lengths_polytope()
+A 2-dimensional polyhedron in (Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?)^4 defined as the convex hull of 1 vertex and 2 rays
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.random_element">
+<span class="sig-name descname"><span class="pre">random_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.random_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.random_element" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a random polygon in this category.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">random_element</span><span class="p">()</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">...</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">random_element</span><span class="p">()</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">...</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">)</span><span class="o">.</span><span class="n">random_element</span><span class="p">()</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.slopes">
+<span class="sig-name descname"><span class="pre">slopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.slopes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.slopes" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the slopes of the edges as a list of vectors.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">e0</span></code> – the first slope returned (default: <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0)</span></code>)</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">slopes</span><span class="p">()</span>
+<span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.strict_convexity">
+<span class="sig-name descname"><span class="pre">strict_convexity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.SubcategoryMethods.strict_convexity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.strict_convexity" title="Permalink to this definition">#</a></dt>
+<dd><p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">angles</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">convexity</span><span class="p">()</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">strict_convexity</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">strict_convexity</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">is_convex</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="n">instead</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.super_categories">
+<span class="sig-name descname"><span class="pre">super_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons_with_angles.html#EuclideanPolygonsWithAngles.super_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.super_categories" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the other categories such polygons are automatically members of,
+namely, the category of rational euclidean polygons polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">EuclideanPolygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">EuclideanPolygons</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">WithAngles</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
+<span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">rational</span> <span class="n">euclidean</span> <span class="n">polygons</span> <span class="n">over</span> <span class="n">Rational</span> <span class="n">Field</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="relative_homology.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="euclidean_polygons.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods.angle"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.ParentMethods.angle()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.ParentMethods.is_convex"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.ParentMethods.is_convex()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.Simple"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.Simple</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.an_element"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.an_element()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.angles"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.angles()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_angles"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_angles()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum_dimension"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.billiard_unfolding_stratum_dimension()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.convexity"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.convexity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.is_convex"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.is_convex()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.lengths_polytope"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.lengths_polytope()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.random_element"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.random_element()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.slopes"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.slopes()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.strict_convexity"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.SubcategoryMethods.strict_convexity()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.super_categories"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygonsWithAngles.super_categories()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>

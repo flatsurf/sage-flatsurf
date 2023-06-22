@@ -1,0 +1,907 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+        <title>flatsurf.geometry.categories.dilation_surfaces - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.categories.dilation_surfaces</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The category of dilation surfaces.</span>
+
+<span class="sd">This module provides shared functionality for all surfaces in sage-flatsurf</span>
+<span class="sd">that are built from Euclidean polygons that are glued by translation followed</span>
+<span class="sd">by homothety, i.e., application of a diagonal matrix.</span>
+
+<span class="sd">See :mod:`flatsurf.geometry.categories` for a general description of the</span>
+<span class="sd">category framework in sage-flatsurf.</span>
+
+<span class="sd">Normally, you won&#39;t create this (or any other) category directly. The correct</span>
+<span class="sd">category is automatically determined for immutable surfaces.</span>
+
+<span class="sd">EXAMPLES::</span>
+
+<span class="sd">    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">    sage: C = S.category()</span>
+
+<span class="sd">    sage: from flatsurf.geometry.categories import DilationSurfaces</span>
+<span class="sd">    sage: C.is_subcategory(DilationSurfaces())</span>
+<span class="sd">    True</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ####################################################################</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2013-2019 Vincent Delecroix</span>
+<span class="c1">#                      2013-2019 W. Patrick Hooper</span>
+<span class="c1">#                           2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ####################################################################</span>
+
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SurfaceCategory</span><span class="p">,</span>
+    <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
+
+
+<div class="viewcode-block" id="DilationSurfaces"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces">[docs]</a><span class="k">class</span> <span class="nc">DilationSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The category of surfaces built from polygons with edges identified by</span>
+<span class="sd">    translations and homothety.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.categories import DilationSurfaces</span>
+<span class="sd">        sage: DilationSurfaces()</span>
+<span class="sd">        Category of dilation surfaces</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DilationSurfaces.super_categories"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.super_categories">[docs]</a>    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the categories that a dilation surfaces is also always a member</span>
+<span class="sd">        of.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import DilationSurfaces</span>
+<span class="sd">            sage: DilationSurfaces().super_categories()</span>
+<span class="sd">            [Category of rational similarity surfaces]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.similarity_surfaces</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">SimilaritySurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Rational</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="DilationSurfaces.Positive"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive">[docs]</a>    <span class="k">class</span> <span class="nc">Positive</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by dilation surfaces that use homothety with</span>
+<span class="sd">        positive scaling.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: &#39;Positive&#39; in S.category().axioms()</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DilationSurfaces.Positive.ParentMethods"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all positive dilation surfaces.</span>
+
+<span class="sd">            If you want to add functionality for such surfaces you most likely</span>
+<span class="sd">            want to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DilationSurfaces.Positive.ParentMethods.is_dilation_surface"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive.ParentMethods.is_dilation_surface">[docs]</a>            <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this surface is a dilation surface.</span>
+
+<span class="sd">                See</span>
+<span class="sd">                :meth:`.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`</span>
+<span class="sd">                for details.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="kc">True</span></div>
+
+            <span class="k">def</span> <span class="nf">_test_positive_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Verify that this is a positive dilation surface.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: S.set_immutable()</span>
+<span class="sd">                    sage: S._test_positive_dilation_surface()</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+                <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                    <span class="n">limit</span> <span class="o">=</span> <span class="mi">32</span>
+
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">DilationSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_dilation_surface</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span>
+                    <span class="p">)</span>
+                <span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="DilationSurfaces.SubcategoryMethods"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.SubcategoryMethods">[docs]</a>    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="DilationSurfaces.SubcategoryMethods.Positive"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.SubcategoryMethods.Positive">[docs]</a>        <span class="k">def</span> <span class="nf">Positive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategory of surfaces glued by positive dilation.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import DilationSurfaces</span>
+<span class="sd">                sage: C = DilationSurfaces()</span>
+<span class="sd">                sage: C.Positive()</span>
+<span class="sd">                Category of positive dilation surfaces</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Positive&quot;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="DilationSurfaces.ParentMethods"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods">[docs]</a>    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides methods available to all dilation surfaces.</span>
+
+<span class="sd">        If you want to add functionality for such surfaces you most likely want</span>
+<span class="sd">        to put it here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DilationSurfaces.ParentMethods.is_dilation_surface"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.is_dilation_surface">[docs]</a>        <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this surface is a dilation surface.</span>
+
+<span class="sd">            See :meth:`.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+
+<span class="sd">                sage: S.is_dilation_surface(positive=True)</span>
+<span class="sd">                True</span>
+<span class="sd">                sage: S.is_dilation_surface(positive=False)</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">positive</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="c1"># We do not know whether this surface is a positive dilation</span>
+            <span class="c1"># surface or not so we have to rely on the generic implementation</span>
+            <span class="c1"># of this.</span>
+            <span class="c1"># pylint: disable-next=bad-super-call</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">DilationSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">parent_class</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">is_dilation_surface</span><span class="p">(</span>
+                <span class="n">positive</span><span class="o">=</span><span class="n">positive</span>
+            <span class="p">)</span></div>
+
+        <span class="nd">@staticmethod</span>
+        <span class="k">def</span> <span class="nf">_is_dilation_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether ``surface`` is a dilation surface by checking how</span>
+<span class="sd">            its polygons are glued.</span>
+
+<span class="sd">            This is a helper method for</span>
+<span class="sd">            :meth:`~.similarity_surfaces.ParentMethods.is_dilation_surface`.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``surface`` -- an oriented similarity surface</span>
+
+<span class="sd">            - ``positive`` -- a boolean (default: ``False``); whether the</span>
+<span class="sd">              entries of the diagonal matrix must be positive or are allowed to</span>
+<span class="sd">              be negative.</span>
+
+<span class="sd">            - ``limit`` -- an integer or ``None`` (default: ``None``); if set, only</span>
+<span class="sd">              the first ``limit`` polygons are checked</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import DilationSurfaces</span>
+<span class="sd">                sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, limit=8)</span>
+<span class="sd">                True</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(edges=[(2, 0),(-1, 3),(-1, -3)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+
+<span class="sd">                sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, positive=True)</span>
+<span class="sd">                False</span>
+<span class="sd">                sage: DilationSurfaces.ParentMethods._is_dilation_surface(S)</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;Oriented&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">surface</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot decide whether a non-oriented surface is dilation surface yet&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
+                <span class="n">labels</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+
+            <span class="n">checked</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">surface</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
+                    <span class="n">cross</span> <span class="o">=</span> <span class="n">surface</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">cross</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="k">if</span> <span class="n">cross</span> <span class="ow">in</span> <span class="n">checked</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">checked</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">))</span>
+
+                    <span class="c1"># We do not call self.edge_matrix() since the surface might</span>
+                    <span class="c1"># have overridden this (just returning the identity matrix e.g.)</span>
+                    <span class="c1"># and we want to deduce the matrix from the attached polygon</span>
+                    <span class="c1"># edges instead.</span>
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">SimilaritySurfaces</span>
+
+                    <span class="n">matrix</span> <span class="o">=</span> <span class="n">SimilaritySurfaces</span><span class="o">.</span><span class="n">Oriented</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">edge_matrix</span><span class="o">.</span><span class="n">f</span><span class="p">(</span>  <span class="c1"># pylint: disable=no-member</span>
+                        <span class="n">surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">matrix</span><span class="o">.</span><span class="n">is_diagonal</span><span class="p">():</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+
+                    <span class="k">if</span> <span class="n">positive</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="DilationSurfaces.ParentMethods.apply_matrix"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.apply_matrix">[docs]</a>        <span class="k">def</span> <span class="nf">apply_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Carry out the GL(2,R) action of m on this surface and return the result.</span>
+
+<span class="sd">            If in_place=True, then this is done in place and changes the surface.</span>
+<span class="sd">            This can only be carried out if the surface is finite and mutable.</span>
+
+<span class="sd">            If mapping=True, then we return a GL2RMapping between this surface and its image.</span>
+<span class="sd">            In this case in_place must be False.</span>
+
+<span class="sd">            If in_place=False, then a copy is made before the deformation.</span>
+
+<span class="sd">            TESTS::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)</span>
+
+<span class="sd">                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False, mapping=True)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="s2">&quot;can not modify in place and return a mapping&quot;</span>
+                    <span class="p">)</span>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.half_dilation_surface</span> <span class="kn">import</span> <span class="n">GL2RMapping</span>
+
+                <span class="k">return</span> <span class="n">GL2RMapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">in_place</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                    <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
+
+                    <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
+                    <span class="n">field</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">common_parent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="p">(</span>
+                        <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">field</span><span class="p">),</span>
+                        <span class="n">category</span><span class="o">=</span><span class="n">DilationSurfaces</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">apply_matrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">s</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">m</span> <span class="o">*</span> <span class="bp">self</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Make sure m is in the right state</span>
+                <span class="kn">from</span> <span class="nn">sage.matrix.constructor</span> <span class="kn">import</span> <span class="n">Matrix</span>
+
+                <span class="n">m</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can not deform by degenerate matrix&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="s2">&quot;in-place GL(2,R) action only works for finite surfaces&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">us</span> <span class="o">=</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">us</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;in-place changes only work for mutable surfaces&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+                    <span class="n">us</span><span class="o">.</span><span class="n">replace_polygon</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">():</span>
+                    <span class="c1"># Polygons were all reversed orientation. Need to redo gluings.</span>
+
+                    <span class="c1"># First pass record new gluings in a dictionary.</span>
+                    <span class="n">new_glue</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">seen_labels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">p1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+                        <span class="n">n1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span>
+                        <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n1</span><span class="p">):</span>
+                            <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+                            <span class="n">n2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span>
+                            <span class="k">if</span> <span class="n">p2</span> <span class="ow">in</span> <span class="n">seen_labels</span><span class="p">:</span>
+                                <span class="k">pass</span>
+                            <span class="k">elif</span> <span class="n">p1</span> <span class="o">==</span> <span class="n">p2</span> <span class="ow">and</span> <span class="n">e1</span> <span class="o">&gt;</span> <span class="n">e2</span><span class="p">:</span>
+                                <span class="k">pass</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">new_glue</span><span class="p">[(</span><span class="n">p1</span><span class="p">,</span> <span class="n">n1</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">e1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">n2</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">e2</span><span class="p">)</span>
+                        <span class="n">seen_labels</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+                    <span class="c1"># Second pass: reassign gluings</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">),</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">new_glue</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">us</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">),</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">))</span>
+                <span class="k">return</span> <span class="bp">self</span></div>
+
+        <span class="k">def</span> <span class="nf">_delaunay_edge_needs_flip_Linfinity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check whether the provided edge which bounds two triangles should be flipped</span>
+<span class="sd">            to get closer to the L-infinity Delaunay decomposition.</span>
+
+<span class="sd">            TESTS::</span>
+
+<span class="sd">                sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon</span>
+<span class="sd">                sage: s = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                sage: s.add_polygon(Polygon(vertices=[(0,0), (1,0), (0,1)]))</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: s.add_polygon(Polygon(vertices=[(1,1), (0,1), (1,0)]))</span>
+<span class="sd">                1</span>
+<span class="sd">                sage: s.glue((0, 0), (1, 0))</span>
+<span class="sd">                sage: s.glue((0, 1), (1, 1))</span>
+<span class="sd">                sage: s.glue((0, 2), (1, 2))</span>
+<span class="sd">                sage: s.set_immutable()</span>
+<span class="sd">                sage: [s._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">                [False, False, False]</span>
+
+<span class="sd">                sage: ss = matrix(2, [1,1,0,1]) * s</span>
+<span class="sd">                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">                [False, False, False]</span>
+<span class="sd">                sage: ss = matrix(2, [1,0,1,1]) * s</span>
+<span class="sd">                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">                [False, False, False]</span>
+
+<span class="sd">                sage: ss = matrix(2, [1,2,0,1]) * s</span>
+<span class="sd">                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">                [False, False, True]</span>
+
+<span class="sd">                sage: ss = matrix(2, [1,0,2,1]) * s</span>
+<span class="sd">                sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]</span>
+<span class="sd">                [True, False, False]</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">),</span> <span class="s2">&quot;not opposite edges&quot;</span>
+
+            <span class="c1"># triangles</span>
+            <span class="n">poly1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+            <span class="n">poly2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly1</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">poly2</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge must be adjacent to two triangles&quot;</span><span class="p">)</span>
+
+            <span class="n">edge1</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
+            <span class="n">edge1L</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">edge1R</span> <span class="o">=</span> <span class="n">poly1</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">edge2</span> <span class="o">=</span> <span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span><span class="p">)</span>
+            <span class="n">edge2L</span> <span class="o">=</span> <span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">edge2R</span> <span class="o">=</span> <span class="n">poly2</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>  <span class="c1"># matrix carrying p2 to p1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="o">.</span><span class="n">is_one</span><span class="p">():</span>
+                <span class="n">edge2</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2</span>
+                <span class="n">edge2L</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2L</span>
+                <span class="n">edge2R</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">edge2R</span>
+
+            <span class="c1"># convexity check of the quadrilateral</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span>
+
+            <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">edge2L</span><span class="p">,</span> <span class="n">edge1R</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ccw</span><span class="p">(</span><span class="n">edge1L</span><span class="p">,</span> <span class="n">edge2R</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># compare the norms</span>
+            <span class="n">new_edge</span> <span class="o">=</span> <span class="n">edge2L</span> <span class="o">+</span> <span class="n">edge1R</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">edge1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">edge1</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">new_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">n1</span>
+
+        <span class="k">def</span> <span class="nf">_test_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Verify that this is a dilation surface.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S._test_dilation_surface()</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="n">limit</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                <span class="n">limit</span> <span class="o">=</span> <span class="mi">32</span>
+
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="n">DilationSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_dilation_surface</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DilationSurfaces.FiniteType"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType">[docs]</a>    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The category of dilation surfaces built from a finite number of polygons.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">            sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import DilationSurfaces</span>
+<span class="sd">            sage: S in DilationSurfaces().FiniteType()</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DilationSurfaces.FiniteType.ParentMethods"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all dilation surfaces built from</span>
+<span class="sd">            finitely many polygons.</span>
+
+<span class="sd">            If you want to add functionality for such surfaces you most likely</span>
+<span class="sd">            want to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DilationSurfaces.FiniteType.ParentMethods.l_infinity_delaunay_triangulation"><a class="viewcode-back" href="../../../../geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods.l_infinity_delaunay_triangulation">[docs]</a>            <span class="k">def</span> <span class="nf">l_infinity_delaunay_triangulation</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return an L-infinity Delaunay triangulation of a surface, or make</span>
+<span class="sd">                some triangle flips to get closer to the Delaunay decomposition.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``triangulated`` -- deprecated and ignored.</span>
+
+<span class="sd">                - ``in_place`` -- deprecated  and must be ``None`` (the default);</span>
+<span class="sd">                  otherwise an error is produced</span>
+
+<span class="sd">                - ``limit`` -- optional (positive integer) If provided, then at most ``limit``</span>
+<span class="sd">                    many diagonal flips will be done.</span>
+
+<span class="sd">                - ``direction`` -- optional (vector). Used to determine labels when a</span>
+<span class="sd">                  pair of triangles is flipped. Each triangle has a unique separatrix</span>
+<span class="sd">                  which points in the provided direction or its negation. As such a</span>
+<span class="sd">                  vector determines a sign for each triangle.  A pair of adjacent</span>
+<span class="sd">                  triangles have opposite signs. Labels are chosen so that this sign is</span>
+<span class="sd">                  preserved (as a function of labels).</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: s0 = translation_surfaces.veech_double_n_gon(5)</span>
+<span class="sd">                    sage: field = s0.base_ring()</span>
+<span class="sd">                    sage: a = field.gen()</span>
+<span class="sd">                    sage: m = matrix(field, 2, [2,a,1,1])</span>
+
+<span class="sd">                    sage: s = m*s0</span>
+<span class="sd">                    sage: s = s.l_infinity_delaunay_triangulation()</span>
+<span class="sd">                    sage: TestSuite(s).run()</span>
+
+<span class="sd">                    sage: s = (m**2)*s0</span>
+<span class="sd">                    sage: s = s.l_infinity_delaunay_triangulation()  # long time (.5s)</span>
+<span class="sd">                    sage: TestSuite(s).run()  # long time (see above)</span>
+
+<span class="sd">                    sage: s = (m**3)*s0</span>
+<span class="sd">                    sage: s = s.l_infinity_delaunay_triangulation()  # long time (.8s)</span>
+<span class="sd">                    sage: TestSuite(s).run()  # long time (see above)</span>
+
+<span class="sd">                TESTS:</span>
+
+<span class="sd">                Verify that deprecated keywords do not cause errors::</span>
+
+<span class="sd">                    sage: s.l_infinity_delaunay_triangulation(triangulated=True)  # long time (.8s)</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.</span>
+<span class="sd">                    Translation Surface in H_2(2) built from 6 triangles</span>
+<span class="sd">                    sage: s.l_infinity_delaunay_triangulation(triangulated=False)  # long time (.9s)</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.</span>
+<span class="sd">                    Translation Surface in H_2(2) built from 6 triangles</span>
+
+<span class="sd">                ::</span>
+
+<span class="sd">                    sage: s.l_infinity_delaunay_triangulation(in_place=True)</span>
+<span class="sd">                    Traceback (most recent call last):</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    NotImplementedError: The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="kn">import</span> <span class="nn">warnings</span>
+
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">&quot;The triangulated keyword of l_infinity_delaunay_triangulation() has been deprecated and will be removed from a future version of sage-flatsurf. The keyword has no effect anymore.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">in_place</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="s2">&quot;The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+
+                <span class="bp">self</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">DilationSurfaces</span><span class="p">()</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">base_ring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+                    <span class="n">direction</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_ring</span><span class="o">**</span><span class="mi">2</span><span class="p">)((</span><span class="n">base_ring</span><span class="o">.</span><span class="n">zero</span><span class="p">(),</span> <span class="n">base_ring</span><span class="o">.</span><span class="n">one</span><span class="p">()))</span>
+
+                <span class="k">if</span> <span class="n">direction</span><span class="o">.</span><span class="n">is_zero</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;direction must be non-zero&quot;</span><span class="p">)</span>
+
+                <span class="n">triangles</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">limit</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+                <span class="k">while</span> <span class="n">triangles</span> <span class="ow">and</span> <span class="n">limit</span><span class="p">:</span>
+                    <span class="n">p1</span> <span class="o">=</span> <span class="n">triangles</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                        <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delaunay_edge_needs_flip_Linfinity</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span>
+                                <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span>
+                            <span class="p">)</span>
+                            <span class="n">triangles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+                            <span class="n">triangles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+                            <span class="n">limit</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span></div></div></div></div>
+
+
+<span class="c1"># Currently, there is no &quot;Positive&quot; axiom in SageMath so we make it known to</span>
+<span class="c1"># the category framework.</span>
+<span class="n">all_axioms</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;Positive&quot;</span><span class="p">,)</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

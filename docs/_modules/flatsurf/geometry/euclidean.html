@@ -1,0 +1,917 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+        <title>flatsurf.geometry.euclidean - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.euclidean</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A loose collection of tools for Euclidean geometry in the plane.</span>
+
+<span class="sd">.. SEEALSO::</span>
+
+<span class="sd">    :mod:`flatsurf.geometry.circle` for everything specific to circles in the plane</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">######################################################################</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
+<span class="c1">#                      2020-2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">######################################################################</span>
+
+
+<div class="viewcode-block" id="is_cosine_sine_of_rational"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_cosine_sine_of_rational">[docs]</a><span class="k">def</span> <span class="nf">is_cosine_sine_of_rational</span><span class="p">(</span><span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the given pair is a cosine and sine of a same rational angle.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``cos`` -- a number</span>
+
+<span class="sd">    - ``sin`` -- a number</span>
+
+<span class="sd">    - ``scaled`` -- a boolean (default: ``False``); whether to allow ``cos``</span>
+<span class="sd">      and ``sin`` to be scaled by the same positive algebraic number</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import is_cosine_sine_of_rational</span>
+
+<span class="sd">        sage: c = s = AA(sqrt(2))/2</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c, s)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: c = AA(sqrt(3))/2</span>
+<span class="sd">        sage: s = AA(1/2)</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c, s)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: c = AA(sqrt(5)/2)</span>
+<span class="sd">        sage: s = (1 - c**2).sqrt()</span>
+<span class="sd">        sage: c**2 + s**2</span>
+<span class="sd">        1.000000000000000?</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c, s)</span>
+<span class="sd">        False</span>
+
+<span class="sd">        sage: c = (AA(sqrt(5)) + 1)/4</span>
+<span class="sd">        sage: s = (1 - c**2).sqrt()</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(c, s)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: K.&lt;sqrt2&gt; = NumberField(x**2 - 2, embedding=1.414)</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(K.zero(), -K.one())</span>
+<span class="sd">        True</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib</span>
+<span class="sd">        sage: R = ExactReals() # optional: exactreal</span>
+<span class="sd">        sage: is_cosine_sine_of_rational(R.one(), R.zero()) # optional: exactreal</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">AA</span>
+
+    <span class="c1"># We cannot check in AA due to https://github.com/flatsurf/exact-real/issues/172</span>
+    <span class="c1"># We just trust that non-algebraic elements won&#39;t allow conversion to AA.</span>
+    <span class="c1"># if cos not in AA:</span>
+    <span class="c1">#     return False</span>
+    <span class="c1"># if sin not in AA:</span>
+    <span class="c1">#     return False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">scaled</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cos</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">sin</span><span class="o">**</span><span class="mi">2</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cos</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># This is a replacement for the &quot;in AA&quot; checked disabled above.</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">cos</span> <span class="o">=</span> <span class="n">cos</span><span class="o">.</span><span class="n">as_number_field_element</span><span class="p">(</span><span class="n">embedded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613</span>
+    <span class="n">cos</span> <span class="o">=</span> <span class="n">cos</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">cos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sin</span> <span class="o">=</span> <span class="n">AA</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="c1"># This is a replacement for the &quot;in AA&quot; checked disabled above.</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">sin</span> <span class="o">=</span> <span class="n">sin</span><span class="o">.</span><span class="n">as_number_field_element</span><span class="p">(</span><span class="n">embedded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># We need an explicit conversion to the number field due to https://github.com/sagemath/sage/issues/35613</span>
+    <span class="n">sin</span> <span class="o">=</span> <span class="n">sin</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">sin</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ComplexBallField</span>
+
+    <span class="n">CBF</span> <span class="o">=</span> <span class="n">ComplexBallField</span><span class="p">(</span><span class="mi">53</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">CBF</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span> <span class="o">+</span> <span class="n">CBF</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">CBF</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span>
+    <span class="n">xN</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="c1"># Suppose that (cos, sin) are indeed sine and cosine of a rational angle.</span>
+    <span class="c1"># Then x = cos + I*sin generates a cyclotomic field C and for some N we</span>
+    <span class="c1"># have x^N = ±1. Since C is contained in the compositum of K=Q(cos) and</span>
+    <span class="c1"># L=Q(i*sin) and Q(cos) and Q(sin) are both contained in C, the degree of C</span>
+    <span class="c1"># is bounded from above by twice (accounting for the imaginary unit) the</span>
+    <span class="c1"># degrees of K and L. The degree of C is the totient of N which is bounded</span>
+    <span class="c1"># from below by n / (e^γ loglog n + 3 / loglog n) [cf. wikipedia].</span>
+    <span class="n">degree_bound</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">cos</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span> <span class="o">*</span> <span class="n">sin</span><span class="o">.</span><span class="n">minpoly</span><span class="p">()</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
+
+    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">xN</span> <span class="o">*=</span> <span class="n">x</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">xN</span><span class="o">.</span><span class="n">real</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">xN</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">xN</span><span class="o">.</span><span class="n">real</span><span class="p">()</span><span class="o">.</span><span class="n">contains_zero</span><span class="p">()</span> <span class="ow">or</span> <span class="n">xN</span><span class="o">.</span><span class="n">imag</span><span class="p">()</span><span class="o">.</span><span class="n">contains_zero</span><span class="p">():</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">cos</span> <span class="o">-</span> <span class="n">s</span> <span class="o">*</span> <span class="n">sin</span><span class="p">,</span> <span class="n">s</span> <span class="o">*</span> <span class="n">cos</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">sin</span>
+
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="n">CBF</span> <span class="o">=</span> <span class="n">ComplexBallField</span><span class="p">(</span><span class="n">CBF</span><span class="o">.</span><span class="n">precision</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">CBF</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span> <span class="o">+</span> <span class="n">CBF</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">CBF</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span>
+            <span class="n">xN</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="n">n</span>
+
+        <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">log</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">/</span> <span class="n">log</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">degree_bound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="angle"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.angle">[docs]</a><span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``u``, ``v`` - vectors</span>
+
+<span class="sd">    - ``numerical`` - boolean (default: ``False``), whether to return floating</span>
+<span class="sd">      point numbers</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import angle</span>
+
+<span class="sd">    As the implementation is dirty, we at least check that it works for all</span>
+<span class="sd">    denominator up to 20::</span>
+
+<span class="sd">        sage: u = vector((AA(1),AA(0)))</span>
+<span class="sd">        sage: for n in xsrange(1,20):       # long time  (1.5s)</span>
+<span class="sd">        ....:     for k in xsrange(1,n):</span>
+<span class="sd">        ....:         v = vector((AA(cos(2*k*pi/n)), AA(sin(2*k*pi/n))))</span>
+<span class="sd">        ....:         assert angle(u,v) == k/n</span>
+
+<span class="sd">    The numerical version (working over floating point numbers)::</span>
+
+<span class="sd">        sage: import math</span>
+<span class="sd">        sage: u = (1, 0)</span>
+<span class="sd">        sage: for n in xsrange(1,20):</span>
+<span class="sd">        ....:     for k in xsrange(1,n):</span>
+<span class="sd">        ....:         a = 2 * k * math.pi / n</span>
+<span class="sd">        ....:         v = (math.cos(a), math.sin(a))</span>
+<span class="sd">        ....:         assert abs(angle(u,v,numerical=True) * 2 * math.pi - a) &lt; 1.e-10</span>
+
+<span class="sd">    If the angle is not rational, then the method returns an element in the real</span>
+<span class="sd">    lazy field::</span>
+
+<span class="sd">        sage: v = vector((AA(sqrt(2)), AA(sqrt(3))))</span>
+<span class="sd">        sage: a = angle(u, v)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        NotImplementedError: cannot recover a rational angle from these numerical results</span>
+<span class="sd">        sage: a = angle(u, v, numerical=True)</span>
+<span class="sd">        sage: a    # abs tol 1e-14</span>
+<span class="sd">        0.14102355421224375</span>
+<span class="sd">        sage: exp(2*pi.n()*CC(0,1)*a)</span>
+<span class="sd">        0.632455532033676 + 0.774596669241483*I</span>
+<span class="sd">        sage: v / v.norm()</span>
+<span class="sd">        (0.6324555320336758?, 0.774596669241484?)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">math</span>
+
+    <span class="n">u0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">u1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">v0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">cos_uv</span> <span class="o">=</span> <span class="p">(</span><span class="n">u0</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">u0</span> <span class="o">*</span> <span class="n">u0</span> <span class="o">+</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">u1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">v0</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">+</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">1.0000001</span>
+        <span class="n">cos_uv</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="mf">1.0000001</span>
+        <span class="n">cos_uv</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>  <span class="c1"># rat number between 0 and 1/2</span>
+
+    <span class="k">if</span> <span class="n">numerical</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle</span>
+
+    <span class="c1"># fast and dirty way using floating point approximation</span>
+    <span class="c1"># (see below for a slow but exact method)</span>
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+
+    <span class="n">angle_rat</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">angle_rat</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">256</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot recover a rational angle from these numerical results&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle_rat</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle_rat</span></div>
+
+    <span class="c1"># a neater way is provided below by working only with number fields</span>
+    <span class="c1"># but this method is slower...</span>
+    <span class="c1"># sqnorm_u = u[0]*u[0] + u[1]*u[1]</span>
+    <span class="c1"># sqnorm_v = v[0]*v[0] + v[1]*v[1]</span>
+    <span class="c1">#</span>
+    <span class="c1"># if sqnorm_u != sqnorm_v:</span>
+    <span class="c1">#    # we need to take a square root in order that u and v have the</span>
+    <span class="c1">#    # same norm</span>
+    <span class="c1">#    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)</span>
+    <span class="c1">#    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)</span>
+    <span class="c1">#    sqnorm_u = AA.one()</span>
+    <span class="c1">#    sqnorm_v = AA.one()</span>
+    <span class="c1">#</span>
+    <span class="c1"># cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u</span>
+    <span class="c1"># sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u</span>
+
+
+<div class="viewcode-block" id="ccw"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.ccw">[docs]</a><span class="k">def</span> <span class="nf">ccw</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a positive number if the turn from ``v`` to ``w`` is</span>
+<span class="sd">    counterclockwise, a negative number if it is clockwise, and zero if the two</span>
+<span class="sd">    vectors are collinear.</span>
+
+<span class="sd">    .. NOTE::</span>
+
+<span class="sd">        This function is sometimes also referred to as the wedge product or</span>
+<span class="sd">        simply the determinant. We chose the more customary name ``ccw`` from</span>
+<span class="sd">        computational geometry here.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import ccw</span>
+<span class="sd">        sage: ccw((1, 0), (0, 1))</span>
+<span class="sd">        1</span>
+<span class="sd">        sage: ccw((1, 0), (-1, 0))</span>
+<span class="sd">        0</span>
+<span class="sd">        sage: ccw((1, 0), (0, -1))</span>
+<span class="sd">        -1</span>
+<span class="sd">        sage: ccw((1, 0), (1, 0))</span>
+<span class="sd">        0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="is_parallel"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_parallel">[docs]</a><span class="k">def</span> <span class="nf">is_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return whether the vectors ``v`` and ``w`` are parallel (but not</span>
+<span class="sd">    anti-parallel.)</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import is_parallel</span>
+<span class="sd">        sage: is_parallel((0, 1), (0, 1))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_parallel((0, 1), (0, 2))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_parallel((0, 1), (0, -2))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_parallel((0, 1), (0, 0))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_parallel((0, 1), (1, 0))</span>
+<span class="sd">        False</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: V = QQ**2</span>
+
+<span class="sd">        sage: is_parallel(V((0,1)), V((0,2)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_parallel(V((1,-1)), V((2,-2)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_parallel(V((4,-2)), V((2,-1)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_parallel(V((1,2)), V((2,4)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_parallel(V((0,2)), V((0,1)))</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: is_parallel(V((1,1)), V((1,2)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_parallel(V((1,2)), V((2,1)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_parallel(V((1,2)), V((1,-2)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_parallel(V((1,2)), V((-1,-2)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_parallel(V((2,-1)), V((-2,1)))</span>
+<span class="sd">        False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># vectors are not collinear</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="is_anti_parallel"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_anti_parallel">[docs]</a><span class="k">def</span> <span class="nf">is_anti_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return whether the vectors ``v`` and ``w`` are anti-parallel, i.e., whether</span>
+<span class="sd">    ``v`` and ``-w`` are parallel.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import is_anti_parallel</span>
+<span class="sd">        sage: V = QQ**2</span>
+
+<span class="sd">        sage: is_anti_parallel(V((0,1)), V((0,-2)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_anti_parallel(V((1,-1)), V((-2,2)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_anti_parallel(V((4,-2)), V((-2,1)))</span>
+<span class="sd">        True</span>
+<span class="sd">        sage: is_anti_parallel(V((-1,-2)), V((2,4)))</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: is_anti_parallel(V((1,1)), V((1,2)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_anti_parallel(V((1,2)), V((2,1)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_anti_parallel(V((0,2)), V((0,1)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_anti_parallel(V((1,2)), V((1,-2)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_anti_parallel(V((1,2)), V((-1,2)))</span>
+<span class="sd">        False</span>
+<span class="sd">        sage: is_anti_parallel(V((2,-1)), V((-2,-1)))</span>
+<span class="sd">        False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">is_parallel</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="n">w</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="line_intersection"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.line_intersection">[docs]</a><span class="k">def</span> <span class="nf">line_intersection</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the point of intersection between the line joining p1 to p2</span>
+<span class="sd">    and the line joining q1 to q2. If the lines do not have a single point of</span>
+<span class="sd">    intersection, we return None. Here p1, p2, q1 and q2 should be vectors in</span>
+<span class="sd">    the plane.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">,</span> <span class="n">q2</span> <span class="o">-</span> <span class="n">q1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Since the wedge product is non-zero, the following is invertible:</span>
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">q2</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">q2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
+    <span class="k">return</span> <span class="n">p1</span> <span class="o">+</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">-</span> <span class="n">p1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_segment_intersecting"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_segment_intersecting">[docs]</a><span class="k">def</span> <span class="nf">is_segment_intersecting</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return whether the segments ``e1`` and ``e2`` intersect.</span>
+
+<span class="sd">    OUTPUT:</span>
+
+<span class="sd">    - ``0`` - do not intersect</span>
+<span class="sd">    - ``1`` - one endpoint in common</span>
+<span class="sd">    - ``2`` - non-trivial intersection</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import is_segment_intersecting</span>
+<span class="sd">        sage: is_segment_intersecting(((0,0),(1,0)),((0,1),(0,3)))</span>
+<span class="sd">        0</span>
+<span class="sd">        sage: is_segment_intersecting(((0,0),(1,0)),((0,0),(0,3)))</span>
+<span class="sd">        1</span>
+<span class="sd">        sage: is_segment_intersecting(((0,0),(1,0)),((0,-1),(0,3)))</span>
+<span class="sd">        2</span>
+<span class="sd">        sage: is_segment_intersecting(((-1,-1),(1,1)),((0,0),(2,2)))</span>
+<span class="sd">        2</span>
+<span class="sd">        sage: is_segment_intersecting(((-1,-1),(1,1)),((1,1),(2,2)))</span>
+<span class="sd">        1</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">e2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">e2</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;degenerate segments&quot;</span><span class="p">)</span>
+
+    <span class="n">elts</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">get_coercion_model</span>
+
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
+
+    <span class="n">base_ring</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">common_parent</span><span class="p">(</span><span class="o">*</span><span class="n">elts</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.structure.coerce</span> <span class="kn">import</span> <span class="n">py_scalar_parent</span>
+
+        <span class="n">base_ring</span> <span class="o">=</span> <span class="n">py_scalar_parent</span><span class="p">(</span><span class="n">base_ring</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">xs1</span><span class="p">,</span> <span class="n">ys1</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">xt1</span><span class="p">,</span> <span class="n">yt1</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">xs2</span><span class="p">,</span> <span class="n">ys2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">e2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">xt2</span><span class="p">,</span> <span class="n">yt2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">base_ring</span><span class="p">,</span> <span class="n">e2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xs1</span><span class="p">,</span> <span class="n">ys1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt1</span><span class="p">,</span> <span class="n">yt1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xs2</span><span class="p">,</span> <span class="n">ys2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">s0</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt2</span><span class="p">,</span> <span class="n">yt2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s0</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s1</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">s0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># e2 stands on one side of the line generated by e1</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xs2</span><span class="p">,</span> <span class="n">ys2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt2</span><span class="p">,</span> <span class="n">yt2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xs1</span><span class="p">,</span> <span class="n">ys1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+    <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt1</span><span class="p">,</span> <span class="n">yt1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">det</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s2</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s3</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">s2</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s3</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># e1 stands on one side of the line generated by e2</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">s0</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">s2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">s3</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">xt1</span> <span class="o">&lt;</span> <span class="n">xs1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">xt1</span> <span class="o">==</span> <span class="n">xs1</span> <span class="ow">and</span> <span class="n">yt1</span> <span class="o">&lt;</span> <span class="n">ys1</span><span class="p">):</span>
+            <span class="n">xs1</span><span class="p">,</span> <span class="n">xt1</span> <span class="o">=</span> <span class="n">xt1</span><span class="p">,</span> <span class="n">xs1</span>
+            <span class="n">ys1</span><span class="p">,</span> <span class="n">yt1</span> <span class="o">=</span> <span class="n">yt1</span><span class="p">,</span> <span class="n">ys1</span>
+        <span class="k">if</span> <span class="n">xt2</span> <span class="o">&lt;</span> <span class="n">xs2</span> <span class="ow">or</span> <span class="p">(</span><span class="n">xt2</span> <span class="o">==</span> <span class="n">xs2</span> <span class="ow">and</span> <span class="n">yt2</span> <span class="o">&lt;</span> <span class="n">ys2</span><span class="p">):</span>
+            <span class="n">xs2</span><span class="p">,</span> <span class="n">xt2</span> <span class="o">=</span> <span class="n">xt2</span><span class="p">,</span> <span class="n">xs2</span>
+            <span class="n">ys2</span><span class="p">,</span> <span class="n">yt2</span> <span class="o">=</span> <span class="n">yt2</span><span class="p">,</span> <span class="n">ys2</span>
+
+        <span class="k">if</span> <span class="n">xs1</span> <span class="o">==</span> <span class="n">xt1</span> <span class="o">==</span> <span class="n">xs2</span> <span class="o">==</span> <span class="n">xt2</span><span class="p">:</span>
+            <span class="n">xs1</span><span class="p">,</span> <span class="n">xt1</span><span class="p">,</span> <span class="n">xs2</span><span class="p">,</span> <span class="n">xt2</span> <span class="o">=</span> <span class="n">ys1</span><span class="p">,</span> <span class="n">yt1</span><span class="p">,</span> <span class="n">ys2</span><span class="p">,</span> <span class="n">yt2</span>
+
+        <span class="k">assert</span> <span class="n">xs1</span> <span class="o">&lt;</span> <span class="n">xt1</span> <span class="ow">and</span> <span class="n">xs2</span> <span class="o">&lt;</span> <span class="n">xt2</span><span class="p">,</span> <span class="p">(</span><span class="n">xs1</span><span class="p">,</span> <span class="n">xt1</span><span class="p">,</span> <span class="n">xs2</span><span class="p">,</span> <span class="n">xt2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">xs2</span> <span class="o">&gt;</span> <span class="n">xt1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">xt2</span> <span class="o">&lt;</span> <span class="n">xs1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>  <span class="c1"># no intersection</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">xs2</span> <span class="o">==</span> <span class="n">xt1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">xt2</span> <span class="o">==</span> <span class="n">xs1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>  <span class="c1"># one endpoint in common</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">xs1</span> <span class="o">&lt;=</span> <span class="n">xs2</span> <span class="o">&lt;</span> <span class="n">xt1</span>
+                <span class="ow">or</span> <span class="n">xs1</span> <span class="o">&lt;</span> <span class="n">xt2</span> <span class="o">&lt;=</span> <span class="n">xt1</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">xs2</span> <span class="o">&lt;</span> <span class="n">xs1</span> <span class="ow">and</span> <span class="n">xt2</span> <span class="o">&gt;</span> <span class="n">xt1</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="n">xs2</span> <span class="o">&gt;</span> <span class="n">xs1</span> <span class="ow">and</span> <span class="n">xt2</span> <span class="o">&lt;</span> <span class="n">xt1</span><span class="p">)</span>
+            <span class="p">),</span> <span class="p">(</span><span class="n">xs1</span><span class="p">,</span> <span class="n">xt1</span><span class="p">,</span> <span class="n">xs2</span><span class="p">,</span> <span class="n">xt2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">2</span>  <span class="c1"># one dimensional</span>
+
+    <span class="k">elif</span> <span class="n">s0</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">s1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># treat alignment here</span>
+        <span class="k">if</span> <span class="n">s2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">s3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>  <span class="c1"># one endpoint in common</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">2</span>  <span class="c1"># intersection in the middle</span>
+
+    <span class="k">return</span> <span class="mi">2</span>  <span class="c1"># middle intersection</span></div>
+
+
+<div class="viewcode-block" id="is_between"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.is_between">[docs]</a><span class="k">def</span> <span class="nf">is_between</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the vector ``f`` is strictly in the sector formed by the vectors</span>
+<span class="sd">    ``e0`` and ``e1`` (in counter-clockwise order).</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import is_between</span>
+<span class="sd">        sage: V = ZZ^2</span>
+<span class="sd">        sage: is_between(V((1, 0)), V((1, 1)), V((2, 1)))</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">e0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">e0</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1"># positive determinant</span>
+        <span class="c1"># [ e0[0] e1[0] ]^-1 = [ e1[1] -e1[0] ]</span>
+        <span class="c1"># [ e0[1] e1[1] ]      [-e0[1]  e0[0] ]</span>
+        <span class="c1"># f[0] * e1[1] - e1[0] * f[1] &gt; 0</span>
+        <span class="c1"># - f[0] * e0[1] + e0[0] * f[1] &gt; 0</span>
+        <span class="k">return</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">e0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">e0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">e0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">e0</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1"># aligned vector</span>
+        <span class="k">return</span> <span class="n">e0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">e0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># negative determinant</span>
+        <span class="c1"># [ e1[0] e0[0] ]^-1 = [ e0[1] -e0[0] ]</span>
+        <span class="c1"># [ e1[1] e0[1] ]      [-e1[1]  e1[0] ]</span>
+        <span class="c1"># f[0] * e0[1] - e0[0] * f[1] &gt; 0</span>
+        <span class="c1"># - f[0] * e1[1] + e1[0] * f[1] &gt; 0</span>
+        <span class="k">return</span> <span class="n">e0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">e0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">e1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">e1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="solve"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.solve">[docs]</a><span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (a,b) so that: x + au = y + bv</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``x``, ``u``, ``y``, ``v`` -- two dimensional vectors</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import solve</span>
+<span class="sd">        sage: K.&lt;sqrt2&gt; = NumberField(x^2 - 2, embedding=AA(2).sqrt())</span>
+<span class="sd">        sage: V = VectorSpace(K,2)</span>
+<span class="sd">        sage: x = V((1,-sqrt2))</span>
+<span class="sd">        sage: y = V((1,1))</span>
+<span class="sd">        sage: a = V((0,1))</span>
+<span class="sd">        sage: b = V((-sqrt2, sqrt2+1))</span>
+<span class="sd">        sage: u = V((0,1))</span>
+<span class="sd">        sage: v = V((-sqrt2, sqrt2+1))</span>
+<span class="sd">        sage: a, b = solve(x,u,y,v)</span>
+<span class="sd">        sage: x + a*u == y + b*v</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: u = V((1,1))</span>
+<span class="sd">        sage: v = V((1,sqrt2))</span>
+<span class="sd">        sage: a, b = solve(x,u,y,v)</span>
+<span class="sd">        sage: x + a*u == y + b*v</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_zero</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;parallel vectors&quot;</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">d</span><span class="p">,</span> <span class="n">b</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="projectivization"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.projectivization">[docs]</a><span class="k">def</span> <span class="nf">projectivization</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">denominator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a simplified version of the projective coordinate [x: y].</span>
+
+<span class="sd">    If ``signed`` (the default), the second coordinate is made non-negative;</span>
+<span class="sd">    otherwise the coordinates keep their signs.</span>
+
+<span class="sd">    If ``denominator`` is ``False``, returns [x/y: 1] up to sign. Otherwise,</span>
+<span class="sd">    the returned coordinates have no denominator and no non-unit gcd.</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import projectivization</span>
+
+<span class="sd">        sage: projectivization(2/3, -3/5, signed=True, denominator=True)</span>
+<span class="sd">        (10, -9)</span>
+<span class="sd">        sage: projectivization(2/3, -3/5, signed=False, denominator=True)</span>
+<span class="sd">        (-10, 9)</span>
+<span class="sd">        sage: projectivization(2/3, -3/5, signed=True, denominator=False)</span>
+<span class="sd">        (10/9, -1)</span>
+<span class="sd">        sage: projectivization(2/3, -3/5, signed=False, denominator=False)</span>
+<span class="sd">        (-10/9, 1)</span>
+
+<span class="sd">        sage: projectivization(-1/2, 0, signed=True, denominator=True)</span>
+<span class="sd">        (-1, 0)</span>
+<span class="sd">        sage: projectivization(-1/2, 0, signed=False, denominator=True)</span>
+<span class="sd">        (1, 0)</span>
+<span class="sd">        sage: projectivization(-1/2, 0, signed=True, denominator=False)</span>
+<span class="sd">        (-1, 0)</span>
+<span class="sd">        sage: projectivization(-1/2, 0, signed=False, denominator=False)</span>
+<span class="sd">        (1, 0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Sequence</span>
+
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span><span class="o">.</span><span class="n">universe</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">y</span><span class="p">:</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
+        <span class="k">if</span> <span class="n">denominator</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="p">(</span><span class="n">denominator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="s2">&quot;denominator&quot;</span><span class="p">)):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">parent</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">denominator</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">parent</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">signed</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">z</span> <span class="o">*</span> <span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">signed</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">parent</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">parent</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">parent</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">parent</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

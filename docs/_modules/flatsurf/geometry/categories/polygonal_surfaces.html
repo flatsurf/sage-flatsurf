@@ -1,0 +1,1674 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+        <title>flatsurf.geometry.categories.polygonal_surfaces - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.categories.polygonal_surfaces</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The category of surfaces built from polygons.</span>
+
+<span class="sd">This module provides shared functionality for all surfaces in sage-flatsurf</span>
+<span class="sd">that are built from polygons (such as Euclidean polygons or hyperbolic</span>
+<span class="sd">polygons.)</span>
+
+<span class="sd">See :mod:`flatsurf.geometry.categories` for a general description of the</span>
+<span class="sd">category framework in sage-flatsurf.</span>
+
+<span class="sd">Normally, you won&#39;t create this (or any other) category directly. The correct</span>
+<span class="sd">category is automatically determined for immutable surfaces.</span>
+
+<span class="sd">EXAMPLES::</span>
+
+<span class="sd">    sage: from flatsurf import MutableOrientedSimilaritySurface</span>
+<span class="sd">    sage: C = MutableOrientedSimilaritySurface(QQ).category()</span>
+
+<span class="sd">    sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">    sage: C.is_subcategory(PolygonalSurfaces())</span>
+<span class="sd">    True</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ****************************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ****************************************************************************</span>
+
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.surface_category</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SurfaceCategory</span><span class="p">,</span>
+    <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
+<span class="kn">from</span> <span class="nn">sage.misc.abstract_method</span> <span class="kn">import</span> <span class="n">abstract_method</span>
+
+
+<div class="viewcode-block" id="PolygonalSurfaces"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces">[docs]</a><span class="k">class</span> <span class="nc">PolygonalSurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The category of surfaces built by gluing polygons defined in some space</span>
+<span class="sd">    such as the real plane (see</span>
+<span class="sd">    :mod:`~flatsurf.geometry.categories.euclidean_polygonal_surfaces`.)</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">        sage: PolygonalSurfaces()</span>
+<span class="sd">        Category of polygonal surfaces</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.super_categories"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.super_categories">[docs]</a>    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the categories that a polygonal surface is always also a member</span>
+<span class="sd">        of.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">            sage: PolygonalSurfaces().super_categories()</span>
+<span class="sd">            [Category of topological surfaces]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.topological_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="n">TopologicalSurfaces</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">TopologicalSurfaces</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods">[docs]</a>    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides methods available to all surfaces that are built from polygons.</span>
+
+<span class="sd">        If you want to add functionality for such surfaces you most likely</span>
+<span class="sd">        want to put it here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.refined_category"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.refined_category">[docs]</a>        <span class="k">def</span> <span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the smallest subcategory that this surface is in by</span>
+<span class="sd">            consulting which edges are glued to each other.</span>
+
+<span class="sd">            Note that this does not take into account how the edges are glued</span>
+<span class="sd">            to each other exactly (e.g., by which similarity) since at this</span>
+<span class="sd">            level (i.e., without knowing about the space in which the polygons</span>
+<span class="sd">            live) the gluing is just described combinatorially.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import MutableOrientedSimilaritySurface, polygons</span>
+<span class="sd">                sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: S.add_polygon(polygons.square(), label=0)</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: S.refined_category()</span>
+<span class="sd">                Category of connected with boundary finite type translation surfaces</span>
+
+<span class="sd">                sage: S.glue((0, 0), (0, 2))</span>
+<span class="sd">                sage: S.glue((0, 1), (0, 3))</span>
+<span class="sd">                sage: S.refined_category()</span>
+<span class="sd">                Category of connected without boundary finite type translation surfaces</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.topological_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="n">TopologicalSurfaces</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">category</span> <span class="o">=</span> <span class="n">TopologicalSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                <span class="n">category</span> <span class="o">&amp;=</span> <span class="n">category</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">category</span> <span class="o">&amp;=</span> <span class="n">category</span><span class="o">.</span><span class="n">InfiniteType</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">category</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.is_triangulated"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_triangulated">[docs]</a>        <span class="k">def</span> <span class="nf">is_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this surface is built from triangles.</span>
+
+<span class="sd">            Surfaces of infinite type should override this method.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.is_triangulated()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">roots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">roots</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;cannot decide whether this (potentially infinite type) surface is triangulated&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.walker"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.walker">[docs]</a>        <span class="k">def</span> <span class="nf">walker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return an iterable that walks the labels of the surface.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: walker = S.walker()</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.</span>
+<span class="sd">                sage: list(walker)</span>
+<span class="sd">                [0]</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;walker() is deprecated and will be removed from a future version of sage-flatsurf; use labels() instead.&quot;</span>
+            <span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface_legacy</span> <span class="kn">import</span> <span class="n">LabelWalker</span>
+
+            <span class="k">return</span> <span class="n">LabelWalker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deprecation_warning</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.labels"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels">[docs]</a>        <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the labels used to enumerate the polygons that make up this</span>
+<span class="sd">            surface.</span>
+
+<span class="sd">            The labels are returned in a breadth first search order starting at</span>
+<span class="sd">            the :meth:`base_label`. This order is compatible with the order in</span>
+<span class="sd">            which polygons are returned by :meth:`polygons`.</span>
+
+<span class="sd">            .. NOTE::</span>
+
+<span class="sd">                The generic implementation of this method returns a collection</span>
+<span class="sd">                that is very slow at computing its length and deciding</span>
+<span class="sd">                containment. To speed things up it is recommended to override</span>
+<span class="sd">                this method.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.labels()</span>
+<span class="sd">                (0,)</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.labels()</span>
+<span class="sd">                (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Labels</span>
+
+            <span class="k">return</span> <span class="n">Labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.base_label"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.base_label">[docs]</a>        <span class="k">def</span> <span class="nf">base_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the polygon label from which iteration by :meth:`labels`</span>
+<span class="sd">            should start.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.base_label()</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general</span>
+<span class="sd">                0</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use root() instead for connected surfaces and roots() in general&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.root"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.root">[docs]</a>        <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the polygon label from which iteration by :meth:`labels`</span>
+<span class="sd">            should start on this connected surface.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.root()</span>
+<span class="sd">                0</span>
+
+<span class="sd">            When there are multiple connected components, :meth:`roots` must be</span>
+<span class="sd">            used instead::</span>
+
+<span class="sd">                sage: from flatsurf import MutableOrientedSimilaritySurface, polygons</span>
+<span class="sd">                sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                sage: S.add_polygon(polygons.square())</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: S.add_polygon(polygons.square())</span>
+<span class="sd">                1</span>
+
+<span class="sd">                sage: S.root()</span>
+<span class="sd">                Traceback (most recent call last):</span>
+<span class="sd">                ...</span>
+<span class="sd">                Exception: surface has more than one root label, use roots() instead</span>
+<span class="sd">                sage: S.roots()</span>
+<span class="sd">                (0, 1)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">roots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">roots</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot return a root label for the connected component on an empty surface, use roots() instead&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;surface has more than one root label, use roots() instead&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.polygons"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons">[docs]</a>        <span class="k">def</span> <span class="nf">polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the polygons that make up this surface (in the same order as</span>
+<span class="sd">            the labels are returned by :meth:`labels`)</span>
+
+<span class="sd">            .. NOTE::</span>
+
+<span class="sd">                Unlike with :meth:`labels`, this method should usually not be</span>
+<span class="sd">                overridden. Things will be fast if :meth:`labels` is fast.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.polygons()</span>
+<span class="sd">                (Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]),)</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.polygons()</span>
+<span class="sd">                (Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), ...)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Polygons</span>
+
+            <span class="k">return</span> <span class="n">Polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+        <span class="k">def</span> <span class="nf">_test_labels_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Verify that :meth:`labels` and :meth:`polygons` are compatible.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S._test_labels_polygons()</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+            <span class="n">polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                <span class="kn">import</span> <span class="nn">itertools</span>
+
+                <span class="n">labels</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">polygons</span><span class="p">):</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">polygon</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.num_polygons"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_polygons">[docs]</a>        <span class="k">def</span> <span class="nf">num_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the number of polygons that make up this surface.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.num_polygons()</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces.)</span>
+<span class="sd">                1</span>
+<span class="sd">                sage: len(S.polygons())</span>
+<span class="sd">                1</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.num_polygons()</span>
+<span class="sd">                +Infinity</span>
+<span class="sd">                sage: S.is_finite_type()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;num_polygons() is deprecated and will be removed in a future version of sage-flatsurf; use len(polygons()) instead (and is_finite_type() for potentially infinite surfaces.)&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Note that using len(self.polygons()) on</span>
+            <span class="c1"># MutableOrientedSimilaritySurface is only very slightly slower:</span>
+            <span class="c1"># %timeit num_polygons()</span>
+            <span class="c1"># 137ns</span>
+            <span class="c1"># %timeit len(polygons())</span>
+            <span class="c1"># 159ns</span>
+
+            <span class="c1"># On other surfaces, the effect can be much more pronounced. The</span>
+            <span class="c1"># overhead of calling through the category framework and creating a</span>
+            <span class="c1"># Labels object can lead to runtimes of about 1μs.</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">infinity</span>
+
+                <span class="k">return</span> <span class="n">infinity</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.label_iterator"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_iterator">[docs]</a>        <span class="k">def</span> <span class="nf">label_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            TESTS::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: list(S.label_iterator())</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead</span>
+<span class="sd">                [0]</span>
+<span class="sd">                sage: S.labels()</span>
+<span class="sd">                (0,)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="k">if</span> <span class="n">polygons</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use zip(labels(), polygons()) instead&quot;</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
+                    <span class="k">yield</span> <span class="n">entry</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead&quot;</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+                    <span class="k">yield</span> <span class="n">entry</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.edge_iterator"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_iterator">[docs]</a>        <span class="k">def</span> <span class="nf">edge_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gluings</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Iterate over the edges of polygons, which are pairs (l,e) where l</span>
+<span class="sd">            is a polygon label, 0 &lt;= e &lt; N and N is the number of edges of the</span>
+<span class="sd">            polygon with label l.</span>
+
+<span class="sd">            TESTS::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: list(S.edge_iterator())</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead</span>
+<span class="sd">                [(0, 0), (0, 1), (0, 2), (0, 3)]</span>
+<span class="sd">                sage: S.edges()</span>
+<span class="sd">                ((0, 0), (0, 1), (0, 2), (0, 3))</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
+<span class="sd">                sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                sage: S.add_polygon(Polygon(edges=[(1,0),(0,1),(-1,-1)]))</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: S.add_polygon(Polygon(edges=[(-1,0),(0,-1),(1,1)]))</span>
+<span class="sd">                1</span>
+<span class="sd">                sage: S.glue((0, 0), (1, 0))</span>
+<span class="sd">                sage: S.glue((0, 1), (1, 1))</span>
+<span class="sd">                sage: S.glue((0, 2), (1, 2))</span>
+<span class="sd">                sage: list(S.edge_iterator())</span>
+<span class="sd">                [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]</span>
+<span class="sd">                sage: S.edges()</span>
+<span class="sd">                ((0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2))</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="k">if</span> <span class="n">gluings</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use gluings() instead&quot;</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gluings</span><span class="p">():</span>
+                    <span class="k">yield</span> <span class="n">entry</span>
+                <span class="k">return</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead&quot;</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">polygon</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
+                    <span class="k">yield</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.edges"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges">[docs]</a>        <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the edges of the polygons that make up this surface as pairs</span>
+<span class="sd">            (polygon label, edge index).</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.edges()</span>
+<span class="sd">                ((0, 0), (0, 1), (0, 2), (0, 3))</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: S.edges()</span>
+<span class="sd">                ((0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (-1, 0), (-1, 1), (-1, 2), (-1, 3), (2, 0), (2, 1), (2, 2), (2, 3), …)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Edges</span>
+
+            <span class="k">return</span> <span class="n">Edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.edge_gluing_iterator"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_gluing_iterator">[docs]</a>        <span class="k">def</span> <span class="nf">edge_gluing_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Iterate over the ordered pairs of edges being glued.</span>
+
+<span class="sd">            TESTS::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: list(S.edge_gluing_iterator())</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead</span>
+<span class="sd">                [((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3))]</span>
+<span class="sd">                sage: S.gluings()</span>
+<span class="sd">                (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3)))</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;edge_gluing_iterator() has been deprecated and will be removed in a future version of sage-flaturf; use gluings() instead&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">label_edge_pair</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="p">(</span>
+                    <span class="n">label_edge_pair</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label_edge_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.gluings"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.gluings">[docs]</a>        <span class="k">def</span> <span class="nf">gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the pairs of edges being glued to each other.</span>
+
+<span class="sd">            Each gluing is reported as a pair of pairs (polygon label, edge</span>
+<span class="sd">            index) and (glued polygon label, glued edge index).</span>
+
+<span class="sd">            Note that each gluing is reported twice (unless it is a</span>
+<span class="sd">            self-gluing.)</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                sage: S.gluings()</span>
+<span class="sd">                (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))</span>
+
+<span class="sd">            A surface with only self-gluings::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.gluings()</span>
+<span class="sd">                (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)), ((0, 3), (0, 3)))</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">Gluings</span>
+
+            <span class="k">return</span> <span class="n">Gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.label_polygon_iterator"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_polygon_iterator">[docs]</a>        <span class="k">def</span> <span class="nf">label_polygon_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Iterate over pairs (label, polygon).</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: print(list(S.label_polygon_iterator()))</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead</span>
+<span class="sd">                [(0, Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]</span>
+<span class="sd">                sage: print(list(zip(S.labels(), S.polygons())))</span>
+<span class="sd">                [(0, Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)]))]</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;label_polygon_iterator() has been deprecated and will be removed from a future version of sage-flatsurf; use zip(labels(), polygons()) instead&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.polygon"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the polygon with ``label``.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``label`` -- one of the labels included in :meth:`labels`</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.polygon(0)</span>
+<span class="sd">                Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.opposite_edge"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">opposite_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the polygon label and edge that is glued to the ``edge`` of</span>
+<span class="sd">            the polygon with ``label``.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``label`` -- one of the labels included in :meth:`labels`</span>
+
+<span class="sd">            - ``edge`` -- a non-negative integer to specify an edge (the edges</span>
+<span class="sd">              of a polygon are numbered starting from zero.)</span>
+
+<span class="sd">            OUTPUT:</span>
+
+<span class="sd">            A tuple ``(label, edge)`` with the semantics as in the input.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.opposite_edge(0, 0)</span>
+<span class="sd">                (0, 0)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.is_finite"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite">[docs]</a>        <span class="k">def</span> <span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this surface is constructed from finitely many polygons.</span>
+
+<span class="sd">            .. NOTE::</span>
+
+<span class="sd">                The semantics of this function clash with the notion of finite</span>
+<span class="sd">                sets inherited from the category of sets. Therefore</span>
+<span class="sd">                :meth:`is_finite_type` should be used instead.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.is_finite_type()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;is_finite() has been deprecated and will be removed in a future version of sage-flatsurf; use is_finite_type() instead&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.is_finite_type"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">is_finite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this surface is constructed from finitely many polygons.</span>
+
+<span class="sd">            .. NOTE::</span>
+
+<span class="sd">                This method is used to determine whether this surface satisfies</span>
+<span class="sd">                the :class:`~.PolygonalSurfaces.FiniteType` axiom or the</span>
+<span class="sd">                :class:`~.PolygonalSurfaces.InfiniteType` axiom. Surfaces can</span>
+<span class="sd">                override this method to perform specialized logic, see the note</span>
+<span class="sd">                in :mod:`flatsurf.geometry.categories` for performance</span>
+<span class="sd">                considerations.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.is_finite_type()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.num_edges"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_edges">[docs]</a>        <span class="k">def</span> <span class="nf">num_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the total number of edges of all polygons used.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.num_edges()</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(len(p.vertices()) for p in polygons()) instead</span>
+<span class="sd">                4</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;num_edges() has been deprecated and will be removed from a future version of sage-flatsurf; use sum(len(p.vertices()) for p in polygons()) instead&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">())</span>
+
+            <span class="kn">from</span> <span class="nn">sage.rings.infinity</span> <span class="kn">import</span> <span class="n">Infinity</span>
+
+            <span class="k">return</span> <span class="n">Infinity</span></div>
+
+        <span class="k">def</span> <span class="nf">_test_gluings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Verify that the gluings of this surface are consistent.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S._test_gluings()</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
+                <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                        <span class="n">e</span><span class="p">,</span>
+                        <span class="n">g</span><span class="p">,</span>
+                        <span class="s2">&quot;edge gluing is not a pairing:</span><span class="se">\n</span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2"> -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">),</span>
+                    <span class="p">)</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.roots"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return root labels for the polygons forming the connected</span>
+<span class="sd">            components of this surface.</span>
+
+<span class="sd">            A root label is just any of the :meth:`labels` of the surface.</span>
+<span class="sd">            However, the iteration of :meth:`labels` starts from those root</span>
+<span class="sd">            labels so for some surfaces they might have been specifically</span>
+<span class="sd">            chosen.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.roots()</span>
+<span class="sd">                (0,)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.is_connected"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_connected">[docs]</a>        <span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this surface is connected.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.is_connected()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.component"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.component">[docs]</a>        <span class="k">def</span> <span class="nf">component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the labels contained in the connected component containing</span>
+<span class="sd">            the label ``root``.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S.component(0)</span>
+<span class="sd">                (0,)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.surface</span> <span class="kn">import</span> <span class="n">ComponentLabels</span>
+
+            <span class="k">return</span> <span class="n">ComponentLabels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ParentMethods.components"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.components">[docs]</a>        <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the connected components that make up this surface.</span>
+
+<span class="sd">            OUTPUT:</span>
+
+<span class="sd">            A sequence of connected components where each component is in turn</span>
+<span class="sd">            a sequence of the polygon labels contained in that component.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons, MutableOrientedSimilaritySurface</span>
+<span class="sd">                sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                sage: S.add_polygon(polygons.square())</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: S.add_polygon(polygons.square())</span>
+<span class="sd">                1</span>
+<span class="sd">                sage: S.add_polygon(polygons.square())</span>
+<span class="sd">                2</span>
+<span class="sd">                sage: S.glue((0, 0), (1, 0))</span>
+<span class="sd">                sage: S.components()</span>
+<span class="sd">                ((0, 1), (2,))</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">())</span></div>
+
+        <span class="k">def</span> <span class="nf">_test_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Verify that :meth:`components` is compatible with :meth:`roots`.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                sage: S._test_components()</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">()),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType">[docs]</a>    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by surfaces built from finitely many polygons.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">            sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">            sage: &#39;FiniteType&#39; in S.category().axioms()</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.extra_super_categories"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.extra_super_categories">[docs]</a>        <span class="k">def</span> <span class="nf">extra_super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the categories that surfaces built from finitely many</span>
+<span class="sd">            polygons are additionally contained in; namely such a surface is a</span>
+<span class="sd">            compact space.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: PolygonalSurfaces().FiniteType().extra_super_categories()</span>
+<span class="sd">                (Category of compact topological spaces,)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">sage.categories.topological_spaces</span> <span class="kn">import</span> <span class="n">TopologicalSpaces</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">TopologicalSpaces</span><span class="p">()</span><span class="o">.</span><span class="n">Compact</span><span class="p">(),)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.InfiniteType"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.InfiniteType">[docs]</a>        <span class="k">class</span> <span class="nc">InfiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The axiom satisfied by surfaces that are built from finitely and</span>
+<span class="sd">            infinitely many polygons at the same time.</span>
+
+<span class="sd">            This axiom does not exist and it is an error to create it.</span>
+
+<span class="sd">            TESTS::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: PolygonalSurfaces().FiniteType() &amp; PolygonalSurfaces().InfiniteType()</span>
+<span class="sd">                Traceback (most recent call last):</span>
+<span class="sd">                ...</span>
+<span class="sd">                TypeError: surface cannot be finite type and infinite type at the same time</span>
+<span class="sd">                sage: PolygonalSurfaces().InfiniteType() &amp; PolygonalSurfaces().FiniteType()</span>
+<span class="sd">                Traceback (most recent call last):</span>
+<span class="sd">                ...</span>
+<span class="sd">                TypeError: surface cannot be finite type and infinite type at the same time</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;surface cannot be finite type and infinite type at the same time&quot;</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.Connected"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected">[docs]</a>        <span class="k">class</span> <span class="nc">Connected</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The axiom satisfied by connected surfaces built from finitely many polygons.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: PolygonalSurfaces().FiniteType().Connected()</span>
+<span class="sd">                Category of connected finite type polygonal surfaces</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.Connected.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected.ParentMethods">[docs]</a>            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Provides methods available to all connected surfaces built from</span>
+<span class="sd">                finitely many polygons.</span>
+
+<span class="sd">                If you want to add functionality for such surfaces you most likely want</span>
+<span class="sd">                to put it here.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+
+                <span class="k">def</span> <span class="nf">_test_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Verify that :meth:`roots` only reports a single connected</span>
+<span class="sd">                    component.</span>
+
+<span class="sd">                    EXAMPLES::</span>
+
+<span class="sd">                        sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                        sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                        sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                        sage: S._test_roots()</span>
+
+<span class="sd">                    &quot;&quot;&quot;</span>
+                    <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+                    <span class="n">roots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
+
+                    <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">:</span>
+                        <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span> <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="n">root</span><span class="p">]</span>
+                        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">type</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">roots</span><span class="p">:</span>
+                        <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="kc">True</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()]))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()))</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.Oriented"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented">[docs]</a>        <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The axiom satisfied by orientable surfaces with an orientation</span>
+<span class="sd">            which is compatible with the orientation of the ambient space of</span>
+<span class="sd">            the finitely many polygons that define the surface (assuming that</span>
+<span class="sd">            that ambient space is orientable.)</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.octagon_and_squares()</span>
+<span class="sd">                sage: S.category().is_subcategory(PolygonalSurfaces().FiniteType().Oriented())</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.Oriented.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods">[docs]</a>            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Provides methods available to all surfaces built from finitely</span>
+<span class="sd">                many oriented polygons.</span>
+
+<span class="sd">                If you want to add functionality for such surfaces you most likely want</span>
+<span class="sd">                to put it here.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic">[docs]</a>                <span class="k">def</span> <span class="nf">euler_characteristic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Return the Euler characteristic of this surface.</span>
+
+<span class="sd">                    EXAMPLES::</span>
+
+<span class="sd">                        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                        sage: S = translation_surfaces.octagon_and_squares()</span>
+<span class="sd">                        sage: S.euler_characteristic()</span>
+<span class="sd">                        -4</span>
+
+<span class="sd">                    &quot;&quot;&quot;</span>
+                    <span class="c1"># Count the vertices</span>
+                    <span class="n">union_find</span> <span class="o">=</span> <span class="p">{</span><span class="n">edge</span><span class="p">:</span> <span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()}</span>
+
+                    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">union_find</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">node</span>
+                        <span class="n">parent</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">union_find</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+                        <span class="n">union_find</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span>
+                        <span class="k">return</span> <span class="n">parent</span>
+
+                    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+                        <span class="n">previous</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span>
+                        <span class="n">cross</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">previous</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">cross</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                        <span class="n">union_find</span><span class="p">[</span><span class="n">find</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">))]</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">cross</span><span class="p">)</span>
+
+                    <span class="n">V</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">find</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()))</span>
+
+                    <span class="c1"># Count the edges</span>
+                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">ZZ</span>
+
+                    <span class="n">E</span> <span class="o">=</span> <span class="n">QQ</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">E</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+                            <span class="n">E</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">V</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">E</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span>
+                    <span class="k">assert</span> <span class="n">E</span> <span class="ow">in</span> <span class="n">ZZ</span>
+
+                    <span class="c1"># Count the faces</span>
+                    <span class="n">F</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">())</span>
+
+                    <span class="k">return</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">V</span> <span class="o">-</span> <span class="n">E</span> <span class="o">+</span> <span class="n">F</span><span class="p">)</span></div></div></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all surfaces built from finitely many polygons.</span>
+
+<span class="sd">            If you want to add functionality for such surfaces you most likely want</span>
+<span class="sd">            to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type">[docs]</a>            <span class="k">def</span> <span class="nf">is_finite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this surface is built from finitely many polygons.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S.is_finite_type()</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated">[docs]</a>            <span class="k">def</span> <span class="nf">is_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this surfaces is built from triangles.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S.is_triangulated()</span>
+<span class="sd">                    False</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary">[docs]</a>            <span class="k">def</span> <span class="nf">is_with_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this surface has a boundary, i.e., unglued polygon edges.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S.is_with_boundary()</span>
+<span class="sd">                    False</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
+                        <span class="n">cross</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">cross</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="kc">True</span>
+
+                <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.FiniteType.ParentMethods.vertices"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.vertices">[docs]</a>            <span class="k">def</span> <span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the equivalence classes of the vertices of the polygons</span>
+<span class="sd">                that make up this surface.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S.vertices()</span>
+<span class="sd">                    {Vertex 0 of polygon 0}</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.regular_octagon()</span>
+<span class="sd">                    sage: S.vertices()</span>
+<span class="sd">                    {Vertex 0 of polygon 0}</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
+                    <span class="c1"># pylint: disable-next=not-callable</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vertex</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">vertex</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
+                <span class="p">)</span></div>
+
+            <span class="k">def</span> <span class="nf">_test_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Verify that :meth:`labels` has been implemented correctly by</span>
+<span class="sd">                this surface.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S._test_labels()</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">([</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()]),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span>
+                <span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.InfiniteType"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType">[docs]</a>    <span class="k">class</span> <span class="nc">InfiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by surfaces built from infinitely many polygons.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: &#39;InfiniteType&#39; in S.category().axioms()</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.InfiniteType.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all surfaces built from infinitely</span>
+<span class="sd">            many polygons.</span>
+
+<span class="sd">            If you want to add functionality for such surfaces you most likely want</span>
+<span class="sd">            to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type">[docs]</a>            <span class="k">def</span> <span class="nf">is_finite_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this surfaces has been built from finitely many</span>
+<span class="sd">                polygons which it has not.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                    sage: S.is_finite_type()</span>
+<span class="sd">                    False</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="kc">False</span></div></div></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.Oriented"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented">[docs]</a>    <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by orientable surfaces with an orientation which is</span>
+<span class="sd">        compatible with the orientation of the ambient space of the polygons</span>
+<span class="sd">        (assuming that that ambient space is orientable.)</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: &#39;Oriented&#39; in S.category().axioms()</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.Oriented.extra_super_categories"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.extra_super_categories">[docs]</a>        <span class="k">def</span> <span class="nf">extra_super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the axioms that are automatically satisfied by a surfaces</span>
+<span class="sd">            which is oriented, namely, that such a surface is orientable.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: &#39;Orientable&#39; in S.category().axioms()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories.topological_surfaces</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="n">TopologicalSurfaces</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="n">TopologicalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Orientable</span><span class="p">(),)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.Oriented.WithoutBoundary"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary">[docs]</a>        <span class="k">class</span> <span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The axiom satisfied by oriented surfaces built from polygons that</span>
+<span class="sd">            have no unglued polygon edges.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: S.category().is_subcategory(PolygonalSurfaces().Oriented().WithoutBoundary())</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.Oriented.WithoutBoundary.Connected"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected">[docs]</a>            <span class="k">class</span> <span class="nc">Connected</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                The axiom satisfied by oriented connected surfaces built from</span>
+<span class="sd">                polygons that have no unglued polygon edges.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                    sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                    sage: S.category().is_subcategory(PolygonalSurfaces().Oriented().WithoutBoundary().Connected())</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods">[docs]</a>                <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Provides methods available to all oriented connected</span>
+<span class="sd">                    surfaces built from polygons without unglued edges.</span>
+
+<span class="sd">                    If you want to add functionality for such surfaces you most</span>
+<span class="sd">                    likely want to put it here.</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus">[docs]</a>                    <span class="k">def</span> <span class="nf">genus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                        Return the genus of this surface.</span>
+
+<span class="sd">                        ALGORITHM:</span>
+
+<span class="sd">                        We deduce the genus from the Euler characteristic.</span>
+
+<span class="sd">                        EXAMPLES::</span>
+
+<span class="sd">                            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                            sage: translation_surfaces.octagon_and_squares().genus()</span>
+<span class="sd">                            3</span>
+
+<span class="sd">                        This method might not be functional if the Euler</span>
+<span class="sd">                        characteristic has not been implemented for the surface::</span>
+
+<span class="sd">                            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                            sage: S.genus()</span>
+<span class="sd">                            Traceback (most recent call last):</span>
+<span class="sd">                            ...</span>
+<span class="sd">                            AttributeError: ... has no attribute &#39;euler_characteristic&#39;</span>
+
+<span class="sd">                        &quot;&quot;&quot;</span>
+                        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">euler_characteristic</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span></div></div></div></div></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.WithoutBoundary"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary">[docs]</a>    <span class="k">class</span> <span class="nc">WithoutBoundary</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by surfaces built from polygons without any unglued</span>
+<span class="sd">        edges.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">            sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">            sage: S.category().is_subcategory(PolygonalSurfaces().WithoutBoundary())</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.WithoutBoundary.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all surfaces that are built from</span>
+<span class="sd">            polygons without unglued edges.</span>
+
+<span class="sd">            If you want to add functionality for such surfaces you most likely want</span>
+<span class="sd">            to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+            <span class="k">def</span> <span class="nf">_test_gluings_without_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Verify that this surface has no unglued edges.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.infinite_staircase()</span>
+<span class="sd">                    sage: S._test_gluings_without_boundary()</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                    <span class="n">it</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
+                    <span class="n">it</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="mi">30</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">lab</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
+                        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                        <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                            <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;edge (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">) is not glued&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                        <span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.SubcategoryMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods">[docs]</a>    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="PolygonalSurfaces.SubcategoryMethods.FiniteType"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.FiniteType">[docs]</a>        <span class="k">def</span> <span class="nf">FiniteType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategory of surfaces built from finitely many polygons.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: PolygonalSurfaces().FiniteType()</span>
+<span class="sd">                Category of finite type polygonal surfaces</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;FiniteType&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.SubcategoryMethods.InfiniteType"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.InfiniteType">[docs]</a>        <span class="k">def</span> <span class="nf">InfiniteType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategory of surfaces built from infinitely many polygons.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: PolygonalSurfaces().InfiniteType()</span>
+<span class="sd">                Category of infinite type polygonal surfaces</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;InfiniteType&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.SubcategoryMethods.Oriented"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.Oriented">[docs]</a>        <span class="k">def</span> <span class="nf">Oriented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategory of surfaces with an orientation that is</span>
+<span class="sd">            inherited from the polygons that it is built from.</span>
+
+<span class="sd">            This assumes that the ambient space of the polygons is orientable.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import PolygonalSurfaces</span>
+<span class="sd">                sage: PolygonalSurfaces().Oriented()</span>
+<span class="sd">                Category of oriented polygonal surfaces</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Oriented&quot;</span><span class="p">)</span></div></div></div>
+
+
+<span class="c1"># Currently, there is no &quot;FiniteType&quot;, &quot;InfiniteType&quot;, and &quot;Oriented&quot;</span>
+<span class="c1"># axiom in SageMath so we make them known to the category framework.</span>
+<span class="n">all_axioms</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot;FiniteType&quot;</span><span class="p">,</span> <span class="s2">&quot;InfiniteType&quot;</span><span class="p">,</span> <span class="s2">&quot;Oriented&quot;</span><span class="p">)</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

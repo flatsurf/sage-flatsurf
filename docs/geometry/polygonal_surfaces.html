@@ -1,0 +1,1357 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="polygons" href="polygons.html" /><link rel="prev" title="polygon" href="polygon.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+        <title>polygonal_surfaces - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-flatsurf.geometry.categories.polygonal_surfaces">
+<span id="polygonal-surfaces"></span><h1><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code><a class="headerlink" href="#module-flatsurf.geometry.categories.polygonal_surfaces" title="Permalink to this heading">#</a></h1>
+<p>The category of surfaces built from polygons.</p>
+<p>This module provides shared functionality for all surfaces in sage-flatsurf
+that are built from polygons (such as Euclidean polygons or hyperbolic
+polygons.)</p>
+<p>See <a class="reference internal" href="categories.html#module-flatsurf.geometry.categories" title="flatsurf.geometry.categories"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.geometry.categories</span></code></a> for a general description of the
+category framework in sage-flatsurf.</p>
+<p>Normally, you won’t create this (or any other) category directly. The correct
+category is automatically determined for immutable surfaces.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">PolygonalSurfaces</span><span class="p">())</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.</span></span><span class="sig-name descname"><span class="pre">PolygonalSurfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces" title="Permalink to this definition">#</a></dt>
+<dd><p>The category of surfaces built by gluing polygons defined in some space
+such as the real plane (see
+<a class="reference internal" href="euclidean_polygonal_surfaces.html#module-flatsurf.geometry.categories.euclidean_polygonal_surfaces" title="flatsurf.geometry.categories.euclidean_polygonal_surfaces"><code class="xref py py-mod docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a>.)</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">polygonal</span> <span class="n">surfaces</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FiniteType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by surfaces built from finitely many polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="s1">&#39;FiniteType&#39;</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Connected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.Connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by connected surfaces built from finitely many polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span><span class="o">.</span><span class="n">Connected</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">connected</span> <span class="n">finite</span> <span class="nb">type</span> <span class="n">polygonal</span> <span class="n">surfaces</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.Connected.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all connected surfaces built from
+finitely many polygons.</p>
+<p>If you want to add functionality for such surfaces you most likely want
+to put it here.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.InfiniteType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InfiniteType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.InfiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.InfiniteType" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by surfaces that are built from finitely and
+infinitely many polygons at the same time.</p>
+<p>This axiom does not exist and it is an error to create it.</p>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">InfiniteType</span><span class="p">()</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="n">surface</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">finite</span> <span class="nb">type</span> <span class="ow">and</span> <span class="n">infinite</span> <span class="nb">type</span> <span class="n">at</span> <span class="n">the</span> <span class="n">same</span> <span class="n">time</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">InfiniteType</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="n">surface</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">finite</span> <span class="nb">type</span> <span class="ow">and</span> <span class="n">infinite</span> <span class="nb">type</span> <span class="n">at</span> <span class="n">the</span> <span class="n">same</span> <span class="n">time</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Oriented</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.Oriented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by orientable surfaces with an orientation
+which is compatible with the orientation of the ambient space of
+the finitely many polygons that define the surface (assuming that
+that ambient space is orientable.)</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">())</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.Oriented.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all surfaces built from finitely
+many oriented polygons.</p>
+<p>If you want to add functionality for such surfaces you most likely want
+to put it here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic">
+<span class="sig-name descname"><span class="pre">euler_characteristic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the Euler characteristic of this surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">euler_characteristic</span><span class="p">()</span>
+<span class="o">-</span><span class="mi">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all surfaces built from finitely many polygons.</p>
+<p>If you want to add functionality for such surfaces you most likely want
+to put it here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type">
+<span class="sig-name descname"><span class="pre">is_finite_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surface is built from finitely many polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated">
+<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surfaces is built from triangles.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_triangulated</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary">
+<span class="sig-name descname"><span class="pre">is_with_boundary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surface has a boundary, i.e., unglued polygon edges.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_with_boundary</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.vertices">
+<span class="sig-name descname"><span class="pre">vertices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.ParentMethods.vertices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.vertices" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the equivalence classes of the vertices of the polygons
+that make up this surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
+<span class="p">{</span><span class="n">Vertex</span> <span class="mi">0</span> <span class="n">of</span> <span class="n">polygon</span> <span class="mi">0</span><span class="p">}</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">regular_octagon</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
+<span class="p">{</span><span class="n">Vertex</span> <span class="mi">0</span> <span class="n">of</span> <span class="n">polygon</span> <span class="mi">0</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.extra_super_categories">
+<span class="sig-name descname"><span class="pre">extra_super_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.FiniteType.extra_super_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.extra_super_categories" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the categories that surfaces built from finitely many
+polygons are additionally contained in; namely such a surface is a
+compact space.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span><span class="o">.</span><span class="n">extra_super_categories</span><span class="p">()</span>
+<span class="p">(</span><span class="n">Category</span> <span class="n">of</span> <span class="n">compact</span> <span class="n">topological</span> <span class="n">spaces</span><span class="p">,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InfiniteType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.InfiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by surfaces built from infinitely many polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="s1">&#39;InfiniteType&#39;</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.InfiniteType.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all surfaces built from infinitely
+many polygons.</p>
+<p>If you want to add functionality for such surfaces you most likely want
+to put it here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type">
+<span class="sig-name descname"><span class="pre">is_finite_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surfaces has been built from finitely many
+polygons which it has not.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Oriented</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.Oriented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by orientable surfaces with an orientation which is
+compatible with the orientation of the ambient space of the polygons
+(assuming that that ambient space is orientable.)</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="s1">&#39;Oriented&#39;</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WithoutBoundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.Oriented.WithoutBoundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by oriented surfaces built from polygons that
+have no unglued polygon edges.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">())</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Connected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.Oriented.WithoutBoundary.Connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by oriented connected surfaces built from
+polygons that have no unglued polygon edges.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">()</span><span class="o">.</span><span class="n">Connected</span><span class="p">())</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all oriented connected
+surfaces built from polygons without unglued edges.</p>
+<p>If you want to add functionality for such surfaces you most
+likely want to put it here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus">
+<span class="sig-name descname"><span class="pre">genus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the genus of this surface.</p>
+<p>ALGORITHM:</p>
+<p>We deduce the genus from the Euler characteristic.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span><span class="o">.</span><span class="n">genus</span><span class="p">()</span>
+<span class="mi">3</span>
+</pre></div>
+</div>
+<p>This method might not be functional if the Euler
+characteristic has not been implemented for the surface:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">genus</span><span class="p">()</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">AttributeError</span><span class="p">:</span> <span class="o">...</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;euler_characteristic&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.extra_super_categories">
+<span class="sig-name descname"><span class="pre">extra_super_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.Oriented.extra_super_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.extra_super_categories" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the axioms that are automatically satisfied by a surfaces
+which is oriented, namely, that such a surface is orientable.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="s1">&#39;Orientable&#39;</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all surfaces that are built from polygons.</p>
+<p>If you want to add functionality for such surfaces you most likely
+want to put it here.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.base_label">
+<span class="sig-name descname"><span class="pre">base_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.base_label" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon label from which iteration by <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a>
+should start.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">base_label</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">base_label</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">root</span><span class="p">()</span> <span class="n">instead</span> <span class="k">for</span> <span class="n">connected</span> <span class="n">surfaces</span> <span class="ow">and</span> <span class="n">roots</span><span class="p">()</span> <span class="ow">in</span> <span class="n">general</span>
+<span class="mi">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.component">
+<span class="sig-name descname"><span class="pre">component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.component" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the labels contained in the connected component containing
+the label <code class="docutils literal notranslate"><span class="pre">root</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">component</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.components">
+<span class="sig-name descname"><span class="pre">components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.components" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the connected components that make up this surface.</p>
+<p>OUTPUT:</p>
+<p>A sequence of connected components where each component is in turn
+a sequence of the polygon labels contained in that component.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
+<span class="mi">2</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">components</span><span class="p">()</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_gluing_iterator">
+<span class="sig-name descname"><span class="pre">edge_gluing_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.edge_gluing_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_gluing_iterator" title="Permalink to this definition">#</a></dt>
+<dd><p>Iterate over the ordered pairs of edges being glued.</p>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">edge_gluing_iterator</span><span class="p">())</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">edge_gluing_iterator</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flaturf</span><span class="p">;</span> <span class="n">use</span> <span class="n">gluings</span><span class="p">()</span> <span class="n">instead</span>
+<span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">gluings</span><span class="p">()</span>
+<span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_iterator">
+<span class="sig-name descname"><span class="pre">edge_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gluings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.edge_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_iterator" title="Permalink to this definition">#</a></dt>
+<dd><p>Iterate over the edges of polygons, which are pairs (l,e) where l
+is a polygon label, 0 &lt;= e &lt; N and N is the number of edges of the
+polygon with label l.</p>
+<p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">())</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">edge_iterator</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">edges</span><span class="p">()</span> <span class="n">instead</span>
+<span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">edge_iterator</span><span class="p">())</span>
+<span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the edges of the polygons that make up this surface as pairs
+(polygon label, edge index).</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.infinite_staircase()
+sage: S.edges()
+((0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (-1, 0), (-1, 1), (-1, 2), (-1, 3), (2, 0), (2, 1), (2, 2), (2, 3), …)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.gluings">
+<span class="sig-name descname"><span class="pre">gluings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.gluings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.gluings" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the pairs of edges being glued to each other.</p>
+<p>Each gluing is reported as a pair of pairs (polygon label, edge
+index) and (glued polygon label, glued edge index).</p>
+<p>Note that each gluing is reported twice (unless it is a
+self-gluing.)</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">gluings</span><span class="p">()</span>
+<span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>A surface with only self-gluings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">gluings</span><span class="p">()</span>
+<span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_connected">
+<span class="sig-name descname"><span class="pre">is_connected</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.is_connected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_connected" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surface is connected.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite">
+<span class="sig-name descname"><span class="pre">is_finite</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.is_finite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surface is constructed from finitely many polygons.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The semantics of this function clash with the notion of finite
+sets inherited from the category of sets. Therefore
+<a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_finite_type()</span></code></a> should be used instead.</p>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type">
+<span class="sig-name descname"><span class="pre">is_finite_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.is_finite_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surface is constructed from finitely many polygons.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is used to determine whether this surface satisfies
+the <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType"><code class="xref py py-class docutils literal notranslate"><span class="pre">FiniteType</span></code></a> axiom or the
+<a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfiniteType</span></code></a> axiom. Surfaces can
+override this method to perform specialized logic, see the note
+in <a class="reference internal" href="categories.html#module-flatsurf.geometry.categories" title="flatsurf.geometry.categories"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.geometry.categories</span></code></a> for performance
+considerations.</p>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_triangulated">
+<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_triangulated" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether this surface is built from triangles.</p>
+<p>Surfaces of infinite type should override this method.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_triangulated</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_iterator">
+<span class="sig-name descname"><span class="pre">label_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.label_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_iterator" title="Permalink to this definition">#</a></dt>
+<dd><p>TESTS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">label_iterator</span><span class="p">())</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">label_iterator</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">labels</span><span class="p">()</span> <span class="n">instead</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_polygon_iterator">
+<span class="sig-name descname"><span class="pre">label_polygon_iterator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.label_polygon_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_polygon_iterator" title="Permalink to this definition">#</a></dt>
+<dd><p>Iterate over pairs (label, polygon).</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">label_polygon_iterator</span><span class="p">()))</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">label_polygon_iterator</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">(),</span> <span class="n">polygons</span><span class="p">())</span> <span class="n">instead</span>
+<span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]))]</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="n">S</span><span class="o">.</span><span class="n">polygons</span><span class="p">())))</span>
+<span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]))]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the labels used to enumerate the polygons that make up this
+surface.</p>
+<p>The labels are returned in a breadth first search order starting at
+the <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.base_label" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.base_label"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_label()</span></code></a>. This order is compatible with the order in
+which polygons are returned by <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons"><code class="xref py py-meth docutils literal notranslate"><span class="pre">polygons()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The generic implementation of this method returns a collection
+that is very slow at computing its length and deciding
+containment. To speed things up it is recommended to override
+this method.</p>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.infinite_staircase()
+sage: S.labels()
+(0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_edges">
+<span class="sig-name descname"><span class="pre">num_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.num_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_edges" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the total number of edges of all polygons used.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">num_edges</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">num_edges</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">())</span> <span class="n">instead</span>
+<span class="mi">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_polygons">
+<span class="sig-name descname"><span class="pre">num_polygons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.num_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_polygons" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the number of polygons that make up this surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">num_polygons</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygons</span><span class="p">())</span> <span class="n">instead</span> <span class="p">(</span><span class="ow">and</span> <span class="n">is_finite_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">potentially</span> <span class="n">infinite</span> <span class="n">surfaces</span><span class="o">.</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">polygons</span><span class="p">())</span>
+<span class="mi">1</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">num_polygons</span><span class="p">()</span>
+<span class="o">+</span><span class="n">Infinity</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">()</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge">
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon label and edge that is glued to the <code class="docutils literal notranslate"><span class="pre">edge</span></code> of
+the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code> – one of the labels included in <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge</span></code> – a non-negative integer to specify an edge (the edges
+of a polygon are numbered starting from zero.)</p></li>
+</ul>
+<p>OUTPUT:</p>
+<p>A tuple <code class="docutils literal notranslate"><span class="pre">(label,</span> <span class="pre">edge)</span></code> with the semantics as in the input.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon">
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code> – one of the labels included in <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a></p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons">
+<span class="sig-name descname"><span class="pre">polygons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygons that make up this surface (in the same order as
+the labels are returned by <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a>)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike with <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a>, this method should usually not be
+overridden. Things will be fast if <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a> is fast.</p>
+</div>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
+<span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]),)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
+<span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]),</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]),</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.refined_category">
+<span class="sig-name descname"><span class="pre">refined_category</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.refined_category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.refined_category" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the smallest subcategory that this surface is in by
+consulting which edges are glued to each other.</p>
+<p>Note that this does not take into account how the edges are glued
+to each other exactly (e.g., by which similarity) since at this
+level (i.e., without knowing about the space in which the polygons
+live) the gluing is just described combinatorially.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">refined_category</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">connected</span> <span class="k">with</span> <span class="n">boundary</span> <span class="n">finite</span> <span class="nb">type</span> <span class="n">translation</span> <span class="n">surfaces</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">refined_category</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">connected</span> <span class="n">without</span> <span class="n">boundary</span> <span class="n">finite</span> <span class="nb">type</span> <span class="n">translation</span> <span class="n">surfaces</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.root">
+<span class="sig-name descname"><span class="pre">root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.root" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon label from which iteration by <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a>
+should start on this connected surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
+<span class="mi">0</span>
+</pre></div>
+</div>
+<p>When there are multiple connected components, <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">roots()</span></code></a> must be
+used instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">polygons</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">())</span>
+<span class="mi">1</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">Exception</span><span class="p">:</span> <span class="n">surface</span> <span class="n">has</span> <span class="n">more</span> <span class="n">than</span> <span class="n">one</span> <span class="n">root</span> <span class="n">label</span><span class="p">,</span> <span class="n">use</span> <span class="n">roots</span><span class="p">()</span> <span class="n">instead</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots">
+<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="Permalink to this definition">#</a></dt>
+<dd><p>Return root labels for the polygons forming the connected
+components of this surface.</p>
+<p>A root label is just any of the <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a> of the surface.
+However, the iteration of <a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">labels()</span></code></a> starts from those root
+labels so for some surfaces they might have been specifically
+chosen.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.walker">
+<span class="sig-name descname"><span class="pre">walker</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.ParentMethods.walker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.walker" title="Permalink to this definition">#</a></dt>
+<dd><p>Return an iterable that walks the labels of the surface.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">self_glued_polygon</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">walker</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">walker</span><span class="p">()</span>
+<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
+<span class="o">...</span>
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">walker</span><span class="p">()</span> <span class="ow">is</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="kn">from</span> <span class="nn">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">labels</span><span class="p">()</span> <span class="n">instead</span><span class="o">.</span>
+<span class="n">sage</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">walker</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SubcategoryMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.SubcategoryMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.FiniteType">
+<span class="sig-name descname"><span class="pre">FiniteType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.SubcategoryMethods.FiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.FiniteType" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the subcategory of surfaces built from finitely many polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">FiniteType</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">finite</span> <span class="nb">type</span> <span class="n">polygonal</span> <span class="n">surfaces</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.InfiniteType">
+<span class="sig-name descname"><span class="pre">InfiniteType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.SubcategoryMethods.InfiniteType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.InfiniteType" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the subcategory of surfaces built from infinitely many polygons.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">InfiniteType</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">infinite</span> <span class="nb">type</span> <span class="n">polygonal</span> <span class="n">surfaces</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.Oriented">
+<span class="sig-name descname"><span class="pre">Oriented</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.SubcategoryMethods.Oriented"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.Oriented" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the subcategory of surfaces with an orientation that is
+inherited from the polygons that it is built from.</p>
+<p>This assumes that the ambient space of the polygons is orientable.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">Oriented</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">oriented</span> <span class="n">polygonal</span> <span class="n">surfaces</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WithoutBoundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.WithoutBoundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary" title="Permalink to this definition">#</a></dt>
+<dd><p>The axiom satisfied by surfaces built from polygons without any unglued
+edges.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">is_subcategory</span><span class="p">(</span><span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">())</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary.ParentMethods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.WithoutBoundary.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary.ParentMethods" title="Permalink to this definition">#</a></dt>
+<dd><p>Provides methods available to all surfaces that are built from
+polygons without unglued edges.</p>
+<p>If you want to add functionality for such surfaces you most likely want
+to put it here.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.super_categories">
+<span class="sig-name descname"><span class="pre">super_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/polygonal_surfaces.html#PolygonalSurfaces.super_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.super_categories" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the categories that a polygonal surface is always also a member
+of.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">PolygonalSurfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">PolygonalSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()</span>
+<span class="p">[</span><span class="n">Category</span> <span class="n">of</span> <span class="n">topological</span> <span class="n">surfaces</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="polygons.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="polygon.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.Connected</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Connected.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.Connected.ParentMethods</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.InfiniteType"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.InfiniteType</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.Oriented</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.Oriented.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.Oriented.ParentMethods.euler_characteristic()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.ParentMethods.is_finite_type()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.ParentMethods.is_triangulated()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.ParentMethods.is_with_boundary()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.ParentMethods.vertices"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.ParentMethods.vertices()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType.extra_super_categories"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.FiniteType.extra_super_categories()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.InfiniteType</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.InfiniteType.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.InfiniteType.ParentMethods.is_finite_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.Oriented</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.Oriented.WithoutBoundary</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.Oriented.WithoutBoundary.Connected</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.Oriented.WithoutBoundary.Connected.ParentMethods.genus()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.Oriented.extra_super_categories"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.Oriented.extra_super_categories()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.base_label"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.base_label()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.component"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.component()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.components"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.components()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_gluing_iterator"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.edge_gluing_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edge_iterator"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.edge_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.edges"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.edges()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.gluings"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.gluings()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_connected"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.is_connected()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.is_finite()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_finite_type"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.is_finite_type()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.is_triangulated"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.is_triangulated()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_iterator"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.label_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.label_polygon_iterator"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.label_polygon_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.labels()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_edges"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.num_edges()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.num_polygons"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.num_polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.polygon()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.polygons()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.refined_category"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.refined_category()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.root"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.root()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.roots()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.walker"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.ParentMethods.walker()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.SubcategoryMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.FiniteType"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.SubcategoryMethods.FiniteType()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.InfiniteType"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.SubcategoryMethods.InfiniteType()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.SubcategoryMethods.Oriented"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.SubcategoryMethods.Oriented()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.WithoutBoundary</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.WithoutBoundary.ParentMethods"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.WithoutBoundary.ParentMethods</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.super_categories"><code class="docutils literal notranslate"><span class="pre">PolygonalSurfaces.super_categories()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>

@@ -1,0 +1,922 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+        <title>flatsurf.geometry.categories.polygons - sage-flatsurf 0.4.7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-brand-primary: #0f0fff;
+  --color-brand-content: #0f0fff;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">sage-flatsurf 0.4.7 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">sage-flatsurf 0.4.7 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing sage-flatsurf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer.html">The Developer’s Guide for sage-flatsurf</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/defining_surfaces.html">Defining Surfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/graphics_configuration.html">Graphics Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/linear_action_and_delaunay.html">The GL(2,R) Action, the Veech Group, Delaunay Decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/rel_deformations.html">Relative Period Deformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/saddle_connections.html">Working with Saddle Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/apisa_wright.html">Exploring Orbit Closures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/siegel_veech.html">Siegel-Veech Constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/straight_line_flow.html">Straight-Line Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/warwick-2017.html">Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/delaunay.html"><code class="docutils literal notranslate"><span class="pre">delaunay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_dilation_surface.html"><code class="docutils literal notranslate"><span class="pre">half_dilation_surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface_point.html"><code class="docutils literal notranslate"><span class="pre">surface_point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for flatsurf.geometry.categories.polygons</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The category of polyogons</span>
+
+<span class="sd">This module provides shared functionality for all polygons in sage-flatsurf.</span>
+
+<span class="sd">See :mod:`flatsurf.geometry.categories` for a general description of the</span>
+<span class="sd">category framework in sage-flatsurf.</span>
+
+<span class="sd">Normally, you won&#39;t create this (or any other) category directly. The correct</span>
+<span class="sd">category of a polygon is automatically determined.</span>
+
+<span class="sd">EXAMPLES::</span>
+
+<span class="sd">    sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">    sage: C = Polygons(QQ)</span>
+
+<span class="sd">    sage: from flatsurf import polygons</span>
+<span class="sd">    sage: polygons.square() in C</span>
+<span class="sd">    True</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ****************************************************************************</span>
+<span class="c1">#  This file is part of sage-flatsurf.</span>
+<span class="c1">#</span>
+<span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
+<span class="c1">#                      2020-2023 Julian Rüth</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
+<span class="c1">#  it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#  the Free Software Foundation, either version 2 of the License, or</span>
+<span class="c1">#  (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#  sage-flatsurf is distributed in the hope that it will be useful,</span>
+<span class="c1">#  but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#  GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#  You should have received a copy of the GNU General Public License</span>
+<span class="c1">#  along with sage-flatsurf. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="c1"># ****************************************************************************</span>
+<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span> <span class="nn">sage.categories.category_types</span> <span class="kn">import</span> <span class="n">Category_over_base_ring</span>
+<span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">,</span>
+    <span class="n">all_axioms</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sage.misc.abstract_method</span> <span class="kn">import</span> <span class="n">abstract_method</span>
+
+<span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Sets</span>
+
+
+<div class="viewcode-block" id="Polygons"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons">[docs]</a><span class="k">class</span> <span class="nc">Polygons</span><span class="p">(</span><span class="n">Category_over_base_ring</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The category of polygons defined over a base ring.</span>
+
+<span class="sd">    This comprises arbitrary base ring, e.g., this category contains Euclidean</span>
+<span class="sd">    polygons and hyperbolic polygons.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">        sage: Polygons(QQ)</span>
+<span class="sd">        Category of polygons over Rational Field</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.super_categories"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.super_categories">[docs]</a>    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the categories polygons automatically belong to.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">            sage: C = Polygons(QQ)</span>
+<span class="sd">            sage: C.super_categories()</span>
+<span class="sd">            [Category of sets]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Sets</span><span class="p">()]</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_describe_polygon</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a printable description of a polygon with ``num_edges`` edges</span>
+<span class="sd">        and additional features encoded as keyword arguments.</span>
+
+<span class="sd">        The returned strings form a triple (indeterminate article, singular, plural).</span>
+
+<span class="sd">        Usually, you don&#39;t call this method directly, but</span>
+<span class="sd">        :meth:`Polygons.ParentMethods.describe_polygon`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">            sage: Polygons._describe_polygon(3)</span>
+<span class="sd">            (&#39;a&#39;, &#39;triangle&#39;, &#39;triangles&#39;)</span>
+<span class="sd">            sage: Polygons._describe_polygon(3, equiangular=True, equilateral=True)</span>
+<span class="sd">            (&#39;an&#39;, &#39;equilateral triangle&#39;, &#39;equilateral triangles&#39;)</span>
+<span class="sd">            sage: Polygons._describe_polygon(9, equiangular=True, equilateral=True)</span>
+<span class="sd">            (&#39;a&#39;, &#39;regular nonagon&#39;, &#39;regular nonagons&#39;)</span>
+<span class="sd">            sage: Polygons._describe_polygon(4, equiangular=False, equilateral=True)</span>
+<span class="sd">            (&#39;a&#39;, &#39;rhombus&#39;, &#39;rhombi&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">infinity</span>
+
+        <span class="c1"># From https://en.wikipedia.org/wiki/Polygon#Naming</span>
+        <span class="n">ngon_names</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;monogon&quot;</span><span class="p">),</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;digon&quot;</span><span class="p">),</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;triangle&quot;</span><span class="p">),</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;quadrilateral&quot;</span><span class="p">),</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;pentagon&quot;</span><span class="p">),</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;hexagon&quot;</span><span class="p">),</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;heptagon&quot;</span><span class="p">),</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;octagon&quot;</span><span class="p">),</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;nonagon&quot;</span><span class="p">),</span>
+            <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;decagon&quot;</span><span class="p">),</span>
+            <span class="mi">11</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;hendecagon&quot;</span><span class="p">),</span>
+            <span class="mi">12</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;dodecagon&quot;</span><span class="p">),</span>
+            <span class="mi">13</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;tridecagon&quot;</span><span class="p">),</span>
+            <span class="mi">14</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;tetradecagon&quot;</span><span class="p">),</span>
+            <span class="mi">15</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;pentadecagon&quot;</span><span class="p">),</span>
+            <span class="mi">16</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;hexadecagon&quot;</span><span class="p">),</span>
+            <span class="mi">17</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;heptadecagon&quot;</span><span class="p">),</span>
+            <span class="mi">18</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;octadecagon&quot;</span><span class="p">),</span>
+            <span class="mi">19</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;enneadecagon&quot;</span><span class="p">),</span>
+            <span class="mi">20</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;icosagon&quot;</span><span class="p">),</span>
+            <span class="c1"># Most people probably don&#39;t know the prefixes after that. We</span>
+            <span class="c1"># keep a few easy/fun ones.</span>
+            <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;hectogon&quot;</span><span class="p">),</span>
+            <span class="mi">1000</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;chiliagon&quot;</span><span class="p">),</span>
+            <span class="mi">10000</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;myriagon&quot;</span><span class="p">),</span>
+            <span class="mi">1000000</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;megagon&quot;</span><span class="p">),</span>
+            <span class="n">infinity</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;apeirogon&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="n">ngon_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">num_edges</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">num_edges</span><span class="si">}</span><span class="s2">-gon&quot;</span><span class="p">)</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">description</span> <span class="o">+</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;s&quot;</span><span class="p">,)</span>
+
+        <span class="k">def</span> <span class="nf">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="o">*</span><span class="n">attributes</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">description</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">article</span><span class="p">,</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attributes</span> <span class="o">+</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="mi">1</span><span class="p">],)),</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attributes</span> <span class="o">+</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="mi">2</span><span class="p">],)),</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">augment_if</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+                <span class="p">]</span>
+            <span class="p">):</span>
+                <span class="n">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">augment_if_not</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+                <span class="p">]</span>
+            <span class="p">):</span>
+                <span class="n">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">augment_if</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;degenerate&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">description</span>
+
+        <span class="k">if</span> <span class="n">num_edges</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">augment_if</span><span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;equilateral&quot;</span><span class="p">,</span> <span class="s2">&quot;equiangular&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">augment_if</span><span class="p">(</span><span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;isosceles&quot;</span><span class="p">):</span>
+                    <span class="n">augment_if</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">description</span>
+
+        <span class="k">if</span> <span class="n">num_edges</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;equilateral&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;equiangular&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;square&quot;</span><span class="p">,</span> <span class="s2">&quot;squares&quot;</span>
+
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;equiangular&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;rectangle&quot;</span><span class="p">,</span> <span class="s2">&quot;rectangles&quot;</span>
+
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;equilateral&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;rhombus&quot;</span><span class="p">,</span> <span class="s2">&quot;rhombi&quot;</span>
+
+        <span class="n">augment_if</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;regular&quot;</span><span class="p">,</span> <span class="s2">&quot;equilateral&quot;</span><span class="p">,</span> <span class="s2">&quot;equiangular&quot;</span><span class="p">)</span>
+
+        <span class="n">augment_if_not</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;non-convex&quot;</span><span class="p">,</span> <span class="s2">&quot;convex&quot;</span><span class="p">)</span>
+
+        <span class="n">marked_vertices</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;marked_vertices&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">marked_vertices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">marked_vertices</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;with a marked vertex&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;with </span><span class="si">{</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;marked_vertices&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> marked vertices&quot;</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">description</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">description</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">description</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">description</span>
+
+<div class="viewcode-block" id="Polygons.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods">[docs]</a>    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides methods available to all polygons.</span>
+
+<span class="sd">        If you want to add functionality to all polygons, independent of</span>
+<span class="sd">        implementation, you probably want to put it here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.ParentMethods.change_ring"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.change_ring">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return a copy of this polygon which is defined over ``ring``.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: S = polygons.square()</span>
+<span class="sd">                sage: K.&lt;sqrt2&gt; = NumberField(x^2 - 2, embedding=AA(2)**(1/2))</span>
+<span class="sd">                sage: S.change_ring(K)</span>
+<span class="sd">                Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Polygons.ParentMethods.is_convex"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_convex">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this is a convex polygon.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``strict`` -- whether to check for strict convexity, i.e., a</span>
+<span class="sd">              polygon with a π angle is not considered convex.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: S = polygons.square()</span>
+<span class="sd">                sage: S.is_convex()</span>
+<span class="sd">                True</span>
+<span class="sd">                sage: S.is_convex(strict=True)</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Polygons.ParentMethods.is_degenerate"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_degenerate">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">is_degenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this polygon is considered degenerate.</span>
+
+<span class="sd">            EXAMPLES:</span>
+
+<span class="sd">            Polygons with zero area are considered degenerate::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon</span>
+<span class="sd">                sage: p = Polygon(vertices=[(0, 0), (2, 0), (1, 0)], check=False)</span>
+<span class="sd">                sage: p.is_degenerate()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            Polygons with marked vertices are considered degenerate::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon</span>
+<span class="sd">                sage: p = Polygon(vertices=[(0, 0), (2, 0), (4, 0), (2, 2)])</span>
+<span class="sd">                sage: p.is_degenerate()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Polygons.ParentMethods.is_simple"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.is_simple">[docs]</a>        <span class="nd">@abstract_method</span>
+        <span class="k">def</span> <span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this polygon is not self-intersecting.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: s = polygons.square()</span>
+<span class="sd">                sage: s.is_simple()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Polygons.ParentMethods.base_ring"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.base_ring">[docs]</a>        <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the ring over which this polygon is defined.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: S = polygons.square()</span>
+<span class="sd">                sage: S.base_ring()</span>
+<span class="sd">                Rational Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Polygons.ParentMethods.describe_polygon"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.ParentMethods.describe_polygon">[docs]</a>        <span class="k">def</span> <span class="nf">describe_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return a textual description of this polygon for generating</span>
+<span class="sd">            human-readable messages.</span>
+
+<span class="sd">            The description is returned as a triple (indeterminate article,</span>
+<span class="sd">            singular, plural).</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: s = polygons.square()</span>
+<span class="sd">                sage: s.describe_polygon()</span>
+<span class="sd">                (&#39;a&#39;, &#39;square&#39;, &#39;squares&#39;)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">marked_vertices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">(</span><span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">marked_vertices</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erase_marked_vertices</span><span class="p">()</span>
+
+            <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;degenerate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_degenerate</span><span class="p">(),</span>
+                <span class="s2">&quot;equilateral&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_equilateral</span><span class="p">(),</span>
+                <span class="s2">&quot;equiangular&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_equiangular</span><span class="p">(),</span>
+                <span class="s2">&quot;convex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(),</span>
+                <span class="s2">&quot;marked_vertices&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">marked_vertices</span><span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">slopes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slopes</span><span class="p">(</span><span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">slope</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">slope</span> <span class="ow">in</span> <span class="n">slopes</span><span class="p">)</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">is_parallel</span>
+
+                <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;isosceles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">is_parallel</span><span class="p">(</span><span class="n">slopes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">slopes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="ow">or</span> <span class="n">is_parallel</span><span class="p">(</span><span class="n">slopes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">slopes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="ow">or</span> <span class="n">is_parallel</span><span class="p">(</span><span class="n">slopes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">slopes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">Polygons</span><span class="o">.</span><span class="n">_describe_polygon</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()),</span> <span class="o">**</span><span class="n">properties</span><span class="p">)</span></div>
+
+        <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Verify that the polygon is in the smallest category that can be</span>
+<span class="sd">            easily determined.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: P = polygons.square()</span>
+<span class="sd">                sage: P._test_refined_category()</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_convex</span><span class="p">():</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;Convex&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_simple</span><span class="p">():</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="s2">&quot;Simple&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span><span class="o">.</span><span class="n">axioms</span><span class="p">())</span></div>
+
+            <span class="c1"># We do not test for Rational and WithAngles since these are only</span>
+            <span class="c1"># determined on demand (computing angles can be very costly.)</span>
+
+<div class="viewcode-block" id="Polygons.Convex"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Convex">[docs]</a>    <span class="k">class</span> <span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by convex polygons.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">            sage: C = Polygons(QQ)</span>
+<span class="sd">            sage: C.Convex()</span>
+<span class="sd">            Category of convex polygons over Rational Field</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.Convex.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Convex.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all convex polygons.</span>
+
+<span class="sd">            If you want to add functionality to all such polygons, you probably</span>
+<span class="sd">            want to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.Convex.ParentMethods.is_convex"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Convex.ParentMethods.is_convex">[docs]</a>            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this is a convex polygon, which it is.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import polygons</span>
+<span class="sd">                    sage: P = polygons.square()</span>
+<span class="sd">                    sage: P.is_convex()</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="s2">&quot;cannot decide strict convexity for this polygon yet&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">return</span> <span class="kc">True</span></div></div></div>
+
+<div class="viewcode-block" id="Polygons.Simple"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Simple">[docs]</a>    <span class="k">class</span> <span class="nc">Simple</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by polygons that are not self-intersecting.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">            sage: C = Polygons(QQ)</span>
+<span class="sd">            sage: C.Simple()</span>
+<span class="sd">            Category of simple polygons over Rational Field</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.Simple.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Simple.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all simple polygons.</span>
+
+<span class="sd">            If you want to add functionality to all such polygons, you probably</span>
+<span class="sd">            want to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.Simple.ParentMethods.is_simple"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Simple.ParentMethods.is_simple">[docs]</a>            <span class="k">def</span> <span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether this polygon is not self-intersecting, i.e.,</span>
+<span class="sd">                return ``True``.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import polygons</span>
+<span class="sd">                    sage: s = polygons.square()</span>
+<span class="sd">                    sage: s.is_simple()</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="kc">True</span></div></div></div>
+
+<div class="viewcode-block" id="Polygons.Rational"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Rational">[docs]</a>    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The axiom satisfied by polygons whose inner angles are rational</span>
+<span class="sd">        multiples of π.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">            sage: C = Polygons(QQ)</span>
+<span class="sd">            sage: C.Rational()</span>
+<span class="sd">            Category of rational polygons over Rational Field</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.Rational.ParentMethods"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Rational.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all rational polygons.</span>
+
+<span class="sd">            If you want to add functionality to all such polygons, you probably</span>
+<span class="sd">            want to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Polygons.Rational.ParentMethods.is_rational"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.Rational.ParentMethods.is_rational">[docs]</a>            <span class="k">def</span> <span class="nf">is_rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return whether all inner angles of this polygon are rational</span>
+<span class="sd">                multiples of π, i.e., return ``True``.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import polygons</span>
+<span class="sd">                    sage: s = polygons.square()</span>
+<span class="sd">                    sage: s.is_rational()</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="kc">True</span></div></div></div>
+
+<div class="viewcode-block" id="Polygons.SubcategoryMethods"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods">[docs]</a>    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="Polygons.SubcategoryMethods.Convex"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Convex">[docs]</a>        <span class="k">def</span> <span class="nf">Convex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategory of convex polygons.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">                sage: Polygons(QQ).Convex()</span>
+<span class="sd">                Category of convex polygons over Rational Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Convex&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Polygons.SubcategoryMethods.Simple"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Simple">[docs]</a>        <span class="k">def</span> <span class="nf">Simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategyr of simple polygons.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">                sage: Polygons(QQ).Simple()</span>
+<span class="sd">                Category of simple polygons over Rational Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Simple&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Polygons.SubcategoryMethods.Rational"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Rational">[docs]</a>        <span class="k">def</span> <span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the subcategory of polygons with rational angles.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">                sage: Polygons(QQ).Rational()</span>
+<span class="sd">                Category of rational polygons over Rational Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Rational&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Polygons.SubcategoryMethods.field"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.field">[docs]</a>        <span class="k">def</span> <span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the field over which these polygons are defined.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])</span>
+<span class="sd">                sage: P.category().field()</span>
+<span class="sd">                doctest:warning</span>
+<span class="sd">                ...</span>
+<span class="sd">                UserWarning: field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead</span>
+<span class="sd">                Rational Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">import</span> <span class="nn">warnings</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;field() has been deprecated and will be removed from a future version of sage-flatsurf; use base_ring() or base_ring().fraction_field() instead&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Polygons.SubcategoryMethods.base_ring"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.base_ring">[docs]</a>        <span class="nd">@cached_method</span>
+        <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the ring over which the polygons in this category are</span>
+<span class="sd">            defined.</span>
+
+<span class="sd">                sage: from flatsurf.geometry.categories import Polygons</span>
+<span class="sd">                sage: C = Polygons(QQ).Rational().Simple().Convex()</span>
+
+<span class="sd">                sage: C.base_ring()</span>
+<span class="sd">                Rational Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Copied this trick from SageMath&#39;s Modules category.</span>
+            <span class="k">for</span> <span class="n">C</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">super_categories</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="s2">&quot;base_ring&quot;</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">C</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="kc">False</span></div>
+
+        <span class="k">def</span> <span class="nf">_test_base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Rings</span>
+
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Rings</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Polygons.SubcategoryMethods.change_ring"><a class="viewcode-back" href="../../../../geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.change_ring">[docs]</a>        <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return this category but defined over the ring ``ring``.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import polygons</span>
+<span class="sd">                sage: s = polygons.square()</span>
+<span class="sd">                sage: C = s.category()</span>
+<span class="sd">                sage: C</span>
+<span class="sd">                Category of convex simple euclidean rectangles over Rational Field</span>
+<span class="sd">                sage: C.change_ring(AA)</span>
+<span class="sd">                Category of convex simple euclidean rectangles over Algebraic Real Field</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">sage.categories.category</span> <span class="kn">import</span> <span class="n">JoinCategory</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">JoinCategory</span><span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">sage.categories.category</span> <span class="kn">import</span> <span class="n">Category</span>
+
+                <span class="k">return</span> <span class="n">Category</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">S</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span> <span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">super_categories</span><span class="p">()]</span>
+                <span class="p">)</span>
+
+            <span class="c1"># This is a hack to make the change ring of EuclideanPolygonsWithAngles subcategories work</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;angles&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">ring</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Category_over_base_ring</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">ring</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot change_ring() of this category yet&quot;</span><span class="p">)</span></div></div></div>
+
+
+<span class="c1"># Currently, there is no &quot;Convex&quot; and &quot;Simple&quot; axiom in SageMath so we make it</span>
+<span class="c1"># known to the category framework. Note that &quot;Rational&quot; is already defined by</span>
+<span class="c1"># topological surfaces so we don&#39;t need to declare it here again.</span>
+<span class="n">all_axioms</span> <span class="o">+=</span> <span class="p">(</span>
+    <span class="s2">&quot;Convex&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Simple&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2016-2023, the sage-flatsurf authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
+    </body>
+</html>
