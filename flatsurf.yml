@@ -13,7 +13,7 @@ dependencies:
   - matplotlib-base
   - pip
   - pyeantic>=1.2.1,<2
-  - pyexactreal>=2.3.0,<3
+  - pyexactreal>=3.1.0,<4
   - pyflatsurf>=3.11.1,<4
   - python=3.9
   - ruamel.yaml
