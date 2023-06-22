@@ -221,7 +221,7 @@ def matrix_multiplicative_order(m):
 
     # then we conjugate and check if the angles are rational
     # we need to take a square root of a symmetric matrix... this is not implemented!
-    A = matrix(m.base_ring(), [[v[0], v[1]], [v[1], v[2]]])
+    # A = matrix(m.base_ring(), [[v[0], v[1]], [v[1], v[2]]])
 
 
 class FinitelyGenerated2x2MatrixGroup(Group):
