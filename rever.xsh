@@ -43,7 +43,7 @@ $RELEASE_YEAR = $RELEASE_DATE.year
 $VERSION_BUMP_PATTERNS = [
     ('recipe/meta.yaml', r"\{% set version =", r"{% set version = '$VERSION' %}"),
     ('recipe/meta.yaml', r"\{% set build_number =", r"{% set build_number = '0' %}"),
-    ('flatsurf/version.py', r"version =", r"version = '$VERSION'"),
+    ('flatsurf/version.py', r"version =", r"version = \"$VERSION\""),
     ('setup.py', r"    version=", r"    version='$VERSION',"),
     ('flatsurf.yml', r"  - sage-flatsurf=", r"  - sage-flatsurf=$VERSION"),
     ('README.md', r'\[!\[Binder\]', r'[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flatsurf/sage-flatsurf/$VERSION?filepath=doc%2Fexamples)'),
