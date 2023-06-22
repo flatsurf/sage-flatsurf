@@ -2235,7 +2235,10 @@ class SimilaritySurfaces(SurfaceCategory):
         class ParentMethods:
             r"""
             Provides methods available to all surfaces built from Euclidean
-            polygons glued by similarities that have rational monodromy.
+            polygons glued by similarities that have rational monodromy, i.e.,
+            `monodromy
+            <https://en.wikipedia.org/wiki/(G,X)-manifold#Monodromy>`_ gives
+            similarities whose rotational part has finite order.
 
             If you want to add functionality for such surfaces you most likely
             want to put it here.
@@ -2575,7 +2578,8 @@ class SimilaritySurfaces(SurfaceCategory):
     class SubcategoryMethods:
         def Rational(self):
             r"""
-            Return the subcategory of surfaces with rational monodromy.
+            Return the subcategory of surfaces with rational monodromy, see
+            :class:`.Rational`.
 
             EXAMPLES::
 

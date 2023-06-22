@@ -2,7 +2,8 @@ r"""
 The category of cone surfaces.
 
 A cone surface is a surface that can be built by gluing Euclidean polygons
-along their edges such that the matrix describing monodromy along a closed path
+along their edges such that the matrix describing `monodromy
+<https://en.wikipedia.org/wiki/(G,X)-manifold#Monodromy>`_ along a closed path
 is an isometry; that matrix is given by multiplying the individual matrices
 that describe how to transition between pairs of glued edges, see
 :meth:`~.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix`.
