@@ -1222,7 +1222,10 @@ def _Polygon_base_ring(vertices, edges, angles, lengths):
                     is_square = scale.is_square()
                 except NotImplementedError:
                     import warnings
-                    warnings.warn("Due to https://github.com/flatsurf/exact-real/issues/173, we cannot compute the minimal base ring over which this polygon is defined. The polygon could possibly have been defined over a smaller ring.")
+
+                    warnings.warn(
+                        "Due to https://github.com/flatsurf/exact-real/issues/173, we cannot compute the minimal base ring over which this polygon is defined. The polygon could possibly have been defined over a smaller ring."
+                    )
                     is_square = False
 
                 if not is_square:
