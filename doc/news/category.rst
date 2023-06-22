@@ -18,7 +18,7 @@
 
 * Added an ``is_connected()`` method to surfaces that returns whether the surface is connected as a topological space. (Before such surfaces were not well supported.)
 
-* Added an ``is_with_boundary()`` method that returns whether a surfaces has polygons with unglued edges. (Before such surfaces were considered to be invalid now they are supported to some limited extent.)
+* Added an ``is_with_boundary()`` method that returns whether a surface has polygons with unglued edges. (Before such surfaces were considered to be invalid now they are supported to some limited extent.)
 
 * Added an ``euler_characteristic()`` method for surfaces of finite type.
 
