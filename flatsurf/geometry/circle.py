@@ -1,21 +1,28 @@
 r"""
-This class contains methods useful for working with circles. 
+This class contains methods useful for working with circles.
 
 This will be used to build a LazyDelaunayTriangulation class which will compute the
 Delaunay decomposition for infinite surfaces.
 """
 # ****************************************************************************
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#  This file is part of sage-flatsurf.
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#       Copyright (C) 2013-2019 Vincent Delecroix
+#                     2013-2019 W. Patrick Hooper
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
 
 from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
@@ -206,8 +213,7 @@ class Circle:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
-            sage: from flatsurf.geometry.circle import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.square_torus()
             sage: c = s.polygon(0).circumscribing_circle()
             sage: c

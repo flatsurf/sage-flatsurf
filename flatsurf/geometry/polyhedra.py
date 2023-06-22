@@ -1,6 +1,23 @@
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
+# ********************************************************************
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2017-2020 W. Patrick Hooper
+#                      2017-2020 Vincent Delecroix
+#                           2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ********************************************************************
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.number_field.number_field import NumberField
@@ -11,9 +28,6 @@ from sage.modules.free_module_element import vector
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.functions.other import sqrt
 
-from flatsurf.geometry.polygon import ConvexPolygons
-from flatsurf.geometry.surface import surface_list_from_polygons_and_gluings
-from flatsurf.geometry.cone_surface import ConeSurface
 from flatsurf.geometry.straight_line_trajectory import (
     StraightLineTrajectory,
     SegmentInPolygon,
@@ -72,26 +86,71 @@ class ConeSurfaceToPolyhedronMap(SageObject):
             )
         raise ValueError("Failed to recognize type of passed object")
 
+    def __eq__(self, other):
+        r"""
+        Return whether this map is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface
+            sage: vertices=[]
+            sage: for i in range(3):
+            ....:     temp=vector([1 if k==i else 0 for k in range(3)])
+            ....:     for j in range(-1,3,2):
+            ....:         vertices.append(j*temp)
+            sage: octahedron=Polyhedron(vertices=vertices)
+            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))  # long time (.5s)
+
+            sage: surface_to_octahedron == surface_to_octahedron  # long time (see above)
+            True
+
+        """
+        if not isinstance(other, ConeSurfaceToPolyhedronMap):
+            return False
+        return self._s == other._s and self._p == other._p and self._md == other._md
+
+    def __ne__(self, other):
+        r"""
+        Return whether this map is distinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface
+            sage: vertices=[]
+            sage: for i in range(3):
+            ....:     temp=vector([1 if k==i else 0 for k in range(3)])
+            ....:     for j in range(-1,3,2):
+            ....:         vertices.append(j*temp)
+            sage: octahedron=Polyhedron(vertices=vertices)
+            sage: surface, surface_to_octahedron = polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))  # long time (.3s)
+
+            sage: surface_to_octahedron != surface_to_octahedron  # long time (see above)
+            False
+
+        """
+        return not (self == other)
+
 
 def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
-    r"""Construct the Euclidean Cone Surface associated to the surface of a polyhedron and a map
+    r"""
+    Construct the Euclidean Cone Surface associated to the surface of a polyhedron and a map
     from the cone surface to the polyhedron.
-    
+
     INPUT:
 
-    - ``polyhedron`` -- A 3-dimensional polyhedron, which should be define over something that coerces into AA
+    - ``polyhedron`` -- A 3-dimensional polyhedron, which should be defined over something that coerces into AA
 
     - ``use_AA`` -- If True, the surface returned will be defined over AA. If false, the algorithm will find the smallest NumberField and write the field there.
-    
+
     - ``scaling_factor`` -- The surface returned will have a metric scaled by multiplication by this factor (compared with the original polyhendron). This can be used to produce a surface defined over a smaller NumberField.
-    
+
     OUTPUT:
-    
+
     A pair consisting of a ConeSurface and a ConeSurfaceToPolyhedronMap.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.polyhedra import *
+        sage: from flatsurf.geometry.polyhedra import Polyhedron, polyhedron_to_cone_surface
         sage: vertices=[]
         sage: for i in range(3):
         ....:     temp=vector([1 if k==i else 0 for k in range(3)])
@@ -101,8 +160,8 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         sage: surface,surface_to_octahedron = \
         ....:     polyhedron_to_cone_surface(octahedron,scaling_factor=AA(1/sqrt(2)))
         sage: TestSuite(surface).run()
-        sage: TestSuite(surface_to_octahedron).run(skip="_test_pickling")
-        sage: surface.num_polygons()
+        sage: TestSuite(surface_to_octahedron).run()  # long time (.4s)
+        sage: len(surface.polygons())
         8
         sage: surface.base_ring()
         Number Field in a with defining polynomial y^2 - 3 with a = 1.732050807568878?
@@ -127,7 +186,9 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         sage: ZZ(total_length**2)
         42
     """
-    assert polyhedron.dim() == 3
+    if polyhedron.dim() != 3:
+        raise ValueError
+
     c = polyhedron.center()
     vertices = polyhedron.vertices()
     vertex_order = {}
@@ -182,13 +243,13 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         w = w / AA(w.norm())
         m = 1 / scaling_factor * matrix(AA, [w, n.cross_product(w), n]).transpose()
         mi = ~m
-        mis = mi.submatrix(0, 0, 2, 3)
+        mi_submatrix = mi.submatrix(0, 0, 2, 3)
         face_map_data.append(
             (
                 v0,  # translation to bring origin in plane to v0
                 m.submatrix(0, 0, 3, 2),
-                -mis * v0,
-                mis,
+                -mi_submatrix * v0,
+                mi_submatrix,
             )
         )
 
@@ -228,12 +289,17 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
         m = face_map_data[p][3]
         polygon_vertices_AA.append([trans + m * v for v in vs])
 
+    from flatsurf import MutableOrientedSimilaritySurface
+
     if use_AA is True:
-        Polys = ConvexPolygons(AA)
-        polygons = []
+        from flatsurf import Polygon
+
+        S = MutableOrientedSimilaritySurface(AA)
         for vs in polygon_vertices_AA:
-            polygons.append(Polys(vertices=vs))
-        S = ConeSurface(surface_list_from_polygons_and_gluings(polygons, gluings))
+            S.add_polygon(Polygon(vertices=vs, base_ring=AA))
+        for x, y in gluings.items():
+            S.glue(x, y)
+        S.set_immutable()
         return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
     else:
         elts = []
@@ -254,11 +320,14 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     vs2.append(vector(field, [elts2[j], elts2[j + 1]]))
                     j = j + 2
                 polygon_vertices_field2.append(vs2)
-            Polys = ConvexPolygons(field)
-            polygons = []
+            S = MutableOrientedSimilaritySurface(field)
+            from flatsurf import Polygon
+
             for vs in polygon_vertices_field2:
-                polygons.append(Polys(vertices=vs))
-            S = ConeSurface(surface_list_from_polygons_and_gluings(polygons, gluings))
+                S.add_polygon(Polygon(vertices=vs, base_ring=field))
+            for x, y in gluings.items():
+                S.glue(x, y)
+            S.set_immutable()
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
         else:
@@ -278,11 +347,14 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=ZZ(1)):
                     vs2.append(vector(field2, [hom2(elts2[j]), hom2(elts2[j + 1])]))
                     j = j + 2
                 polygon_vertices_field2.append(vs2)
-            Polys = ConvexPolygons(field2)
-            polygons = []
+            S = MutableOrientedSimilaritySurface(field2)
+            from flatsurf import Polygon
+
             for vs in polygon_vertices_field2:
-                polygons.append(Polys(vertices=vs))
-            S = ConeSurface(surface_list_from_polygons_and_gluings(polygons, gluings))
+                S.add_polygon(Polygon(vertices=vs, base_ring=field2))
+            for x, y in gluings.items():
+                S.glue(x, y)
+            S.set_immutable()
             return S, ConeSurfaceToPolyhedronMap(S, polyhedron, face_map_data)
 
 
@@ -335,8 +407,8 @@ def platonic_octahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_octahedron
-        sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()
-        sage: TestSuite(surface).run()
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_octahedron()  # long time (.3s)
+        sage: TestSuite(surface).run()  # long time (see above)
     """
     vertices = []
     for i in range(3):
@@ -358,8 +430,8 @@ def platonic_dodecahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_dodecahedron
-        sage: polyhedron,surface,surface_to_polyhedron = platonic_dodecahedron()
-        sage: TestSuite(surface).run()
+        sage: polyhedron, surface, surface_to_polyhedron = platonic_dodecahedron()  # long time (1s)
+        sage: TestSuite(surface).run()  # long time (.8s)
     """
     vertices = []
     phi = AA(1 + sqrt(5)) / 2
@@ -388,8 +460,8 @@ def platonic_icosahedron():
     EXAMPLES::
 
         sage: from flatsurf.geometry.polyhedra import platonic_icosahedron
-        sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()
-        sage: TestSuite(surface).run()
+        sage: polyhedron,surface,surface_to_polyhedron = platonic_icosahedron()  # long time (.9s)
+        sage: TestSuite(surface).run()  # long time (see above)
     """
     vertices = []
     phi = AA(1 + sqrt(5)) / 2

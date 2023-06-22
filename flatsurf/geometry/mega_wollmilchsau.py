@@ -1,15 +1,31 @@
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
+# ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
+#       Copyright (C) 2016-2019 Vincent Delecroix
+#                     2016-2019 W. Patrick Hooper
+#                          2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ****************************************************************************
 from sage.groups.group import Group
 from sage.categories.groups import Groups
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.element import MultiplicativeGroupElement
 from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
-from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ
 
-from .translation_surface import AbstractOrigami
+from flatsurf.geometry.origami import AbstractOrigami
 
 _Q = QuaternionAlgebra(-1, -1)
 _i, _j, _k = _Q.gens()
@@ -35,10 +51,13 @@ class MegaWollmilchsauGroupElement(MultiplicativeGroupElement):
         if parent is None:
             raise ValueError("The parent must be provided")
         # I should assert that the element lives in the domain of the group.
-        assert i in ZZ
-        assert r in _Q
+        if i not in ZZ:
+            raise ValueError
+        if r not in _Q:
+            raise ValueError
         # Actually q should be in {1,-1,-i,i,j,-j,k,-k}. I'm not testing for that.
-        assert q in _Q
+        if q not in _Q:
+            raise ValueError
         # There is one more condition. The group doesn't have full image...
         self._i = i
         self._r = r
@@ -113,9 +132,6 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
     def is_abelian(self):
         return False
 
-    # def order(self):
-    #    return infinity
-
     def _an_element_(self):
         return self.a()
 
@@ -123,18 +139,16 @@ class MegaWollmilchsauGroup(UniqueRepresentation, Group):
         return [self.a(), self.b()]
 
     def _test_relations(self, **options):
+        tester = self._tester(**options)
         a, b = self.gens()
         e = self.one()
-        assert a**4 == e
-        assert b**4 == e
-        assert (a * b) ** 4 == e
-        assert (a / b) ** 4 == e
-        assert (a * a * b) ** 4 == e
-        assert (a * a / b) ** 4 == e
-        assert (a * b / a / b) ** 2 != e
-
-    # def cardinality(self):
-    #    return infinity
+        tester.assertEqual(a**4, e)
+        tester.assertEqual(b**4, e)
+        tester.assertEqual((a * b) ** 4, e)
+        tester.assertEqual((a / b) ** 4, e)
+        tester.assertEqual((a * a * b) ** 4, e)
+        tester.assertEqual((a * a / b) ** 4, e)
+        tester.assertNotEqual((a * b / a / b) ** 2, e)
 
 
 class MegaWollmilchsau(AbstractOrigami):

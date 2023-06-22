@@ -19,16 +19,6 @@ r"""Mappings between translation surfaces."""
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-from six import iteritems
-
-from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
-from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict, ExtraLabel
-from flatsurf.geometry.similarity_surface import SimilaritySurface
-
-from sage.rings.infinity import Infinity
-from sage.structure.sage_object import SageObject
 
 
 class SurfaceMapping:
@@ -130,113 +120,33 @@ class IdentityMapping(SurfaceMapping):
         )
 
 
-class MatrixListDeformedSurface(Surface):
-    r"""
-    Apply a different matrix to each polygon in the surface.
-    Here matrix_function is a python function mapping labels to 2x2 matrices with positive determinant.
-
-    .. WARNING::
-
-        Note that only some methods are forwarding correctly to the underlying
-        surface ``_s``. Others are incorrectly mutating/querying this surface
-        object which should be stateless (but is not.)
-
-    """
-
-    def __init__(self, surface, matrix_function, ring=None):
-        self._s = surface
-        self._m = matrix_function
-        if ring is None:
-            self._base_ring = self._s.base_ring()
-        else:
-            self._base_ring = ring
-        self._P = ConvexPolygons(self._base_ring)
-        Surface.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
-
-    def base_label(self):
-        r"""
-        Return the label of a special chosen polygon in this surface.
-        """
-        return self._s.base_label()
-
-    def change_base_label(self, new_base_label):
-        r"""
-        Set the :meth:`base_label` to ``new_base_label``.
-        """
-        self._s.change_base_label(new_base_label)
-
-    def polygon(self, lab):
-        p = self._s.polygon(lab)
-        edges = [self._m(lab) * p.edge(e) for e in range(p.num_edges())]
-        return self._P(edges)
-
-    def opposite_edge(self, p, e):
-        return self._s.opposite_edge(p, e)
-
-    def is_finite(self):
-        return self._s.is_finite()
-
-
-class MatrixListDeformedSurfaceMapping(SurfaceMapping):
-    r"""
-    This mapping applies a possibly different linear matrix to each polygon.
-    The matrix is determined by the matrix_function which should be a python
-    object.
-    """
-
-    def __init__(self, s, matrix_function, ring=None):
-        codomain = MatrixListDeformedSurface(s, matrix_function, ring=ring)
-        self._m = matrix_function
-        SurfaceMapping.__init__(self, s, codomain)
-
-    def push_vector_forward(self, tangent_vector):
-        label = tangent_vector.polygon_label()
-        m = self._m(label)
-        return self.codomain().tangent_vector(
-            label, m * tangent_vector.point(), m * tangent_vector.vector()
-        )
-
-    def pull_vector_back(self, tangent_vector):
-        label = tangent_vector.polygon_label()
-        im = ~self._m(label)
-        return self.domain().tangent_vector(
-            label, im * tangent_vector.point(), im * tangent_vector.vector()
-        )
-
-
 class SimilarityJoinPolygonsMapping(SurfaceMapping):
     r"""
     Return a SurfaceMapping joining two polygons together along the edge provided to the constructor.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
-        sage: from flatsurf.geometry.polygon import ConvexPolygons
-        sage: P = ConvexPolygons(QQ)
-        sage: s0=Surface_list(base_ring=QQ)
-        sage: s0.add_polygon(P([(1,0),(0,1),(-1,-1)])) # gets label=0
+        sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+        sage: s = MutableOrientedSimilaritySurface(QQ)
+        sage: s.add_polygon(Polygon(edges=[(1,0),(0,1),(-1,-1)]))
         0
-        sage: s0.add_polygon(P([(-1,0),(0,-1),(1,1)])) # gets label=1
+        sage: s.add_polygon(Polygon(edges=[(-1,0),(0,-1),(1,1)]))
         1
-        sage: s0.change_polygon_gluings(0,[(1,0),(1,1),(1,2)])
-        sage: s0.set_immutable()
-        sage: s=TranslationSurface(s0)
-        sage: from flatsurf.geometry.mappings import *
-        sage: m=SimilarityJoinPolygonsMapping(s,0,2)
+        sage: s.glue((0, 0), (1, 0))
+        sage: s.glue((0, 1), (1, 1))
+        sage: s.glue((0, 2), (1, 2))
+        sage: s.set_immutable()
+
+        sage: from flatsurf.geometry.mappings import SimilarityJoinPolygonsMapping
+        sage: m=SimilarityJoinPolygonsMapping(s, 0, 2)
         sage: s2=m.codomain()
-        sage: for label,polygon in s2.label_iterator(polygons=True):
-        ....:     print("Polygon "+str(label)+" is "+str(polygon)+".")
-        Polygon 0 is Polygon: (0, 0), (1, 0), (1, 1), (0, 1).
-        sage: for label,edge in s2.edge_iterator():
-        ....:     print(str((label,edge))+" is glued to "+str(s2.opposite_edge(label,edge))+".")
-        (0, 0) is glued to (0, 2).
-        (0, 1) is glued to (0, 3).
-        (0, 2) is glued to (0, 0).
-        (0, 3) is glued to (0, 1).
+        sage: s2.labels()
+        (0,)
+        sage: s2.polygons()
+        (Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]),)
+        sage: s2.gluings()
+        (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
     """
 
     def __init__(self, s, p1, e1):
@@ -248,8 +158,10 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
                 "Can only construct SimilarityJoinPolygonsMapping for immutable surfaces."
             )
 
-        ss2 = s.copy(lazy=True, mutable=True)
-        s2 = ss2.underlying_surface()
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+        ss2 = MutableOrientedSimilaritySurface.from_surface(s)
+        s2 = ss2
 
         poly1 = s.polygon(p1)
         p2, e2 = s.opposite_edge(p1, e1)
@@ -261,34 +173,38 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         for i in range(e1):
             edge_map[len(vs)] = (p1, i)
             vs.append(poly1.edge(i))
-        ne = poly2.num_edges()
+        ne = len(poly2.vertices())
         for i in range(1, ne):
             ee = (e2 + i) % ne
             edge_map[len(vs)] = (p2, ee)
             vs.append(dt * poly2.edge(ee))
-        for i in range(e1 + 1, poly1.num_edges()):
+        for i in range(e1 + 1, len(poly1.vertices())):
             edge_map[len(vs)] = (p1, i)
             vs.append(poly1.edge(i))
 
         inv_edge_map = {}
-        for key, value in iteritems(edge_map):
+        for key, value in edge_map.items():
             inv_edge_map[value] = (p1, key)
 
-        if s.base_label() == p2:
+        if p2 in s.roots():
             # The polygon with the base label is being removed.
-            s2.change_base_label(p1)
+            s2.set_roots(tuple(p1 if label == p2 else label for label in s.roots()))
 
-        s2.change_polygon(p1, ConvexPolygons(s.base_ring())(vs))
+        s2.remove_polygon(p1)
+        from flatsurf import Polygon
+
+        s2.add_polygon(Polygon(edges=vs, base_ring=s.base_ring()), label=p1)
 
         for i in range(len(vs)):
             p3, e3 = edge_map[i]
             p4, e4 = s.opposite_edge(p3, e3)
             if p4 == p1 or p4 == p2:
                 pp, ee = inv_edge_map[(p4, e4)]
-                s2.change_edge_gluing(p1, i, pp, ee)
+                s2.glue((p1, i), (pp, ee))
             else:
-                s2.change_edge_gluing(p1, i, p4, e4)
+                s2.glue((p1, i), (p4, e4))
 
+        s2.remove_polygon(p2)
         s2.set_immutable()
 
         self._saved_label = p1
@@ -310,7 +226,8 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
         """
         return (
             self._glued_edge,
-            self._glued_edge + self._domain.polygon(self._removed_label).num_edges(),
+            self._glued_edge
+            + len(self._domain.polygon(self._removed_label).vertices()),
         )
 
     def push_vector_forward(self, tangent_vector):
@@ -340,9 +257,9 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
             p = tangent_vector.point()
             v = self._domain.polygon(self._saved_label).vertex(self._glued_edge)
             e = self._domain.polygon(self._saved_label).edge(self._glued_edge)
-            from flatsurf.geometry.polygon import wedge_product
+            from flatsurf.geometry.euclidean import ccw
 
-            wp = wedge_product(p - v, e)
+            wp = ccw(p - v, e)
             if wp > 0:
                 # in polygon with the removed label
                 return self.domain().tangent_vector(
@@ -361,7 +278,7 @@ class SimilarityJoinPolygonsMapping(SurfaceMapping):
                 )
             # Otherwise wp==0
             w = tangent_vector.vector()
-            wp = wedge_product(w, e)
+            wp = ccw(w, e)
             if wp > 0:
                 # in polygon with the removed label
                 return self.domain().tangent_vector(
@@ -391,28 +308,19 @@ class SplitPolygonsMapping(SurfaceMapping):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s=translation_surfaces.veech_2n_gon(4)
         sage: from flatsurf.geometry.mappings import SplitPolygonsMapping
         sage: m = SplitPolygonsMapping(s,0,0,2)
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
-        sage: for pair in s2.label_iterator(polygons=True):
-        ....:     print(pair)
-        (0, Polygon: (0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a))
-        (ExtraLabel(0), Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a))
-        sage: for glue in s2.edge_iterator(gluings=True):
-        ....:     print(glue)
-        ((0, 0), (ExtraLabel(0), 0))
-        ((0, 1), (0, 5))
-        ((0, 2), (0, 6))
-        ((0, 3), (ExtraLabel(0), 1))
-        ((0, 4), (ExtraLabel(0), 2))
-        ((0, 5), (0, 1))
-        ((0, 6), (0, 2))
-        ((ExtraLabel(0), 0), (0, 0))
-        ((ExtraLabel(0), 1), (0, 3))
-        ((ExtraLabel(0), 2), (0, 4))
+        sage: s2.labels()
+        (0, 1)
+        sage: s2.polygons()
+        (Polygon(vertices=[(0, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]), Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
+        sage: s2.gluings()
+        (((0, 0), (1, 0)), ((0, 1), (0, 5)), ((0, 2), (0, 6)), ((0, 3), (1, 1)), ((0, 4), (1, 2)), ((0, 5), (0, 1)), ((0, 6), (0, 2)), ((1, 0), (0, 0)), ((1, 1), (0, 3)), ((1, 2), (0, 4)))
+
     """
 
     def __init__(self, s, p, v1, v2, new_label=None):
@@ -425,7 +333,7 @@ class SplitPolygonsMapping(SurfaceMapping):
             raise ValueError("The surface should be immutable.")
 
         poly = s.polygon(p)
-        ne = poly.num_edges()
+        ne = len(poly.vertices())
         if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
             raise ValueError("Provided vertices out of bounds.")
         if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
@@ -435,19 +343,25 @@ class SplitPolygonsMapping(SurfaceMapping):
             v1 = v2
             v2 = temp
 
-        newvertices1 = [poly.vertex(v2) - poly.vertex(v1)]
+        newedges1 = [poly.vertex(v2) - poly.vertex(v1)]
         for i in range(v2, v1 + ne):
-            newvertices1.append(poly.edge(i))
-        newpoly1 = ConvexPolygons(s.base_ring())(newvertices1)
+            newedges1.append(poly.edge(i))
 
-        newvertices2 = [poly.vertex(v1) - poly.vertex(v2)]
+        from flatsurf import Polygon
+
+        newpoly1 = Polygon(edges=newedges1, base_ring=s.base_ring())
+
+        newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
         for i in range(v1, v2):
-            newvertices2.append(poly.edge(i))
-        newpoly2 = ConvexPolygons(s.base_ring())(newvertices2)
+            newedges2.append(poly.edge(i))
+        newpoly2 = Polygon(edges=newedges2, base_ring=s.base_ring())
 
-        ss2 = s.copy(mutable=True, lazy=True)
-        s2 = ss2.underlying_surface()
-        s2.change_polygon(p, newpoly1)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+        ss2 = MutableOrientedSimilaritySurface.from_surface(s)
+        s2 = ss2
+        s2.remove_polygon(p)
+        s2.add_polygon(newpoly1, label=p)
         new_label = s2.add_polygon(newpoly2, label=new_label)
 
         old_to_new_labels = {}
@@ -459,19 +373,19 @@ class SplitPolygonsMapping(SurfaceMapping):
             else:  # i>=v2
                 old_to_new_labels[i] = (p, i - v2 + 1)
         new_to_old_labels = {}
-        for i, pair in iteritems(old_to_new_labels):
+        for i, pair in old_to_new_labels.items():
             new_to_old_labels[pair] = i
 
         # This glues the split polygons together.
-        s2.change_edge_gluing(p, 0, new_label, 0)
+        s2.glue((p, 0), (new_label, 0))
         for e in range(ne):
             ll, ee = old_to_new_labels[e]
             lll, eee = s.opposite_edge(p, e)
             if lll == p:
                 gl, ge = old_to_new_labels[eee]
-                s2.change_edge_gluing(ll, ee, gl, ge)
+                s2.glue((ll, ee), (gl, ge))
             else:
-                s2.change_edge_gluing(ll, ee, lll, eee)
+                s2.glue((ll, ee), (lll, eee))
 
         s2.set_immutable()
 
@@ -494,7 +408,9 @@ class SplitPolygonsMapping(SurfaceMapping):
             vertex1 = self._domain.polygon(self._p).vertex(self._v1)
             vertex2 = self._domain.polygon(self._p).vertex(self._v2)
 
-            wp = wedge_product(vertex2 - vertex1, point - vertex1)
+            from flatsurf.geometry.euclidean import ccw
+
+            wp = ccw(vertex2 - vertex1, point - vertex1)
 
             if wp > 0:
                 # in new polygon 1
@@ -515,7 +431,7 @@ class SplitPolygonsMapping(SurfaceMapping):
 
             # Otherwise wp==0
             w = tangent_vector.vector()
-            wp = wedge_product(vertex2 - vertex1, w)
+            wp = ccw(vertex2 - vertex1, w)
             if wp > 0:
                 # in new polygon 1
                 return self.codomain().tangent_vector(
@@ -571,43 +487,49 @@ def subdivide_a_polygon(s):
     r"""
     Return a SurfaceMapping which cuts one polygon along a diagonal or None if the surface is triangulated.
     """
-    from flatsurf.geometry.polygon import wedge_product
+    from flatsurf.geometry.euclidean import ccw
 
-    for l, poly in s.label_iterator(polygons=True):
-        n = poly.num_edges()
+    for label, poly in zip(s.labels(), s.polygons()):
+        n = len(poly.vertices())
         if n > 3:
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
-                if wedge_product(e1, e2) != 0:
-                    return SplitPolygonsMapping(s, l, i, (i + 2) % n)
+                if ccw(e1, e2) != 0:
+                    return SplitPolygonsMapping(s, label, i, (i + 2) % n)
             raise ValueError(
-                "Unable to triangulate polygon with label " + str(l) + ": " + str(poly)
+                "Unable to triangulate polygon with label "
+                + str(label)
+                + ": "
+                + str(poly)
             )
     return None
 
 
 def triangulation_mapping(s):
-    r"""Return a  SurfaceMapping triangulating the provided surface.
+    r"""
+    Return a SurfaceMapping triangulating ``s``.
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s=translation_surfaces.veech_2n_gon(4)
-        sage: from flatsurf.geometry.mappings import *
+        sage: from flatsurf.geometry.mappings import triangulation_mapping
         sage: m=triangulation_mapping(s)
         sage: s2=m.codomain()
         sage: TestSuite(s2).run()
-        sage: for label,polygon in s2.label_iterator(polygons=True):
-        ....:     print(str(polygon))
-        Polygon: (0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)
-        Polygon: (0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)
-        Polygon: (0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)
-        Polygon: (0, 0), (-1, -a - 1), (1/2*a, -1/2*a)
-        Polygon: (0, 0), (0, -a - 1), (1, 0)
-        Polygon: (0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)
+        sage: s2.polygons()
+        (Polygon(vertices=[(0, 0), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)]),
+         Polygon(vertices=[(0, 0), (1/2*a, -1/2*a - 1), (1/2*a, 1/2*a)]),
+         Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a - 1), (0, -1)]),
+         Polygon(vertices=[(0, 0), (-1, -a - 1), (1/2*a, -1/2*a)]),
+         Polygon(vertices=[(0, 0), (0, -a - 1), (1, 0)]),
+         Polygon(vertices=[(0, 0), (-1/2*a - 1, -1/2*a), (-1/2*a, -1/2*a)]))
+
     """
-    assert s.is_finite()
+    if not s.is_finite_type():
+        raise NotImplementedError
+
     m = subdivide_a_polygon(s)
     if m is None:
         return None
@@ -638,9 +560,9 @@ def one_delaunay_flip_mapping(s):
     r"""
     Returns one delaunay flip, or none if no flips are needed.
     """
-    for p, poly in s.label_iterator(polygons=True):
-        for e in range(poly.num_edges()):
-            if s._edge_needs_flip(p, e):
+    for p, poly in zip(s.labels(), s.polygons()):
+        for e in range(len(poly.vertices())):
+            if s._delaunay_edge_needs_flip(p, e):
                 return flip_edge_mapping(s, p, e)
     return None
 
@@ -649,7 +571,9 @@ def delaunay_triangulation_mapping(s):
     r"""
     Returns a mapping to a Delaunay triangulation or None if the surface already is Delaunay triangulated.
     """
-    assert s.is_finite()
+    if not s.is_finite_type():
+        raise NotImplementedError
+
     m = triangulation_mapping(s)
     if m is None:
         s1 = s
@@ -680,13 +604,19 @@ def delaunay_decomposition_mapping(s):
         s1 = s
     else:
         s1 = m.codomain()
+
+    joins = set()
     edge_vectors = []
-    lc = s._label_comparator()
-    for p, poly in s1.label_iterator(polygons=True):
-        for e in range(poly.num_edges()):
+
+    for p, poly in zip(s1.labels(), s1.polygons()):
+        for e in range(len(poly.vertices())):
             pp, ee = s1.opposite_edge(p, e)
-            if (lc.lt(p, pp) or (p == pp and e < ee)) and s1._edge_needs_join(p, e):
+            if (pp, ee) in joins:
+                continue
+            if s1._delaunay_edge_needs_join(p, e):
+                joins.add((p, e))
                 edge_vectors.append(s1.tangent_vector(p, poly.vertex(e), poly.edge(e)))
+
     if len(edge_vectors) > 0:
         ev = edge_vectors.pop()
         p, e = ev.edge_pointing_along()
@@ -713,7 +643,7 @@ def canonical_first_vertex(polygon):
     """
     best = 0
     best_pt = polygon.vertex(best)
-    for v in range(1, polygon.num_edges()):
+    for v in range(1, len(polygon.vertices())):
         pt = polygon.vertex(v)
         if pt[1] < best_pt[1]:
             best = v
@@ -734,34 +664,40 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
         r"""
         Split the polygon with label p of surface s along the diagonal joining vertex v1 to vertex v2.
         """
-        if not s.is_finite():
+        if not s.is_finite_type():
             raise ValueError("Currently only works with finite surfaces.")
         ring = s.base_ring()
         from flatsurf.geometry.similarity import SimilarityGroup
 
         T = SimilarityGroup(ring)
-        P = ConvexPolygons(ring)
         cv = {}  # dictionary for canonical vertices
         translations = {}  # translations bringing the canonical vertex to the origin.
-        s2 = Surface_dict(base_ring=ring)
-        for l, polygon in s.label_iterator(polygons=True):
-            cv[l] = cvcur = canonical_first_vertex(polygon)
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+        s2 = MutableOrientedSimilaritySurface(ring)
+        for label, polygon in zip(s.labels(), s.polygons()):
+            cv[label] = cvcur = canonical_first_vertex(polygon)
             newedges = []
-            for i in range(polygon.num_edges()):
-                newedges.append(polygon.edge((i + cvcur) % polygon.num_edges()))
-            s2.add_polygon(P(newedges), label=l)
-            translations[l] = T(-polygon.vertex(cvcur))
-        for l1, polygon in s.label_iterator(polygons=True):
-            for e1 in range(polygon.num_edges()):
+            for i in range(len(polygon.vertices())):
+                newedges.append(polygon.edge((i + cvcur) % len(polygon.vertices())))
+
+            from flatsurf import Polygon
+
+            s2.add_polygon(Polygon(edges=newedges, base_ring=ring), label=label)
+            translations[label] = T(-polygon.vertex(cvcur))
+        for l1, polygon in zip(s.labels(), s.polygons()):
+            for e1 in range(len(polygon.vertices())):
                 l2, e2 = s.opposite_edge(l1, e1)
-                ee1 = (e1 - cv[l1] + polygon.num_edges()) % polygon.num_edges()
+                ee1 = (e1 - cv[l1] + len(polygon.vertices())) % len(polygon.vertices())
                 polygon2 = s.polygon(l2)
-                ee2 = (e2 - cv[l2] + polygon2.num_edges()) % polygon2.num_edges()
+                ee2 = (e2 - cv[l2] + len(polygon2.vertices())) % len(
+                    polygon2.vertices()
+                )
                 # newgluing.append( ( (l1,ee1),(l2,ee2) ) )
-                s2.change_edge_gluing(l1, ee1, l2, ee2)
-        s2.change_base_label(s.base_label())
+                s2.glue((l1, ee1), (l2, ee2))
+        s2.set_roots(s.roots())
         s2.set_immutable()
-        ss2 = s.__class__(s2)
+        ss2 = s2
 
         self._cv = cv
         self._translations = translations
@@ -771,10 +707,10 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def push_vector_forward(self, tangent_vector):
         r"""Applies the mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
-        l = tangent_vector.polygon_label()
+        label = tangent_vector.polygon_label()
         return self.codomain().tangent_vector(
-            l,
-            self._translations[l](tangent_vector.point()),
+            label,
+            self._translations[label](tangent_vector.point()),
             tangent_vector.vector(),
             ring=ring,
         )
@@ -782,10 +718,10 @@ class CanonicalizePolygonsMapping(SurfaceMapping):
     def pull_vector_back(self, tangent_vector):
         r"""Applies the pullback mapping to the provided vector."""
         ring = tangent_vector.bundle().base_ring()
-        l = tangent_vector.polygon_label()
+        label = tangent_vector.polygon_label()
         return self.domain().tangent_vector(
-            l,
-            (~self._translations[l])(tangent_vector.point()),
+            label,
+            (~self._translations[label])(tangent_vector.point()),
             tangent_vector.vector(),
             ring=ring,
         )
@@ -800,39 +736,42 @@ class ReindexMapping(SurfaceMapping):
         r"""
         The parameters should be a surface and a dictionary which takes as input a label and produces a new label.
         """
-        if not s.is_finite():
+        if not s.is_finite_type():
             raise ValueError("Currently only works with finite surfaces." "")
         f = {}  # map for labels going forward.
         b = {}  # map for labels going backward.
-        for l in s.label_iterator():
-            if l in relabler:
-                l2 = relabler[l]
-                f[l] = l2
+        for label in s.labels():
+            if label in relabler:
+                l2 = relabler[label]
+                f[label] = l2
                 if l2 in b:
                     raise ValueError(
                         "Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change."
                     )
-                b[l2] = l
+                b[l2] = label
             else:
                 # If no key then don't change the label
-                f[l] = l
-                if l in b:
+                f[label] = label
+                if label in b:
                     raise ValueError(
                         "Provided dictionary has two keys mapping to the same value. Or you are mapping to a label you didn't change."
                     )
-                b[l] = l
+                b[label] = label
 
         self._f = f
         self._b = b
 
         if new_base_label is None:
-            if s.base_label() in f:
-                new_base_label = f[s.base_label()]
+            if s.root() in f:
+                new_base_label = f[s.root()]
             else:
-                new_base_label = s.base_label()
-        s2 = s.copy(mutable=True, lazy=True)
+                new_base_label = s.root()
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+        s2 = MutableOrientedSimilaritySurface.from_surface(s)
         s2.relabel(relabler, in_place=True)
-        s2.underlying_surface().change_base_label(new_base_label)
+        s2.set_roots([new_base_label])
+        s2.set_immutable()
 
         SurfaceMapping.__init__(self, s, s2)
 
@@ -870,16 +809,16 @@ def my_sgn(val):
 def polygon_compare(poly1, poly2):
     r"""
     Compare two polygons first by area, then by number of sides,
-    then by lexigraphical ordering on edge vectors."""
+    then by lexicographical ordering on edge vectors."""
     # This should not be used is broken!!
     # from sage.functions.generalized import sgn
     res = my_sgn(-poly1.area() + poly2.area())
     if res != 0:
         return res
-    res = my_sgn(poly1.num_edges() - poly2.num_edges())
+    res = my_sgn(len(poly1.vertices()) - len(poly2.vertices()))
     if res != 0:
         return res
-    ne = poly1.num_edges()
+    ne = len(poly1.vertices())
     for i in range(0, ne - 1):
         edge_diff = poly1.edge(i) - poly2.edge(i)
         res = my_sgn(edge_diff[0])
@@ -891,64 +830,28 @@ def polygon_compare(poly1, poly2):
     return 0
 
 
-def translation_surface_cmp(s1, s2):
-    r"""
-    Compare two finite surfaces.
-    The surfaces will be considered equal if and only if there is a translation automorphism
-    respecting the polygons and the base_labels.
-    """
-    if not s1.is_finite() or not s2.is_finite():
-        raise NotImplementedError
-    lw1 = s1.walker()
-    lw2 = s2.walker()
-    try:
-        from itertools import zip_longest
-    except ImportError:
-        from itertools import izip_longest as zip_longest
-    for p1, p2 in zip_longest(lw1.polygon_iterator(), lw2.polygon_iterator()):
-        if p1 is None:
-            # s2 has more polygons
-            return -1
-        if p2 is None:
-            # s1 has more polygons
-            return 1
-        ret = polygon_compare(p1, p2)
-        if ret != 0:
-            return ret
-    # Polygons are identical. Compare edge gluings.
-    for pair1, pair2 in zip_longest(lw1.edge_iterator(), lw2.edge_iterator()):
-        l1, e1 = s1.opposite_edge(pair1)
-        l2, e2 = s2.opposite_edge(pair2)
-        num1 = lw1.label_to_number(l1)
-        num2 = lw2.label_to_number(l2)
-        ret = (num1 > num2) - (num1 < num2)
-        if ret != 0:
-            return ret
-        ret = (e1 > e2) - (e1 < e2)
-        if ret != 0:
-            return ret
-    return 0
-
-
 def canonicalize_translation_surface_mapping(s):
     r"""
     Return the translation surface in a canonical form.
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: s=translation_surfaces.octagon_and_squares().canonicalize()
+        sage: from flatsurf import translation_surfaces
+        sage: s = translation_surfaces.octagon_and_squares().canonicalize()
+
         sage: TestSuite(s).run()
+
         sage: a = s.base_ring().gen()  # a is the square root of 2.
 
-        sage: from flatsurf.geometry.mappings import *
+        sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
+        sage: from flatsurf.geometry.mappings import canonicalize_translation_surface_mapping
         sage: mat=Matrix([[1,2+a],[0,1]])
         sage: from flatsurf.geometry.half_dilation_surface import GL2RMapping
-        sage: m1=GL2RMapping(s,mat)
+        sage: m1=GL2RMapping(s, mat)
         sage: m2=canonicalize_translation_surface_mapping(m1.codomain())
         sage: m=m2*m1
-        sage: translation_surface_cmp(m.domain(),m.codomain())==0
-        True
+        sage: m.domain().cmp(m.codomain())
+        0
         sage: TestSuite(m.codomain()).run()
         sage: s=m.domain()
         sage: v=s.tangent_vector(0,(0,0),(1,1))
@@ -956,11 +859,11 @@ def canonicalize_translation_surface_mapping(s):
         sage: print(w)
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (a + 3, 1)
     """
-    from flatsurf.geometry.translation_surface import TranslationSurface
+    from flatsurf.geometry.categories import TranslationSurfaces
 
-    if not s.is_finite():
+    if not s.is_finite_type():
         raise NotImplementedError
-    if not isinstance(s, TranslationSurface):
+    if s not in TranslationSurfaces():
         raise ValueError("Only defined for TranslationSurfaces")
     m1 = delaunay_decomposition_mapping(s)
     if m1 is None:
@@ -974,18 +877,22 @@ def canonicalize_translation_surface_mapping(s):
         m = SurfaceMappingComposition(m1, m2)
     s2 = m.codomain()
 
-    s2copy = s2.copy(mutable=True)
-    ss = s2.copy(mutable=True)
-    labels = {label for label in s2.label_iterator()}
-    labels.remove(s2.base_label())
-    for label in labels:
-        ss.underlying_surface().change_base_label(label)
-        if ss.cmp(s2copy) > 0:
-            s2copy.underlying_surface().change_base_label(label)
-    # We now have the base_label correct.
-    # We will use the label walker to generate the canonical labeling of polygons.
-    w = s2copy.walker()
-    w.find_all_labels()
+    # This is essentially copy & paste from canonicalize() from TranslationSurfaces()
+    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-    m3 = ReindexMapping(s2, w.label_dictionary(), 0)
+    s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
+    ss = MutableOrientedSimilaritySurface.from_surface(s2)
+    labels = {label for label in s2.labels()}
+    for label in labels:
+        ss.set_roots([label])
+        if ss.cmp(s2copy) > 0:
+            s2copy.set_roots([label])
+
+    s2copy.set_immutable()
+
+    # We now have the base_label correct.
+    # We will use the label walk to generate the canonical labeling of polygons.
+    labels = {label: i for (i, label) in enumerate(s2copy.labels())}
+
+    m3 = ReindexMapping(s2, labels, 0)
     return SurfaceMappingComposition(m, m3)

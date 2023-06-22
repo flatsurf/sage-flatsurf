@@ -11,8 +11,28 @@ References
     Pages 259--266.
     DOI: http://dx.doi.org/10.1145/2755996.2756664
 """
+######################################################################
+#  This file is part of sage-flatsurf.
+#
+#        Copyright (C) 2020 Samuel Lelièvre
+#                      2020 Vincent Delecroix
+#                      2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+######################################################################
 from sage.misc.misc_c import prod
-from sage.rings.all import ZZ, QQ, AA, QQbar, NumberField, polygen
+from sage.rings.all import ZZ, QQ, AA, NumberField, polygen
 from sage.structure.element import parent
 from sage.modules.free_module import VectorSpace
 from sage.matrix.constructor import matrix
@@ -134,7 +154,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         sage: R.<x> = QQ[]
         sage: p1 = x^3 - x - 1
         sage: roots1 = p1.roots(QQbar, False)
-        sage: for _ in range(10):
+        sage: for _ in range(10):  # long time (1.5s)
         ....:     p2 = R.random_element(degree=2)
         ....:     while not p2.is_irreducible(): p2 = R.random_element(degree=2)
         ....:     roots2 = p2.roots(QQbar, False)
@@ -292,9 +312,9 @@ def chebyshev_T(n, c):
     # T_0(x) = 2
     # T_1(x) = x
     # and T_{n+1}(x) = x T_n(x) - T_{n-1}(x)
+    T0 = parent(c)(2)
     if n == 0:
-        return parent(c)(2)
-    T0 = 2
+        return T0
     T1 = c
     for i in range(n - 1):
         T0, T1 = T1, c * T1 - T0
