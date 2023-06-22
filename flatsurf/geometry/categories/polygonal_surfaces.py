@@ -468,7 +468,8 @@ class PolygonalSurfaces(SurfaceCategory):
                 warnings.warn(
                     "edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use edges() instead"
                 )
-                yield from range(len(polygon.vertices()))
+                for edge in range(len(polygon.vertices())):
+                    yield label, edge
 
         def edges(self):
             r"""
