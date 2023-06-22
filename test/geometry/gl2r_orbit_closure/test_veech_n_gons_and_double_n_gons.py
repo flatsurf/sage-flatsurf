@@ -8,7 +8,7 @@ These surface satisfies the so-called Veech dichotomy: in any direction of a
 saddle connection, the flow is completely periodic and the cylinders have
 commensurable moduli ("parabolic direction").
 """
-######################################################################
+# ****************************************************************************
 # This file is part of sage-flatsurf.
 #
 #       Copyright (C) 2020 Vincent Delecroix
@@ -25,7 +25,7 @@ commensurable moduli ("parabolic direction").
 #
 # You should have received a copy of the GNU General Public License
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 

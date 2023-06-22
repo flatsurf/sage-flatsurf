@@ -6,6 +6,26 @@ marked triangulation. The marking corresponds to the position of the horizontal
 and vertical separatrices. Each triangle hence get one of the following types:
 bottom-left, bottom-right, top-left, top-right.
 """
+# ****************************************************************************
+#  This file is part of sage-flatsurf.
+#
+#       Copyright (C) 2016-2019 Vincent Delecroix
+#                     2016-2019 W. Patrick Hooper
+#                          2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
+# ****************************************************************************
 from sage.misc.cachefunc import cached_method
 
 # the types of edges
@@ -351,30 +371,27 @@ class LInfinityMarkedTriangulation:
             sage: T = LInfinityMarkedTriangulation(2, gluings, types)
             sage: S = T.barycenter()
             sage: S.polygon(0)
-            Polygon: (0, 0), (3/7, 13/21), (-3/7, 11/21)
+            Polygon(vertices=[(0, 0), (3/7, 13/21), (-3/7, 11/21)])
             sage: S.polygon(1)
-            Polygon: (0, 0), (6/7, 2/21), (3/7, 13/21)
+            Polygon(vertices=[(0, 0), (6/7, 2/21), (3/7, 13/21)])
         """
         verts = [v.vector() for v in self.polytope().vertices()]
         b = sum(verts) / len(verts)
 
-        from .polygon import ConvexPolygons
+        from flatsurf import Polygon
         from sage.rings.rational_field import QQ
 
-        C = ConvexPolygons(QQ)
+        from flatsurf import MutableOrientedSimilaritySurface
 
-        triangles = []
+        barycenter = MutableOrientedSimilaritySurface(QQ)
+
         for p in range(self._n):
             e1 = (b[6 * p], b[6 * p + 1])
             e2 = (b[6 * p + 2], b[6 * p + 3])
             e3 = (b[6 * p + 4], b[6 * p + 5])
-            triangles.append(C([e1, e2, e3]))
+            barycenter.add_polygon(Polygon(edges=[e1, e2, e3], base_ring=QQ))
 
-        from .surface import surface_list_from_polygons_and_gluings
-        from .translation_surface import TranslationSurface
+        for gluing in self._edge_identifications.items():
+            barycenter.glue(*gluing)
 
-        return TranslationSurface(
-            surface_list_from_polygons_and_gluings(
-                triangles, self._edge_identifications
-            )
-        )
+        return barycenter
