@@ -484,11 +484,11 @@
 
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
         <span class="s2">&quot;your matrix is conjugate to an orthogonal matrix but the angle might not be rational.. to be terminated.&quot;</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
 
     <span class="c1"># then we conjugate and check if the angles are rational</span>
     <span class="c1"># we need to take a square root of a symmetric matrix... this is not implemented!</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span></div>
+    <span class="c1"># A = matrix(m.base_ring(), [[v[0], v[1]], [v[1], v[2]]])</span>
 
 
 <div class="viewcode-block" id="FinitelyGenerated2x2MatrixGroup"><a class="viewcode-back" href="../../../geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup">[docs]</a><span class="k">class</span> <span class="nc">FinitelyGenerated2x2MatrixGroup</span><span class="p">(</span><span class="n">Group</span><span class="p">):</span>

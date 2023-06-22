@@ -1107,7 +1107,7 @@
         <span class="p">):</span>  <span class="c1"># noqa, we are comparing to a boost tribool so this cannot be replaced by &quot;is not True&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
 
-        <span class="n">perimeters</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">perimeter</span><span class="p">()]</span>
+        <span class="n">perimeters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">perimeter</span><span class="p">())</span>
         <span class="n">per</span> <span class="o">=</span> <span class="n">perimeters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="n">per</span><span class="o">.</span><span class="n">vertical</span><span class="p">()</span>
         <span class="n">sc</span> <span class="o">=</span> <span class="n">per</span><span class="o">.</span><span class="n">saddleConnection</span><span class="p">()</span>
@@ -1276,7 +1276,7 @@
 <span class="sd">          boundary of ``decomposition`` and the corresponding values are the indices</span>
 <span class="sd">          of the components of ``decomposition``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">decomposition</span><span class="o">.</span><span class="n">components</span><span class="p">()]</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">decomposition</span><span class="o">.</span><span class="n">components</span><span class="p">())</span>
 
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sc_index</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
@@ -1284,7 +1284,6 @@
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">perimeter</span><span class="p">():</span>
             <span class="k">break</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">saddleConnection</span><span class="p">()</span>
         <span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>  <span class="c1"># face -&gt; half edge to take to go to the root</span>
         <span class="n">todo</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># store edges in topological order to perform Gauss reduction</span>
@@ -1407,7 +1406,6 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spanning_set</span><span class="p">):</span>
             <span class="n">sc</span> <span class="o">=</span> <span class="n">sc_pos</span><span class="p">[</span><span class="n">sc</span><span class="p">]</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">chain</span><span class="p">()</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
                 <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ZZ</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">edge</span><span class="p">]))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">index</span><span class="p">())</span>
         <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">det</span><span class="p">()</span><span class="o">.</span><span class="n">is_unit</span><span class="p">()</span>
@@ -1576,10 +1574,7 @@
 <span class="sd">            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf</span>
 <span class="sd">            sage: loads(dumps(O)) == O  # long time (6s, #123)</span>
 <span class="sd">            True</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">from_pyflatsurf</span>
-
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">GL2ROrbitClosure</span><span class="p">,</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surface</span><span class="p">,),</span>
