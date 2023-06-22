@@ -34,7 +34,7 @@
 
 * Added a ``marked_vertices`` keyword to ``vertices()`` of polygons to control whether vertices with angle π are included in the output.
 
-* Added a ``erase_marked_vertices()`` method to polygons to produce a copy of the polygon with any vertices with angle π.
+* Added a ``erase_marked_vertices()`` method to polygons to produce a copy of the polygon without vertices with angle π.
 
 * Added ``is_equilateral()`` and ``is_equiangular()`` methods to polygons.
 
