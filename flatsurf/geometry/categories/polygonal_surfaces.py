@@ -413,14 +413,12 @@ class PolygonalSurfaces(SurfaceCategory):
                 warnings.warn(
                     "label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use zip(labels(), polygons()) instead"
                 )
-                for entry in zip(self.labels(), self.polygons()):
-                    yield entry
+                yield from zip(self.labels(), self.polygons())
             else:
                 warnings.warn(
                     "label_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use labels() instead"
                 )
-                for entry in self.labels():
-                    yield entry
+                yield from self.labels()
 
         def edge_iterator(self, gluings=False):
             r"""
@@ -464,8 +462,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 warnings.warn(
                     "edge_iterator() has been deprecated and will be removed in a future version of sage-flatsurf; use gluings() instead"
                 )
-                for entry in self.gluings():
-                    yield entry
+                yield from self.gluings()
                 return
             for label, polygon in zip(self.labels(), self.polygons()):
                 warnings.warn(

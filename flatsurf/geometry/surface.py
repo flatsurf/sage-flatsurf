@@ -2956,8 +2956,7 @@ class Labels(LabeledCollection, collections.abc.Set):
 
     def __iter__(self):
         for component in self._surface.components():
-            for label in component:
-                yield label
+            yield from component
 
 
 class LabelsFromView(Labels, LabeledView):

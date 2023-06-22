@@ -3088,8 +3088,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 if pair:
                     defining.append(pair)
 
-                for conditions in self._isometry_conditions(defining[:], remaining):
-                    yield conditions
+                yield from self._isometry_conditions(defining[:], remaining)
 
             # Extend with a pair of geodesics in "remaining[0]"
             elif isinstance(x, HyperbolicOrientedGeodesic):
@@ -3102,19 +3101,15 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 if pair:
                     defining.append(pair)
 
-                for conditions in self._isometry_conditions(
+                yield from self._isometry_conditions(
                     defining[:],
                     remaining + [(x.start(), y.start()), (x.end(), y.end())],
-                ):
-                    yield conditions
+                )
 
             # Extend with points coming from other hyperbolic objects in "remaining[0]"
             else:
                 for pairs in x._isometry_conditions(y):
-                    for conditions in self._isometry_conditions(
-                        defining[:], pairs + remaining
-                    ):
-                        yield conditions
+                    yield from self._isometry_conditions(defining[:], pairs + remaining)
 
         else:
             yield defining
