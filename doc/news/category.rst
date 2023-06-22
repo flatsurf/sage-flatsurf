@@ -36,7 +36,7 @@
 
 * Added a ``erase_marked_vertices()`` method to polygons to produce a copy of the polygon without vertices with angle π.
 
-* Added ``is_equilateral()`` and ``is_equiangular()`` methods to polygons.
+* Added ``is_equilateral()`` and ``is_equiangular()`` methods to Euclidean polygons.
 
 **Changed:**
 
