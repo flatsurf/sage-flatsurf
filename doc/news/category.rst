@@ -40,6 +40,8 @@
 
 **Changed:**
 
+* Changed supported versions of SageMath. We now require at least SageMath 9.2 (released in October 2020.)
+
 * Changed the notion of "dilation surface" in some places. What was previously called a "half-dilation surface" is now called a "dilation surface", and what was previously called a "dilation surface" is now called a "positive dilation surface". (Existing code should not be affected by this but the documentation has been updated and new functions use this naming.) Note that the notions of a half-translation surface and a translation surface have not changed (though internally a translation surface is just a positive half-translation surface.)
 
 * Changed the mutability of the surface returned by ``polyhedron_to_cone_surface``; the returned surface is now immutable.

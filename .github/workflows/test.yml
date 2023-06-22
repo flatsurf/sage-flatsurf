@@ -14,18 +14,6 @@ jobs:
       matrix:
         include:
           - optionals: "sage,flipper"
-            sagelib: "8.8"
-            environment: "environment.yml"
-            python: "3.7.12"
-          - optionals: "sage,flipper"
-            sagelib: "8.9"
-            environment: "environment.yml"
-            python: "3.7.12"
-          - optionals: "sage,flipper"
-            sagelib: "9.1"
-            environment: "environment.yml"
-            python: "3.7.12"
-          - optionals: "sage,flipper"
             sagelib: "9.2"
             environment: "environment.yml"
             python: "3.9.15"
