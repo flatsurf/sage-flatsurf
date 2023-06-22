@@ -55,7 +55,7 @@ from flatsurf.geometry.subfield import (
 
 from flatsurf.geometry.categories import EuclideanPolygons
 from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
-    EuclideanPolygonsWithAngles,
+    EuclideanPolygonsWithAngles as EuclideanPolygonsWithAnglesCategory,
 )
 
 
@@ -1412,7 +1412,7 @@ def _Polygon_check(p, vertices, edges, angles, lengths, convex):
         )
 
         # Use EuclideanPolygon's angle() so we do not use the precomputed angles set by the category.
-        if EuclideanPolygonsWithAngles._normalize_angles(angles) != tuple(
+        if EuclideanPolygonsWithAnglesCategory._normalize_angles(angles) != tuple(
             EuclideanPolygons.ParentMethods.angle(p, i)
             for i in range(len(p.vertices()))
         ):
@@ -1576,7 +1576,7 @@ def EuclideanPolygonsWithAngles(*angles):
     if len(angles) == 1 and isinstance(angles[0], (tuple, list)):
         angles = angles[0]
 
-    angles = EuclideanPolygonsWithAngles._normalize_angles(angles)
+    angles = EuclideanPolygonsWithAnglesCategory._normalize_angles(angles)
 
     from flatsurf.geometry.categories.euclidean_polygons_with_angles import (
         _base_ring,
