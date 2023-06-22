@@ -366,11 +366,32 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         sage: S
                         Translation Surface in H_1(0^6) built from 6 right triangles
 
+                    TESTS:
+
+                    Verify that #89 has been resolved::
+
+                        sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to pkg_resources deprecation warnings
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.square_torus()
+                        sage: S = S.change_ring(ExactReals())  # optional: exactreal
+                        sage: S.normalized_coordinates()  # optional: exactreal
+                        Traceback (most recent call last):
+                        ...
+                        NotImplementedError: base ring must be a field to normalize coordinates of the surface
+
+
                     """
                     from sage.all import matrix
 
                     if self.base_ring() is QQ:
                         return (self, matrix(QQ, 2, 2, 1))
+
+                    from sage.categories.all import Fields
+
+                    if self.base_ring() not in Fields():
+                        raise NotImplementedError(
+                            "base ring must be a field to normalize coordinates of the surface"
+                        )
 
                     lab = next(iter(self.labels()))
                     p = self.polygon(lab)
