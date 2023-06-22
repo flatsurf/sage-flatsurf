@@ -2579,7 +2579,7 @@ class SimilaritySurfaces(SurfaceCategory):
         def Rational(self):
             r"""
             Return the subcategory of surfaces with rational monodromy, see
-            :class:`.Rational`.
+            :class:`~.SimilaritySurfaces.Rational`.
 
             EXAMPLES::
 
