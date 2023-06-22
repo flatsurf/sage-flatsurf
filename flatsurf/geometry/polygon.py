@@ -1218,7 +1218,14 @@ def _Polygon_base_ring(vertices, edges, angles, lengths):
             )
             for slope, length in zip(with_angles.slopes(), lengths):
                 scale = base_ring(length**2 / (slope[0] ** 2 + slope[1] ** 2))
-                if not scale.is_square():
+                try:
+                    is_square = scale.is_square()
+                except NotImplementedError:
+                    import warnings
+                    warnings.warn("Due to https://github.com/flatsurf/exact-real/issues/173, we cannot compute the minimal base ring over which this polygon is defined. The polygon could possibly have been defined over a smaller ring.")
+                    is_square = False
+
+                if not is_square:
                     # Note that this ring might not be minimal.
                     base_ring = pushout(base_ring, with_angles._cosines_ring())
 
