@@ -73,7 +73,7 @@ jobs:
       - name: Run black
         shell: bash -l {0}
         run: |
-          black `find -name '*.py'`
+          black `find flatsurf -name '*.py'`
           # We run our notebooks through black to make sure everything is nicely formatted in our examples.
           # Consequently, we cannot use SageMath syntax in the notebooks. (But presently we do not need it anyway.)
           jupytext --sync --pipe black doc/examples/*.md
