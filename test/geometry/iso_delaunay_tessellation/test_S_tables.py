@@ -25,10 +25,11 @@ import flatsurf
         (60, 2, 0, 0, 8, QQ(-10))
     ],
 )
-def test_S_tables(discriminant, chi, genus, ncusps, nu2, nu3):
-    e = 0 if discriminant % 2 == 0 else -1
-    w = (discriminant - e**2) / 4
-    L = flatsurf.translation_surfaces.lanneau_nguyen_genus3_prototype(w, 1, 0, e)
+def test_S_tables(discriminant, genus, nu2, nu3, ncusps, chi):
+    discriminant_to_e = {0: 0, 1: -1, 4: -2}
+    e = discriminant_to_e[discriminant % 8]
+    w = (discriminant - e**2) // 8
+    S = flatsurf.translation_surfaces.lanneau_nguyen_genus3_prototype(w, 1, 0, e)
     idt = flatsurf.IsoDelaunayTessellation(L)
     idt.explore()
     idt.plot().show()
@@ -36,4 +37,4 @@ def test_S_tables(discriminant, chi, genus, ncusps, nu2, nu3):
     assert len(idt.cusps()) == ncusps
     assert idt.orbifold_euler_characteristic() == chi
     assert len(idt.orbifold_points(2)) == nu2
-    assert len(idt.orbifold_points(3)) == 0
+    assert len(idt.orbifold_points(3)) == nu3

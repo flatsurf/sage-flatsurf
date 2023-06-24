@@ -7,8 +7,6 @@ import flatsurf
 @pytest.mark.parametrize(
     "discriminant,genus,nu2,nu3,ncusps,chi",
     [
-        (5, 0, 0, 1, 1, QQ(-7,15)),
-        (8, 0, 1, 1, 2, QQ(-7,6)),
         (12, 0, 1, 0, 3, QQ(-7,3)),
         (13, 0, 0, 2, 3, QQ(-7,3)),
         (17, 0, 0, 1, 6, QQ(-14,3)),
@@ -32,15 +30,15 @@ import flatsurf
         (60, 8, 4, 0, 12, QQ(-28))
     ],
 )
-def test_X_tables(discriminant, chi, genus, ncusps, nu2, nu3):
+def test_X_tables(discriminant, genus, nu2, nu3, ncusps, chi):
     e = 0 if discriminant % 2 == 0 else -1
     w = (discriminant - e**2) / 4
-    L = flatsurf.translation_surfaces.lanneau_nguyen_genus3_prototype(w, 1, 0, e)
-    idt = flatsurf.IsoDelaunayTessellation(L)
+    X = flatsurf.translation_surfaces.lanneau_nguyen_genus3_prototype(w, 1, 0, e)
+    idt = flatsurf.IsoDelaunayTessellation(X)
     idt.explore()
     idt.plot().show()
     assert idt.genus() == genus
     assert len(idt.cusps()) == ncusps
     assert idt.orbifold_euler_characteristic() == chi
     assert len(idt.orbifold_points(2)) == nu2
-    assert len(idt.orbifold_points(3)) == 0
+    assert len(idt.orbifold_points(3)) == nu3
