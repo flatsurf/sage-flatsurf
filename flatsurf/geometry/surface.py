@@ -1,61 +1,48 @@
 r"""
-Data structures for surfaces built from polygons.
+Generic mutable and immutable surfaces
 
-All surfaces in sage-flatsurf are built from polygons whose sides are
-identified by similarities. This module provides data structures to describe
-such surfaces. Currently, there are two fundamental such data structures,
-namely :class:`Surface_list` and `Surface_dict`. The former labels the polygons
-that make up a surface by non-negative integers and the latter can use
-arbitrary labels. Additionally, there are lots of other surface representations
-that are not really implementing data structures but essentially just wrap
-these two, e.g., a :class:`.minimal_cover.MinimalTranslationCover`.
+This module provides base classes and implementations of surfaces. Most
+surfaces in sage-flatsurf inherit from some of the classes in this module.
 
-All these surface implementations inherit from :class:`Surface` which describes
-the contract that all surfaces must satisfy. As an absolute minimum, they
-implement :meth:`Surface.polygon` which maps polygon labels to actual polygons,
-and :meth:`Surface.opposite_edge` which describes the gluing of polygons.
+The most important class in this module is
+:class:`MutableOrientedSimilaritySurface` which allows you to create a surface
+by gluing polygons with similarities.
 
 EXAMPLES:
 
-We built a torus by gluing the opposite sides of a square::
+We build a translation surface by gluing two hexagons, labeled 0 and 1::
 
-    sage: from flatsurf import polygons
-    sage: from flatsurf.geometry.surface import Surface_list
+    sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+    sage: S = MutableOrientedSimilaritySurface(QuadraticField(3))
 
-    sage: S = Surface_list(QQ)
-    sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+    sage: S.add_polygon(polygons.regular_ngon(6))
     0
-    sage: S.set_edge_pairing(0, 0, 0, 2)
-    sage: S.set_edge_pairing(0, 1, 0, 3)
+    sage: S.add_polygon(polygons.regular_ngon(6))
+    1
 
-    sage: S.polygon(0)
-    Polygon: (0, 0), (1, 0), (1, 1), (0, 1)
-    sage: S.opposite_edge(0, 0)
-    (0, 2)
+    sage: S.glue((0, 0), (1, 3))
+    sage: S.glue((0, 1), (1, 4))
+    sage: S.glue((0, 2), (1, 5))
+    sage: S.glue((0, 3), (1, 0))
+    sage: S.glue((0, 4), (1, 1))
+    sage: S.glue((0, 5), (1, 2))
 
-There are two separate hierarchies of surfaces in sage-flatsurf. The underlying
-data of a surface described by the subclasses of :class:`Surface` here and the
-:class:`.similarity_surface.SimilaritySurface` and its subclasses which wrap a
-:class:`Surface`. While a :class:`Surface` essentially provides the raw data of
-a surface, a :class:`.similarity_surface.SimilaritySurface` then adds
-mathematical knowledge to that data structure, e.g., by declaring that the data
-describes a :class:`.translation_surface.TranslationSurface`::
+    sage: S
+    Translation Surface built from 2 regular hexagons
 
-    sage: from flatsurf import TranslationSurface
-    sage: T = TranslationSurface(S)
+We signal that the construction is complete. This refines the category of the
+surface and makes more functionality available::
 
-We can recover the underlying surface again::
-
-    sage: T.underlying_surface() is S
-    True
+    sage: S.set_immutable()
+    sage: S
+    Translation Surface in H_2(1^2) built from 2 regular hexagons
 
 """
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2016-2020 W. Patrick Hooper
-#                      2019-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#        Copyright (C) 2016-2020 Vincent Delecroix
+#                           2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -70,2240 +57,3103 @@ We can recover the underlying surface again::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from collections import deque
+import collections.abc
 
-from sage.structure.sage_object import SageObject
-
+from sage.structure.parent import Parent
 from sage.misc.cachefunc import cached_method
 
-
-class Surface_base(SageObject):
-    # TODO: Rename to Surface
-    # TODO: docstring
-    def polygon(self, label):
-        r"""
-        Return the polygon with the provided label.
-
-        This method must be overridden in subclasses.
-        """
-        raise NotImplementedError
-
-    def opposite_edge(self, l, e):
-        r"""
-        Given the label ``l`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``ll``, ``ee``) to which this edge is glued.
-
-        This method must be overridden in subclasses.
-        """
-        raise NotImplementedError
-
-    def num_polygons(self):
-        r"""
-        Return the number of polygons making up the surface, or
-        sage.rings.infinity.Infinity if the surface is infinite.
-
-        This is a generic method. On a finite surface it will be linear time in
-        the edges the first time it is run, then constant time (assuming no
-        mutation occurs).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        if self.is_finite():
-            lw = self.walker()
-            lw.find_all_labels()
-            return len(lw)
-        else:
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-    def label_iterator(self):
-        r"""
-        Iterator over all polygon labels.
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        return iter(self.walker())
-
-    def label_polygon_iterator(self):
-        r"""
-        Iterate over pairs (label, polygon).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        for label in self.label_iterator():
-            yield label, self.polygon(label)
-
-    def num_edges(self):
-        r"""
-        Return the total number of edges of all polygons used.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["num_edges"]
-            except KeyError:
-                num_edges = sum(p.num_edges() for l, p in self.label_polygon_iterator())
-                self._cache["num_edges"] = num_edges
-                return num_edges
-        else:
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-    def area(self):
-        r"""
-        Return the area of this surface.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["area"]
-            except KeyError:
-                area = sum(p.area() for l, p in self.label_polygon_iterator())
-                self._cache["area"] = area
-                return area
-        raise NotImplementedError(
-            "area is not implemented for surfaces built from an infinite number of polygons"
-        )
-
-    def edge_iterator(self):
-        r"""
-        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
-        """
-        for label, polygon in self.label_polygon_iterator():
-            for edge in range(polygon.num_edges()):
-                yield label, edge
-
-    def edge_gluing_iterator(self):
-        r"""
-        Iterate over the ordered pairs of edges being glued.
-        """
-        for label_edge_pair in self.edge_iterator():
-            yield (
-                label_edge_pair,
-                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
-            )
-
-    def base_label(self):
-        raise NotImplementedError
+from flatsurf.geometry.surface_objects import SurfacePoint
 
 
-class Surface(Surface_base):
-    # TODO: Rename to EuclideanSurface
+class Surface_base(Parent):
     r"""
-    Abstract base class of all surfaces that are built from a set of Euclidean
-    polygons with edges identified. The identifications are compositions of
-    homothety, rotations and translations, i.e., similarities that ensure that
-    the surface is oriented.
+    A base class for all surfaces in sage-flatsurf.
 
-    Concrete implementations of a surface must implement at least
-    :meth:`polygon` and :meth:`opposite_edge`.
-
-    To be able to modify a surface, subclasses should also implement
-    :meth:`_change_polygon`, :meth:`_set_edge_pairing`, :meth:`_add_polygon`,
-    :meth:`_remove_polygon`.
-
-    For concrete implementations of a Surface, see, e.g., :class:`Surface_list`
-    and :class:`Surface_dict`.
-
-    INPUT:
-
-    - ``base_ring`` -- the ring containing the coordinates of the vertices of
-      the polygons
-
-    - ``base_label`` -- the label of a chosen special polygon in the surface,
-      see :meth:`base_label`
-
-    - ``finite`` -- whether this is a finite surface, see :meth:`is_finite`
-
-    - ``mutable`` -- whether this is a mutable surface; can be changed later
-      with :meth:`set_immutable`
+    This class patches bits of the category framework in SageMath that assume
+    that all parent structures are immutable.
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.surface import Surface, Surface_list, Surface_dict
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
 
-        sage: S = Surface_list(QQ)
-        sage: isinstance(S, Surface)
-        True
-
-        sage: S = Surface_dict(QQ)
-        sage: isinstance(S, Surface)
-        True
-
-    TESTS:
-
-    Users are being warned if they try to define a surface over an inexact ring::
-
-        sage: S = Surface_list(RR)
-        ...
-        UserWarning: surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring
-        sage: isinstance(S, Surface)
+        sage: from flatsurf.geometry.surface import Surface_base
+        sage: isinstance(S, Surface_base)
         True
 
     """
 
-    def __init__(self, base_ring, base_label, finite, mutable):
-        if finite not in [False, True]:
-            raise ValueError("finite must be either True or False")
-
-        from sage.all import Rings
-
-        if base_ring not in Rings():
-            raise ValueError("base_ring must be a ring")
-
-        if not base_ring.is_exact():
-            from warnings import warn
-
-            warn(
-                "surface defined over an inexact ring; many operations in sage-flatsurf are not going to work correctly over this ring"
-            )
-
-        if mutable not in [False, True]:
-            raise ValueError("mutable must be either True or False")
-
-        self._base_ring = base_ring
-        self._base_label = base_label
-        self._finite = finite
-        self._mutable = mutable
-
-        self._cache = {}
-
-    def is_triangulated(self, limit=None):
+    def _refine_category_(self, category):
         r"""
-        EXAMPLES::
+        Refine the category of this surface to a subcategory ``category``.
 
-            sage: import flatsurf
-            sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
-            sage: S.is_triangulated()
-            False
-            sage: S.triangulate().is_triangulated()
-            True
-        """
-        it = self.label_iterator()
-        if not self.is_finite():
-            if limit is None:
-                raise ValueError(
-                    "for infinite polygon, 'limit' must be set to a positive integer"
-                )
-            else:
-                from itertools import islice
-
-                it = islice(it, limit)
-        for p in it:
-            if self.polygon(p).num_edges() != 3:
-                return False
-        return True
-
-    def polygon(self, label):
-        r"""
-        Return the polygon with the provided label.
-
-        This method must be overridden in subclasses.
-        """
-        raise NotImplementedError
-
-    def opposite_edge(self, label, e):
-        r"""
-        Given the label ``label`` of a polygon and an edge ``e`` in that
-        polygon returns the pair (``ll``, ``ee``) to which this edge is glued.
-
-        This method must be overridden in subclasses.
-        """
-        raise NotImplementedError
-
-    def _change_polygon(self, label, new_polygon, gluing_list=None):
-        r"""
-        Internal method used by change_polygon(). Should not be called directly.
-
-        Mutable surfaces should implement this method.
-        """
-        raise NotImplementedError
-
-    def _set_edge_pairing(self, label1, edge1, label2, edge2):
-        r"""
-        Internal method used by change_edge_gluing(). Should not be called directly.
-
-        Mutable surfaces should implement this method.
-        """
-        raise NotImplementedError
-
-    def _add_polygon(self, new_polygon, gluing_list=None, label=None):
-        r"""
-        Internal method used by add_polygon(). Should not be called directly.
-
-        Mutable surfaces should implement this method.
-        """
-        raise NotImplementedError
-
-    def _remove_polygon(self, label):
-        r"""
-        Internal method used by remove_polygon(). Should not be called directly.
-
-        Mutable surfaces should implement this method.
-        """
-        raise NotImplementedError
-
-    def num_polygons(self):
-        r"""
-        Return the number of polygons making up the surface, or
-        sage.rings.infinity.Infinity if the surface is infinite.
-
-        This is a generic method. On a finite surface it will be linear time in
-        the edges the first time it is run, then constant time (assuming no
-        mutation occurs).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        if self.is_finite():
-            lw = self.walker()
-            lw.find_all_labels()
-            return len(lw)
-        else:
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-    def label_iterator(self):
-        r"""
-        Iterator over all polygon labels.
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        return iter(self.walker())
-
-    def label_polygon_iterator(self):
-        r"""
-        Iterate over pairs (label, polygon).
-
-        Subclasses should consider overriding this method for increased
-        performance.
-        """
-        for label in self.label_iterator():
-            yield label, self.polygon(label)
-
-    def num_edges(self):
-        r"""
-        Return the total number of edges of all polygons used.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["num_edges"]
-            except KeyError:
-                num_edges = sum(
-                    p.num_edges() for label, p in self.label_polygon_iterator()
-                )
-                self._cache["num_edges"] = num_edges
-                return num_edges
-        else:
-            from sage.rings.infinity import Infinity
-
-            return Infinity
-
-    def area(self):
-        r"""
-        Return the area of this surface.
-        """
-        if self.is_finite():
-            try:
-                return self._cache["area"]
-            except KeyError:
-                area = sum(p.area() for label, p in self.label_polygon_iterator())
-                self._cache["area"] = area
-                return area
-        raise NotImplementedError(
-            "area is not implemented for surfaces built from an infinite number of polygons"
-        )
-
-    def edge_iterator(self):
-        r"""
-        Iterate over the edges of polygons, which are pairs (l,e) where l is a polygon label, 0 <= e < N and N is the number of edges of the polygon with label l.
-        """
-        for label, polygon in self.label_polygon_iterator():
-            for edge in range(polygon.num_edges()):
-                yield label, edge
-
-    def edge_gluing_iterator(self):
-        r"""
-        Iterate over the ordered pairs of edges being glued.
-        """
-        for label_edge_pair in self.edge_iterator():
-            yield (
-                label_edge_pair,
-                self.opposite_edge(label_edge_pair[0], label_edge_pair[1]),
-            )
-
-    def base_ring(self):
-        r"""
-        The field on which the coordinates of ``self`` live.
-        """
-        return self._base_ring
-
-    def base_label(self):
-        r"""
-        Return the label of a special chosen polygon in the surface.
-
-        When no specific choice was made with :meth:`change_base_label`, this
-        might just be the initial polygon, i.e., the one that was first added
-        in the construction of this surface.
-
-        This label is for example used as the starting position when walking
-        the surface in a canonical order with :meth:`walker`.
+        We need to override this method from ``Parent`` since we need to
+        disable a hashing check that is otherwise enabled when doctesting.
 
         EXAMPLES::
 
-            sage: import flatsurf
-            sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
-            sage: S.base_label()
-            1
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.category()
+            Category of finite type oriented similarity surfaces
+
+            sage: S._refine_category_(S.refined_category())
+            sage: S.category()
+            Category of connected without boundary finite type translation surfaces
 
         """
-        if self._base_label is None:
-            raise Exception("base label has not been set for this surface")
-        return self._base_label
+        from sage.structure.debug_options import debug
 
-    def is_finite(self):
-        r"""
-        Return whether or not the surface is finite.
-        """
-        return self._finite
-
-    def is_mutable(self):
-        r"""
-        Return if this surface is mutable.
-        """
-        return self._mutable
-
-    def set_immutable(self):
-        r"""
-        Mark this surface as immutable.
-        """
-        self._mutable = False
-
-    def walker(self):
-        r"""
-        Return a LabelWalker which walks over the surface in a canonical way.
-        """
+        old_refine_category_hash_check = debug.refine_category_hash_check
+        debug.refine_category_hash_check = False
         try:
-            return self._cache["lw"]
-        except KeyError:
-            lw = LabelWalker(self)
-            self._cache["lw"] = lw
-            return lw
+            super()._refine_category_(category)
+        finally:
+            debug.refine_category_hash_check = old_refine_category_hash_check
 
-    def __mutate(self):
+        # The (cached) an_element is going to fail its test suite because it has the wrong category now.
+        # Make sure that we create a new copy of an_element when requested.
+        self._cache_an_element = None
+
+
+class MutablePolygonalSurface(Surface_base):
+    r"""
+    A base class for mutable surfaces that are built by gluing polygons.
+
+    EXAMPLES::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+
+        sage: from flatsurf.geometry.surface import MutablePolygonalSurface
+        sage: isinstance(S, MutablePolygonalSurface)
+        True
+
+    """
+
+    def __init__(self, base, category=None):
+        from sage.all import ZZ
+
+        self._next_label = ZZ(0)
+        self._roots = ()
+
+        self._polygons = {}
+
+        self._mutable = True
+
+        super().__init__(base, category=category)
+
+    def _test_refined_category(self, **options):
         r"""
-        Called before a mutation occurs. Do not call directly.
-        """
-        if not self.is_mutable():
-            raise Exception("surface must be mutable")
+        Test that this surface has been refined to its best possible
+        subcategory (that can be computed cheaply.)
 
-        # Remove the cache which will likely be invalidated.
-        self._cache = {}
+        We override this method here to disable this check for mutable
+        surfaces. Mutable surfaces have not been refined yet since changes in
+        the surface might require a widening of the category which is not
+        possible.
 
-    def change_polygon(self, label, new_polygon, gluing_list=None):
-        r"""
-        Assuming label is currently in the list of labels, change the
-        poygon assigned to the provided label to new_polygon, and
-        glue the edges according to gluing_list (which must be a list
-        of pairs of length equal to number of edges of the polygon).
-        """
-        self.__mutate()
-        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
-            raise ValueError
-        self._change_polygon(label, new_polygon, gluing_list)
+        EXAMPLES::
 
-    def set_edge_pairing(self, label1, edge1, label2, edge2):
-        r"""
-        Update the gluing so that (``label1``, ``edge1``) is glued to
-        (``label2``, ``edge2``).
-        """
-        self.__mutate()
-        self._set_edge_pairing(label1, edge1, label2, edge2)
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
 
-    # TODO: deprecation alias?
-    change_edge_gluing = set_edge_pairing
-
-    def change_polygon_gluings(self, label, glue_list):
-        r"""
-        Updates the list of glued polygons according to the provided list,
-        which is a list of pairs (pp,ee) whose position in the list
-        describes the edge of the polygon with the provided label.
-
-        This method updates both the edges of the polygon with label "label"
-        and updates the edges listed in the glue_list.
-        """
-        self.__mutate()
-        p = self.polygon(label)
-        if p.num_edges() != len(glue_list):
-            raise ValueError(
-                "len(glue_list)="
-                + str(len(glue_list))
-                + " and number of sides of polygon="
-                + str(p.num_edges())
-                + " should be the same."
-            )
-        for e, (pp, ee) in enumerate(glue_list):
-            self._set_edge_pairing(label, e, pp, ee)
-
-    def add_polygons(self, polygons):
-        return [self.add_polygon(p) for p in polygons]
-
-    def add_polygon(self, new_polygon, gluing_list=None, label=None):
-        r"""
-        Adds a the provided polygon to the surface. Utilizes gluing_list
-        for the gluing data for edges (which must be a list
-        of pairs representing edges of length equal to number of edges
-        of the polygon).
-
-        If the parameter label is provided, the Surface attempts to use
-        this as the label for the new_polygon. However, this may fail
-        depending on the implementation.
-
-        Returns the label assigned to the new_polygon (which may differ
-        from the label provided).
-        """
-        self.__mutate()
-        if not (gluing_list is None or new_polygon.num_edges() == len(gluing_list)):
-            raise ValueError
-        label = self._add_polygon(new_polygon, gluing_list, label)
-        if self._base_label is None:
-            self.change_base_label(label)
-        return label
-
-    def remove_polygon(self, label):
-        r"""
-        Remove the polygon with the provided label. Causes a ValueError
-        if the base_label is removed.
-        """
-        if label == self._base_label:
-            raise ValueError("Can not remove the base_label.")
-        self.__mutate()
-        return self._remove_polygon(label)
-
-    def change_base_label(self, new_base_label):
-        r"""
-        Change the base_label to the provided label.
-        """
-        self.__mutate()
-        self._base_label = new_base_label
-
-    def subdivide(self):
-        r"""
-        Return a copy of this surface whose polygons have been partitioned into
-        smaller triangles with
-        :meth:`.polygon.ConvexPolygon.subdivide`.
-
-        EXAMPLES:
-
-        A surface consisting of a single triangle::
-
-            sage: from flatsurf.geometry.surface import Surface_dict
-            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
-
-            sage: S = Surface_dict(QQ)
-            sage: P = ConvexPolygons(QQ)
-            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
-            'Δ'
-
-        Subdivision of this surface yields a surface with three triangles::
-
-            sage: T = S.subdivide()
-            sage: list(T.label_iterator())
-            [('Δ', 0), ('Δ', 1), ('Δ', 2)]
-
-        Note that the new labels are old labels plus an index. We verify that
-        the triangles are glued correctly::
-
-            sage: list(T.edge_gluing_iterator())
-            [((('Δ', 0), 0), None),
-             ((('Δ', 0), 1), (('Δ', 1), 2)),
-             ((('Δ', 0), 2), (('Δ', 2), 1)),
-             ((('Δ', 1), 0), None),
-             ((('Δ', 1), 1), (('Δ', 2), 2)),
-             ((('Δ', 1), 2), (('Δ', 0), 1)),
-             ((('Δ', 2), 0), None),
-             ((('Δ', 2), 1), (('Δ', 0), 2)),
-             ((('Δ', 2), 2), (('Δ', 1), 1))]
-
-        If we add another polygon to the original surface and glue things, we
-        can see how existing gluings are preserved when subdividing::
-
-            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
-            '□'
-
-            sage: S.change_edge_gluing("Δ", 0, "□", 2)
-            sage: S.change_edge_gluing("□", 1, "□", 3)
-
-            sage: T = S.subdivide()
-
-            sage: list(T.label_iterator())
-            [('Δ', 0), ('Δ', 1), ('Δ', 2), ('□', 0), ('□', 1), ('□', 2), ('□', 3)]
-            sage: list(sorted(T.edge_gluing_iterator()))
-            [((('Δ', 0), 0), (('□', 2), 0)),
-             ((('Δ', 0), 1), (('Δ', 1), 2)),
-             ((('Δ', 0), 2), (('Δ', 2), 1)),
-             ((('Δ', 1), 0), None),
-             ((('Δ', 1), 1), (('Δ', 2), 2)),
-             ((('Δ', 1), 2), (('Δ', 0), 1)),
-             ((('Δ', 2), 0), None),
-             ((('Δ', 2), 1), (('Δ', 0), 2)),
-             ((('Δ', 2), 2), (('Δ', 1), 1)),
-             ((('□', 0), 0), None),
-             ((('□', 0), 1), (('□', 1), 2)),
-             ((('□', 0), 2), (('□', 3), 1)),
-             ((('□', 1), 0), (('□', 3), 0)),
-             ((('□', 1), 1), (('□', 2), 2)),
-             ((('□', 1), 2), (('□', 0), 1)),
-             ((('□', 2), 0), (('Δ', 0), 0)),
-             ((('□', 2), 1), (('□', 3), 2)),
-             ((('□', 2), 2), (('□', 1), 1)),
-             ((('□', 3), 0), (('□', 1), 0)),
-             ((('□', 3), 1), (('□', 0), 2)),
-             ((('□', 3), 2), (('□', 2), 1))]
+            sage: S._test_refined_category()
+            sage: S.set_immutable()
+            sage: S._test_refined_category()
 
         """
-        labels = list(self.label_iterator())
-        polygons = [self.polygon(label) for label in labels]
+        if self._mutable:
+            return
 
-        subdivisions = [p.subdivide() for p in polygons]
+        super()._test_refined_category(**options)
 
-        from flatsurf.geometry.surface import Surface_dict
-
-        surface = Surface_dict(base_ring=self._base_ring)
-
-        # Add subdivided polygons
-        for s, subdivision in enumerate(subdivisions):
-            label = labels[s]
-            for p, polygon in enumerate(subdivision):
-                surface.add_polygon(polygon, label=(label, p))
-
-        surface.change_base_label((self._base_label, 0))
-
-        # Add gluings between subdivided polygons
-        for s, subdivision in enumerate(subdivisions):
-            label = labels[s]
-            for p in range(len(subdivision)):
-                surface.change_edge_gluing(
-                    (label, p), 1, (label, (p + 1) % len(subdivision)), 2
-                )
-
-                # Add gluing from original surface
-                opposite = self.opposite_edge(label, p)
-                if opposite is not None:
-                    surface.change_edge_gluing((label, p), 0, opposite, 0)
-
-        return surface
-
-    def subdivide_edges(self, parts=2):
+    def add_polygon(self, polygon, *, label=None):
         r"""
-        Return a copy of this surface whose edges have been split into
-        ``parts`` equal pieces each.
+        Add an unglued polygon to this surface and return its label.
 
         INPUT:
 
-        - ``parts`` -- a positive integer (default: 2)
+        - ``polygon`` -- a simple Euclidean polygon
 
+        - ``label`` -- a hashable identifier or ``None`` (default: ``None``);
+          if ``None`` an integer identifier is automatically selected
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.add_polygon(polygons.square(), label=0)
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon label already present in this surface
+
+            sage: S.add_polygon(polygons.square(), label='X')
+            'X'
+
+        """
+        if not self._mutable:
+            raise Exception("cannot modify an immutable surface")
+
+        if label is None:
+            while self._next_label in self._polygons:
+                self._next_label += 1
+            label = self._next_label
+
+        if label in self._polygons:
+            raise ValueError("polygon label already present in this surface")
+
+        self._polygons[label] = polygon.change_ring(self.base_ring())
+        return label
+
+    def add_polygons(self, polygons):
+        r"""
+        Add several polygons with automatically assigned labels at once.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygons([polygons.square(), polygons.square()])
+            doctest:warning
+            ...
+            UserWarning: add_polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use labels = [add_polygon(p) for p in polygons] instead
+            [0, 1]
+
+        """
+        import warnings
+
+        warnings.warn(
+            "add_polygons() has been deprecated and will be removed in a future version of sage-flatsurf; use labels = [add_polygon(p) for p in polygons] instead"
+        )
+
+        return [self.add_polygon(p) for p in polygons]
+
+    def set_default_graphical_surface(self, graphical_surface):
+        r"""
         EXAMPLES:
 
-        A surface consisting of a single triangle::
+        This has been disabled because it tends to break caching::
 
-            sage: from flatsurf.geometry.surface import Surface_dict
-            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
-
-            sage: S = Surface_dict(QQ)
-            sage: P = ConvexPolygons(QQ)
-            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label="Δ")
-            'Δ'
-
-        Subdividing this triangle yields a triangle with marked points along
-        the edges::
-
-            sage: T = S.subdivide_edges()
-
-        If we add another polygon to the original surface and glue them, we
-        can see how existing gluings are preserved when subdividing::
-
-            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, 0), (0, -1)]), label='□')
-            '□'
-
-            sage: S.change_edge_gluing("Δ", 0, "□", 2)
-            sage: S.change_edge_gluing("□", 1, "□", 3)
-
-            sage: T = S.subdivide_edges()
-            sage: list(sorted(T.edge_gluing_iterator()))
-            [(('Δ', 0), ('□', 5)),
-             (('Δ', 1), ('□', 4)),
-             (('Δ', 2), None),
-             (('Δ', 3), None),
-             (('Δ', 4), None),
-             (('Δ', 5), None),
-             (('□', 0), None),
-             (('□', 1), None),
-             (('□', 2), ('□', 7)),
-             (('□', 3), ('□', 6)),
-             (('□', 4), ('Δ', 1)),
-             (('□', 5), ('Δ', 0)),
-             (('□', 6), ('□', 3)),
-             (('□', 7), ('□', 2))]
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.set_default_graphical_surface(S.graphical_surface())
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: set_default_graphical_surface() has been removed from this version of sage-flatsurf. If you want to change the default plotting of a surface, create a subclass and override graphical_surface() instead
 
         """
-        labels = list(self.label_iterator())
-        polygons = [self.polygon(label) for label in labels]
-
-        subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
-
-        from flatsurf.geometry.surface import Surface_dict
-
-        surface = Surface_dict(base_ring=self._base_ring)
-
-        # Add subdivided polygons
-        for s, subdivided in enumerate(subdivideds):
-            surface.add_polygon(subdivided, label=labels[s])
-
-        surface.change_base_label(self._base_label)
-
-        # Reestablish gluings between polygons
-        for label, polygon, subdivided in zip(labels, polygons, subdivideds):
-            for e in range(polygon.num_edges()):
-                opposite = self.opposite_edge(label, e)
-                if opposite is not None:
-                    for p in range(parts):
-                        surface.change_edge_gluing(
-                            label,
-                            e * parts + p,
-                            opposite[0],
-                            opposite[1] * parts + (parts - p - 1),
-                        )
-
-        return surface
-
-    @cached_method
-    def __hash__(self):
-        r"""
-        Hash compatible with equals.
-        """
-        if self.is_mutable():
-            raise ValueError("Attempting to hash mutable surface.")
-        if not self.is_finite():
-            raise ValueError("Attempting to hash infinite surface.")
-
-        return hash(
-            (
-                self.base_ring(),
-                self.base_label(),
-                tuple(self.label_polygon_iterator()),
-                tuple(self.edge_gluing_iterator()),
-            )
+        raise NotImplementedError(
+            "set_default_graphical_surface() has been removed from this version of sage-flatsurf. If you want to change the default plotting of a surface, create a subclass and override graphical_surface() instead"
         )
+
+    def remove_polygon(self, label):
+        r"""
+        Remove the polygon with label ``label`` from this surface (and all data
+        associated to it.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.remove_polygon(0)
+
+            sage: S.add_polygon(polygons.square())
+            0
+
+        """
+        if not self._mutable:
+            raise Exception("cannot modify an immutable surface")
+
+        self._polygons.pop(label)
+        self._roots = tuple(root for root in self._roots if root != label)
+
+    def roots(self):
+        r"""
+        Return a label for each connected component on this surface.
+
+        This implements :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S.roots()
+            ()
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.roots()
+            (0,)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            1
+
+            sage: S.roots()
+            (0, 1)
+
+            sage: S.glue((0, 0), (1, 0))
+            sage: S.roots()
+            (0,)
+
+        .. SEEALSO::
+
+            :meth:`components`
+
+        """
+        return LabeledView(
+            self, RootedComponents_MutablePolygonalSurface(self).keys(), finite=True
+        )
+
+    def components(self):
+        r"""
+        Return the connected components as the sequence of their respective
+        polygon labels.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S.components()
+            ()
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.components()
+            ((0,),)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            1
+
+            sage: S.components()
+            ((0,), (1,))
+
+            sage: S.glue((0, 0), (1, 0))
+            sage: S.components()
+            ((0, 1),)
+
+        """
+        return LabeledView(
+            self, RootedComponents_MutablePolygonalSurface(self).values(), finite=True
+        )
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with label ``label`` in this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S.polygon(0)
+            Traceback (most recent call last):
+            ...
+            KeyError: 0
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        """
+        return self._polygons[label]
+
+    def set_immutable(self):
+        r"""
+        Make this surface immutable.
+
+        Any mutation attempts from now on will be an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+        Note that declaring a surface immutable refines its category and
+        thereby unlocks more methods that are available to such a surface::
+
+            sage: S.category()
+            Category of finite type oriented similarity surfaces
+            sage: old_methods = set(method for method in dir(S) if not method.startswith('_'))
+
+            sage: S.set_immutable()
+            sage: S.category()
+            Category of connected without boundary finite type translation surfaces
+            sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
+            sage: new_methods - old_methods
+            {'angles',
+             'apply_matrix',
+             'area',
+             'canonicalize',
+             'canonicalize_mapping',
+             'erase_marked_points',
+             'holonomy_field',
+             'j_invariant',
+             'l_infinity_delaunay_triangulation',
+             'minimal_translation_cover',
+             'normalized_coordinates',
+             'rel_deformation',
+             'stratum'}
+
+        An immutable surface cannot be mutated anymore::
+
+            sage: S.remove_polygon(0)
+            Traceback (most recent call last):
+            ...
+            Exception: cannot modify an immutable surface
+
+        However, the category of an immutable might be further refined as
+        (expensive to determine) features of the surface are deduced.
+
+        """
+        if self._mutable:
+            self.set_roots(self.roots())
+            self._mutable = False
+
+        self._refine_category_(self.refined_category())
+
+    def is_mutable(self):
+        r"""
+        Return whether this surface can be modified.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S.is_mutable()
+            True
+
+            sage: S.set_immutable()
+            sage: S.is_mutable()
+            False
+
+        """
+        return self._mutable
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
+        See
+        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
+        for details on this notion of equality.
+
         EXAMPLES::
 
-            sage: from flatsurf.geometry.surface import Surface_dict
-            sage: from flatsurf.geometry.polygon import Polygon, ConvexPolygons
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: T = MutableOrientedSimilaritySurface(QQ)
 
-            sage: S = Surface_dict(QQ)
-            sage: P = ConvexPolygons(QQ)
-            sage: S.add_polygon(P([(1, 0), (0, 1), (-1, -1)]), label=0)
-            0
-            sage: S == S
+            sage: S == T
             True
 
-            sage: T = Surface_dict(QQ)
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
             sage: S == T
             False
 
         TESTS::
 
-            sage: S == 42
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: T = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S != T
             False
 
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S != T
+            True
+
         """
-        if self is other:
-            return True
-
-        if not isinstance(other, Surface):
+        if not isinstance(other, MutablePolygonalSurface):
             return False
 
-        if self.is_finite() != other.is_finite():
-            return False
-        if self.base_ring() != other.base_ring():
-            return False
-        if self.is_mutable() != other.is_mutable():
-            return False
-        if self.num_polygons() == 0:
-            return other.num_polygons() == 0
-        if other.num_polygons() == 0:
-            return False
-        if self.base_label() != other.base_label():
-            return False
-        if self.num_polygons() != other.num_polygons():
+        if self.base() != other.base():
             return False
 
-        if self.polygon(self.base_label()) != other.polygon(self.base_label()):
+        if self._polygons != other._polygons:
             return False
 
-        if not self.is_finite():
-            raise NotImplementedError("cannot compare these infinite surfaces yet")
+        # Note that the order of the root labels matters since it changes the order of iteration in labels()
+        if self._roots != other._roots:
+            return False
 
-        for label, polygon in self.label_polygon_iterator():
-            try:
-                polygon2 = other.polygon(label)
-            except ValueError:
-                return False
-            if polygon != polygon2:
-                return False
-            for edge in range(polygon.num_edges()):
-                if self.opposite_edge(label, edge) != other.opposite_edge(label, edge):
-                    return False
+        if self._mutable != other._mutable:
+            return False
 
         return True
 
-    def __ne__(self, other):
-        return not self == other
-
-    def _test_base_ring(self, **options):
-        # Test that the base_label is associated to a polygon
-        tester = self._tester(**options)
-        from sage.all import Rings
-
-        tester.assertTrue(self.base_ring() in Rings())
-
-    def _test_base_label(self, **options):
-        # Test that the base_label is associated to a polygon
-        tester = self._tester(**options)
-        from .polygon import ConvexPolygon
-
-        tester.assertTrue(
-            isinstance(self.polygon(self.base_label()), ConvexPolygon),
-            "polygon(base_label) does not return a ConvexPolygon. "
-            + "Here base_label="
-            + str(self.base_label()),
-        )
-
-    def _test_gluings(self, **options):
-        # iterate over pairs with pair1 glued to pair2
-        tester = self._tester(**options)
-
-        if self.is_finite():
-            it = self.label_iterator()
-        else:
-            from itertools import islice
-
-            it = islice(self.label_iterator(), 30)
-
-        for lab in it:
-            p = self.polygon(lab)
-            for k in range(p.num_edges()):
-                e = (lab, k)
-                f = self.opposite_edge(lab, k)
-                tester.assertFalse(
-                    f is None, "edge ({}, {}) is not glued".format(lab, k)
-                )
-                g = self.opposite_edge(f[0], f[1])
-                tester.assertEqual(
-                    e,
-                    g,
-                    "edge gluing is not a pairing:\n{} -> {} -> {}".format(e, f, g),
-                )
-
-    def _test_override(self, **options):
-        # Test that the required methods have been overridden and that some other methods have not been overridden.
-
-        # Of course, we don't care if the methods are overridden or not we just want to warn the programmer.
-        if "tester" in options:
-            tester = options["tester"]
-        else:
-            tester = self._tester(**options)
-
-        # Check for override:
-        tester.assertNotEqual(
-            self.polygon.__func__,
-            Surface.polygon,
-            "Method polygon of Surface must be overridden. The Surface is of type "
-            + str(type(self))
-            + ".",
-        )
-        tester.assertNotEqual(
-            self.opposite_edge.__func__,
-            Surface.opposite_edge,
-            "Method opposite_edge of Surface must be overridden. The Surface is of type "
-            + str(type(self))
-            + ".",
-        )
-
-        if self.is_mutable():
-            # Check for override:
-            tester.assertNotEqual(
-                self._change_polygon.__func__,
-                Surface._change_polygon,
-                "Method _change_polygon of Surface must be overridden in a mutable surface. "
-                + "The Surface is of type "
-                + str(type(self))
-                + ".",
-            )
-            tester.assertNotEqual(
-                self._set_edge_pairing.__func__,
-                Surface._set_edge_pairing,
-                "Method _set_edge_pairing of Surface must be overridden in a mutable surface. "
-                + "The Surface is of type "
-                + str(type(self))
-                + ".",
-            )
-            tester.assertNotEqual(
-                self._add_polygon.__func__,
-                Surface._add_polygon,
-                "Method _add_polygon of Surface must be overridden in a mutable surface. "
-                + "The Surface is of type "
-                + str(type(self))
-                + ".",
-            )
-            tester.assertNotEqual(
-                self._remove_polygon.__func__,
-                Surface._remove_polygon,
-                "Method _remove_polygon of Surface must be overridden in a mutable surface. "
-                + "The Surface is of type "
-                + str(type(self))
-                + ".",
-            )
-
-    def _test_polygons(self, **options):
-        # Test that the base_label is associated to a polygon
-        if "tester" in options:
-            tester = options["tester"]
-        else:
-            tester = self._tester(**options)
-        from .polygon import ConvexPolygon
-
-        if self.is_finite():
-            it = self.label_iterator()
-        else:
-            from itertools import islice
-
-            it = islice(self.label_iterator(), 30)
-        for label in it:
-            tester.assertTrue(
-                isinstance(self.polygon(label), ConvexPolygon),
-                "polygon(label) does not return a ConvexPolygon when label="
-                + str(label),
-            )
-
-
-class Surface_list(Surface):
-    r"""
-    A fast mutable :class:`Surface` using a list to store polygons and gluings.
-
-    ALGORITHM:
-
-    Internally, we maintain a list ``_p`` for storing polygons together with
-    gluing data.
-
-    Each ``_p[label]`` is typically a pair ``(polygon, gluing_list)`` where
-    ``gluing_list`` is a list of pairs ``(other_label, other_edge)`` such that
-    :meth:`opposite_edge(label, edge) <Surface.opposite_edge>` returns
-    ``_p[label][1][edge]``.
-
-    INPUT:
-
-    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
-      containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`Surface.base_ring` will be the one of ``surface``.
-
-    - ``surface`` -- :class:`Surface`,
-      :class:`.similarity_surface.SimilaritySurface`, or ``None`` (default:
-      ``None``); a surface to be copied or referenced (see ``copy``). If
-      ``None``, the surface is initially empty.
-
-    - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
-      underlying ``surface`` is copied into this surface or just a reference to
-      that surface is kept. If ``None``, a sensible default is chosen, namely
-      ``surface.is_mutable()``.
-
-    - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
-      surface is mutable. When ``None``, the surface will be mutable iff
-      ``surface`` is ``None``.
-
-    EXAMPLES::
-
-        sage: from flatsurf import *
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: p=polygons.regular_ngon(5)
-        sage: s=Surface_list(base_ring=p.base_ring())
-        sage: s.add_polygon(p) # gets label 0
-        0
-        sage: s.add_polygon( (-matrix.identity(2))*p ) # gets label 1
-        1
-        sage: s.change_polygon_gluings(0,[(1,e) for e in range(5)])
-        sage: # base label defaults to zero.
-        sage: s.set_immutable()
-        sage: TestSuite(s).run()
-
-    We surgically add a square into an infinite billiard surface::
-
-        sage: p = polygons(vertices=[(0,0),(4,0),(0,3)])
-        sage: s = similarity_surfaces.billiard(p)
-        sage: ts=s.minimal_cover(cover_type="translation").copy(relabel=True, mutable=True)
-        sage: # Explore the surface a bit
-        sage: ts.polygon(0)
-        Polygon: (0, 0), (4, 0), (0, 3)
-        sage: ts.opposite_edge(0,0)
-        (1, 2)
-        sage: ts.polygon(1)
-        Polygon: (0, 0), (0, -3), (4, 0)
-        sage: s = ts.underlying_surface()
-        sage: l=s.add_polygon(polygons.square(side=4))
-        sage: s.change_edge_gluing(0,0,l,2)
-        sage: s.change_edge_gluing(1,2,l,0)
-        sage: s.change_edge_gluing(l,1,l,3)
-        sage: print("Glued in label is "+str(l))
-        Glued in label is 2
-        sage: count = 0
-        sage: for x in ts.edge_iterator(gluings=True):
-        ....:     print(x)
-        ....:     count=count+1
-        ....:     if count>15:
-        ....:         break
-        ((0, 0), (2, 2))
-        ((0, 1), (3, 1))
-        ((0, 2), (4, 0))
-        ((2, 0), (1, 2))
-        ((2, 1), (2, 3))
-        ((2, 2), (0, 0))
-        ((2, 3), (2, 1))
-        ((3, 0), (5, 2))
-        ((3, 1), (0, 1))
-        ((3, 2), (6, 0))
-        ((4, 0), (0, 2))
-        ((4, 1), (7, 1))
-        ((4, 2), (8, 0))
-        ((1, 0), (8, 2))
-        ((1, 1), (9, 1))
-        ((1, 2), (2, 0))
-        sage: count = 0
-        sage: for l,p in ts.label_iterator(polygons=True):
-        ....:     print(str(l)+" -> "+str(p))
-        ....:     count=count+1
-        ....:     if count>5:
-        ....:         break
-        0 -> Polygon: (0, 0), (4, 0), (0, 3)
-        2 -> Polygon: (0, 0), (4, 0), (4, 4), (0, 4)
-        3 -> Polygon: (0, 0), (-72/25, -21/25), (28/25, -96/25)
-        4 -> Polygon: (0, 0), (0, 3), (-4, 0)
-        1 -> Polygon: (0, 0), (0, -3), (4, 0)
-        5 -> Polygon: (0, 0), (-28/25, 96/25), (-72/25, -21/25)
-
-    """
-
-    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
-        self._p = []  # list of pairs (polygon, gluings)
-        self._reference_surface = None
-        self._removed_labels = []
-        self._num_polygons = 0
-
-        # Validate input parameters and fill in defaults
-        (
-            base_ring,
-            surface,
-            copy,
-            mutable,
-            finite,
-        ) = Surface_list._validate_init_parameters(
-            base_ring=base_ring,
-            surface=surface,
-            copy=copy,
-            mutable=mutable,
-            finite=None,
-        )
-
-        Surface.__init__(self, base_ring, base_label=0, finite=finite, mutable=True)
-
-        # Initialize surface from reference surface
-        if surface is not None:
-            if copy is True:
-                reference_label_to_label = {
-                    label: self.add_polygon(polygon)
-                    for label, polygon in surface.label_polygon_iterator()
-                }
-
-                for (
-                    (label, edge),
-                    (glued_label, glued_edge),
-                ) in surface.edge_gluing_iterator():
-                    self.set_edge_pairing(
-                        reference_label_to_label[label],
-                        edge,
-                        reference_label_to_label[glued_label],
-                        glued_edge,
-                    )
-
-                self.change_base_label(reference_label_to_label[surface.base_label()])
-            else:
-                self._reference_surface = surface
-                self._ref_to_int = {}
-                self._int_to_ref = []
-
-                self._num_polygons = surface.num_polygons()
-
-                # Cache the base polygon
-                self.change_base_label(self.__get_label(surface.base_label()))
-                assert self.base_label() == 0
-
-        if not mutable:
-            self.set_immutable()
-
-    @classmethod
-    def _validate_init_parameters(cls, base_ring, surface, copy, mutable, finite):
+    def __hash__(self):
         r"""
-        Helper method for ``__init__`` that validates the parameters and
-        returns them in the same order with defaults filled in.
-        """
-        if surface is None and base_ring is None:
-            raise ValueError("Either surface or base_ring must be provided.")
-
-        if surface is None:
-            if copy is not None:
-                raise ValueError("Cannot copy when surface was provided.")
-
-            if mutable is None:
-                mutable = True
-
-            finite = True
-        else:
-            from .similarity_surface import SimilaritySurface
-
-            if isinstance(surface, SimilaritySurface):
-                surface = surface.underlying_surface()
-
-            if not isinstance(surface, Surface):
-                raise TypeError("surface must be a Surface or a SimilaritySurface")
-
-            if not surface.is_finite() and surface.is_mutable():
-                raise NotImplementedError(
-                    "Cannot create surface from infinite mutable surface yet."
-                )
-
-            if base_ring is None:
-                base_ring = surface.base_ring()
-
-            if base_ring != surface.base_ring():
-                raise NotImplementedError(
-                    "Cannot provide both a surface and a base_ring yet."
-                )
-
-            if mutable is None:
-                mutable = True
-
-            if copy is None:
-                copy = surface.is_mutable()
-
-            if copy and not surface.is_finite():
-                raise ValueError("Cannot copy infinite surface.")
-
-            if surface.is_mutable() and not copy:
-                raise ValueError("Cannot reference mutable surface.")
-
-            finite = surface.is_finite()
-
-        return base_ring, surface, copy, mutable, finite
-
-    def __get_label(self, ref_label):
-        r"""
-        Returns a corresponding label. Creates a new label if necessary.
-        """
-        try:
-            return self._ref_to_int[ref_label]
-        except KeyError:
-            polygon = self._reference_surface.polygon(ref_label)
-            data = [polygon, [None for i in range(polygon.num_edges())]]
-            if len(self._removed_labels) > 0:
-                i = self._removed_labels.pop()
-                self._p[i] = data
-                self._ref_to_int[ref_label] = i
-                self._int_to_ref[i] = ref_label
-            else:
-                i = len(self._p)
-                if i != len(self._int_to_ref):
-                    raise RuntimeError(
-                        "length of self._int_to_ref is "
-                        + str(len(self._int_to_ref))
-                        + " should be the same as i="
-                        + str(i)
-                    )
-                self._p.append(data)
-                self._ref_to_int[ref_label] = i
-                self._int_to_ref.append(ref_label)
-            return i
-
-    def polygon(self, lab):
-        r"""
-        Return the polygon with label ``lab``.
-        """
-        try:
-            data = self._p[lab]
-        except IndexError:
-            if self._reference_surface is None:
-                raise ValueError(f"No polygon with label {lab}.")
-
-            for label in self.label_iterator():
-                if label >= lab:
-                    break
-
-            if lab >= len(self._p):
-                raise ValueError(f"no polygon with label {lab}")
-
-            data = self._p[lab]
-
-        if data is None:
-            raise ValueError("Provided label was removed.")
-
-        return data[0]
-
-    def opposite_edge(self, p, e):
-        r"""
-        Given the label ``p`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``pp``, ``ee``) to which this edge is glued.
-        """
-        try:
-            data = self._p[p]
-        except KeyError:
-            raise ValueError("No known polygon with provided label")
-        if data is None:
-            raise ValueError("Provided label was removed.")
-        glue = data[1]
-        try:
-            oe = glue[e]
-        except KeyError:
-            raise ValueError("Edge out of range of polygon.")
-        if oe is None:
-            if self._reference_surface is None:
-                # Perhaps the user of this class left an edge unglued?
-                return None
-            else:
-                ref_p = self._int_to_ref[p]
-                ref_pp, ref_ee = self._reference_surface.opposite_edge(ref_p, e)
-                pp = self.__get_label(ref_pp)
-                return_value = (pp, ref_ee)
-                glue[e] = return_value
-                return return_value
-        else:
-            # Successfully return edge data
-            return oe
-
-    # Methods for changing the surface
-
-    def _change_polygon(self, label, new_polygon, gluing_list=None):
-        r"""
-        Internal method used by change_polygon(). Should not be called directly.
-        """
-        try:
-            data = self._p[label]
-        except KeyError:
-            raise ValueError("No known polygon with provided label")
-        if data is None:
-            raise ValueError("Provided label was removed from the surface.")
-        data[0] = new_polygon
-        if data[1] is None or new_polygon.num_edges() != len(data[1]):
-            data[1] = [None for e in range(new_polygon.num_edges())]
-        if gluing_list is not None:
-            self.change_polygon_gluings(label, gluing_list)
-
-    def _set_edge_pairing(self, label1, edge1, label2, edge2):
-        r"""
-        Internal method used by change_edge_gluing(). Should not be called directly.
-        """
-        try:
-            data = self._p[label1]
-        except KeyError:
-            raise ValueError("No known polygon with provided label1=" + str(label1))
-        if data is None:
-            raise ValueError(
-                "Provided label1=" + str(label1) + " was removed from the surface."
-            )
-        data[1][edge1] = (label2, edge2)
-        try:
-            data = self._p[label2]
-        except KeyError:
-            raise ValueError("No known polygon with provided label2=" + str(label2))
-        if data is None:
-            raise ValueError(
-                "Provided label2=" + str(label2) + " was removed from the surface."
-            )
-        data[1][edge2] = (label1, edge1)
-
-    # TODO: deprecation alias?
-    _change_edge_gluing = _set_edge_pairing
-
-    def _add_polygon(self, new_polygon, gluing_list=None, label=None):
-        r"""
-        Internal method used by add_polygon(). Should not be called directly.
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
 
         EXAMPLES::
 
-            sage: from flatsurf import *
-            sage: from flatsurf.geometry.surface import Surface_list
-            sage: p=polygons.regular_ngon(5)
-            sage: s=Surface_list(base_ring=p.base_ring())
-            sage: s.add_polygon(p, label=3)
-            3
-            sage: s.add_polygon( (-matrix.identity(2))*p, label=30)
-            30
-            sage: s.change_polygon_gluings(3,[(30,e) for e in range(5)])
-            sage: s.change_base_label(30)
-            sage: s.num_polygons()
-            2
-            sage: TestSuite(s).run()
-            sage: s.remove_polygon(3)
-            sage: s.add_polygon(p, label=6)
-            6
-            sage: s.change_polygon_gluings(6,[(30,e) for e in range(5)])
-            sage: s.num_polygons()
-            2
-            sage: TestSuite(s).run()
-            sage: s.change_base_label(6)
-            sage: s.remove_polygon(30)
-            sage: label = s.add_polygon((-matrix.identity(2))*p)
-            sage: s.change_polygon_gluings(6,[(label,e) for e in range(5)])
-            sage: TestSuite(s).run()
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: T = MutableOrientedSimilaritySurface(QQ)
+            sage: hash(S) == hash(T)
+            Traceback (most recent call last):
+            ...
+            TypeError: cannot hash a mutable surface
+
+            sage: S.set_immutable()
+            sage: T.set_immutable()
+            sage: hash(S) == hash(T)
+            True
+
         """
-        if new_polygon is None:
-            data = [None, None]
-        else:
-            data = [new_polygon, [None for i in range(new_polygon.num_edges())]]
-        if label is None:
-            if len(self._removed_labels) > 0:
-                new_label = self._removed_labels.pop()
-                self._p[new_label] = data
+        if self._mutable:
+            raise TypeError("cannot hash a mutable surface")
+
+        return hash((tuple(self.labels()), tuple(self.polygons()), self._roots))
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S
+            Empty Surface
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S
+            Translation Surface with boundary built from a square
+
+        """
+        if not self.is_finite_type():
+            return "Surface built from infinitely many polygons"
+
+        if len(self.labels()) == 0:
+            return "Empty Surface"
+
+        return f"{self._describe_surface()} built from {self._describe_polygons()}"
+
+    def _describe_surface(self):
+        r"""
+        Return a string describing this kind of surface.
+
+        This is a helper method for :meth:`_repr_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S._describe_surface()
+            'Translation Surface'
+
+        """
+        return "Surface"
+
+    def _describe_polygons(self):
+        r"""
+        Return a string describing the nature of the polygons that make up this surface.
+
+        This is a helper method for :meth:`_repr_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S._describe_polygons()
+            ''
+
+        """
+        polygons = [
+            (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
+            for p in self.polygons()
+        ]
+        polygons.sort()
+        polygons = [description for (edges, description) in polygons]
+
+        if not polygons:
+            return ""
+
+        collated = []
+        while polygons:
+            count = 1
+            polygon = polygons.pop()
+            while polygons and polygons[-1] == polygon:
+                count += 1
+                polygons.pop()
+
+            if count == 1:
+                collated.append(f"{polygon[0]} {polygon[1]}")
             else:
-                new_label = len(self._p)
-                self._p.append(data)
-                if self._reference_surface is not None:
-                    # Need a blank in this list for algorithmic reasons
-                    self._int_to_ref.append(None)
-        else:
-            new_label = int(label)
-            if new_label < len(self._p):
-                if self._p[new_label] is not None:
-                    raise ValueError(
-                        "Trying to add a polygon with label="
-                        + str(label)
-                        + " which already indexes a polygon."
-                    )
-                self._p[new_label] = data
-            else:
-                if new_label - len(self._p) > 100:
-                    raise ValueError(
-                        "Adding a polygon with label="
-                        + str(label)
-                        + " would add more than 100 entries in our list."
-                    )
-                for i in range(len(self._p), new_label):
-                    self._p.append(None)
-                    self._removed_labels.append(i)
-                    if self._reference_surface is not None:
-                        # Need a blank in this list for algorithmic reasons
-                        self._int_to_ref.append(None)
+                collated.append(f"{count} {polygon[2]}")
 
-                self._p.append(data)
-                if self._reference_surface is not None:
-                    # Need a blank in this list for algorithmic reasons
-                    self._int_to_ref.append(None)
+        description = collated.pop()
 
-        if gluing_list is not None:
-            self.change_polygon_gluings(new_label, gluing_list)
-        self._num_polygons += 1
+        if collated:
+            description = ", ".join(collated) + " and " + description
 
-        return new_label
+        return description
 
-    def num_polygons(self):
+    def set_root(self, root):
         r"""
-        Return the number of polygons making up the surface in constant time.
-        """
-        return self._num_polygons
+        Set ``root`` as the label at which exploration of a connected component
+        starts.
 
-    def label_iterator(self):
-        r"""
-        Iterator over all polygon labels.
-        """
-        if self._reference_surface is not None:
-            for i in Surface.label_iterator(self):
-                yield i
-        elif self._num_polygons == len(self._p):
-            for i in range(self.num_polygons()):
-                yield i
-        else:
-            # We've removed some labels
-            found = 0
-            i = 0
-            while found < self._num_polygons:
-                if self._p[i] is not None:
-                    found += 1
-                    yield i
-                i += 1
+        This method can be called for connected and disconnected surfaces. In
+        either case, it establishes ``root`` as the new label from which
+        enumeration of the connected component containing it starts. If another
+        label for this component had been set earlier, it is replaced.
 
-    def _remove_polygon(self, label):
-        r"""
-        Internal method used by remove_polygon(). Should not be called directly.
-        """
-        if label == len(self._p) - 1:
-            self._p.pop()
-            if self._reference_surface is not None:
-                ref_label = self._int_to_ref.pop()
-                assert len(self._int_to_ref) == label
-                if ref_label is not None:
-                    del self._ref_to_int[ref_label]
-        else:
-            self._p[label] = None
-            self._removed_labels.append(label)
-            if self._reference_surface is not None:
-                ref_label = self._int_to_ref[label]
-                if ref_label is not None:
-                    self._int_to_ref[label] = None
-                    del self._ref_to_int[ref_label]
-        self._num_polygons -= 1
+        .. NOTE::
 
-    def ramified_cover(self, d, data):
-        r"""
-        Make a ramified cover of this surface.
+            After roots have been declared explicitly, gluing operations come
+            at an additional cost since the root labels have to be updated
+            sometimes. It is therefore good practice to declare the root labels
+            after all the gluings have been established when creating a
+            surface.
 
         INPUT:
 
-        - ``d`` - integer (the degree of the cover)
-
-        - ``data`` - a dictionary which to a pair ``(label, edge_num)`` associates a permutation
-          of {1,...,d}
-        """
-        from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-
-        G = SymmetricGroup(d)
-        for k in data:
-            data[k] = G(data[k])
-        cover = Surface_list(base_ring=self.base_ring())
-        labels = list(self.label_iterator())
-        edges = set(self.edge_iterator())
-        cover_labels = {}
-        for i in range(1, d + 1):
-            for lab in self.label_iterator():
-                cover_labels[(lab, i)] = cover.add_polygon(self.polygon(lab))
-        while edges:
-            lab, e = elab = edges.pop()
-            llab, ee = eelab = self.opposite_edge(lab, e)
-            edges.remove(eelab)
-            if elab in data:
-                if eelab in data:
-                    if not (data[elab] * data[eelab]).is_one():
-                        raise ValueError("inconsistent covering data")
-                s = data[elab]
-            elif eelab in data:
-                s = ~data[eelab]
-            else:
-                s = G.one()
-
-            for i in range(1, d + 1):
-                p0 = cover_labels[(lab, i)]
-                p1 = cover_labels[(lab, s(i))]
-                cover.set_edge_pairing(p0, e, p1, ee)
-        return cover
-
-    def __eq__(self, other):
-        r"""
-        Return whether this surface is indistinguishable from ``other``.
+        - ``root`` -- a polygon label in this surface
 
         EXAMPLES::
 
-            sage: from flatsurf import Surface_list, polygons
-            sage: P=polygons.regular_ngon(5)
-            sage: S = Surface_list(base_ring=P.base_ring())
-            sage: T = Surface_list(base_ring=P.base_ring())
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
 
-            sage: S == T
-            True
+            sage: S.set_root(0)
+            Traceback (most recent call last):
+            ...
+            ValueError: root must be a label in the surface
 
-            sage: S.add_polygon(P, label=3)
-            3
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
 
-            sage: S == T
-            False
+            sage: S.set_root(0)
+            sage: S.set_root(1)
+
+            sage: S.roots()
+            (0, 1)
+
+        Note that the roots get updated automatically when merging components::
+
+            sage: S.glue((0, 0), (1, 0))
+            sage: S.roots()
+            (0,)
+
+        The purpose of changing the root label is to modify the order of
+        exploration, e.g., in :meth:`labels`::
+
+            sage: S.labels()
+            (0, 1)
+
+            sage: S.set_root(1)
+            sage: S.labels()
+            (1, 0)
+
+        .. SEEALSO::
+
+            :meth:`set_roots` to replace all the root labels
 
         """
-        if not isinstance(other, Surface_list):
-            return False
+        if not self._mutable:
+            raise Exception("cannot modify an immutable surface")
 
-        if self._reference_surface is not None:
-            equal = self._eq_reference_surface(other)
-            if equal is True:
-                return True
-            if equal is False:
-                return False
+        root = [label for label in self.labels() if label == root]
+        if not root:
+            raise ValueError("root must be a label in the surface")
+        assert len(root) == 1
+        root = root[0]
 
-        return super().__eq__(other)
+        component = [component for component in self.components() if root in component]
+        assert len(component) == 1
+        component = component[0]
 
-    def _eq_reference_surface(self, other):
+        self._roots = tuple(r for r in self._roots if r not in component) + (root,)
+
+    def set_roots(self, roots):
         r"""
-        Return whether this surface is indistinguishable from ``other`` by
-        comparing their reference surfaces.
+        Declare that the labels in ``roots`` are the labels from which their
+        corresponding connected components should be enumerated.
 
-        Returns ``None``, when no conclusion could be reached.
+        There must be at most one label for each connected component in
+        ``roots``. Components that have no label set explicitly will have their
+        label chosen automatically.
 
-        This is a helper method for :meth:`__eq__`.
+        INPUT:
+
+        - ``roots`` -- a sequence of polygon labels in this surface
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.add_polygon(polygons.square())
+            2
+
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: S.set_roots([1])
+            sage: S.roots()
+            (1, 2)
+
+        Setting the roots of connected components affects their enumeration in :meth:`labels`::
+
+            sage: S.labels()
+            (1, 0, 2)
+
+            sage: S.set_roots([0, 2])
+            sage: S.labels()
+            (0, 1, 2)
+
+        There must be at most one root per component::
+
+            sage: S.set_roots([0, 1, 2])
+            Traceback (most recent call last):
+            ...
+            ValueError: there must be at most one root label for each connected component
+
         """
-        if self._reference_surface != other._reference_surface:
-            return None
+        if not self._mutable:
+            raise Exception("cannot modify an immutable surface")
 
-        for label in range(len(self._p)):
-            if self._p[label] is None:
-                if label >= len(other._p) or other._p[label] is not None:
-                    return None
-                continue
-            try:
-                if self.polygon(label) != other.polygon(label):
-                    return False
-            except ValueError:
-                return False
+        roots = [[label for label in self.labels() if label == root] for root in roots]
 
-        for label in range(len(other._p)):
-            if other._p[label] is None:
-                if label >= len(self._p) or self._p[label] is not None:
-                    return None
-                continue
-            try:
-                if self.polygon(label) != other.polygon(label):
-                    return False
-            except ValueError:
-                return False
+        if any(len(root) == 0 for root in roots):
+            raise ValueError("roots must be existing labels in the surface")
 
-        if self.base_ring() != other.base_ring():
-            return False
-        if self.is_mutable() != other.is_mutable():
-            return False
-        if self.base_label() != other.base_label():
-            return False
+        assert all(len(root) == 1 for root in roots)
 
-        return True
+        roots = tuple(root[0] for root in roots)
+
+        for component in self.components():
+            if len([root for root in roots if root in component]) > 1:
+                raise ValueError(
+                    "there must be at most one root label for each connected component"
+                )
+
+        self._roots = tuple(roots)
+
+    def change_base_label(self, label):
+        r"""
+        This is a deprecated alias for :meth:`set_root`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.change_base_label(0)
+            doctest:warning
+            ...
+            UserWarning: change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_root() instead
+
+        """
+        import warnings
+
+        warnings.warn(
+            "change_base_label() has been deprecated and will be removed in a future version of sage-flatsurf; use set_root() instead"
+        )
+
+        self.set_root(label)
+
+    @cached_method
+    def labels(self):
+        r"""
+        Return the polygon labels in this surface.
+
+        This replaces the generic
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`
+        method with a more efficient implementation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S.labels()
+            ()
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+
+            sage: S.labels()
+            (0,)
+
+        .. SEEALSO::
+
+            :meth:`polygon` to translate polygon labels to the corresponding polygons
+
+            :meth:`polygons` for the corresponding sequence of polygons
+
+        """
+        return LabelsFromView(self, self._polygons.keys(), finite=True)
+
+    @cached_method
+    def polygons(self):
+        r"""
+        Return the polygons that make up this surface.
+
+        The order the polygons are returned is guaranteed to be compatible with
+        the order of the labels in :meth:`~.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
+
+        This replaces the generic
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygons`
+        with a more efficient implementation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: S.polygons()
+            ()
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.add_polygon(polygons.square())
+            2
+
+            sage: S.polygons()
+            (Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]), Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+
+        .. SEEALSO::
+
+            :meth:`polygon` to get a single polygon
+
+        """
+        return Polygons_MutableOrientedSimilaritySurface(self)
 
 
-def surface_list_from_polygons_and_gluings(polygons, gluings, mutable=False):
+class OrientedSimilaritySurface(Surface_base):
     r"""
-    Take a list of polygons and gluings (given either as a list of pairs of edges, or as a dictionary),
-    and produce a Surface_list from it. The mutable parameter determines the mutability of the resulting
-    surface.
-    """
-    if not (isinstance(polygons, list) or isinstance(polygons, tuple)):
-        raise ValueError("polygons must be a list or tuple.")
-    field = polygons[0].parent().field()
-    s = Surface_list(base_ring=field)
-    for p in polygons:
-        s.add_polygon(p)
-    try:
-        # dict case:
-        it = gluings.items()
-    except AttributeError:
-        # list case:
-        it = gluings
-    for (l1, e1), (l2, e2) in it:
-        s.change_edge_gluing(l1, e1, l2, e2)
-    if not mutable:
-        s.set_immutable()
-    return s
-
-
-class Surface_dict(Surface):
-    r"""
-    A mutable :class:`Surface` using a dict to store polygons and gluings.
-
-    Unlike :class:`Surface_list`, this surface is not limited to integer
-    labels. However, :class:`Surface_list` is likely more efficient for most
-    applications.
-
-    ALGORITHM:
-
-    Internally, we maintain a dict ``_p`` for storing polygons together with
-    gluing data.
-
-    Each ``_p[label]`` is typically a pair ``(polygon, gluing_dict)`` where
-    ``gluing_dict`` is maps ``other_label`` to ``other_edge`` such that
-    :meth:`opposite_edge(label, edge) <Surface.opposite_edge>` returns
-    ``_p[label][1][edge]``.
-
-    INPUT:
-
-    - ``base_ring`` -- ring or ``None`` (default: ``None``); the ring
-      containing the coordinates of the vertices of the polygons. If ``None``,
-      the :meth:`Surface.base_ring` will be the one of ``surface``.
-
-    - ``surface`` -- :class:`Surface`, :class:`.similarity_surface.SimilaritySurface`, or
-      ``None`` (default: ``None``); a surface to be copied or referenced (see
-      ``copy``). If ``None``, the surface is initially empty.
-
-    - ``copy`` -- boolean or ``None`` (default: ``None``); whether the data
-      underlying ``surface`` is copied into this surface or just a reference to
-      that surface is kept. If ``None``, a sensible default is chosen, namely
-      ``surface.is_mutable()``.
-
-    - ``mutable`` -- boolean or ``None`` (default: ``None``); whether this
-      surface is mutable. When ``None``, the surface will be mutable iff
-      ``surface`` is ``None``.
+    Base class for surfaces built from Euclidean polygons that are glued with
+    orientation preserving similarities.
 
     EXAMPLES::
 
-        sage: from flatsurf import *
-        sage: p=polygons.regular_ngon(10)
-        sage: s=Surface_dict(base_ring=p.base_ring())
-        sage: s.add_polygon(p,label="A")
-        'A'
-        sage: s.change_polygon_gluings("A",[("A",(e+5)%10) for e in range(10)])
-        sage: s.change_base_label("A")
-        sage: s.set_immutable()
-        sage: TestSuite(s).run()
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+
+        sage: from flatsurf.geometry.surface import OrientedSimilaritySurface
+        sage: isinstance(S, OrientedSimilaritySurface)
+        True
+
+    """
+    Element = SurfacePoint
+
+    def __init__(self, base, category=None):
+        from sage.categories.all import Rings
+
+        if base not in Rings():
+            raise TypeError("base ring must be a ring")
+
+        from flatsurf.geometry.categories import SimilaritySurfaces
+
+        if category is None:
+            category = SimilaritySurfaces().Oriented()
+
+        category &= SimilaritySurfaces().Oriented()
+
+        super().__init__(base, category=category)
+
+    def _describe_surface(self):
+        if not self.is_finite_type():
+            return "Surface built from infinitely many polygons"
+
+        if not self.is_connected():
+            # Many checks do not work yet if a surface is not connected, so we stop here.
+            return "Disconnected Surface"
+
+        if self.is_translation_surface(positive=True):
+            description = "Translation Surface"
+        elif self.is_translation_surface(positive=False):
+            description = "Half-Translation Surface"
+        elif self.is_dilation_surface(positive=True):
+            description = "Positive Dilation Surface"
+        elif self.is_dilation_surface(positive=False):
+            description = "Dilation Surface"
+        elif self.is_cone_surface():
+            description = "Cone Surface"
+            if self.is_rational_surface():
+                description = f"Rational {description}"
+        else:
+            description = "Surface"
+
+        if hasattr(self, "stratum"):
+            try:
+                description += f" in {self.stratum()}"
+            except NotImplementedError:
+                # Computation of the stratum might fail due to #227.
+                pass
+        elif self.genus is not NotImplemented:
+            description = f"Genus {self.genus()} {description}"
+
+        if self.is_with_boundary():
+            description += " with boundary"
+
+        return description
+
+
+class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
+    r"""
+    Base class for surface built from Euclidean polyogns glued by orientation
+    preserving similarities.
+
+    This provides the features of :class:`MutableOrientedSimilaritySurface`
+    without making a choice about how data is stored internally; it is a
+    generic base class for other implementations of mutable surfaces.
+
+    EXAMPLES::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+
+        sage: from flatsurf.geometry.surface import MutableOrientedSimilaritySurface_base
+        sage: isinstance(S, MutableOrientedSimilaritySurface_base)
+        True
+
     """
 
-    def __init__(self, base_ring=None, surface=None, copy=None, mutable=None):
-        self._p = {}
-        self._reference_surface = None
-
-        # Validate input parameters and fill in defaults
-        (
-            base_ring,
-            surface,
-            copy,
-            mutable,
-            finite,
-        ) = Surface_list._validate_init_parameters(
-            base_ring=base_ring,
-            surface=surface,
-            copy=copy,
-            mutable=mutable,
-            finite=None,
-        )
-
-        Surface.__init__(self, base_ring, base_label=None, finite=finite, mutable=True)
-
-        # Initialize surface from reference surface
-        if surface is not None:
-            if copy is True:
-                reference_label_to_label = {
-                    label: self.add_polygon(polygon, label=label)
-                    for label, polygon in surface.label_polygon_iterator()
-                }
-
-                for (
-                    (label, edge),
-                    (glued_label, glued_edge),
-                ) in surface.edge_gluing_iterator():
-                    self.set_edge_pairing(
-                        reference_label_to_label[label],
-                        edge,
-                        reference_label_to_label[glued_label],
-                        glued_edge,
-                    )
-
-                self.change_base_label(reference_label_to_label[surface.base_label()])
-            else:
-                self._reference_surface = surface
-
-                self.change_base_label(surface.base_label())
-
-        if not mutable:
-            self.set_immutable()
-
-    def polygon(self, lab):
+    def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
         r"""
-        Return the polygon with label ``lab``.
+        Overrides
+        :meth:`.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip`
+        to provide in-place flipping of triangles.
+
+        See that method for details.
         """
-        try:
-            data = self._p[lab]
-        except KeyError:
-            if self._reference_surface is None:
-                raise ValueError(f"No polygon with label {lab}.")
-
-            polygon = self._reference_surface.polygon(lab)
-            data = [
-                self._reference_surface.polygon(lab),
-                [
-                    self._reference_surface.opposite_edge(lab, e)
-                    for e in range(polygon.num_edges())
-                ],
-            ]
-            self._p[lab] = data
-
-        if data is None:
-            raise ValueError("Label " + str(lab) + " was removed from the surface.")
-        return data[0]
-
-    def opposite_edge(self, p, e):
-        r"""
-        Given the label ``p`` of a polygon and an edge ``e`` in that polygon
-        returns the pair (``pp``, ``ee``) to which this edge is glued.
-        """
-        try:
-            data = self._p[p]
-        except KeyError:
-            self.polygon(p)
-            data = self._p[p]
-        if data is None:
-            raise ValueError("Label " + str(p) + " was removed from the surface.")
-        gluing_data = data[1]
-        try:
-            return gluing_data[e]
-        except IndexError:
-            raise ValueError(
-                "Edge e=" + str(e) + " is out of range in polygon with label " + str(p)
+        if not in_place:
+            return super().triangle_flip(
+                l1=l1, e1=e1, in_place=in_place, test=test, direction=direction
             )
 
-    # Methods for changing the surface
+        s = self
 
-    def _change_polygon(self, label, new_polygon, gluing_list=None):
-        r"""
-        Internal method used by change_polygon(). Should not be called directly.
-        """
+        p1 = s.polygon(l1)
+        if not len(p1.vertices()) == 3:
+            raise ValueError("The polygon with the provided label is not a triangle.")
+        l2, e2 = s.opposite_edge(l1, e1)
+
+        sim = s.edge_transformation(l2, e2)
+        p2 = s.polygon(l2)
+        if not len(p2.vertices()) == 3:
+            raise ValueError(
+                "The polygon opposite the provided edge is not a triangle."
+            )
+
+        from flatsurf import Polygon
+
+        p2 = Polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
+
+        if direction is None:
+            direction = (s.base_ring() ** 2)((0, 1))
+        # Get vertices corresponding to separatices in the provided direction.
+        v1 = p1.find_separatrix(direction=direction)[0]
+        v2 = p2.find_separatrix(direction=direction)[0]
+        # Our quadrilateral has vertices labeled:
+        # * 0=p1.vertex(e1+1)=p2.vertex(e2)
+        # * 1=p1.vertex(e1+2)
+        # * 2=p1.vertex(e1)=p2.vertex(e2+1)
+        # * 3=p2.vertex(e2+2)
+        # Record the corresponding vertices of this quadrilateral.
+        q1 = (3 + v1 - e1 - 1) % 3
+        q2 = (2 + (3 + v2 - e2 - 1) % 3) % 4
+
+        new_diagonal = p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3)
+        # This list will store the new triangles which are being glued in.
+        # (Unfortunately, they may not be cyclically labeled in the correct way.)
+        new_triangle = []
         try:
-            data = self._p[label]
-            if data is None:
-                raise ValueError(
-                    "Label " + str(label) + " was removed from the surface."
+            new_triangle.append(
+                Polygon(
+                    edges=[
+                        p1.edge((e1 + 2) % 3),
+                        p2.edge((e2 + 1) % 3),
+                        -new_diagonal,
+                    ],
+                    base_ring=p1.base_ring(),
                 )
-            data[0] = new_polygon
-        except KeyError:
-            # Polygon probably lies in reference surface
-            if self._reference_surface is None:
-                raise ValueError("No known polygon with provided label")
+            )
+            new_triangle.append(
+                Polygon(
+                    edges=[
+                        p2.edge((e2 + 2) % 3),
+                        p1.edge((e1 + 1) % 3),
+                        new_diagonal,
+                    ],
+                    base_ring=p1.base_ring(),
+                )
+            )
+            # The above triangles would be glued along edge 2 to form the diagonal of the quadrilateral being removed.
+        except ValueError:
+            raise ValueError(
+                "Gluing triangles along this edge yields a non-convex quadrilateral."
+            )
+
+        # Find the separatrices of the two new triangles, and in particular which way they point.
+        new_sep = []
+        new_sep.append(new_triangle[0].find_separatrix(direction=direction)[0])
+        new_sep.append(new_triangle[1].find_separatrix(direction=direction)[0])
+        # The quadrilateral vertices corresponding to these separatrices are
+        # new_sep[0]+1 and (new_sep[1]+3)%4 respectively.
+
+        # i=0 if the new_triangle[0] should be labeled l1 and new_triangle[1] should be labeled l2.
+        # i=1 indicates the opposite labeling.
+        if new_sep[0] + 1 == q1:
+            assert (new_sep[1] + 3) % 4 == q2
+            i = 0
+        else:
+            assert (new_sep[1] + 3) % 4 == q1
+            assert new_sep[0] + 1 == q2
+            i = 1
+
+        # These quantities represent the cyclic relabeling of triangles needed.
+        cycle1 = (new_sep[i] - v1 + 3) % 3
+        cycle2 = (new_sep[1 - i] - v2 + 3) % 3
+
+        # This will be the new triangle with label l1:
+        tri1 = Polygon(
+            edges=[
+                new_triangle[i].edge(cycle1),
+                new_triangle[i].edge((cycle1 + 1) % 3),
+                new_triangle[i].edge((cycle1 + 2) % 3),
+            ],
+            base_ring=p1.base_ring(),
+        )
+        # This will be the new triangle with label l2:
+        tri2 = Polygon(
+            edges=[
+                new_triangle[1 - i].edge(cycle2),
+                new_triangle[1 - i].edge((cycle2 + 1) % 3),
+                new_triangle[1 - i].edge((cycle2 + 2) % 3),
+            ],
+            base_ring=p1.base_ring(),
+        )
+        # In the above, edge 2-cycle1 of tri1 would be glued to edge 2-cycle2 of tri2
+        diagonal_glue_e1 = 2 - cycle1
+        diagonal_glue_e2 = 2 - cycle2
+
+        assert p1.find_separatrix(direction=direction) == tri1.find_separatrix(
+            direction=direction
+        )
+        assert p2.find_separatrix(direction=direction) == tri2.find_separatrix(
+            direction=direction
+        )
+
+        # Two opposite edges will not change their labels (label,edge) under our regluing operation.
+        # The other two opposite ones will change and in fact they change labels.
+        # The following finds them (there are two cases).
+        # At the end of the if statement, the following will be true:
+        # * new_glue_e1 and new_glue_e2 will be the edges of the new triangle with label l1 and l2 which need regluing.
+        # * old_e1 and old_e2 will be the corresponding edges of the old triangles.
+        # (Note that labels are swapped between the pair. The appending 1 or 2 refers to the label used for the triangle.)
+        if p1.edge(v1) == tri1.edge(v1):
+            # We don't have to worry about changing gluings on edge v1 of the triangles with label l1
+            # We do have to worry about the following edge:
+            new_glue_e1 = (
+                3 - diagonal_glue_e1 - v1
+            )  # returns the edge which is neither diagonal_glue_e1 nor v1.
+            # This corresponded to the following old edge:
+            old_e1 = 3 - e1 - v1  # Again this finds the edge which is neither e1 nor v1
+        else:
+            temp = (v1 + 2) % 3
+            assert p1.edge(temp) == tri1.edge(temp)
+            # We don't have to worry about changing gluings on edge (v1+2)%3 of the triangles with label l1
+            # We do have to worry about the following edge:
+            new_glue_e1 = (
+                3 - diagonal_glue_e1 - temp
+            )  # returns the edge which is neither diagonal_glue_e1 nor temp.
+            # This corresponded to the following old edge:
+            old_e1 = (
+                3 - e1 - temp
+            )  # Again this finds the edge which is neither e1 nor temp
+        if p2.edge(v2) == tri2.edge(v2):
+            # We don't have to worry about changing gluings on edge v2 of the triangles with label l2
+            # We do have to worry about the following edge:
+            new_glue_e2 = (
+                3 - diagonal_glue_e2 - v2
+            )  # returns the edge which is neither diagonal_glue_e2 nor v2.
+            # This corresponded to the following old edge:
+            old_e2 = 3 - e2 - v2  # Again this finds the edge which is neither e2 nor v2
+        else:
+            temp = (v2 + 2) % 3
+            assert p2.edge(temp) == tri2.edge(temp)
+            # We don't have to worry about changing gluings on edge (v2+2)%3 of the triangles with label l2
+            # We do have to worry about the following edge:
+            new_glue_e2 = (
+                3 - diagonal_glue_e2 - temp
+            )  # returns the edge which is neither diagonal_glue_e2 nor temp.
+            # This corresponded to the following old edge:
+            old_e2 = (
+                3 - e2 - temp
+            )  # Again this finds the edge which is neither e2 nor temp
+
+        # remember the old gluings.
+        old_opposite1 = s.opposite_edge(l1, old_e1)
+        old_opposite2 = s.opposite_edge(l2, old_e2)
+
+        us = s
+
+        # Replace the triangles.
+        us.replace_polygon(l1, tri1)
+        us.replace_polygon(l2, tri2)
+        # Glue along the new diagonal of the quadrilateral
+        us.glue((l1, diagonal_glue_e1), (l2, diagonal_glue_e2))
+        # Now we deal with that pair of opposite edges of the quadrilateral that need regluing.
+        # There are some special cases:
+        if old_opposite1 == (l2, old_e2):
+            # These opposite edges were glued to each other.
+            # Do the same in the new surface:
+            us.glue((l1, new_glue_e1), (l2, new_glue_e2))
+        else:
+            if old_opposite1 == (l1, old_e1):
+                # That edge was "self-glued".
+                us.glue((l2, new_glue_e2), (l2, new_glue_e2))
             else:
-                # Ensure the reference surface had a polygon with the provided label:
-                old_polygon = self._reference_surface.polygon(label)
-                if old_polygon.num_edges() == new_polygon.num_edges():
-                    data = [
-                        new_polygon,
-                        [
-                            self._reference_surface.opposite_edge(label, e)
-                            for e in range(new_polygon.num_edges())
-                        ],
-                    ]
-                    self._p[label] = data
+                # The edge (l1,old_e1) was glued in a standard way.
+                # That edge now corresponds to (l2,new_glue_e2):
+                us.glue((l2, new_glue_e2), (old_opposite1[0], old_opposite1[1]))
+            if old_opposite2 == (l2, old_e2):
+                # That edge was "self-glued".
+                us.glue((l1, new_glue_e1), (l1, new_glue_e1))
+            else:
+                # The edge (l2,old_e2) was glued in a standard way.
+                # That edge now corresponds to (l1,new_glue_e1):
+                us.glue((l1, new_glue_e1), (old_opposite2[0], old_opposite2[1]))
+        return s
+
+    def standardize_polygons(self, in_place=False):
+        r"""
+        Replace each polygon with a new polygon which differs by
+        translation and reindexing. The new polygon will have the property
+        that vertex zero is the origin, and all vertices lie either in the
+        upper half plane, or on the x-axis with non-negative x-coordinate.
+
+        This is done to the current surface if in_place=True. A mutable
+        copy is created and returned if in_place=False (as default).
+
+        This overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons`
+        to provide in-place standardizing of surfaces.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+            sage: p = Polygon(vertices = ([(1,1),(2,1),(2,2),(1,2)]))
+            sage: s = MutableOrientedSimilaritySurface(QQ)
+            sage: s.add_polygon(p)
+            0
+            sage: s.glue((0, 0), (0, 2))
+            sage: s.glue((0, 1), (0, 3))
+            sage: s.set_root(0)
+            sage: s.set_immutable()
+
+            sage: s.standardize_polygons().polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+        """
+        if not in_place:
+            S = MutableOrientedSimilaritySurface.from_surface(self)
+            S.standardize_polygons(in_place=True)
+            return S
+
+        cv = {}  # dictionary for non-zero canonical vertices
+        for label, polygon in zip(self.labels(), self.polygons()):
+            best = 0
+            best_pt = polygon.vertex(best)
+            for v in range(1, len(polygon.vertices())):
+                pt = polygon.vertex(v)
+                if (pt[1] < best_pt[1]) or (pt[1] == best_pt[1] and pt[0] < best_pt[0]):
+                    best = v
+                    best_pt = pt
+            # We replace the polygon if the best vertex is not the zero vertex, or
+            # if the coordinates of the best vertex differs from the origin.
+            if not (best == 0 and best_pt.is_zero()):
+                cv[label] = best
+        for label, v in cv.items():
+            self.set_vertex_zero(label, v, in_place=True)
+
+        return self
+
+
+class MutableOrientedSimilaritySurface(
+    MutableOrientedSimilaritySurface_base, MutablePolygonalSurface
+):
+    r"""
+    A surface built from Euclidean polyogns glued by orientation preserving
+    similarities.
+
+    This is the main tool to create new surfaces of finite type in
+    sage-flatsurf.
+
+    EXAMPLES::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+
+        sage: from flatsurf import polygons
+        sage: S.add_polygon(polygons.square())
+        0
+
+        sage: S.glue((0, 0), (0, 2))
+        sage: S.glue((0, 1), (0, 3))
+
+        sage: S.set_immutable()
+
+        sage: S
+        Translation Surface in H_1(0) built from a square
+
+    TESTS::
+
+        sage: TestSuite(S).run()
+
+    """
+
+    def __init__(self, base, category=None):
+        self._gluings = {}
+
+        from flatsurf.geometry.categories import SimilaritySurfaces
+
+        if category is None:
+            category = SimilaritySurfaces().Oriented().FiniteType()
+
+        category &= SimilaritySurfaces().Oriented().FiniteType()
+
+        super().__init__(base, category=category)
+
+    @classmethod
+    def from_surface(cls, surface, category=None):
+        r"""
+        Return a mutable copy of ``surface``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface, polygons
+
+            sage: T = translation_surfaces.square_torus()
+
+        We build a surface that is made from two tori:
+
+            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((1, 0), (1, 2))
+            sage: S.glue((1, 1), (1, 3))
+
+            sage: S.set_immutable()
+
+            sage: S
+            Disconnected Surface built from 2 squares
+
+        """
+        if not surface.is_finite_type():
+            raise TypeError
+        self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category)
+
+        for label in surface.labels():
+            self.add_polygon(surface.polygon(label), label=label)
+
+        for label in surface.labels():
+            for edge in range(len(surface.polygon(label).vertices())):
+                cross = surface.opposite_edge(label, edge)
+                if cross:
+                    self.glue((label, edge), cross)
+
+        if isinstance(surface, MutablePolygonalSurface):
+            # Only copy explicitly set roots over
+            self._roots = surface._roots
+        else:
+            self.set_roots(surface.roots())
+
+        return self
+
+    def add_polygon(self, polygon, *, label=None):
+        # Overrides add_polygon from MutablePolygonalSurface
+        label = super().add_polygon(polygon, label=label)
+        assert label not in self._gluings
+        self._gluings[label] = [None] * len(polygon.vertices())
+
+        if self._roots:
+            self._roots = self._roots + (label,)
+
+        return label
+
+    def remove_polygon(self, label):
+        # Overrides remove_polygon from MutablePolygonalSurface
+        self._unglue_polygon(label)
+        self._gluings.pop(label)
+
+        super().remove_polygon(label)
+
+    def glue(self, x, y):
+        r"""
+        Glue ``x`` and ``y`` with an (orientation preserving) similarity.
+
+        INPUT:
+
+        - ``x`` -- a pair consisting of a polygon label and an edge index for
+          that polygon
+
+        - ``y`` -- a pair consisting of a polygon label and an edge index for
+          that polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygons.square())
+            0
+
+        Glue two opposite sides of the square to each other::
+
+            sage: S.glue((0, 1), (0, 3))
+
+        Glue the other sides of the square to themselves::
+
+            sage: S.glue((0, 0), (0, 0))
+            sage: S.glue((0, 2), (0, 2))
+
+        Note that existing gluings are removed when gluing already glued
+        sides::
+
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.set_immutable()
+
+            sage: S
+            Translation Surface in H_1(0) built from a square
+
+        """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
+
+        if x[0] not in self._polygons:
+            raise ValueError
+
+        if y[0] not in self._polygons:
+            raise ValueError
+
+        self.unglue(*x)
+        self.unglue(*y)
+
+        if self._roots:
+            component = set(self.component(x[0]))
+            if y[0] not in component:
+                # Gluing will join two connected components.
+                cross_component = set(self.component(y[0]))
+                for root in reversed(self._roots):
+                    if root in component or root in cross_component:
+                        self._roots = tuple([r for r in self._roots if r != root])
+                        break
                 else:
-                    data = [new_polygon, [None for e in range(new_polygon.num_edges())]]
-                    self._p[label] = data
-        if len(data[1]) != new_polygon.num_edges():
-            data[1] = [None for e in range(new_polygon.num_edges())]
+                    assert False, "did not find any root to eliminate"
+
+        self._gluings[x[0]][x[1]] = y
+        self._gluings[y[0]][y[1]] = x
+
+    def unglue(self, label, edge):
+        r"""
+        Unglue the side ``edge`` of the polygon ``label`` if it is glued.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
+
+            sage: T = translation_surfaces.square_torus()
+
+            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
+
+            sage: S.unglue(0, 0)
+
+            sage: S.gluings()
+            (((0, 1), (0, 3)), ((0, 3), (0, 1)))
+
+            sage: S.set_immutable()
+            sage: S
+            Translation Surface with boundary built from a square
+
+        """
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
+
+        cross = self._gluings[label][edge]
+        if cross is not None:
+            self._gluings[cross[0]][cross[1]] = None
+
+        self._gluings[label][edge] = None
+
+        if cross is not None and self._roots:
+            component = set(self.component(label))
+            if cross[0] not in component:
+                # Ungluing created a new connected component.
+                cross_component = set(self.component(cross[0]))
+                assert label not in cross_component
+                for root in self._roots:
+                    if root in component:
+                        self._roots = self._roots + (
+                            LabeledView(
+                                surface=self, view=cross_component, finite=True
+                            ).min(),
+                        )
+                        break
+                    if root in cross_component:
+                        self._roots = self._roots + (
+                            LabeledView(
+                                surface=self, view=component, finite=True
+                            ).min(),
+                        )
+                        break
+                else:
+                    assert False, "did not find any root to split"
+
+    def _unglue_polygon(self, label):
+        r"""
+        Remove all gluigns from polygon ``label``.
+
+        This is a helper method to completely unglue a polygon before removing
+        or replacing it.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
+
+            sage: T = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
+
+            sage: S._unglue_polygon(0)
+            sage: S.gluings()
+            ()
+
+        """
+        for edge, cross in enumerate(self._gluings[label]):
+            if cross is None:
+                continue
+            cross_label, cross_edge = cross
+            self._gluings[cross_label][cross_edge] = None
+        self._gluings[label] = [None] * len(self.polygon(label).vertices())
+
+    def set_edge_pairing(self, label0, edge0, label1, edge1):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.set_edge_pairing(0, 0, 0, 2)
+            doctest:warning
+            ...
+            UserWarning: set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead
+            sage: S.set_edge_pairing(0, 1, 0, 3)
+
+            sage: S.gluings()
+            (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
+        """
+        import warnings
+
+        warnings.warn(
+            "set_edge_pairing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead"
+        )
+        return self.glue((label0, edge0), (label1, edge1))
+
+    def change_edge_gluing(self, label0, edge0, label1, edge1):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.change_edge_gluing(0, 0, 0, 2)
+            doctest:warning
+            ...
+            UserWarning: change_edge_gluing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead
+            sage: S.change_edge_gluing(0, 1, 0, 3)
+
+            sage: S.gluings()
+            (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
+        """
+        import warnings
+
+        warnings.warn(
+            "change_edge_gluing(label0, edge0, label1, edge1) has been deprecated and will be removed in a future version of sage-flatsurf; use glue((label0, edge0), (label1, edge1)) instead"
+        )
+        return self.glue((label0, edge0), (label1, edge1))
+
+    def change_polygon_gluings(self, label, gluings):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.change_polygon_gluings(0, [(0, 2), (0, 3), (0, 0), (0, 1)])
+            doctest:warning
+            ...
+            UserWarning: change_polygon_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use glue() in a loop instead
+
+            sage: S.gluings()
+            (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
+        """
+        import warnings
+
+        warnings.warn(
+            "change_polygon_gluings() has been deprecated and will be removed in a future version of sage-flatsurf; use glue() in a loop instead"
+        )
+
+        for edge0, cross in enumerate(gluings):
+            if cross is None:
+                self.unglue(label, edge0)
+            else:
+                self.glue((label, edge0), cross)
+
+    def change_polygon(self, label, polygon, gluing_list=None):
+        r"""
+        TESTS::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface, translation_surfaces
+
+            sage: T = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(T)
+
+            sage: S.change_polygon(0, 2 * S.polygon(0))
+            doctest:warning
+            ...
+            UserWarning: change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead
+
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)])
+
+        """
+        import warnings
+
+        warnings.warn(
+            "change_polygon() has been deprecated and will be removed in a future version of sage-flatsurf; use replace_polygon() or remove_polygon() and add_polygon() instead"
+        )
+
+        if not self._mutable:
+            raise Exception(
+                "cannot modify immutable surface; create a copy with MutableOrientedSimilaritySurface.from_surface()"
+            )
+
+        # Note that this obscure feature. If the number of edges is unchanged, we keep the gluings, otherwise we trash them all.
+        if len(polygon.vertices()) != len(self.polygon(label).vertices()):
+            self._unglue_polygon(label)
+            self._gluings[label] = [None] * len(polygon.vertices())
+
+        self._polygons[label] = polygon
+
         if gluing_list is not None:
-            self.change_polygon_gluings(label, gluing_list)
+            for i, cross in enumerate(gluing_list):
+                self.glue((label, i), cross)
 
-    def _set_edge_pairing(self, label1, edge1, label2, edge2):
+    def replace_polygon(self, label, polygon):
         r"""
-        Internal method used by set_edge_pairing(). Should not be called directly.
+        Replace the polygon ``label`` with ``polygon`` while keeping its
+        gluings intact.
+
+        INPUT:
+
+        - ``label`` -- an element of :meth:`~.MutablePolygonalSurface.labels`
+
+        - ``polygon`` -- a Euclidean polygon
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2)]))
+
+        The replacement of a polygon must have the same number of sides::
+
+            sage: S.replace_polygon(0, Polygon(vertices=[(0, 0), (2, 0), (2, 2)]))
+            Traceback (most recent call last):
+            ...
+            ValueError: polygon must be a quadrilateral
+
+        To replace the polygon without keeping its glueings, remove the polygon
+        first and then add a new one::
+
+            sage: S.remove_polygon(0)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (2, 0), (2, 2)]), label=0)
+            0
+
         """
-        try:
-            data = self._p[label1]
-        except KeyError:
-            if self._reference_surface is None:
-                raise ValueError(
-                    "No known polygon with provided label1 = {}".format(label1)
+        old = self.polygon(label)
+
+        if len(old.vertices()) != len(polygon.vertices()):
+            from flatsurf.geometry.categories.polygons import Polygons
+
+            article, singular, plural = Polygons._describe_polygon(len(old.vertices()))
+            raise ValueError(f"polygon must be {article} {singular}")
+
+        self._polygons[label] = polygon
+
+    def opposite_edge(self, label, edge=None):
+        r"""
+        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        INPUT:
+
+        - ``label`` -- one of the labels included in :meth:`~.MutablePolygonalSurface.labels`
+
+        - ``edge`` -- a non-negative integer to specify an edge (the edges
+          of a polygon are numbered starting from zero.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+
+            sage: S.glue((0, 0), (0, 1))
+            sage: S.glue((0, 2), (0, 2))
+
+            sage: S.opposite_edge(0, 0)
+            (0, 1)
+            sage: S.opposite_edge(0, 1)
+            (0, 0)
+            sage: S.opposite_edge(0, 2)
+            (0, 2)
+            sage: S.opposite_edge(0, 3)
+
+            sage: S.opposite_edge((0, 0))
+            doctest:warning
+            ...
+            UserWarning: calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead
+            (0, 1)
+
+        """
+        if edge is None:
+            import warnings
+
+            warnings.warn(
+                "calling opposite_edge() with a single argument has been deprecated and will be removed in a future version of sage-flatsurf; use opposite_edge(label, edge) instead"
+            )
+            label, edge = label
+        return self._gluings[label][edge]
+
+    def set_vertex_zero(self, label, v, in_place=False):
+        r"""
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero`
+        to make it possible to set the zero vertex in-place.
+        """
+        if not in_place:
+            return super().set_vertex_zero(label, v, in_place=in_place)
+
+        us = self
+        if not us.is_mutable():
+            raise ValueError(
+                "set_vertex_zero can only be done in_place for a mutable surface."
+            )
+        p = us.polygon(label)
+        n = len(p.vertices())
+        if not (0 <= v < n):
+            raise ValueError
+        glue = []
+
+        from flatsurf import Polygon
+
+        pp = Polygon(
+            edges=[p.edge((i + v) % n) for i in range(n)], base_ring=us.base_ring()
+        )
+
+        for i in range(n):
+            e = (v + i) % n
+            ll, ee = us.opposite_edge(label, e)
+            if ll == label:
+                ee = (ee + n - v) % n
+            glue.append((ll, ee))
+
+        us.remove_polygon(label)
+        us.add_polygon(pp, label=label)
+        for e, cross in enumerate(glue):
+            us.glue((label, e), cross)
+        return self
+
+    def relabel(self, relabeling_map, in_place=False):
+        r"""
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
+        to allow relabeling in-place.
+        """
+        if not in_place:
+            return super().relabel(relabeling_map=relabeling_map, in_place=in_place)
+
+        us = self
+        if not isinstance(relabeling_map, dict):
+            raise NotImplementedError(
+                "Currently relabeling is only implemented via a dictionary."
+            )
+        domain = set()
+        codomain = set()
+        data = {}
+        for l1, l2 in relabeling_map.items():
+            p = us.polygon(l1)
+            glue = []
+            for e in range(len(p.vertices())):
+                ll, ee = us.opposite_edge(l1, e)
+                try:
+                    lll = relabeling_map[ll]
+                except KeyError:
+                    lll = ll
+                glue.append((lll, ee))
+            data[l2] = (p, glue)
+            domain.add(l1)
+            codomain.add(l2)
+        if len(domain) != len(codomain):
+            raise ValueError(
+                "The relabeling_map must be injective. Received " + str(relabeling_map)
+            )
+        changed_labels = domain.intersection(codomain)
+        added_labels = codomain.difference(domain)
+        removed_labels = domain.difference(codomain)
+        # Pass to add_polygons
+        roots = list(us.roots())
+        relabel_errors = {}
+        for l2 in added_labels:
+            p, glue = data[l2]
+            l3 = us.add_polygon(p, label=l2)
+            if not l2 == l3:
+                # This means the label l2 could not be added for some reason.
+                # Perhaps the implementation does not support this type of label.
+                # Or perhaps there is already a polygon with this label.
+                relabel_errors[l2] = l3
+        # Pass to change polygons
+        for l2 in changed_labels:
+            p, glue = data[l2]
+            us.remove_polygon(l2)
+            us.add_polygon(p, label=l2)
+            us.replace_polygon(l2, p)
+        # Deal with the component roots
+        roots = [relabeling_map.get(label, label) for label in roots]
+        roots = [relabel_errors.get(label, label) for label in roots]
+        # Pass to remove polygons:
+        for l1 in removed_labels:
+            us.remove_polygon(l1)
+        # Pass to update the edge gluings
+        if len(relabel_errors) == 0:
+            # No problems. Update the gluings.
+            for l2 in codomain:
+                p, glue = data[l2]
+                for e, cross in enumerate(glue):
+                    us.glue((l2, e), cross)
+        else:
+            # Use the gluings provided by relabel_errors when necessary
+            for l2 in codomain:
+                p, glue = data[l2]
+                for e in range(len(p.vertices())):
+                    ll, ee = glue[e]
+                    try:
+                        # First try the error dictionary
+                        us.glue((l2, e), (relabel_errors[ll], ee))
+                    except KeyError:
+                        us.glue((l2, e), (ll, ee))
+        us.set_roots(roots)
+        return self, len(relabel_errors) == 0
+
+    def join_polygons(self, p1, e1, test=False, in_place=False):
+        r"""
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.join_polygons`
+        to allow joining in-place.
+        """
+        if test:
+            in_place = False
+
+        if not in_place:
+            return super().join_polygon(p1, e1, test=test, in_place=in_place)
+
+        poly1 = self.polygon(p1)
+        p2, e2 = self.opposite_edge(p1, e1)
+        poly2 = self.polygon(p2)
+        if p1 == p2:
+            raise ValueError("Can't glue polygon to itself.")
+        t = self.edge_transformation(p2, e2)
+        dt = t.derivative()
+        es = []
+        edge_map = {}  # Store the pairs for the old edges.
+        for i in range(e1):
+            edge_map[len(es)] = (p1, i)
+            es.append(poly1.edge(i))
+        ne = len(poly2.vertices())
+        for i in range(1, ne):
+            ee = (e2 + i) % ne
+            edge_map[len(es)] = (p2, ee)
+            es.append(dt * poly2.edge(ee))
+        for i in range(e1 + 1, len(poly1.vertices())):
+            edge_map[len(es)] = (p1, i)
+            es.append(poly1.edge(i))
+
+        from flatsurf import Polygon
+
+        new_polygon = Polygon(edges=es, base_ring=self.base_ring())
+
+        # Do the gluing.
+        ss = self
+        s = ss
+
+        inv_edge_map = {}
+        for key, value in edge_map.items():
+            inv_edge_map[value] = (p1, key)
+
+        glue_list = []
+        for i in range(len(es)):
+            p3, e3 = edge_map[i]
+            p4, e4 = self.opposite_edge(p3, e3)
+            if p4 == p1 or p4 == p2:
+                glue_list.append(inv_edge_map[(p4, e4)])
+            else:
+                glue_list.append((p4, e4))
+
+        if p2 in s.roots():
+            s.set_roots((p1 if label == p2 else label for label in s.roots()))
+
+        s.remove_polygon(p2)
+
+        s.remove_polygon(p1)
+        s.add_polygon(new_polygon, label=p1)
+        for e, cross in enumerate(glue_list):
+            s.glue((p1, e), cross)
+
+        return s
+
+    def subdivide_polygon(self, p, v1, v2, test=False, new_label=None):
+        r"""
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon`
+        to allow subdividing in-place.
+        """
+        if test:
+            return super().subdivide_polygon(
+                p=p, v1=v1, v2=v2, test=test, new_label=new_label
+            )
+
+        poly = self.polygon(p)
+        ne = len(poly.vertices())
+        if v1 < 0 or v2 < 0 or v1 >= ne or v2 >= ne:
+            raise ValueError("Provided vertices out of bounds.")
+        if abs(v1 - v2) <= 1 or abs(v1 - v2) >= ne - 1:
+            raise ValueError("Provided diagonal is not actually a diagonal.")
+
+        if v2 < v1:
+            v2 = v2 + ne
+
+        newedges1 = [poly.vertex(v2) - poly.vertex(v1)]
+        for i in range(v2, v1 + ne):
+            newedges1.append(poly.edge(i))
+
+        from flatsurf import Polygon
+
+        newpoly1 = Polygon(edges=newedges1, base_ring=self.base_ring())
+
+        newedges2 = [poly.vertex(v1) - poly.vertex(v2)]
+        for i in range(v1, v2):
+            newedges2.append(poly.edge(i))
+        newpoly2 = Polygon(edges=newedges2, base_ring=self.base_ring())
+
+        # Store the old gluings
+        old_gluings = {(p, i): self.opposite_edge(p, i) for i in range(ne)}
+
+        # Update the polygon with label p, add a new polygon.
+        self.remove_polygon(p)
+        self.add_polygon(newpoly1, label=p)
+        if new_label is None:
+            new_label = self.add_polygon(newpoly2)
+        else:
+            new_label = self.add_polygon(newpoly2, label=new_label)
+        # This gluing is the diagonal we used.
+        self.glue((p, 0), (new_label, 0))
+
+        # Setup conversion from old to new labels.
+        old_to_new_labels = {}
+        for i in range(v1, v2):
+            old_to_new_labels[(p, i % ne)] = (new_label, i - v1 + 1)
+        for i in range(v2, ne + v1):
+            old_to_new_labels[(p, i % ne)] = (p, i - v2 + 1)
+
+        for e in range(1, len(newpoly1.vertices())):
+            pair = old_gluings[(p, (v2 + e - 1) % ne)]
+            if pair in old_to_new_labels:
+                pair = old_to_new_labels[pair]
+            self.glue((p, e), (pair[0], pair[1]))
+
+        for e in range(1, len(newpoly2.vertices())):
+            pair = old_gluings[(p, (v1 + e - 1) % ne)]
+            if pair in old_to_new_labels:
+                pair = old_to_new_labels[pair]
+            self.glue((new_label, e), (pair[0], pair[1]))
+
+    def reposition_polygons(self, in_place=False, relabel=None):
+        r"""
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons`
+        to allow normalizing in-place.
+        """
+        if not in_place:
+            return super().reposition_polygons(in_place=in_place, relabel=relabel)
+
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from reposition_polygon; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
                 )
             else:
-                # Failure likely because reference_surface contains the polygon.
-                # import the data into this surface.
-                polygon = self._reference_surface.polygon(label1)
-                data = [
-                    polygon,
-                    [
-                        self._reference_surface.opposite_edge(label1, e)
-                        for e in range(polygon.num_edges())
-                    ],
-                ]
-                self._p[label1] = data
-        try:
-            data[1][edge1] = (label2, edge2)
-        except IndexError:
-            # break down error
-            if data is None:
-                raise ValueError("polygon with label1={} was removed".format(label1))
-            data1 = data[1]
-            try:
-                data1[edge1] = (label2, edge2)
-            except IndexError:
-                raise ValueError(
-                    "edge1={} is out of range in polygon with label1={}".format(
-                        edge1, label1
-                    )
-                )
-        try:
-            data = self._p[label2]
-        except KeyError:
-            if self._reference_surface is None:
-                raise ValueError("no polygon with label2={}".format(label2))
-            else:
-                # Failure likely because reference_surface contains the polygon.
-                # import the data into this surface.
-                polygon = self._reference_surface.polygon(label2)
-                data = [
-                    polygon,
-                    [
-                        self._reference_surface.opposite_edge(label2, e)
-                        for e in range(polygon.num_edges())
-                    ],
-                ]
-                self._p[label2] = data
-        try:
-            data[1][edge2] = (label1, edge1)
-        except IndexError:
-            # break down error
-            if data is None:
-                raise ValueError("polygon with label1={} was removed".format(label1))
-            data1 = data[1]
-            try:
-                data1[edge2] = (label1, edge1)
-            except IndexError:
-                raise ValueError(
-                    "edge {} is out of range in polygon with label2={}".format(
-                        edge2, label2
-                    )
+                import warnings
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to reposition_polygons()"
                 )
 
-    _change_edge_gluing = _set_edge_pairing
+        s = self
 
-    def _add_polygon(self, new_polygon, gluing_list=None, label=None):
+        labels = list(s.labels())
+        from flatsurf.geometry.similarity import SimilarityGroup
+
+        S = SimilarityGroup(self.base_ring())
+        identity = S.one()
+        it = iter(labels)
+        label = next(it)
+        changes = {label: identity}
+        for label in it:
+            polygon = self.polygon(label)
+            adjacencies = {
+                edge: self.opposite_edge(label, edge)[0]
+                for edge in range(len(polygon.vertices()))
+            }
+            edge = min(
+                adjacencies,
+                # pylint: disable-next=cell-var-from-loop
+                key=lambda edge: labels.index(adjacencies[edge]),
+            )
+            label2, edge2 = s.opposite_edge(label, edge)
+            changes[label] = changes[label2] * s.edge_transformation(label, edge)
+        it = iter(labels)
+        # Skip the base label:
+        label = next(it)
+        for label in it:
+            p = s.polygon(label)
+            p = changes[label].derivative() * p
+            s.replace_polygon(label, p)
+        return s
+
+    def triangulate(self, in_place=False, label=None, relabel=None):
         r"""
-        Internal method used by add_polygon(). Should not be called directly.
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`
+        to allow triangulating in-place.
         """
-        data = [new_polygon, [None for i in range(new_polygon.num_edges())]]
+        if relabel is not None:
+            import warnings
+
+            warnings.warn(
+                "the relabel keyword argument of triangulate() is ignored, it has been deprecated and will be removed in a future version of sage-flatsurf"
+            )
+
+        if not in_place:
+            return super().triangulate(in_place=in_place, label=label)
+
         if label is None:
-            new_label = ExtraLabel()
-        else:
-            try:
-                old_data = self._p[label]
-                if old_data is None:
-                    # already removed this polygon. That's good, we can add.
-                    new_label = label
-                else:
-                    raise ValueError(
-                        "label={} already used by another polygon".format(label)
-                    )
-            except KeyError:
-                # This seems inconvenient to enforce:
-                #
-                # if not self._reference_surface is None:
-                #    # Can not be sure we are not overwriting a polygon in the reference surface.
-                #    raise ValueError("Can not assign this label to a Surface_dict containing a reference surface,"+\
-                #        "which may already contain this label.")
-                new_label = label
-        self._p[new_label] = data
-        if gluing_list is not None:
-            self.change_polygon_gluings(new_label, gluing_list)
-        return new_label
+            # We triangulate the whole surface
+            # Store the current labels.
+            labels = [label for label in self.labels()]
+            s = self
+            # Subdivide each polygon in turn.
+            for label in labels:
+                s = s.triangulate(in_place=True, label=label)
+            return s
 
-    def num_polygons(self):
+        poly = self.polygon(label)
+        n = len(poly.vertices())
+        if n > 3:
+            s = self
+        else:
+            # This polygon is already a triangle.
+            return self
+        from flatsurf.geometry.euclidean import ccw
+
+        for i in range(n - 3):
+            poly = s.polygon(label)
+            n = len(poly.vertices())
+            for i in range(n):
+                e1 = poly.edge(i)
+                e2 = poly.edge((i + 1) % n)
+                if ccw(e1, e2) != 0:
+                    # This is in case the polygon is a triangle with subdivided edge.
+                    e3 = poly.edge((i + 2) % n)
+                    if ccw(e1 + e2, e3) != 0:
+                        s.subdivide_polygon(label, i, (i + 2) % n)
+                        break
+        return s
+
+    def delaunay_single_flip(self):
         r"""
-        Return the number of polygons making up the surface in constant time.
+        Perform a single in place flip of a triangulated mutable surface
+        in-place.
         """
-        if self.is_finite():
-            if self._reference_surface is None:
-                return len(self._p)
+        lc = self._label_comparator()
+        for (l1, e1), (l2, e2) in self.gluings():
+            if (
+                lc.lt(l1, l2) or (l1 == l2 and e1 <= e2)
+            ) and self._delaunay_edge_needs_flip(l1, e1):
+                self.triangle_flip(l1, e1, in_place=True)
+                return True
+        return False
+
+    def delaunay_triangulation(
+        self,
+        triangulated=False,
+        in_place=False,
+        direction=None,
+        relabel=None,
+    ):
+        r"""
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation`
+        to allow triangulating in-place.
+        """
+        if not in_place:
+            return super().delaunay_triangulation(
+                triangulated=triangulated,
+                in_place=in_place,
+                direction=direction,
+                relabel=relabel,
+            )
+
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from delaunay_triangulation(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                )
             else:
-                # Unfortunately, I don't see a good way to compute this.
-                return Surface.num_polygons(self)
+                import warnings
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
+                )
+
+        if triangulated:
+            s = self
         else:
-            from sage.rings.infinity import Infinity
+            s = self
+            self.triangulate(in_place=True)
 
-            return Infinity
+        if direction is None:
+            direction = (self.base_ring() ** 2)((0, 1))
 
-    def label_iterator(self):
+        if direction.is_zero():
+            raise ValueError
+
+        from collections import deque
+
+        unchecked_labels = deque(s.labels())
+        checked_labels = set()
+        while unchecked_labels:
+            label = unchecked_labels.popleft()
+            flipped = False
+            for edge in range(3):
+                if s._delaunay_edge_needs_flip(label, edge):
+                    # Record the current opposite edge:
+                    label2, edge2 = s.opposite_edge(label, edge)
+                    # Perform the flip.
+                    s.triangle_flip(label, edge, in_place=True, direction=direction)
+                    # Move the opposite polygon to the list of labels we need to check.
+                    if label2 != label:
+                        try:
+                            checked_labels.remove(label2)
+                            unchecked_labels.append(label2)
+                        except KeyError:
+                            # Occurs if label2 is not in checked_labels
+                            pass
+                    flipped = True
+                    break
+            if flipped:
+                unchecked_labels.append(label)
+            else:
+                checked_labels.add(label)
+        return s
+
+    def delaunay_decomposition(
+        self,
+        triangulated=False,
+        delaunay_triangulated=False,
+        in_place=False,
+        direction=None,
+        relabel=None,
+    ):
         r"""
-        Iterator over all polygon labels.
+        Overrides
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition`
+        to allow normalizing in-place.
         """
-        if self._reference_surface is None:
-            for i in self._p:
-                yield i
-        else:
-            for i in Surface.label_iterator(self):
-                yield i
+        if not in_place:
+            return super().delaunay_decomposition(
+                triangulated=triangulated,
+                delaunay_triangulated=delaunay_triangulated,
+                in_place=in_place,
+                direction=direction,
+                relabel=relabel,
+            )
 
-    def _remove_polygon(self, label):
+        if relabel is not None:
+            if relabel:
+                raise NotImplementedError(
+                    "the relabel keyword has been removed from delaunay_decomposition(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                )
+            else:
+                import warnings
+
+                warnings.warn(
+                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
+                )
+
+        s = self
+        if not delaunay_triangulated:
+            s = s.delaunay_triangulation(
+                triangulated=triangulated,
+                in_place=True,
+                direction=direction,
+                relabel=relabel,
+            )
+
+        while True:
+            for (l1, e1), (l2, e2) in s.gluings():
+                if s._delaunay_edge_needs_join(l1, e1):
+                    s.join_polygons(l1, e1, in_place=True)
+                    break
+            else:
+                return s
+
+    def cmp(self, s2, limit=None):
         r"""
-        Internal method used by remove_polygon(). Should not be called directly.
+        Compare two surfaces. This is an ordering returning -1, 0, or 1.
+
+        The surfaces will be considered equal if and only if there is a translation automorphism
+        respecting the polygons and the root labels.
+
+        If the two surfaces are infinite, we just examine the first limit polygons.
         """
-        if self._reference_surface is None:
-            try:
-                data = self._p[label]
-            except KeyError:
-                raise ValueError("Label " + str(label) + " is not in the surface.")
-            del self._p[label]
+        if self.is_finite_type():
+            if s2.is_finite_type():
+                if limit is not None:
+                    raise ValueError("limit only enabled for finite surfaces")
+
+                sign = len(self.polygons()) - len(s2.polygons())
+                if sign > 0:
+                    return 1
+                if sign < 0:
+                    return -1
+
+                lw1 = self.labels()
+                labels1 = list(lw1)
+
+                lw2 = s2.labels()
+                labels2 = list(lw2)
+
+                for l1, l2 in zip(lw1, lw2):
+                    ret = self.polygon(l1).cmp(self.polygon(l2))
+                    if ret != 0:
+                        return ret
+
+                    for e in range(len(self.polygon(l1).vertices())):
+                        ll1, e1 = self.opposite_edge(l1, e)
+                        ll2, e2 = s2.opposite_edge(l2, e)
+                        num1 = labels1.index(ll1)
+                        num2 = labels2.index(ll2)
+
+                        ret = (num1 > num2) - (num1 < num2)
+                        if ret:
+                            return ret
+                        ret = (e1 > e2) - (e1 < e2)
+                        if ret:
+                            return ret
+                return 0
+            else:
+                # s1 is finite but s2 is infinite.
+                return -1
         else:
-            try:
-                data = self._p[label]
-                # Success.
-                if data is None:
-                    raise ValueError(
-                        "Label " + str(label) + " was already removed from the surface."
-                    )
-                self._p[label] = None
-            except KeyError:
-                # Assume on faith we are removing a polygon in the base_surface.
-                self._p[label] = None
+            if s2.is_finite_type():
+                # s1 is infinite but s2 is finite.
+                return 1
+            else:
+                if limit is None:
+                    raise NotImplementedError
+
+                # both surfaces are infinite.
+                from itertools import islice
+
+                lw1 = self.labels()
+                labels1 = list(islice(lw1, limit))
+
+                lw2 = s2.labels()
+                labels2 = list(islice(lw2, limit))
+
+                count = 0
+                for l1, l2 in zip(lw1, lw2):
+                    ret = self.polygon(l1).cmp(s2.polygon(l2))
+                    if ret != 0:
+                        return ret
+
+                    for e in range(len(self.polygon(l1).vertices())):
+                        ll1, ee1 = self.opposite_edge(l1, e)
+                        ll2, ee2 = s2.opposite_edge(l2, e)
+                        num1 = labels1.index(ll1)
+                        num2 = labels2.index(ll2)
+                        ret = (num1 > num2) - (num1 < num2)
+                        if ret:
+                            return ret
+                        ret = (ee1 > ee2) - (ee1 < ee2)
+                        if ret:
+                            return ret
+                    if count >= limit:
+                        break
+                    count += 1
+                return 0
 
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
 
+        See
+        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
+        for details on this notion of equality.
+
         EXAMPLES::
 
-            sage: from flatsurf import Surface_dict, polygons
-            sage: P=polygons.regular_ngon(5)
-            sage: S = Surface_dict(base_ring=P.base_ring())
-            sage: T = Surface_dict(base_ring=P.base_ring())
+            sage: from flatsurf import MutableOrientedSimilaritySurface
 
-            sage: S == T
-            True
-
-            sage: S.add_polygon(P, label=3)
-            3
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: T = MutableOrientedSimilaritySurface(AA)
 
             sage: S == T
             False
 
+            sage: S == S
+            True
+
         """
-        if not isinstance(other, Surface_dict):
+        if not isinstance(other, MutableOrientedSimilaritySurface):
             return False
 
-        if self._reference_surface is not None:
-            equal = self._eq_reference_surface(other)
-            if equal is True:
-                return True
-            if equal is False:
-                return False
-
-        return super().__eq__(other)
-
-    def _eq_reference_surface(self, other):
-        r"""
-        Return whether this surface is indistinguishable from ``other`` by
-        comparing their reference surfaces.
-
-        Returns ``None``, when no conclusion could be reached.
-
-        This is a helper method for :meth:`__eq__`.
-        """
-        if self._reference_surface != other._reference_surface:
-            return None
-
-        for label, polygon in self._p.items():
-            if polygon is None:
-                if label not in other._p or other._p[label] is not None:
-                    return None
-                continue
-            try:
-                if self.polygon(label) != other.polygon(label):
-                    return False
-            except ValueError:
-                return False
-
-        for label, polygon in other._p.items():
-            if polygon is None:
-                if label not in self._p or self._p[label] is not None:
-                    return None
-                continue
-            try:
-                if self.polygon(label) != other.polygon(label):
-                    return False
-            except ValueError:
-                return False
-
-        if self.base_ring() != other.base_ring():
+        if not super().__eq__(other):
             return False
-        if self.is_mutable() != other.is_mutable():
-            return False
-        if self.base_label() != other.base_label():
+
+        if self._gluings != other._gluings:
             return False
 
         return True
 
+    def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
 
-class BaseRingChangedSurface(Surface):
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: T = MutableOrientedSimilaritySurface(QQ)
+
+            sage: hash(S) == hash(T)
+            Traceback (most recent call last):
+            ...
+            TypeError: cannot hash a mutable surface
+
+            sage: S.set_immutable()
+            sage: T.set_immutable()
+            sage: hash(S) == hash(T)
+            True
+
+        """
+        if self._mutable:
+            raise TypeError("cannot hash a mutable surface")
+
+        return hash((super().__hash__(), tuple(self.gluings())))
+
+
+class BaseRingChangedSurface(OrientedSimilaritySurface):
     r"""
-    A surface with a different base_ring.
+    Changes the ring over which a surface is defined.
+
+    EXAMPLES:
+
+    This class is used in the implementation of
+    :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring`::
+
+        sage: from flatsurf import translation_surfaces
+        sage: T = translation_surfaces.square_torus()
+        sage: S = T.change_ring(AA)
+
+        sage: from flatsurf.geometry.surface import BaseRingChangedSurface
+        sage: isinstance(S, BaseRingChangedSurface)
+        True
+
+        sage: TestSuite(S).run()
+
     """
 
-    def __init__(self, surface, ring):
-        self._s = surface
-        self._base_ring = ring
-        from flatsurf.geometry.polygon import ConvexPolygons
+    def __init__(self, surface, ring, category=None):
+        if surface.is_mutable():
+            raise NotImplementedError("surface must be immutable")
 
-        self._P = ConvexPolygons(self._base_ring)
-        Surface.__init__(
-            self, ring, self._s.base_label(), mutable=False, finite=self._s.is_finite()
-        )
+        self._reference = surface
+        super().__init__(ring, category=category or surface.category())
 
-    def polygon(self, lab):
-        return self._P(self._s.polygon(lab))
+    def is_mutable(self):
+        r"""
+        Return whether this surface can be modified, i.e., return ``False``.
 
-    def opposite_edge(self, p, e):
-        return self._s.opposite_edge(p, e)
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: S.is_mutable()
+            False
+
+        """
+        return False
+
+    def labels(self):
+        r"""
+        Return the labels of the polygons of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+            sage: S.labels()
+            (0,)
+
+        """
+        return self._reference.labels()
+
+    def roots(self):
+        r"""
+        Return a label for each connected component on this surface.
+
+        This implements :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: S.roots()
+            (0,)
+
+        """
+        return self._reference.roots()
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: p = S.polygon(0)
+            sage: p.base_ring()
+            Algebraic Real Field
+
+        """
+        return self._reference.polygon(label).change_ring(self.base_ring())
+
+    def opposite_edge(self, label, edge):
+        r"""
+        Return the edge that ``edge`` of ``label`` is glued to or ``None`` if this edge is unglued.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: S = T.change_ring(AA)
+
+            sage: S.opposite_edge(0, 0)
+            (0, 2)
+
+        """
+        return self._reference.opposite_edge(label, edge)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this surface is indistinguishable from ``other``.
+
+        See
+        :meth:`~.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface`
+        for details on this notion of equality.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: T.change_ring(AA) == T.change_ring(AA)
+            True
+
+        """
+        if not isinstance(other, BaseRingChangedSurface):
+            return False
+
+        return self._reference == other._reference and self.base() == other.base()
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: T = translation_surfaces.square_torus()
+            sage: hash(T.change_ring(AA)) == hash(T.change_ring(AA))
+            True
+
+        """
+        return hash((self._reference, self.base()))
 
 
-class LabelWalker:
+class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
     r"""
-    Take a canonical walk around the surface and find the labels of polygons.
+    Connected components of a :class:`MutablePolygonalSurface`.
 
-    We start at the base_label().
-    Then the labels are visited in order involving the combinatorial distance from the base_label(),
-    where combinatorial distance measures the minimal number of edges which need to be crossed to reach the
-    polygon with a givel label. Ties are broken using lexigraphical order on the numbers associated to edges crossed
-    (labels are not used in this lexigraphical ordering).
+    The components are represented as a mapping that maps the root labels to
+    the labels of the corresponding component.
+
+    This is a helper method for :meth:`MutablePolygonalSurface.components` and
+    :meth:`MutablePolygonalSurface.roots`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+
+        sage: from flatsurf import polygons
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S.add_polygon(polygons.square())
+        1
+
+        sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+        sage: components = RootedComponents_MutablePolygonalSurface(S)
+
     """
-
-    class LabelWalkerIterator:
-        def __init__(self, label_walker):
-            self._lw = label_walker
-            self._i = 0
-
-        def __next__(self):
-            if self._i < len(self._lw):
-                label = self._lw.number_to_label(self._i)
-                self._i = self._i + 1
-                return label
-            if self._i == len(self._lw):
-                label = self._lw.find_a_new_label()
-                if label is None:
-                    raise StopIteration()
-                self._i = self._i + 1
-                return label
-            raise StopIteration()
-
-        next = __next__  # for Python 2
-
-        def __iter__(self):
-            return self
 
     def __init__(self, surface):
-        self._s = surface
-        self._labels = [self._s.base_label()]
-        self._label_dict = {self._s.base_label(): 0}
+        self._surface = surface
 
-        # This will stores an edge to move through to get to a polygon closer to the base_polygon
-        self._label_edge_back = {self._s.base_label(): None}
-
-        self._walk = deque()
-        self._walk.append((self._s.base_label(), 0))
-
-    def label_dictionary(self):
+    def __getitem__(self, root):
         r"""
-        Return a dictionary mapping labels to integers which gives a canonical order on labels.
-        """
-        return self._label_dict
+        Return the labels of the connected component rooted at the label
+        ``root``.
 
-    def edge_back(self, label, limit=None):
-        r"""
-        Return the "canonical" edge to walk through to get closer to the base_label,
-        or None if label already is the base_label.
+        EXAMPLES::
 
-        Remark: This could be slow on infinite surfaces!
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+            sage: components = RootedComponents_MutablePolygonalSurface(S)
+            sage: components[0]
+            (0, 1)
+
         """
-        try:
-            return self._label_edge_back[label]
-        except KeyError:
-            if limit is None:
-                if not self._s.is_finite():
-                    limit = 1000
-                else:
-                    limit = self._s.num_polygons()
-            for i in range(limit):
-                new_label = self.find_a_new_label()
-                if label == new_label:
-                    return self._label_edge_back[label]
-        # Maybe the surface is not connected?
-        raise KeyError(
-            "Unable to find label %s. Are you sure the surface is connected?" % (label)
-        )
+        return self._surface.component(root)
 
     def __iter__(self):
-        return LabelWalker.LabelWalkerIterator(self)
+        r"""
+        Iterate over the keys of this mapping, i.e., the root labels of the
+        connected components.
 
-    def polygon_iterator(self):
-        for label in self:
-            yield self._s.polygon(label)
+        EXAMPLES::
 
-    def label_polygon_iterator(self):
-        for label in self:
-            yield label, self._s.polygon(label)
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
 
-    def edge_iterator(self):
-        for label, polygon in self.label_polygon_iterator():
-            for e in range(polygon.num_edges()):
-                yield label, e
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+            sage: components = RootedComponents_MutablePolygonalSurface(S)
+            sage: list(components)
+            [0]
+
+        """
+        # Shortcut enumeration if this is known to be a connected surface.
+        connected = "Connected" in self._surface.category().axioms()
+
+        for root in self._surface._roots:
+            yield root
+            if connected:
+                return
+
+        labels = set(self._surface._polygons)
+        for root in self._surface._roots:
+            for label in self._surface.component(root):
+                labels.remove(label)
+
+        while labels:
+            root = LabeledView(surface=self._surface, view=labels, finite=True).min()
+
+            yield root
+            if connected:
+                return
+            for label in self._surface.component(root):
+                labels.remove(label)
 
     def __len__(self):
         r"""
-        Return the number of labels found.
+        Return the number of connected components of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+
+            sage: from flatsurf import polygons
+            sage: S.add_polygon(polygons.square())
+            0
+            sage: S.add_polygon(polygons.square())
+            1
+            sage: S.glue((0, 0), (1, 0))
+
+            sage: from flatsurf.geometry.surface import RootedComponents_MutablePolygonalSurface
+            sage: components = RootedComponents_MutablePolygonalSurface(S)
+            sage: len(components)
+            1
+
         """
-        return len(self._labels)
-
-    def find_a_new_label(self):
-        r"""
-        Finds a new label, stores it, and returns it. Returns None if we have already found all labels.
-        """
-        while len(self._walk) > 0:
-            label, e = self._walk.popleft()
-            opposite_label, opposite_edge = self._s.opposite_edge(label, e)
-            e = e + 1
-            if e < self._s.polygon(label).num_edges():
-                self._walk.appendleft((label, e))
-            if opposite_label not in self._label_dict:
-                n = len(self._labels)
-                self._labels.append(opposite_label)
-                self._label_dict[opposite_label] = n
-                self._walk.append((opposite_label, 0))
-                self._label_edge_back[opposite_label] = opposite_edge
-                return opposite_label
-        return None
-
-    def find_new_labels(self, n):
-        r"""
-        Look for n new labels. Return the list of labels found.
-        """
-        new_labels = []
-        for i in range(n):
-            label = self.find_a_new_label()
-            if label is None:
-                return new_labels
-            else:
-                new_labels.append(label)
-        return new_labels
-
-    def find_all_labels(self):
-        if not self._s.is_finite():
-            raise NotImplementedError
-        label = self.find_a_new_label()
-        while label is not None:
-            label = self.find_a_new_label()
-
-    def number_to_label(self, n):
-        r"""
-        Return the n-th label where n is less than the length.
-        """
-        return self._labels[n]
-
-    def label_to_number(self, label, search=False, limit=100):
-        r"""
-        Return the number associated to the provided label.
-
-        Returns an error if the label has not already been found by the walker
-        unless search=True in which case we look for the label. We look by
-        continuing to look for the label by walking over the surface visiting
-        the next limit many polygons.
-        """
-        if not search:
-            return self._label_dict[label]
-        else:
-            if label in self._label_dict:
-                return self._label_dict[label]
-            for i in range(limit):
-                new_label = self.find_a_new_label()
-                if label == new_label:
-                    return self._label_dict[label]
-            raise ValueError(
-                "Failed to find label even after searching. limit=" + str(limit)
-            )
-
-    def surface(self):
-        return self._s
+        components = 0
+        for root in self:
+            components += 1
+        return components
 
 
-class ExtraLabel:
+class LabeledCollection:
     r"""
-    Used to spit out new labels.
+    Abstract base class for collection of labels as returned by ``labels()``
+    methods of surfaces.
+
+    This also serves as a base clas for things such as ``polygons()`` that are
+    tied to labels.
+
+    INPUT:
+
+    - ``surface`` -- a polygonal surface, the labels are taken from that
+      surface; subclasses might change this to only represent a subset of the
+      labels of this surface
+
+    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
+      a finite set; if ``None``, it is not known whether the set is finite
+      (some operations might not be supported in that case or not terminate if
+      the set is actually infinite.)
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: labels = S.labels()
+
+        sage: from flatsurf.geometry.surface import LabeledCollection
+        sage: isinstance(labels, LabeledCollection)
+        True
+
     """
-    _next = int(0)
 
-    def __init__(self, value=None):
-        r"""
-        Construct a new label.
-        """
-        if value is None:
-            self._label = int(ExtraLabel._next)
-            ExtraLabel._next = ExtraLabel._next + 1
-        else:
-            self._label = value
+    def __init__(self, surface, finite=None):
+        if finite is None and surface.is_finite_type():
+            finite = True
 
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self._label == other._label
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __hash__(self):
-        return hash(23 * self._label)
-
-    def __str__(self):
-        return "E" + str(self._label)
+        self._surface = surface
+        self._finite = finite
 
     def __repr__(self):
-        return "ExtraLabel(" + str(self._label) + ")"
+        r"""
+        Return a printable representation of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.labels()
+            (0,)
+
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S.labels()
+            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+        """
+        from itertools import islice
+
+        items = list(islice(self, 17))
+
+        if self._finite is True or len(items) < 17:
+            return repr(tuple(self))
+
+        return f"({', '.join(str(x) for x in islice(self, 16))}, …)"
+
+    def __len__(self):
+        r"""
+        Return the size of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: len(S.labels())
+            1
+
+        Python does not allow ``__len__`` to return anything but an integer, so
+        we cannot return infinity::
+
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: len(S.labels())
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: len() of an infinite set
+
+        """
+        if self._finite is False:
+            raise TypeError("infinite set has no integer length")
+
+        length = 0
+        for x in self:  # pylint: disable=not-an-iterable
+            length += 1
+
+        return length
+
+    def __contains__(self, x):
+        r"""
+        Return whether ``x`` is contained in this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: labels = S.labels()
+            sage: 0 in labels
+            True
+            sage: 1 in labels
+            False
+
+        """
+        for item in self:  # pylint: disable=not-an-iterable
+            if x == item:
+                return True
+
+        return False
 
 
-class LabelComparator(object):
+class LabeledView(LabeledCollection):
     r"""
-    Implements a total ordering on labels, which may be of varying types.
+    A set of labels (or something resembling labels such as ``polygons()``)
+    backed by another collection ``view``.
 
-    We use hashes, so if hash(label1) < hash(label2) we declare label1 < label2.
+    INPUT:
 
-    For objects with the same hash, we store an arbitrary ordering.
+    - ``surface`` -- a polygonal surface, the labels in ``view`` are labels of
+      that surface
+
+    - ``view`` -- a collection that all queries are going to be redirected to.
+      Note that ``labels()`` guarantees that iteration over labels happens in a
+      breadth-first-search so iteration over ``view`` must follow that same
+      order. However, subclasses can remove this requirement by overriding
+      :meth:`__iter__`.
+
+    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
+      a finite set; if ``None``, it is not known whether the set is finite
+      (some operations might not be supported in that case or not terminate if
+      the set is actually infinite.)
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.t_fractal()
+        sage: labels = S.labels()
+
+        sage: from flatsurf.geometry.surface import LabeledView
+        sage: isinstance(labels, LabeledView)
+        True
+
     """
 
-    def __init__(self):
-        r"""
-        Initialize a label comparator.
-        """
-        self._hash_collision_resolver = {}
+    def __init__(self, surface, view, finite=None):
+        super().__init__(surface, finite=finite)
+        self._view = view
 
-    def _get_resolver_index(self, label_hash, label):
+    def __iter__(self):
+        return iter(self._view)
+
+    def __contains__(self, x):
+        return x in self._view
+
+    def __len__(self):
+        return len(self._view)
+
+    def min(self):
+        r"""
+        Return a minimal item in this set.
+
+        If the items can be compared, this is just the actual ``min`` of the
+        items.
+
+        Otherwise, we take the one with minimal ``repr``.
+
+        .. NOTE::
+
+            If the items cannot be compared, and there are clashes in the
+            ``repr``, this method will fail.
+
+            Also, if comparison of items is not consistent, then this can
+            produce somewhat random output.
+
+            Finally, note with this approach the min of a set is not the always
+            the min of the mins of a each partition of that set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.t_fractal()
+            sage: S.labels().min()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot determine minimum of an infinite set
+
+        ::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1,2)
+            sage: C.labels().min()
+            0
+
+        ::
+
+            sage: labels = list(C.labels())[:3]
+            sage: from flatsurf.geometry.surface import LabeledView
+            sage: LabeledView(C, labels).min()
+            0
+
+        """
+        if self._finite is False:
+            raise NotImplementedError("cannot determine minimum of an infinite set")
+
         try:
-            lst = self._hash_collision_resolver[label_hash]
-        except KeyError:
-            lst = []
-            self._hash_collision_resolver[label_hash] = lst
-        for i, stored_label in enumerate(lst):
-            if label == stored_label:
-                return i
-        # At this point we know label is not in lst
-        lst.append(label)
-        return len(lst) - 1
+            return min(self)
+        except TypeError:
+            reprs = {repr(item): item for item in self}
+            if len(reprs) != len(self):
+                raise TypeError(
+                    "cannot determine minimum of tset without ordering and with non-unique repr()"
+                )
+            return reprs[min(reprs)]
 
-    def lt(self, l1, l2):
+
+class ComponentLabels(LabeledCollection):
+    r"""
+    The labels of a connected component.
+
+    INPUT:
+
+    - ``surface`` -- a polygonal surface
+
+    - ``root`` -- a label of the connected component from which enumeration of
+      the component starts.
+
+    - ``finite`` -- a boolean or ``None`` (default: ``None``); whether this is
+      a finite component; if ``None``, it is not known whether the component is
+      finite (some operations might not be supported in that case or not
+      terminate if the component is actually infinite.)
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.t_fractal()
+        sage: component = S.component(0)
+
+        sage: from flatsurf.geometry.surface import ComponentLabels
+        sage: isinstance(component, ComponentLabels)
+        True
+
+    """
+
+    def __init__(self, surface, root, finite=None):
+        super().__init__(surface, finite=finite)
+        self._root = root
+
+    def __iter__(self):
         r"""
-        Return the truth value of l1 < l2.
+        Return an iterator of this component that enumerates labels starting
+        from the root label in a breadth-first-search.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: component = C.component(0)
+            sage: list(component)
+            [0, 1, 3, 2]
+
         """
-        h1 = hash(l1)
-        h2 = hash(l2)
-        if h1 < h2:
-            return True
-        if h1 > h2:
+        from collections import deque
+
+        seen = set()
+        pending = deque([self._root])
+
+        while pending:
+            label = pending.popleft()
+            if label in seen:
+                continue
+
+            seen.add(label)
+
+            yield label
+            for e in range(len(self._surface.polygon(label).vertices())):
+                cross = self._surface.opposite_edge(label, e)
+                if cross is not None:
+                    pending.append(cross[0])
+
+
+class Labels(LabeledCollection, collections.abc.Set):
+    r"""
+    The labels of a surface.
+
+    .. NOTE::
+
+        This is a generic implementation that represents the set of labels of a
+        surface in a breadth-first iteration starting from the root labels of the
+        connected components.
+
+        This implementation makes no assumption on the surface and can be very
+        slow to answer, e.g., containment or compute the number of labels in
+        the surface (because it needs to iterate over the entire surface.)
+
+        When possible, a faster implementation should be used such as
+        :class:`LabelsFromView`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import polygons, similarity_surfaces
+        sage: T = polygons.triangle(1, 2, 5)
+        sage: S = similarity_surfaces.billiard(T)
+        sage: S = S.minimal_cover("translation")
+
+        sage: labels = S.labels()
+        sage: labels
+        ((0, 1, 0), (1, 1, 0), (1, 0, -1), (1, 1/2*c0, 1/2*c0), (0, 1/2*c0, -1/2*c0), (0, 0, 1), (0, -1/2*c0, -1/2*c0), (0, 0, -1), (0, -1/2*c0, 1/2*c0), (0, 1/2*c0, 1/2*c0),
+         (1, 1/2*c0, -1/2*c0), (1, -1/2*c0, -1/2*c0), (1, 0, 1), (1, -1/2*c0, 1/2*c0), (1, -1, 0), (0, -1, 0))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.surface import Labels
+        sage: type(labels) == Labels
+        True
+
+    """
+
+    def __iter__(self):
+        for component in self._surface.components():
+            for label in component:
+                yield label
+
+
+class LabelsFromView(Labels, LabeledView):
+    r"""
+    The labels of a surface backed by another set that can quickly compute the
+    length of the labels and decide containment in the set.
+
+    .. NOTE::
+
+        Iteration of the view collection does not have to be in breadth-first
+        search order in the surface since this class is picking up the generic
+        :meth:`Labels.__iter__`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: labels = C.labels()
+
+        sage: from flatsurf.geometry.surface import LabelsFromView
+        sage: type(labels) == LabelsFromView
+        True
+
+    """
+
+
+class Polygons(LabeledCollection, collections.abc.Collection):
+    r"""
+    The collection of polygons of a surface.
+
+    The polygons are returned in the same order as labels of the surface are
+    returned by :class:`.Labels`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: polygons = C.polygons()
+
+        sage: from flatsurf.geometry.surface import Polygons
+        sage: isinstance(polygons, Polygons)
+        True
+
+    """
+
+    def __iter__(self):
+        r"""
+        Iterate over the polygons in the same order as ``labels()`` does.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: labels = C.labels()
+            sage: polygons = C.polygons()
+
+            sage: for entry in zip(labels, polygons):
+            ....:     print(entry)
+            (0, Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            (1, Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)]))
+            (3, Polygon(vertices=[(3, 0), (7/2, -1/2), (11/2, -1/2), (6, 0), (6, 1), (11/2, 3/2), (7/2, 3/2), (3, 1)]))
+            (2, Polygon(vertices=[(2, 0), (3, 0), (3, 1), (2, 1)]))
+
+        """
+        for label in self._surface.labels():
+            yield self._surface.polygon(label)
+
+    def __len__(self):
+        r"""
+        Return the number of polygons in this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: polygons = C.polygons()
+            sage: len(polygons)
+            4
+
+        """
+        return len(self._surface.labels())
+
+
+class Polygons_MutableOrientedSimilaritySurface(Polygons):
+    r"""
+    The collection of polygons of a :class:`MutableOrientedSimilaritySurface`.
+
+    This is a faster version of :class:`Polygons`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: polygons = C.polygons()
+
+        sage: from flatsurf.geometry.surface import Polygons_MutableOrientedSimilaritySurface
+        sage: isinstance(polygons, Polygons_MutableOrientedSimilaritySurface)
+        True
+
+    """
+
+    def __init__(self, surface):
+        # This hack makes __len__ 20% faster (it saves one attribute lookup.)
+        self._polygons = surface._polygons
+        super().__init__(surface)
+
+    def __len__(self):
+        return len(self._polygons)
+
+
+class Edges(LabeledCollection, collections.abc.Set):
+    r"""
+    The set of edges of a surface.
+
+    The set of edges contains of pairs (label, index) with the labels of the
+    polygons and the actual edges indexed from 0 in the second component.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: C = translation_surfaces.cathedral(1, 2)
+        sage: edges = C.edges()
+        sage: edges
+        ((0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (2, 0), (2, 1), (2, 2), (2, 3))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.surface import Edges
+        sage: isinstance(edges, Edges)
+        True
+
+    """
+
+    def __iter__(self):
+        for label, polygon in zip(self._surface.labels(), self._surface.polygons()):
+            for edge in range(len(polygon.vertices())):
+                yield (label, edge)
+
+    def __contains__(self, x):
+        label, edge = x
+        if label not in self._surface.labels():
             return False
-        # Otherwise the hashes are equal.
-        if l1 == l2:
+
+        polygon = self._surface.polygon(label)
+        return 0 <= len(polygon.vertices()) < edge
+
+
+class Gluings(LabeledCollection, collections.abc.Set):
+    r"""
+    The set of gluings of the surface.
+
+    Each gluing consists of two pairs (label, index) that describe the edges
+    being glued.
+
+    Note that each gluing (that is not a self-gluing) is reported twice.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: gluings = S.gluings()
+        sage: gluings
+        (((0, 0), (0, 2)), ((0, 1), (0, 3)), ((0, 2), (0, 0)), ((0, 3), (0, 1)))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.surface import Gluings
+        sage: isinstance(gluings, Gluings)
+        True
+
+    """
+
+    def __iter__(self):
+        for label, edge in self._surface.edges():
+            cross = self._surface.opposite_edge(label, edge)
+            if cross is None:
+                continue
+            yield (label, edge), cross
+
+    def __contains__(self, x):
+        x, y = x
+
+        if x not in self._surface.edges():
             return False
-        return self._get_resolver_index(h1, l1) < self._get_resolver_index(h1, l2)
 
-    def le(self, l1, l2):
-        r"""
-        Return the truth value of l1 <= l2.
-        """
-        return self.lt(l1, l2) or l1 == l2
+        cross = self._surface.opposite_edge(*x)
+        if cross is None:
+            return False
 
-    def gt(self, l1, l2):
-        r"""
-        Return the truth value of l1 > l2.
-        """
-        return self.lt(l2, l1)
+        return y == cross
 
-    def ge(self, l1, l2):
-        r"""
-        Return the truth value of l1 >= l2.
-        r"""
-        return self.lt(l2, l1) or l1 == l2
+
+# Import deprecated symbols so imports using flatsurf.geometry.surface do not break.
+from flatsurf.geometry.surface_legacy import (  # noqa, we import at the bottom of the file to break a circular import  # pylint: disable=wrong-import-position
+    Surface,
+    Surface_list,
+    Surface_dict,
+    surface_list_from_polygons_and_gluings,
+)

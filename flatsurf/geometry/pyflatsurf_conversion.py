@@ -83,21 +83,21 @@ def to_pyflatsurf(S):
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
-    from flatsurf.geometry.translation_surface import TranslationSurface
+    from flatsurf.geometry.categories import TranslationSurfaces
 
-    if not isinstance(S, TranslationSurface):
+    if S not in TranslationSurfaces():
         raise TypeError("S must be a translation surface")
-    if not S.is_finite():
+    if not S.is_finite_type():
         raise ValueError("the surface S must be finite")
 
     S = S.triangulate()
 
     # populate half edges and vectors
-    n = sum(S.polygon(lab).num_edges() for lab in S.label_iterator())
+    n = sum(len(S.polygon(lab).vertices()) for lab in S.labels())
     half_edge_labels = {}  # map: (face lab, edge num) in faltsurf -> integer
     vec = []  # vectors
     k = 1  # half edge label in {1, ..., n}
-    for t0, t1 in S.edge_iterator(gluings=True):
+    for t0, t1 in S.gluings():
         if t0 in half_edge_labels:
             continue
 
@@ -113,9 +113,9 @@ def to_pyflatsurf(S):
     # compute vertex and face permutations
     vp = [None] * (n + 1)  # vertex permutation
     fp = [None] * (n + 1)  # face permutation
-    for t in S.edge_iterator(gluings=False):
+    for t in S.edges():
         e = half_edge_labels[t]
-        j = (t[1] + 1) % S.polygon(t[0]).num_edges()
+        j = (t[1] + 1) % len(S.polygon(t[0]).vertices())
         fp[e] = half_edge_labels[(t[0], j)]
         vp[fp[e]] = -e
 
@@ -261,29 +261,33 @@ def from_pyflatsurf(T):
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
-        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
-        TranslationSurface built from 6 polygons
+        sage: T = from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
+        sage: T  # optional: pyflatsurf
+        Translation Surface in H_2(2) built from 6 isosceles triangles
 
-    TESTS:
+    TESTS::
+
+        sage: from flatsurf.geometry.categories import TranslationSurfaces
+        sage: T in TranslationSurfaces()  # optional: pyflatsurf
+        True
 
     Verify that #137 has been resolved::
 
-        sage: from flatsurf import polygons
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
+        sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
         sage: from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
         sage: from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
         sage: P = polygons.regular_ngon(10)
-        sage: S = Surface_list(P.base_ring())
+        sage: S = MutableOrientedSimilaritySurface(P.base_ring())
         sage: S.add_polygon(P)
         0
-        sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
-        sage: M = TranslationSurface(S)
+        sage: for i in range(5): S.glue((0, i), (0, 5+i))
+        sage: S.set_immutable()
+        sage: M = S
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
-        TranslationSurface built from 8 polygons
+        Translation Surface in H_2(1^2) built from 2 isosceles triangles and 6 triangles
 
     """
     from flatsurf.features import pyflatsurf_feature
@@ -293,15 +297,13 @@ def from_pyflatsurf(T):
 
     ring = sage_ring(T)
 
-    from flatsurf.geometry.surface import Surface_list
+    from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
-    S = Surface_list(ring)
+    S = MutableOrientedSimilaritySurface(ring)
 
-    from flatsurf.geometry.polygon import ConvexPolygons
+    from flatsurf.geometry.polygon import Polygon
 
-    P = ConvexPolygons(ring)
-
-    V = P.module()
+    V = ring**2
 
     half_edges = {}
 
@@ -312,7 +314,7 @@ def from_pyflatsurf(T):
         vectors = [
             V([ring(to_sage_ring(v.x())), ring(to_sage_ring(v.y()))]) for v in vectors
         ]
-        triangle = P(vectors)
+        triangle = Polygon(edges=vectors)
         face_id = S.add_polygon(triangle)
 
         assert a not in half_edges
@@ -324,10 +326,7 @@ def from_pyflatsurf(T):
 
     for half_edge, (face, id) in half_edges.items():
         _face, _id = half_edges[-half_edge]
-        S.change_edge_gluing(face, id, _face, _id)
+        S.glue((face, id), (_face, _id))
 
     S.set_immutable()
-
-    from flatsurf.geometry.translation_surface import TranslationSurface
-
-    return TranslationSurface(S)
+    return S
