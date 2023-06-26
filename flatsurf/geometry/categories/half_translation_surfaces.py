@@ -531,54 +531,77 @@ class HalfTranslationSurfaces(SurfaceCategory):
                             sage: S.angles()
                             [1]
 
+                        Non-convex examples::
+
+                            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                            sage: S = MutableOrientedSimilaritySurface(QQ)
+                            sage: L = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(1,1),(1,2),(0,2),(0,1)])
+                            sage: S.add_polygon(L)
+                            0
+                            sage: S.glue((0, 0), (0, 5))
+                            sage: S.glue((0, 1), (0, 3))
+                            sage: S.glue((0, 2), (0, 7))
+                            sage: S.glue((0, 4), (0, 6))
+                            sage: S.set_immutable()
+                            sage: S.angles()
+                            [3]
+
+                            sage: S = MutableOrientedSimilaritySurface(QQ)
+                            sage: P = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(3,1),(3,2),(2,2),(1,2),(1,1),(0,1)])
+                            sage: S.add_polygon(P)
+                            0
+                            sage: S.glue((0, 0), (0, 8))
+                            sage: S.glue((0, 1), (0, 6))
+                            sage: S.glue((0, 2), (0, 9))
+                            sage: S.glue((0, 3), (0, 5))
+                            sage: S.glue((0, 4), (0, 7))
+                            sage: S.set_immutable()
+                            sage: S.angles()
+                            [2, 2]
                         """
+                        from flatsurf.geometry.euclidean import is_between
+
                         edges = set(self.edges())
                         angles = []
 
-                        if return_adjacent_edges:
-                            while edges:
-                                # Note that iteration order here is different for different
-                                # versions of Python. Therefore, the output in the doctest
-                                # above is random.
-                                pair = p, e = next(iter(edges))
-                                ve = self.polygon(p).edge(e)
-                                angle = 0
-                                adjacent_edges = []
-                                while pair in edges:
-                                    adjacent_edges.append(pair)
-                                    edges.remove(pair)
-                                    f = (e - 1) % len(self.polygon(p).vertices())
-                                    ve = self.polygon(p).edge(e)
-                                    vf = -self.polygon(p).edge(f)
-                                    ppair = pp, ff = self.opposite_edge(p, f)
-                                    angle += (
-                                        (ve[0] > 0 and vf[0] <= 0)
-                                        or (ve[0] < 0 and vf[0] >= 0)
-                                        or (ve[0] == vf[0] == 0)
-                                    )
-                                    pair, p, e = ppair, pp, ff
-                                if numerical:
+                        while edges:
+                            # Note that iteration order here is different for different
+                            # versions of Python. Therefore, the output in the doctest
+                            # above is random.
+                            pair = p,e = next(iter(edges))
+                            ve = self.polygon(p).edge(e)
+                            angle = 0
+                            adjacent_edges = []
+                            while pair in edges:
+                                adjacent_edges.append(pair)
+                                edges.remove(pair)
+                                poly = self.polygon(p)
+                                f = (e-1) % len(poly.vertices())
+                                ve = poly.edge(e)
+                                vf = -poly.edge(f)
+                                if ve[0] * vf[1] == ve[1] * vf[0] and ve[0] * vf[0] >= 0 and ve[1] * vf[1] >= 0:
+                                    # aligned vectors (angle 2pi)
+                                    if ve[0] == 0:
+                                        angle += 1
+                                    else:
+                                        angle += 2
+                                else:
+                                    if vf[0] == 0:
+                                        # include vf because it is vertical
+                                        angle += 1
+                                    angle += is_between(ve, vf, (0, 1))
+                                    angle += is_between(ve, vf, (0, -1))
+                                ppair = pp, ff = self.opposite_edge(p, f)
+                                pair, p, e = ppair, pp, ff
+                            if numerical:
+                                if return_adjacent_edges:
                                     angles.append((float(angle) / 2, adjacent_edges))
                                 else:
-                                    angles.append((QQ((angle, 2)), adjacent_edges))
-                        else:
-                            while edges:
-                                pair = p, e = next(iter(edges))
-                                angle = 0
-                                while pair in edges:
-                                    edges.remove(pair)
-                                    f = (e - 1) % len(self.polygon(p).vertices())
-                                    ve = self.polygon(p).edge(e)
-                                    vf = -self.polygon(p).edge(f)
-                                    ppair = pp, ff = self.opposite_edge(p, f)
-                                    angle += (
-                                        (ve[0] > 0 and vf[0] <= 0)
-                                        or (ve[0] < 0 and vf[0] >= 0)
-                                        or (ve[0] == vf[0] == 0)
-                                    )
-                                    pair, p, e = ppair, pp, ff
-                                if numerical:
+
                                     angles.append(float(angle) / 2)
+                            else:
+                                if return_adjacent_edges:
+                                    angles.append((QQ((angle, 2)), adjacent_edges))
                                 else:
                                     angles.append(QQ((angle, 2)))
 
