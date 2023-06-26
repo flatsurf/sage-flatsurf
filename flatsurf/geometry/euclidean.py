@@ -525,6 +525,7 @@ def is_between(e0, e1, f):
         # - f[0] * e1[1] + e1[0] * f[1] > 0
         return e0[1] * f[0] < e0[0] * f[1] or e1[0] * f[1] < e1[1] * f[0]
 
+
 def solve(x, u, y, v):
     r"""
     Return (a,b) so that: x + au = y + bv

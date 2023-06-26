@@ -568,7 +568,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                             # Note that iteration order here is different for different
                             # versions of Python. Therefore, the output in the doctest
                             # above is random.
-                            pair = p,e = next(iter(edges))
+                            pair = p, e = next(iter(edges))
                             ve = self.polygon(p).edge(e)
                             angle = 0
                             adjacent_edges = []
@@ -576,10 +576,14 @@ class HalfTranslationSurfaces(SurfaceCategory):
                                 adjacent_edges.append(pair)
                                 edges.remove(pair)
                                 poly = self.polygon(p)
-                                f = (e-1) % len(poly.vertices())
+                                f = (e - 1) % len(poly.vertices())
                                 ve = poly.edge(e)
                                 vf = -poly.edge(f)
-                                if ve[0] * vf[1] == ve[1] * vf[0] and ve[0] * vf[0] >= 0 and ve[1] * vf[1] >= 0:
+                                if (
+                                    ve[0] * vf[1] == ve[1] * vf[0]
+                                    and ve[0] * vf[0] >= 0
+                                    and ve[1] * vf[1] >= 0
+                                ):
                                     # aligned vectors (angle 2pi)
                                     if ve[0] == 0:
                                         angle += 1
