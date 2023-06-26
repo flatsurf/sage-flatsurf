@@ -496,10 +496,13 @@ def is_between(e0, e1, f):
     EXAMPLES::
 
         sage: from flatsurf.geometry.euclidean import is_between
-        sage: V = ZZ^2
-        sage: is_between(V((1, 0)), V((1, 1)), V((2, 1)))
+        sage: is_between((1, 0), (1, 1), (2, 1))
         True
 
+        sage: from itertools import product
+        sage: vecs = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
+        sage: for (i, vi), (j, vj), (k, vk) in product(enumerate(vecs), repeat=3):
+        ....:     assert is_between(vi, vj, vk) == ((i == j and i != k) or i < k < j or k < j < i or j < i < k), ((i, vi), (j, vj), (k, vk))
     """
     if e0[0] * e1[1] > e1[0] * e0[1]:
         # positive determinant
@@ -510,14 +513,17 @@ def is_between(e0, e1, f):
         return e1[1] * f[0] > e1[0] * f[1] and e0[0] * f[1] > e0[1] * f[0]
     elif e0[0] * e1[1] == e1[0] * e0[1]:
         # aligned vector
-        return e0[0] * f[1] > e0[1] * f[0]
+        if e0[0] * e1[0] >= 0 and e0[1] * e1[1] >= 0:
+            return f[0] * e0[1] != f[1] * e0[0] or f[0] * e0[0] < 0 or f[1] * e0[1] < 0
+        else:
+            return e0[0] * f[1] > e0[1] * f[0]
     else:
         # negative determinant
         # [ e1[0] e0[0] ]^-1 = [ e0[1] -e0[0] ]
         # [ e1[1] e0[1] ]      [-e1[1]  e1[0] ]
         # f[0] * e0[1] - e0[0] * f[1] > 0
         # - f[0] * e1[1] + e1[0] * f[1] > 0
-        return e0[1] * f[0] <= e0[0] * f[1] or e1[0] * f[1] <= e1[1] * f[0]
+        return e0[1] * f[0] < e0[0] * f[1] or e1[0] * f[1] < e1[1] * f[0]
 
 
 def solve(x, u, y, v):
