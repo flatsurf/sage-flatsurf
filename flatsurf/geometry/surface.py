@@ -2024,7 +2024,7 @@ class MutableOrientedSimilaritySurface(
         .. TODO::
 
             The code here is not using
-            :meth:`~categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.
+            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.
             It should probably be rewritten to share the same logic.
 
         TESTS:
