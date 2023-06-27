@@ -2020,6 +2020,59 @@ class MutableOrientedSimilaritySurface(
         Overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`
         to allow triangulating in-place.
+
+        .. TODO::
+
+            The code here is not using
+            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.
+            It should probably be rewritten to share the same logic.
+
+        TESTS:
+
+        Verify that the monotile can be triangulated::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: K = QuadraticField(3)
+            sage: a = K.gen()
+            sage: # build the vectors
+            sage: l = [(1, 0), (1, 2), (a, 11), (a, 1), (1, 4), (1, 6), (a, 3),
+            ....:      (a, 5), (1, 8), (1, 6), (a, 9), (a, 7), (1, 10), (1, 0)]
+            sage: vecs = []
+            sage: for m, e in l:
+            ....:     v = vector(K, [m * cos(2*pi*e/12), m * sin(2*pi*e/12)])
+            ....:     vecs.append(v)
+            sage: p = Polygon(edges=vecs)
+
+            sage: from collections import defaultdict
+            sage: d = defaultdict(list)
+            sage: for i, e in enumerate(p.edges()):
+            ....:     e.set_immutable()
+            ....:     d[e].append(i)
+
+            sage: Sbase = MutableOrientedSimilaritySurface(K)
+            sage: _ = Sbase.add_polygon(p)
+            sage: for v in list(d):
+            ....:     if v in d:
+            ....:         indices = d[v]
+            ....:         v_op = -v
+            ....:         v_op.set_immutable()
+            ....:         opposite_indices = d[v_op]
+            ....:         assert len(indices) == len(opposite_indices), (len(indices), len(opposite_indices))
+            ....:         if len(indices) == 1:
+            ....:             del d[v]
+            ....:             del d[v_op]
+            ....:             Sbase.glue((0, indices[0]), (0, opposite_indices[0]))
+
+            sage: (i0, j0), (i1, j1) = d.values()
+
+            sage: S1 = MutableOrientedSimilaritySurface.from_surface(Sbase)
+            sage: S1.glue((0, i0), (0, i1))
+            sage: S1.glue((0, j0), (0, j1))
+            sage: S1.set_immutable()
+
+            sage: S1.triangulate()
+            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, 6 triangles and a right triangle
+
         """
         if relabel is not None:
             import warnings
@@ -2056,7 +2109,7 @@ class MutableOrientedSimilaritySurface(
             for i in range(n):
                 e1 = poly.edge(i)
                 e2 = poly.edge((i + 1) % n)
-                if ccw(e1, e2) != 0:
+                if ccw(e1, e2) > 0:
                     # This is in case the polygon is a triangle with subdivided edge.
                     e3 = poly.edge((i + 2) % n)
                     if ccw(e1 + e2, e3) != 0:
