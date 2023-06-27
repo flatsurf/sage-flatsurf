@@ -97,12 +97,8 @@ and strata
 print(S1.stratum(), S2.stratum())
 ```
 
-TODO: failure
 ```{code-cell}
 S1.triangulate()
-```
-
-TODO: failure
 ```{code-cell}
 S2.triangulate()
 ```
