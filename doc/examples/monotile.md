@@ -99,6 +99,8 @@ print(S1.stratum(), S2.stratum())
 
 ```{code-cell}
 S1.triangulate()
+```
+
 ```{code-cell}
 S2.triangulate()
 ```
