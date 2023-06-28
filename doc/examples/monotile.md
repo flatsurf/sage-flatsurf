@@ -32,10 +32,11 @@ for m, e in l:
     v = vector(K, [m * cos(2*pi*e/12), m * sin(2*pi*e/12)])
     vecs.append(v)
 p = Polygon(edges=vecs)
+p.plot()
 ```
 
 One can build translation surfaces by gluing parallel edges. There is an
-ambiguity in doing so because of the horizontal segments. We a surface
+ambiguity in doing so because of the horizontal segments. We create a surface
 `Sbase` where non-ambiguous gluings are performed.
 ```{code-cell}
 from collections import defaultdict

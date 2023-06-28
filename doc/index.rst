@@ -58,6 +58,7 @@ Demos of some of the capabilities of sage-flatsurf:
    examples/straight_line_flow
    examples/warwick-2017
    examples/boshernitzan_conjecture
+   examples/monotile
 
 These examples can also be explored interactively by clicking |binder|_. The
 interactive session might take a moment to start. Once ready, press Shift +

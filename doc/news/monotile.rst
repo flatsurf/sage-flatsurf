@@ -1,3 +1,3 @@
 **Added:**
 
-* monotile notebook example
+* Added a monotile notebook example to the examples section of the documentation.
