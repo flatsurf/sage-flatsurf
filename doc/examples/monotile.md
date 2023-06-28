@@ -25,11 +25,25 @@ K = QuadraticField(3)
 a = K.gen()
 
 # build the vectors
-l = [(1, 0), (1, 2), (a, 11), (a, 1), (1, 4), (1, 6), (a, 3),
-     (a, 5), (1, 8), (1, 6), (a, 9), (a, 7), (1, 10), (1, 0)]
+l = [
+    (1, 0),
+    (1, 2),
+    (a, 11),
+    (a, 1),
+    (1, 4),
+    (1, 6),
+    (a, 3),
+    (a, 5),
+    (1, 8),
+    (1, 6),
+    (a, 9),
+    (a, 7),
+    (1, 10),
+    (1, 0)
+]
 vecs = []
 for m, e in l:
-    v = vector(K, [m * cos(2*pi*e/12), m * sin(2*pi*e/12)])
+    v = vector(K, [m * cos(2 * pi * e / 12), m * sin(2 * pi * e / 12)])
     vecs.append(v)
 p = Polygon(edges=vecs)
 p.plot()
@@ -38,8 +52,10 @@ p.plot()
 One can build translation surfaces by gluing parallel edges. There is an
 ambiguity in doing so because of the horizontal segments. We create a surface
 `Sbase` where non-ambiguous gluings are performed.
+
 ```{code-cell}
 from collections import defaultdict
+
 d = defaultdict(list)
 for i, e in enumerate(p.edges()):
     e.set_immutable()
@@ -55,7 +71,7 @@ for v in list(d):
         v_op = -v
         v_op.set_immutable()
         opposite_indices = d[v_op]
-        assert len(indices) == len(opposite_indices), (len(indices), len(opposite_indices))
+        assert len(indices) == len(opposite_indices)
         if len(indices) == 1:
             del d[v]
             del d[v_op]
@@ -63,6 +79,7 @@ for v in list(d):
 ```
 
 Next we recover the ambiguous edges and build the two possible remaining gluings.
+
 ```{code-cell}
 assert len(d) == 2
 (i0, j0), (i1, j1) = d.values()
@@ -89,11 +106,13 @@ print(S2.category())
 ```
 
 And one can compute their genera
+
 ```{code-cell}
 print(S1.genus(), S2.genus())
 ```
 
 and strata
+
 ```{code-cell}
 print(S1.stratum(), S2.stratum())
 ```
