@@ -18,6 +18,7 @@ The monotile is a polygon that tiles the plane by rotation and reflections. Inte
 one can build two translation surfaces out of it.
 
 The monotile is the following polygon.
+
 ```{code-cell}
 from flatsurf import Polygon, MutableOrientedSimilaritySurface
 
@@ -39,7 +40,7 @@ l = [
     (a, 9),
     (a, 7),
     (1, 10),
-    (1, 0)
+    (1, 0),
 ]
 vecs = []
 for m, e in l:
@@ -100,6 +101,7 @@ S2.set_immutable()
 ```
 
 We indeed obtain translation surfaces
+
 ```{code-cell}
 print(S1.category())
 print(S2.category())
