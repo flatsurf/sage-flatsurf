@@ -849,7 +849,7 @@ class GeometricPrimitives:
     def center(self, label, edge, pos):
         r"""
         Return the point at ``center + pos * e`` where ``center`` is the center
-        of the circumsrcibing circle of the polygon ``label`` and ``e`` is the
+        of the circumscribing circle of the polygon ``label`` and ``e`` is the
         straight segment connecting that center to the center of the polygon
         across the ``edge``.
 
@@ -2313,9 +2313,12 @@ class PowerSeriesConstraints:
         # We want to minimize the sum of |b_n|^2 r^2n where r is a somewhat
         # randomly chosen small radius around the midpoint.
 
-        distance = self._geometry.center(label, edge, b) - self._geometry.center(label, edge, a)
+        # distance = self._geometry.center(label, edge, b) - self._geometry.center(label, edge, a)
+        # r2 = (distance[0] ** 2 + distance[1] ** 2) / 4
+
+        r2 = self.real_field()(self._geometry._convergence(label, edge, (a + b) / 2) ** 2 / 25)
+
         b = (T0 - T1).list()
-        r2 = (distance[0] ** 2 + distance[1] ** 2) / 4
 
         r2n = r2
         for n, b_n in enumerate(b):
@@ -2841,6 +2844,18 @@ class PowerSeriesConstraints:
         rows, columns = A.dimensions()
         print(f"Solving {rows}×{columns} system")
         rank = A.rank()
+
+        from sage.all import RDF
+        print("condition is", A.change_ring(RDF).condition())
+
+        def cond():
+            C = A.list()
+            import random
+            random.shuffle(C)
+            return A.parent()(C).change_ring(RDF).condition()
+        
+        print("condition could be", min([cond() for i in range(64)]) / A.change_ring(RDF).condition(), "of this")
+
         if rank < columns:
             # TODO: Warn?
             print(f"system underdetermined: {rows}×{columns} matrix of rank {rank}")

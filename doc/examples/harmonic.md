@@ -47,7 +47,7 @@ f = H({a: 1})
 
 ```sage
 Omega = HarmonicDifferentials(T)
-omega = Omega(f, prec=20)
+omega = Omega(f, prec=10, check=False)
 omega
 ```
 
@@ -56,11 +56,7 @@ The power series is developed around the centers of the circumcircle of the tria
 We can recover the series for each triangle of the triangulation:
 
 ```sage
-omega.series(0)
-```
-
-```sage
-omega.series(0)
+omega.series((0, 0, 0))
 ```
 
 We can ask the differential how well it solves the constraints that were used to created it:
@@ -118,6 +114,11 @@ omega.cauchy_residue(vertex, -1)
 ## A Less Trivial Example, the Regular Octagon
 
 ```sage
+import jurigged
+jurigged.watch('/')
+```
+
+```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
 S = translation_surfaces.regular_octagon().copy(mutable=True)
 
@@ -144,15 +145,19 @@ f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 Omega = HarmonicDifferentials(S)
 # Omega.plot().show()
 
-omega = Omega(HS(f), prec=90, check=False, algorithm={"L2": 1, "midpoint_derivatives": 2})
+omega = Omega(HS(f), prec=6, check=False, algorithm={"L2": 1})
 ```
 
 ```sage
-omega.error()
+omega.error(verbose=True)
 ```
 
 ```sage
-omega.series((0, 0, 0))
+omega.series((0, 2, 137/482))
+```
+
+```sage
+omega._series.keys()
 ```
 
 ### An Explicit Series for the Octagon
@@ -168,6 +173,13 @@ g = z^2 - 1/9*z^10 + 20/1377*z^18 - 14/6885*z^26 + 2044/6952473*z^34 - 111097/25
 ```
 
 ```sage
+width = S.polygon(0).edge(0)[0] + 2*S.polygon(0).edge(1)[0]
+# Δ = 137/482 * width / 1.41421356237310 * (1 + I)
+Δ = 1/5 * (1 + I)
+g.polynomial()(Δ)
+```
+
+```sage
 omega_exact = OmegaExact({(0, 0, 0): g})
 ```
 
@@ -178,7 +190,7 @@ We integrate to find the cohomology class this corresponds to.
 ```
 
 ```sage
-Δ = vector((1/4, 1/2)) - S.polygon(0).circumscribing_circle().center()
+Δ = vector(list(Δ))
 ```
 
 ```sage
@@ -194,13 +206,14 @@ S.polygon(0).plot()
 ```
 
 ```sage
-omega_exact.evaluate(0, 0, 0, Δ)
+exact_sample = omega_exact.evaluate(0, 0, 0, Δ)
+exact_sample
 ```
 
 Measuring the quality of the computed ω.
 
 ```sage
-point = S.point(0, (1/4, 1/2))
+point = S.point(0, vector(Δ) + S.polygon(0).circumscribing_circle().center() )
 ```
 
 ```sage
@@ -210,16 +223,7 @@ S.plot() + point.plot(color="black", size=50) + sum([S.point(label, S.polygon(la
 ```
 
 ```sage
-omega.evaluate(0, edge=None, pos=None, Δ=Δ)
-```
+approximate_sample = omega.evaluate(0, edge=None, pos=None, Δ=Δ)
 
-```sage
-Omega = HarmonicDifferentials(S)
-for prec in range(20, 100, 10):
-    print("*" * 80)
-    print(f"{prec=}")
-    omega = Omega(f, prec=prec, check=False, algorithm=["L2"])
-    print(omega.error())
-    print(omega.evaluate(0, edge=None, pos=None, Δ=Δ), "vs. the exact value", omega_exact.evaluate(0, 0, 0, Δ))
-    print(omega.series((0, 0, 0)))
+print("|", exact_sample,"-",approximate_sample,"| = ", (exact_sample-approximate_sample).abs())
 ```
