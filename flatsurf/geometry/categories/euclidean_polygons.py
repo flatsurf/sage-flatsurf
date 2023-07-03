@@ -795,13 +795,18 @@ class EuclideanPolygons(Category_over_base_ring):
 
             """
             from sage.all import vector
+
             point = vector(point)
 
             if translation is not None:
                 import warnings
-                warnings.warn("the translation keyword argument to get_point_position() has been deprecated and will be removed in a future version of sage-flatsurf; shift the point instead with the - operator")
+
+                warnings.warn(
+                    "the translation keyword argument to get_point_position() has been deprecated and will be removed in a future version of sage-flatsurf; shift the point instead with the - operator"
+                )
 
                 from sage.all import vector
+
                 return self.get_point_position(point - vector(translation))
 
             from flatsurf.geometry.euclidean import ccw
@@ -823,10 +828,12 @@ class EuclideanPolygons(Category_over_base_ring):
             # winding number of the polygon.
             winding_number = 0
 
-            for (v, w) in zip(self.vertices(), self.vertices()[1:] + self.vertices()[:1]):
-                if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point -v) > 0:
+            for (v, w) in zip(
+                self.vertices(), self.vertices()[1:] + self.vertices()[:1]
+            ):
+                if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
                     winding_number += 1
-                if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point -v) < 0:
+                if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
                     winding_number -= 1
 
             if winding_number % 2:
