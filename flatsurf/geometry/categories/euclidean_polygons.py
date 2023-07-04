@@ -748,6 +748,100 @@ class EuclideanPolygons(Category_over_base_ring):
                 )
             )
 
+        def get_point_position(self, point, translation=None):
+            r"""
+            Return the combinatorial classification of a point and a polygon.
+
+            INPUT:
+
+            - ``point`` -- a point in the plane as a SageMath vector or pair of
+              numbers
+
+            OUTPUT:
+
+            a :class:`.geometry.polygon.PolygonPosition` object
+
+            ALGORITHM:
+
+            We use a winding number algorithm see
+            https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, Polygon
+                sage: S = polygons.square()
+
+                sage: S.get_point_position((1/2, 1/2))
+                point positioned in interior of polygon
+                sage: S.get_point_position((1, 0))
+                point positioned on vertex 1 of polygon
+                sage: S.get_point_position((1, 1/2))
+                point positioned on interior of edge 1 of polygon
+                sage: S.get_point_position((1, 3/2))
+                point positioned outside polygon
+
+                sage: p = Polygon(edges=[(1, 0), (1, 0), (1, 0), (0, 1), (-3, 0), (0, -1)])
+                sage: p.get_point_position([10, 0])
+                point positioned outside polygon
+                sage: p.get_point_position([1/2, 0])
+                point positioned on interior of edge 0 of polygon
+                sage: p.get_point_position([3/2, 0])
+                point positioned on interior of edge 1 of polygon
+                sage: p.get_point_position([2,0])
+                point positioned on vertex 2 of polygon
+                sage: p.get_point_position([5/2, 0])
+                point positioned on interior of edge 2 of polygon
+                sage: p.get_point_position([5/2, 1/4])
+                point positioned in interior of polygon
+
+            """
+            from sage.all import vector
+
+            point = vector(point)
+
+            if translation is not None:
+                import warnings
+
+                warnings.warn(
+                    "the translation keyword argument to get_point_position() has been deprecated and will be removed in a future version of sage-flatsurf; shift the point instead with the - operator"
+                )
+
+                from sage.all import vector
+
+                return self.get_point_position(point - vector(translation))
+
+            from flatsurf.geometry.euclidean import ccw
+            from flatsurf.geometry.polygon import PolygonPosition
+
+            # Determine whether the point is a vertex of the polygon.
+            for (i, v) in enumerate(self.vertices()):
+                if point == v:
+                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+
+            # Determine whether the point is on an edge of the polygon.
+            for (i, (v, e)) in enumerate(zip(self.vertices(), self.edges())):
+                if ccw(e, point - v) == 0:
+                    # The point lies on the line through this edge.
+                    if 0 < e.dot_product(point - v) < e.dot_product(e):
+                        return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+
+            # Determine whether the point is inside or outside by computing the
+            # winding number of the polygon.
+            winding_number = 0
+
+            for (v, w) in zip(
+                self.vertices(), self.vertices()[1:] + self.vertices()[:1]
+            ):
+                if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
+                    winding_number += 1
+                if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
+                    winding_number -= 1
+
+            if winding_number % 2:
+                return PolygonPosition(PolygonPosition.INTERIOR)
+
+            return PolygonPosition(PolygonPosition.OUTSIDE)
+
     class Rational(CategoryWithAxiom_over_base_ring):
         r"""
         The category of rational Euclidean polygons.
@@ -1378,78 +1472,6 @@ class EuclideanPolygons(Category_over_base_ring):
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
-
-                def get_point_position(self, point, translation=None):
-                    r"""
-                    Get a combinatorial position of a points position compared to the polygon
-
-                    INPUT:
-
-                    - ``point`` -- a point in the plane (vector over the underlying base_ring())
-
-                    - ``translation`` -- optional translation to applied to the polygon (vector over the underlying base_ring())
-
-                    OUTPUT:
-
-                    - a PolygonPosition object
-
-                    EXAMPLES::
-
-                        sage: from flatsurf import polygons, Polygon
-                        sage: s = polygons.square()
-                        sage: V = s.base_ring()**2
-                        sage: s.get_point_position(V((1/2,1/2)))
-                        point positioned in interior of polygon
-                        sage: s.get_point_position(V((1,0)))
-                        point positioned on vertex 1 of polygon
-                        sage: s.get_point_position(V((1,1/2)))
-                        point positioned on interior of edge 1 of polygon
-                        sage: s.get_point_position(V((1,3/2)))
-                        point positioned outside polygon
-
-                        sage: p=Polygon(edges=[(1,0),(1,0),(1,0),(0,1),(-3,0),(0,-1)])
-                        sage: V = p.base_ring()**2
-                        sage: p.get_point_position(V([10,0]))
-                        point positioned outside polygon
-                        sage: p.get_point_position(V([1/2,0]))
-                        point positioned on interior of edge 0 of polygon
-                        sage: p.get_point_position(V([3/2,0]))
-                        point positioned on interior of edge 1 of polygon
-                        sage: p.get_point_position(V([2,0]))
-                        point positioned on vertex 2 of polygon
-                        sage: p.get_point_position(V([5/2,0]))
-                        point positioned on interior of edge 2 of polygon
-                        sage: p.get_point_position(V([5/2,1/4]))
-                        point positioned in interior of polygon
-                    """
-                    from flatsurf.geometry.polygon import PolygonPosition
-
-                    if translation is None:
-                        # Since we allow the initial vertex to be non-zero, this changed:
-                        v1 = self.vertex(0)
-                    else:
-                        # Since we allow the initial vertex to be non-zero, this changed:
-                        v1 = translation + self.vertex(0)
-                    # Below, we only make use of edge vectors:
-                    for i in range(len(self.vertices())):
-                        v0 = v1
-                        e = self.edge(i)
-                        v1 = v0 + e
-                        w = ccw(e, point - v0)
-                        if w < 0:
-                            return PolygonPosition(PolygonPosition.OUTSIDE)
-                        if w == 0:
-                            # Lies on the line through edge i!
-                            dp1 = e.dot_product(point - v0)
-                            if dp1 == 0:
-                                return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
-                            dp2 = e.dot_product(e)
-                            if 0 < dp1 and dp1 < dp2:
-                                return PolygonPosition(
-                                    PolygonPosition.EDGE_INTERIOR, edge=i
-                                )
-                    # Loop terminated (on inside of each edge)
-                    return PolygonPosition(PolygonPosition.INTERIOR)
 
                 def flow_to_exit(self, point, direction):
                     r"""
