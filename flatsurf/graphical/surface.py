@@ -651,7 +651,7 @@ class GraphicalSurface:
         INPUT:
 
         - ``point`` -- Coordinates of a point in graphical coordinates to be
-            converted to graphical coordinates.
+            converted to surface coordinates.
 
         - ``v`` -- (default ``None``) If provided a tangent vector in graphical
             coordinates based at the provided point.
@@ -720,6 +720,8 @@ class GraphicalSurface:
 
         """
         surface = self.get_surface()
+
+        point = vector(point, ring or surface.base_ring())
 
         if label is None:
             if search_all:
