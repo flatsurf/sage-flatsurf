@@ -796,7 +796,7 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             from sage.all import vector
 
-            point = vector(point)
+            point = vector(point, ring=self.base_ring())
 
             if translation is not None:
                 import warnings
@@ -807,7 +807,9 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 from sage.all import vector
 
-                return self.get_point_position(point - vector(translation))
+                return self.get_point_position(
+                    point - vector(translation, ring=self.base_ring())
+                )
 
             from flatsurf.geometry.euclidean import ccw
             from flatsurf.geometry.polygon import PolygonPosition
