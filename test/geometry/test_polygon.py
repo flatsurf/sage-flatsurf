@@ -22,6 +22,7 @@ Test properties of polygons.
 
 import pytest
 
+
 @pytest.mark.parametrize("n", [4, 6, 8, 10])
 def test_get_point_position(n):
     from sage.all import vector
@@ -49,19 +50,19 @@ def test_get_point_position(n):
         assert P.get_point_position(p).is_in_edge_interior()
 
     for v in P.vertices():
-        p = v + vector((1/1024, 0))
+        p = v + vector((1 / 1024, 0))
         p_position = P.get_point_position(p)
 
-        q = v + vector((1/2048, 0))
+        q = v + vector((1 / 2048, 0))
         q_position = P.get_point_position(q)
 
         assert str(p_position) == str(q_position)
 
     for v in P.vertices():
-        p = v - vector((1/1024, 0))
+        p = v - vector((1 / 1024, 0))
         p_position = P.get_point_position(p)
 
-        q = v - vector((1/2048, 0))
+        q = v - vector((1 / 2048, 0))
         q_position = P.get_point_position(q)
 
         assert str(p_position) == str(q_position)
