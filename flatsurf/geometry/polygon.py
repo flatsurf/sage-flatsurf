@@ -110,7 +110,7 @@ class EuclideanPolygonPoint(Element):
 
         .. SEEALSO::
 
-            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position`
+            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.get_point_position`
 
         """
         return self.parent().get_point_position(self._xy)
