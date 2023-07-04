@@ -918,7 +918,7 @@
 <span class="sd">        INPUT:</span>
 
 <span class="sd">        - ``point`` -- Coordinates of a point in graphical coordinates to be</span>
-<span class="sd">            converted to graphical coordinates.</span>
+<span class="sd">            converted to surface coordinates.</span>
 
 <span class="sd">        - ``v`` -- (default ``None``) If provided a tangent vector in graphical</span>
 <span class="sd">            coordinates based at the provided point.</span>
@@ -987,6 +987,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span>
+
+        <span class="n">point</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">ring</span> <span class="ow">or</span> <span class="n">surface</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">search_all</span><span class="p">:</span>

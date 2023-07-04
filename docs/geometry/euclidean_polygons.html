@@ -522,6 +522,50 @@ one vertex to the next one.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.get_point_position">
+<span class="sig-name descname"><span class="pre">get_point_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.ParentMethods.get_point_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.get_point_position" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the combinatorial classification of a point and a polygon.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code> – a point in the plane as a SageMath vector or pair of
+numbers</p></li>
+</ul>
+<p>OUTPUT:</p>
+<p>a <a class="reference internal" href="polygon.html#flatsurf.geometry.polygon.PolygonPosition" title="flatsurf.geometry.polygon.PolygonPosition"><code class="xref py py-class docutils literal notranslate"><span class="pre">geometry.polygon.PolygonPosition</span></code></a> object</p>
+<p>ALGORITHM:</p>
+<p>We use a winding number algorithm see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm">https://en.wikipedia.org/wiki/Point_in_polygon#Winding_number_algorithm</a></p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">Polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="ow">in</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">vertex</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">outside</span> <span class="n">polygon</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">outside</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">([</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">0</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">([</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">vertex</span> <span class="mi">2</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">([</span><span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">2</span> <span class="n">of</span> <span class="n">polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">([</span><span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">point</span> <span class="n">positioned</span> <span class="ow">in</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">polygon</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_convex">
 <span class="sig-name descname"><span class="pre">is_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.ParentMethods.is_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_convex" title="Permalink to this definition">#</a></dt>
 <dd><p>Return whether this is a convex polygon.</p>
@@ -940,50 +984,6 @@ into the polygon.</p>
 <li><p>The point in the boundary of the polygon where the trajectory exits</p></li>
 <li><p>a PolygonPosition object representing the combinatorial position of the stopping point</p></li>
 </ul>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position">
-<span class="sig-name descname"><span class="pre">get_point_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position" title="Permalink to this definition">#</a></dt>
-<dd><p>Get a combinatorial position of a points position compared to the polygon</p>
-<p>INPUT:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">point</span></code> – a point in the plane (vector over the underlying base_ring())</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">translation</span></code> – optional translation to applied to the polygon (vector over the underlying base_ring())</p></li>
-</ul>
-<p>OUTPUT:</p>
-<ul class="simple">
-<li><p>a PolygonPosition object</p></li>
-</ul>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">Polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">square</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">V</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">**</span><span class="mi">2</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="ow">in</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">vertex</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">outside</span> <span class="n">polygon</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">=</span><span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">V</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">**</span><span class="mi">2</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">outside</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">([</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">0</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">([</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">1</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">vertex</span> <span class="mi">2</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">([</span><span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="n">on</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">edge</span> <span class="mi">2</span> <span class="n">of</span> <span class="n">polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">V</span><span class="p">([</span><span class="mi">5</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">]))</span>
-<span class="n">point</span> <span class="n">positioned</span> <span class="ow">in</span> <span class="n">interior</span> <span class="n">of</span> <span class="n">polygon</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1488,6 +1488,7 @@ the polygons.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.edges"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.edges()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.erase_marked_vertices"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.erase_marked_vertices()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.field"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.field()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.get_point_position"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.get_point_position()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_convex"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.is_convex()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_degenerate"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.is_degenerate()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_equiangular"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.is_equiangular()</span></code></a></li>
@@ -1512,7 +1513,6 @@ the polygons.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.flow()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_map"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.flow_map()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit()</span></code></a></li>
-<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.get_point_position()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_translate"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.Simple.Convex.ParentMethods.is_translate()</span></code></a></li>

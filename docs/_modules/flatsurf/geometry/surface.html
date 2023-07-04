@@ -2287,6 +2287,59 @@
 <span class="sd">        Overrides</span>
 <span class="sd">        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`</span>
 <span class="sd">        to allow triangulating in-place.</span>
+
+<span class="sd">        .. TODO::</span>
+
+<span class="sd">            The code here is not using</span>
+<span class="sd">            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.</span>
+<span class="sd">            It should probably be rewritten to share the same logic.</span>
+
+<span class="sd">        TESTS:</span>
+
+<span class="sd">        Verify that the monotile can be triangulated::</span>
+
+<span class="sd">            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
+<span class="sd">            sage: K = QuadraticField(3)</span>
+<span class="sd">            sage: a = K.gen()</span>
+<span class="sd">            sage: # build the vectors</span>
+<span class="sd">            sage: l = [(1, 0), (1, 2), (a, 11), (a, 1), (1, 4), (1, 6), (a, 3),</span>
+<span class="sd">            ....:      (a, 5), (1, 8), (1, 6), (a, 9), (a, 7), (1, 10), (1, 0)]</span>
+<span class="sd">            sage: vecs = []</span>
+<span class="sd">            sage: for m, e in l:</span>
+<span class="sd">            ....:     v = vector(K, [m * cos(2*pi*e/12), m * sin(2*pi*e/12)])</span>
+<span class="sd">            ....:     vecs.append(v)</span>
+<span class="sd">            sage: p = Polygon(edges=vecs)</span>
+
+<span class="sd">            sage: from collections import defaultdict</span>
+<span class="sd">            sage: d = defaultdict(list)</span>
+<span class="sd">            sage: for i, e in enumerate(p.edges()):</span>
+<span class="sd">            ....:     e.set_immutable()</span>
+<span class="sd">            ....:     d[e].append(i)</span>
+
+<span class="sd">            sage: Sbase = MutableOrientedSimilaritySurface(K)</span>
+<span class="sd">            sage: _ = Sbase.add_polygon(p)</span>
+<span class="sd">            sage: for v in list(d):</span>
+<span class="sd">            ....:     if v in d:</span>
+<span class="sd">            ....:         indices = d[v]</span>
+<span class="sd">            ....:         v_op = -v</span>
+<span class="sd">            ....:         v_op.set_immutable()</span>
+<span class="sd">            ....:         opposite_indices = d[v_op]</span>
+<span class="sd">            ....:         assert len(indices) == len(opposite_indices), (len(indices), len(opposite_indices))</span>
+<span class="sd">            ....:         if len(indices) == 1:</span>
+<span class="sd">            ....:             del d[v]</span>
+<span class="sd">            ....:             del d[v_op]</span>
+<span class="sd">            ....:             Sbase.glue((0, indices[0]), (0, opposite_indices[0]))</span>
+
+<span class="sd">            sage: (i0, j0), (i1, j1) = d.values()</span>
+
+<span class="sd">            sage: S1 = MutableOrientedSimilaritySurface.from_surface(Sbase)</span>
+<span class="sd">            sage: S1.glue((0, i0), (0, i1))</span>
+<span class="sd">            sage: S1.glue((0, j0), (0, j1))</span>
+<span class="sd">            sage: S1.set_immutable()</span>
+
+<span class="sd">            sage: S1.triangulate()</span>
+<span class="sd">            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, 6 triangles and a right triangle</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">relabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">warnings</span>
@@ -2323,7 +2376,7 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
                 <span class="n">e1</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="n">e2</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># This is in case the polygon is a triangle with subdivided edge.</span>
                     <span class="n">e3</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="n">e2</span><span class="p">,</span> <span class="n">e3</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
