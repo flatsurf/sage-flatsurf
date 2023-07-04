@@ -754,7 +754,8 @@ class EuclideanPolygons(Category_over_base_ring):
 
             INPUT:
 
-            - ``point`` -- a point in the plane (vector over the underlying base ring)
+            - ``point`` -- a point in the plane as a SageMath vector or pair of
+              numbers
 
             OUTPUT:
 
@@ -796,7 +797,7 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             from sage.all import vector
 
-            point = vector(point, self.base_ring())
+            point = vector(point)
 
             if translation is not None:
                 import warnings
@@ -807,9 +808,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 from sage.all import vector
 
-                return self.get_point_position(
-                    point - vector(translation, self.base_ring())
-                )
+                return self.get_point_position(point - vector(translation))
 
             from flatsurf.geometry.euclidean import ccw
             from flatsurf.geometry.polygon import PolygonPosition
