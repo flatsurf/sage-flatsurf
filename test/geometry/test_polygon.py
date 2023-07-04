@@ -24,6 +24,8 @@ import pytest
 
 @pytest.mark.parametrize("n", [4, 6, 8, 10])
 def test_get_point_position(n):
+    from sage.all import vector
+
     from flatsurf import polygons
     inner = polygons.regular_ngon(n)
     inner = inner.translate(-inner.centroid())
