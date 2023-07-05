@@ -4,6 +4,15 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.5.2
+====================
+
+**Fixed:**
+
+* Fixed double escapes in sage-flatsurf version numbers.
+
+
+
 v0.5.1
 ====================
 
