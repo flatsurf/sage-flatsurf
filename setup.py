@@ -29,7 +29,7 @@ setup(
     description="Flat surfaces in SageMath",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    version='0.5.1',
+    version="0.5.1",
     url="https://github.com/flatsurf/sage-flatsurf",
     license="GNU General Public License, version 2",
     packages=[
