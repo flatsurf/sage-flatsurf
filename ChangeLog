@@ -4,6 +4,24 @@ sage-flatsurf Change Log
 
 .. current developments
 
+v0.5.1
+====================
+
+**Added:**
+
+* Added `get_point_position()` for non-convex polygons.
+
+**Deprecated:**
+
+* Deprecated the `translation` keyword argument for `get_point_position`.
+
+**Fixed:**
+
+* Fixed angles() for half translation surfaces built with non-convex polygons
+* Fixed triangulation of surfaces built from non-convex polygons.
+
+
+
 v0.5.0
 ====================
 
