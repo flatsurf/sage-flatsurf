@@ -2403,6 +2403,45 @@ class MutableOrientedSimilaritySurface(
         return hash((super().__hash__(), tuple(self.gluings())))
 
 
+class MutableOrientedHyperbolicSurface(MutablePolygonalSurface):
+    r"""
+    A surface built from hyperbolic polygons glued by orientation preserving
+    isometries.
+
+    INPUT:
+
+    - ``hyperbolic_plane`` -- the :class:`.hyperbolic.HyperbolicPlane` in which
+      the polygons are defined that make up this surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane(QQ)
+
+        sage: from flatsurf import MutableOrientedHyperbolicSurface
+        sage: S = MutableOrientedHyperbolicSurface(H)
+
+        sage: S.add_polygon(H.polygon([
+        ....:     H.vertical(1).left_half_space(),
+        ....:     H.vertical(-1).right_half_space(),
+        ....:     H.half_circle(0, 4).left_half_space(),
+        ....:     H.half_circle(0, 16).right_half_space(),
+        ....: ], marked_vertices=[2*I, 4*I]))
+        0
+
+        sage: S.polygon(0).edges()
+
+        sage: S.glue((0, 0), (0, 3))
+        sage: S.glue((0, 1), (0, 2))
+        sage: S.glue((0, 4), (0, 5))
+
+    """
+
+    def __init__(self, hyperbolic_plane, category=None):
+        super().__init__(hyperbolic_plane.base_ring())
+
+
+
 class BaseRingChangedSurface(OrientedSimilaritySurface):
     r"""
     Changes the ring over which a surface is defined.

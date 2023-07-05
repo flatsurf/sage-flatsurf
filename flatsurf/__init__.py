@@ -19,7 +19,7 @@ from flatsurf.geometry.similarity_surface_generators import (
     translation_surfaces,
 )
 
-from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+from flatsurf.geometry.surface import MutableOrientedSimilaritySurface, MutableOrientedHyperbolicSurface
 
 from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
