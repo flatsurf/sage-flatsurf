@@ -1355,15 +1355,12 @@ class Surface_list(Surface):
         Iterator over all polygon labels.
         """
         if polygons:
-            for entry in zip(self.labels(), self.polygons()):
-                yield entry
+            yield from zip(self.labels(), self.polygons())
             return
         if self._reference_surface is not None:
-            for i in Surface.label_iterator(self):
-                yield i
+            yield from Surface.label_iterator(self)
         elif self._num_polygons == len(self._p):
-            for i in range(self.num_polygons()):
-                yield i
+            yield from range(self.num_polygons())
         else:
             # We've removed some labels
             found = 0
@@ -1866,15 +1863,12 @@ class Surface_dict(Surface):
         Iterator over all polygon labels.
         """
         if polygons:
-            for entry in zip(self.labels(), self.polygons()):
-                yield entry
+            yield from zip(self.labels(), self.polygons())
             return
         if self._reference_surface is None:
-            for i in self._p:
-                yield i
+            yield from self._p
         else:
-            for i in Surface.label_iterator(self):
-                yield i
+            yield from Surface.label_iterator(self)
 
     def _remove_polygon(self, label):
         r"""
@@ -2076,8 +2070,7 @@ class LabelWalker:
 
     def edge_iterator(self, gluings=False):
         if gluings:
-            for entry in self._s.gluings():
-                yield entry
+            yield from self._s.gluings()
             return
         for label, polygon in self.label_polygon_iterator():
             for e in range(len(polygon.vertices())):
