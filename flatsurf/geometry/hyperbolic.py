@@ -11159,11 +11159,11 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                 vertices_on_edge = [
                     vertex for vertex in self._marked_vertices if vertex in edge
                 ]
-                vertices_on_edge.sort(
-                    key=lambda vertex: edge.geodesic().parametrize(
-                        vertex, model="euclidean"
-                    )
-                )
+
+                def key(vertex, geodesic=edge.geodesic()):
+                    return geodesic.parametrize(vertex, model="euclidean")
+
+                vertices_on_edge.sort(key=key)
                 vertices_on_edge.append(edge.end())
 
                 start = edge.start()
