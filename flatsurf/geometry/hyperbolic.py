@@ -11156,14 +11156,27 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             edges_without_marked_vertices = edges
             edges = []
             for edge in edges_without_marked_vertices:
-                vertices_on_edge = [vertex for vertex in self._marked_vertices if vertex in edge]
-                vertices_on_edge.sort(key=lambda vertex: edge.geodesic().parametrize(vertex, model="euclidean"))
+                vertices_on_edge = [
+                    vertex for vertex in self._marked_vertices if vertex in edge
+                ]
+                vertices_on_edge.sort(
+                    key=lambda vertex: edge.geodesic().parametrize(
+                        vertex, model="euclidean"
+                    )
+                )
                 vertices_on_edge.append(edge.end())
 
                 start = edge.start()
                 for vertex in vertices_on_edge:
-                    edges.append(self.parent().segment(
-                        edge.geodesic(), start=start, end=vertex, assume_normalized=as_segments, check=False))
+                    edges.append(
+                        self.parent().segment(
+                            edge.geodesic(),
+                            start=start,
+                            end=vertex,
+                            assume_normalized=as_segments,
+                            check=False,
+                        )
+                    )
                     start = vertex
 
         return HyperbolicEdges(edges)
@@ -14200,7 +14213,9 @@ class HyperbolicEdges(OrderedSet):
         if isinstance(rhs, HyperbolicOrientedSegment):
             rhs_geodesic = rhs.geodesic()
 
-        if HyperbolicHalfSpaces._lt_(lhs_geodesic.left_half_space(), rhs_geodesic.left_half_space()):
+        if HyperbolicHalfSpaces._lt_(
+            lhs_geodesic.left_half_space(), rhs_geodesic.left_half_space()
+        ):
             return True
 
         if lhs_geodesic != rhs_geodesic:
@@ -14216,14 +14231,22 @@ class HyperbolicEdges(OrderedSet):
 
         if lhs.start().is_ideal():
             if rhs.start().is_ideal():
-                assert not lhs.end().is_ideal() and not rhs.end().is_ideal(), "edges in a set of HyperbolicEdges must be sortable"
-                assert lhs.end() != rhs.end(), "edges were found to be different as segments but they are actually the same"
+                assert (
+                    not lhs.end().is_ideal() and not rhs.end().is_ideal()
+                ), "edges in a set of HyperbolicEdges must be sortable"
+                assert (
+                    lhs.end() != rhs.end()
+                ), "edges were found to be different as segments but they are actually the same"
 
-                return geodesic.parametrize(lhs.end(), model="euclidean") < geodesic.parametrize(rhs.end(), model="euclidean")
+                return geodesic.parametrize(
+                    lhs.end(), model="euclidean"
+                ) < geodesic.parametrize(rhs.end(), model="euclidean")
 
             return True
 
         if rhs.start().is_ideal():
             return False
 
-        return geodesic.parametrize(lhs.start(), model="euclidean") < geodesic.parametrize(rhs.start(), model="euclidean")
+        return geodesic.parametrize(
+            lhs.start(), model="euclidean"
+        ) < geodesic.parametrize(rhs.start(), model="euclidean")
