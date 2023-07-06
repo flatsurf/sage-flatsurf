@@ -5798,7 +5798,7 @@
             <span class="c1"># Verify that neg inverts the orientation of the set</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet.edges"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="HyperbolicConvexSet.edges"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the :class:`segments &lt;HyperbolicOrientedSegment&gt;` and</span>
 <span class="sd">        :class:`geodesics &lt;HyperbolicOrientedGeodesic&gt;` that bound this set.</span>
@@ -5807,6 +5807,10 @@
 
 <span class="sd">        - ``as_segments`` -- a boolean (default: ``False``); whether to also</span>
 <span class="sd">          return the geodesics as segments with ideal end points.</span>
+
+<span class="sd">        - ``marked_vertices`` -- a boolean (default: ``True``); whether to</span>
+<span class="sd">          report segments that start or end at redundant marked vertices or</span>
+<span class="sd">          otherwise whether such marked vertices are completely ignored.</span>
 
 <span class="sd">        OUTPUT:</span>
 
@@ -10234,7 +10238,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marked_vertices</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">vertex</span> <span class="ow">in</span> <span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()]):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">vertex</span> <span class="ow">in</span> <span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">)]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;marked vertex must be on an edge of the polygon&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">require_normalized</span><span class="p">:</span>
@@ -11304,7 +11308,7 @@
         <span class="k">return</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon.edges"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.edges">[docs]</a>    <span class="nd">@cached_method</span>
-    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the :class:`segments &lt;HyperbolicOrientedSegment&gt;` and</span>
 <span class="sd">        :class:`geodesics &lt;HyperbolicOrientedGeodesic&gt;` defining this polygon.</span>
@@ -11315,6 +11319,10 @@
 
 <span class="sd">        - ``as_segments`` -- a boolean (default: ``False``); whether to also</span>
 <span class="sd">          return the geodesics as segments with ideal end points.</span>
+
+<span class="sd">        - ``marked_vertices`` -- a boolean (default: ``True``); if set, edges</span>
+<span class="sd">          with end points at a marked vertex are reported, otherwise, marked</span>
+<span class="sd">          vertices are completely ignored.</span>
 
 <span class="sd">        OUTPUT:</span>
 
@@ -11348,6 +11356,14 @@
 <span class="sd">             &lt;class &#39;flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category&#39;&gt;,</span>
 <span class="sd">             &lt;class &#39;flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category&#39;&gt;,</span>
 <span class="sd">             &lt;class &#39;flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category&#39;&gt;]</span>
+
+<span class="sd">        The edges of a polygon with marked vertices::</span>
+
+<span class="sd">            sage: P = H.convex_hull(-1, 1, I, 2*I, marked_vertices=True)</span>
+<span class="sd">            sage: P.edges()</span>
+<span class="sd">            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≥ 0}}</span>
+<span class="sd">            sage: P.edges(marked_vertices=False)</span>
+<span class="sd">            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0}}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -11402,6 +11418,33 @@
                     <span class="n">B</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">assume_normalized</span><span class="o">=</span><span class="n">as_segments</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">marked_vertices</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marked_vertices</span><span class="p">:</span>
+            <span class="n">edges_without_marked_vertices</span> <span class="o">=</span> <span class="n">edges</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges_without_marked_vertices</span><span class="p">:</span>
+                <span class="n">vertices_on_edge</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">vertex</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marked_vertices</span> <span class="k">if</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">edge</span>
+                <span class="p">]</span>
+
+                <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">geodesic</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()):</span>
+                    <span class="k">return</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+
+                <span class="n">vertices_on_edge</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">vertices_on_edge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">end</span><span class="p">())</span>
+
+                <span class="n">start</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">vertices_on_edge</span><span class="p">:</span>
+                    <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
+                            <span class="n">edge</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(),</span>
+                            <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                            <span class="n">end</span><span class="o">=</span><span class="n">vertex</span><span class="p">,</span>
+                            <span class="n">assume_normalized</span><span class="o">=</span><span class="n">as_segments</span><span class="p">,</span>
+                            <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">vertex</span>
 
         <span class="k">return</span> <span class="n">HyperbolicEdges</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span></div>
 
@@ -11459,7 +11502,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">end</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
@@ -11688,7 +11731,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_half_spaces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot plot full space&quot;</span><span class="p">)</span>
 
-        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">as_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">as_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">pos</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
@@ -14406,14 +14449,74 @@
 <span class="sd">            sage: edges._lt_(edges[0], edges[1])</span>
 <span class="sd">            True</span>
 
+<span class="sd">        Segments on the same edge are ordered correctly::</span>
+
+<span class="sd">            sage: segments = [</span>
+<span class="sd">            ....:   H(0).segment(H(I)),</span>
+<span class="sd">            ....:   H(I).segment(H(2*I)),</span>
+<span class="sd">            ....:   H(2*I).segment(H(oo))</span>
+<span class="sd">            ....: ]</span>
+
+<span class="sd">            sage: edges._lt_(segments[0], segments[1])</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: edges._lt_(segments[0], segments[2])</span>
+<span class="sd">            True</span>
+<span class="sd">            sage: edges._lt_(segments[1], segments[2])</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: edges._lt_(segments[2], segments[1])</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: edges._lt_(segments[2], segments[0])</span>
+<span class="sd">            False</span>
+<span class="sd">            sage: edges._lt_(segments[1], segments[0])</span>
+<span class="sd">            False</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lhs_geodesic</span> <span class="o">=</span> <span class="n">lhs</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">HyperbolicOrientedSegment</span><span class="p">):</span>
-            <span class="n">lhs</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span>
+            <span class="n">lhs_geodesic</span> <span class="o">=</span> <span class="n">lhs</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span>
 
+        <span class="n">rhs_geodesic</span> <span class="o">=</span> <span class="n">rhs</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">HyperbolicOrientedSegment</span><span class="p">):</span>
-            <span class="n">rhs</span> <span class="o">=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span>
+            <span class="n">rhs_geodesic</span> <span class="o">=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">HyperbolicHalfSpaces</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">lhs</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">(),</span> <span class="n">rhs</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">())</span></div></div>
+        <span class="k">if</span> <span class="n">HyperbolicHalfSpaces</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span>
+            <span class="n">lhs_geodesic</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">(),</span> <span class="n">rhs_geodesic</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">lhs_geodesic</span> <span class="o">!=</span> <span class="n">rhs_geodesic</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">lhs</span> <span class="o">==</span> <span class="n">rhs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># The geodesics containing the edges are the same but they are not the</span>
+        <span class="c1"># same segments. We compare the finite points on the segment to decide</span>
+        <span class="c1"># which edge comes first in counterclockwise order.</span>
+        <span class="n">geodesic</span> <span class="o">=</span> <span class="n">lhs_geodesic</span>
+
+        <span class="k">if</span> <span class="n">lhs</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">rhs</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">():</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="n">lhs</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">rhs</span><span class="o">.</span><span class="n">end</span><span class="p">()</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">()</span>
+                <span class="p">),</span> <span class="s2">&quot;edges in a set of HyperbolicEdges must be sortable&quot;</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">lhs</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="o">!=</span> <span class="n">rhs</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+                <span class="p">),</span> <span class="s2">&quot;edges were found to be different as segments but they are actually the same&quot;</span>
+
+                <span class="k">return</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span>
+                    <span class="n">lhs</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span>
+                <span class="p">)</span> <span class="o">&lt;</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">rhs</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">rhs</span><span class="o">.</span><span class="n">start</span><span class="p">()</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span>
+            <span class="n">lhs</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span>
+        <span class="p">)</span> <span class="o">&lt;</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">rhs</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

@@ -1491,7 +1491,7 @@ smaller. This is, however, only possible for polygons created with
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.edges">
-<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicConvexPolygon.edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.edges" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_vertices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicConvexPolygon.edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.edges" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment" title="flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment"><code class="xref py py-class docutils literal notranslate"><span class="pre">segments</span></code></a> and
 <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic" title="flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic"><code class="xref py py-class docutils literal notranslate"><span class="pre">geodesics</span></code></a> defining this polygon.</p>
 <p>This implements <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges" title="flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HyperbolicConvexSet.edges()</span></code></a> for polygons.</p>
@@ -1499,6 +1499,9 @@ smaller. This is, however, only possible for polygons created with
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">as_segments</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>); whether to also
 return the geodesics as segments with ideal end points.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">marked_vertices</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>); if set, edges
+with end points at a marked vertex are reported, otherwise, marked
+vertices are completely ignored.</p></li>
 </ul>
 <p>OUTPUT:</p>
 <p>A set of segments and geodesics. Iteration through this set is in
@@ -1529,6 +1532,14 @@ sage: [type(e) for e in P.edges(as_segments=True)]
  &lt;class &#39;flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category&#39;&gt;,
  &lt;class &#39;flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category&#39;&gt;,
  &lt;class &#39;flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category&#39;&gt;]
+</pre></div>
+</div>
+<p>The edges of a polygon with marked vertices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: P = H.convex_hull(-1, 1, I, 2*I, marked_vertices=True)
+sage: P.edges()
+{{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≥ 0}}
+sage: P.edges(marked_vertices=False)
+{{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0}}
 </pre></div>
 </div>
 </dd></dl>
@@ -2637,13 +2648,16 @@ the resulting objects lives in.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges">
-<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicConvexSet.edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marked_vertices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicConvexSet.edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment" title="flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment"><code class="xref py py-class docutils literal notranslate"><span class="pre">segments</span></code></a> and
 <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic" title="flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic"><code class="xref py py-class docutils literal notranslate"><span class="pre">geodesics</span></code></a> that bound this set.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">as_segments</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>); whether to also
 return the geodesics as segments with ideal end points.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">marked_vertices</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>); whether to
+report segments that start or end at redundant marked vertices or
+otherwise whether such marked vertices are completely ignored.</p></li>
 </ul>
 <p>OUTPUT:</p>
 <p>A set of segments and geodesics. Iteration through this set is in
@@ -3155,6 +3169,28 @@ sage: P.vertices(marked_vertices=False)
 <span class="n">sage</span><span class="p">:</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">vertical</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Segments on the same edge are ordered correctly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">segments</span> <span class="o">=</span> <span class="p">[</span>
+<span class="o">....</span><span class="p">:</span>   <span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="n">I</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>   <span class="n">H</span><span class="p">(</span><span class="n">I</span><span class="p">)</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">I</span><span class="p">)),</span>
+<span class="o">....</span><span class="p">:</span>   <span class="n">H</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">I</span><span class="p">)</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="n">oo</span><span class="p">))</span>
+<span class="o">....</span><span class="p">:</span> <span class="p">]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">segments</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">segments</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">segments</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="kc">True</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">segments</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="kc">False</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="kc">False</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">segments</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="kc">False</span>
 </pre></div>
 </div>
 </dd></dl>
