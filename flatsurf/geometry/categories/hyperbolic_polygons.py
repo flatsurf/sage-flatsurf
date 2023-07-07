@@ -40,6 +40,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 from sage.categories.category_types import Category_over_base_ring
+from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 
 from flatsurf.geometry.categories.polygons import Polygons
 
@@ -81,3 +82,30 @@ class HyperbolicPolygons(Category_over_base_ring):
         def is_equiangular(self):
             # TODO
             return None
+
+        def get_point_position(self, point):
+            point = self.parent()(point)
+
+            from flatsurf.geometry.polygon import PolygonPosition
+            for (i, v) in enumerate(self.vertices()):
+                if point == v:
+                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+
+            for (i, e) in enumerate(self.edges()):
+                if point in e:
+                    return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
+
+            if point in self:
+                return PolygonPosition(PolygonPosition.INTERIOR)
+
+            return PolygonPosition(PolygonPosition.OUTSIDE)
+
+    class Simple(CategoryWithAxiom_over_base_ring):
+        class Convex(CategoryWithAxiom_over_base_ring):
+            class ParentMethods:
+                def area(self):
+                    # Returned in multiples of π.
+                    angles = self.angles()
+
+                    # Gauss Bonnet, 1.4.2 in Katok
+                    return len(angles) - sum(angles)

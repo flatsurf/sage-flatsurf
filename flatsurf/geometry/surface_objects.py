@@ -140,9 +140,6 @@ class SurfacePoint(Element):
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
-        point = (ring**2)(point)
-        point.set_immutable()
-
         position = polygon.get_point_position(point)
 
         if not position.is_inside():
@@ -168,7 +165,11 @@ class SurfacePoint(Element):
                 self._representatives.add((label, source_edge))
 
                 # Rotate to the next edge that is leaving at the vertex
-                label, source_edge = surface.opposite_edge(label, source_edge)
+                opposite_edge = surface.opposite_edge(label, source_edge)
+                if opposite_edge is None:
+                    raise NotImplementedError("cannot create points at vertices of surfaces with boundary")
+
+                label, source_edge = opposite_edge
                 source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
 
                 if limit is not None:

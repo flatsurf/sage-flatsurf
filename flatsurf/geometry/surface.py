@@ -2400,7 +2400,25 @@ class MutableOrientedSimilaritySurface(
         return hash((super().__hash__(), tuple(self.gluings())))
 
 
-class MutableOrientedHyperbolicSurface(MutablePolygonalSurface):
+class OrientedHyperbolicIsometrySurface(Surface_base):
+    Element = SurfacePoint
+
+    def __init__(self, hyperbolic_plane, category=None):
+        from flatsurf.geometry.categories import HyperbolicIsometrySurfaces
+
+        if category is None:
+            category = HyperbolicIsometrySurfaces().Oriented().FiniteType()
+
+        category &= HyperbolicIsometrySurfaces().Oriented().FiniteType()
+
+        super().__init__(hyperbolic_plane.base_ring(), category=category)
+
+    def _describe_surface(self):
+        # TODO
+        return super()._describe_surface()
+
+
+class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, MutablePolygonalSurface):
     r"""
     A surface built from hyperbolic polygons glued by orientation preserving
     isometries.
@@ -2441,6 +2459,12 @@ class MutableOrientedHyperbolicSurface(MutablePolygonalSurface):
         sage: S
         Surface built from a quadrilateral
 
+        sage: S.vertices()
+        {Vertex 0 of polygon 0,
+         Vertex 1 of polygon 0,
+         Vertex 2 of polygon 0,
+         Vertex 5 of polygon 0}
+
     We get the same surface by self-gluing the edges of a quadrilateral::
 
         sage: from flatsurf import HyperbolicPlane
@@ -2470,19 +2494,15 @@ class MutableOrientedHyperbolicSurface(MutablePolygonalSurface):
         sage: S
         Surface built from a quadrilateral
 
+        sage: S.vertices()
+        {Vertex 0 of polygon 0, Vertex 1 of polygon 0}
+
     """
 
     def __init__(self, hyperbolic_plane, category=None):
         self._hyperbolic_plane = hyperbolic_plane
 
-        from flatsurf.geometry.categories import HyperbolicIsometrySurfaces
-
-        if category is None:
-            category = HyperbolicIsometrySurfaces().Oriented().FiniteType()
-
-        category &= HyperbolicIsometrySurfaces().Oriented().FiniteType()
-
-        super().__init__(hyperbolic_plane.base_ring(), category=category)
+        super().__init__(hyperbolic_plane, category=category)
 
     def glue(self, x, y):
         r"""

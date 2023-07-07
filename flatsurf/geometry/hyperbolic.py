@@ -4554,6 +4554,9 @@ class HyperbolicConvexSet(SageObject):
             .vertices()
         )
 
+    def vertex(self, n):
+        return self.vertices()[n]
+
     def is_finite(self):
         r"""
         Return whether all points in this set are finite.
