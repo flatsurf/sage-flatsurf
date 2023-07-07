@@ -171,7 +171,11 @@ from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
 from flatsurf.geometry.categories.euclidean_polygonal_surfaces import (
     EuclideanPolygonalSurfaces,
 )
+from flatsurf.geometry.categories.hyperbolic_polygonal_surfaces import (
+    HyperbolicPolygonalSurfaces,
+)
 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+from flatsurf.geometry.categories.hyperbolic_isometry_surfaces import HyperbolicIsometrySurfaces
 from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
 from flatsurf.geometry.categories.half_translation_surfaces import (

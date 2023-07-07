@@ -72,3 +72,12 @@ class HyperbolicPolygons(Category_over_base_ring):
 
         """
         return [Polygons(self.base_ring())]
+
+    class ParentMethods:
+        def is_equilateral(self):
+            # TODO
+            return None
+
+        def is_equiangular(self):
+            # TODO
+            return None

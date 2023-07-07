@@ -5785,6 +5785,9 @@ class HyperbolicConvexSet(SageObject):
         """
         raise NotImplementedError(f"{cls} does not support producing random sets yet")
 
+    def erase_marked_vertices(self):
+        return self.parent().intersection(*self.half_spaces())
+
 
 class HyperbolicOrientedConvexSet(HyperbolicConvexSet):
     r"""
