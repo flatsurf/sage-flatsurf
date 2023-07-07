@@ -5531,7 +5531,7 @@ class HyperbolicConvexSet(SageObject):
             # Verify that neg inverts the orientation of the set
             tester.assertEqual(self, -(-self))
 
-    def edges(self, as_segments=False):
+    def edges(self, as_segments=False, marked_vertices=True):
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and
         :class:`geodesics <HyperbolicOrientedGeodesic>` that bound this set.
@@ -5540,6 +5540,10 @@ class HyperbolicConvexSet(SageObject):
 
         - ``as_segments`` -- a boolean (default: ``False``); whether to also
           return the geodesics as segments with ideal end points.
+
+        - ``marked_vertices`` -- a boolean (default: ``True``); whether to
+          report segments that start or end at redundant marked vertices or
+          otherwise whether such marked vertices are completely ignored.
 
         OUTPUT:
 
@@ -9967,7 +9971,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         """
         for vertex in self._marked_vertices:
-            if not any([vertex in edge for edge in self.edges()]):
+            if not any([vertex in edge for edge in self.edges(marked_vertices=False)]):
                 raise ValueError("marked vertex must be on an edge of the polygon")
 
         if require_normalized:
@@ -11037,7 +11041,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         return ZZ(2)
 
     @cached_method
-    def edges(self, as_segments=False):
+    def edges(self, as_segments=False, marked_vertices=True):
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and
         :class:`geodesics <HyperbolicOrientedGeodesic>` defining this polygon.
@@ -11048,6 +11052,10 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         - ``as_segments`` -- a boolean (default: ``False``); whether to also
           return the geodesics as segments with ideal end points.
+
+        - ``marked_vertices`` -- a boolean (default: ``True``); if set, edges
+          with end points at a marked vertex are reported, otherwise, marked
+          vertices are completely ignored.
 
         OUTPUT:
 
@@ -11081,6 +11089,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
              <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>,
              <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>,
              <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>]
+
+        The edges of a polygon with marked vertices::
+
+            sage: P = H.convex_hull(-1, 1, I, 2*I, marked_vertices=True)
+            sage: P.edges()
+            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≥ 0}}
+            sage: P.edges(marked_vertices=False)
+            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0}}
 
         """
         edges = []
@@ -11135,6 +11151,33 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                     B, start=start, end=end, assume_normalized=as_segments, check=False
                 )
             )
+
+        if marked_vertices and self._marked_vertices:
+            edges_without_marked_vertices = edges
+            edges = []
+            for edge in edges_without_marked_vertices:
+                vertices_on_edge = [
+                    vertex for vertex in self._marked_vertices if vertex in edge
+                ]
+
+                def key(vertex, geodesic=edge.geodesic()):
+                    return geodesic.parametrize(vertex, model="euclidean")
+
+                vertices_on_edge.sort(key=key)
+                vertices_on_edge.append(edge.end())
+
+                start = edge.start()
+                for vertex in vertices_on_edge:
+                    edges.append(
+                        self.parent().segment(
+                            edge.geodesic(),
+                            start=start,
+                            end=vertex,
+                            assume_normalized=as_segments,
+                            check=False,
+                        )
+                    )
+                    start = vertex
 
         return HyperbolicEdges(edges)
 
@@ -11192,7 +11235,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         """
         vertices = []
 
-        edges = self.edges()
+        edges = self.edges(marked_vertices=False)
 
         end = edges[-1].end()
         for i, edge in enumerate(edges):
@@ -11421,7 +11464,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         if len(self._half_spaces) == 0:
             raise NotImplementedError("cannot plot full space")
 
-        edges = self.edges(as_segments=True)
+        edges = self.edges(as_segments=True, marked_vertices=False)
 
         pos = edges[0].start()
 
@@ -14139,11 +14182,71 @@ class HyperbolicEdges(OrderedSet):
             sage: edges._lt_(edges[0], edges[1])
             True
 
+        Segments on the same edge are ordered correctly::
+
+            sage: segments = [
+            ....:   H(0).segment(H(I)),
+            ....:   H(I).segment(H(2*I)),
+            ....:   H(2*I).segment(H(oo))
+            ....: ]
+
+            sage: edges._lt_(segments[0], segments[1])
+            True
+            sage: edges._lt_(segments[0], segments[2])
+            True
+            sage: edges._lt_(segments[1], segments[2])
+            True
+
+            sage: edges._lt_(segments[2], segments[1])
+            False
+            sage: edges._lt_(segments[2], segments[0])
+            False
+            sage: edges._lt_(segments[1], segments[0])
+            False
+
         """
+        lhs_geodesic = lhs
         if isinstance(lhs, HyperbolicOrientedSegment):
-            lhs = lhs.geodesic()
+            lhs_geodesic = lhs.geodesic()
 
+        rhs_geodesic = rhs
         if isinstance(rhs, HyperbolicOrientedSegment):
-            rhs = rhs.geodesic()
+            rhs_geodesic = rhs.geodesic()
 
-        return HyperbolicHalfSpaces._lt_(lhs.left_half_space(), rhs.left_half_space())
+        if HyperbolicHalfSpaces._lt_(
+            lhs_geodesic.left_half_space(), rhs_geodesic.left_half_space()
+        ):
+            return True
+
+        if lhs_geodesic != rhs_geodesic:
+            return False
+
+        if lhs == rhs:
+            return False
+
+        # The geodesics containing the edges are the same but they are not the
+        # same segments. We compare the finite points on the segment to decide
+        # which edge comes first in counterclockwise order.
+        geodesic = lhs_geodesic
+
+        if lhs.start().is_ideal():
+            if rhs.start().is_ideal():
+                assert (
+                    not lhs.end().is_ideal() and not rhs.end().is_ideal()
+                ), "edges in a set of HyperbolicEdges must be sortable"
+                assert (
+                    lhs.end() != rhs.end()
+                ), "edges were found to be different as segments but they are actually the same"
+
+                return geodesic.parametrize(
+                    lhs.end(), model="euclidean"
+                ) < geodesic.parametrize(rhs.end(), model="euclidean")
+
+            return True
+
+        if rhs.start().is_ideal():
+            return False
+
+        return geodesic.parametrize(
+            lhs.start(), model="euclidean"
+        ) < geodesic.parametrize(rhs.start(), model="euclidean")
