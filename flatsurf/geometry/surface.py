@@ -2427,12 +2427,19 @@ class MutableOrientedHyperbolicSurface(MutablePolygonalSurface):
         0
 
         sage: S.polygon(0).edges()
+        {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≥ 0} ∩ {2*(x^2 + y^2) - 17*x - 15 ≤ 0},
+         {-(x^2 + y^2) + 16 = 0} ∩ {(x^2 + y^2) - 17*x + 1 ≥ 0} ∩ {x ≥ 0},
+         {-(x^2 + y^2) + 16 = 0} ∩ {x ≤ 0} ∩ {(x^2 + y^2) + 17*x + 1 ≥ 0},
+         {x + 1 = 0} ∩ {2*(x^2 + y^2) + 17*x - 15 ≤ 0} ∩ {2*(x^2 + y^2) + 5*x - 3 ≥ 0},
+         {(x^2 + y^2) - 4 = 0} ∩ {(x^2 + y^2) + 5*x + 1 ≥ 0} ∩ {x ≤ 0},
+         {(x^2 + y^2) - 4 = 0} ∩ {x ≥ 0} ∩ {(x^2 + y^2) - 5*x + 1 ≥ 0}}
 
         sage: S.glue((0, 0), (0, 3))
         sage: S.glue((0, 1), (0, 2))
         sage: S.glue((0, 4), (0, 5))
 
         sage: S
+        Surface built from a quadrilateral
 
     We get the same surface by self-gluing the edges of a quadrilateral::
 
@@ -2451,12 +2458,17 @@ class MutableOrientedHyperbolicSurface(MutablePolygonalSurface):
         0
 
         sage: S.polygon(0).edges()
+        {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≥ 0} ∩ {2*(x^2 + y^2) - 17*x - 15 ≤ 0},
+         {-(x^2 + y^2) + 16 = 0} ∩ {(x^2 + y^2) - 17*x + 1 ≥ 0} ∩ {(x^2 + y^2) + 17*x + 1 ≥ 0},
+         {x + 1 = 0} ∩ {2*(x^2 + y^2) + 17*x - 15 ≤ 0} ∩ {2*(x^2 + y^2) + 5*x - 3 ≥ 0},
+         {(x^2 + y^2) - 4 = 0} ∩ {(x^2 + y^2) + 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 1 ≥ 0}}
 
         sage: S.glue((0, 0), (0, 2))
         sage: S.glue((0, 1), (0, 1))
         sage: S.glue((0, 3), (0, 3))
 
         sage: S
+        Surface built from a quadrilateral
 
     """
 
