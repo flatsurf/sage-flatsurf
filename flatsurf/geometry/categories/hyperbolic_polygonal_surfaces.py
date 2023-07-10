@@ -6,3 +6,7 @@ class HyperbolicPolygonalSurfaces(SurfaceCategory):
         from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
 
         return [PolygonalSurfaces()]
+
+    class ParentMethods:
+        def plot(self):
+            return sum(polygon.plot() for polygon in self.polygons())
