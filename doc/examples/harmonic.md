@@ -6,9 +6,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.5
+      jupytext_version: 1.14.6
   kernelspec:
-    display_name: SageMath 9.7
+    display_name: SageMath 10.0
     language: sage
     name: sagemath
 ---
@@ -23,8 +23,6 @@ watcher = jurigged.watch("/")
 
 
 First, some differentials on a square torus.
-
-(TODO: Unfortunately, we need to explicitly Delaunay triangulate the torus for this to work. We should remove this limitation and hide the triangulation as an implementation detail…)
 
 ```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
@@ -47,7 +45,7 @@ f = H({a: 1})
 
 ```sage
 Omega = HarmonicDifferentials(T)
-omega = Omega(f, prec=10, check=False)
+omega = Omega(f, check=False)
 omega
 ```
 
@@ -67,56 +65,49 @@ omega.error(verbose=True)
 
 If we create the differential with much more precision, we see some numerical noise here:
 
-```sage
+
 Omega(f, prec=40).error(verbose=True)
-```
+
 
 We can also use other strategies to determine the differential. The supported strategies are `L2` (the default), `midpoint_derivatives` (forcing derivatives up to some point to match at the midpoints of the triangulation edges,) `area_upper_bound` (minimize an approximation of the area,) `area` (minimize the area).
 
-```sage
+
 Omega(f, prec=2, algorithm=["midpoint_derivatives"])
-```
+
 
 These strategies can also be mixed and weighted differently (in the case of `midpoint_derivatives`, this controls up to which derivative we force derivatives to match).
 
 There are checks for obvious errors in the computation, e.g., when the error in the L2 norm gets too big:
 
-```sage
+
 Omega(f, prec=10, algorithm={"midpoint_derivatives": 1, "area_upper_bound": 0, "L2": 0})
-```
+
 
 These checks can be disabled though:
 
-```sage
+
 Omega(f, prec=10, algorithm={"midpoint_derivatives": 1, "area_upper_bound": 10, "L2": 0}, check=False)
-```
+
 
 There are some other basic operations supported. We can, e.g., ask for the roots of a differential (TODO: This does not include roots at the vertices of the triangulation yet):
 
-```sage
+
 omega.roots()
-```
+
 
 At the vertices we can ask for the coefficients of the power series developed around that vertex:
 
-```sage
+
 vertex = T.angles(return_adjacent_edges=True)[0][1]
-```
 
-```sage
+
 omega.cauchy_residue(vertex, 0)
-```
 
-```sage
+
 omega.cauchy_residue(vertex, -1)
-```
+
 
 ## A Less Trivial Example, the Regular Octagon
-
-```sage
-import jurigged
-jurigged.watch('/')
-```
 
 ```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
@@ -143,9 +134,9 @@ f = HS(f)
 f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
 Omega = HarmonicDifferentials(S)
-# Omega.plot().show()
+Omega.plot().show()
 
-omega = Omega(HS(f), prec=6, check=False, algorithm={"L2": 1})
+omega = Omega(HS(f), check=False)
 ```
 
 ```sage
@@ -153,11 +144,7 @@ omega.error(verbose=True)
 ```
 
 ```sage
-omega.series((0, 2, 137/482))
-```
-
-```sage
-omega._series.keys()
+omega.plot()
 ```
 
 ### An Explicit Series for the Octagon
@@ -181,6 +168,10 @@ g.polynomial()(Δ)
 
 ```sage
 omega_exact = OmegaExact({(0, 0, 0): g})
+```
+
+```sage
+omega_exact.plot()
 ```
 
 We integrate to find the cohomology class this corresponds to.

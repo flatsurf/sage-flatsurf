@@ -86,7 +86,6 @@ VectorXmp solve(vector<vector<double>> _A, vector<double> _b)
     for (int x = 0; x < COLS; x++) {
       if (_A[y][x] != 0) {
         A.insert(y, x) = _A[y][x];
-        
       }
       b[y] = _b[y];
     }
@@ -573,6 +572,34 @@ class HarmonicDifferential(Element):
             return series.map_coefficients(compress_coefficient)
 
         return repr(tuple(compress(series) for series in self._series.values()))
+
+    def plot(self):
+        from sage.all import RealField, I, vector, complex_plot, oo
+        S = self.parent().surface()
+        GS = S.graphical_surface()
+
+        plot = S.plot(fill=None)
+
+        for label in S.label_iterator():
+            P = S.polygon(label)
+            PS = GS.graphical_polygon(label)
+
+            def f(z):
+                xy = (z.real(), z.imag())
+                xy = PS.transform_back(xy)
+                if not P.contains_point(vector(xy)):
+                    return oo
+                xy = xy - P.circumscribing_circle().center()
+
+                xy = RealField(54)(xy[0]) + I*RealField(54)(xy[1])
+                return self.evaluate(0, edge=None, pos=None, Δ=xy)
+
+            bbox = PS.bounding_box()
+            plot += complex_plot(f, (bbox[0], bbox[2]), (bbox[1], bbox[3]))
+
+        # plot += S.plot(fill=None)
+
+        return plot
 
 
 class HarmonicDifferentials(UniqueRepresentation, Parent):
