@@ -107,7 +107,6 @@ VectorXmp solve(vector<vector<double>> _A, vector<double> _b)
 ''')
 
 
-
 class HarmonicDifferential(Element):
     def __init__(self, parent, series, residue=None, cocycle=None):
         super().__init__(parent)
@@ -573,7 +572,7 @@ class HarmonicDifferential(Element):
 
         return repr(tuple(compress(series) for series in self._series.values()))
 
-    def plot(self):
+    def plot(self, versus=None):
         from sage.all import RealField, I, vector, complex_plot, oo
         S = self.parent().surface()
         GS = S.graphical_surface()
@@ -584,6 +583,10 @@ class HarmonicDifferential(Element):
             P = S.polygon(label)
             PS = GS.graphical_polygon(label)
 
+            if versus:
+                if versus.parent().surface().polygon(label).vertices() != P.vertices():
+                    raise ValueError
+
             def f(z):
                 xy = (z.real(), z.imag())
                 xy = PS.transform_back(xy)
@@ -592,7 +595,10 @@ class HarmonicDifferential(Element):
                 xy = xy - P.circumscribing_circle().center()
 
                 xy = RealField(54)(xy[0]) + I*RealField(54)(xy[1])
-                return self.evaluate(0, edge=None, pos=None, Δ=xy)
+                value = self.evaluate(label, edge=None, pos=None, Δ=xy)
+                if versus:
+                    value -= versus.evaluate(label, edge=None, pos=None, Δ=xy)
+                return value
 
             bbox = PS.bounding_box()
             plot += complex_plot(f, (bbox[0], bbox[2]), (bbox[1], bbox[3]))

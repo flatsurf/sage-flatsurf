@@ -174,6 +174,10 @@ omega_exact = OmegaExact({(0, 0, 0): g})
 omega_exact.plot()
 ```
 
+```sage
+omega.plot(versus=omega_exact)
+```
+
 We integrate to find the cohomology class this corresponds to.
 
 ```sage
