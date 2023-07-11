@@ -206,8 +206,8 @@ class HarmonicDifferential(Element):
             for derivative in range(self.precision()//3):
                 for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
                     opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
-                    expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint(label, edge, a, b)), derivative)
-                    other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint(opposite_label, opposite_edge, 1 - b, 1 - a)), derivative)
+                    expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint(label, edge, a, edge, b)), derivative)
+                    other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a)), derivative)
 
                     abs_error, rel_error = errors(expected, other)
 
@@ -821,12 +821,13 @@ class GeometricPrimitives:
         self._homology_generators = homology_generators
 
     @cached_method
-    def midpoint(self, label, edge, a, b):
+    def midpoint(self, label, a_edge, a, b_edge, b):
         r"""
         Return the weighed midpoint of ``center + a * e`` and ``center + b *
-        e`` where ``center`` is the center of the circumscribing circle of
-        polygon ``label`` and ``e`` is the straight segment that goes from the
-        ``center`` to the midpoint of the polygon across ``edge``.
+        f`` where ``center`` is the center of the circumscribing circle of
+        polygon ``label`` and ``e``/``f`` is the straight segment that goes
+        from the ``center`` to the midpoint of the polygon across
+        ``a_edge``/``b_edge``.
 
         The midpoint is determined by weighing the two points according to
         their radius of convergence, see :meth:`_convergence`.
@@ -848,25 +849,25 @@ class GeometricPrimitives:
         centers because the radius of convergence is not the same (the vertex
         of the square is understood to be a singularity)::
 
-            sage: G.midpoint(0, 0, 0, 1/3)
+            sage: G.midpoint(0, 0, 0, 0, 1/3)
             (0.000000000000000, -0.142350327708281)
-            sage: G.midpoint(0, 2, 2/3, 1)
+            sage: G.midpoint(0, 2, 2/3, 2, 1)
             (0.000000000000000, 0.190983005625053)
-            sage: G.midpoint(0, 2, 2/3, 1) - G.midpoint(0, 0, 0, 1/3)
+            sage: G.midpoint(0, 2, 2/3, 2, 1) - G.midpoint(0, 0, 0, 0, 1/3)
             (0.000000000000000, 0.333333333333333)
 
         Here the midpoints are exactly on the edge of the square::
 
-            sage: G.midpoint(0, 0, 1/3, 2/3)
+            sage: G.midpoint(0, 0, 1/3, 0, 2/3)
             (0.000000000000000, -0.166666666666667)
-            sage: G.midpoint(0, 2, 1/3, 2/3)
+            sage: G.midpoint(0, 2, 1/3, 2, 2/3)
             (0.000000000000000, 0.166666666666667)
 
         Again, the same as in the first example::
 
-            sage: G.midpoint(0, 0, 2/3, 1)
+            sage: G.midpoint(0, 0, 2/3, 0, 1)
             (0.000000000000000, -0.190983005625053)
-            sage: G.midpoint(0, 2, 0, 1/3)
+            sage: G.midpoint(0, 2, 0, 2, 1/3)
             (0.000000000000000, 0.142350327708281)
 
         ::
@@ -878,18 +879,18 @@ class GeometricPrimitives:
             sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
             sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
 
-            sage: G.midpoint(0, 0, 0, 1/2)  # tol 1e-9
+            sage: G.midpoint(0, 0, 0, 0, 1/2)  # tol 1e-9
             (0.000000000000000, -0.334089318959649)
 
         """
         radii = (
-            self._convergence(label, edge, a),
-            self._convergence(label, edge, b),
+            self._convergence(label, a_edge, a),
+            self._convergence(label, b_edge, b),
         )
 
         centers = (
-            self.center(label, edge, a),
-            self.center(label, edge, b),
+            self.center(label, a_edge, a),
+            self.center(label, b_edge, b),
         )
 
         return (centers[1] - centers[0]) * radii[1] / (sum(radii))
@@ -2213,7 +2214,7 @@ class PowerSeriesConstraints:
 
                 a = gen[1]
                 b = gen[2]
-                P = self.complex_field()(*self._geometry.midpoint(label, edge, a, b))
+                P = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
 
                 P_power = P
 
@@ -2223,7 +2224,7 @@ class PowerSeriesConstraints:
 
                 opposite_label, opposite_edge = surface.opposite_edge(label, edge)
 
-                Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1 - b, 1 - a))
+                Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a))
 
                 Q_power = Q
 
@@ -2340,8 +2341,8 @@ class PowerSeriesConstraints:
 
             parent = self.symbolic_ring()
 
-            Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, b))
-            Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, 1-a))
+            Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
+            Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, opposite_edge, 1-a))
 
             # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
             for derivative in range(derivatives):
@@ -2355,8 +2356,8 @@ class PowerSeriesConstraints:
 
         # The weighed midpoint of the segment where the power series meet with
         # respect to the centers of the power series.
-        Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, b))
-        Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, 1-a))
+        Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
+        Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, opposite_edge, 1-a))
 
         # Develop both power series around that midpoint, i.e., Taylor expand them.
         # Unfortunately, these contain huge binomial coefficients.
