@@ -262,7 +262,7 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-            sage: η.series((0, 0, 0))  # tol 1e-9
+            sage: η.series((0, 0, 0))  # abstol 1e-9
             1.00000000000000 + 1.87854000000000e-72*I + (-2.25406000000000e-73 + 1.02693000000000e-72*I)*z0_0_1 + (2.43931000000000e-12 + 2.32526000000000e-71*I)*z0_0_1^2 + (3.89566000000000e-72 - 6.49402000000000e-72*I)*z0_0_1^3 + (-6.75204000000000e-13 - 5.90057000000000e-71*I)*z0_0_1^4 + O(z0_0_1^5)
 
         """
@@ -364,7 +364,7 @@ class HarmonicDifferential(Element):
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5, Ω._geometry)
             sage: R = C.symbolic_ring()
-            sage: η._evaluate(R(C.gen(0, 0, 0, 0))) # tol 1e-9
+            sage: η._evaluate(R(C.gen(0, 0, 0, 0))) # abstol 1e-9
             1.00000000000000 + 1.87854000000000e-72*I
 
         """
@@ -881,6 +881,13 @@ class GeometricPrimitives:
 
             sage: G.midpoint(0, 0, 0, 0, 1/2)  # tol 1e-9
             (0.000000000000000, -0.334089318959649)
+
+        A midpoint between two different Voronoi paths::
+
+            sage: G.midpoint(0, 0, 1, 2, 1)
+            (1.20710678118655, 1.20710678118655)
+            sage: G.midpoint(0, 0, 1, 4, 1)
+            (0.000000000000000, 2.41421356237309)
 
         """
         radii = (
@@ -2349,29 +2356,29 @@ class PowerSeriesConstraints:
                 self.add_constraint(
                     parent(self.evaluate(label, edge, a, Δ0, derivative)) - parent(self.evaluate(opposite_label, opposite_edge, 1-b, Δ1, derivative)))
 
-    def _L2_consistency_edge(self, label, edge, a, b):
+    def _L2_consistency_edge(self, label, a_edge, a, b_edge, b):
         cost = self.symbolic_ring(self.real_field()).zero()
-
-        opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
 
         # The weighed midpoint of the segment where the power series meet with
         # respect to the centers of the power series.
-        Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
-        Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, opposite_edge, 1-a))
+        Δ0 = self.complex_field()(*self._geometry.midpoint(label, a_edge, a, b_edge, b))
+        Δ1 = self.complex_field()(*self._geometry.midpoint(label, b_edge, b, a_edge, a))
 
         # Develop both power series around that midpoint, i.e., Taylor expand them.
-        # Unfortunately, these contain huge binomial coefficients.
-        T0 = self.develop(label, edge, a, Δ0)
-        T1 = self.develop(opposite_label, opposite_edge, 1-b, Δ1)
+        T0 = self.develop(label, a_edge, a, Δ0)
+        T1 = self.develop(label, b_edge, b, Δ1)
 
         # Write b_n for the difference of the n-th coefficient of both power series.
         # We want to minimize the sum of |b_n|^2 r^2n where r is a somewhat
         # randomly chosen small radius around the midpoint.
 
-        # distance = self._geometry.center(label, edge, b) - self._geometry.center(label, edge, a)
-        # r2 = (distance[0] ** 2 + distance[1] ** 2) / 4
+        a_convergence = self._geometry._convergence(label, a_edge, a)
+        b_convergence = self._geometry._convergence(label, b_edge, b)
 
-        r2 = self.real_field()(self._geometry._convergence(label, edge, (a + b) / 2) ** 2 / 25)
+        convergence = min(a_convergence - Δ0.norm(), b_convergence - Δ1.norm())
+
+        # TODO: What should 4 be here?
+        r2 = self.real_field()((convergence / 4)**2)
 
         b = (T0 - T1).list()
 
@@ -2423,7 +2430,7 @@ class PowerSeriesConstraints:
         cost = R.zero()
 
         for (label, edge), a, b in self._geometry._homology_generators:
-            cost += self._L2_consistency_edge(label, edge, a, b)
+            cost += self._L2_consistency_edge(label, edge, a, edge, b)
 
         return cost
 
