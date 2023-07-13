@@ -2477,7 +2477,11 @@ class PowerSeriesConstraints:
         convergence = min(a_convergence - Δ0.norm(), b_convergence - Δ1.norm())
 
         # TODO: What should 4 be here?
-        r2 = self.real_field()((convergence / 4)**2)
+        r = convergence / 4
+        debug.append(r)
+
+        assert convergence > 0
+        r2 = self.real_field()(r**2)
 
         b = (T0 - T1).list()
 
@@ -2491,6 +2495,10 @@ class PowerSeriesConstraints:
             cost += (real * real + imag * imag) * r2n
 
             r2n *= r2
+
+        # TODO: This is not in the article. Does that make sense?
+        # Normalize the result with the area of the integral domain.
+        cost /= r2
 
         self._debugs.append(debug)
 
