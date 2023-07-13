@@ -268,8 +268,13 @@ class HarmonicDifferential(Element):
         """
         return self._series[triangle]
 
+    @cached_method
+    def _constraints(self):
+        # TODO: This is a hack. Come up with a better class hierarchy!
+        return PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
+
     def evaluate(self, label, edge, pos, Δ, derivative=0):
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
+        C = self._constraints()
         return self._evaluate(C.evaluate(label, edge, pos, Δ, derivative=derivative))
 
     # TODO: Make this work again.
@@ -587,10 +592,13 @@ class HarmonicDifferential(Element):
                 if versus.parent().surface().polygon(label).vertices() != P.vertices():
                     raise ValueError
 
+            from sage.all import RR
+            PR = P.change_ring(RR)
+
             def f(z):
                 xy = (z.real(), z.imag())
                 xy = PS.transform_back(xy)
-                if not P.contains_point(vector(xy)):
+                if not PR.contains_point(vector(xy)):
                     return oo
                 xy = xy - P.circumscribing_circle().center()
 
@@ -932,7 +940,7 @@ class GeometricPrimitives:
         return (centers[1] - centers[0]) * radii[1] / (sum(radii))
 
     @cached_method
-    def center(self, label, edge, pos, wrap=False):
+    def center(self, label, edge, pos, wrap=False, ring=None):
         r"""
         Return the point at ``center + pos * e`` where ``center`` is the center
         of the circumscribing circle of the polygon ``label`` and ``e`` is the
@@ -971,6 +979,7 @@ class GeometricPrimitives:
             (0, (1/2, 1/2))
 
         """
+        # TODO: This method feels a bit hacky. The name is misleading, the return tuple is weird, and the ring argument is a strange performance hack.
         polygon = self._surface.polygon(label)
         polygon_center = polygon.circumscribing_circle().center()
 
@@ -985,10 +994,13 @@ class GeometricPrimitives:
         center = (1 - pos) * polygon_center + pos * opposite_polygon_center
 
         if not wrap or self._surface.polygon(label).contains_point(center):
+            if ring is not None:
+                from sage.all import vector
+                center = vector((ring(center[0]), ring(center[1])))
             return label, center
 
         label, edge = self._surface.opposite_edge(label, edge)
-        return self.center(label, edge, 1 - pos, wrap=True)
+        return self.center(label, edge, 1 - pos, wrap=True, ring=ring)
 
     @cached_method
     def _convergence(self, label, edge, pos):
@@ -2341,6 +2353,11 @@ class PowerSeriesConstraints:
 
         return value
 
+    @cached_method
+    def _circumscribing_circle_center(self, label):
+        from sage.all import CC
+        return CC(*self._surface.polygon(label).circumscribing_circle().center())
+
     def relativize(self, label, Δ):
         r"""
         Determine the power series which is best suited to evaluate a function at Δ.
@@ -2353,28 +2370,32 @@ class PowerSeriesConstraints:
           center of the circumscribing circle of that polygon.
 
         """
-        from sage.all import vector
-        Δ = vector((Δ.real(), Δ.imag()))
-        Δ += self._surface.polygon(label).circumscribing_circle().center()
+        # TODO: For performance reasons we compute in CC. We should probably use complex_field()
+        from sage.all import CC
 
-        # TODO: This sometimes fails due to numerical noise
+        Δ = CC(Δ)
+        Δ += self._circumscribing_circle_center(label)
+
+        # TODO: This sometimes fails due to numerical noise when plotting.
         # if not self._surface.polygon(label).contains_point(Δ):
         #     raise ValueError
 
+        from sage.all import RR
+
         def center(edge, pos):
-            lbl, center = self._geometry.center(label, edge, pos, wrap=True)
+            lbl, center = self._geometry.center(label, edge, pos, wrap=True, ring=RR)
             if lbl != label:
                 raise NotImplementedError
-            return center
+            return CC(*center)
 
         edge, pos = min(
             [(edge, pos) for (lbl, edge, pos) in self.symbolic_ring()._gens if lbl == label],
             key=lambda edge_pos: (Δ - center(*edge_pos)).norm())
-        # TODO: Once we treat centers that are in a different polygon, we need to take this into account here.
-        Δ -= self._geometry.center(label, edge, pos, wrap=True)[1]
-        Δ = self.complex_field()(Δ[0], Δ[1])
 
-        return edge, pos, Δ
+        # TODO: Once we treat centers that are in a different polygon, we need to take this into account here.
+        Δ -= center(edge, pos)
+
+        return edge, pos, self.complex_field()(Δ)
 
     def require_midpoint_derivatives(self, derivatives):
         r"""
@@ -3095,17 +3116,19 @@ class PowerSeriesConstraints:
         rank = A.rank()
 
         from sage.all import RDF
-        # TODO
-        # print("condition is", A.change_ring(RDF).condition())
+        condition = A.change_ring(RDF).condition()
 
         def cond():
             C = A.list()
-            import random
-            random.shuffle(C)
+            # numpy.random.shuffle() is much faster than random.shuffle() on large lists
+            import numpy.random
+            numpy.random.shuffle(C)
             return A.parent()(C).change_ring(RDF).condition()
 
-        # TODO: Warn when the condition looks too bad.
-        # print("condition could be", min([cond() for i in range(64)]) / A.change_ring(RDF).condition(), "of this")
+        random_condition = min([cond() for i in range(8)])
+
+        if random_condition / condition < .01:
+            print(f"condition is {condition:.1e} but could be {random_condition/condition:.1e} of that")
 
         if rank < columns:
             # TODO: Warn?

@@ -1858,6 +1858,7 @@ class ConvexPolygon(Polygon):
             "Point on boundary of polygon and holonomy not pointed into the polygon."
         )
 
+    @cached_method
     def circumscribing_circle(self):
         r"""
         Returns the circle which circumscribes this polygon.
