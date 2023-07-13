@@ -597,7 +597,8 @@ class HarmonicDifferential(Element):
                 xy = RealField(54)(xy[0]) + I*RealField(54)(xy[1])
                 value = self.evaluate(label, edge=None, pos=None, Δ=xy)
                 if versus:
-                    value -= versus.evaluate(label, edge=None, pos=None, Δ=xy)
+                    v = versus.evaluate(label, edge=None, pos=None, Δ=xy)
+                    value = (value - v) / v.abs()
                 return value
 
             bbox = PS.bounding_box()
