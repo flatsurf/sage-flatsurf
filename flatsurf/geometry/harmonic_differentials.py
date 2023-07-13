@@ -2543,6 +2543,28 @@ class PowerSeriesConstraints:
         for (label, edge), a, b in self._geometry._homology_generators:
             cost += self._L2_consistency_edge(label, edge, a, edge, b)
 
+        # TODO: Replace these hard-coded conditions with something generic.
+        # Maybe, take a Delaunay triangulation of the centers in a polygon and
+        # then make sure that we have at least a condition on the four shortest
+        # edges of each vertex.
+        cost += self._L2_consistency_edge(0, 0, 137/482, 1, 137/482)
+        cost += self._L2_consistency_edge(0, 1, 137/482, 2, 137/482)
+        cost += self._L2_consistency_edge(0, 2, 137/482, 3, 137/482)
+        cost += self._L2_consistency_edge(0, 3, 137/482, 0, 345/482)
+        cost += self._L2_consistency_edge(0, 0, 345/482, 1, 345/482)
+        cost += self._L2_consistency_edge(0, 1, 345/482, 2, 345/482)
+        cost += self._L2_consistency_edge(0, 2, 345/482, 3, 345/482)
+        cost += self._L2_consistency_edge(0, 3, 345/482, 0, 137/482)
+
+        cost += self._L2_consistency_edge(0, 0, 427/964, 1, 427/964)
+        cost += self._L2_consistency_edge(0, 1, 427/964, 2, 427/964)
+        cost += self._L2_consistency_edge(0, 2, 427/964, 3, 427/964)
+        cost += self._L2_consistency_edge(0, 3, 427/964, 0, 537/964)
+        cost += self._L2_consistency_edge(0, 0, 537/964, 1, 537/964)
+        cost += self._L2_consistency_edge(0, 1, 537/964, 2, 537/964)
+        cost += self._L2_consistency_edge(0, 2, 537/964, 3, 537/964)
+        cost += self._L2_consistency_edge(0, 3, 537/964, 0, 427/964)
+
         return cost
 
     @cached_method
