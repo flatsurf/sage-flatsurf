@@ -662,6 +662,8 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         Parent.__init__(self, category=category)
 
         self._surface = surface
+        # TODO: Find a better way to track the L2 circles.
+        self._debugs = []
 
         self._geometry = GeometricPrimitives(surface, homology_generators)
 
@@ -707,18 +709,43 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         G = S.plot()
         SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
         for (label, edge, pos) in SR._gens:
-            center = self._geometry.center(label, edge, pos)
-            if not S.polygon(label).contains_point(center):
-                label, edge = S.opposite_edge(label, edge)
-                pos = 1 - pos
-                center = self._geometry.center(label, edge, pos)
+            label, center = self._geometry.center(label, edge, pos, wrap=True)
             radius = self._geometry._convergence(label, edge, pos)
             from flatsurf import TranslationSurface
             P = TranslationSurface(S).surface_point(label, center)
             G += P.plot(color="red")
 
             from sage.all import circle
-            G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.1)
+            G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.05)
+
+        for (label, edge, pos) in SR._gens:
+            label, center = self._geometry.center(label, edge, pos, wrap=True)
+
+            from flatsurf import TranslationSurface
+            P = TranslationSurface(S).surface_point(label, center)
+            p = P.graphical_surface_point().points()[0]
+
+            for (lbl, a_edge, a, b_edge, b, Δ0, Δ1, radius) in self._debugs:
+                if lbl == label and a_edge == edge and a == pos:
+                    Δ = Δ0
+                elif self._surface.opposite_edge(lbl, a_edge) == (label, edge) and a == 1 - pos:
+                    Δ = Δ0
+                elif lbl == label and b_edge == edge and b == pos:
+                    Δ = Δ1
+                elif self._surface.opposite_edge(lbl, b_edge) == (label, edge) and b == 1 - pos:
+                    Δ = Δ1
+                else:
+                    continue
+
+                from sage.all import vector
+                q = p + vector((Δ.real(), Δ.imag()))
+
+                from sage.all import line
+                G += line((p, q), color="black")
+
+                from sage.all import circle
+                G += circle(q, radius, color="brown", fill="brown", alpha=.1)
+
         return G
 
     def surface(self):
@@ -780,6 +807,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
             constraints.optimize(weight * constraints._L2_consistency())
+            self._debugs = constraints._debugs
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
@@ -2407,10 +2435,33 @@ class PowerSeriesConstraints:
     def _L2_consistency_edge(self, label, a_edge, a, b_edge, b):
         cost = self.symbolic_ring(self.real_field()).zero()
 
+        debug = [label, a_edge, a, b_edge, b]
+
+        def Δ(x_edge, x, y_edge, y):
+            x_opposite_label, x_opposite_edge = self._surface.opposite_edge(label, x_edge)
+            if x_opposite_label != label:
+                raise NotImplementedError  # need to shift polygons
+
+            y_opposite_label, y_opposite_edge = self._surface.opposite_edge(label, y_edge)
+            if y_opposite_label != label:
+                raise NotImplementedError  # need to shift polygons
+
+            Δs = (
+                self.complex_field()(*self._geometry.midpoint(label, x_edge, x, y_edge, y)),
+                self.complex_field()(*self._geometry.midpoint(label, x_opposite_edge, 1 - x, y_edge, y)),
+                self.complex_field()(*self._geometry.midpoint(label, x_edge, x, y_opposite_edge, 1 - y)),
+                self.complex_field()(*self._geometry.midpoint(label, x_opposite_edge, 1 - x, y_opposite_edge, 1 - y)),
+            )
+
+            return min(Δs, key=lambda v: v.norm())
+
         # The weighed midpoint of the segment where the power series meet with
         # respect to the centers of the power series.
-        Δ0 = self.complex_field()(*self._geometry.midpoint(label, a_edge, a, b_edge, b))
-        Δ1 = self.complex_field()(*self._geometry.midpoint(label, b_edge, b, a_edge, a))
+        # TODO: Assert that the min is attained for the same choice of representatives (or pick the representatives explicitly as the ones with minimal distance.)
+        Δ0 = Δ(a_edge, a, b_edge, b)
+        Δ1 = Δ(b_edge, b, a_edge, a)
+
+        debug += [Δ0, Δ1]
 
         # Develop both power series around that midpoint, i.e., Taylor expand them.
         T0 = self.develop(label, a_edge, a, Δ0)
@@ -2440,6 +2491,8 @@ class PowerSeriesConstraints:
             cost += (real * real + imag * imag) * r2n
 
             r2n *= r2
+
+        self._debugs.append(debug)
 
         return cost
 
@@ -2473,6 +2526,8 @@ class PowerSeriesConstraints:
             0
 
         """
+        self._debugs = []
+
         R = self.symbolic_ring(self.real_field())
 
         cost = R.zero()
