@@ -896,21 +896,32 @@ class GeometricPrimitives:
         )
 
         centers = (
-            self.center(label, a_edge, a),
-            self.center(label, b_edge, b),
+            self.center(label, a_edge, a)[1],
+            self.center(label, b_edge, b)[1],
         )
 
         return (centers[1] - centers[0]) * radii[1] / (sum(radii))
 
     @cached_method
-    def center(self, label, edge, pos):
+    def center(self, label, edge, pos, wrap=False):
         r"""
         Return the point at ``center + pos * e`` where ``center`` is the center
         of the circumscribing circle of the polygon ``label`` and ``e`` is the
         straight segment connecting that center to the center of the polygon
         across the ``edge``.
 
-        The center is returned in coordinates in the system of the polygon ``label``.
+        The point returned might not be inside the polygon ``label`` anymore.
+
+        When ``wrap`` is not set, the point is returned in coordinates of the
+        polygon ``label`` even if it is outside of the that polygon.
+
+        Otherwise, the point is returned in coordinates of a polygon that
+        contains it.
+
+        OUTPUT:
+
+        A pair ``(label, coordinates)`` where ``coordinates`` are coordinates
+        of the point in the polygon ``label``.
 
         EXAMPLES::
 
@@ -922,11 +933,13 @@ class GeometricPrimitives:
             sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
 
             sage: G.center(0, 0, 0)
-            (1/2, 1/2)
+            (0, (1/2, 1/2))
             sage: G.center(0, 0, 1/2)
-            (1/2, 0)
+            (0, (1/2, 0))
             sage: G.center(0, 0, 1)
-            (1/2, -1/2)
+            (0, (1/2, -1/2))
+            sage: G.center(0, 0, 1, wrap=True)
+            (0, (1/2, 1/2))
 
         """
         polygon = self._surface.polygon(label)
@@ -940,7 +953,13 @@ class GeometricPrimitives:
 
         opposite_polygon_center = opposite_polygon.circumscribing_circle().center()
 
-        return (1 - pos) * polygon_center + pos * opposite_polygon_center
+        center = (1 - pos) * polygon_center + pos * opposite_polygon_center
+
+        if not wrap or self._surface.polygon(label).contains_point(center):
+            return label, center
+
+        label, edge = self._surface.opposite_edge(label, edge)
+        return self.center(label, edge, 1 - pos, wrap=True)
 
     @cached_method
     def _convergence(self, label, edge, pos):
@@ -972,7 +991,7 @@ class GeometricPrimitives:
             1.30656296487638
 
         """
-        center = self.center(label, edge, pos)
+        label, center = self.center(label, edge, pos)
         polygon = self._surface.polygon(label)
 
         # TODO: We are assuming that the only relevant singularities are the
@@ -2281,14 +2300,7 @@ class PowerSeriesConstraints:
         factor = ComplexField(54)(factorial(derivative))
 
         if edge is None and pos is None:
-            from sage.all import vector
-            Δ = vector((Δ.real(), Δ.imag()))
-            Δ += self._surface.polygon(label).circumscribing_circle().center()
-            edge, pos = min(
-                [(edge, pos) for (lbl, edge, pos) in self.symbolic_ring()._gens if lbl == label],
-                key=lambda edge_pos: (Δ - self._geometry.center(label, *edge_pos)).norm())
-            Δ -= self._geometry.center(label, edge, pos)
-            Δ = self.complex_field()(Δ[0], Δ[1])
+            edge, pos, Δ = self.relativize(label, Δ)
 
         for k in range(derivative, self._prec):
             value += factor * self.gen(label, edge, pos, k) * z
@@ -2299,6 +2311,41 @@ class PowerSeriesConstraints:
             z *= Δ
 
         return value
+
+    def relativize(self, label, Δ):
+        r"""
+        Determine the power series which is best suited to evaluate a function at Δ.
+
+        INPUT:
+
+        - ``label`` -- a label of a polygon in the surface
+
+        - ``Δ`` -- a complex number describing coordinates relative to the
+          center of the circumscribing circle of that polygon.
+
+        """
+        from sage.all import vector
+        Δ = vector((Δ.real(), Δ.imag()))
+        Δ += self._surface.polygon(label).circumscribing_circle().center()
+
+        # TODO: This sometimes fails due to numerical noise
+        # if not self._surface.polygon(label).contains_point(Δ):
+        #     raise ValueError
+
+        def center(edge, pos):
+            lbl, center = self._geometry.center(label, edge, pos, wrap=True)
+            if lbl != label:
+                raise NotImplementedError
+            return center
+
+        edge, pos = min(
+            [(edge, pos) for (lbl, edge, pos) in self.symbolic_ring()._gens if lbl == label],
+            key=lambda edge_pos: (Δ - center(*edge_pos)).norm())
+        # TODO: Once we treat centers that are in a different polygon, we need to take this into account here.
+        Δ -= self._geometry.center(label, edge, pos, wrap=True)[1]
+        Δ = self.complex_field()(Δ[0], Δ[1])
+
+        return edge, pos, Δ
 
     def require_midpoint_derivatives(self, derivatives):
         r"""
