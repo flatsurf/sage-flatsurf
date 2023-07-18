@@ -140,6 +140,9 @@ class SurfacePoint(Element):
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
+        from sage.all import vector
+        point = vector(point, immutable=True)
+
         position = polygon.get_point_position(point)
 
         if not position.is_inside():
