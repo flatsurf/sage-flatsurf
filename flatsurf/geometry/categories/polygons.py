@@ -321,7 +321,7 @@ class Polygons(Category_over_base_ring):
                 self.vertices(marked_vertices=False)
             )
 
-            if marked_vertices and self.area() != 0:
+            if marked_vertices:
                 self = self.erase_marked_vertices()
 
             properties = {

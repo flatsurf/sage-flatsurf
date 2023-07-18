@@ -10,3 +10,9 @@ class HyperbolicPolygonalSurfaces(SurfaceCategory):
     class ParentMethods:
         def plot(self):
             return sum(polygon.plot() for polygon in self.polygons())
+
+        def _an_element_(self):
+            label = next(iter(self.labels()))
+            polygon = self.polygon(label)
+
+            return self(label, polygon.vertices()[0])

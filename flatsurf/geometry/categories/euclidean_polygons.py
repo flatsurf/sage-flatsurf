@@ -745,7 +745,7 @@ class EuclideanPolygons(Category_over_base_ring):
                             for i in range(nvertices)
                         ]
                     ),
-                )
+                ), immutable=True
             )
 
         def get_point_position(self, point, translation=None):

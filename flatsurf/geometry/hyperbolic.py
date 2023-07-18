@@ -8400,6 +8400,68 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         return parent.geodesic(a, b)
 
+    def angle(self, other):
+        r"""
+        Return the angle between this geodesic and ``other``.
+
+        Returns ``None`` if the geodesics do not intersect at a finite or ideal point.
+
+        INPUT:
+
+        - ``other`` -- another oriented geodesic
+
+        ALGORITHM:
+
+        We are using derived from the hyperboloid model, see https://math.stackexchange.com/a/4167944/145897
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        Geodesics may not intersect::
+
+            sage: v = H.vertical(0)
+            sage: v.angle(v) is None
+            True
+            sage: v.angle(-v) is None
+            True
+
+            sage: w = H.half_circle(2, 1)
+            sage: v.angle(w) is None
+            True
+
+        Geodesics might intersect at an infinite point::
+
+            sage: w = H.vertical(1)
+            sage: v.angle(w)
+            0.0...
+            sage: (-v).angle(-w)
+            0.0...
+
+        Geodesics can intresect in a finite point::
+
+            sage: v = H.half_circle(-1, 2)
+            sage: w = H.half_circle(1, 2)
+            sage: v.angle(w)  # tol 1e-9
+            0.5
+
+        """
+        a = self.equation(model="klein")
+        b = other.equation(model="klein")
+
+        numerator = a[1] * b[1] + a[2] * b[2] - a[0] * b[0]
+        denominator2 = (a[1] ** 2 + a[2] ** 2 - a[0] ** 2) * (b[1] ** 2 + b[2] ** 2 - b[0] ** 2)
+
+        if self._configuration(other) not in ["convex", "concave"]:
+            return None
+
+        rhs = (numerator**2 / denominator2).abs()
+        if rhs > 1:
+            return None
+
+        return HyperbolicExpressions(self.parent().base_ring())(("acos", numerator.abs(), denominator2, "π"))
+
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
     r"""
@@ -11852,6 +11914,82 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         return not self.is_finite()
 
+    def angles(self):
+        r"""
+        Return the inner angles at the vertices of this polygon in multiples of
+        π.
+
+        EXAMPLES:
+
+        A triangle with infinite vertices has three angles of zero::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(-1).right_half_space(),
+            ....:     H.vertical(1).left_half_space(),
+            ....:     H.half_circle(0, 1).left_half_space()])
+            sage: P.angles()
+            [0.000000000000000, 0.000000000000000, 0.000000000000000]
+
+        A triangle with finite vertices has non-zero angles::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_circle(-1, 4).right_half_space(),
+            ....:     H.half_circle(0, 2).left_half_space()])
+            sage: P.angles()
+            [0.500000000000000, 0.154919815756076, 0.333333333333333]
+
+        Note that vertices might only be bounded by a single geodesic. At such
+        vertices, an angle of ``None`` is reported::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.half_circle(-1, 4).right_half_space()])
+            sage: P.angles()
+            [None, None, 0.333333333333333]
+
+        ::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space()])
+            sage: P.angles()
+            [None, None, 0.000000000000000]
+
+        At marked vertices, the angle is π::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+            sage: P = H.polygon([
+            ....:     H.vertical(0).right_half_space(),
+            ....:     H.vertical(1).left_half_space()],
+            ....:     marked_vertices=[H(I)])
+            sage: P.angles()
+            [None, None, 0.000000000000000, 1.00000000000000]
+
+        """
+        angles = []
+        for vertex in self.vertices():
+            for e, f in self.edges(marked_vertices=False).pairs():
+                if e.intersection(f) == vertex:
+                    angles.append((-e.geodesic()).angle(f.geodesic()))
+                    break
+            else:
+                if vertex.is_ideal():
+                    angles.append(None)
+                else:
+                    angles.append(HyperbolicExpressions(self.parent().base_ring())(("acos", -1, 1, "π")))
+
+        return angles
+
 
 class HyperbolicSegment(HyperbolicConvexFacade):
     r"""
@@ -13477,6 +13615,13 @@ class OrderedSet(collections.abc.Set):
             sage: H.vertical(0).half_spaces() + H.vertical(1).half_spaces()
             {{x ≤ 0}, {x - 1 ≤ 0}, {x ≥ 0}, {x - 1 ≥ 0}}
 
+        TESTS::
+
+            sage: from flatsurf.geometry.hyperbolic import HyperbolicVertices
+            sage: V = HyperbolicVertices([H(0), H(1), H(oo)])
+            sage: V + V
+            {0, 1, ∞}
+
         """
         if type(self) is not type(other):
             raise TypeError("both sets must be of the same type")
@@ -13698,6 +13843,11 @@ class HyperbolicVertices(OrderedSet):
         sage: isinstance(V, HyperbolicVertices)
         True
 
+    ::
+
+        sage: HyperbolicVertices([H(0), H(1), H(I), H(oo)])
+        {0, 1, ∞, I}
+
     .. SEEALSO::
 
         :meth:`HyperbolicConvexSet.vertices` to obtain such a set
@@ -13797,7 +13947,7 @@ class HyperbolicVertices(OrderedSet):
         """
         return super()._merge(*sets)
 
-    def _slope(self, vertex):
+    def _slope(self, vertex, reference=None):
         r"""
         Return the slope of ``vertex`` with respect to the chosen reference
         vertex of this set as a tuple (Δy, Δx).
@@ -13816,7 +13966,7 @@ class HyperbolicVertices(OrderedSet):
             (1, 1)
 
         """
-        sx, sy = self._start.coordinates(model="klein")
+        sx, sy = (reference or self._start).coordinates(model="klein")
         x, y = vertex.coordinates(model="klein")
         return (y - sy, x - sx)
 
@@ -13844,12 +13994,17 @@ class HyperbolicVertices(OrderedSet):
             sage: V._lt_(H(oo), H(1))
             False
 
+        TESTS::
+
+            sage: V._lt_(H(0), H(0))
+            False
+
         """
+        if lhs == rhs:
+            return False
         if lhs == self._start:
             return True
         if rhs == self._start:
-            return False
-        if lhs == rhs:
             return False
 
         dy_lhs, dx_lhs = self._slope(lhs)
@@ -13866,21 +14021,33 @@ class HyperbolicVertices(OrderedSet):
             return False
 
         # The points (start, lhs, rhs) are collinear.
-        # In general we cannot decide their order with only looking at start,
+        # In general we cannot decide their order by only looking at start,
         # lhs, and rhs. We need to understand where the rest of the convex hull
         # lives.
         assert (
             lhs in self._entries and rhs in self._entries
         ), "cannot compare vertices that are not defining for the convex hull"
 
-        # If there is any vertex with a bigger slope, then this line is at the
-        # start of the walk in counterclockwise order.
+        # To decide the ordering of lhs and rhs, we need to find out if the
+        # counterclockwise walk begins with start followed by lhs or rhs or
+        # whether it ends with any of lhs and rhs.
+
+        # To decide, we can need to know if the convex hull is on the left or
+        # on the right of the line containing start, lhs, rhs.
         for vertex in self._entries:
             dy, dx = self._slope(vertex)
             if dy * dx_rhs > dy_rhs * dx:
-                return dx_lhs < dx_rhs
+                # The convex hull is on the left of the line formed by start,
+                # lhs, and rhs.
+                # Since lhs and rhs are at the start of the counterclockwise
+                # walk, the closer of the two comes first.
+                return dx_lhs ** 2 + dy_lhs ** 2 < dx_rhs ** 2 + dy_rhs ** 2
             elif dy * dx_rhs < dy_rhs * dx:
-                return dx_lhs > dx_rhs
+                # The convex hull is on the rightof the line formed by start,
+                # lhs, and rhs.
+                # Since lhs and rhs are at the end of the counterclockwise
+                # walk, the closer of the two comes last
+                return dx_lhs ** 2 + dy_lhs ** 2 > dx_rhs ** 2 + dy_rhs ** 2
 
         raise ValueError(
             "cannot decide counterclockwise ordering of exactly three collinear points"
@@ -14256,3 +14423,51 @@ class HyperbolicEdges(OrderedSet):
         return geodesic.parametrize(
             lhs.start(), model="euclidean"
         ) < geodesic.parametrize(rhs.start(), model="euclidean")
+
+
+class HyperbolicExpression(Element):
+    def __init__(self, parent, x):
+        if x == 0:
+            x = "acos", 0, 1, "π"
+
+        self._trig, self._numerator, self._denominator2, self._normalization = x
+        super().__init__(parent)
+
+    def _repr_(self):
+        from sage.all import RR
+        rhs = (RR(self._numerator) / RR(self._denominator2).sqrt())
+
+        if self._trig == "acos":
+            from sage.all import acos as trig
+        elif self._trig == "asin":
+            from sage.all import asin as trig
+        elif self._trig == "acosh":
+            from sage.all import acosh as trig
+        elif self._trig == "asinh":
+            from sage.all import asinh as trig
+        else:
+            raise NotImplementedError("cannot represent expression involving this trigonometric function yet")
+
+        if self._normalization == "π":
+            from sage.all import acos
+            pi = acos(-1.)
+            return repr(trig(rhs) / pi)
+        else:
+            raise NotImplementedError("unsupported normalization")
+
+    def _add_(self, other):
+        if not self:
+            return other
+        if not other:
+            return self
+
+        raise NotImplementedError("cannot compute the sum of these symbolic expressions yet")
+
+
+from sage.rings.ring import Ring
+
+class HyperbolicExpressions(Ring):
+    Element = HyperbolicExpression
+
+    def _element_constructor_(self, x):
+        return self.element_class(self, x)
