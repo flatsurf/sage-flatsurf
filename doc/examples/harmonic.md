@@ -128,15 +128,24 @@ f = {
     a: -0.681616747143081,
     b: 0.963951648150378,
     c: -0.681616747143081,
+    # d: 0,
+    # a: 0,
+    # b: 0,
+    # c: 1,
 }
 print(f)
 f = HS(f)
 f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
 Omega = HarmonicDifferentials(S)
-Omega.plot().show()
+```
 
-omega = Omega(HS(f), check=False)
+```sage
+omega = Omega(HS(f), prec=30, check=False)
+```
+
+```sage
+Omega.plot()
 ```
 
 ```sage
@@ -161,21 +170,26 @@ g = z^2 - 1/9*z^10 + 20/1377*z^18 - 14/6885*z^26 + 2044/6952473*z^34 - 111097/25
 
 ```sage
 width = S.polygon(0).edge(0)[0] + 2*S.polygon(0).edge(1)[0]
-# Δ = 137/482 * width / 1.41421356237310 * (1 + I)
+Δ = 137/482 * width / 1.41421356237310 * (1 + I)
 Δ = 1/5 * (1 + I)
+Δ = (4 + I) / 5
 g.polynomial()(Δ)
 ```
 
 ```sage
-omega_exact = OmegaExact({(0, 0, 0): g})
+omega_exact_truncated = OmegaExact({(0, 0, 0): g.add_bigoh(30).change_ring(RR)})
 ```
 
 ```sage
-omega_exact.plot()
+omega_exact = OmegaExact({(0, 0, 0): g.change_ring(RR)})
 ```
 
 ```sage
-omega.plot(versus=omega_exact)
+omega_exact_truncated.plot(versus=omega_exact)
+```
+
+```sage
+omega.plot(versus=omega_exact_truncated)
 ```
 
 We integrate to find the cohomology class this corresponds to.
@@ -197,11 +211,7 @@ We integrate to find the cohomology class this corresponds to.
 ```
 
 ```sage
-S.polygon(0).plot()
-```
-
-```sage
-exact_sample = omega_exact.evaluate(0, 0, 0, Δ)
+exact_sample = omega_exact.evaluate(0, edge=None, pos=None, Δ=Δ)
 exact_sample
 ```
 
@@ -218,7 +228,7 @@ S.plot() + point.plot(color="black", size=50) + sum([S.point(label, S.polygon(la
 ```
 
 ```sage
-approximate_sample = omega.evaluate(0, edge=None, pos=None, Δ=Δ)
+approximate_sample = omega_exact.evaluate(0, edge=None, pos=None, Δ=Δ)
 
 print("|", exact_sample,"-",approximate_sample,"| = ", (exact_sample-approximate_sample).abs())
 ```

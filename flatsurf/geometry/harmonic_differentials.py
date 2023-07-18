@@ -2497,8 +2497,8 @@ class PowerSeriesConstraints:
 
         convergence = min(a_convergence - Δ0.norm(), b_convergence - Δ1.norm())
 
-        # TODO: What should 4 be here?
-        r = convergence / 4
+        # TODO: What should the divisor be here?
+        r = convergence / 2
         debug.append(r)
 
         assert convergence > 0
