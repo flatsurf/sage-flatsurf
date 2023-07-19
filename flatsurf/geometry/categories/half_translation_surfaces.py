@@ -193,7 +193,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         Q_0(0, -1^4)
 
                     """
-                    angles = self.angles()
+                    angles = [v.angle() for v in self.vertices()]
 
                     for a, b in self.gluings():
                         if a == b:
@@ -232,6 +232,32 @@ class HalfTranslationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
+            def angle(self, point, numerical=False):
+                if numerical:
+                    from flatsurf.geometry.categories import ConeSurfaces
+                    return ConeSurfaces.Oriented.ParentMethods.angle(self, point, numerical=True)
+
+                from sage.all import ZZ
+                if not point.is_vertex():
+                    return ZZ(1)
+
+                angle = ZZ(0)
+
+                for label, edge in point.edges():
+                    if self.opposite_edge(label, edge) is None:
+                        raise ValueError("vertex at boundary does not have a total angle")
+
+                    v = self.polygon(label).edge(edge)
+                    w = -self.polygon(label).edge(edge - 1)
+
+                    from flatsurf.geometry.euclidean import is_between, is_parallel
+                    from sage.all import vector
+                    for side in [vector((1, 0)), vector((-1, 0))]:
+                        if is_parallel(side, v) or is_between(v, w, side):
+                            angle += 1
+
+                return angle / 2
 
             def holonomy_field(self):
                 r"""
@@ -488,6 +514,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                             sage: import flatsurf.geometry.similarity_surface_generators as sfg
                             sage: sfg.translation_surfaces.regular_octagon().angles()
+                            doctest:warning
+                            ...
+                            UserWarning: angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().
                             [3]
                             sage: S = sfg.translation_surfaces.veech_2n_gon(5)
                             sage: S.angles()
@@ -559,6 +588,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                             sage: S.angles()
                             [2, 2]
                         """
+                        import warnings
+                        warnings.warn("angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().")
+
                         from flatsurf.geometry.euclidean import is_between
 
                         edges = set(self.edges())

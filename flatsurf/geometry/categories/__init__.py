@@ -137,7 +137,7 @@ available::
     sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
     Traceback (most recent call last):
     ...
-    AttributeError: ... no attribute 'angles'
+    AttributeError: ... no attribute 'angle'
 
 So this approach is quite brittle and might need a mix with the above to work::
 

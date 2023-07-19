@@ -290,6 +290,38 @@ class SurfacePoint(Element):
         """
         return next(iter(self.representatives()))
 
+    def edges(self):
+        r"""
+        Return the list of edges that contain this point.
+
+        Glued pairs of edges in the surface are only reported once. In
+        particular, if the point is both the starting point of e and the end
+        point of -e, then only e is reported.
+
+        """
+        if not self.is_vertex():
+            # This is a point in the interior of a polygon or on an edge
+            label, coordinates = self.representative()
+            position = self.surface().polygon(label).get_point_position(coordinates)
+
+            if position.is_in_edge_interior():
+                return {position.get_edge()}
+
+            return set()
+
+        edges = set()
+
+        for label, coordinates in self.representatives():
+            polygon = self.surface().polygon(label)
+            vertex = polygon.get_point_position(coordinates).get_vertex()
+            edges.add((label, vertex))
+
+            previous_edge = (vertex - 1) % len(polygon.vertices())
+            if self.surface().opposite_edge(label, previous_edge) is None:
+                edges.add((label, previous_edge))
+
+        return edges
+
     def vertex_set(self):
         r"""
         Return the list of pairs (l, v) in the equivalence class of this singularity.
@@ -479,6 +511,31 @@ class SurfacePoint(Element):
         return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
             *args, **kwargs
         )
+
+    def angle(self, numerical=False):
+        r"""
+        Return the total angle at this point in multiples of 2π.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: P = S.point(0, (1/2, 1/2))
+            sage: P.angle()
+            1
+
+        ::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: P = S.point(0, 0)
+            sage: P.angle()
+            1/2
+
+        """
+        if not self.is_vertex():
+            return 1. if numerical else 1
+        return self.surface().angle(self, numerical=numerical)
 
     def __repr__(self):
         r"""

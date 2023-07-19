@@ -202,6 +202,23 @@ class ConeSurfaces(SurfaceCategory):
 
             return True
 
+    class Oriented(SurfaceCategoryWithAxiom):
+        class ParentMethods:
+            def angle(self, point, numerical=False):
+                from sage.all import ZZ
+
+                if not point.is_vertex():
+                    return ZZ(1)
+
+                angle = ZZ(0)
+
+                for label, edge in point.edges():
+                    angle += self.polygon(label).angle(edge, numerical=numerical)
+                    if self.opposite_edge(label, edge) is None:
+                        raise ValueError("vertex at boundary does not have a total angle")
+
+                return angle
+
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
         The category of cone surfaces built from finitely many polygons.
@@ -326,6 +343,9 @@ class ConeSurfaces(SurfaceCategory):
                             sage: T = polygons.triangle(3, 4, 5)
                             sage: S = similarity_surfaces.billiard(T)
                             sage: S.angles()
+                            doctest:warning
+                            ...
+                            UserWarning: angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().
                             [1/3, 1/4, 5/12]
                             sage: S.angles(numerical=True)   # abs tol 1e-14
                             [0.333333333333333, 0.250000000000000, 0.416666666666667]
@@ -333,7 +353,87 @@ class ConeSurfaces(SurfaceCategory):
                             sage: S.angles(return_adjacent_edges=True)
                             [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
 
+                        ::
+
+                            sage: import flatsurf.geometry.similarity_surface_generators as sfg
+                            sage: sfg.translation_surfaces.regular_octagon().angles()
+                            doctest:warning
+                            ...
+                            UserWarning: angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().
+                            [3]
+                            sage: S = sfg.translation_surfaces.veech_2n_gon(5)
+                            sage: S.angles()
+                            [2, 2]
+                            sage: S.angles(numerical=True)
+                            [2.0, 2.0]
+                            sage: S.angles(return_adjacent_edges=True) # random output
+                            [(2, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
+                             (2, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
+                            sage: S.angles(numerical=True, return_adjacent_edges=True) # random output
+                            [(2.0, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
+                             (2.0, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
+
+                            sage: sfg.translation_surfaces.veech_2n_gon(6).angles()
+                            [5]
+                            sage: sfg.translation_surfaces.veech_double_n_gon(5).angles()
+                            [3]
+                            sage: sfg.translation_surfaces.cathedral(1, 1).angles()
+                            [3, 3, 3]
+
+                            sage: from flatsurf import polygons, similarity_surfaces
+                            sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                            sage: H = B.minimal_cover(cover_type="half-translation")
+                            sage: S = B.minimal_cover(cover_type="translation")
+                            sage: H.angles()
+                            [1/2, 5/2, 1/2, 1/2]
+                            sage: S.angles()
+                            [1, 5, 1, 1]
+
+                            sage: H.angles(return_adjacent_edges=True)
+                             [(1/2, [...]), (5/2, [...]), (1/2, [...]), (1/2, [...])]
+                            sage: S.angles(return_adjacent_edges=True)
+                             [(1, [...]), (5, [...]), (1, [...]), (1, [...])]
+
+                        For self-glued edges, no angle is reported for the
+                        "vertex" at the midpoint of the edge::
+
+                            sage: from flatsurf import Polygon, similarity_surfaces
+                            sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                            sage: S = similarity_surfaces.self_glued_polygon(P)
+                            sage: S.angles()
+                            [1]
+
+                        Non-convex examples::
+
+                            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                            sage: S = MutableOrientedSimilaritySurface(QQ)
+                            sage: L = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(1,1),(1,2),(0,2),(0,1)])
+                            sage: S.add_polygon(L)
+                            0
+                            sage: S.glue((0, 0), (0, 5))
+                            sage: S.glue((0, 1), (0, 3))
+                            sage: S.glue((0, 2), (0, 7))
+                            sage: S.glue((0, 4), (0, 6))
+                            sage: S.set_immutable()
+                            sage: S.angles()
+                            [3]
+
+                            sage: S = MutableOrientedSimilaritySurface(QQ)
+                            sage: P = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(3,1),(3,2),(2,2),(1,2),(1,1),(0,1)])
+                            sage: S.add_polygon(P)
+                            0
+                            sage: S.glue((0, 0), (0, 8))
+                            sage: S.glue((0, 1), (0, 6))
+                            sage: S.glue((0, 2), (0, 9))
+                            sage: S.glue((0, 3), (0, 5))
+                            sage: S.glue((0, 4), (0, 7))
+                            sage: S.set_immutable()
+                            sage: S.angles()
+                            [2, 2]
                         """
+                        import warnings
+                        warnings.warn("angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().")
+
                         if not numerical and any(
                             not p.is_rational() for p in self.polygons()
                         ):
@@ -440,6 +540,6 @@ class ConeSurfaces(SurfaceCategory):
 
                             tester.assertAlmostEqual(
                                 self.genus(),
-                                sum(a - 1 for a in self.angles(numerical=True)) / 2.0
+                                float(sum(v.angle(numerical=True) - 1 for v in self.vertices()) / 2.0)
                                 + 1,
                             )
