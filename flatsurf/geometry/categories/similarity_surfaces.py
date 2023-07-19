@@ -391,6 +391,43 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
 
+        def _describe_surface(self):
+            if not self.is_finite_type():
+                return "Surface built from infinitely many polygons"
+
+            if not self.is_connected():
+                # Many checks do not work yet if a surface is not connected, so we stop here.
+                return "Disconnected Surface"
+
+            if self.is_translation_surface(positive=True):
+                description = "Translation Surface"
+            elif self.is_translation_surface(positive=False):
+                description = "Half-Translation Surface"
+            elif self.is_dilation_surface(positive=True):
+                description = "Positive Dilation Surface"
+            elif self.is_dilation_surface(positive=False):
+                description = "Dilation Surface"
+            elif self.is_cone_surface():
+                description = "Cone Surface"
+                if self.is_rational_surface():
+                    description = f"Rational {description}"
+            else:
+                description = "Surface"
+
+            if hasattr(self, "stratum"):
+                try:
+                    description += f" in {self.stratum()}"
+                except NotImplementedError:
+                    # Computation of the stratum might fail due to #227.
+                    pass
+            elif self.genus is not NotImplemented:
+                description = f"Genus {self.genus()} {description}"
+
+            if self.is_with_boundary():
+                description += " with boundary"
+
+            return description
+
         def _mul_(self, matrix, switch_sides=True):
             r"""
             EXAMPLES::

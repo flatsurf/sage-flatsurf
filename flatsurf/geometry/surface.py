@@ -594,66 +594,6 @@ class MutablePolygonalSurface(Surface_base):
 
         return f"{self._describe_surface()} built from {self._describe_polygons()}"
 
-    def _describe_surface(self):
-        r"""
-        Return a string describing this kind of surface.
-
-        This is a helper method for :meth:`_repr_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S._describe_surface()
-            'Translation Surface'
-
-        """
-        return "Surface"
-
-    def _describe_polygons(self):
-        r"""
-        Return a string describing the nature of the polygons that make up this surface.
-
-        This is a helper method for :meth:`_repr_`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import MutableOrientedSimilaritySurface
-            sage: S = MutableOrientedSimilaritySurface(QQ)
-            sage: S._describe_polygons()
-            ''
-
-        """
-        polygons = [
-            (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
-            for p in self.polygons()
-        ]
-        polygons.sort()
-        polygons = [description for (edges, description) in polygons]
-
-        if not polygons:
-            return ""
-
-        collated = []
-        while polygons:
-            count = 1
-            polygon = polygons.pop()
-            while polygons and polygons[-1] == polygon:
-                count += 1
-                polygons.pop()
-
-            if count == 1:
-                collated.append(f"{polygon[0]} {polygon[1]}")
-            else:
-                collated.append(f"{count} {polygon[2]}")
-
-        description = collated.pop()
-
-        if collated:
-            description = ", ".join(collated) + " and " + description
-
-        return description
-
     def set_root(self, root):
         r"""
         Set ``root`` as the label at which exploration of a connected component
@@ -1179,43 +1119,6 @@ class OrientedSimilaritySurface(Surface_base):
         category &= SimilaritySurfaces().Oriented()
 
         super().__init__(base, category=category)
-
-    def _describe_surface(self):
-        if not self.is_finite_type():
-            return "Surface built from infinitely many polygons"
-
-        if not self.is_connected():
-            # Many checks do not work yet if a surface is not connected, so we stop here.
-            return "Disconnected Surface"
-
-        if self.is_translation_surface(positive=True):
-            description = "Translation Surface"
-        elif self.is_translation_surface(positive=False):
-            description = "Half-Translation Surface"
-        elif self.is_dilation_surface(positive=True):
-            description = "Positive Dilation Surface"
-        elif self.is_dilation_surface(positive=False):
-            description = "Dilation Surface"
-        elif self.is_cone_surface():
-            description = "Cone Surface"
-            if self.is_rational_surface():
-                description = f"Rational {description}"
-        else:
-            description = "Surface"
-
-        if hasattr(self, "stratum"):
-            try:
-                description += f" in {self.stratum()}"
-            except NotImplementedError:
-                # Computation of the stratum might fail due to #227.
-                pass
-        elif self.genus is not NotImplemented:
-            description = f"Genus {self.genus()} {description}"
-
-        if self.is_with_boundary():
-            description += " with boundary"
-
-        return description
 
 
 class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
@@ -2414,10 +2317,6 @@ class OrientedHyperbolicIsometrySurface(Surface_base):
 
         super().__init__(hyperbolic_plane.base_ring(), category=category)
 
-    def _describe_surface(self):
-        # TODO
-        return super()._describe_surface()
-
 
 class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, MutablePolygonalSurface):
     r"""
@@ -2458,7 +2357,7 @@ class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, Mutabl
         sage: S.glue((0, 4), (0, 5))
 
         sage: S
-        Surface built from a quadrilateral with 2 marked vertices
+        Hyperbolic Surface built from a quadrilateral with 2 marked vertices
 
         sage: S.vertices()
         {Vertex 0 of polygon 0,
@@ -2493,7 +2392,7 @@ class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, Mutabl
         sage: S.glue((0, 3), (0, 3))
 
         sage: S
-        Surface built from a quadrilateral
+        Hyperbolic Surface built from a quadrilateral
 
         sage: S.vertices()
         {Vertex 0 of polygon 0, Vertex 1 of polygon 0}

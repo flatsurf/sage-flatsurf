@@ -87,6 +87,22 @@ class TopologicalSurfaces(SurfaceCategory):
         to put it here.
         """
 
+        def _describe_surface(self):
+            r"""
+            Return a string describing this kind of surface.
+
+            This is a helper method for :meth:`_repr_`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S._describe_surface()
+                'Translation Surface'
+
+            """
+            return "Surface"
+
         def refined_category(self):
             r"""
             Return the smallest subcategory that this surface is in.

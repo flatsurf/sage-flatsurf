@@ -115,3 +115,28 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
     class ParentMethods:
         def cusps(self):
             return set(vertex for vertex in self.vertices() if next(iter(vertex.representatives()))[1].is_ideal())
+
+        def orbifold_points(self):
+            return set()
+            return set(vertex for vertex in self.vertices() if vertex.angle() < 1)
+
+        def _describe_surface(self):
+            if not self.is_finite_type():
+                return "Surface built from infinitely many polygons"
+
+            if not self.is_connected():
+                return "Disconnected surface"
+
+            description = "Hyperbolic Surface"
+
+            if self.genus is not NotImplemented:
+                description = f"Genus {self.genus()} {description}"
+
+            cusps = self.cusps()
+            orbifold_points = self.orbifold_points()
+            if cusps or orbifold_points:
+                cusps = ["with {len(cusps)} cusps"] if cusps else []
+                orbifold_points = ["with {len(orbifold_points)} orbifold points"] if orbifold_points else []
+                description = f"{description} {' and '.join(cusps + orbifold_points)}"
+
+            return description
