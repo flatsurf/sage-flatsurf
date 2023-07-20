@@ -83,6 +83,14 @@ class HyperbolicPolygons(Category_over_base_ring):
             # TODO
             return None
 
+        def is_right(self):
+            # TODO
+            return False
+
+        def is_isosceles(self):
+            # TODO
+            return False
+
         def get_point_position(self, point):
             point = self.parent()(point)
 

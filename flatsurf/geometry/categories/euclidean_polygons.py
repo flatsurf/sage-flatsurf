@@ -491,6 +491,24 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return [vector((c, s)) for (c, s) in zip(cos, sin)]
 
+        def is_right(self):
+            slopes = self.slopes(relative=True)
+            return any(slope[0] == 0 for slope in slopes)
+
+        def is_isosceles(self):
+            if len(self.vertices()) != 3:
+                return False
+
+            slopes = self.slopes(relative=True)
+
+            from flatsurf.geometry.euclidean import is_parallel
+
+            return (
+                is_parallel(slopes[0], slopes[1])
+                or is_parallel(slopes[0], slopes[2])
+                or is_parallel(slopes[1], slopes[2])
+            )
+
         def erase_marked_vertices(self):
             r"""
             Return a copy of this polygon without marked vertices.

@@ -332,17 +332,8 @@ class Polygons(Category_over_base_ring):
                 "marked_vertices": len(marked_vertices),
             }
 
-            if len(self.vertices()) == 3:
-                slopes = self.slopes(relative=True)
-                properties["right"] = any(slope[0] == 0 for slope in slopes)
-
-                from flatsurf.geometry.euclidean import is_parallel
-
-                properties["isosceles"] = (
-                    is_parallel(slopes[0], slopes[1])
-                    or is_parallel(slopes[0], slopes[2])
-                    or is_parallel(slopes[1], slopes[2])
-                )
+            properties["right"] = self.is_right()
+            properties["isosceles"] = self.is_isosceles()
 
             return Polygons._describe_polygon(len(self.vertices()), **properties)
 

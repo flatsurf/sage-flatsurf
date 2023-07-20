@@ -221,24 +221,25 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             if self.genus is not NotImplemented:
                 description = f"Genus {self.genus()} {description}"
 
-            cusps = self.cusps()
-            orbifold_points = self.orbifold_points()
+            if not self.is_with_boundary():
+                cusps = self.cusps()
+                orbifold_points = self.orbifold_points()
 
-            if len(cusps) == 0:
-                cusps = ""
-            elif len(cusps) == 1:
-                cusps = "with 1 cusp"
-            else:
-                cusps = f"with {len(cusps)} cusps"
+                if len(cusps) == 0:
+                    cusps = ""
+                elif len(cusps) == 1:
+                    cusps = "with 1 cusp"
+                else:
+                    cusps = f"with {len(cusps)} cusps"
 
-            if len(orbifold_points) == 0:
-                orbifold_points = ""
-            elif len(orbifold_points) == 1:
-                orbifold_points = "with 1 orbifold point"
-            else:
-                orbifold_points = f"with {len(orbifold_points)} orbifold points"
+                if len(orbifold_points) == 0:
+                    orbifold_points = ""
+                elif len(orbifold_points) == 1:
+                    orbifold_points = "with 1 orbifold point"
+                else:
+                    orbifold_points = f"with {len(orbifold_points)} orbifold points"
 
-            description = " ".join(filter(None, [description, " and ".join(filter(None, [cusps, orbifold_points]))]))
+                description = " ".join(filter(None, [description, " and ".join(filter(None, [cusps, orbifold_points]))]))
 
             return description
 
