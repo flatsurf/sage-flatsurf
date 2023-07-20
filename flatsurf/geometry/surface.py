@@ -2392,7 +2392,7 @@ class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, Mutabl
         sage: S.glue((0, 3), (0, 3))
 
         sage: S
-        Hyperbolic Surface built from a quadrilateral
+        Hyperbolic Surface with 3 orbifold points built from a quadrilateral
 
         sage: S.vertices()
         {Vertex 0 of polygon 0, Vertex 1 of polygon 0}

@@ -59,7 +59,7 @@ We create a surface from scratch (using
     sage: S.glue((0, 3), (1, 1))
 
     sage: S
-    Hyperbolic Surface built from 2 quadrilaterals
+    Hyperbolic Surface with 2 orbifold points built from 2 quadrilaterals
 
 To perform a sanity check on the obtained surface, you can run its test
 suite::

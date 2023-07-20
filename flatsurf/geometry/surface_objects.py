@@ -154,8 +154,6 @@ class SurfacePoint(Element):
 
             cross_label, cross_edge = surface.opposite_edge(label, position.get_edge())
             cross_point = surface.edge_transformation(label, position.get_edge()) * point
-            # TODO
-            # cross_point.set_immutable()
 
             self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():

@@ -7452,10 +7452,16 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             q = end.coordinates(model="klein")
             x = intersection.coordinates(model="klein")
 
+            px = p[0] * x[0] + p[1] * x[1]
+            qx = q[0] * x[0] + q[1] * x[1]
+            p2 = p[0] ** 2 + p[1] ** 2
+            q2 = q[0] ** 2 + q[1] ** 2
+
             # The intersection point is the midpoint iff it is at equal
             # distance from the endpoints of the segment defining the midpoint.
             # We use the distance formula from https://math.stackexchange.com/a/4167944/145897
-            return p[0] * x[0] + p[1] * x[1] == q[0] * x[0] + q[1] * x[1]
+            # TODO: This code is copy & pasted elsewhere.
+            return px ** 2 * q2 == qx ** 2 * p2
 
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
@@ -10067,12 +10073,20 @@ class HyperbolicMidpoint(HyperbolicPoint):
                 if self._segment == other._segment:
                     return True
 
+            if other not in self._segment:
+                return False
+
             start, end = self._segment.vertices()
-            start = start.coordinates(model="klein")
-            end = end.coordinates(model="klein")
+            p = start.coordinates(model="klein")
+            q = end.coordinates(model="klein")
             x = other.coordinates(model="klein")
 
-            return other in self._segment and start[0] * x[0] + start[1] * x[1] == end[0] * x[0] + end[1] * x[1]
+            px = p[0] * x[0] + p[1] * x[1]
+            qx = q[0] * x[0] + q[1] * x[1]
+            p2 = p[0] ** 2 + p[1] ** 2
+            q2 = q[0] ** 2 + q[1] ** 2
+
+            return px ** 2 * q2 == qx ** 2 * p2
 
         return super()._richcmp_(other, op)
 
