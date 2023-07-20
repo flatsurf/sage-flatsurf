@@ -6164,11 +6164,29 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             x, y = point.coordinates(model="klein")
         except ValueError:
             # The point does not have coordinates in the base ring in the Klein model.
-            # It is the starting point of a geodesic.
-            assert point.is_ideal()
+            if isinstance(point, HyperbolicPointFromGeodesic):
+                # It is the starting point of a geodesic.
+                if point in self.boundary():
+                    return True
 
-            if point in self.boundary():
-                return True
+            if isinstance(point, HyperbolicMidpoint):
+                start, end = point._segment.vertices()
+
+                if start in self and end in self:
+                    return True
+
+                if start not in self and end not in self:
+                    return False
+
+                if start in self and end not in self:
+                    start, end = end, start
+
+                intersection = self.boundary()._intersection(point._segment.geodesic())
+                a = start.coordinates(model="klein")
+                b = end.coordinates(model="klein")
+                x = intersection.coordinates(model="klein")
+
+                return a[0] * x[0] + a[1] * x[1] < b[0] * x[0] + b[1] * x[1]
 
             raise NotImplementedError(
                 "cannot decide whether this ideal point is contained in the half space yet"
@@ -7414,6 +7432,30 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
                 return False
 
             return intersection == point
+
+        if isinstance(point, HyperbolicMidpoint):
+            if point._segment.geodesic() == self.unoriented():
+                return True
+
+            intersection = self._intersection(point._segment.geodesic())
+
+            if intersection is None:
+                return False
+
+            if not intersection.is_finite():
+                return False
+
+            # The point is on the geodesic if the segment defining the point
+            # and the geodesic intersect in the midpoint.
+            start, end = point._segment.vertices()
+            p = start.coordinates(model="klein")
+            q = end.coordinates(model="klein")
+            x = intersection.coordinates(model="klein")
+
+            # The intersection point is the midpoint iff it is at equal
+            # distance from the endpoints of the segment defining the midpoint.
+            # We use the distance formula from https://math.stackexchange.com/a/4167944/145897
+            return p[0] * x[0] + p[1] * x[1] == q[0] * x[0] + q[1] * x[1]
 
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
@@ -9136,6 +9178,27 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
         """
         return self == point
 
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicPoint):
+                return False
+
+            # See note in the docstring. We should use specialized geometry
+            # here to compare the coordinates simultaneously.
+            return all(
+                self.parent().geometry._equal(a, b)
+                for (a, b) in zip(
+                    self.coordinates(model="klein"), other.coordinates(model="klein")
+                )
+            )
+
+        raise NotImplementedError
+
 
 class HyperbolicPointFromCoordinates(HyperbolicPoint):
     r"""
@@ -9278,20 +9341,11 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
-            if not isinstance(other, HyperbolicPoint):
-                return False
-
             if isinstance(other, HyperbolicPointFromGeodesic):
                 return other == self
 
-            # See note in the docstring. We should use specialized geometry
-            # here to compare the coordinates simultaneously.
-            return all(
-                self.parent().geometry._equal(a, b)
-                for (a, b) in zip(
-                    self.coordinates(model="klein"), other.coordinates(model="klein")
-                )
-            )
+            if isinstance(other, HyperbolicMidpoint):
+                return other == self
 
         return super()._richcmp_(other, op)
 
@@ -9941,6 +9995,98 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
             image = -image
 
         return image.start()
+
+
+class HyperbolicMidpoint(HyperbolicPoint):
+    def __init__(self, parent, segment):
+        super().__init__(parent)
+
+        if not isinstance(segment, HyperbolicUnorientedSegment):
+            raise TypeError("segment must be an unoriented segment")
+
+        self._segment = segment
+
+    def is_ideal(self):
+        return False
+
+    def is_ultra_ideal(self):
+        return False
+
+    def is_finite(self):
+        return True
+
+    @cached_method
+    def _coordinates_klein(self, ring):
+        segment = self._segment
+
+        start, end = segment.vertices()
+
+        if start == end:
+            return start
+
+        if not start.is_finite() and not end.is_finite():
+            return segment.geodesic().midpoint().coordinates(model="klein")
+
+        if not start.is_finite() or not end.is_finite():
+            raise NotImplementedError(
+                f"cannot compute midpoint of unbounded segment {self}"
+            )
+
+        for p in segment.geodesic().perpendicular(start).vertices():
+            for q in segment.geodesic().perpendicular(end).vertices():
+                try:
+                    line = self.parent().geodesic(p, q)
+                except ValueError:
+                    if ring == "maybe":
+                        return None
+                    raise
+                intersection = segment.intersection(line)
+                if intersection:
+                    return intersection.coordinates(model="klein")
+
+            # One of the two lines start at any p must intersect the segment
+            # already. No need to check the other p.
+            assert (
+                False
+            ), f"segment {self} must have a midpoint but the straightedge and compass construction did not yield any"
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicPoint):
+                return False
+
+            if not other.is_finite():
+                return False
+
+            if isinstance(other, HyperbolicMidpoint):
+                if self._segment == other._segment:
+                    return True
+
+            start, end = self._segment.vertices()
+            start = start.coordinates(model="klein")
+            end = end.coordinates(model="klein")
+            x = other.coordinates(model="klein")
+
+            return other in self._segment and start[0] * x[0] + start[1] * x[1] == end[0] * x[0] + end[1] * x[1]
+
+        return super()._richcmp_(other, op)
+
+    def __hash__(self):
+        if self.coordinates(model="klein", ring="maybe") is not None:
+            return super().__hash__()
+
+        return hash((type(self), self._segment))
+
+    def _repr_(self):
+        return repr(self.parent().point(*self.coordinates(model="klein"), model="klein"))
+
+    def _apply_isometry_klein(self, isometry, on_right=False):
+        return self._segment._apply_isometry_klein(isometry=isometry, on_right=on_right).midpoint()
 
 
 class HyperbolicConvexPolygon(HyperbolicConvexFacade):
@@ -12676,36 +12822,49 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: s.midpoint()
             a*I
 
+        A midpoint which has coordinates in the base ring. However, the
+        construction fails over the base ring::
+
+            sage: H = HyperbolicPlane(QQ)
+            sage: geodesic = H(-4).segment(4)
+            sage: a = geodesic.intersection(H.vertical(-1))
+            sage: b = geodesic.intersection(H.vertical(1))
+            sage: s = H(a).segment(b)
+            sage: P = s.midpoint()
+            sage: P.coordinates()
+            Traceback (most recent call last):
+            ...
+            ValueError: ...
+
+            sage: P in geodesic
+            True
+            sage: P in H.vertical(0)
+            True
+            sage: P == H(4*I)
+            True
+
+        TESTS::
+
+            sage: P in H.vertical(1)
+            False
+            sage: P in H.vertical(-1)
+            False
+
+            sage: P in s.geodesic().left_half_space()
+            True
+            sage: P in s.geodesic().right_half_space()
+            True
+
         .. SEEALSO::
 
             :meth:`HyperbolicSegment.perpendicular` for the perpendicular bisector
 
         """
-        start, end = self.vertices()
-
-        if start == end:
-            return start
-
-        if not start.is_finite() and not end.is_finite():
-            return self.geodesic().midpoint()
-
-        if not start.is_finite() or not end.is_finite():
-            raise NotImplementedError(
-                f"cannot compute midpoint of unbounded segment {self}"
-            )
-
-        for p in self.geodesic().perpendicular(start).vertices():
-            for q in self.geodesic().perpendicular(end).vertices():
-                line = self.parent().geodesic(p, q)
-                intersection = self.intersection(line)
-                if intersection:
-                    return intersection
-
-            # One of the two lines start at any p must intersect the segment
-            # already. No need to check the other p.
-            assert (
-                False
-            ), f"segment {self} must have a midpoint but the straightedge and compass construction did not yield any"
+        # TODO: Mention that as an alternative, we could algebraically solve
+        # with https://math.stackexchange.com/a/4167944/145897 but it leads to
+        # a quadratic equation (or taking a square root as well.)
+        midpoint = self.parent().__make_element_class__(HyperbolicMidpoint)(self.parent(), self.unoriented())
+        return midpoint
 
     def perpendicular(self, point=None):
         r"""

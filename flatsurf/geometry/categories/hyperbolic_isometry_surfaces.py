@@ -241,3 +241,7 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             description = " ".join(filter(None, [description, " and ".join(filter(None, [cusps, orbifold_points]))]))
 
             return description
+
+        def edge_transformation(self, label, edge):
+            opposite_label, opposite_edge = self.opposite_edge(label, edge)
+            return self._hyperbolic_plane.isometry(self.polygon(label).edges()[edge], -self.polygon(opposite_label).edges()[opposite_edge])
