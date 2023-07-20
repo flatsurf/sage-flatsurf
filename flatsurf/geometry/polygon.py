@@ -189,6 +189,7 @@ class PolygonPosition:
                     "Constructed vertex position with no specified vertex."
                 )
             self._vertex = vertex
+            self._edge = edge
         if self.is_in_edge_interior():
             if edge is None:
                 raise ValueError("Constructed edge position with no specified edge.")
@@ -239,8 +240,8 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
-        if not self.is_in_edge_interior():
-            raise ValueError("Asked for edge when not in edge interior.")
+        if not self.is_in_edge_interior() and not self.is_vertex():
+            raise ValueError("Asked for edge when not on an edge.")
         return self._edge
 
     def get_vertex(self):

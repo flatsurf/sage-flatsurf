@@ -901,7 +901,6 @@ class Surface_list(Surface):
         sage: s.add_polygon( (-matrix.identity(2))*p ) # gets label 1
         1
         sage: s.change_polygon_gluings(0,[(1,e) for e in range(5)])
-        sage: # base label defaults to zero.
         sage: s.set_immutable()
         sage: TestSuite(s).run()
 

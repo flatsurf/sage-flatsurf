@@ -816,7 +816,7 @@ class EuclideanPolygons(Category_over_base_ring):
             # Determine whether the point is a vertex of the polygon.
             for (i, v) in enumerate(self.vertices()):
                 if point == v:
-                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
+                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i, edge=i)
 
             # Determine whether the point is on an edge of the polygon.
             for (i, (v, e)) in enumerate(zip(self.vertices(), self.edges())):

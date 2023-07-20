@@ -234,14 +234,11 @@ class HalfTranslationSurfaces(SurfaceCategory):
             """
 
             def angle(self, point, numerical=False):
-                if numerical:
+                if numerical or not point.is_vertex():
                     from flatsurf.geometry.categories import ConeSurfaces
                     return ConeSurfaces.Oriented.ParentMethods.angle(self, point, numerical=True)
 
                 from sage.all import ZZ
-                if not point.is_vertex():
-                    return ZZ(1)
-
                 angle = ZZ(0)
 
                 for label, edge in point.edges():

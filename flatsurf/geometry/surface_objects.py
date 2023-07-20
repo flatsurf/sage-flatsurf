@@ -160,7 +160,7 @@ class SurfacePoint(Element):
         elif position.is_vertex():
             self._representatives = set()
 
-            source_edge = position.get_vertex()
+            source_edge = position.get_edge()
             while (label, source_edge) not in self._representatives:
                 self._representatives.add((label, source_edge))
 
@@ -170,7 +170,7 @@ class SurfacePoint(Element):
                     raise NotImplementedError("cannot create points at vertices of surfaces with boundary")
 
                 label, source_edge = opposite_edge
-                source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
+                source_edge = (source_edge + 1) % len(surface.polygon(label).edges())
 
                 if limit is not None:
                     limit -= 1
@@ -178,8 +178,8 @@ class SurfacePoint(Element):
                         raise ValueError("number of edges at singularity exceeds limit")
 
             self._representatives = {
-                (label, surface.polygon(label).vertex(vertex))
-                for (label, vertex) in self._representatives
+                (label, surface.polygon(label).vertices()[edge])
+                for (label, edge) in self._representatives
             }
         else:
             raise NotImplementedError
@@ -313,14 +313,28 @@ class SurfacePoint(Element):
 
         for label, coordinates in self.representatives():
             polygon = self.surface().polygon(label)
-            vertex = polygon.get_point_position(coordinates).get_vertex()
-            edges.add((label, vertex))
+            edge = polygon.get_point_position(coordinates).get_edge()
+            edges.add((label, edge))
 
-            previous_edge = (vertex - 1) % len(polygon.vertices())
+            previous_edge = (edge - 1) % len(polygon.edges())
             if self.surface().opposite_edge(label, previous_edge) is None:
                 edges.add((label, previous_edge))
 
         return edges
+
+    def vertices(self):
+        if not self.is_vertex():
+            return set()
+
+        vertices = set()
+
+        for label, coordinates in self.representatives():
+            polygon = self.surface().polygon(label)
+            vertex = polygon.get_point_position(coordinates).get_vertex()
+            vertices.add((label, vertex))
+
+        return vertices
+
 
     def vertex_set(self):
         r"""

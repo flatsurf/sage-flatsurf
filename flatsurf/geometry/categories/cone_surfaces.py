@@ -205,12 +205,27 @@ class ConeSurfaces(SurfaceCategory):
     class Oriented(SurfaceCategoryWithAxiom):
         class ParentMethods:
             def angle(self, point, numerical=False):
-                from sage.all import ZZ
+                if numerical:
+                    from sage.all import RR
+                    angle = RR(0)
+                else:
+                    from sage.all import ZZ
+                    angle = ZZ(0)
 
                 if not point.is_vertex():
-                    return ZZ(1)
+                    label, coordinates = point.representative()
+                    position = self.polygon(label).get_point_position(coordinates)
+                    if position.is_in_interior():
+                        angle += 1
+                    elif self.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
+                        # point on self-glued edge
+                        from sage.all import ZZ
+                        angle += ZZ(1) / 2
+                    else:
+                        # point on non-self-glued edge
+                        angle += 1
 
-                angle = ZZ(0)
+                    return angle
 
                 for label, edge in point.edges():
                     angle += self.polygon(label).angle(edge, numerical=numerical)
