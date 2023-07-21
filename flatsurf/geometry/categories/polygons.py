@@ -332,8 +332,8 @@ class Polygons(Category_over_base_ring):
                 "marked_vertices": len(marked_vertices),
             }
 
-            properties["right"] = self.is_right()
-            properties["isosceles"] = self.is_isosceles()
+            properties["right"] = self.is_right_triangle()
+            properties["isosceles"] = self.is_isosceles_triangle()
 
             return Polygons._describe_polygon(len(self.vertices()), **properties)
 

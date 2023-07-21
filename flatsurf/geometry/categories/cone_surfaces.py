@@ -226,7 +226,8 @@ class ConeSurfaces(SurfaceCategory):
 
             At an interior point of a polygon the total angle is 2π::
 
-                sage: S.angle(S.polygon(0).centroid())
+                sage: p = S(0, S.polygon(0).centroid())
+                sage: S.angle(p)
                 1
 
             """

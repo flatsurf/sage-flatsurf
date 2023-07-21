@@ -83,11 +83,11 @@ class HyperbolicPolygons(Category_over_base_ring):
             # TODO
             return None
 
-        def is_right(self):
+        def is_right_triangle(self):
             # TODO
             return False
 
-        def is_isosceles(self):
+        def is_isosceles_triangle(self):
             # TODO
             return False
 
