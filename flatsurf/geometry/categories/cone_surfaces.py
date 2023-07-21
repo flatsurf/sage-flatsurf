@@ -202,37 +202,62 @@ class ConeSurfaces(SurfaceCategory):
 
             return True
 
-    class Oriented(SurfaceCategoryWithAxiom):
-        class ParentMethods:
-            def angle(self, point, numerical=False):
-                if numerical:
-                    from sage.all import RR
-                    angle = RR(0)
-                else:
+        def angle(self, point, numerical=False):
+            r"""
+            Return the total angle at the ``point`` of this surface in multiples of 2π.
+
+            INPUT:
+
+            - ``point`` -- a point on this surface
+
+            - ``numerical`` -- a boolean (default: ``False``); whether to
+              return a numerical approximation or the exact angle.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: T = polygons.triangle(3, 4, 5)
+                sage: S = similarity_surfaces.billiard(T)
+                sage: [S.angle(v) for v in S.vertices()]
+                [1/4, 5/12, 1/3]
+
+                sage: [S.angle(v, numerical=True) for v in S.vertices()]
+                [0.250000000000000, 0.416666666666667, 0.333333333333333]
+
+            At an interior point of a polygon the total angle is 2π::
+
+                sage: S.angle(S.polygon(0).centroid())
+                1
+
+            """
+            if numerical:
+                from sage.all import RR
+                angle = RR(0)
+            else:
+                from sage.all import ZZ
+                angle = ZZ(0)
+
+            if not point.is_vertex():
+                label, coordinates = point.representative()
+                position = self.polygon(label).get_point_position(coordinates)
+                if position.is_in_interior():
+                    angle += 1
+                elif self.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
+                    # point on self-glued edge
                     from sage.all import ZZ
-                    angle = ZZ(0)
-
-                if not point.is_vertex():
-                    label, coordinates = point.representative()
-                    position = self.polygon(label).get_point_position(coordinates)
-                    if position.is_in_interior():
-                        angle += 1
-                    elif self.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
-                        # point on self-glued edge
-                        from sage.all import ZZ
-                        angle += ZZ(1) / 2
-                    else:
-                        # point on non-self-glued edge
-                        angle += 1
-
-                    return angle
-
-                for label, edge in point.edges():
-                    angle += self.polygon(label).angle(edge, numerical=numerical)
-                    if self.opposite_edge(label, edge) is None:
-                        raise ValueError("vertex at boundary does not have a total angle")
+                    angle += ZZ(1) / 2
+                else:
+                    # point on non-self-glued edge
+                    angle += 1
 
                 return angle
+
+            for label, edge in point.edges():
+                angle += self.polygon(label).angle(edge, numerical=numerical)
+                if self.opposite_edge(label, edge) is None:
+                    raise ValueError("vertex at boundary does not have a total angle")
+
+            return angle
 
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
