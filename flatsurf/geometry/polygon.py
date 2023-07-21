@@ -269,7 +269,7 @@ class PolygonPosition:
 
     def get_vertex(self):
         if not self.is_vertex():
-            raise ValueError("not on any vertex")
+            raise ValueError("not at any vertex")
         return self._vertex
 
 
