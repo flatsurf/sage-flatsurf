@@ -240,13 +240,36 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
+        r"""
+        Return an edge that this point is on.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, Polygon
+            sage: S = polygons.square()
+
+            sage: pos = S.get_point_position((0, 0))
+            sage: pos.get_edge()
+            0
+
+            sage: pos = S.get_point_position((0, 1/2))
+            sage: pos.get_edge()
+            3
+
+            sage: pos = S.get_point_position((1/2, 1/2))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not on any edge
+
+        """
         if not self.is_in_edge_interior() and not self.is_vertex():
-            raise ValueError("Asked for edge when not on an edge.")
+            raise ValueError("not on any edge")
         return self._edge
 
     def get_vertex(self):
         if not self.is_vertex():
-            raise ValueError("Asked for vertex when not a vertex.")
+            raise ValueError("not on any vertex")
         return self._vertex
 
 
