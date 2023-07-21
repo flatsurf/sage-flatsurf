@@ -234,6 +234,27 @@ class HalfTranslationSurfaces(SurfaceCategory):
             """
 
             def angle(self, point, numerical=False):
+                r"""
+                Return the total angle at ``point`` in multiples of 2π.
+
+                INPUT:
+
+                - ``point`` -- a point on this surface
+
+                - ``numerical`` -- a boolean (default: ``False``); whether to
+                  return a numerical approximation of the angle or the exact
+                  value
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces, polygons, similarity_surfaces
+                    sage: S = translation_surfaces.veech_2n_gon(5)
+                    sage: [S.angle(v) for v in S.vertices()]
+                    [2, 2]
+                    sage: [S.angle(v, numerical=True) for v in S.vertices()]
+                    [2.00000000000000, 2.00000000000000]
+
+                """
                 if numerical or not point.is_vertex():
                     from flatsurf.geometry.categories import ConeSurfaces
                     return ConeSurfaces.ParentMethods.angle(self, point, numerical=True)
