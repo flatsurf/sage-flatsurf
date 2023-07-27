@@ -7030,9 +7030,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         ALGORITHM:
 
-        The pole is the intersection of tangents of the Klein disk at
-        the ideal endpoints of this geodesic, see `Wikipedia
-        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`.
+        We use the formulas from https://en.wikipedia.org/wiki/Pole_and_polar#Tables_for_pole-polar_relations.
 
         EXAMPLES:
 
@@ -7053,12 +7051,10 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             ...
             NotImplementedError: can only compute pole if geodesic is a not a diameter in the Klein model
 
-        The pole might not be defined without passing to a larger base ring::
+        ::
 
             sage: H.half_circle(2, 2).pole()
-            Traceback (most recent call last):
-            ...
-            ValueError: square root of 32 not in Rational Field
+            (4/3, 1/3)
 
         """
         if self.is_diameter():
@@ -7066,17 +7062,10 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
                 "can only compute pole if geodesic is a not a diameter in the Klein model"
             )
 
-        def tangent(endpoint):
-            x, y = endpoint.coordinates(model="klein")
-            return self.parent().geodesic(
-                -(x * x + y * y), x, y, model="klein", check=False
-            )
+        a, b, c = self.equation(model="klein")
+        pole = self.parent().point(-b/a, -c/a, model="klein", check=False)
 
-        A, B = self.vertices()
-
-        pole = tangent(A)._intersection(tangent(B))
-
-        assert pole is not None, "non-parallel lines must intersect"
+        assert pole.is_ultra_ideal()
 
         return pole
 
@@ -10040,7 +10029,7 @@ class HyperbolicMidpoint(HyperbolicPoint):
 
         if not start.is_finite() or not end.is_finite():
             raise NotImplementedError(
-                f"cannot compute midpoint of unbounded segment {self}"
+                f"cannot compute midpoint of unbounded segment"
             )
 
         for p in segment.geodesic().perpendicular(start).vertices():
