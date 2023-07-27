@@ -221,7 +221,9 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             if self.genus is not NotImplemented:
                 description = f"Genus {self.genus()} {description}"
 
-            if not self.is_with_boundary():
+            if self.is_with_boundary():
+                description = f"{description} with boundary"
+            else:
                 cusps = self.cusps()
                 orbifold_points = self.orbifold_points()
 
