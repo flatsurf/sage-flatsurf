@@ -10096,7 +10096,7 @@ class HyperbolicMidpoint(HyperbolicPoint):
             return repr(self.parent().point(*coordinates, model="klein"))
 
         start, end = self._segment.vertices()
-        return f"({start!r} + {end!r}) / 2"
+        return f"({start!r} → {end!r}) / 2"
 
     def _apply_isometry_klein(self, isometry, on_right=False):
         return self._segment._apply_isometry_klein(isometry=isometry, on_right=on_right).midpoint()
