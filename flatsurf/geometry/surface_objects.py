@@ -525,31 +525,6 @@ class SurfacePoint(Element):
             *args, **kwargs
         )
 
-    def angle(self, numerical=False):
-        r"""
-        Return the total angle at this point in multiples of 2π.
-
-        EXAMPLES::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: P = S.point(0, (1/2, 1/2))
-            sage: P.angle()
-            1
-
-        ::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: P = S.point(0, 0)
-            sage: P.angle()
-            1/2
-
-        """
-        if not self.is_vertex():
-            return 1. if numerical else 1
-        return self.surface().angle(self, numerical=numerical)
-
     def __repr__(self):
         r"""
         Return a printable representation of this point.

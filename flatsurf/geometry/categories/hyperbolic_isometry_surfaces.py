@@ -198,133 +198,13 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
 
             .. SEEALSO::
 
-                :meth:`orbifold_order` to determine the order of the orbifold points
+                :meth:`ElementMethods.orbifold_order` to determine the order of the orbifold points
 
             """
-            vertices = {vertex for vertex in self.vertices() if self.orbifold_order(vertex)}
+            vertices = {vertex for vertex in self.vertices() if vertex.orbifold_order()}
             midpoints = {self(a[0], self.polygon(a[0]).edges()[a[1]].midpoint()) for (a, b) in self.gluings() if a == b}
 
             return vertices.union(midpoints)
-
-        def orbifold_order(self, point):
-            r"""
-            Return the order of the orbifold point ``point`` or ``None`` if the
-            point is not an orbifold point.
-
-            INPUT:
-
-            - ``point`` -- a point of this surface
-
-            EXAMPLES::
-
-                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
-                sage: H = HyperbolicPlane(QQ)
-                sage: S = MutableOrientedHyperbolicSurface(H)
-
-                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
-                0
-
-                sage: S.glue((0, 1), (0, 1))
-                sage: S.glue((0, 0), (0, 2))
-
-                sage: P = S(0, S.polygon(0).edges()[1].midpoint())
-                sage: S.orbifold_order(P)
-                2
-
-                sage: P = S(0, 0)
-                sage: S.orbifold_order(P) is None
-                True
-
-            """
-            # TODO: Make ElementMethods
-            label, p = point.representative()
-            position = self.polygon(label).get_point_position(p)
-
-            if p.is_ideal():
-                return None
-
-            if position.is_in_interior():
-                return None
-
-            if position.is_in_edge_interior():
-                edge = position.get_edge()
-                # This is an orbifold iff it is on a self-glued edge
-                if self.opposite_edge(label, edge) == (label, edge):
-                    return 2
-                return None
-
-            angle = point.angle(numerical=True)
-
-            order = (1/angle).round()
-
-            if order <= 1:
-                return None
-
-            # This does not work because we cannot decide whether an angle is rational. We could probably do something like https://mathproblems123.wordpress.com/2018/03/31/when-is-arccos-a-rational-multiple-of-pi/
-            # angle = point.angle()
-            # from sage.all import QQ
-            # if angle not in QQ:
-            #     return False
-            # angle = QQ(angle)
-            # return angle.numerator() == 1 and angle.denominator() > 1
-
-            # We rearrange all the polygons attached to this point so that they
-            # are glued by identities. Then we take the first and the last edge
-            # of this gadget to get a hold of the total angle at the point.
-            start_label, start_edge = label, position.get_edge()
-            start_edge_geometry = self.polygon(start_label).edges()[start_edge]
-            end_label, end_edge = label, (start_edge - 1) % len(self.polygon(start_label).vertices())
-            end_edge_geometry = self.polygon(end_label).edges()[end_edge]
-
-            while True:
-                label, edge = self.opposite_edge(end_label, end_edge)
-                if label == start_label and edge == start_edge:
-                    break
-
-                normalization = end_edge_geometry.parent().isometry(-end_edge_geometry, self.polygon(label).edges()[edge])
-
-                end_label, end_edge = label, (edge - 1) % len(self.polygon(label).vertices())
-
-                end_edge_geometry = self.polygon(end_label).edges()[end_edge]
-                end_edge_geometry = normalization * end_edge_geometry
-
-            # Now we check if by arranging n copies of this widget at the vertex, we get a 2π angle.
-            isometry = start_edge_geometry.parent().isometry(start_edge_geometry, -end_edge_geometry)
-            identity = isometry ** order
-            if identity == 1 or identity == -1:
-                return order
-
-            return None
-
-        def angle(self, point, numerical=False):
-            # TODO: Make ElementMethods (and make sure that the Euclidean version is as well. Adapt news!
-            if numerical:
-                from sage.all import RR
-                angle = RR(0)
-            else:
-                from sage.all import ZZ
-                angle = ZZ(0)
-
-            if not point.is_vertex():
-                label, point = point.representative()
-                position = self.polygon(label).get_point_position(point)
-                if position.is_in_interior():
-                    angle += 1
-                elif self.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
-                    # point on self-glued edge
-                    angle += ZZ(1) / 2
-                else:
-                    # point on non-self-glued edge
-                    angle += 1
-
-                return angle
-
-            # TODO: Check that all edges at this vertex are glued.
-
-            for label, vertex in point.vertices():
-                angle += self.polygon(label).angle(vertex, numerical=numerical)
-
-            return angle
 
         def _describe_surface(self):
             if not self.is_finite_type():
@@ -365,3 +245,126 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
         def edge_transformation(self, label, edge):
             opposite_label, opposite_edge = self.opposite_edge(label, edge)
             return self._hyperbolic_plane.isometry(self.polygon(label).edges()[edge], -self.polygon(opposite_label).edges()[opposite_edge])
+
+    class ElementMethods:
+        def orbifold_order(self):
+            r"""
+            Return the order of this point or ``None`` if this is not an
+            orbifold point.
+
+            INPUT:
+
+            - ``point`` -- a point of this surface
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: P = S(0, S.polygon(0).edges()[1].midpoint())
+                sage: P.orbifold_order()
+                2
+
+                sage: P = S(0, 0)
+                sage: P.orbifold_order() is None
+                True
+
+            """
+            surface = self.parent()
+
+            label, p = self.representative()
+            position = surface.polygon(label).get_point_position(p)
+
+            if p.is_ideal():
+                return None
+
+            if position.is_in_interior():
+                return None
+
+            if position.is_in_edge_interior():
+                edge = position.get_edge()
+                # This is an orbifold iff it is on a self-glued edge
+                if surface.opposite_edge(label, edge) == (label, edge):
+                    return 2
+                return None
+
+            angle = self.angle(numerical=True)
+
+            order = (1/angle).round()
+
+            if order <= 1:
+                return None
+
+            # This does not work because we cannot decide whether an angle is rational. We could probably do something like https://mathproblems123.wordpress.com/2018/03/31/when-is-arccos-a-rational-multiple-of-pi/
+            # angle = point.angle()
+            # from sage.all import QQ
+            # if angle not in QQ:
+            #     return False
+            # angle = QQ(angle)
+            # return angle.numerator() == 1 and angle.denominator() > 1
+
+            # We rearrange all the polygons attached to this point so that they
+            # are glued by identities. Then we take the first and the last edge
+            # of this gadget to get a hold of the total angle at the point.
+            start_label, start_edge = label, position.get_edge()
+            start_edge_geometry = surface.polygon(start_label).edges()[start_edge]
+            end_label, end_edge = label, (start_edge - 1) % len(surface.polygon(start_label).vertices())
+            end_edge_geometry = surface.polygon(end_label).edges()[end_edge]
+
+            while True:
+                label, edge = surface.opposite_edge(end_label, end_edge)
+                if label == start_label and edge == start_edge:
+                    break
+
+                normalization = end_edge_geometry.parent().isometry(-end_edge_geometry, surface.polygon(label).edges()[edge])
+
+                end_label, end_edge = label, (edge - 1) % len(surface.polygon(label).vertices())
+
+                end_edge_geometry = surface.polygon(end_label).edges()[end_edge]
+                end_edge_geometry = normalization * end_edge_geometry
+
+            # Now we check if by arranging n copies of this widget at the vertex, we get a 2π angle.
+            isometry = start_edge_geometry.parent().isometry(start_edge_geometry, -end_edge_geometry)
+            identity = isometry ** order
+            if identity == 1 or identity == -1:
+                return order
+
+            return None
+
+        def angle(self, numerical=False):
+            surface = self.parent()
+            # TODO: Make ElementMethods (and make sure that the Euclidean version is as well. Adapt news!
+            if numerical:
+                from sage.all import RR
+                angle = RR(0)
+            else:
+                from sage.all import ZZ
+                angle = ZZ(0)
+
+            if not self.is_vertex():
+                label, point = self.representative()
+                position = surface.polygon(label).get_point_position(point)
+                if position.is_in_interior():
+                    angle += 1
+                elif surface.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
+                    # point on self-glued edge
+                    angle += ZZ(1) / 2
+                else:
+                    # point on non-self-glued edge
+                    angle += 1
+
+                return angle
+
+            # TODO: Check that all edges at this vertex are glued.
+
+            for label, vertex in self.vertices():
+                angle += surface.polygon(label).angle(vertex, numerical=numerical)
+
+            return angle

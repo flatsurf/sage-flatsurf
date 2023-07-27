@@ -223,6 +223,64 @@ class HalfTranslationSurfaces(SurfaceCategory):
             True
 
         """
+        class ElementMethods:
+            def angle(self, numerical=False):
+                r"""
+                Return the total angle at this point in multiples of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean (default: ``False``); whether to
+                  return a numerical approximation of the angle or the exact
+                  value
+
+                EXAMPLES::
+
+                    sage: from flatsurf import half_translation_surfaces
+                    sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+                    sage: P = S.point(0, (1/2, 1/2))
+                    sage: P.angle()
+                    1
+
+                ::
+
+                    sage: P = S.point(0, 0)
+                    sage: P.angle()
+                    1/2
+
+                ::
+
+                    sage: from flatsurf import translation_surfaces, polygons, similarity_surfaces
+                    sage: S = translation_surfaces.veech_2n_gon(5)
+                    sage: [v.angle() for v in S.vertices()]
+                    [2, 2]
+                    sage: [v.angle(numerical=True) for v in S.vertices()]
+                    [2.00000000000000, 2.00000000000000]
+
+                """
+                surface = self.parent()
+
+                if numerical or not self.is_vertex():
+                    from flatsurf.geometry.categories import ConeSurfaces
+                    return ConeSurfaces.ElementMethods.angle(self, numerical=numerical)
+
+                from sage.all import ZZ
+                angle = ZZ(0)
+
+                for label, edge in self.edges():
+                    if surface.opposite_edge(label, edge) is None:
+                        raise ValueError("vertex at boundary does not have a total angle")
+
+                    v = surface.polygon(label).edge(edge)
+                    w = -surface.polygon(label).edge(edge - 1)
+
+                    from flatsurf.geometry.euclidean import is_between, is_parallel
+                    from sage.all import vector
+                    for side in [vector((1, 0)), vector((-1, 0))]:
+                        if is_parallel(side, v) or is_between(v, w, side):
+                            angle += 1
+
+                return angle / 2
 
         class ParentMethods:
             r"""
@@ -232,50 +290,6 @@ class HalfTranslationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
-
-            def angle(self, point, numerical=False):
-                r"""
-                Return the total angle at ``point`` in multiples of 2π.
-
-                INPUT:
-
-                - ``point`` -- a point on this surface
-
-                - ``numerical`` -- a boolean (default: ``False``); whether to
-                  return a numerical approximation of the angle or the exact
-                  value
-
-                EXAMPLES::
-
-                    sage: from flatsurf import translation_surfaces, polygons, similarity_surfaces
-                    sage: S = translation_surfaces.veech_2n_gon(5)
-                    sage: [S.angle(v) for v in S.vertices()]
-                    [2, 2]
-                    sage: [S.angle(v, numerical=True) for v in S.vertices()]
-                    [2.00000000000000, 2.00000000000000]
-
-                """
-                if numerical or not point.is_vertex():
-                    from flatsurf.geometry.categories import ConeSurfaces
-                    return ConeSurfaces.ParentMethods.angle(self, point, numerical=True)
-
-                from sage.all import ZZ
-                angle = ZZ(0)
-
-                for label, edge in point.edges():
-                    if self.opposite_edge(label, edge) is None:
-                        raise ValueError("vertex at boundary does not have a total angle")
-
-                    v = self.polygon(label).edge(edge)
-                    w = -self.polygon(label).edge(edge - 1)
-
-                    from flatsurf.geometry.euclidean import is_between, is_parallel
-                    from sage.all import vector
-                    for side in [vector((1, 0)), vector((-1, 0))]:
-                        if is_parallel(side, v) or is_between(v, w, side):
-                            angle += 1
-
-                return angle / 2
 
             def holonomy_field(self):
                 r"""
