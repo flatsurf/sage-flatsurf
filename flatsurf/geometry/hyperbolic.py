@@ -14448,7 +14448,7 @@ class HyperbolicExpression(Element):
 
 from sage.rings.ring import Ring
 
-class HyperbolicExpressions(Ring):
+class HyperbolicExpressions(Ring, UniqueRepresentation):
     Element = HyperbolicExpression
 
     def _element_constructor_(self, x):

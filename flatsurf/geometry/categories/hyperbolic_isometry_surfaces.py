@@ -174,9 +174,8 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
 
         def orbifold_points(self):
             r"""
-            Return the set of orbifold points of this surface with their
-            respective order, i.e., for each point an n such that the total
-            angle at the point is 2π/n.
+            Return the set of orbifold points of this surface, i.e., the points
+            with total angle 2π/n with n > 1.
 
             EXAMPLES::
 
@@ -207,11 +206,35 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             return vertices.union(midpoints)
 
         def _describe_surface(self):
+            r"""
+            Return a printable description of this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+                sage: S._describe_surface()
+                'Hyperbolic Surface'
+
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S._describe_surface()
+                'Hyperbolic Surface with boundary'
+
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                1
+
+                sage: S._describe_surface()
+                'Disconnected Surface'
+
+            """
             if not self.is_finite_type():
                 return "Surface built from infinitely many polygons"
 
             if not self.is_connected():
-                return "Disconnected surface"
+                return "Disconnected Surface"
 
             description = "Hyperbolic Surface"
 
@@ -243,18 +266,64 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             return description
 
         def edge_transformation(self, label, edge):
-            opposite_label, opposite_edge = self.opposite_edge(label, edge)
-            return self._hyperbolic_plane.isometry(self.polygon(label).edges()[edge], -self.polygon(opposite_label).edges()[opposite_edge])
-
-    class ElementMethods:
-        def orbifold_order(self):
             r"""
-            Return the order of this point or ``None`` if this is not an
-            orbifold point.
+            Return the isometry that glues the ``edge`` of the polygon
+            ``label`` to its :meth:`opposite_edge`.
 
             INPUT:
 
-            - ``point`` -- a point of this surface
+            - ``label`` -- the label of a polygon in this surface
+
+            - ``edge`` -- the index of a glued edge in that polygon of the surface
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.edge_transformation(0, 0)
+                Traceback (most recent call last):
+                ...
+                ValueError: edge is not glued
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: S.edge_transformation(0, 0)
+                [   1    0]
+                [-4/5    1]
+                sage: S.edge_transformation(0, 1)
+                [  0  -1]
+                [1/5   0]
+                sage: S.edge_transformation(0, 2)
+                [  1   0]
+                [4/5   1]
+
+            """
+            opposite = self.opposite_edge(label, edge)
+            if opposite is None:
+                raise ValueError("edge is not glued")
+            opposite_label, opposite_edge = opposite
+            return self._hyperbolic_plane.isometry(self.polygon(label).edges()[edge], -self.polygon(opposite_label).edges()[opposite_edge])
+
+    class ElementMethods:
+        r"""
+        Provides methods for all points of hyperbolic surfaces built from
+        polygons glued by isometries.
+
+        If you want to add functionality to such points, you most likely want
+        to add methods here.
+        """
+
+        def orbifold_order(self):
+            r"""
+            Return the order of this point, i.e., the ``n`` in the total angle
+            2π/n at this point.
+
+            Returns ``None`` if this is not an orbifold point.
 
             EXAMPLES::
 
@@ -339,13 +408,79 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             return None
 
         def angle(self, numerical=False):
+            r"""
+            Return the total angle at this point in multiples of 2π.
+
+            INPUT:
+
+            - ``numerical`` -- a boolean (default: ``False``); whether to
+              return a numerical approximation or the exact angle at this
+              point (often not implemented.)
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+
+                sage: P = H.convex_hull(0, I + 2, I - 2)
+                sage: S.add_polygon(P)
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+            At the cusp, the total angle is zero::
+
+                sage: S(0, 0).angle(numerical=True)
+                0.000000000000000
+
+            At the non-cusp, the total angle is the sum of the two other inner
+            angles of the triangle::
+
+                sage: P.angles()
+                [0.000000000000000, 0.0737918088252166, 0.0737918088252166]
+                sage: S(0, 1).angle(numerical=True)
+                0.147583617650433
+                sage: S(0, 2).angle(numerical=True)
+                0.147583617650433
+
+            At most other points, the total angle is 2π. But there is an
+            orbifold point at which the total angle is π::
+
+                sage: edges = P.edges()
+                sage: S(0, edges[1].midpoint()).angle(numerical=True)
+                0.500000000000000
+
+                sage: S(0, I).angle(numerical=True)
+                1.00000000000000
+
+            Note that only very few angles can be compute non-numerically since
+            summing of non-numerical angles has not been implemented::
+
+                sage: S(0, 0).angle()
+                0.000000000000000
+
+            The printed value is only an approximation of the real value but
+            internally, the values are being tracked exactly::
+
+                sage: _.parent().is_exact()
+                True
+
+            ::
+
+                sage: S(0, 1).angle()
+                Traceback (most recent call last):
+                ...
+                NotImplementedError: ...
+
+            """
+            from sage.all import ZZ, RR
             surface = self.parent()
-            # TODO: Make ElementMethods (and make sure that the Euclidean version is as well. Adapt news!
+
             if numerical:
-                from sage.all import RR
                 angle = RR(0)
             else:
-                from sage.all import ZZ
                 angle = ZZ(0)
 
             if not self.is_vertex():
@@ -353,18 +488,23 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
                 position = surface.polygon(label).get_point_position(point)
                 if position.is_in_interior():
                     angle += 1
-                elif surface.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
-                    # point on self-glued edge
-                    angle += ZZ(1) / 2
-                else:
-                    # point on non-self-glued edge
-                    angle += 1
+                else: # point on edge
+                    opposite = surface.opposite_edge(label, position.get_edge())
+                    if opposite is None:
+                        raise NotImplementedError("cannot determine total angle for point on boundary")
+
+                    if opposite == (label, position.get_edge()):
+                        # point on self-glued edge
+                        angle += ZZ(1) / 2
+                    else:
+                        # point on non-self-glued edge
+                        angle += 1
 
                 return angle
 
-            # TODO: Check that all edges at this vertex are glued.
-
             for label, vertex in self.vertices():
+                if surface.opposite_edge(label, vertex) is None:
+                    raise NotImplementedError("cannot determine total angle for point on boundary")
                 angle += surface.polygon(label).angle(vertex, numerical=numerical)
 
             return angle
