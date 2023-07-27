@@ -2424,7 +2424,7 @@ class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, Mutabl
         x_edge = self.polygon(x[0]).edges()[x[1]]
         y_edge = self.polygon(y[0]).edges()[y[1]]
 
-        if not x_edge.is_finite() or not y_edge.is_finite():
+        if (x_edge.start().is_ideal() and x_edge.end().is_ideal()) or (y_edge.start().is_ideal() and y_edge.end().is_ideal()):
             raise NotImplementedError("cannot glue geodesics yet")
 
         isometry = self._hyperbolic_plane.isometry(x_edge, -y_edge)
