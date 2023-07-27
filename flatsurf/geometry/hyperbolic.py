@@ -6186,7 +6186,12 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
                 b = end.coordinates(model="klein")
                 x = intersection.coordinates(model="klein")
 
-                return a[0] * x[0] + a[1] * x[1] < b[0] * x[0] + b[1] * x[1]
+                # The midpoint of the segment is contained, if the intersection
+                # point is closer to end than to start, i.e., d(x, b) ≤ d(x, a).
+                # With d(x, a) = cosh | <x, a> / sqrt(<x,x><a,a>) | we deduce
+                # the following by monotony of cosh and squaring both sides;
+                # see https://math.stackexchange.com/a/4167944/145897
+                return (b[0] * x[0] + b[1] * x[1] - 1)**2 * (a[0]**2 + a[1]**2 - 1) <= (a[0] * x[0] + a[1] * x[1] - 1)**2 * (b[0]**2 + b[1]**2 - 1)
 
             raise NotImplementedError(
                 "cannot decide whether this ideal point is contained in the half space yet"
