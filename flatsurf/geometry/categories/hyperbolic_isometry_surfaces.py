@@ -107,45 +107,158 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategory
 
 
 class HyperbolicIsometrySurfaces(SurfaceCategory):
+    r"""
+    The category of surfaces built by gluing hyperbolic polygons with
+    isometries.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.categories import HyperbolicIsometrySurfaces
+        sage: HyperbolicIsometrySurfaces()
+        Category of hyperbolic isometry surfaces
+
+    """
+
     def super_categories(self):
+        r"""
+        Return the categories such surfaces are also automatically contained
+        in, namely the category of surfaces built by gluing hyperbolic
+        polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.categories import HyperbolicIsometrySurfaces
+            sage: C = HyperbolicIsometrySurfaces()
+            sage: C.super_categories()
+            [Category of hyperbolic polygonal surfaces]
+
+        """
         from flatsurf.geometry.categories.hyperbolic_polygonal_surfaces import HyperbolicPolygonalSurfaces
 
         return [HyperbolicPolygonalSurfaces()]
 
     class ParentMethods:
+        r"""
+        Provides methods available to all surfaces built by gluing hyperbolic
+        polygons with isometries.
+
+        If you want to add functionality to all such surfaces, you most likely
+        want to put it here.
+        """
+
         def cusps(self):
+            r"""
+            Return the set of cusps of this surface, i.e., the set of vertices
+            that are at infinite points.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+
+                sage: S.add_polygon(H.convex_hull(0, I + 1, I - 1))
+                0
+
+                sage: S.glue((0, 0), (0, 2))
+                sage: S.glue((0, 1), (0, 1))
+
+                sage: S
+                Hyperbolic Surface with 1 cusp and with 1 orbifold point built from a degenerate triangle
+
+                sage: S.cusps()
+                {Vertex 0 of polygon 0}
+
+            """
             return set(vertex for vertex in self.vertices() if next(iter(vertex.representatives()))[1].is_ideal())
 
         def orbifold_points(self):
-            orbifold_points = [vertex for vertex in self.vertices() if self.is_orbifold_point(vertex)]
+            r"""
+            Return the set of orbifold points of this surface with their
+            respective order, i.e., for each point an n such that the total
+            angle at the point is 2π/n.
 
-            for (a, b) in self.gluings():
-                if a == b:
-                    orbifold_points.append(self(a[0], self.polygon(a[0]).edges()[a[1]].midpoint()))
+            EXAMPLES::
 
-            return orbifold_points
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
 
-        def is_orbifold_point(self, point):
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: S
+                Hyperbolic Surface with 1 cusp and with 1 orbifold point built from a degenerate triangle
+
+                sage: S.orbifold_points()
+                {Point (2 + I → -2 + I) / 2 of polygon 0}
+
+            .. SEEALSO::
+
+                :meth:`orbifold_order` to determine the order of the orbifold points
+
+            """
+            vertices = {vertex for vertex in self.vertices() if self.orbifold_order(vertex)}
+            midpoints = {self(a[0], self.polygon(a[0]).edges()[a[1]].midpoint()) for (a, b) in self.gluings() if a == b}
+
+            return vertices.union(midpoints)
+
+        def orbifold_order(self, point):
+            r"""
+            Return the order of the orbifold point ``point`` or ``None`` if the
+            point is not an orbifold point.
+
+            INPUT:
+
+            - ``point`` -- a point of this surface
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: P = S(0, S.polygon(0).edges()[1].midpoint())
+                sage: S.orbifold_order(P)
+                2
+
+                sage: P = S(0, 0)
+                sage: S.orbifold_order(P) is None
+                True
+
+            """
+            # TODO: Make ElementMethods
             label, p = point.representative()
             position = self.polygon(label).get_point_position(p)
 
             if p.is_ideal():
-                return False
+                return None
 
             if position.is_in_interior():
-                return False
+                return None
 
             if position.is_in_edge_interior():
-                edge = position.edge()
+                edge = position.get_edge()
                 # This is an orbifold iff it is on a self-glued edge
-                return self.opposite_edge(label, edge) == (label, edge)
+                if self.opposite_edge(label, edge) == (label, edge):
+                    return 2
+                return None
 
             angle = point.angle(numerical=True)
 
-            n = (1/angle).round()
+            order = (1/angle).round()
 
-            if n <= 1:
-                return False
+            if order <= 1:
+                return None
 
             # This does not work because we cannot decide whether an angle is rational. We could probably do something like https://mathproblems123.wordpress.com/2018/03/31/when-is-arccos-a-rational-multiple-of-pi/
             # angle = point.angle()
@@ -177,10 +290,14 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
 
             # Now we check if by arranging n copies of this widget at the vertex, we get a 2π angle.
             isometry = start_edge_geometry.parent().isometry(start_edge_geometry, -end_edge_geometry)
-            identity = isometry ** n
-            return identity == 1 or identity == -1
+            identity = isometry ** order
+            if identity == 1 or identity == -1:
+                return order
+
+            return None
 
         def angle(self, point, numerical=False):
+            # TODO: Make ElementMethods (and make sure that the Euclidean version is as well. Adapt news!
             if numerical:
                 from sage.all import RR
                 angle = RR(0)
