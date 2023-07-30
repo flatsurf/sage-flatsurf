@@ -189,7 +189,6 @@ class PolygonPosition:
                     "Constructed vertex position with no specified vertex."
                 )
             self._vertex = vertex
-            self._edge = edge
         if self.is_in_edge_interior():
             if edge is None:
                 raise ValueError("Constructed edge position with no specified edge.")
@@ -241,7 +240,7 @@ class PolygonPosition:
 
     def get_edge(self):
         r"""
-        Return an edge that this point is on.
+        If this point is on the interior of an edge, return that edge's index.
 
         EXAMPLES::
 
@@ -250,7 +249,9 @@ class PolygonPosition:
 
             sage: pos = S.get_point_position((0, 0))
             sage: pos.get_edge()
-            0
+            Traceback (most recent call last):
+            ...
+            ValueError: not in interior of any edge
 
             sage: pos = S.get_point_position((0, 1/2))
             sage: pos.get_edge()
@@ -260,12 +261,13 @@ class PolygonPosition:
             sage: pos.get_edge()
             Traceback (most recent call last):
             ...
-            ValueError: not on any edge
+            ValueError: not in interior of any edge
 
         """
-        if not self.is_in_edge_interior() and not self.is_vertex():
-            raise ValueError("not on any edge")
-        return self._edge
+        if self.is_in_edge_interior():
+            return self._edge
+
+        raise ValueError("not in interior of any edge")
 
     def get_vertex(self):
         if not self.is_vertex():
@@ -365,6 +367,9 @@ class EuclideanPolygon(Parent):
         )
 
         return self.category()
+
+    def adjacencies(self):
+        return tuple(((v - 1) % len(self.vertices()), v) for v in range(len(self.vertices())))
 
     @cached_method
     def __hash__(self):

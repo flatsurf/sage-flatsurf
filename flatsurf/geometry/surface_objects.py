@@ -118,6 +118,32 @@ class SurfacePoint(Element):
         sage: S.point(1, (0, 0))
         Vertex 0 of polygon 1
 
+    A point can be on a boundary edge::
+
+        ...
+
+    A point can be on a boundary vertex::
+
+        ...
+
+    A point can be on a vertex of an infinite area polygon::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: P = H.intersection(
+        ....:     H.vertical(-1).right_half_space(),
+        ....:     H.half_circle(0, 4).right_half_space(),
+        ....:     H.vertical(1).left_half_space())
+
+        sage: from flatsurf import MutableOrientedHyperbolicSurface
+        sage: S = MutableOrientedHyperbolicSurface(H)
+        sage: S.add_polygon(P)
+        0
+        sage: S.glue((0, 0), (0, 2))
+
+        sage: S(0, 0)
+        Vertex 0 of polygon 0
+
     """
 
     def __init__(self, surface, label, point, ring=None, limit=None):
@@ -152,34 +178,49 @@ class SurfacePoint(Element):
         elif position.is_in_edge_interior():
             self._representatives = {(label, point)}
 
-            cross_label, cross_edge = surface.opposite_edge(label, position.get_edge())
-            cross_point = surface.edge_transformation(label, position.get_edge()) * point
+            opposite = surface.opposite_edge(label, position.get_edge())
+            if opposite is not None:
+                cross_label, cross_edge = opposite
+                cross_point = surface.edge_transformation(label, position.get_edge()) * point
 
-            self._representatives.add((cross_label, cross_point))
+                self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():
             self._representatives = set()
 
-            source_edge = position.get_edge()
-            while (label, source_edge) not in self._representatives:
-                self._representatives.add((label, source_edge))
+            def step(label, vertex, ccw=True):
+                edge = surface.polygon(label).adjacencies()[vertex][0 if ccw else 1]
+                if edge is None:
+                    return None
+                cross = surface.opposite_edge(label, edge)
+                if not cross:
+                    return None
+                cross_label, cross_edge = cross
+                for cross_vertex, edges in enumerate(surface.polygon(cross_label).adjacencies()):
+                    if cross_edge == edges[1 if ccw else 0]:
+                        return cross_label, cross_vertex
 
-                # Rotate to the next edge that is leaving at the vertex
-                opposite_edge = surface.opposite_edge(label, source_edge)
-                if opposite_edge is None:
-                    raise NotImplementedError("cannot create points at vertices of surfaces with boundary")
+                assert False, "no vertex attached to this edge"
 
-                label, source_edge = opposite_edge
-                source_edge = (source_edge + 1) % len(surface.polygon(label).edges())
+            def walk(label, vertex, ccw=True, limit=None):
+                representatives = set()
+                current = label, vertex
+                while current not in representatives:
+                    representatives.add(current)
 
-                if limit is not None:
-                    limit -= 1
-                    if limit < 0:
-                        raise ValueError("number of edges at singularity exceeds limit")
+                    current = step(*current, ccw=ccw)
+                    if current is None:
+                        break
 
-            self._representatives = {
-                (label, surface.polygon(label).vertices()[edge])
-                for (label, edge) in self._representatives
-            }
+                    if limit is not None:
+                        limit -= 1
+                        if limit < 0:
+                            raise ValueError("number of edges at singularity exceeds limit")
+
+                return representatives
+
+            self._representatives = walk(label, position.get_vertex(), ccw=True, limit=limit).union(
+                walk(label, position.get_vertex(), ccw=False, limit=limit))
+            self._representatives = set([(label, surface.polygon(label).vertices()[v]) for (label, v) in self._representatives])
         else:
             raise NotImplementedError
 
@@ -256,7 +297,7 @@ class SurfacePoint(Element):
     def representatives(self):
         r"""
         Return the representatives of this point as pairs of polygon labels and
-        coordinates.
+        polygon points.
 
         EXAMPLES::
 
@@ -312,12 +353,8 @@ class SurfacePoint(Element):
 
         for label, coordinates in self.representatives():
             polygon = self.surface().polygon(label)
-            edge = polygon.get_point_position(coordinates).get_edge()
-            edges.add((label, edge))
-
-            previous_edge = (edge - 1) % len(polygon.edges())
-            if self.surface().opposite_edge(label, previous_edge) is None:
-                edges.add((label, previous_edge))
+            position = polygon.get_point_position(coordinates)
+            edges.add((label, polygon.adjacencies()[position.get_vertex()][1]))
 
         return edges
 
@@ -333,7 +370,6 @@ class SurfacePoint(Element):
             vertices.add((label, vertex))
 
         return vertices
-
 
     def vertex_set(self):
         r"""
@@ -477,6 +513,7 @@ class SurfacePoint(Element):
             ((0, 0), (1, 0), (0, 1), (1, 1))
 
         """
+        # TODO: Deprecate
         return tuple(
             coordinates for (l, coordinates) in self._representatives if l == label
         )

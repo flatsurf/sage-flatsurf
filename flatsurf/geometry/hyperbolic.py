@@ -11281,6 +11281,39 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
         return ZZ(2)
 
     @cached_method
+    def adjacencies(self):
+        r"""
+        Return the edges that are adjacent to the vertices of the polygon.
+
+        A ``None`` is returned if no edge is on one side of a vertex.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+        For most polygons, this function is rather trivial::
+
+            sage: P = H.convex_hull(I - 1, I + 1, 0)
+            sage: P.adjacencies()
+            ((2, 0), (0, 1), (1, 2))
+
+        However, for polygons of infinite area, edges can be "missing" in the
+        output here::
+
+            sage: P = H.intersection(
+            ....:   H.vertical(-1).right_half_space(),
+            ....:   H.vertical(1).left_half_space())
+
+            sage: P.adjacencies()
+            ((None, 0), (0, 1), (1, None))
+
+        """
+        starts = {edge.start(): i for i, edge in enumerate(self.edges())}
+        ends = {edge.end(): i for i, edge in enumerate(self.edges())}
+        return tuple((ends.get(vertex, None), starts.get(vertex, None)) for vertex in self.vertices())
+
+    @cached_method
     def edges(self, as_segments=False, marked_vertices=True):
         r"""
         Return the :class:`segments <HyperbolicOrientedSegment>` and

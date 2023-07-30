@@ -2372,9 +2372,9 @@ class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, Mutabl
         sage: H = HyperbolicPlane(QQ)
 
         sage: from flatsurf import MutableOrientedHyperbolicSurface
-        sage: S = MutableOrientedHyperbolicSurface(H)
+        sage: T = MutableOrientedHyperbolicSurface(H)
 
-        sage: S.add_polygon(H.polygon([
+        sage: T.add_polygon(H.polygon([
         ....:     H.vertical(1).left_half_space(),
         ....:     H.vertical(-1).right_half_space(),
         ....:     H.half_circle(0, 4).left_half_space(),
@@ -2382,23 +2382,28 @@ class MutableOrientedHyperbolicSurface(OrientedHyperbolicIsometrySurface, Mutabl
         ....: ]))
         0
 
-        sage: S.polygon(0).edges()
+        sage: T.polygon(0).edges()
         {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≥ 0} ∩ {2*(x^2 + y^2) - 17*x - 15 ≤ 0},
          {-(x^2 + y^2) + 16 = 0} ∩ {(x^2 + y^2) - 17*x + 1 ≥ 0} ∩ {(x^2 + y^2) + 17*x + 1 ≥ 0},
          {x + 1 = 0} ∩ {2*(x^2 + y^2) + 17*x - 15 ≤ 0} ∩ {2*(x^2 + y^2) + 5*x - 3 ≥ 0},
          {(x^2 + y^2) - 4 = 0} ∩ {(x^2 + y^2) + 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 5*x + 1 ≥ 0}}
 
-        sage: S.glue((0, 0), (0, 2))
-        sage: S.glue((0, 1), (0, 1))
-        sage: S.glue((0, 3), (0, 3))
+        sage: T.glue((0, 0), (0, 2))
+        sage: T.glue((0, 1), (0, 1))
+        sage: T.glue((0, 3), (0, 3))
 
-        sage: S.set_immutable()
+        sage: T.set_immutable()
 
-        sage: S
+        sage: T
         Genus 0 Hyperbolic Surface with 3 orbifold points built from a quadrilateral
 
-        sage: S.vertices()
+        sage: T.vertices()
         {Vertex 0 of polygon 0, Vertex 1 of polygon 0}
+
+    TESTS::
+
+        sage: TestSuite(S).run()
+        sage: TestSuite(T).run()
 
     """
 

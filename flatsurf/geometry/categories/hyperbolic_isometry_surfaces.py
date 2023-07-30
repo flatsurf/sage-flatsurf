@@ -309,6 +309,9 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             opposite_label, opposite_edge = opposite
             return self._hyperbolic_plane.isometry(self.polygon(label).edges()[edge], -self.polygon(opposite_label).edges()[opposite_edge])
 
+        def plot(self):
+            # TODO: Implement me
+            pass
     class ElementMethods:
         r"""
         Provides methods for all points of hyperbolic surfaces built from
@@ -382,7 +385,8 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             # We rearrange all the polygons attached to this point so that they
             # are glued by identities. Then we take the first and the last edge
             # of this gadget to get a hold of the total angle at the point.
-            start_label, start_edge = label, position.get_edge()
+            # TODO: Refuse to do this if this is an infinite area polygon here.
+            start_label, start_edge = label, surface.polygon(label).adjacencies()[position.get_vertex()][1]
             start_edge_geometry = surface.polygon(start_label).edges()[start_edge]
             end_label, end_edge = label, (start_edge - 1) % len(surface.polygon(start_label).vertices())
             end_edge_geometry = surface.polygon(end_label).edges()[end_edge]

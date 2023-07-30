@@ -97,9 +97,7 @@ class HyperbolicPolygons(Category_over_base_ring):
             from flatsurf.geometry.polygon import PolygonPosition
             for (i, v) in enumerate(self.vertices()):
                 if point == v:
-                    edges = [e for e, edge in enumerate(self.edges()) if edge.start() == v]
-                    assert len(edges) == 1
-                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i, edge=edges[0])
+                    return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
 
             for (i, e) in enumerate(self.edges()):
                 if point in e:
