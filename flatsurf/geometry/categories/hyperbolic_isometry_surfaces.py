@@ -197,7 +197,7 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
                 Hyperbolic Surface with 1 cusp and with 1 orbifold point built from a degenerate triangle
 
                 sage: S.orbifold_points()
-                {Point (2 + I → -2 + I) / 2 of polygon 0}
+                {Point (0, 2/3) of polygon 0}
 
             .. SEEALSO::
 

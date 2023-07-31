@@ -10002,6 +10002,8 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
 
 class HyperbolicMidpoint(HyperbolicPoint):
+    # TODO: Implement change()
+    # TODO: Make sure midpoints are returned by some_elements()
     def __init__(self, parent, segment):
         super().__init__(parent)
 
@@ -10020,7 +10022,7 @@ class HyperbolicMidpoint(HyperbolicPoint):
         return True
 
     @cached_method
-    def _coordinates_klein(self, ring):
+    def _coordinates_klein(self, ring, algorithm="algebraic"):
         segment = self._segment
 
         start, end = segment.vertices()
@@ -10036,23 +10038,55 @@ class HyperbolicMidpoint(HyperbolicPoint):
                 f"cannot compute midpoint of unbounded segment"
             )
 
-        for p in segment.geodesic().perpendicular(start).vertices():
-            for q in segment.geodesic().perpendicular(end).vertices():
-                try:
-                    line = self.parent().geodesic(p, q)
-                except ValueError:
-                    if ring == "maybe":
-                        return None
-                    raise
-                intersection = segment.intersection(line)
-                if intersection:
-                    return intersection.coordinates(model="klein")
+        if algorithm == "perpendicular":
+            for p in segment.geodesic().perpendicular(start).vertices():
+                for q in segment.geodesic().perpendicular(end).vertices():
+                    try:
+                        # This can fail, even if the result is over the base
+                        # ring.
+                        line = self.parent().geodesic(p, q)
+                    except ValueError:
+                        if ring == "maybe":
+                            return None
+                        raise
+                    intersection = segment.intersection(line)
+                    if intersection:
+                        return intersection.coordinates(model="klein")
 
-            # One of the two lines start at any p must intersect the segment
-            # already. No need to check the other p.
-            assert (
-                False
-            ), f"segment {self} must have a midpoint but the straightedge and compass construction did not yield any"
+                # One of the two lines start at any p must intersect the segment
+                # already. No need to check the other p.
+                assert (
+                    False
+                ), f"segment {self} must have a midpoint but the straightedge and compass construction did not yield any"
+        elif algorithm == "algebraic":
+            # The midpoint has the same distance from the endpoints of the
+            # segment. We use the formula from
+            # https://math.stackexchange.com/a/4167944/145897, i.e., we solve
+            # for <start, mid> sqrt<end, end> = <end, mid> sqrt<start, start>.
+            a = start.coordinates(model="klein")
+            b = end.coordinates(model="klein")
+            c = (a[0]**2 + a[1]**2 - 1) / (b[0]**2 + b[1]**2 - 1)
+
+            try:
+                c = c.sqrt()
+            except ValueError:
+                if ring == "maybe":
+                    return None
+                raise
+
+            # We now solve
+            # a0x0 + a1x1 - 1 = (b0x0 + x1x1 - 1) c
+            # under the condition that the point is on the geodesic.
+            g = self._segment.geodesic().equation(model="klein")
+            from sage.all import matrix, vector
+            M = matrix([
+                [a[0] - b[0]*c, a[1]-b[1]*c],
+                [g[1], g[2]]
+            ])
+            x = M.solve_right(vector([-c + 1, -g[0]]))
+            return x[0], x[1]
+        else:
+            raise NotImplementedError("unsupported algorithm")
 
     def _richcmp_(self, other, op):
         from sage.structure.richcmp import op_EQ, op_NE
@@ -12872,8 +12906,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: s.midpoint()
             a*I
 
-        A midpoint which has coordinates in the base ring. However, the
-        construction fails over the base ring::
+        ::
 
             sage: H = HyperbolicPlane(QQ)
             sage: geodesic = H(-4).segment(4)
@@ -12882,16 +12915,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: s = H(a).segment(b)
             sage: P = s.midpoint()
             sage: P.coordinates()
-            Traceback (most recent call last):
-            ...
-            ValueError: ...
-
-            sage: P in geodesic
-            True
-            sage: P in H.vertical(0)
-            True
-            sage: P == H(4*I)
-            True
+            (0, 4)
 
         TESTS::
 
