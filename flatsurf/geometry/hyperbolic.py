@@ -105,7 +105,7 @@ polygons::
 We can also intersect objects that are not half spaces::
 
     sage: P.intersection(H.vertical(0))
-    {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+    ∞ ↔ (0, 1/3)
 
 .. WARNING::
 
@@ -176,7 +176,7 @@ We can also intersect objects that are not half spaces::
     Similarly, a geodesic can be treated as a segment without endpoints::
 
         sage: H.segment(g, start=None, end=None, check=False, assume_normalized=True)
-        {-x = 0}
+        0 → ∞
 
 .. NOTE::
 
@@ -742,10 +742,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             {3*(x^2 + y^2) - 5*x - 1 ≥ 0}
 
             sage: H.random_element("oriented segment")
-            {-3*(x^2 + y^2) + x + 3 = 0} ∩ {9*(x^2 + y^2) - 114*x + 28 ≥ 0} ∩ {(x^2 + y^2) + 12*x - 1 ≥ 0}
+            1/3 + I → I
 
             sage: H.random_element("unoriented segment")
-            {16*(x^2 + y^2) - x - 16 = 0} ∩ {(x^2 + y^2) + 64*x - 1 ≥ 0} ∩ {496*(x^2 + y^2) - 1056*x + 529 ≥ 0}
+            I ↔ 1 + 1/4*I
 
             sage: H.random_element("polygon")
             {56766100*(x^2 + y^2) - 244977117*x + 57459343 ≥ 0} ∩ {822002048*(x^2 + y^2) - 3988505279*x + 2596487836 ≥ 0} ∩ {464*(x^2 + y^2) + 9760*x + 11359 ≥ 0} ∩ {4*(x^2 + y^2) + 45*x + 49 ≥ 0}
@@ -1558,12 +1558,12 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         When only one endpoint is provided, the segment is infinite on one end::
 
             sage: H.segment(H.vertical(0), start=I, end=None)
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+            I → ∞
 
         When both endpoints are provided, a proper closed segment is returned::
 
             sage: H.segment(H.vertical(0), start=I, end=2*I)
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}
+            I → 2*I
 
         However, ideal endpoints on the geodesic are ignored::
 
@@ -1649,10 +1649,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ValueError: end point of segment must not be before start point on the underlying geodesic
 
             sage: H.segment(H.vertical(0), start=I, end=2*I)
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}
+            I → 2*I
 
             sage: H.segment(H.vertical(0).unoriented(), start=2*I, end=I)
-            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+            2*I → I
 
             sage: H.segment(H.vertical(0), start=2*I, end=I)
             Traceback (most recent call last):
@@ -4347,9 +4347,13 @@ class HyperbolicConvexSet(SageObject):
             sage: H = HyperbolicPlane()
             sage: segment = H.segment(H.vertical(-1), start=H.infinity(), end=H.infinity(), check=False, assume_normalized=True)
             sage: segment
-            {-x - 1 = 0} ∩ {x - 1 ≥ 0} ∩ {x - 1 ≤ 0}
+            ∞
+            sage: type(_)
+            <class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>
             sage: segment._normalize()
             ∞
+            sage: type(_)
+            <class 'flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates_with_category'>
 
         """
         return self
@@ -5045,7 +5049,7 @@ class HyperbolicConvexSet(SageObject):
 
             sage: segment = H(I).segment(2*I)
             sage: segment.apply_isometry(isometry)
-            {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x - 2 ≤ 0}
+            1 + I → 1 + 2*I
 
         REFERENCES:
 
@@ -5566,7 +5570,7 @@ class HyperbolicConvexSet(SageObject):
             ....:   H.half_circle(0, 2).left_half_space())
 
             sage: P.edges()
-            {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0}, {x + 1 = 0} ∩ {2*(x^2 + y^2) + 3*x - 1 ≥ 0}, {(x^2 + y^2) - 2 = 0} ∩ {(x^2 + y^2) + 3*x + 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x + 1 ≥ 0}}
+            {1 + I → ∞, ∞ → -1 + I, -1 + I → 1 + I}
 
         The single edge of a half space:
 
@@ -5579,7 +5583,7 @@ class HyperbolicConvexSet(SageObject):
             {{-x = 0}, {x = 0}}
 
             sage: H(I).segment(2*I).edges()
-            {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}, {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}}
+            {I → 2*I, 2*I → I}
 
         Lower dimensional objects have no edges:
 
@@ -8958,7 +8962,7 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
             sage: H = HyperbolicPlane()
 
             sage: H(0).segment(I)
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≤ 0}
+            0 → I
 
         A geodesic is returned when both endpoints are ideal points::
 
@@ -10792,7 +10796,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             ....:   H.vertical(0).left_half_space(),
             ....:   H.vertical(0).right_half_space(),
             ....: )._normalize_drop_unit_disk_redundant()
-            {x = 0} ∩ {(x^2 + y^2) - 2 ≥ 0}
+            ∞ → (0, 1/3)
 
         An unbounded polygon touching the unit disk from the inside::
 
@@ -10810,7 +10814,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             ....:     H.geodesic(-2, 2).right_half_space(),
             ....:     H.geodesic(-1/2, 1/2).left_half_space(),
             ....: )._normalize_drop_unit_disk_redundant()
-            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {4*(x^2 + y^2) - 1 ≥ 0}
+            2*I → 1/2*I
 
         .. NOTE::
 
@@ -11349,7 +11353,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
             ....:   H.half_circle(0, 4).right_half_space())
 
             sage: P.edges()
-            {{-x + 1 = 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≤ 0}, {-(x^2 + y^2) + 4 = 0} ∩ {(x^2 + y^2) - 5*x + 1 ≥ 0} ∩ {(x^2 + y^2) + 5*x + 1 ≥ 0}, {x + 1 = 0} ∩ {2*(x^2 + y^2) + 5*x - 3 ≤ 0}, {(x^2 + y^2) - 1 = 0}}
+            {1 → (2/5, 3/5), (2/5, 3/5) → (-2/5, 3/5), (-2/5, 3/5) → -1, {(x^2 + y^2) - 1 = 0}}
 
             sage: [type(e) for e in P.edges()]
             [<class 'flatsurf.geometry.hyperbolic.HyperbolicOrientedSegment_with_category_with_category'>,
@@ -11367,9 +11371,9 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
             sage: P = H.convex_hull(-1, 1, I, 2*I, marked_vertices=True)
             sage: P.edges()
-            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}, {(x^2 + y^2) - 1 = 0} ∩ {x ≥ 0}}
+            {1 → 2*I, 2*I → -1, -1 → I, I → 1}
             sage: P.edges(marked_vertices=False)
-            {{-(x^2 + y^2) - 3*x + 4 = 0} ∩ {3*(x^2 + y^2) - 25*x - 12 ≤ 0}, {-(x^2 + y^2) + 3*x + 4 = 0} ∩ {3*(x^2 + y^2) + 25*x - 12 ≤ 0}, {(x^2 + y^2) - 1 = 0}}
+            {1 → 2*I, 2*I → -1, {(x^2 + y^2) - 1 = 0}}
 
         """
         edges = []
@@ -12206,10 +12210,10 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         sage: H = HyperbolicPlane()
 
         sage: H.segment(H.vertical(0), start=I)
-        {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+        I → ∞
 
         sage: H(I).segment(oo)
-        {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+        I → ∞
 
     .. SEEALSO::
 
@@ -12372,10 +12376,10 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         Segments that remain segments in normalization::
 
             sage: segment(H.vertical(0), start=I, end=H.infinity())._normalize()
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+            I → ∞
 
             sage: segment(-H.vertical(0), start=H.infinity(), end=I)._normalize()
-            {x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+            ∞ → I
 
         .. NOTE::
 
@@ -12462,7 +12466,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: isometry = matrix([[1, -1, 1], [1, 1/2, 1/2], [1, -1/2, 3/2]])
             sage: segment = H(I).segment(2*I)
             sage: segment._apply_isometry_klein(isometry)
-            {-x + 1 = 0} ∩ {2*(x^2 + y^2) - 3*x - 1 ≥ 0} ∩ {(x^2 + y^2) - 3*x - 2 ≤ 0}
+            1 + I → 1 + 2*I
 
         We apply an isometry of negative determinant to an oriented segment::
 
@@ -12556,13 +12560,10 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: H = HyperbolicPlane()
 
             sage: H.segment(H.half_circle(0, 1), end=I)
-            {(x^2 + y^2) - 1 = 0} ∩ {x ≤ 0}
+            -1 → I
 
         """
-        bounds = [repr(self._geodesic)]
-        bounds.extend(repr(half_space) for half_space in self._endpoint_half_spaces())
-
-        return " ∩ ".join(bounds)
+        return (" → " if self.is_oriented() else " ↔ ").join([repr(vertex) for vertex in self.vertices()])
 
     def half_spaces(self):
         r"""
@@ -12686,7 +12687,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             sage: s = H(I).segment(2*I)
 
             sage: s.change(ring=AA)
-            {-x = 0} ∩ {3/5*(x^2 + y^2) - 3/5 ≥ 0} ∩ {6/25*(x^2 + y^2) - 24/25 ≤ 0}
+            I → 2*I
 
         We make the segment unoriented::
 
@@ -13006,7 +13007,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         such as a Python ``set``::
 
             sage: {s.unoriented(), (-s).unoriented()}
-            {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}}
+            {I ↔ 2*I}
 
         """
         return hash((frozenset([self._start, self._end]), self.geodesic()))
@@ -13027,10 +13028,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
             sage: conditions = s._isometry_conditions(s)
             sage: list(conditions)
-            [[({-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0},
-               {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0})],
-             [({-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0},
-               {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0})]]
+            [[(I → 2*I, I → 2*I)], [(I → 2*I, 2*I → I)]]
 
         .. SEEALSO::
 
@@ -13109,10 +13107,10 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
 
             sage: s = H(I).segment(2*I)
             sage: s
-            {-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}
+            I → 2*I
 
             sage: -s
-            {x = 0} ∩ {(x^2 + y^2) - 4 ≤ 0} ∩ {(x^2 + y^2) - 1 ≥ 0}
+            2*I → I
 
         """
         return self.parent().segment(
@@ -13134,7 +13132,7 @@ class HyperbolicOrientedSegment(HyperbolicSegment, HyperbolicOrientedConvexSet):
         Python ``set``::
 
             sage: {s}
-            {{-x = 0} ∩ {(x^2 + y^2) - 1 ≥ 0} ∩ {(x^2 + y^2) - 4 ≤ 0}}
+            {I → 2*I}
 
         """
         return hash((self._start, self._end, self.geodesic()))

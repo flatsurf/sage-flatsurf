@@ -41,17 +41,21 @@ We create a surface from scratch (using
     ....: ]))
     1
 
+We glue the edges of the polygon. Note that the edges of the polygons are
+represented by their coordinates in the Klein model (since the end points are not
+representable over the rationals in the upper half-plane model)::
+
     sage: S.polygon(0).edges()
-    {{(x^2 + y^2) - 4*x = 0} ∩ {3*(x^2 + y^2) + 5*x - 17 ≥ 0} ∩ {(x^2 + y^2) + 13*x - 51 ≤ 0},
-     {-x + 3 = 0} ∩ {10*(x^2 + y^2) - 39*x - 3 ≥ 0} ∩ {2*(x^2 + y^2) - 15*x - 3 ≤ 0},
-     {-(x^2 + y^2) + 4*x + 12 = 0} ∩ {7*(x^2 + y^2) - 65*x + 27 ≥ 0} ∩ {9*(x^2 + y^2) - 221*x + 77 ≤ 0},
-     {x - 1 = 0} ∩ {2*(x^2 + y^2) - 17*x - 15 ≤ 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≥ 0}}
+    {(2/5, 3/5) → (6/13, 11/13),
+     (6/13, 11/13) → (6/25, 23/25),
+     (6/25, 23/25) → (2/17, 15/17),
+     (2/17, 15/17) → (2/5, 3/5)}
 
     sage: S.polygon(1).edges()
-    {{(x^2 + y^2) - 4*x = 0} ∩ {3*(x^2 + y^2) + 5*x - 17 ≥ 0} ∩ {(x^2 + y^2) + 13*x - 51 ≤ 0},
-     {-x + 3 = 0} ∩ {10*(x^2 + y^2) - 39*x - 3 ≥ 0} ∩ {2*(x^2 + y^2) - 15*x - 3 ≤ 0},
-     {-(x^2 + y^2) + 4*x + 12 = 0} ∩ {7*(x^2 + y^2) - 65*x + 27 ≥ 0} ∩ {9*(x^2 + y^2) - 221*x + 77 ≤ 0},
-     {x - 1 = 0} ∩ {2*(x^2 + y^2) - 17*x - 15 ≤ 0} ∩ {2*(x^2 + y^2) - 5*x - 3 ≥ 0}}
+    {(2/5, 3/5) → (6/13, 11/13),
+     (6/13, 11/13) → (6/25, 23/25),
+     (6/25, 23/25) → (2/17, 15/17),
+     (2/17, 15/17) → (2/5, 3/5)}
 
     sage: S.glue((0, 0), (1, 0))
     sage: S.glue((0, 1), (1, 3))
