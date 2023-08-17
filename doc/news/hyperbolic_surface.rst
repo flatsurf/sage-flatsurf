@@ -30,6 +30,6 @@
 
 * Fixed complicated printing of hyperbolic segments. Now, segments are printed as ``start → end`` instead of giving the intersection of the half planes that define the segment.
 
-** Deprecated:**
+**Deprecated:**
 
 * Deprecated ``angles()`` method of surfaces.
