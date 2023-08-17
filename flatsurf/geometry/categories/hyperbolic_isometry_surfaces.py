@@ -343,41 +343,6 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
 
             return GraphicalHyperbolicIsometrySurface(self, **kwargs)
 
-        def plot(self, **kwargs):
-            r"""
-            Return a plot of this surface.
-
-            The documentation of sage-flatsurf contains a section of example
-            plots. Consult the :mod:`flatsurf.graphical.surface` reference for all the
-            details.
-
-            EXAMPLES::
-
-                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
-                sage: H = HyperbolicPlane(QQ)
-                sage: S = MutableOrientedHyperbolicSurface(H)
-                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
-                0
-
-                sage: S.glue((0, 1), (0, 1))
-                sage: S.glue((0, 0), (0, 2))
-
-                sage: S.plot()
-                Graphics object consisting of 5 graphics primitives
-
-            """
-            graphical_surface_keywords = {
-                key: kwargs.pop(key)
-                for key in [
-                    "adjacencies",
-                    "polygon_labels",
-                    "edge_labels",
-                    "default_position_function",
-                ]
-                if key in kwargs
-            }
-            return self.graphical_surface(**graphical_surface_keywords).plot(**kwargs)
-
     class ElementMethods:
         r"""
         Provides methods for all points of hyperbolic surfaces built from

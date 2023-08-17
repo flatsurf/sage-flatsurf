@@ -136,22 +136,3 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 coordinates = polygon.edge(0) / 2
                 coordinates.set_immutable()
             return self(label, coordinates)  # pylint: disable=not-callable
-
-        def plot(self, **kwargs):
-            r"""
-            Return a plot of this surface.
-
-            The documentation of sage-flatsurf contains a section of example
-            plots. Consult the :mod:`flatsurf.graphical.surface` reference
-            for all the details.
-
-            EXAMPLES::
-
-                sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.square_torus()
-                sage: S.plot()
-                Graphics object consisting of 10 graphics primitives
-
-
-            """
-            return self.graphical_surface(**kwargs).plot()
