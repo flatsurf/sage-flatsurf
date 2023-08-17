@@ -313,9 +313,71 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
             opposite_label, opposite_edge = opposite
             return self._hyperbolic_plane.isometry(self.polygon(label).edges()[edge], -self.polygon(opposite_label).edges()[opposite_edge])
 
-        def plot(self):
-            # TODO: Implement me
-            pass
+        def graphical_surface(self, **kwargs):
+            r"""
+            Return a graphical representation of this surface.
+
+            This method can be used to further configure or augment a plot
+            beyond the possibilities of :meth:`plot`.
+
+            The documentation of sage-flatsurf contains a section of example
+            plots. Consult the :mod:`flatsurf.graphical.surface` reference for all the
+            details.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: S.graphical_surface()
+                Graphical representation of Hyperbolic Surface with 1 cusp and with 1 orbifold point built from a degenerate triangle
+
+            """
+            from flatsurf.graphical.surface import GraphicalHyperbolicIsometrySurface
+
+            return GraphicalHyperbolicIsometrySurface(self, **kwargs)
+
+        def plot(self, **kwargs):
+            r"""
+            Return a plot of this surface.
+
+            The documentation of sage-flatsurf contains a section of example
+            plots. Consult the :mod:`flatsurf.graphical.surface` reference for all the
+            details.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: S.plot()
+                Graphics object consisting of 5 graphics primitives
+
+            """
+            graphical_surface_keywords = {
+                key: kwargs.pop(key)
+                for key in [
+                    "adjacencies",
+                    "polygon_labels",
+                    "edge_labels",
+                    "default_position_function",
+                ]
+                if key in kwargs
+            }
+            return self.graphical_surface(**graphical_surface_keywords).plot(**kwargs)
+
     class ElementMethods:
         r"""
         Provides methods for all points of hyperbolic surfaces built from

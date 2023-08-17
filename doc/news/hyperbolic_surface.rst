@@ -8,6 +8,10 @@
 
 * Added ``adjacencies()`` method to polygons that reports the edges adjacent to the vertices in order. This is necessary for hyperbolic polygons of infinite area where some vertices might not be adjacent to two edges.
 
+**Changed:**
+
+* Changed surface plotting quite a bit to make the same code work for hyperbolic surfaces and similarity surfaces. Edge labels can now only be configured differently for adjacent edges, non-adjacent edges, self-glued edges, and boundary edges. The new defaults there should make it much easier to interactively build a surface.
+
 **Fixed:**
 
 * Fixed merging of hyperbolic sets of vertices.

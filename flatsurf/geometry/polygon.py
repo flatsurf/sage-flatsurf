@@ -593,6 +593,9 @@ class EuclideanPolygon(Parent):
         )
         return iter(self.vertices())
 
+    def apply_similarity(self, similarity):
+        return Polygon(vertices=[similarity(v) for v in self._v])
+
 
 class PolygonsConstructor:
     def square(self, side=1, **kwds):

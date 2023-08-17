@@ -518,24 +518,6 @@ class SurfacePoint(Element):
             coordinates for (l, coordinates) in self._representatives if l == label
         )
 
-    def graphical_surface_point(self, graphical_surface=None):
-        r"""
-        Return a
-        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
-        represent this point graphically.
-
-        EXAMPLES::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (1/2, 1/2))
-            sage: G = p.graphical_surface_point()
-
-        """
-        from flatsurf.graphical.surface_point import GraphicalSurfacePoint
-
-        return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
-
     def plot(self, *args, **kwargs):
         r"""
         Return a plot of this point.
@@ -545,22 +527,21 @@ class SurfacePoint(Element):
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
             sage: p = S.point(0, (0, 0))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
+            sage: S.plot() + p.plot(color="red")
+            ...Graphics object consisting of 73 graphics primitives
 
             sage: p = S.point(0, (0, 25/12))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
+            sage: S.plot() + p.plot(color="red")
+            ...Graphics object consisting of 73 graphics primitives
 
         """
         graphical_surface = None
         if args:
             graphical_surface = args[0]
             args = args[1:]
-
-        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
-            *args, **kwargs
-        )
+        if graphical_surface is None:
+            graphical_surface = self._surface.graphical_surface()
+        return graphical_surface.plot_point(self, *args, **kwargs)
 
     def __repr__(self):
         r"""

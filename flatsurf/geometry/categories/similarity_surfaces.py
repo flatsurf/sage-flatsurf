@@ -1472,7 +1472,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
                     sage: ss=s.triangulate()
                     sage: gs=ss.graphical_surface()
-                    sage: gs.make_all_visible()
+                    sage: gs.layout()
                     sage: gs
                     Graphical representation of Translation Surface in H_2(2) built from 6 isosceles triangles
 
@@ -2215,6 +2215,39 @@ class SimilaritySurfaces(SurfaceCategory):
                                 )
 
                 return surface
+
+            def graphical_surface(self, *args, **kwargs):
+                r"""
+                Return a graphical representation of this surface.
+
+                This method can be used to further configure or augment a plot
+                beyond the possibilities of :meth:`plot`.
+
+                The documentation of sage-flatsurf contains a section of example
+                plots. Consult the :mod:`flatsurf.graphical.surface` reference for all the
+                details.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S.graphical_surface()
+                    Graphical representation of Translation Surface in H_1(0) built from a square
+
+                """
+                if "cached" in kwargs:
+                    import warnings
+
+                    warnings.warn(
+                        "The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. "
+                        "The result of graphical_surface() is never cached anymore."
+                    )
+
+                    kwargs.pop("cached")
+
+                from flatsurf.graphical.surface import GraphicalSimilaritySurface
+
+                return GraphicalSimilaritySurface(self, *args, **kwargs)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""

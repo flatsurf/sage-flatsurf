@@ -770,21 +770,27 @@ class Surface(OrientedSimilaritySurface):
             sage: s.plot()
             ...Graphics object consisting of 32 graphics primitives
             sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
-            ...Graphics object consisting of 18 graphics primitives
+            doctest:warning
+            ...
+            UserWarning: The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. The result of graphical_surface() is never cached anymore.
+            doctest:warning
+            ...
+            UserWarning: The adjacencies keyword has been removed from this version of sage-flatsurf. Loop over the labels and call layout() instead.
+            ...Graphics object consisting of 32 graphics primitives
 
         """
-        from flatsurf.graphical.surface import GraphicalSurface
+        from flatsurf.graphical.surface import GraphicalSimilaritySurface
 
         if "cached" in kwds:
             if not kwds["cached"]:
                 # cached=False: return a new surface.
                 kwds.pop("cached", None)
-                return GraphicalSurface(self, *args, **kwds)
+                return GraphicalSimilaritySurface(self, *args, **kwds)
             kwds.pop("cached", None)
         if hasattr(self, "_gs"):
             self._gs.process_options(*args, **kwds)
         else:
-            self._gs = GraphicalSurface(self, *args, **kwds)
+            self._gs = GraphicalSimilaritySurface(self, *args, **kwds)
         return self._gs
 
     def plot(self, *args, **kwds):
