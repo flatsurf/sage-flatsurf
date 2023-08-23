@@ -137,11 +137,11 @@ print(f)
 f = HS(f)
 f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
-Omega = HarmonicDifferentials(S, safety=0, singularities=True)
+Omega = HarmonicDifferentials(S, safety=1/3, singularities=True)
 ```
 
 ```sage
-omega = Omega(HS(f), prec=10, check=True, algorithm=["L2_lines"])
+omega = Omega(HS(f), prec=10, check=True)
 ```
 
 ```sage

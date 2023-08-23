@@ -2294,26 +2294,30 @@ class PowerSeriesConstraints:
                 else:
                     assert False, f"cannot continue path from {label}, {edge}, {pos} with generators {self._geometry._homology_generators}"
 
-                a = gen[1]
-                b = gen[2]
-                P = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
+                if not self._geometry._singularities:
+                    # We develop exactly around the endpoints of the generators of homology.
+                    a = gen[1]
+                    b = gen[2]
+                    P = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
 
-                P_power = P
+                    P_power = P
 
-                for k in range(self._prec):
-                    expression += multiplicity * self._gen_nonsingular(label, edge, a, k) / (k + 1) * P_power
-                    P_power *= P
+                    for k in range(self._prec):
+                        expression += multiplicity * self._gen_nonsingular(label, edge, a, k) / (k + 1) * P_power
+                        P_power *= P
 
-                opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+                    opposite_label, opposite_edge = surface.opposite_edge(label, edge)
 
-                Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a))
+                    Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a))
 
-                Q_power = Q
+                    Q_power = Q
 
-                for k in range(self._prec):
-                    expression -= multiplicity * self._gen_nonsingular(opposite_label, opposite_edge, 1-b, k) / (k + 1) * Q_power
+                    for k in range(self._prec):
+                        expression -= multiplicity * self._gen_nonsingular(opposite_label, opposite_edge, 1-b, k) / (k + 1) * Q_power
 
-                    Q_power *= Q
+                        Q_power *= Q
+                else:
+                    raise NotImplementedError
 
                 pos = b
 
@@ -2468,7 +2472,7 @@ class PowerSeriesConstraints:
                 self.add_constraint(
                     parent(self.evaluate(label, edge, a, Δ0, derivative)) - parent(self.evaluate(opposite_label, opposite_edge, 1-b, Δ1, derivative)))
 
-    def _L2_consistency_edge(self, label, a_edge, a, b_edge, b):
+    def _L2_consistency_segment(self, label, a_edge, a, b_edge, b):
         cost = self.symbolic_ring(self.real_field()).zero()
 
         debug = [label, a_edge, a, b_edge, b]
@@ -2576,33 +2580,36 @@ class PowerSeriesConstraints:
 
         cost = R.zero()
 
-        for (label, edge), a, b in self._geometry._homology_generators:
-            cost += self._L2_consistency_edge(label, edge, a, edge, b)
+        if not self._geometry._singularities:
+            # We develop around the end points of each homology generator.
 
-        if self._geometry._singularities:
+            for (label, edge), a, b in self._geometry._homology_generators:
+                cost += self._L2_consistency_segment(label, edge, a, edge, b)
+
+            # TODO: Replace these hard-coded conditions with something generic.
+            # Maybe, take a Delaunay triangulation of the centers in a polygon and
+            # then make sure that we have at least a condition on the four shortest
+            # edges of each vertex.
+            cost += self._L2_consistency_segment(0, 0, 137/482, 1, 137/482)
+            cost += self._L2_consistency_segment(0, 1, 137/482, 2, 137/482)
+            cost += self._L2_consistency_segment(0, 2, 137/482, 3, 137/482)
+            cost += self._L2_consistency_segment(0, 3, 137/482, 0, 345/482)
+            cost += self._L2_consistency_segment(0, 0, 345/482, 1, 345/482)
+            cost += self._L2_consistency_segment(0, 1, 345/482, 2, 345/482)
+            cost += self._L2_consistency_segment(0, 2, 345/482, 3, 345/482)
+            cost += self._L2_consistency_segment(0, 3, 345/482, 0, 137/482)
+
+            cost += self._L2_consistency_segment(0, 0, 427/964, 1, 427/964)
+            cost += self._L2_consistency_segment(0, 1, 427/964, 2, 427/964)
+            cost += self._L2_consistency_segment(0, 2, 427/964, 3, 427/964)
+            cost += self._L2_consistency_segment(0, 3, 427/964, 0, 537/964)
+            cost += self._L2_consistency_segment(0, 0, 537/964, 1, 537/964)
+            cost += self._L2_consistency_segment(0, 1, 537/964, 2, 537/964)
+            cost += self._L2_consistency_segment(0, 2, 537/964, 3, 537/964)
+            cost += self._L2_consistency_segment(0, 3, 537/964, 0, 427/964)
+        else:
+            # We develop around the centers of the Delaunay cells and around the vertices.
             raise NotImplementedError
-
-        # TODO: Replace these hard-coded conditions with something generic.
-        # Maybe, take a Delaunay triangulation of the centers in a polygon and
-        # then make sure that we have at least a condition on the four shortest
-        # edges of each vertex.
-        cost += self._L2_consistency_edge(0, 0, 137/482, 1, 137/482)
-        cost += self._L2_consistency_edge(0, 1, 137/482, 2, 137/482)
-        cost += self._L2_consistency_edge(0, 2, 137/482, 3, 137/482)
-        cost += self._L2_consistency_edge(0, 3, 137/482, 0, 345/482)
-        cost += self._L2_consistency_edge(0, 0, 345/482, 1, 345/482)
-        cost += self._L2_consistency_edge(0, 1, 345/482, 2, 345/482)
-        cost += self._L2_consistency_edge(0, 2, 345/482, 3, 345/482)
-        cost += self._L2_consistency_edge(0, 3, 345/482, 0, 137/482)
-
-        cost += self._L2_consistency_edge(0, 0, 427/964, 1, 427/964)
-        cost += self._L2_consistency_edge(0, 1, 427/964, 2, 427/964)
-        cost += self._L2_consistency_edge(0, 2, 427/964, 3, 427/964)
-        cost += self._L2_consistency_edge(0, 3, 427/964, 0, 537/964)
-        cost += self._L2_consistency_edge(0, 0, 537/964, 1, 537/964)
-        cost += self._L2_consistency_edge(0, 1, 537/964, 2, 537/964)
-        cost += self._L2_consistency_edge(0, 2, 537/964, 3, 537/964)
-        cost += self._L2_consistency_edge(0, 3, 537/964, 0, 427/964)
 
         return cost
 
