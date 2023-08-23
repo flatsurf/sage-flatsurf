@@ -33,3 +33,7 @@
 **Deprecated:**
 
 * Deprecated ``angles()`` method of surfaces.
+
+**Removed:**
+
+* Removed ``plot_polygon()`` on surfaces. All plotting is now in graphical surfaces. (This function can largely be emulated by hiding all but one polygon in a graphical surface before plotting.)
