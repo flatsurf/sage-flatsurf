@@ -370,7 +370,7 @@ class HarmonicDifferential(Element):
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(T, 5, Ω._geometry)
             sage: R = C.symbolic_ring()
-            sage: η._evaluate(R(C.gen(0, 0, 0, 0))) # abstol 1e-9
+            sage: η._evaluate(R(C._gen_nonsingular(0, 0, 0, 0))) # abstol 1e-9
             1.00000000000000 + 1.87854000000000e-72*I
 
         """
@@ -842,11 +842,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             # TODO: Should we still try to do something like this? (Whatever
             # the idea was here?)
             pass
-
-        if "L2_lines" in algorithm:
-            weight = get_parameter("L2_lines", 1)
-            algorithm = [a for a in algorithm if a != "L2_lines"]
-            constraints.optimize(weight * constraints._L2_lines_consistency())
 
         if algorithm:
             raise ValueError(f"unsupported algorithm {algorithm}")
@@ -2003,11 +1998,14 @@ class PowerSeriesConstraints:
         return RealField(54)
         return RealField(self._bitprec)
 
+    def gen(self, point, /, conjugate=False):
+        raise NotImplementedError
+
     @cached_method
-    def gen(self, label, edge, pos, k, /, conjugate=False):
+    def _gen_nonsingular(self, label, edge, pos, k, /, conjugate=False):
         assert conjugate is True or conjugate is False
-        real = self.real(label, edge, pos, k)
-        imag = self.imag(label, edge, pos, k)
+        real = self._real_nonsingular(label, edge, pos, k)
+        imag = self._imag_nonsingular(label, edge, pos, k)
 
         i = self.symbolic_ring().imaginary_unit()
 
@@ -2017,7 +2015,7 @@ class PowerSeriesConstraints:
         return real + i*imag
 
     @cached_method
-    def real(self, label, edge, pos, k):
+    def _real_nonsingular(self, label, edge, pos, k):
         r"""
         Return the real part of the kth coefficient of the power series
         developed around ``center + pos * e`` where ``center`` is the center of
@@ -2035,21 +2033,21 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(T)
 
             sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C.real(0, 0, 0, 0)
+            sage: C._real_nonsingular(0, 0, 0, 0)
             Re(a2,0)
-            sage: C.real(0, 0, 0, 1)
+            sage: C._real_nonsingular(0, 0, 0, 1)
             Re(a2,1)
-            sage: C.real(0, 0, 1, 0)
+            sage: C._real_nonsingular(0, 0, 1, 0)
             Re(a2,0)
-            sage: C.real(0, 1, 0, 0)
+            sage: C._real_nonsingular(0, 1, 0, 0)
             Re(a2,0)
-            sage: C.real(0, 2, 137/482, 0)
+            sage: C._real_nonsingular(0, 2, 137/482, 0)
             Re(a0,0)
-            sage: C.real(0, 0,  537/964, 0)
+            sage: C._real_nonsingular(0, 0,  537/964, 0)
             Re(a3,0)
-            sage: C.real(0, 1, 345/482, 0)
+            sage: C._real_nonsingular(0, 1, 345/482, 0)
             Re(a1,0)
-            sage: C.real(0, 1, 537/964, 0)
+            sage: C._real_nonsingular(0, 1, 537/964, 0)
             Re(a4,0)
 
         """
@@ -2059,7 +2057,7 @@ class PowerSeriesConstraints:
         return self.symbolic_ring().gen(("real", label, edge, pos, k))
 
     @cached_method
-    def imag(self, label, edge, pos, k):
+    def _imag_nonsingular(self, label, edge, pos, k):
         r"""
         Return the imaginary part of the kth generator of the :meth:`symbolic_ring`
         for the polygon ``label``.
@@ -2073,11 +2071,11 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
             sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C.imag(0, 0, 0, 0)
+            sage: C._imag_nonsingular(0, 0, 0, 0)
             Im(a2,0)
-            sage: C.imag(0, 0, 0, 1)
+            sage: C._imag_nonsingular(0, 0, 0, 1)
             Im(a2,1)
-            sage: C.imag(0, 0, 0, 2)
+            sage: C._imag_nonsingular(0, 0, 0, 2)
             Im(a2,2)
 
         """
@@ -2127,15 +2125,15 @@ class PowerSeriesConstraints:
 
         ::
 
-            sage: C.real_part(C.gen(0, 0, 0, 0))
+            sage: C.real_part(C._gen_nonsingular(0, 0, 0, 0))
             Re(a2,0)
-            sage: C.real_part(C.real(0, 0, 0, 0))
+            sage: C.real_part(C._real_nonsingular(0, 0, 0, 0))
             Re(a2,0)
-            sage: C.real_part(C.imag(0, 0, 0, 0))
+            sage: C.real_part(C._imag_nonsingular(0, 0, 0, 0))
             Im(a2,0)
-            sage: C.real_part(2*C.gen(0, 0, 0, 0))  # tol 1e-9
+            sage: C.real_part(2*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
             2*Re(a2,0)
-            sage: C.real_part(2*I*C.gen(0, 0, 0, 0))  # tol 1e-9
+            sage: C.real_part(2*I*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
             -2.0000000000000*Im(a2,0)
 
         """
@@ -2161,15 +2159,15 @@ class PowerSeriesConstraints:
 
         ::
 
-            sage: C.imaginary_part(C.gen(0, 0, 0, 0))
+            sage: C.imaginary_part(C._gen_nonsingular(0, 0, 0, 0))
             Im(a2,0)
-            sage: C.imaginary_part(C.real(0, 0, 0, 0))  # tol 1e-9
+            sage: C.imaginary_part(C._real_nonsingular(0, 0, 0, 0))  # tol 1e-9
             0
-            sage: C.imaginary_part(C.imag(0, 0, 0, 0))  # tol 1e-9
+            sage: C.imaginary_part(C._imag_nonsingular(0, 0, 0, 0))  # tol 1e-9
             0
-            sage: C.imaginary_part(2*C.gen(0, 0, 0, 0))  # tol 1e-9
+            sage: C.imaginary_part(2*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
             2*Im(a2,0)
-            sage: C.imaginary_part(2*I*C.gen(0, 0, 0, 0))  # tol 1e-9
+            sage: C.imaginary_part(2*I*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
             2*Re(a2,0)
 
         """
@@ -2204,16 +2202,16 @@ class PowerSeriesConstraints:
             raise NotImplementedError("cannot handle expressions over this base ring")
 
     @cached_method
-    def _formal_power_series(self, label, edge, pos, base_ring=None):
+    def _formal_power_series_nonsingular(self, label, edge, pos, base_ring=None):
         if base_ring is None:
             base_ring = self.symbolic_ring()
 
         from sage.all import PowerSeriesRing
         R = PowerSeriesRing(base_ring, 'z')
 
-        return R([self.gen(label, edge, pos, n) for n in range(self._prec)])
+        return R([self._gen_nonsingular(label, edge, pos, n) for n in range(self._prec)])
 
-    def develop(self, label, edge, pos, Δ=0, base_ring=None):
+    def develop_nonsingular(self, label, edge, pos, Δ=0, base_ring=None):
         r"""
         Return the power series obtained by developing at z + Δ where z is the
         coordinate at ``center + pos * e`` where ``center`` is the center of
@@ -2229,14 +2227,14 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
             sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C.develop(0, 0, 0)  # tol 1e-9
+            sage: C.develop_nonsingular(0, 0, 0)  # tol 1e-9
             Re(a2,0) + 1.000000000000000*I*Im(a2,0) + (Re(a2,1) + 1.000000000000000*I*Im(a2,1))*z + (Re(a2,2) + 1.000000000000000*I*Im(a2,2))*z^2
-            sage: C.develop(0, 0, 0, 1)  # tol 1e-9
+            sage: C.develop_nonsingular(0, 0, 0, 1)  # tol 1e-9
             Re(a2,0) + 1.000000000000000*I*Im(a2,0) + Re(a2,1) + 1.000000000000000*I*Im(a2,1) + Re(a2,2) + 1.000000000000000*I*Im(a2,2) + (Re(a2,1) + 1.000000000000000*I*Im(a2,1) + 2.000000000000000*Re(a2,2) + 2.000000000000000*I*Im(a2,2))*z + (Re(a2,2) + 1.000000000000000*I*Im(a2,2))*z^2
 
         """
         # TODO: Check that Δ is within the radius of convergence.
-        f = self._formal_power_series(label, edge, pos, base_ring=base_ring)
+        f = self._formal_power_series_nonsingular(label, edge, pos, base_ring=base_ring)
         return f(f.parent().gen() + Δ)
 
     def integrate(self, cycle):
@@ -2297,7 +2295,7 @@ class PowerSeriesConstraints:
                 P_power = P
 
                 for k in range(self._prec):
-                    expression += multiplicity * self.gen(label, edge, a, k) / (k + 1) * P_power
+                    expression += multiplicity * self._gen_nonsingular(label, edge, a, k) / (k + 1) * P_power
                     P_power *= P
 
                 opposite_label, opposite_edge = surface.opposite_edge(label, edge)
@@ -2307,7 +2305,7 @@ class PowerSeriesConstraints:
                 Q_power = Q
 
                 for k in range(self._prec):
-                    expression -= multiplicity * self.gen(opposite_label, opposite_edge, 1-b, k) / (k + 1) * Q_power
+                    expression -= multiplicity * self._gen_nonsingular(opposite_label, opposite_edge, 1-b, k) / (k + 1) * Q_power
 
                     Q_power *= Q
 
@@ -2355,7 +2353,7 @@ class PowerSeriesConstraints:
             edge, pos, Δ = self.relativize(label, Δ)
 
         for k in range(derivative, self._prec):
-            value += factor * self.gen(label, edge, pos, k) * z
+            value += factor * self._gen_nonsingular(label, edge, pos, k) * z
 
             factor *= k + 1
             factor /= k - derivative + 1
@@ -2496,8 +2494,8 @@ class PowerSeriesConstraints:
         debug += [Δ0, Δ1]
 
         # Develop both power series around that midpoint, i.e., Taylor expand them.
-        T0 = self.develop(label, a_edge, a, Δ0)
-        T1 = self.develop(label, b_edge, b, Δ1)
+        T0 = self.develop_nonsingular(label, a_edge, a, Δ0)
+        T1 = self.develop_nonsingular(label, b_edge, b, Δ1)
 
         # Write b_n for the difference of the n-th coefficient of both power series.
         # We want to minimize the sum of |b_n|^2 r^2n where r is a somewhat
@@ -2601,9 +2599,6 @@ class PowerSeriesConstraints:
         cost += self._L2_consistency_edge(0, 3, 537/964, 0, 427/964)
 
         return cost
-
-    def _L2_lines_consistency(self):
-        raise NotImplementedError
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):
@@ -2819,7 +2814,7 @@ class PowerSeriesConstraints:
         constraints, we do not get any Lagrange multipliers in this
         optimization but just for roots of the derivative::
 
-            sage: f = 10*C.real(0, 0, 0, 0)^2 + 16*C.imag(0, 0, 0, 0)^2
+            sage: f = 10*C._real_nonsingular(0, 0, 0, 0)^2 + 16*C._imag_nonsingular(0, 0, 0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
@@ -2832,7 +2827,7 @@ class PowerSeriesConstraints:
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1)]
-            sage: f = 10*C.real(0, 0, 0, 0)^2 + 17*C.imag(0, 0, 0, 0)^2
+            sage: f = 10*C._real_nonsingular(0, 0, 0, 0)^2 + 17*C._imag_nonsingular(0, 0, 0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
@@ -2844,7 +2839,7 @@ class PowerSeriesConstraints:
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1)]
-            sage: f = 3*C.real(0, 0, 0, 1)^2 + 5*C.imag(0, 0, 0, 1)^2
+            sage: f = 3*C._real_nonsingular(0, 0, 0, 1)^2 + 5*C._imag_nonsingular(0, 0, 0, 1)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
@@ -3021,7 +3016,7 @@ class PowerSeriesConstraints:
         ::
 
             sage: R = C.symbolic_ring()
-            sage: f = 10*C.real(0, 0, 0, 0)^2 + 16*C.imag(0, 0, 0, 0)^2
+            sage: f = 10*C._real_nonsingular(0, 0, 0, 0)^2 + 16*C._imag_nonsingular(0, 0, 0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C.matrix()  # not tested TODO
@@ -3108,8 +3103,8 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
             sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
-            sage: C.add_constraint(C.real(0, 0, 0, 0) - C.real(0, 0, 0, 1))
-            sage: C.add_constraint(C.real(0, 0, 0, 0) - 1)
+            sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - C._real_nonsingular(0, 0, 0, 1))
+            sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - 1)
             sage: C.solve()  # rondam output due to random ordering of the dict
             ({(0, 0, 345/482): O(z0_0_0^2),
               (0, 1, 345/482): O(z0_1_0^2),
