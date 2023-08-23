@@ -6,6 +6,7 @@ EXAMPLES:
 We compute harmonic differentials on the square torus::
 
     sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+    ...  # might show some deprecation warnings
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
