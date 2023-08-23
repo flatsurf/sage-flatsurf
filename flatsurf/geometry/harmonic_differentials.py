@@ -5,8 +5,8 @@ EXAMPLES:
 
 We compute harmonic differentials on the square torus::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-    ...  # might show some deprecation warnings
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology  # might show some deprecation warnings
+    ...
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
@@ -651,7 +651,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     Element = HarmonicDifferential
 
     @staticmethod
-    def __classcall__(cls, surface, safety=None, category=None):
+    def __classcall__(cls, surface, safety=None, singularities=False, category=None):
         r"""
         Normalize parameters when creating the space of harmonic differentials.
 
@@ -665,26 +665,19 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             True
 
         """
-        return super().__classcall__(cls, surface, HarmonicDifferentials._homology_generators(surface, safety), category or SetsWithPartialMaps())
+        return super().__classcall__(cls, surface, HarmonicDifferentials._homology_generators(surface, safety), singularities, category or SetsWithPartialMaps())
 
-    def __init__(self, surface, homology_generators, category):
+    def __init__(self, surface, homology_generators, singularities, category):
         Parent.__init__(self, category=category)
 
         self._surface = surface
         # TODO: Find a better way to track the L2 circles.
         self._debugs = []
 
-        self._geometry = GeometricPrimitives(surface, homology_generators)
+        self._geometry = GeometricPrimitives(surface, homology_generators, singularities=singularities)
 
     @staticmethod
     def _homology_generators(surface, safety=None):
-        # safety = float(safety or 7)
-
-        from flatsurf.geometry.homology import SimplicialHomology
-        H = SimplicialHomology(surface, generators="voronoi")
-
-        # TODO: Require that the surface is decomposed into Delaunay cells.
-
         # The generators of homology will come from paths crossing from a
         # center of a Delaunay cell to the center of a neighbouring Delaunay
         # cell.
@@ -706,6 +699,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
                 gens.append((path, QQ(537)/964, QQ(690)/964))
                 gens.append((path, QQ(690)/964, QQ(964)/964))
         else:
+            # TODO: Currently, we ignore the safety.
             for path in voronoi_paths:
                 gens.append((path, QQ(0), QQ(1)))
 
@@ -714,13 +708,14 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return gens
 
     def plot(self):
+        from flatsurf import TranslationSurface
+
         S = self._surface
         G = S.plot()
         SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
         for (label, edge, pos) in SR._gens:
             label, center = self._geometry.center(label, edge, pos, wrap=True)
             radius = self._geometry._convergence(label, edge, pos)
-            from flatsurf import TranslationSurface
             P = TranslationSurface(S).surface_point(label, center)
             G += P.plot(color="red")
 
@@ -730,7 +725,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         for (label, edge, pos) in SR._gens:
             label, center = self._geometry.center(label, edge, pos, wrap=True)
 
-            from flatsurf import TranslationSurface
             P = TranslationSurface(S).surface_point(label, center)
             p = P.graphical_surface_point().points()[0]
 
@@ -810,16 +804,19 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # class Φ.
         if "midpoint_derivatives" in algorithm:
             derivatives = get_parameter("midpoint_derivatives", prec//3)
+            algorithm = [a for a in algorithm if a != "midpoint_derivatives"]
             constraints.require_midpoint_derivatives(derivatives)
 
         # (1') TODO: Describe L2 optimization.
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
+            algorithm = [a for a in algorithm if a != "L2"]
             constraints.optimize(weight * constraints._L2_consistency())
             self._debugs = constraints._debugs
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
+            algorithm = [a for a in algorithm if a != "squares"]
             constraints.optimize(weight * constraints._squares())
 
         # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
@@ -831,16 +828,28 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # REFERENCE?] we optimize for a proxy of this quantity to be minimal.
         if "area_upper_bound" in algorithm:
             weight = get_parameter("area_upper_bound", 1)
+            algorithm = [a for a in algorithm if a != "area_upper_bound"]
             constraints.optimize(weight * constraints._area_upper_bound())
 
         # (3') We can also optimize for the exact quantity to be minimal but
         # this is much slower.
         if "area" in algorithm:
             weight = get_parameter("area", 1)
+            algorithm = [a for a in algorithm if a != "area"]
             constraints.optimize(weight * constraints._area())
 
         if "tykhonov" in algorithm:
+            # TODO: Should we still try to do something like this? (Whatever
+            # the idea was here?)
             pass
+
+        if "L2_lines" in algorithm:
+            weight = get_parameter("L2_lines", 1)
+            algorithm = [a for a in algorithm if a != "L2_lines"]
+            constraints.optimize(weight * constraints._L2_lines_consistency())
+
+        if algorithm:
+            raise ValueError(f"unsupported algorithm {algorithm}")
 
         solution, residue = constraints.solve()
         η = self.element_class(self, solution, residue=residue, cocycle=cocycle)
@@ -853,10 +862,11 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
 
 class GeometricPrimitives:
-    def __init__(self, surface, homology_generators):
+    def __init__(self, surface, homology_generators, singularities=False):  # TODO: Make True the default everywhere if this works out.
         # TODO: Require immutable.
         self._surface = surface
         self._homology_generators = homology_generators
+        self._singularities = singularities
 
     @cached_method
     def midpoint(self, label, a_edge, a, b_edge, b):
@@ -2565,6 +2575,9 @@ class PowerSeriesConstraints:
         for (label, edge), a, b in self._geometry._homology_generators:
             cost += self._L2_consistency_edge(label, edge, a, edge, b)
 
+        if self._geometry._singularities:
+            raise NotImplementedError
+
         # TODO: Replace these hard-coded conditions with something generic.
         # Maybe, take a Delaunay triangulation of the centers in a polygon and
         # then make sure that we have at least a condition on the four shortest
@@ -2588,6 +2601,9 @@ class PowerSeriesConstraints:
         cost += self._L2_consistency_edge(0, 3, 537/964, 0, 427/964)
 
         return cost
+
+    def _L2_lines_consistency(self):
+        raise NotImplementedError
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):

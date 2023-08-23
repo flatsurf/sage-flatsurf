@@ -8,7 +8,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.14.6
   kernelspec:
-    display_name: SageMath 10.0
+    display_name: SageMath 9.8
     language: sage
     name: sagemath
 ---
@@ -137,11 +137,11 @@ print(f)
 f = HS(f)
 f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
-Omega = HarmonicDifferentials(S)
+Omega = HarmonicDifferentials(S, safety=0, singularities=True)
 ```
 
 ```sage
-omega = Omega(HS(f), prec=30, check=False)
+omega = Omega(HS(f), prec=10, check=True, algorithm=["L2_lines"])
 ```
 
 ```sage
