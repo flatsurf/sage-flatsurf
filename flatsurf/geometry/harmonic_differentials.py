@@ -698,6 +698,12 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
                 gens.append((path, QQ(427)/964, QQ(537)/964))
                 gens.append((path, QQ(537)/964, QQ(690)/964))
                 gens.append((path, QQ(690)/964, QQ(964)/964))
+        elif safety == QQ(1)/3:
+            for path in voronoi_paths:
+                # TODO: We are not actually doing safety 1/3 here currently but just break paths up evenly in thirds.
+                gens.append((path, QQ(0), QQ(1)/3))
+                gens.append((path, QQ(1)/3, QQ(2)/3))
+                gens.append((path, QQ(2)/3, QQ(1)))
         else:
             # TODO: Currently, we ignore the safety.
             for path in voronoi_paths:
