@@ -2620,6 +2620,17 @@ class PowerSeriesConstraints:
             # consistency between end points of edges and consistency between
             # the center of a polygon and its vertices.
 
+            for label in self._surface.labels():
+                for vertex in self._surface.polygon(label).vertices():
+                    cost += self._L2_consistency_between_center_and_vertex(label, vertex)
+
+            seen = set()
+            for (label, edge), (opposite_label, opposite_edge) in self._surface.gluings():
+                if (opposite_label, opposite_edge) in seen:
+                    continue
+                seen.add((label, edge))
+                cost += self._L2_consistency_across_edge(label, edge)
+
             raise NotImplementedError
 
         return cost
