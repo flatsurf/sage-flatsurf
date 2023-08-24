@@ -111,10 +111,10 @@ omega.cauchy_residue(vertex, -1)
 
 ```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
-S = translation_surfaces.regular_octagon().copy(mutable=True)
+S = translation_surfaces.regular_octagon()
 
 scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
-S = S.apply_matrix(diagonal_matrix([scale, scale]))
+S = S.apply_matrix(diagonal_matrix([scale, scale]), in_place=False)
 S = S.underlying_surface()
 S.set_immutable()
 

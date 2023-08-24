@@ -213,8 +213,8 @@ class HarmonicDifferential(Element):
             for derivative in range(self.precision()//3):
                 for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
                     opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
-                    expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint(label, edge, a, edge, b)), derivative)
-                    other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a)), derivative)
+                    expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b)), derivative)
+                    other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a)), derivative)
 
                     abs_error, rel_error = errors(expected, other)
 
@@ -332,7 +332,7 @@ class HarmonicDifferential(Element):
     #             if multiplicity != 1:
     #                 raise NotImplementedError
 
-    #             root += root.parent()(*self.parent()._geometry.center(triangle))
+    #             root += root.parent()(*self.parent()._geometry.point_on_path_between_centers(triangle))
 
     #             from sage.all import vector
     #             root = vector(root)
@@ -496,8 +496,8 @@ class HarmonicDifferential(Element):
 
     #             # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
 
-    #             P = complex_field(*self.parent()._geometry.midpoint(label, edge))
-    #             Q = complex_field(*self.parent()._geometry.midpoint(label, edge_))
+    #             P = complex_field(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge))
+    #             Q = complex_field(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge_))
 
     #             # The vector from z=0, the center of the Voronoi cell, to the vertex.
     #             δ = P - complex_field(*surface.polygon(label).edge(edge)) / 2
@@ -726,7 +726,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         G = S.plot()
         SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
         for (label, edge, pos) in SR._gens:
-            label, center = self._geometry.center(label, edge, pos, wrap=True)
+            label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
             radius = self._geometry._convergence(label, edge, pos)
             P = TranslationSurface(S).surface_point(label, center)
             G += P.plot(color="red")
@@ -735,7 +735,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.05)
 
         for (label, edge, pos) in SR._gens:
-            label, center = self._geometry.center(label, edge, pos, wrap=True)
+            label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
 
             P = TranslationSurface(S).surface_point(label, center)
             p = P.graphical_surface_point().points()[0]
@@ -876,7 +876,7 @@ class GeometricPrimitives:
         self._singularities = singularities
 
     @cached_method
-    def midpoint(self, label, a_edge, a, b_edge, b):
+    def midpoint_on_path_between_centers(self, label, a_edge, a, b_edge, b):
         r"""
         Return the weighed midpoint of ``center + a * e`` and ``center + b *
         f`` where ``center`` is the center of the circumscribing circle of
@@ -904,25 +904,25 @@ class GeometricPrimitives:
         centers because the radius of convergence is not the same (the vertex
         of the square is understood to be a singularity)::
 
-            sage: G.midpoint(0, 0, 0, 0, 1/3)
+            sage: G.midpoint_on_path_between_centers(0, 0, 0, 0, 1/3)
             (0.000000000000000, -0.142350327708281)
-            sage: G.midpoint(0, 2, 2/3, 2, 1)
+            sage: G.midpoint_on_path_between_centers(0, 2, 2/3, 2, 1)
             (0.000000000000000, 0.190983005625053)
-            sage: G.midpoint(0, 2, 2/3, 2, 1) - G.midpoint(0, 0, 0, 0, 1/3)
+            sage: G.midpoint_on_path_between_centers(0, 2, 2/3, 2, 1) - G.midpoint_on_path_between_centers(0, 0, 0, 0, 1/3)
             (0.000000000000000, 0.333333333333333)
 
         Here the midpoints are exactly on the edge of the square::
 
-            sage: G.midpoint(0, 0, 1/3, 0, 2/3)
+            sage: G.midpoint_on_path_between_centers(0, 0, 1/3, 0, 2/3)
             (0.000000000000000, -0.166666666666667)
-            sage: G.midpoint(0, 2, 1/3, 2, 2/3)
+            sage: G.midpoint_on_path_between_centers(0, 2, 1/3, 2, 2/3)
             (0.000000000000000, 0.166666666666667)
 
         Again, the same as in the first example::
 
-            sage: G.midpoint(0, 0, 2/3, 0, 1)
+            sage: G.midpoint_on_path_between_centers(0, 0, 2/3, 0, 1)
             (0.000000000000000, -0.190983005625053)
-            sage: G.midpoint(0, 2, 0, 2, 1/3)
+            sage: G.midpoint_on_path_between_centers(0, 2, 0, 2, 1/3)
             (0.000000000000000, 0.142350327708281)
 
         ::
@@ -934,14 +934,14 @@ class GeometricPrimitives:
             sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
             sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
 
-            sage: G.midpoint(0, 0, 0, 0, 1/2)  # tol 1e-9
+            sage: G.midpoint_on_path_between_centers(0, 0, 0, 0, 1/2)  # tol 1e-9
             (0.000000000000000, -0.334089318959649)
 
         A midpoint between two different Voronoi paths::
 
-            sage: G.midpoint(0, 0, 1, 2, 1)
+            sage: G.midpoint_on_path_between_centers(0, 0, 1, 2, 1)
             (1.20710678118655, 1.20710678118655)
-            sage: G.midpoint(0, 0, 1, 4, 1)
+            sage: G.midpoint_on_path_between_centers(0, 0, 1, 4, 1)
             (0.000000000000000, 2.41421356237309)
 
         """
@@ -951,14 +951,14 @@ class GeometricPrimitives:
         )
 
         centers = (
-            self.center(label, a_edge, a)[1],
-            self.center(label, b_edge, b)[1],
+            self.point_on_path_between_centers(label, a_edge, a)[1],
+            self.point_on_path_between_centers(label, b_edge, b)[1],
         )
 
         return (centers[1] - centers[0]) * radii[1] / (sum(radii))
 
     @cached_method
-    def center(self, label, edge, pos, wrap=False, ring=None):
+    def point_on_path_between_centers(self, label, edge, pos, wrap=False, ring=None):
         r"""
         Return the point at ``center + pos * e`` where ``center`` is the center
         of the circumscribing circle of the polygon ``label`` and ``e`` is the
@@ -987,13 +987,13 @@ class GeometricPrimitives:
             sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
             sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
 
-            sage: G.center(0, 0, 0)
+            sage: G.point_on_path_between_centers(0, 0, 0)
             (0, (1/2, 1/2))
-            sage: G.center(0, 0, 1/2)
+            sage: G.point_on_path_between_centers(0, 0, 1/2)
             (0, (1/2, 0))
-            sage: G.center(0, 0, 1)
+            sage: G.point_on_path_between_centers(0, 0, 1)
             (0, (1/2, -1/2))
-            sage: G.center(0, 0, 1, wrap=True)
+            sage: G.point_on_path_between_centers(0, 0, 1, wrap=True)
             (0, (1/2, 1/2))
 
         """
@@ -1018,7 +1018,7 @@ class GeometricPrimitives:
             return label, center
 
         label, edge = self._surface.opposite_edge(label, edge)
-        return self.center(label, edge, 1 - pos, wrap=True, ring=ring)
+        return self.point_on_path_between_centers(label, edge, 1 - pos, wrap=True, ring=ring)
 
     @cached_method
     def _convergence(self, label, edge, pos):
@@ -1050,7 +1050,7 @@ class GeometricPrimitives:
             1.30656296487638
 
         """
-        label, center = self.center(label, edge, pos)
+        label, center = self.point_on_path_between_centers(label, edge, pos)
         polygon = self._surface.polygon(label)
 
         # TODO: We are assuming that the only relevant singularities are the
@@ -2304,7 +2304,7 @@ class PowerSeriesConstraints:
                     # We develop exactly around the endpoints of the generators of homology.
                     a = gen[1]
                     b = gen[2]
-                    P = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
+                    P = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b))
 
                     P_power = P
 
@@ -2314,7 +2314,7 @@ class PowerSeriesConstraints:
 
                     opposite_label, opposite_edge = surface.opposite_edge(label, edge)
 
-                    Q = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a))
+                    Q = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a))
 
                     Q_power = Q
 
@@ -2408,7 +2408,7 @@ class PowerSeriesConstraints:
         from sage.all import RR
 
         def center(edge, pos):
-            lbl, center = self._geometry.center(label, edge, pos, wrap=True, ring=RR)
+            lbl, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True, ring=RR)
             if lbl != label:
                 raise NotImplementedError
             return CC(*center)
@@ -2470,8 +2470,8 @@ class PowerSeriesConstraints:
 
             parent = self.symbolic_ring()
 
-            Δ0 = self.complex_field()(*self._geometry.midpoint(label, edge, a, edge, b))
-            Δ1 = self.complex_field()(*self._geometry.midpoint(opposite_label, opposite_edge, 1-b, opposite_edge, 1-a))
+            Δ0 = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b))
+            Δ1 = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1-b, opposite_edge, 1-a))
 
             # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
             for derivative in range(derivatives):
@@ -2493,10 +2493,10 @@ class PowerSeriesConstraints:
                 raise NotImplementedError  # need to shift polygons
 
             Δs = (
-                self.complex_field()(*self._geometry.midpoint(label, x_edge, x, y_edge, y)),
-                self.complex_field()(*self._geometry.midpoint(label, x_opposite_edge, 1 - x, y_edge, y)),
-                self.complex_field()(*self._geometry.midpoint(label, x_edge, x, y_opposite_edge, 1 - y)),
-                self.complex_field()(*self._geometry.midpoint(label, x_opposite_edge, 1 - x, y_opposite_edge, 1 - y)),
+                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_edge, x, y_edge, y)),
+                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_opposite_edge, 1 - x, y_edge, y)),
+                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_edge, x, y_opposite_edge, 1 - y)),
+                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_opposite_edge, 1 - x, y_opposite_edge, 1 - y)),
             )
 
             return min(Δs, key=lambda v: v.norm())
