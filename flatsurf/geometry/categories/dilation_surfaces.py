@@ -338,6 +338,7 @@ class DilationSurfaces(SurfaceCategory):
                 if not us.is_mutable():
                     raise ValueError("in-place changes only work for mutable surfaces")
                 for label in self.labels():
+                    # TODO: replace_polygon() does not exist anymore.
                     us.replace_polygon(label, m * self.polygon(label))
                 if m.det() < self.base_ring().zero():
                     # Polygons were all reversed orientation. Need to redo gluings.
