@@ -1,23 +1,24 @@
-from flatsurf.geometry.surface import Surface
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
-class Surface_pyflatsurf(Surface):
+class Surface_pyflatsurf(OrientedSimilaritySurface):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf import polygons
-        sage: from flatsurf.geometry.surface import Surface_dict
+        sage: from flatsurf import Polygon
+        sage: from flatsurf import MutableOrientedSimilaritySurface
 
-        sage: S = Surface_dict(QQ)
-        sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
         0
-        sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
         1
 
-        sage: S.set_edge_pairing(0, 0, 1, 1)
-        sage: S.set_edge_pairing(0, 1, 1, 2)
-        sage: S.set_edge_pairing(0, 2, 1, 0)
+        sage: S.glue((0, 0), (1, 1))
+        sage: S.glue((0, 1), (1, 2))
+        sage: S.glue((0, 2), (1, 0))
 
+        sage: S.set_immutable()
         sage: T, _ = S._pyflatsurf()  # random output due to deprecation warnings
 
     TESTS::
@@ -37,10 +38,10 @@ class Surface_pyflatsurf(Surface):
 
         base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
-        base_label = map(int, next(iter(flat_triangulation.faces())))
+        from flatsurf.geometry.categories import TranslationSurfaces
 
         super().__init__(
-            base_ring=base_ring, base_label=base_label, finite=True, mutable=False
+            base=base_ring, category=TranslationSurfaces().FiniteType().WithoutBoundary()  # TODO: Surface could have boundary
         )
 
     def pyflatsurf(self):
@@ -48,18 +49,18 @@ class Surface_pyflatsurf(Surface):
 
     @classmethod
     def _from_flatsurf(cls, surface):
-        if not surface.is_finite():
+        if not surface.is_finite_type():
             raise ValueError("surface must be finite to convert to pyflatsurf")
 
         if not surface.is_triangulated():
             raise ValueError("surface must be triangulated to convert to pyflatsurf")
 
         # populate half edges and vectors
-        n = sum(surface.polygon(lab).num_edges() for lab in surface.label_iterator())
+        n = sum(len(surface.polygon(lab).vertices()) for lab in surface.labels())
         half_edge_labels = {}  # map: (face lab, edge num) in flatsurf -> integer
         vec = []  # vectors
         k = 1  # half edge label in {1, ..., n}
-        for t0, t1 in surface.edge_gluing_iterator():
+        for t0, t1 in surface.gluings():
             if t0 in half_edge_labels:
                 continue
 
@@ -75,9 +76,9 @@ class Surface_pyflatsurf(Surface):
         # compute vertex and face permutations
         vp = [None] * (n + 1)  # vertex permutation
         fp = [None] * (n + 1)  # face permutation
-        for t in surface.edge_iterator():
+        for t in surface.edges():
             e = half_edge_labels[t]
-            j = (t[1] + 1) % surface.polygon(t[0]).num_edges()
+            j = (t[1] + 1) % len(surface.polygon(t[0]).vertices())
             fp[e] = half_edge_labels[(t[0], j)]
             vp[fp[e]] = -e
 

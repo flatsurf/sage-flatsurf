@@ -34,8 +34,6 @@ from sage.structure.element import ModuleElement
 from sage.modules.module import Module
 from sage.rings.integer_ring import ZZ
 
-from .similarity_surface import SimilaritySurface
-
 
 def cmp(x, y):
     r"""
@@ -134,7 +132,9 @@ class RelativeHomology(Module):
 
     def __init__(self, surface, base_ring=ZZ):
         self._base_ring = base_ring
-        if not isinstance(surface, SimilaritySurface):
+        from flatsurf.geometry.categories import SimilaritySurfaces
+
+        if surface not in SimilaritySurfaces():
             raise ValueError(
                 "RelativeHomology only defined for SimilaritySurfaces (and better)."
             )
@@ -176,7 +176,7 @@ class RelativeHomology(Module):
             return self._cached_edges[(label, e)]
         except KeyError:
             # not cached!
-            num_edges = self._s.polygon(label).num_edges()
+            num_edges = len(self._s.polygon(label).vertices())
             # Check to see if all other edges of the polygon are cached.
             has_all_others = True
             for i in range(1, num_edges):

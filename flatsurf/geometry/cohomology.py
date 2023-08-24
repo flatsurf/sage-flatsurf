@@ -97,7 +97,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
     Currently, surfaces must be Delaunay triangulated to compute their homology::
 
         sage: SimplicialCohomology(T)
-        H¹(TranslationSurface built from 2 polygons; Real Field with 53 bits of precision)
+        H¹(Translation Surface in H_1(0) built from 2 isosceles triangles; Real Field with 53 bits of precision)
 
     """
     Element = SimplicialCohomologyClass
@@ -160,7 +160,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
         sage: T.set_immutable()
         sage: H = SimplicialCohomology(T)
         sage: H.homology()
-        H₁(TranslationSurface built from 2 polygons; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from 2 isosceles triangles; Integer Ring)
 
         """
         return self._homology

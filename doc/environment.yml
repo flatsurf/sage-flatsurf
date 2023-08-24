@@ -9,7 +9,6 @@ channels:
   - defaults
 dependencies:
   - sphinx
-  - jupytext
   - myst-nb
   - tachyon
   - furo

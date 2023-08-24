@@ -32,9 +32,9 @@ Relative homology on the unfolding of the (3, 4, 13) triangle; homology
 relative to the subset of vertices::
 
 
-    sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-    sage: P = EquiangularPolygons(3, 4, 13).an_element()
-    sage: S = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+    sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces
+    sage: P = EuclideanPolygonsWithAngles(3, 4, 13).an_element()
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
     sage: H = SimplicialHomology(relative=S.singularities())  # not tested; TODO
     sage: H.gens()  # not tested; TODO
 
@@ -227,7 +227,7 @@ class SimplicialHomologyClass_voronoi(SimplicialHomologyClass):
 
     """
     # def safety(self):
-    #     return min(self._safety(label0, edge0) for (label0, edge0) in self._surface.underlying_surface().edge_iterator())
+    #     return min(self._safety(label0, edge0) for (label0, edge0) in self._surface.underlying_surface().edges())
 
     # def _safety(self, label, edge):
     #     polygon = self._surface.polygon(label)
@@ -316,12 +316,12 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
     EXAMPLES::
 
-        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: from flatsurf import translation_surfaces, SimplicialHomology, MutableOrientedSimilaritySurface
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
 
     Surfaces must be immutable to compute their homology::
 
-        sage: T = T.copy(mutable=True)
+        sage: T = MutableOrientedSimilaritySurface.from_surface(T)
         sage: SimplicialHomology(T)
         Traceback (most recent call last):
         ...
@@ -331,7 +331,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         sage: T.set_immutable()
         sage: SimplicialHomology(T)
-        H₁(TranslationSurface built from 1 polygon; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
 
     TESTS::
 
@@ -474,17 +474,17 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
     def _simplices_points(self):
         if self._generators == "edge":
-            return tuple(set(self._surface.point(label, self._surface.polygon(label).vertex(edge)) for (label, edge) in self._surface.edge_iterator()))
+            return tuple(set(self._surface.point(label, self._surface.polygon(label).vertex(edge)) for (label, edge) in self._surface.edges()))
 
         if self._generators == "voronoi":
-            for label in self._surface.label_iterator():
+            for label in self._surface.labels():
                 polygon = self._surface.polygon(label)
                 # TODO: This fails if the center of the circumscribing circle
                 # is not in the polygon; we should be more explicit here and
                 # check this condition properly earlier.
                 # self._surface.surface_point(label, polygon.circumscribing_circle().center())
 
-            return tuple(self._surface.label_iterator())
+            return tuple(self._surface.labels())
 
         raise NotImplementedError
 
@@ -493,7 +493,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             # When "edge", then the edges are the generators.
             # When "voronoi", then the paths crossing the edges are the generators.
             simplices = set()
-            for edge in self._surface.edge_iterator():
+            for edge in self._surface.edges():
                 if self._surface.opposite_edge(*edge) not in simplices:
                     simplices.add(edge)
             return tuple(simplices)
@@ -502,10 +502,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
     def _simplices_polygons(self):
         if self._generators == "edge":
-            return tuple(self._surface.label_iterator())
+            return tuple(self._surface.labels())
 
         if self._generators == "voronoi":
-            return tuple(self._surface.edge_iterator())
+            return tuple(self._surface.edges())
 
         raise NotImplementedError
 
@@ -591,7 +591,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             C1 = self.chain_module(dimension=1)
             boundary = C1.zero()
             face = gen
-            for edge in range(self._surface.polygon(face).num_edges()):
+            for edge in range(len(self._surface.polygon(face).vertices())):
                 if (face, edge) in C1.indices():
                     boundary += C1((face, edge))
                 else:
@@ -604,7 +604,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             label, vertex = gen
             # The counterclockwise walk around "vertex" is a boundary.
             while True:
-                edge = (vertex - 1) % self._surface.polygon(label).num_edges()
+                edge = (vertex - 1) % len(self._surface.polygon(label).vertices())
                 opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
                 if (label, edge) in C1.indices():
                     boundary += C1((label, edge))
@@ -731,7 +731,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
-            H₁(TranslationSurface built from 1 polygon; Integer Ring)
+            H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
 
         """
         return f"H₁({self._surface}; {self._coefficients})"

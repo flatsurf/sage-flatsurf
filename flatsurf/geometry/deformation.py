@@ -15,13 +15,13 @@ EXAMPLES:
 We can use deformations to follow a surface through a retriangulation process::
 
     sage: from flatsurf import translation_surfaces
-    sage: S = translation_surfaces.regular_octagon().underlying_surface()
+    sage: S = translation_surfaces.regular_octagon()
     sage: deformation = S.subdivide_edges(3)
     sage: deformation = deformation.codomain().subdivide() * deformation
     sage: T = deformation.codomain()
 
     sage: deformation
-    Deformation from <flatsurf.geometry.surface.Surface_list object at 0x...> to <flatsurf.geometry.surface.Surface_dict object at 0x...>
+    Deformation from Translation Surface in H_2(2) built from a regular octagon to Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
 
 We can then map points through the deformation::
 
@@ -191,7 +191,7 @@ class SubdivideDeformation(Deformation):
             return v[0] * w[1] >= w[0] * v[1]
 
         initial_edge = ((label, 0), 0)
-        mid_edge = ((label, self.codomain().num_polygons() // self.domain().num_polygons() - 1), 1)
+        mid_edge = ((label, len(self.codomain().polygons()) // len(self.domain().polygons()) - 1), 1)
 
         face = mid_edge if ccw(self.codomain().polygon(mid_edge[0]).edge(mid_edge[1]), coordinates) else initial_edge
         face = to_pyflatsurf(face)
@@ -243,7 +243,7 @@ class SubdivideEdgesDeformation(Deformation):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.regular_octagon().underlying_surface()
+            sage: S = translation_surfaces.regular_octagon()
             sage: deformation = S.subdivide_edges(2)
 
             sage: from flatsurf.geometry.surface_objects import SurfacePoint

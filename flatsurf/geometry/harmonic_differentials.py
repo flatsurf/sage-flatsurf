@@ -5,8 +5,7 @@ EXAMPLES:
 
 We compute harmonic differentials on the square torus::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology  # might show some deprecation warnings
-    ...
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
@@ -19,7 +18,8 @@ vertical `b` to zero::
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: Ω(f)
+    sage: ω = Ω(f)  # random output due to deprecation warnings
+    sage: ω
     (1.00000000000000 + O(z0_0_0^5), 1.00000000000000 + O(z0_1_0^5), 1.00000000000000 + O(z0_0_1^5), 1.00000000000000 + O(z0_0_2^5), 1.00000000000000 + O(z0_1_1^5), 1.00000000000000 + O(z0_0_3^5), 1.00000000000000 + O(z0_1_2^5), 1.00000000000000 + O(z0_1_3^5), 1.00000000000000 + O(z0_0_4^5))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b`::
@@ -56,56 +56,62 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
 
-import cppyy
-cppyy.cppdef(r'''
-#include <cassert>
-#include <vector>
-#include <iostream>
-#include "/home/jule/proj/eskin/sage-flatsurf/mpreal-support.h"
-#include <eigen3/Eigen/LU>
-#include <eigen3/Eigen/Sparse>
-#include <eigen3/Eigen/OrderingMethods>
 
-using namespace mpfr;
-using namespace Eigen;
-using std::vector;
-typedef SparseMatrix<mpreal> MatrixXmp;
-typedef Matrix<mpreal,Dynamic,1> VectorXmp;
+def define_solve():
+    import cppyy
 
-VectorXmp solve(vector<vector<double>> _A, vector<double> _b)
-{
-  // set precision to ? bits (double has only 53 bits)
-  mpreal::set_default_prec(256);
-  // Declare matrix and vector types with multi-precision scalar type
+    if not hasattr(cppyy.gbl, "solve"):
+        cppyy.cppdef(r'''
+        #include <cassert>
+        #include <vector>
+        #include <iostream>
+        #include "/home/jule/proj/eskin/sage-flatsurf/mpreal-support.h"
+        #include <eigen3/Eigen/LU>
+        #include <eigen3/Eigen/Sparse>
+        #include <eigen3/Eigen/OrderingMethods>
 
-  const int ROWS = _A.size();
-  const int COLS = _A[0].size();
-  MatrixXmp A = MatrixXmp(ROWS, COLS);
-  VectorXmp b = VectorXmp(ROWS);
+        using namespace mpfr;
+        using namespace Eigen;
+        using std::vector;
+        typedef SparseMatrix<mpreal> MatrixXmp;
+        typedef Matrix<mpreal,Dynamic,1> VectorXmp;
 
-  for (int y = 0; y < ROWS; y++) {
-    for (int x = 0; x < COLS; x++) {
-      if (_A[y][x] != 0) {
-        A.insert(y, x) = _A[y][x];
-      }
-      b[y] = _b[y];
-    }
-  }
+        VectorXmp solve(vector<vector<double>> _A, vector<double> _b)
+        {
+          // set precision to ? bits (double has only 53 bits)
+          mpreal::set_default_prec(256);
+          // Declare matrix and vector types with multi-precision scalar type
 
-  A.makeCompressed();
+          const int ROWS = _A.size();
+          const int COLS = _A[0].size();
+          MatrixXmp A = MatrixXmp(ROWS, COLS);
+          VectorXmp b = VectorXmp(ROWS);
 
-  SparseQR<MatrixXmp, NaturalOrdering<int>> QRd;
-  QRd.compute(A);
+          for (int y = 0; y < ROWS; y++) {
+            for (int x = 0; x < COLS; x++) {
+              if (_A[y][x] != 0) {
+                A.insert(y, x) = _A[y][x];
+              }
+              b[y] = _b[y];
+            }
+          }
 
-  assert(QRd.info() == Success);
+          A.makeCompressed();
 
-  VectorXmp x = QRd.solve(b);
+          SparseQR<MatrixXmp, NaturalOrdering<int>> QRd;
+          QRd.compute(A);
 
-  assert(QRd.info() == Success);
+          assert(QRd.info() == Success);
 
-  return x;
-}
-''')
+          VectorXmp x = QRd.solve(b);
+
+          assert(QRd.info() == Success);
+
+          return x;
+        }
+        ''')
+
+    return cppyy.gbl.solve
 
 
 class HarmonicDifferential(Element):
@@ -319,7 +325,7 @@ class HarmonicDifferential(Element):
 
     #     surface = self.parent().surface()
 
-    #     for triangle in surface.label_iterator():
+    #     for triangle in surface.labels():
     #         series = self._series[triangle]
     #         series = series.truncate(series.prec())
     #         for (root, multiplicity) in series.roots():
@@ -486,7 +492,7 @@ class HarmonicDifferential(Element):
     #             # We integrate on the line segment from the midpoint of edge to
     #             # the midpoint of the previous edge in triangle, i.e., the next
     #             # edge in counterclockwise order walking around the vertex.
-    #             edge_ = (edge - 1) % surface.polygon(label).num_edges()
+    #             edge_ = (edge - 1) % len(surface.polygon(label).vertices())
 
     #             # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
 
@@ -585,7 +591,7 @@ class HarmonicDifferential(Element):
 
         plot = S.plot(fill=None)
 
-        for label in S.label_iterator():
+        for label in S.labels():
             P = S.polygon(label)
             PS = GS.graphical_polygon(label)
 
@@ -629,7 +635,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         sage: T.set_immutable()
 
         sage: Ω = HarmonicDifferentials(T); Ω
-        Ω(TranslationSurface built from 1 polygon)
+        Ω(Translation Surface in H_1(0) built from a square)
 
     ::
 
@@ -682,7 +688,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # center of a Delaunay cell to the center of a neighbouring Delaunay
         # cell.
         voronoi_paths = set()
-        for label, edge in surface.edge_iterator():
+        for label, edge in surface.edges():
             if surface.opposite_edge(label, edge) not in voronoi_paths:
                 voronoi_paths.add((label, edge))
 
@@ -997,9 +1003,9 @@ class GeometricPrimitives:
 
         opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
         opposite_polygon = self._surface.polygon(opposite_label)
-        opposite_polygon = opposite_polygon.translate(-opposite_polygon.vertex((opposite_edge + 1) % opposite_polygon.num_edges()) + polygon.vertex(edge))
+        opposite_polygon = opposite_polygon.translate(-opposite_polygon.vertex((opposite_edge + 1) % len(opposite_polygon.vertices())) + polygon.vertex(edge))
 
-        assert polygon.vertex((edge + 1) % polygon.num_edges()) == opposite_polygon.vertex(opposite_edge)
+        assert polygon.vertex((edge + 1) % len(polygon.vertices())) == opposite_polygon.vertex(opposite_edge)
 
         opposite_polygon_center = opposite_polygon.circumscribing_circle().center()
 
@@ -1053,7 +1059,7 @@ class GeometricPrimitives:
         from sage.all import RR
         return min(
             (center - polygon.vertex(edge)).change_ring(RR).norm(),
-            (center - polygon.vertex((edge + 1) % polygon.num_edges())).change_ring(RR).norm())
+            (center - polygon.vertex((edge + 1) % len(polygon.vertices()))).change_ring(RR).norm())
 
 
 class SymbolicCoefficientExpression(CommutativeRingElement):
@@ -1917,7 +1923,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                 else:
                     raise NotImplementedError
 
-                polygon = list(self._surface.label_iterator()).index(polygon)
+                polygon = list(self._surface.labels()).index(polygon)
                 assert polygon != -1
                 n = k * 2 * len(self._gens) + 2 * self._gens.index((polygon, edge, pos)) + kind
             elif len(n) == 2:
@@ -2744,7 +2750,7 @@ class PowerSeriesConstraints:
 
     #     # We eveluate the integral of |f|^2 on each triangle where f is the
     #     # power series on the Voronoy cell containing that triangle.
-    #     for triangle in self._surface.label_iterator():
+    #     for triangle in self._surface.labels():
     #         # We expand the integrand Σa_nz^n · \overline{Σa_mz^m} naively as
     #         # the sum of a_n \overline{a_m} z^n \overline{z^m}.
     #         for n in range(self._prec):
@@ -3103,7 +3109,7 @@ class PowerSeriesConstraints:
 
         """
         from sage.all import PowerSeriesRing
-        polygon = list(self._surface.label_iterator()).index(label)
+        polygon = list(self._surface.labels()).index(label)
         pos = [p for (lbl, e, p) in self.symbolic_ring()._gens if lbl == label and e == edge].index(pos)
 
         return PowerSeriesRing(self.complex_field(), f"z{polygon}_{edge}_{pos}")
@@ -3182,7 +3188,7 @@ class PowerSeriesConstraints:
 
             cppyy.load_library("mpfr")
 
-            solution = cppyy.gbl.solve(A, b)
+            solution = define_solve()(A, b)
 
             from sage.all import vector
             solution = vector([self.real_field()(entry) for entry in solution])

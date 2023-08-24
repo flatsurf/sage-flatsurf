@@ -3,7 +3,7 @@ Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2017-2020 W. Patrick Hooper
@@ -22,7 +22,7 @@ This includes singularities, saddle connections and cylinders.
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.modules.free_module_element import vector
@@ -30,8 +30,8 @@ from sage.plot.graphics import Graphics
 from sage.plot.polygon import polygon2d
 from sage.rings.qqbar import AA
 from sage.structure.sage_object import SageObject
+from sage.structure.element import Element
 
-from flatsurf.geometry.polygon import ConvexPolygons, wedge_product
 from flatsurf.geometry.similarity import SimilarityGroup
 
 
@@ -68,19 +68,19 @@ def Singularity(similarity_surface, label, v, limit=None):
     )
 
 
-class SurfacePoint(SageObject):
+class SurfacePoint(Element):
     r"""
     A point on ``surface``.
 
     INPUT:
 
-    - ``surface`` -- a :class:`flatsurf.geometry.surface.Surface` or a
-      :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
+    - ``surface`` -- a similarity surface
 
     - ``label`` -- a polygon label for the polygon with respect to which the
       ``point`` coordinates can be made sense of
 
-    - ``point`` -- coordinates of a point in the polygon ``label``
+    - ``point`` -- coordinates of a point in the polygon ``label`` or the index
+      of the vertex of the polygon with ``label``
 
     - ``ring`` -- a SageMath ring or ``None`` (default: ``None``); the
       coordinate ring for ``point``
@@ -135,9 +135,12 @@ class SurfacePoint(SageObject):
 
         polygon = surface.polygon(label)
 
-        from sage.modules.free_module import VectorSpace
+        from sage.all import ZZ
 
-        point = VectorSpace(ring, 2)(point)
+        if point in ZZ:
+            point = surface.polygon(label).vertex(point)
+
+        point = (ring**2)(point)
         point.set_immutable()
 
         position = polygon.get_point_position(point)
@@ -166,7 +169,7 @@ class SurfacePoint(SageObject):
 
                 # Rotate to the next edge that is leaving at the vertex
                 label, source_edge = surface.opposite_edge(label, source_edge)
-                source_edge = (source_edge + 1) % surface.polygon(label).num_edges()
+                source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
 
                 if limit is not None:
                     limit -= 1
@@ -182,13 +185,11 @@ class SurfacePoint(SageObject):
 
         self._representatives = frozenset(self._representatives)
 
+        super().__init__(surface)
+
     def surface(self):
         r"""
         Return the surface containing this point.
-
-        Depending on how this point was created, this can be either a
-        :class:`flatsurf.geometry.surface.Surface` or a
-        :class:`flatsurf.geometry.similarity_surface.SimilaritySurface`.
 
         EXAMPLES::
 
@@ -541,6 +542,28 @@ class SurfacePoint(SageObject):
             return False
         return self._representatives == other._representatives
 
+    def _test_category(self, **options):
+        r"""
+        Check that this point inherits from the element class of its surface's
+        category.
+
+        Overridden to disable these tests when this is a point of a mutable
+        surface since the category might then change as the surface becomes
+        immutable.
+
+        EXAMPLES::
+
+            sage: from flatsurf import half_translation_surfaces
+            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
+            sage: p = S.point(0, (1/2, 1/2))
+            sage: p._test_category()
+
+        """
+        if self.surface().is_mutable():
+            return
+
+        super()._test_category(**options)
+
     def __hash__(self):
         r"""
         Return a hash value of this point.
@@ -645,15 +668,15 @@ class SaddleConnection(SageObject):
             The combinatorial limit (in terms of number of polygons crossed) to flow forward
             to check the saddle connection geometry.
         """
-        from .similarity_surface import SimilaritySurface
+        from flatsurf.geometry.categories import SimilaritySurfaces
 
-        if not isinstance(surface, SimilaritySurface):
+        if surface not in SimilaritySurfaces():
             raise TypeError
 
         self._surface = surface
 
         # Sanitize the direction vector:
-        V = self._surface.vector_space()
+        V = self._surface.base_ring().fraction_field() ** 2
         self._direction = V(direction)
         if self._direction == V.zero():
             raise ValueError("Direction must be nonzero.")
@@ -677,20 +700,21 @@ class SaddleConnection(SageObject):
         self._surfacetart_data = tuple(start_data)
 
         if end_direction is None:
-            from .half_dilation_surface import HalfDilationSurface
-            from .dilation_surface import DilationSurface
+            from flatsurf.geometry.categories import DilationSurfaces
 
             # Attempt to infer the end_direction.
-            if isinstance(self._surface, DilationSurface):
+            if self._surface in DilationSurfaces().Positive():
                 end_direction = -self._direction
-            elif (
-                isinstance(self._surface, HalfDilationSurface) and end_data is not None
-            ):
+            elif self._surface in DilationSurfaces() and end_data is not None:
                 p = self._surface.polygon(end_data[0])
+                from flatsurf.geometry.euclidean import ccw
+
                 if (
-                    wedge_product(p.edge(end_data[1]), self._direction) >= 0
-                    and wedge_product(
-                        p.edge((p.num_edges() + end_data[1] - 1) % p.num_edges()),
+                    ccw(p.edge(end_data[1]), self._direction) >= 0
+                    and ccw(
+                        p.edge(
+                            (len(p.vertices()) + end_data[1] - 1) % len(p.vertices())
+                        ),
                         self._direction,
                     )
                     > 0
@@ -701,12 +725,14 @@ class SaddleConnection(SageObject):
 
         if end_holonomy is None and holonomy is not None:
             # Attempt to infer the end_holonomy:
-            from .half_translation_surface import HalfTranslationSurface
-            from .translation_surface import TranslationSurface
+            from flatsurf.geometry.categories import (
+                HalfTranslationSurfaces,
+                TranslationSurfaces,
+            )
 
-            if isinstance(self._surface, TranslationSurface):
+            if self._surface in TranslationSurfaces():
                 end_holonomy = -holonomy
-            if isinstance(self._surface, HalfTranslationSurface):
+            if self._surface in HalfTranslationSurfaces():
                 if direction == end_direction:
                     end_holonomy = holonomy
                 else:
@@ -859,9 +885,9 @@ class SaddleConnection(SageObject):
         this may not lie in the field of definition of the surface, it is
         returned as an element of the Algebraic Real Field.
         """
-        from .cone_surface import ConeSurface
+        from flatsurf.geometry.categories import ConeSurfaces
 
-        if not isinstance(self._surface, ConeSurface):
+        if self._surface not in ConeSurfaces():
             raise NotImplementedError(
                 "length of a saddle connection only makes sense for cone surfaces"
             )
@@ -1056,7 +1082,7 @@ class Cylinder(SageObject):
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import translation_surfaces
         sage: s = translation_surfaces.octagon_and_squares()
         sage: from flatsurf.geometry.surface_objects import Cylinder
         sage: cyl = Cylinder(s, 0, [2, 3, 3, 3, 2, 0, 1, 3, 2, 0])
@@ -1104,12 +1130,12 @@ class Cylinder(SageObject):
             )
         m = trans.matrix()
         v = vector(s.base_ring(), (m[0][2], m[1][2]))  # translation vector
-        from flatsurf.geometry.polygon import wedge_product
+        from flatsurf.geometry.euclidean import ccw
 
         p = ss.polygon(labels[0])
         e = edges[0]
-        min_y = wedge_product(v, p.vertex(e))
-        max_y = wedge_product(v, p.vertex((e + 1) % p.num_edges()))
+        min_y = ccw(v, p.vertex(e))
+        max_y = ccw(v, p.vertex((e + 1) % len(p.vertices())))
         if min_y >= max_y:
             raise ValueError("Combinatorial data does not represent a cylinder")
 
@@ -1120,7 +1146,7 @@ class Cylinder(SageObject):
         for i in range(1, len(edges)):
             e = edges[i]
             p = ss.polygon(labels[i])
-            y = wedge_product(v, p.vertex(e))
+            y = ccw(v, p.vertex(e))
             if y == min_y:
                 min_list.append(i)
             elif y > min_y:
@@ -1128,7 +1154,7 @@ class Cylinder(SageObject):
                 min_y = y
                 if min_y >= max_y:
                     raise ValueError("Combinatorial data does not represent a cylinder")
-            y = wedge_product(v, p.vertex((e + 1) % p.num_edges()))
+            y = ccw(v, p.vertex((e + 1) % len(p.vertices())))
             if y == max_y:
                 max_list.append(i)
             elif y < max_y:
@@ -1156,7 +1182,7 @@ class Cylinder(SageObject):
             lj = labels[j]
             sc = SaddleConnection(
                 s,
-                (lio[0][0], (lio[1] + 1) % ss.polygon(lio[0]).num_edges()),
+                (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
                 (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
             )
             sc_set_right.add(sc)
@@ -1170,7 +1196,7 @@ class Cylinder(SageObject):
                 lj = labels[j]
                 sc = SaddleConnection(
                     s,
-                    (lio[0][0], (lio[1] + 1) % ss.polygon(lio[0]).num_edges()),
+                    (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
                     (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
                     limit=j - i,
                 )
@@ -1184,7 +1210,7 @@ class Cylinder(SageObject):
         for i in max_list:
             label = labels[i]
             p = ss.polygon(label)
-            vertices.append((i, p.vertex((edges[i] + 1) % p.num_edges())))
+            vertices.append((i, p.vertex((edges[i] + 1) % len(p.vertices()))))
         i, vert_i = vertices[-1]
         vert_i = vert_i - v
         j, vert_j = vertices[0]
@@ -1195,7 +1221,7 @@ class Cylinder(SageObject):
             lj = labels[j]
             sc = SaddleConnection(
                 s,
-                (lj[0], (edges[j] + 1) % ss.polygon(lj).num_edges()),
+                (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
                 (~lj[1])(vert_i) - (~lj[1])(vert_j),
             )
             sc_set_left.add(sc)
@@ -1208,7 +1234,7 @@ class Cylinder(SageObject):
                 lj = labels[j]
                 sc = SaddleConnection(
                     s,
-                    (lj[0], (edges[j] + 1) % ss.polygon(lj).num_edges()),
+                    (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
                     (~lj[1])(vert_i) - (~lj[1])(vert_j),
                 )
                 sc_set_left.add(sc)
@@ -1226,15 +1252,15 @@ class Cylinder(SageObject):
         i = max_list[0]
         label = labels[i]
         p = ss.polygon(label)
-        left_point = p.vertex((edges[i] + 1) % p.num_edges())
-        from flatsurf.geometry.polygon import solve
+        left_point = p.vertex((edges[i] + 1) % len(p.vertices()))
+        from flatsurf.geometry.euclidean import solve
 
         for i in range(len(edges)):
             label = labels[i]
             p = ss.polygon(label)
             e = edges[i]
             v1 = p.vertex(e)
-            v2 = p.vertex((e + 1) % p.num_edges())
+            v2 = p.vertex((e + 1) % len(p.vertices()))
             a, b = solve(left_point, v, v1, v2 - v1)
             w1 = (~(label[1]))(v1 + b * (v2 - v1))
             a, b = solve(right_point, v, v1, v2 - v1)
@@ -1242,7 +1268,6 @@ class Cylinder(SageObject):
             edge_intersections.append((w1, w2))
 
         polygons = []
-        P = ConvexPolygons(s.base_ring())
         pair1 = edge_intersections[-1]
         l1 = labels[-2][0]
         e1 = edges[-1]
@@ -1257,7 +1282,12 @@ class Cylinder(SageObject):
                 polygon_verts.append(pair2[1])
             if pair2[0] != pair1p[0]:
                 polygon_verts.append(pair2[0])
-            polygons.append((l2, P(vertices=polygon_verts)))
+
+            from flatsurf import Polygon
+
+            polygons.append(
+                (l2, Polygon(vertices=polygon_verts, base_ring=s.base_ring()))
+            )
             l1 = l2
             pair1 = pair2
             e1 = e2
@@ -1301,10 +1331,11 @@ class Cylinder(SageObject):
         r"""
         Return the area of this cylinder if it is contained in a ConeSurface.
         """
-        from .cone_surface import ConeSurface
+        from flatsurf.geometry.categories import ConeSurfaces
 
-        if not isinstance(self._surface, ConeSurface):
+        if self._surface not in ConeSurfaces():
             raise NotImplementedError("area only makes sense for cone surfaces")
+
         area = 0
         for label, p in self.polygons():
             area += p.area()
@@ -1368,13 +1399,13 @@ class Cylinder(SageObject):
 
         v = sc.end_tangent_vector()
         v = v.clockwise_to(-v.vector())
-        from flatsurf.geometry.polygon import is_same_direction
+        from flatsurf.geometry.euclidean import is_parallel
 
         for sc2 in self._boundary:
             if sc2.start_data() == (
                 v.polygon_label(),
                 v.vertex(),
-            ) and is_same_direction(sc2.direction(), v.vector()):
+            ) and is_parallel(sc2.direction(), v.vector()):
                 return sc2
         raise ValueError("Failed to find next saddle connection in boundary set.")
 
@@ -1387,10 +1418,10 @@ class Cylinder(SageObject):
             raise ValueError
         v = sc.start_tangent_vector()
         v = v.counterclockwise_to(-v.vector())
-        from flatsurf.geometry.polygon import is_same_direction
+        from flatsurf.geometry.euclidean import is_parallel
 
         for sc2 in self._boundary:
-            if sc2.end_data() == (v.polygon_label(), v.vertex()) and is_same_direction(
+            if sc2.end_data() == (v.polygon_label(), v.vertex()) and is_parallel(
                 sc2.end_direction(), v.vector()
             ):
                 return sc2
@@ -1402,14 +1433,14 @@ class Cylinder(SageObject):
         In a translation surface, return one of the two holonomy vectors of the cylinder,
         which differ by a sign.
         """
-        from .translation_surface import TranslationSurface
+        from flatsurf.geometry.categories import TranslationSurfaces
 
-        if not isinstance(self._surface, TranslationSurface):
+        if self._surface not in TranslationSurfaces():
             raise NotImplementedError(
                 "holonomy currently only computable for translation surfaces"
             )
 
-        V = self._surface.vector_space()
+        V = self._surface.base_ring() ** 2
         total = V.zero()
         for sc in self._boundary1:
             total += sc.holonomy()
@@ -1432,9 +1463,9 @@ class Cylinder(SageObject):
         not lie in the field of definition of the surface, it is returned
         as an element of the Algebraic Real Field.
         """
-        from .cone_surface import ConeSurface
+        from flatsurf.geometry.categories import ConeSurfaces
 
-        if not isinstance(self._surface, ConeSurface):
+        if self._surface not in ConeSurfaces():
             raise NotImplementedError(
                 "circumference only makes sense for cone surfaces"
             )

@@ -1,7 +1,7 @@
 r"""
 Discriminant loci in H(1,1)
 """
-######################################################################
+# ****************************************************************************
 # This file is part of sage-flatsurf.
 #
 #       Copyright (C) 2020 Vincent Delecroix
@@ -18,7 +18,7 @@ Discriminant loci in H(1,1)
 #
 # You should have received a copy of the GNU General Public License
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 
@@ -37,7 +37,7 @@ def test_origami1():
     S = to_pyflatsurf(origami)
     assert (
         str(S)
-        == "FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 6, -5)(-2, 4, -6, 5, -4, 3), faces = (1, 2, 3)(-1, -5, -6)(-2, -3, -4)(4, 5, 6)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1)}"
+        == "FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, -5, 4)(-2, -6, 5, -4, 6, 3), faces = (1, 2, 3)(-1, 4, 5)(-2, -3, 6)(-4, -5, -6)) with vectors {1: (-1, -1), 2: (1, 0), 3: (0, 1), 4: (-1, 0), 5: (0, -1), 6: (1, 1)}"
     )
 
 
@@ -51,8 +51,8 @@ def test_origami2():
     S = to_pyflatsurf(origami)
     assert (
         str(S)
-        == "FlatTriangulationCombinatorial(vertices = (1, -3, 8, -7, 3, -2, 4, -6, 5, -4, 9, -8, 7, -9, 2, -1, 6, -5), faces = (1, 2, 3)(-1, -5, -6)(-2, -9, -4)(-3, -7, -8)(4, 5, 6)(7, 8, 9)) "
-        "with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (1, 1), 8: (-1, 0), 9: (0, -1)}"
+        == "FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, -5, -9, 8, 5, -4, 6, 3, -2, -6, -7, 9, -8, 7, 4), faces = (1, 2, 3)(-1, 4, 5)(-2, -3, 6)(-4, 7, -6)(-5, 8, 9)(-7, -8, -9)) "
+        "with vectors {1: (-1, -1), 2: (1, 0), 3: (0, 1), 4: (-1, 0), 5: (0, -1), 6: (1, 1), 7: (0, 1), 8: (-1, -1), 9: (1, 0)}"
     )
 
 
