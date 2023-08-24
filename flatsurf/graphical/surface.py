@@ -47,7 +47,8 @@ class GraphicalSurface:
     DEFAULTS = {
         "polygon": {
             "axes": False,
-            "color": "lightgray"
+            "color": "lightgray",
+            "edgecolor": None,
         },
         "point": {
             # We choose z-order so that points are above everything else,
