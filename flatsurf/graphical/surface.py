@@ -29,10 +29,6 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
-from sage.modules.free_module_element import vector
-
 
 class GraphicalSurface:
     r"""
@@ -960,6 +956,7 @@ class GraphicalSimilaritySurface(GraphicalSurface):
         return similarity(point)
 
     def _point(self, label, graphical_coordinates):
+        from sage.all import vector
         graphical_coordinates = vector(graphical_coordinates)
         coordinates = (~self._transformation[label])(graphical_coordinates)
         polygon = self._surface.polygon(label)
@@ -968,6 +965,7 @@ class GraphicalSimilaritySurface(GraphicalSurface):
         return self._surface.point(label, coordinates)
 
     def _tangent_vector(self, label, graphical_base, graphical_direction):
+        from sage.all import vector
         graphical_base = vector(graphical_base)
         base = (~self._transformation[label])(graphical_base)
         position = self._surface.polygon(label).get_point_position(base)
