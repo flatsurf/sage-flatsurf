@@ -1,6 +1,11 @@
 r"""
 Rendering of surfaces
 
+.. NOTE::
+
+    The documentation of sage-flatsurf contains a section of example plots that
+    showcase all the ways in which plots can be customized.
+
 EXAMPLES::
 
     sage: import flatsurf
@@ -38,10 +43,15 @@ class GraphicalSurface:
     the details of rendering surfaces defined by euclidean polygons and
     surfaces defined by hyperbolic polygons.
 
-    Objects of this type shuold not be created manually, instead use
+    Objects of this type should not be created manually, instead use
     ``graphical_surface()`` and ``plot()`` on a surface.
 
-    TODO
+    EXAMPLES::
+
+        sage: import flatsurf
+        sage: flatsurf.translation_surfaces.veech_2n_gon(4).graphical_surface()
+        Graphical representation of Translation Surface in H_2(2) built from a regular octagon
+
     """
 
     DEFAULTS = {
