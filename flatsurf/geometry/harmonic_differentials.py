@@ -2253,6 +2253,9 @@ class PowerSeriesConstraints:
         f = self._formal_power_series_nonsingular(label, edge, pos, base_ring=base_ring)
         return f(f.parent().gen() + Δ)
 
+    def develop_singular(self, label, vertex, Δ, radius):
+        raise NotImplementedError
+
     def integrate(self, cycle):
         r"""
         Return the linear combination of the power series coefficients that
@@ -2482,16 +2485,14 @@ class PowerSeriesConstraints:
                 self.add_constraint(
                     parent(self.evaluate(label, edge, a, Δ0, derivative)) - parent(self.evaluate(opposite_label, opposite_edge, 1-b, Δ1, derivative)))
 
-    def _L2_consistency_cost(self, T0, T1, convergence, debug):
+    def _L2_consistency_cost_ball(self, T0, T1, r, debug):
         cost = self.symbolic_ring(self.real_field()).zero()
 
         b = (T0 - T1).list()
 
-        # TODO: What should the divisor be here?
-        r = convergence / 2
         debug.append(r)
 
-        assert convergence > 0
+        assert r > 0
         r2 = self.real_field()(r**2)
 
         r2n = r2
@@ -2553,7 +2554,10 @@ class PowerSeriesConstraints:
 
         convergence = min(a_convergence - Δ0.norm(), b_convergence - Δ1.norm())
 
-        cost = self._L2_consistency_cost(T0, T1, convergence, debug)
+        # TODO: What should the divisor be here?
+        r = convergence / 2
+
+        cost = self._L2_consistency_cost_ball(T0, T1, r, debug)
         self._debugs.append(debug)
 
         return cost
@@ -2569,15 +2573,18 @@ class PowerSeriesConstraints:
 
         debug += [Δ0, Δ1]
 
-        # Develop both power series around that midpoint, i.e., Taylor expand them there.
-        T0 = self.develop_nonsingular(label, 0, 0, Δ0)
-        T1 = self.develop_singular(label, vertex, Δ1)
-
         # TODO: We assume here that the smallest radius of convergence is given
         # by the edge lengths and the distance from the vertex to the center.
         convergence = min(self._surface.polygon(label).edge(vertex).norm(), self._surface.polygon(label).edge(vertex - 1).norm(), (self._surface.polygon(label).circumscribing_circle().center() - vertex).norm())
 
-        cost = self._L2_consistency_cost(T0, T1, convergence, debug)
+        # TODO: What should the divisor be here?
+        r = convergence / 2
+
+        # Develop both power series around that midpoint, i.e., Taylor expand them there.
+        T0 = self.develop_nonsingular(label, 0, 0, Δ0)
+        T1 = self.develop_singular(label, vertex, Δ1, r)
+
+        cost = self._L2_consistency_cost_ball(T0, T1, r, debug)
         self._debugs.append(debug)
 
         return cost
@@ -2656,12 +2663,8 @@ class PowerSeriesConstraints:
                 for vertex in self._surface.polygon(label).vertices():
                     cost += self._L2_consistency_between_center_and_vertex(label, vertex)
 
-            seen = set()
             for (label, edge), (opposite_label, opposite_edge) in self._surface.gluings():
-                if (opposite_label, opposite_edge) in seen:
-                    continue
-                seen.add((label, edge))
-                cost += self._L2_consistency_across_edge(label, edge)
+                cost += self._L2_consistency_left_of_edge(label, edge)
 
             raise NotImplementedError
 
