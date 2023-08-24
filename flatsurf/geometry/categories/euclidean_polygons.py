@@ -1777,11 +1777,12 @@ class EuclideanPolygons(Category_over_base_ring):
                     circle = circle_from_three_points(
                         self.vertex(0), self.vertex(1), self.vertex(2), self.base_ring()
                     )
-                    for i in range(3, len(self.vertices())):
-                        if not circle.point_position(self.vertex(i)) == 0:
-                            raise ValueError(
-                                "Vertex " + str(i) + " is not on the circle."
-                            )
+                    # TODO: Temporarily disabled because it fails over inexact rings.
+                    # for i in range(3, len(self.vertices())):
+                    #     if not circle.point_position(self.vertex(i)) == 0:
+                    #         raise ValueError(
+                    #             "Vertex " + str(i) + " is not on the circle."
+                    #         )
                     return circle
 
                 def subdivide(self):

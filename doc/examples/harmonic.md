@@ -110,6 +110,12 @@ omega.cauchy_residue(vertex, -1)
 ## A Less Trivial Example, the Regular Octagon
 
 ```sage
+import jurigged
+import os
+watcher = jurigged.watch("/")
+```
+
+```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
 S = translation_surfaces.regular_octagon()
 

@@ -1021,6 +1021,10 @@ class GeometricPrimitives:
         return self.point_on_path_between_centers(label, edge, 1 - pos, wrap=True, ring=ring)
 
     @cached_method
+    def midpoint_on_center_vertex_path(self, label, vertex):
+        return (vertex - self._surface.polygon(label).circumscribing_circle().center()) / 2
+
+    @cached_method
     def _convergence(self, label, edge, pos):
         r"""
         Return the radius of convergence at the point at which we develop a
@@ -2478,9 +2482,36 @@ class PowerSeriesConstraints:
                 self.add_constraint(
                     parent(self.evaluate(label, edge, a, Δ0, derivative)) - parent(self.evaluate(opposite_label, opposite_edge, 1-b, Δ1, derivative)))
 
-    def _L2_consistency_between_nonsingular_points(self, label, a_edge, a, b_edge, b):
+    def _L2_consistency_cost(self, T0, T1, convergence, debug):
         cost = self.symbolic_ring(self.real_field()).zero()
 
+        b = (T0 - T1).list()
+
+        # TODO: What should the divisor be here?
+        r = convergence / 2
+        debug.append(r)
+
+        assert convergence > 0
+        r2 = self.real_field()(r**2)
+
+        r2n = r2
+        for n, b_n in enumerate(b):
+            # TODO: In the article it says that it should be R^n as a
+            # factor but R^{2n+2} is actually more reasonable. See
+            # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
+            real = b_n.real()
+            imag = b_n.imag()
+            cost += (real * real + imag * imag) * r2n
+
+            r2n *= r2
+
+        # TODO: This is not in the article. Does that make sense?
+        # Normalize the result with the area of the integral domain.
+        cost /= r2
+
+        return cost
+
+    def _L2_consistency_between_nonsingular_points(self, label, a_edge, a, b_edge, b):
         debug = [label, a_edge, a, b_edge, b]
 
         def Δ(x_edge, x, y_edge, y):
@@ -2522,30 +2553,31 @@ class PowerSeriesConstraints:
 
         convergence = min(a_convergence - Δ0.norm(), b_convergence - Δ1.norm())
 
-        # TODO: What should the divisor be here?
-        r = convergence / 2
-        debug.append(r)
+        cost = self._L2_consistency_cost(T0, T1, convergence, debug)
+        self._debugs.append(debug)
 
-        assert convergence > 0
-        r2 = self.real_field()(r**2)
+        return cost
 
-        b = (T0 - T1).list()
+    def _L2_consistency_between_center_and_vertex(self, label, vertex):
+        cost = self.symbolic_ring(self.real_field()).zero()
 
-        r2n = r2
-        for n, b_n in enumerate(b):
-            # TODO: In the article it says that it should be R^n as a
-            # factor but R^{2n+2} is actually more reasonable. See
-            # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
-            real = b_n.real()
-            imag = b_n.imag()
-            cost += (real * real + imag * imag) * r2n
+        debug = [label, vertex]
 
-            r2n *= r2
+        # The weighted midpoint of the segment with respect ot the centers of the power series.
+        Δ0 = self.complex_field()(*self._geometry.midpoint_on_center_vertex_path(label, vertex))
+        Δ1 = -Δ0
 
-        # TODO: This is not in the article. Does that make sense?
-        # Normalize the result with the area of the integral domain.
-        cost /= r2
+        debug += [Δ0, Δ1]
 
+        # Develop both power series around that midpoint, i.e., Taylor expand them there.
+        T0 = self.develop_nonsingular(label, 0, 0, Δ0)
+        T1 = self.develop_singular(label, vertex, Δ1)
+
+        # TODO: We assume here that the smallest radius of convergence is given
+        # by the edge lengths and the distance from the vertex to the center.
+        convergence = min(self._surface.polygon(label).edge(vertex).norm(), self._surface.polygon(label).edge(vertex - 1).norm(), (self._surface.polygon(label).circumscribing_circle().center() - vertex).norm())
+
+        cost = self._L2_consistency_cost(T0, T1, convergence, debug)
         self._debugs.append(debug)
 
         return cost
