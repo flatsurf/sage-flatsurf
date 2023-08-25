@@ -57,7 +57,7 @@ class GraphicalSurface:
     DEFAULTS = {
         "polygon": {
             "axes": False,
-            "color": "lightgray",
+            "color": "whitesmoke",
             "edgecolor": None,
         },
         "point": {
