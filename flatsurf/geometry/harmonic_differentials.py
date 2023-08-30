@@ -2562,33 +2562,6 @@ class PowerSeriesConstraints:
 
         return cost
 
-    def _L2_consistency_between_center_and_vertex(self, label, vertex):
-        cost = self.symbolic_ring(self.real_field()).zero()
-
-        debug = [label, vertex]
-
-        # The weighted midpoint of the segment with respect ot the centers of the power series.
-        Δ0 = self.complex_field()(*self._geometry.midpoint_on_center_vertex_path(label, vertex))
-        Δ1 = -Δ0
-
-        debug += [Δ0, Δ1]
-
-        # TODO: We assume here that the smallest radius of convergence is given
-        # by the edge lengths and the distance from the vertex to the center.
-        convergence = min(self._surface.polygon(label).edge(vertex).norm(), self._surface.polygon(label).edge(vertex - 1).norm(), (self._surface.polygon(label).circumscribing_circle().center() - vertex).norm())
-
-        # TODO: What should the divisor be here?
-        r = convergence / 2
-
-        # Develop both power series around that midpoint, i.e., Taylor expand them there.
-        T0 = self.develop_nonsingular(label, 0, 0, Δ0)
-        T1 = self.develop_singular(label, vertex, Δ1, r)
-
-        cost = self._L2_consistency_cost_ball(T0, T1, r, debug)
-        self._debugs.append(debug)
-
-        return cost
-
     def _L2_consistency(self):
         r"""
         For each pair of adjacent centers along a homology path we use for
@@ -2658,34 +2631,27 @@ class PowerSeriesConstraints:
             center = S(0, S.polygon(0).centroid())
             centers = S.vertices().union([center])
 
-            # We integrate L2 errors along the boundary of Voronoi cells.
             def weight(center):
                 if center == S.polygon(0).centroid():
                     from sage.all import QQ
                     return QQ(center.norm().n())
                 if center in S.polygon(0).vertices():
-                    return 1
+                    from sage.all import QQ
+                    return QQ(1)
                 raise NotImplementedError
 
             from flatsurf.geometry.voronoi import FixedVoronoiWeight, VoronoiDiagram
             V = VoronoiDiagram(S, centers, weight=FixedVoronoiWeight(weight))
 
-
-
-            # TODO: Is this enough in general? Here we only consider
-            # consistency between end points of edges and consistency between
-            # the center of a polygon and its vertices.
-
-            for label in self._surface.labels():
-                for vertex in self._surface.polygon(label).vertices():
-                    cost += self._L2_consistency_between_center_and_vertex(label, vertex)
-
-            for (label, edge), (opposite_label, opposite_edge) in self._surface.gluings():
-                cost += self._L2_consistency_left_of_edge(label, edge)
-
-            raise NotImplementedError
+            # We integrate L2 errors along the boundary of Voronoi cells.
+            for center in centers:
+                for boundary in V.cell(center):
+                    cost += self._L2_consistency_voronoi_boundary(boundary)
 
         return cost
+
+    def _L2_consistency_voronoi_boundary(self, boundary):
+        raise NotImplementedError
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):

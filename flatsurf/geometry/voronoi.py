@@ -10,6 +10,7 @@ class VoronoiDiagram:
         sage: center = S(0, S.polygon(0).centroid())
         sage: V = VoronoiDiagram(S, S.vertices().union([center]))
         sage: V.plot()
+        Graphics object consisting of 43 graphics primitives
 
         sage: def weight(center):
         ....:     if center == S.polygon(0).centroid():
@@ -20,6 +21,7 @@ class VoronoiDiagram:
         sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
         sage: V = VoronoiDiagram(S, S.vertices().union([center]), weight=FixedVoronoiWeight(weight))
         sage: V.plot()
+        Graphics object consisting of 43 graphics primitives
 
     """
 
@@ -37,13 +39,18 @@ class VoronoiDiagram:
 
         # TODO: These mapping structures are too complex.
         polygon_diagrams = {label: VoronoiDiagram_Polygon(surface.polygon(label), [coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label], create_half_space=lambda *args: weight.create_half_space(label, *args)) for label in surface.labels()}
-        self._segments = {point: [(label, coordinates, polygon_diagrams[label].segments(coordinates)) for (label, coordinates) in point.representatives()] for point in points}
+        self._segments = {point: [
+            VoronoiCellBoundarySegment(point, surface(label, other_coordinates), label, coordinates, other_coordinates, segment) for (label, coordinates) in point.representatives() for (other_coordinates, segment) in polygon_diagrams[label].segments(coordinates).items()]
+            for point in points}
 
     def plot(self):
         colors = ["red", "green"]
         return self._surface.plot(edge_labels=False, polygon_labels=False) + \
-            sum(
-                segment.plot(color=colors[i]) for i, point in enumerate(self._segments) for (_, _, segments) in self._segments[point] for segment in segments.values()) + sum(center.plot(color=colors[i]) for i, center in enumerate(self._segments))
+            sum(center.plot(color=colors[i]) for i, center in enumerate(self._segments)) + \
+            sum(segment.plot(color=colors[i]) for i, point in enumerate(self._segments) for segment in self._segments[point])
+
+    def cell(self, center):
+        return self._segments[center]
 
 
 class FixedVoronoiWeight:
@@ -85,6 +92,15 @@ class VoronoiDiagram_Polygon:
                 segments[point] = Segment(half_space, endpoints)
 
         return segments
+
+
+class VoronoiCellBoundarySegment:
+    def __init__(self, center, other, label, coordinates, other_coordinates, segment):
+        self._segment = segment
+        pass
+
+    def plot(self, **kwargs):
+        return self._segment.plot(**kwargs)
 
 
 class HalfSpace:

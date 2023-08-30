@@ -119,7 +119,7 @@ watcher = jurigged.watch('/', logger=None)
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
 S = translation_surfaces.regular_octagon()
 
-scale = 1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2)
+scale = QQ(1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2))
 S = S.apply_matrix(diagonal_matrix([scale, scale]), in_place=False)
 S = S.underlying_surface()
 S.set_immutable()
@@ -148,6 +148,10 @@ Omega = HarmonicDifferentials(S, safety=1/3, singularities=True)
 
 ```sage
 omega = Omega(HS(f), prec=10, check=True)
+```
+
+```sage
+%debug
 ```
 
 ```sage
