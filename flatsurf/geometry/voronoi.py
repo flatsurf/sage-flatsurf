@@ -8,6 +8,15 @@ class VoronoiDiagram:
         sage: center = S(0, S.polygon(0).centroid())
         sage: V = VoronoiDiagram(S, S.vertices().union([center]))
 
+        sage: def weight(center):
+        ....:    if center == S.polygon(0).centroid():
+        ....:        return QQ(center.norm().n())
+        ....:    if center in S.polygon(0).vertices():
+        ....:        return 1
+        ....:    raise NotImplementedError
+        sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
+        sage: V = VoronoiDiagram(S, S.vertices().union([center]), weight=FixedVoronoiWeight(weight))
+
     """
 
     def __init__(self, surface, points, weight=None):
@@ -25,6 +34,9 @@ class VoronoiDiagram:
         polygon_diagrams = {label: VoronoiDiagram_Polygon(surface.polygon(label), [coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label], create_half_space=lambda *args: weight.create_half_space(label, *args)) for label in surface.labels()}
         self._segments = {point: [(label, segment) for (label, coordinates) in point.representatives() for segment in polygon_diagrams[label].segments(coordinates)] for point in points}
 
+    def plot(self):
+        colors = ["red", "green"]
+        return self._surface.plot(edge_labels=False, polygon_labels=False) + sum(segment.plot(color=colors[i]) for i, point in enumerate(self._segments) for (_, segment) in self._segments[point]) + sum(center.plot(color=colors[i]) for i, center in enumerate(self._segments))
 
 
 class FixedVoronoiWeight:
@@ -38,7 +50,7 @@ class FixedVoronoiWeight:
         a, b = center - point
         # TODO: Generalize this to get half spaces that are weighted by the radii of convergence.
         weights = self._weight(point), self._weight(center)
-        midpoint = (weights[0] * point + weights[1] * center) / sum(weights)
+        midpoint = (weights[1] * point + weights[0] * center) / sum(weights)
         c = - a * midpoint[0] - b * midpoint[1]
         return HalfSpace(a, b, c)
 
@@ -142,3 +154,15 @@ class Segment:
     def __init__(self, half_space, endpoints):
         if len(endpoints) != 2:
             raise NotImplementedError
+
+        # Sort endpoints so that they are in counterclockwise order when seen
+        # from the center.
+        if not isinstance(half_space, HalfSpace):
+            raise NotImplementedError
+        endpoints.sort(key=lambda xy: xy[0] * half_space._b - xy[1] * half_space._a)
+
+        self._endpoints = endpoints
+
+    def plot(self, **kwargs):
+        from sage.all import arrow
+        return arrow(*self._endpoints, arrowsize=3, **kwargs)
