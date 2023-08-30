@@ -6,9 +6,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.6
+      jupytext_version: 1.15.0
   kernelspec:
-    display_name: SageMath 9.8
+    display_name: SageMath 10.0
     language: sage
     name: sagemath
 ---
@@ -112,7 +112,7 @@ omega.cauchy_residue(vertex, -1)
 ```sage
 import jurigged
 import os
-watcher = jurigged.watch("/")
+watcher = jurigged.watch('/', logger=None)
 ```
 
 ```sage

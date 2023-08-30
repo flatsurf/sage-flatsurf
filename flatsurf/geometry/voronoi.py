@@ -1,3 +1,5 @@
+# TODO: Documentation
+
 class VoronoiDiagram:
     r"""
     EXAMPLES::
@@ -7,15 +9,17 @@ class VoronoiDiagram:
         sage: S = translation_surfaces.regular_octagon()
         sage: center = S(0, S.polygon(0).centroid())
         sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+        sage: V.plot()
 
         sage: def weight(center):
-        ....:    if center == S.polygon(0).centroid():
-        ....:        return QQ(center.norm().n())
-        ....:    if center in S.polygon(0).vertices():
-        ....:        return 1
-        ....:    raise NotImplementedError
+        ....:     if center == S.polygon(0).centroid():
+        ....:         return QQ(center.norm().n())
+        ....:     if center in S.polygon(0).vertices():
+        ....:         return 1
+        ....:     raise NotImplementedError
         sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
         sage: V = VoronoiDiagram(S, S.vertices().union([center]), weight=FixedVoronoiWeight(weight))
+        sage: V.plot()
 
     """
 
@@ -31,12 +35,15 @@ class VoronoiDiagram:
         self._surface = surface
         self._points = points
 
+        # TODO: These mapping structures are too complex.
         polygon_diagrams = {label: VoronoiDiagram_Polygon(surface.polygon(label), [coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label], create_half_space=lambda *args: weight.create_half_space(label, *args)) for label in surface.labels()}
-        self._segments = {point: [(label, segment) for (label, coordinates) in point.representatives() for segment in polygon_diagrams[label].segments(coordinates)] for point in points}
+        self._segments = {point: [(label, coordinates, polygon_diagrams[label].segments(coordinates)) for (label, coordinates) in point.representatives()] for point in points}
 
     def plot(self):
         colors = ["red", "green"]
-        return self._surface.plot(edge_labels=False, polygon_labels=False) + sum(segment.plot(color=colors[i]) for i, point in enumerate(self._segments) for (_, segment) in self._segments[point]) + sum(center.plot(color=colors[i]) for i, center in enumerate(self._segments))
+        return self._surface.plot(edge_labels=False, polygon_labels=False) + \
+            sum(
+                segment.plot(color=colors[i]) for i, point in enumerate(self._segments) for (_, _, segments) in self._segments[point] for segment in segments.values()) + sum(center.plot(color=colors[i]) for i, center in enumerate(self._segments))
 
 
 class FixedVoronoiWeight:
@@ -59,23 +66,23 @@ class VoronoiDiagram_Polygon:
     def __init__(self, polygon, points, create_half_space):
         self._polygon = polygon
 
-        half_spaces = {center: [create_half_space(center, point) for point in points if point != center] for center in points}
+        half_spaces = {center: {point: create_half_space(center, point) for point in points if point != center} for center in points}
         self._segments = {center: self._segments(half_spaces[center]) for center in points}
 
     def segments(self, coordinates):
-        return set(self._segments[coordinates])
+        return self._segments[coordinates]
 
     def _segments(self, half_spaces):
-        segments = []
-        for half_space in half_spaces:
+        segments = {}
+        for point, half_space in half_spaces.items():
             from itertools import chain
             endpoints = set(
-                list(chain.from_iterable(half_space.half_space_boundary_intersections(other) for other in half_spaces if other is not half_space)) +
+                list(chain.from_iterable(half_space.half_space_boundary_intersections(other) for other in half_spaces.values() if other is not half_space)) +
                 list(half_space.polygon_boundary_intersection(self._polygon))
             )
-            endpoints = [endpoint for endpoint in endpoints if self._polygon.contains_point(endpoint) and all(half_space.contains(endpoint) for half_space in half_spaces)]
+            endpoints = [endpoint for endpoint in endpoints if self._polygon.contains_point(endpoint) and all(half_space.contains(endpoint) for half_space in half_spaces.values())]
             if endpoints:
-                segments.append(Segment(half_space, endpoints))
+                segments[point] = Segment(half_space, endpoints)
 
         return segments
 

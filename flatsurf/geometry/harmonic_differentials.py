@@ -2653,7 +2653,24 @@ class PowerSeriesConstraints:
             cost += self._L2_consistency_between_nonsingular_points(0, 2, 537/964, 3, 537/964)
             cost += self._L2_consistency_between_nonsingular_points(0, 3, 537/964, 0, 427/964)
         else:
-            # We develop around the centers of the Delaunay cells and around the vertices.
+            # TODO: Hardcoded octagon here.
+            S = self._surface
+            center = S(0, S.polygon(0).centroid())
+            centers = S.vertices().union([center])
+
+            # We integrate L2 errors along the boundary of Voronoi cells.
+            def weight(center):
+                if center == S.polygon(0).centroid():
+                    from sage.all import QQ
+                    return QQ(center.norm().n())
+                if center in S.polygon(0).vertices():
+                    return 1
+                raise NotImplementedError
+
+            from flatsurf.geometry.voronoi import FixedVoronoiWeight, VoronoiDiagram
+            V = VoronoiDiagram(S, centers, weight=FixedVoronoiWeight(weight))
+
+
 
             # TODO: Is this enough in general? Here we only consider
             # consistency between end points of edges and consistency between
