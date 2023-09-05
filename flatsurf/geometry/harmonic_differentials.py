@@ -2646,11 +2646,111 @@ class PowerSeriesConstraints:
             # We integrate L2 errors along the boundary of Voronoi cells.
             for center in centers:
                 for boundary in V.cell(center):
-                    cost += self._L2_consistency_voronoi_boundary(boundary)
+                    for segment in boundary.segments_with_uniform_roots():
+                        cost += self._L2_consistency_voronoi_boundary(segment)
 
         return cost
 
-    def _L2_consistency_voronoi_boundary(self, boundary):
+    def _L2_consistency_voronoi_boundary(self, boundary_segment):
+        r"""
+        ALGORITHM:
+
+        Two cells meet at the ``boundary_segment``. The harmonic differential
+        can on these cells abstractly be described as a Laurent series around
+        the center of the cell
+
+        g(y) = Σ_{n ≥ -d} a_n y^n
+
+        where ``d`` is the order of the singularity at the center; this is,
+        however, not the representation on any of the charts in which the
+        translation surface is given.
+
+        To describe this power series on such a chart, let `z` denote the
+        variable on that chart, we are going to have to takes `d+1`-st roots
+        `y`. Note that ``boundary_segment`` is assumed to be such that this is
+        consistently possible, namely ``boundary_segment`` does not cross the
+        horizontal line on which the singularity lives in the `z`-chart.
+
+        Therefore, we write with the center y=0 being z=α
+
+        y(z) = ζ_{d+1}^κ (z-α)^{-(d+1)}
+
+        where the last part denotes the principal `d+1`-st root of `z`.
+
+        Hence, we can rewrite `g(y)dy` on the `z`-chart:
+
+        g(y)dy = g(y(z)) dy/dz dz
+               = Σ_{n ≥ -d} a_n ζ_{d+1}^{κ n} (z-α)^{n/(d+1)} ζ_{d+1}^κ 1/(d+1) (z-α)^{-d/(d+1)}dz
+               = Σ_{n ≥ -d} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} dz
+               = Σ_{n ≥ -d} a_n f_n(z) dz
+               = f(z) dz
+
+        Now, we want to describe the error between two such series when
+        integrating along the ``boundary_segment``, namely, for two such
+        differentials `f(z)dz` and `g(z)dz` we compute the L2 norm of `f-g` or
+        rather the square thereof `\int_γ (f-g)\overline{(f-g)} dz` where γ is
+        the ``boundary_segment``.
+
+        As discussed above, we have
+
+        f = Σ_{n ≥ -d} a_n f_n(z),
+
+        g = Σ_{m ≥ -d} b_m g_m(z).
+
+        Note that we can assume that both have the same `d` by taking their
+        least common multiple.
+
+        The `a_n` and `b_n` are symbolic variables since we are going to
+        optimize for these later. If we evaluate that L2 norm squared we get a
+        polynomial of homogeneous degree two in these variables.
+
+        Namely,
+
+        (f-g)\overline{(f-g)} = f\overline{f} - 2 \Re f\overline{g} + g\overline{g}.
+
+        The first term is going to yield polynomials in `a_n a_m`, the second
+        term mixed polynomials `a_n b_m`, and the last term polynomials in `b_n
+        b_m`.
+
+        In fact, our symbolic variables are going to be `\Re a_n`, `\Im a_n`,
+        `\Re b_m`, `\Im b_m`.
+
+        Working through the first of the three components of the L2 norm
+        expression, we have
+
+        \int_γ f\overline{f}
+        = Σ_{n,m ≥ -d} a_n \overline{a_m} \int_γ f_n(z)\overline{f_m(z)}
+        = Σ_{n,m ≥ -d} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
+
+        We can simplify things a bit since we know that the result is real;
+        inside the series we have therefore
+
+        a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
+        = (\Re a_n \Re a_m + \Im a_n \Im a_m - i \Re a_n \Im a_m + i \Im a_n \Re a_m) (f_{\Re, n, m} + i f_{\Im, n, m})
+        = \Re a_n \Re a_m f_{\Re, n, m} + \Im a_n \Im a_m f_{\Re, n, m} + \Re a_n \Im a_m f_{\Im, n, m} - \Im a_n \Re a_m f_{\Im, n, m}.
+
+        Clearly, we get essentially the same terms for `g\overline{g}`.
+
+        Finally, we need to compute the middle term:
+
+        - \int_γ 2 \Re f\overline{g}
+        = - 2 \Re \int_γ f\overline{g}
+        = - 2 \Re Σ_{n,m ≥ -d} a_n \overline{b_m} \int_γ f_n{z)\overline{g_m(z)}
+        = - 2 \Re Σ_{n,m ≥ -d} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+
+        Again we can simplify and get inside the series
+
+        a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+        = \Re a_n \Re b_m (f,g)_{\Re, n, m} + \Im a_n \Im b_m (f,g)_{\Re, n, m} + \Re a_n \Im b_m (f,g)_{\Im, n, m} - \Im a_n \Re b_m (f,g)_{\Im, n, m}
+
+        The integrals `f_{\Re, n, m}`, `f_{\Im, n, m}`, `(f,g)_{\Re, n, m}`,
+        and `(f,g)_{\Im, n, m}` are currently all computed numerically. We
+        currently have no feasible approach to compute the symbolically.
+
+        """
+        center, label, center_coordinates = boundary_segment.center()
+        opposite_center, label, opposite_center_coordinates = boundary_segment.opposite_center()
+
         raise NotImplementedError
 
     @cached_method
