@@ -1,4 +1,5 @@
 # TODO: Documentation
+# TODO: Drop all use of coordinates. Use EuclideanPolygonPoint instead of (label, coordinates)
 
 class VoronoiDiagram:
     r"""
@@ -96,11 +97,39 @@ class VoronoiDiagram_Polygon:
 
 class VoronoiCellBoundarySegment:
     def __init__(self, center, other, label, coordinates, other_coordinates, segment):
+        self._center = center
+        self._other = other
+        self._label = label
+        self._coordinates = coordinates
+        self._other_coordinates = other_coordinates
         self._segment = segment
-        pass
 
     def plot(self, **kwargs):
         return self._segment.plot(**kwargs)
+
+    def center(self):
+        return self._center, self._label, self._coordinates
+
+    def opposite_center(self):
+        return self._other, self._label, self._other_coordinates
+
+    def segment(self):
+        return self._label, self._segment
+
+    def segments_with_uniform_roots(self):
+        segments = [self]
+
+        import itertools
+
+        if self._center.is_vertex():
+            segments = itertools.chain.from_iterable(segment.split_vertically(self._coordinates[1]) for segment in segments)
+        if self._other.is_vertex():
+            segments = itertools.chain.from_iterable(segment.split_vertically(self._other_coordinates[1]) for segment in segments)
+
+        return list(segments)
+
+    def split_vertically(self, y):
+        return [VoronoiCellBoundarySegment(self._center, self._other, self._label, self._coordinates, self._other_coordinates, segment) for segment in self._segment.split_vertically(y)]
 
 
 class HalfSpace:
@@ -184,8 +213,19 @@ class Segment:
             raise NotImplementedError
         endpoints.sort(key=lambda xy: xy[0] * half_space._b - xy[1] * half_space._a)
 
+        self._half_space = half_space
         self._endpoints = endpoints
 
     def plot(self, **kwargs):
         from sage.all import arrow
         return arrow(*self._endpoints, arrowsize=3, **kwargs)
+
+    def split_vertically(self, y):
+        if (self._endpoints[0][1] < y and self._endpoints[1][1] > y) or (self._endpoints[0][1] > y and self._endpoints[1][1] < y):
+            split = self._half_space.half_space_boundary_intersections(HalfSpace(0, 1, -y))[0]
+            return [Segment(self._half_space, [self._endpoints[0], split]), Segment(self._half_space, [split, self._endpoints[1]])]
+
+        return [self]
+
+    def endpoints(self):
+        return self._endpoints

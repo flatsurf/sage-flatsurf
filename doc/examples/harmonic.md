@@ -110,12 +110,6 @@ omega.cauchy_residue(vertex, -1)
 ## A Less Trivial Example, the Regular Octagon
 
 ```sage
-import jurigged
-import os
-watcher = jurigged.watch('/', logger=None)
-```
-
-```sage
 from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
 S = translation_surfaces.regular_octagon()
 
@@ -143,15 +137,23 @@ print(f)
 f = HS(f)
 f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}
 
-Omega = HarmonicDifferentials(S, safety=1/3, singularities=True)
+Omega = HarmonicDifferentials(S, safety=0, singularities=True)
 ```
 
 ```sage
-omega = Omega(HS(f), prec=10, check=True)
+omega = Omega(HS(f), prec=1, check=True)
 ```
 
 ```sage
 %debug
+```
+
+```sage
+S = center.parent()
+```
+
+```sage
+S.angles?
 ```
 
 ```sage

@@ -1083,7 +1083,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a == a
@@ -1111,7 +1111,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
 
@@ -1190,7 +1190,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.degree(a)
@@ -1221,7 +1221,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.is_monomial()
@@ -1252,7 +1252,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.is_constant()
@@ -1290,7 +1290,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: x = R.gen(('imag', 0, 0, 0, 0)) + 1; x
             Im(a2,0) + 1.00000000000000
             sage: x.norm(1)
@@ -1311,7 +1311,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: -a
@@ -1338,7 +1338,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a + 1
@@ -1379,7 +1379,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a - 1
@@ -1401,7 +1401,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a * a
@@ -1455,7 +1455,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: a * 0
             0.000000000000000
@@ -1476,7 +1476,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: 0 * a
             0.000000000000000
@@ -1497,7 +1497,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.constant_coefficient()
@@ -1521,7 +1521,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.variables()
@@ -1560,7 +1560,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.is_variable()
@@ -1596,7 +1596,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.describe()
@@ -1634,7 +1634,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: c = (a + b)**2
@@ -1653,7 +1653,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: c = (a + b)**2
@@ -1676,7 +1676,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a[a]
@@ -1708,7 +1708,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: R.zero().total_degree()
@@ -1733,7 +1733,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: R.zero().derivative(a)
@@ -1791,7 +1791,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a({a: 1})
@@ -1817,11 +1817,11 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
 class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
     @staticmethod
-    def __classcall__(cls, surface, base_ring, homology_generators, category=None):
+    def __classcall__(cls, surface, base_ring, geometry, category=None):
         from sage.categories.all import CommutativeRings
-        return super().__classcall__(cls, surface, base_ring, homology_generators, category or CommutativeRings())
+        return super().__classcall__(cls, surface, base_ring, geometry, category or CommutativeRings())
 
-    def __init__(self, surface, base_ring, homology_generators, category):
+    def __init__(self, surface, base_ring, geometry, category):
         r"""
         TESTS::
 
@@ -1830,7 +1830,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
-            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry._homology_generators)
+            sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
             sage: R.has_coerce_map_from(CC)
             True
 
@@ -1839,17 +1839,23 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         """
         self._surface = surface
         self._base_ring = base_ring
-        self._homology_generators = homology_generators
+        self._geometry = geometry
+        self._homology_generators = geometry._homology_generators
 
         self._gens = set()
-        for (label, edge), a, b in homology_generators:
+        for (label, edge), a, b in self._homology_generators:
             self._gens.add((label, edge if a else 0, a))
             if b == 1:
                 label, edge = self._surface.opposite_edge(label, edge)
                 edge = 0
                 b = 0
             self._gens.add((label, edge, b))
-        self._gens = list(self._gens)
+
+        self._gens = [self._surface(*self._geometry.point_on_path_between_centers(*gen)) for gen in self._gens]
+
+        if self._geometry._singularities:
+            for vertex in self._surface.vertices():
+                self._gens.append(vertex)
 
         CommutativeRing.__init__(self, base_ring, category=category, normalize=False)
         self.register_coercion(base_ring)
@@ -1860,7 +1866,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         return f"Ring of Power Series Coefficients over {self.base_ring()}"
 
     def change_ring(self, ring):
-        return SymbolicCoefficientRing(self._surface, ring, self._homology_generators, category=self.category())
+        return SymbolicCoefficientRing(self._surface, ring, self._geometry, category=self.category())
 
     def real_field(self):
         from sage.all import RealField
@@ -1914,11 +1920,15 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                     label, edge = self._surface.opposite_edge(polygon, edge)
                     pos = 0
 
-                if pos == 0:
-                    edge = 0
+                point = self._geometry.point_on_path_between_centers(polygon, edge, pos)
+                point = self._surface(polygon, point)
 
-                if (polygon, edge, pos) not in self._gens:
-                    raise ValueError(f"{(polygon, edge, pos)} is not a valid generator; valid generators are {self._gens}")
+                return self.gen((kind, point, k))
+            elif len(n) == 3:
+                kind, point, k = n
+
+                if point not in self._gens:
+                    raise ValueError(f"{point} is not a valid generator; valid generators are {self._gens}")
 
                 if kind == "real":
                     kind = 0
@@ -1927,9 +1937,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                 else:
                     raise NotImplementedError
 
-                polygon = list(self._surface.labels()).index(polygon)
-                assert polygon != -1
-                n = k * 2 * len(self._gens) + 2 * self._gens.index((polygon, edge, pos)) + kind
+                n = k * 2 * len(self._gens) + 2 * self._gens.index(point) + kind
             elif len(n) == 2:
                 kind, k = n
 
@@ -2000,7 +2008,7 @@ class PowerSeriesConstraints:
         # TODO: What's the correct precision here?
         # return SymbolicCoefficientRing(self._surface, base_ring=base_ring or self.complex_field())
         from sage.all import ComplexField
-        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or ComplexField(54), homology_generators=self._geometry._homology_generators)
+        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or ComplexField(54), geometry=self._geometry)
 
     @cached_method
     def complex_field(self):
@@ -2644,10 +2652,10 @@ class PowerSeriesConstraints:
             V = VoronoiDiagram(S, centers, weight=FixedVoronoiWeight(weight))
 
             # We integrate L2 errors along the boundary of Voronoi cells.
-            for center in centers:
-                for boundary in V.cell(center):
-                    for segment in boundary.segments_with_uniform_roots():
-                        cost += self._L2_consistency_voronoi_boundary(segment)
+            segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
+            for i, segment in enumerate(segments):
+                print(i,"/",len(segments))
+                cost += self._L2_consistency_voronoi_boundary(segment)
 
         return cost
 
@@ -2729,7 +2737,7 @@ class PowerSeriesConstraints:
         = (\Re a_n \Re a_m + \Im a_n \Im a_m - i \Re a_n \Im a_m + i \Im a_n \Re a_m) (f_{\Re, n, m} + i f_{\Im, n, m})
         = \Re a_n \Re a_m f_{\Re, n, m} + \Im a_n \Im a_m f_{\Re, n, m} + \Re a_n \Im a_m f_{\Im, n, m} - \Im a_n \Re a_m f_{\Im, n, m}.
 
-        Clearly, we get essentially the same terms for `g\overline{g}`.
+        We get essentially the same terms for `g\overline{g}`.
 
         Finally, we need to compute the middle term:
 
@@ -2740,7 +2748,7 @@ class PowerSeriesConstraints:
 
         Again we can simplify and get inside the series
 
-        a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+        \Re a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
         = \Re a_n \Re b_m (f,g)_{\Re, n, m} + \Im a_n \Im b_m (f,g)_{\Re, n, m} + \Re a_n \Im b_m (f,g)_{\Im, n, m} - \Im a_n \Re b_m (f,g)_{\Im, n, m}
 
         The integrals `f_{\Re, n, m}`, `f_{\Im, n, m}`, `(f,g)_{\Re, n, m}`,
@@ -2751,7 +2759,147 @@ class PowerSeriesConstraints:
         center, label, center_coordinates = boundary_segment.center()
         opposite_center, label, opposite_center_coordinates = boundary_segment.opposite_center()
 
-        raise NotImplementedError
+        R = self.symbolic_ring(self.real_field())
+
+        d = 2
+        limit = self._prec
+
+        def int_f_overline_f():
+            r"""
+            Return the value of `\int_γ f\overline{f}.
+            """
+            value = R.zero()
+            for n in range(-d, limit):
+                for m in range(-d, limit):
+                    value += Re_a(n) * Re_a(m) * f_(Re, n, m) + Im_a(n) * Im_a(m) * f_(Re, n, m) + Re_a(n) * Im_a(m) * f_(Im, n, m) - Im_a(n) * Re_a(m) * f_(Im, n, m)
+
+            return value
+
+        def int_Re_f_overline_g():
+            r"""
+            Return the value of `\int_γ f\overline{g}.
+            """
+            value = R.zero()
+            for n in range(-d, limit):
+                for m in range(-d, limit):
+                    value += Re_a(n) * Re_b(m) * fg_(Re, n, m) + Im_a(n) * Im_b(m) * fg_(Re, n, m) + Re_a(n) * Im_b(m) * fg_(Im, n, m) - Im_a(n) * Re_b(m) * fg_(Im, n, m)
+
+            return value
+
+        def int_g_overline_g():
+            r"""
+            Return the value of `\int_γ g\overline{g}.
+            """
+            value = R.zero()
+            for n in range(-d, limit):
+                for m in range(-d, limit):
+                    value += Re_b(n) * Re_b(m) * g_(Re, n, m) + Im_b(n) * Im_b(m) * g_(Re, n, m) + Re_b(n) * Im_b(m) * g_(Im, n, m) - Im_b(n) * Re_b(m) * g_(Im, n, m)
+
+            return value
+
+        def gen(kind, center, n):
+            return R.gen((kind, center, n))
+
+        def Re_a(n):
+            return gen("real", center, n)
+
+        def Im_a(n):
+            return gen("imag", center, n)
+
+        def Re_b(n):
+            return gen("real", opposite_center, n)
+
+        def Im_b(n):
+            return gen("imag", opposite_center, n)
+
+        def f_(part, n, m):
+            return integral(part, α(), κ(), n, α(), κ(), m)
+
+        def g_(part, n, m):
+            return integral(part, β(), λ(), n, β(), λ(), m)
+
+        def fg_(part, n, m):
+            return integral(part, α(), κ(), n, β(), λ(), m)
+
+        def Re(z):
+            raise NotImplementedError
+
+        def Im(z):
+            raise NotImplementedError
+
+        def α():
+            return self.complex_field()(*center_coordinates)
+
+        def β():
+            return self.complex_field()(*opposite_center_coordinates)
+
+        def κλ(center, segment):
+            low = min([endpoint[1] for endpoint in segment.endpoints()]) < center[1]
+
+            for i, vertex in enumerate(self._surface.polygon(label).vertices()):
+                if vertex == center:
+                    if i == 0:
+                        return 0
+                    if i == 1:
+                        return 1
+                    if i == 2:
+                        return 0 if low else 2
+                    if i == 3:
+                        return 1 if low else 0
+                    if i == 4:
+                        return 2
+                    if i == 5:
+                        return 0
+                    if i == 6:
+                        return 1
+                    if i == 7:
+                        return 2
+
+            raise NotImplementedError
+
+        def κ():
+            if not center.is_vertex():
+                return 0
+
+            return κλ(center_coordinates, boundary_segment.segment()[1])
+
+        def λ():
+            if not opposite_center.is_vertex():
+                return 0
+
+            return κλ(opposite_center_coordinates, boundary_segment.segment()[1])
+
+        def integral(part, α, κ, n, β, λ, m):
+            r"""
+            Return the real/imaginary part of
+
+            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{d+1}^{λ (n+1)}/(d+1) (z-β)^\frac{m-d}{d+1}} dz
+            """
+            C = self.complex_field()
+
+            from sage.all import exp, pi, I
+            ζ = C(exp(2*pi*I / d + 1))
+
+            def value(t):
+                _, segment = boundary_segment.segment()
+                a, b = segment.endpoints()
+                z = C(*((1 - t) * a + t * b))
+
+                value = ζ**(κ * (n+1)) / (d+1) * (z-α).nth_root(d + 1)**(n - d) * (ζ**(λ * (n+1)) / (d+1) * (z-β).nth_root(d + 1)**(m - d)).conjugate()
+
+                if part == Re:
+                    return float(value.real())
+                if part == Im:
+                    return float(value.imag())
+
+                raise NotImplementedError
+
+            from scipy.integrate import quad
+            integral, error = quad(value, 0, 1)
+
+            return self.real_field()(integral)
+
+        return int_f_overline_f() - 2 * int_Re_f_overline_g() + int_g_overline_g()
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):
