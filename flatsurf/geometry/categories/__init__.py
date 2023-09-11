@@ -67,7 +67,7 @@ It does not really make sense to ask which stratum this surface belongs to::
     sage: S.stratum()
     Traceback (most recent call last):
     ...
-    AttributeError: ... has no attribute 'stratum'
+    AttributeError: ... has no attribute 'stratum'...
 
 Once we add gluings, this turns into a square torus::
 
