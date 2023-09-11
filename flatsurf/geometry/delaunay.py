@@ -381,7 +381,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
         sage: S.replace_polygon(0, q)
         Traceback (most recent call last):
         ...
-        AttributeError: '_InfiniteStaircase_with_category' object has no attribute 'replace_polygon'
+        AttributeError: '_InfiniteStaircase_with_category' object has no attribute 'replace_polygon'...
 
         sage: T.replace_polygon(0, q)
         sage: T.polygon(0)

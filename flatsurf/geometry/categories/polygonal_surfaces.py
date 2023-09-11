@@ -1257,7 +1257,7 @@ class PolygonalSurfaces(SurfaceCategory):
                             sage: S.genus()
                             Traceback (most recent call last):
                             ...
-                            AttributeError: ... has no attribute 'euler_characteristic'
+                            AttributeError: ... has no attribute 'euler_characteristic'...
 
                         """
                         return 1 - self.euler_characteristic() / 2
