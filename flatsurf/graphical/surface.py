@@ -398,10 +398,18 @@ class GraphicalSurface:
             self._layout_one(label=label, algorithm=algorithm, **kwargs)
 
     def _layout_many(self, limit=None, algorithm=None, **kwargs):
-        if limit is None and not self._surface.is_finite_type():
-            raise ValueError("limit must be set for surfaces of infinite type")
+        if algorithm == "trajectory":
+            trajectory = kwargs["trajectory"]
+            labels = []
+            for (label, _) in trajectory.coding():
+                if label not in labels:
+                    labels.append(label)
+        else:
+            if limit is None and not self._surface.is_finite_type():
+                raise ValueError("limit must be set for surfaces of infinite type")
 
-        labels = self._surface.labels()
+            labels = self._surface.labels()
+
         if limit is not None:
             from itertools import islice
             labels = islice(labels, limit)
@@ -418,8 +426,10 @@ class GraphicalSurface:
 
         if algorithm == "adjacent":
             self._layout_one_adjacent(label, **kwargs)
+        elif algorithm == "trajectory":
+            self._layout_one_trajectory(label, **kwargs)
         else:
-            raise NotImplementedError("unknown ayout algorithm")
+            raise NotImplementedError("unknown layout algorithm")
 
     def hide(self, label):
         raise NotImplementedError
@@ -560,6 +570,19 @@ class GraphicalSurface:
         #                 if edge_labels[i] is not None:
         #                     p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         # return p
+
+    def _layout_one_trajectory(self, label, trajectory):
+        if label == trajectory.coding()[0][0]:
+            self._layout_one_adjacent(label)
+            return
+
+        for (l, e) in trajectory.coding():
+            ll, ee = self._surface.opposite_edge(l, e)
+            if ll == label:
+                self._layout_one_adjacent(ll, ee)
+                return
+        
+        raise ValueError("label is not on trajectory")
 
     def _layout_one_adjacent(self, label, edge=None):
         if edge is None:
