@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   conda-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
       with:
@@ -59,6 +59,33 @@ jobs:
       with:
         user: flatsurf
         token: ${{ secrets.BINSTAR_TOKEN }}
+  conda-pack:
+    runs-on: "${{ matrix.on }}"
+    strategy:
+      matrix:
+        on: [ubuntu-22.04, macos-11]
+    steps:
+      - uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - uses: conda-incubator/setup-miniconda@v2
+        with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "${{ matrix.python }}" }
+      - name: Install sage-flatsurf stack
+        shell: bash -l {0}
+        run: |
+          mamba env create -n flatsurf -f flatsurf.yml
+      - name: Install conda-pack
+        shell: bash -l {0}
+        run: |
+          mamba install -y conda-pack makeself
+      - name: Create installer
+        shell: bash -l {0}
+        run: |
+          conda pack -n flatsurf --n-threads 2
+          tar -zxf flatsurf.tar.gz -C pack
+          find pack/lib -name '*.dylib' -type f -exec strip -S \{\} \; # macOS
+          find pack/lib -name '*.so' -type f -exec strip --strip-unneeded \{\} \; # Linux
+          mkdir tmp
+          TMPDIR=$PWD/tmp/ makeself --complevel 6 --target ./flatsurf-0.5.2 pack/ flatsurf.install flatsurf ./unpack.sh
 
 env:
   MAKEFLAGS: -j2

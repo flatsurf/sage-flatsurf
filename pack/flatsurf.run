@@ -1,0 +1,5 @@
+#!/bin/bash
+dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$dir"
+source bin/activate
+./bin/sage --notebook=jupyter $@
