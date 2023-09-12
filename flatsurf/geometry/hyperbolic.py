@@ -5471,7 +5471,7 @@ class HyperbolicConvexSet(SageObject):
             sage: h.start()
             Traceback (most recent call last):
             ...
-            AttributeError: ... has no attribute 'start'
+            AttributeError: ... has no attribute 'start'...
 
         Segments are oriented::
 
@@ -5494,7 +5494,7 @@ class HyperbolicConvexSet(SageObject):
             sage: u.start()
             Traceback (most recent call last):
             ...
-            AttributeError: ... has no attribute 'start'
+            AttributeError: ... has no attribute 'start'...
 
         Points are not oriented as there is no choice of orientation::
 

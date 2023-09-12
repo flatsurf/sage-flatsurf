@@ -10,6 +10,7 @@ channels:
 dependencies:
   - gap-defaults
   - ipywidgets
+  - notebook>=7
   - matplotlib-base
   - pip
   - pyeantic>=1.2.1,<2
@@ -18,12 +19,10 @@ dependencies:
   - python=3.9
   - ruamel.yaml
   - sage-flatsurf=0.5.2
-  - sagelib=10.0
+  - sagelib=9.7
   - scipy
   - surface-dynamics>=0.4.7,<0.5
   - pip:
-    - ipyvue-async >=0.1.0,<0.2
-    - ipyvue >=1.5.0,<2
     - jupyter_ui_poll >=0.2.1,<0.3
     - flipper
-    - ipyvue-flatsurf>=0.5.5,<0.6
+    - ipyvue-flatsurf>=0.6.0,<0.7
