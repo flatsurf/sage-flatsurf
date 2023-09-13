@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 source bin/activate
 conda-unpack
