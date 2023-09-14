@@ -65,6 +65,9 @@ jobs:
       matrix:
         on: [ubuntu-22.04, macos-11]
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        if: ${{ matrix.on == 'ubuntu-22.04' }}
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
