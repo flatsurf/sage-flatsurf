@@ -11,23 +11,7 @@ kernelspec:
   name: sagemath
 ---
 
-+++ {"editable": true, "slideshow": {"slide_type": ""}}
-
-# The flatsurf software suite
-
-https://flatsurf.github.io/
-
-To run this notebook, you need SageMath with the flatsurf suite properly installed.
-
-## Install flatsurf
-
-Run the [installer](https://github.com/flatsurf/sage-flatsurf/releases/tag/0.5.2) or have a look at our [documentation](https://flatsurf.github.io/sage-flatsurf/#installation).
-
-How to get help
-
-- ask (forum) at https://ask.sagemath.org/
-- zulip (chat) at https://sagemath.zulipchat.com/ ([channel "polygon"](https://sagemath.zulipchat.com/#narrow/stream/271193-polygon) or [channel "CIRM-2023-09"](https://sagemath.zulipchat.com/#narrow/stream/403580-CIRM-2023-09))
-- github repositories of the flatsurf projects https://github.com/flatsurf
+# A Tour of the flatsurf Software Suite
 
 +++
 
@@ -168,8 +152,6 @@ from flatsurf import similarity_surfaces, Polygon
 Q = Polygon(angles=(3, 4, 13), vertices=[(0, 0), (almost_one, 0)])
 S = similarity_surfaces.billiard(Q).minimal_cover(cover_type="translation")
 ```
-
-+++ {"editable": true, "slideshow": {"slide_type": ""}}
 
 ## Flow Decompositions
 
