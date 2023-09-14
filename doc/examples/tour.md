@@ -137,9 +137,13 @@ from flatsurf import similarity_surfaces, Polygon
 P = Polygon(angles=(3, 4, 13), vertices=[(0, 0), (1, 0)])
 S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
 print(f"{P.base_ring() = }")
+```
 
-# from ipyvue_flatsurf import Widget
-# Widget(S).show()
+The plotting in sage-flatsurf does not produce a very appealing picture of this surface yet. The ipyvue-flatsurf widget, if installed, has a more sophisticated layout algorithm for translation surfaces. You can see its output by running:
+
+```python
+from ipyvue_flatsurf import Widget
+Widget(S).show()
 ```
 
 ```{code-cell} ipython3
@@ -179,7 +183,9 @@ decomposition = next(decompositions)
 print(f"{decomposition = }")
 ```
 
-```{code-cell} ipython3
+If you have the (optional) ipyvue-flatsurf widget installed, you can run the following cell to visualize the decomposition:
+
+```python
 from ipyvue_flatsurf import Widget
 Widget(decomposition)
 ```
