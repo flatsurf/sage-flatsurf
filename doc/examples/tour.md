@@ -367,15 +367,6 @@ g0.plot('klein', color='blue') + g1.plot('klein', color='red')
 ```
 
 ```{code-cell} ipython3
-# maybe soon?
-g0.plot('disk', color='blue') + g1.plot('disk', color='red')
-```
-
-```{code-cell} ipython3
-
-```
-
-```{code-cell} ipython3
 p = g0.intersection(g1)
 ```
 
@@ -384,12 +375,9 @@ p.coordinates('klein')
 ```
 
 ```{code-cell} ipython3
-# computing coordinates in the upper half plane requires square-root...
+# computing coordinates in the upper half plane requires square-root so this would fail
 p.coordinates('half_plane')
-```
 
-```{code-cell} ipython3
-# we can move to a ring that do contain all square roots of our base ring if needed
 p.change_ring(AA).coordinates('half_plane')
 ```
 
