@@ -376,7 +376,7 @@ p.coordinates('klein')
 
 ```{code-cell} ipython3
 # computing coordinates in the upper half plane requires square-root so this would fail
-p.coordinates('half_plane')
+# p.coordinates('half_plane')
 
 p.change_ring(AA).coordinates('half_plane')
 ```
