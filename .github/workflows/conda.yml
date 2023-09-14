@@ -80,6 +80,14 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba install -y conda-pack makeself
+      - name: Maximize build space
+        shell: bash -l {0}
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
+          sudo gem uninstall -aIx
+          sudo rm -rf /usr/local/miniconda
+          sudo rm -rf /usr/local/lib/node_modules
+        if: ${{ matrix.on == 'macos-11' }}
       - name: Create installer
         shell: bash -l {0}
         run: |
