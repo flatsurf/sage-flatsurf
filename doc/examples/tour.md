@@ -278,7 +278,7 @@ D.info()
 ```
 
 ```{code-cell} ipython3
-# get the list of Teichmüller curves in genus gsuch that in any direction we have >= g cylinders 
+# get the list of Teichmüller curves in genus gsuch that in any direction we have >= g cylinders
 for g in range(2, 7):
     q = D.query(('genus', '=', g), ('min_nb_of_cyls', '>=', g))
     print('g={}: got {} examples'.format(g, q.number_of()))
@@ -471,20 +471,26 @@ print(H.dimension(), H0.dimension())
 
 ## Veering Triangulations
 
+References:
+
 - [M. Bell, V. Delecroix, V. Gadre, R. Gutiérrez-Romo, Saul Schleimer  arXiv:1909.00890](https://arxiv.org/abs/1909.00890)
 - [B. Zykoski arXiv:2206.04143](https://arxiv.org/abs/2206.04143)
 
+
 ```{code-cell} ipython3
-# not by default in the flatsurf stack... but soon
+# you might need to install veerer
+# (it is not by default in the flatsurf stack... but soon)
+# the command could equally be run in a console
 %pip install git+https://github.com/flatsurf/veerer
 ```
 
 ```{code-cell} ipython3
-from veerer import VeeringTriangulation
+from veerer import VeeringTriangulation, FlatVeeringTriangulation
 from surface_dynamics import AbelianStratum
 ```
 
 ```{code-cell} ipython3
+# here we create a veering triangulation from the stratum H(2)
 H2 = AbelianStratum(2)
 vt = VeeringTriangulation.from_stratum(H2)
 ```
@@ -494,9 +500,130 @@ vt
 ```
 
 ```{code-cell} ipython3
-vt.flat_structure_middle().plot()
+# if you aim to study a specific surface, you might need to
+# input the veering triangulation manually
+triangles = "(0,~7,6)(1,~5,~2)(2,4,~3)(3,8,~4)(5,7,~6)(~8,~1,~0)"
+edge_slopes = "RBBRBRBRB"
+vt2 = VeeringTriangulation(triangles, edge_slopes)
 ```
 
 ```{code-cell} ipython3
+vt2
+```
 
+```{code-cell} ipython3
+# the latter also belongs to the H(2) stratum
+vt2.stratum()
+```
+
+```{code-cell} ipython3
+# Now we play with flat structures on a given veering triangulation
+# There are several pre-built constructions
+flat0 = vt.flat_structure_middle()
+flat1 = vt.flat_structure_geometric_middle()
+flat2 = vt.flat_structure_min()
+```
+
+```{code-cell} ipython3
+# WARNING: the layout is a (sadly) completly random
+graphics_array([flat0.plot(), flat1.plot(), flat2.plot()]).show(figsize=14)
+```
+
+```{code-cell} ipython3
+# Now we want to work with L^oo-Delaunay flat structures.
+# These are also called "geometric" flat structures in veerer.
+# We check below that the veering triangulation vt corresponds
+# to an open cell of the L^oo-Delaunay decomposition of H(2)
+vt.is_geometric()
+```
+
+```{code-cell} ipython3
+# Now, compute the cone of L^oo-Delaunay data for the given veering
+# triangulation vt
+# Each point in the cone corresponds to geometric flat structure given
+# as (x0, x1, ...., x8, y0, y1, ..., y8) where (xi, yi) is the holonomy
+# of the i-th edge
+geometric_structures = vt.geometric_polytope()
+```
+
+```{code-cell} ipython3
+# the geometric structures is a polytope
+# - the ambient dimension 18 corresponds to the fact that
+#   we have 9 edges (each edge has a x and a y coordinate)
+# - the dimension 8 is the real dimension of the stratum
+#   (dim_C H(2) = 4)
+geometric_structures
+```
+
+```{code-cell} ipython3
+# the rays allow to build any vector in the cone via linear combination
+# (with non-negative coefficients)
+rays = geometric_structures.rays()
+```
+
+```{code-cell} ipython3
+# in order to sum rays, we convert them to vectors
+V = VectorSpace(QQ, 18)
+rays = list(map(V, rays))
+```
+
+```{code-cell} ipython3
+# if all entries are positive, we have a valid geometric structure
+# on vt
+xy = rays[0] + rays[12] + rays[5] + 10 * rays[6] + rays[10] + rays[16]
+print(xy)
+```
+
+```{code-cell} ipython3
+# the function below construct the associated flat structure
+# WARNING: have to invert x and y coordinates in the function below
+flat_veering = vt._flat_structure_from_train_track_lengths(xy[9:], xy[:9])
+```
+
+```{code-cell} ipython3
+flat_veering.plot()
+```
+
+```{code-cell} ipython3
+# We now explore the L^infinity Delaunay of a given linear family.
+# We do it for the ambient stratum (ie tangent space is everything)
+# The object one needs to start from is a pair (veering_triangulation, linear_subspace)
+L = vt.as_linear_family()
+```
+
+```{code-cell} ipython3
+# the "geometric automaton" is the set of pairs (veering_triangulation, linear_subspace)
+# that one obtains by moving around in the moduli space
+# (by setting run to False we do not run the full computation which can take a lot
+# of time in general)
+A = L.geometric_automaton(run=False)
+```
+
+```{code-cell} ipython3
+# at start there is only the pair (veering_triangulation, linear_subspace)
+# we provided
+A
+```
+
+```{code-cell} ipython3
+# but we can add more
+A.run(10)
+```
+
+```{code-cell} ipython3
+A
+```
+
+```{code-cell} ipython3
+# and we can even compute everything (until there is nothing more to be
+# explored)
+# if the computation terminates, it proves that L was indeed the tangent
+# space to a GL(2,R)-orbit closure
+A
+```
+
+```{code-cell} ipython3
+# One can iterate through A to see all cells of the 54 L^oo-Delaunay
+# of H(2)
+list(A)
 ```
