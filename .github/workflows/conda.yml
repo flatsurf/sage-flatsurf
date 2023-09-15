@@ -76,6 +76,8 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba env create -n flatsurf -f flatsurf.yml
+          # Add mamba so users can install optional packages later.
+          mamba install -n flatsurf -y mamba
       - name: Install conda-pack
         shell: bash -l {0}
         run: |

@@ -10,7 +10,9 @@ channels:
 dependencies:
   - gap-defaults
   - ipywidgets
-  - notebook>=7
+  # Some parts of surface-dynamics use latte-integrale
+  - latte-integrale>=1.7.6,<2
+  - notebook>=7,<8
   # Required to make symbolic computations functional in SageMath (we don't use them but using SageMath you run into this all the time.)
   - maxima
   - matplotlib-base
@@ -21,6 +23,7 @@ dependencies:
   - python=3.9
   - ruamel.yaml
   - sage-flatsurf=0.5.2
+  - sagemath-db-conway-polynomials
   - sagelib=9.7
   - scipy
   - surface-dynamics>=0.4.7,<0.5
