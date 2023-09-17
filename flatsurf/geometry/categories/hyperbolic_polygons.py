@@ -222,11 +222,7 @@ class HyperbolicPolygons(Category_over_base_ring):
 
             ::
 
-                sage: P = H.intersection(
-                ....:   H.vertical(1).left_half_space(),
-                ....:   H.vertical(-1).right_half_space(),
-                ....:   H.half_circle(0, 2).left_half_space())
-
+                sage: P = H.convex_hull(H(I), H(2*I + 1), H(2*I - 2))
                 sage: P.is_isosceles_triangle()
                 False
 
