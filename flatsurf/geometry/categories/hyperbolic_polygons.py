@@ -84,7 +84,54 @@ class HyperbolicPolygons(Category_over_base_ring):
             return None
 
         def is_right_triangle(self):
-            # TODO
+            r"""
+            Return whether this is a triangle with a π/2 angle.
+
+            ALGORITHM:
+
+            We construct a geodesic through each vertex perpendicular to an
+            adjacent edge. If that geodesic is parallel to the other edge, the
+            angle is π/2. See
+            :meth:`hyperbolic.HyperbolicGeodesic.perpendicular`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.intersection(
+                ....:   H.vertical(0).left_half_space(),
+                ....:   H.vertical(-1).right_half_space(),
+                ....:   H.half_circle(0, 1).left_half_space())
+
+                sage: P.is_right_triangle()
+                True
+
+            ::
+
+                sage: P = H.intersection(
+                ....:   H.vertical(1).left_half_space(),
+                ....:   H.vertical(-1).right_half_space(),
+                ....:   H.half_circle(0, 2).left_half_space())
+
+                sage: P.is_right_triangle()
+                False
+
+            """
+            if len(self.vertices()) != 3:
+                return False
+
+            if len(self.edges()) != 3:
+                return False
+
+            for edge, following_edge in self.edges().pairs():
+                vertex = edge.end()
+
+                if not vertex.is_finite():
+                    continue
+
+                if edge.geodesic().perpendicular(edge.end()) == following_edge.geodesic().unoriented():
+                    return True
+
             return False
 
         def is_isosceles_triangle(self):
