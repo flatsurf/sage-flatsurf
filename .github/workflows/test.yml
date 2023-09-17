@@ -9,31 +9,37 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: "${{ matrix.on }}"
     strategy:
       matrix:
         include:
-          - optionals: "sage,flipper"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper"
             sagelib: "9.2"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic"
             sagelib: "9.3"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,pyflatsurf"
             sagelib: "9.4"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,pyflatsurf"
             sagelib: "9.5"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.6"
             environment: "environment.yml"
             python: "3.10.8"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.7"
             environment: "environment.yml"
             python: "3.10.8"
@@ -42,7 +48,12 @@ jobs:
           #   sagelib: "9.8"
           #   environment: "environment.yml"
           #   python: "3.10.8"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            environment: "flatsurf.yml"
+            python: "3.10.8"
+          - on: macos-11
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
     steps:
