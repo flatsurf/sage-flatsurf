@@ -2106,10 +2106,6 @@ class EuclideanPolygons(Category_over_base_ring):
                     matrix identifies this polygon with the other and the edges 0 in this polygon
                     is mapped to the edge ``index`` in the other.
 
-                    .. TODO::
-
-                        Implement ``is_linearly_equivalent`` and ``is_similar``.
-
                     EXAMPLES::
 
                         sage: from flatsurf import Polygon, polygons
@@ -2282,3 +2278,9 @@ class EuclideanPolygons(Category_over_base_ring):
                         oedges.append(oedges.pop(0))
 
                     return (False, None) if certificate else False
+
+                def is_similar(self, other, certificate=False):
+                    raise NotImplementedError
+
+                def is_linearly_equivalent(self, other, certificate=False):
+                    raise NotImplementedError
