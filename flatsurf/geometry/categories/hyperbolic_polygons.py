@@ -115,13 +115,41 @@ class HyperbolicPolygons(Category_over_base_ring):
                 try:
                     e.parent().isometry(e, f)
                 except ValueError:
+                    # TODO: Is this true? Can such an isometry always be constructed?
                     return False
 
             return True
 
         def is_equiangular(self):
-            # TODO
-            return None
+            r"""
+            Return whether this polygon is the convex hull of its vertices and
+            the angle at each of its vertices is the same.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.convex_hull(H(I), H(2*I + 1), H(2*I - 1))
+                sage: P.is_equiangular()
+                True
+
+            ::
+
+                sage: P = H.convex_hull(H(I), H(I + 1), H(2*I), H(I - 1))
+                sage: P.is_equiangular()
+                False
+
+            """
+            if len(self.edges()) != len(self.vertices()):
+                return False
+
+            from itertools import pairwise
+
+            for a, b in pairwise(self.angles()):
+                if a != b:
+                    return False
+
+            return True
 
         def is_right_triangle(self):
             r"""
@@ -135,7 +163,7 @@ class HyperbolicPolygons(Category_over_base_ring):
             :meth:`hyperbolic.HyperbolicGeodesic.perpendicular`.
 
             EXAMPLES::
-
+
                 sage: from flatsurf import HyperbolicPlane
                 sage: H = HyperbolicPlane(QQ)
                 sage: P = H.intersection(
@@ -218,6 +246,7 @@ class HyperbolicPolygons(Category_over_base_ring):
                 try:
                     e.parent().isometry(e, f)
                 except ValueError:
+                    # TODO: Is this true? Could such an isometry always be constructed?
                     continue
                 else:
                     return True

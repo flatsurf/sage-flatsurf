@@ -522,7 +522,7 @@ class HyperbolicIsometrySurfaces(SurfaceCategory):
                 position = surface.polygon(label).get_point_position(point)
                 if position.is_in_interior():
                     angle += 1
-                else: # point on edge
+                else:  # point on edge
                     opposite = surface.opposite_edge(label, position.get_edge())
                     if opposite is None:
                         raise NotImplementedError("cannot determine total angle for point on boundary")

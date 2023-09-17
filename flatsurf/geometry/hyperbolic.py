@@ -14500,6 +14500,29 @@ class HyperbolicExpression(Element):
 
         raise NotImplementedError("cannot compute the sum of these symbolic expressions yet")
 
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, HyperbolicExpression):
+                return False
+
+            if self._trig != other._trig:
+                raise NotImplementedError("cannot compare different trigonometric functions yet")
+
+            if self._normalization != other._normalization:
+                raise NotImplementedError("cannot compare differently normalized values yet")
+
+            if self._trig == "acos":
+                return self._numerator**2 * other._denominator2 == other._numerator**2 * self._denominator2
+
+            raise NotImplementedError("cannot compare expressions involving this trigonometric function yet")
+
+        raise NotImplementedError
+
 
 from sage.rings.ring import Ring
 
