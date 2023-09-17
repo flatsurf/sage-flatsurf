@@ -7237,9 +7237,9 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         transformation sending z to `-1/z` has the imaginary unit as its fixed
         point. For a half circle centered at the origin its point on the
         imaginary axis must be the fixed point (due to symmetry or a direct
-        computation.) All other geodesics, are just translated versions of
-        these so we can just conjugate with a translation to determine the
-        fixed point, i.e., the fixed point is a translate of one of the above.
+        computation.) All other geodesics are translated versions of these
+        so we can just conjugate with a translation to determine the fixed
+        point, i.e., the fixed point is a translate of one of the above.
 
         EXAMPLES::
 

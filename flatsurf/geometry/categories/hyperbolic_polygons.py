@@ -135,7 +135,53 @@ class HyperbolicPolygons(Category_over_base_ring):
             return False
 
         def is_isosceles_triangle(self):
-            # TODO
+            r"""
+            Return whether this is a triangle with two sides of equal length.
+
+            ALGORITHM:
+
+            We check whether two sides have equal length by searching for an
+            isometry between them, see :meth:`HyperbolicPlane.isometry`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.convex_hull(H(I), H(2*I + 1), H(2*I - 1))
+
+                sage: P.is_isosceles_triangle()
+                True
+
+            ::
+
+                sage: P = H.intersection(
+                ....:   H.vertical(1).left_half_space(),
+                ....:   H.vertical(-1).right_half_space(),
+                ....:   H.half_circle(0, 2).left_half_space())
+
+                sage: P.is_isosceles_triangle()
+                False
+
+            """
+            if len(self.edges()) != 3:
+                return False
+
+            finite_edges = [segment for segment in self.edges() if segment.is_finite()]
+
+            if len(finite_edges) <= 1:
+                # When there are at least two infinite segments, then these are
+                # of equal length and this triangle is isosceles.
+                return True
+
+            from itertools import combinations
+            for (e, f) in combinations(finite_edges, 2):
+                try:
+                    e.parent().isometry(e, f)
+                except ValueError:
+                    continue
+                else:
+                    return True
+
             return False
 
         def get_point_position(self, point):
