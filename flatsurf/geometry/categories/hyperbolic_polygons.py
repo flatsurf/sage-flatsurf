@@ -115,7 +115,9 @@ class HyperbolicPolygons(Category_over_base_ring):
                 try:
                     e.parent().isometry(e, f)
                 except ValueError:
-                    # TODO: Is this true? Can such an isometry always be constructed?
+                    # If an isometry that sends e to f exists, it must be
+                    # defined over the base ring. We assume that ValueError
+                    # signals that no such isometry exists over the base ring.
                     return False
 
             return True
@@ -242,7 +244,9 @@ class HyperbolicPolygons(Category_over_base_ring):
                 try:
                     e.parent().isometry(e, f)
                 except ValueError:
-                    # TODO: Is this true? Could such an isometry always be constructed?
+                    # If an isometry that sends e to f exists, it must be
+                    # defined over the base ring. We assume that ValueError
+                    # signals that no such isometry exists over the base ring.
                     continue
                 else:
                     return True
