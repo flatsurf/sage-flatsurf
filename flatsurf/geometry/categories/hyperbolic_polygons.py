@@ -76,8 +76,48 @@ class HyperbolicPolygons(Category_over_base_ring):
 
     class ParentMethods:
         def is_equilateral(self):
-            # TODO
-            return None
+            r"""
+            Return whether all edges of this polygon have the same length.
+
+            ALGORITHM:
+
+            We construct isometries between the edges. If no such isometries
+            exist, the sides are not of the same length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.convex_hull(H(I), H(I + 1), H(2*I), H(I - 1))
+                sage: P.is_equilateral()
+                True
+
+            ::
+
+                sage: from flatsurf import HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: P = H.convex_hull(H(I), H(I + 1), H(3*I), H(I - 1))
+                sage: P.is_equilateral()
+                False
+
+            """
+            edges = list(self.edges())
+            finite_edges = [edge for edge in edges if edge.is_finite()]
+
+            if not finite_edges:
+                return True
+
+            if len(finite_edges) != len(edges):
+                return False
+
+            from itertools import combinations
+            for e, f in combinations(edges, 2):
+                try:
+                    e.parent().isometry(e, f)
+                except ValueError:
+                    return False
+
+            return True
 
         def is_equiangular(self):
             # TODO
