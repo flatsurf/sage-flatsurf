@@ -7406,6 +7406,21 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             sage: g.end() in h
             False
 
+        We can also decide containment of points coming from midpoint constructions::
+
+            sage: g.midpoint() in g
+            True
+
+            sage: segment = g.an_element().segment(g.midpoint())
+            sage: segment.midpoint() in g
+            True
+
+            sage: g.midpoint() in H.vertical(479/40)
+            True
+
+            sage: g.midpoint() in H.vertical(479/41)
+            False
+
         .. NOTE::
 
             The implementation is currently not very robust over inexact rings.
@@ -7440,26 +7455,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             if intersection is None:
                 return False
 
-            if not intersection.is_finite():
-                return False
-
-            # The point is on the geodesic if the segment defining the point
-            # and the geodesic intersect in the midpoint.
-            start, end = point._segment.vertices()
-            p = start.coordinates(model="klein")
-            q = end.coordinates(model="klein")
-            x = intersection.coordinates(model="klein")
-
-            px = p[0] * x[0] + p[1] * x[1]
-            qx = q[0] * x[0] + q[1] * x[1]
-            p2 = p[0] ** 2 + p[1] ** 2
-            q2 = q[0] ** 2 + q[1] ** 2
-
-            # The intersection point is the midpoint iff it is at equal
-            # distance from the endpoints of the segment defining the midpoint.
-            # We use the distance formula from https://math.stackexchange.com/a/4167944/145897
-            # TODO: This code is copy & pasted elsewhere.
-            return px ** 2 * q2 == qx ** 2 * p2
+            return point == intersection
 
         x, y = point.coordinates(model="klein")
         a, b, c = self.equation(model="klein")
@@ -10113,6 +10109,7 @@ class HyperbolicMidpoint(HyperbolicPoint):
             q = end.coordinates(model="klein")
             x = other.coordinates(model="klein")
 
+            # We use the distance formula from https://math.stackexchange.com/a/4167944/145897
             px = p[0] * x[0] + p[1] * x[1]
             qx = q[0] * x[0] + q[1] * x[1]
             p2 = p[0] ** 2 + p[1] ** 2
@@ -13682,7 +13679,6 @@ class OrderedSet(collections.abc.Set):
             True
 
         """
-        # TODO: Is this too inefficient?
         return set(self) == set(other)
 
     def __ne__(self, other):
