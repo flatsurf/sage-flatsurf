@@ -516,8 +516,6 @@ class SimilarityGroup(UniqueRepresentation, Group):
         b = s = t = self._ring.zero()
         sign = ZZ_1
 
-        # TODO: 2x2 and 3x3 matrix input
-
         if isinstance(x, (tuple, list)):
             if len(x) == 2:
                 s, t = map(self._ring, x)
