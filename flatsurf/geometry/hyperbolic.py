@@ -10168,15 +10168,6 @@ class HyperbolicMidpoint(HyperbolicPoint):
 
         return super()._richcmp_(other, op)
 
-    def __hash__(self):
-        # TODO: This is not correct in the current implementation. This returns
-        # None if the construction uses coordinates that are not in the base
-        # ring even though the final result is in the base ring.
-        if self.coordinates(model="klein", ring="maybe") is not None:
-            return super().__hash__()
-
-        return hash((type(self), self._segment))
-
     def _repr_(self):
         coordinates = self.coordinates(model="klein", ring="maybe")
         if coordinates is not None:
