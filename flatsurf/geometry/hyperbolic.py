@@ -14085,9 +14085,8 @@ class MergeableOrderedSet(OrderedSet):
         TESTS::
 
             sage: from flatsurf.geometry.hyperbolic import HyperbolicVertices
-            sage: V = HyperbolicVertices([H(0), H(1), H(oo)])
-            sage: V + V  # not tested, TODO test something that implement merging
-            {0, 1, ∞}
+            sage: H.vertical(0).half_spaces() + H.vertical(0).half_spaces()
+            {{x ≤ 0}, {x ≥ 0}}
 
         """
         if type(self) is not type(other):
