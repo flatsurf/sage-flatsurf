@@ -666,6 +666,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [∞, 0, 1, -1, ...]
 
         """
+        from sage.all import I
         return [
             self.infinity(),
             self.real(0),
@@ -673,6 +674,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             self.real(-1),
             self.geodesic(0, 2).start(),
             self.half_circle(0, 2).start(),
+            self(I).segment(2*I).midpoint(),
+            self(I).segment(I + 1).midpoint(),
         ]
 
     def _test_some_subsets(self, tester=None, **options):
@@ -745,7 +748,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             1/3 + I → I
 
             sage: H.random_element("unoriented segment")
-            I ↔ 1 + 1/4*I
+            1 + 1/4*I ↔ I
 
             sage: H.random_element("polygon")
             {56766100*(x^2 + y^2) - 244977117*x + 57459343 ≥ 0} ∩ {822002048*(x^2 + y^2) - 3988505279*x + 2596487836 ≥ 0} ∩ {464*(x^2 + y^2) + 9760*x + 11359 ≥ 0} ∩ {4*(x^2 + y^2) + 45*x + 49 ≥ 0}
@@ -1274,7 +1277,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         return self.geometry.vertical(real, self.geodesic)
 
-    def geodesic(self, a, b, c=None, model=None, oriented=True, check=True):
+    def geodesic(self, a, b, c=None, model=None, oriented=True, check=True, assume_normalized=False):
         r"""
         Return a geodesic in the hyperbolic plane.
 
@@ -1438,8 +1441,10 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 HyperbolicOrientedGeodesic if oriented else HyperbolicUnorientedGeodesic
             )(self, a, b, c)
 
-            if check:
+            if not assume_normalized:
                 geodesic = geodesic._normalize()
+
+            if check:
                 geodesic._check()
 
             return geodesic
@@ -1659,6 +1664,13 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             ...
             ValueError: end point of segment must not be before start point on the underlying geodesic
 
+        For unoriented segments, we pick a consistent ordering::
+
+            sage: H.segment(H.vertical(0), start=I, end=oo, oriented=False)
+            ∞ ↔ I
+            sage: H.segment(H.vertical(0).unoriented(), start=oo, end=I, oriented=False)
+            ∞ ↔ I
+
         .. SEEALSO::
 
             :meth:`HyperbolicPoint.segment`
@@ -1683,12 +1695,14 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             oriented = geodesic.is_oriented() or (start is not None and end is not None)
 
         if not geodesic.is_oriented():
+            # Pick an orientation of the geodesic that is consistent with start & end.
+
             geodesic = geodesic.change(oriented=True)
 
             if start is None and end is None:
                 # any orientation of the geodesic will do
                 pass
-            elif start is None or end is None or start == end:
+            elif start is None or end is None:
                 raise ValueError(
                     "cannot deduce segment from single endpoint on an unoriented geodesic"
                 )
@@ -2013,7 +2027,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         Note that this cannot be used to produce marked points on a segment::
 
             sage: H.convex_hull(I, 2*I, 3*I)
-            {x = 0}
+            3*I → I
 
             sage: H.convex_hull(I, 2*I, 3*I, marked_vertices=True)
             Traceback (most recent call last):
@@ -2035,6 +2049,11 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
             sage: H.convex_hull(H(0), H(1), H(oo), H(I), H(I + 1))
             {(x^2 + y^2) - x ≥ 0} ∩ {x - 1 ≤ 0} ∩ {x ≥ 0}
+
+        ::
+
+            sage: H.convex_hull(H(I), H(oo))
+            ∞ → I
 
         .. SEEALSO::
 
@@ -2534,12 +2553,17 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             [  0  -1]
             [1/2   1]
 
-        An isometry mapping unoriented segments, though not the most apparent
-        one::
+        An isometry mapping unoriented segments::
 
             sage: H.isometry(H(I).segment(2*I).unoriented(), H(2*I).segment(I).unoriented())
-            [  0  -1]
-            [1/2   0]
+            [1 0]
+            [0 1]
+
+        ::
+
+            sage: H.isometry(H(I).segment(I + 1).unoriented(), H(I).segment(I - 1).unoriented())
+            [ 1  2]
+            [-2  1]
 
         .. SEEALSO::
 
@@ -6880,17 +6904,6 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         else:
             raise NotImplementedError("cannot determine equation for this model yet")
 
-        sgn = self.parent().geometry._sgn
-        sgn = (
-            -1
-            if (
-                sgn(a) < 0
-                or (sgn(a) == 0 and b < 0)
-                or (sgn(a) == 0 and sgn(b) == 0 and sgn(c) < 0)
-            )
-            else 1
-        )
-
         while normalization:
             strategy = normalization.pop()
 
@@ -6902,11 +6915,6 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
             except Exception:
                 if not normalization:
                     raise
-
-        if not self.is_oriented():
-            a *= sgn
-            b *= sgn
-            c *= sgn
 
         return a, b, c
 
@@ -7408,6 +7416,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         We can also decide containment of points coming from midpoint constructions::
 
+            sage: g = H.geodesic(20, -479, 858, model="half_plane")
             sage: g.midpoint() in g
             True
 
@@ -7554,7 +7563,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         if oriented != self.is_oriented():
             self = self.parent().geodesic(
-                self._a, self._b, self._c, model="klein", check=False, oriented=oriented
+                self._a, self._b, self._c, model="klein", check=False, oriented=oriented, assume_normalized=False
             )
 
         return self
@@ -7962,7 +7971,7 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
 
             sage: conditions = v._isometry_conditions(w)
             sage: list(conditions)
-            [[({-x = 0}, {-x + 1 = 0})], [({-x = 0}, {x - 1 = 0})]]
+            [[({x = 0}, {-x + 1 = 0})], [({x = 0}, {x - 1 = 0})]]
 
         .. SEEALSO::
 
@@ -7973,6 +7982,33 @@ class HyperbolicUnorientedGeodesic(HyperbolicGeodesic):
         other = other.change(oriented=True)
         yield [(self, other)]
         yield [(self, -other)]
+
+    def _normalize(self):
+        equation = self.equation(model="klein")
+        if equation != super().equation(model="klein"):
+            self = self.parent().geodesic(*equation, model="klein", assume_normalized=True, check=False, oriented=False)
+
+        return self
+
+    def equation(self,  model, normalization=None):
+        a, b, c = super().equation(model=model, normalization=normalization)
+
+        sgn = self.parent().geometry._sgn
+        sgn = (
+            -1
+            if (
+                sgn(a) < 0
+                or (sgn(a) == 0 and b < 0)
+                or (sgn(a) == 0 and sgn(b) == 0 and sgn(c) < 0)
+            )
+            else 1
+        )
+
+        a *= sgn
+        b *= sgn
+        c *= sgn
+
+        return a, b, c
 
     @classmethod
     def random_set(cls, parent):
@@ -8876,15 +8912,18 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
         if model == "klein":
             pass
         elif model == "half_plane":
-            x, y = coordinates
-
             if self == self.parent().infinity() or self.is_ultra_ideal():
                 raise ValueError("point has no coordinates in the upper half plane")
+
+            x, y = coordinates
+            if ring not in [None, "maybe"]:
+                x = ring(x)
+                y = ring(y)
 
             denominator = 1 - y
 
             if not self.is_finite():
-                return (x / denominator, self.parent().base_ring().zero())
+                return (x / denominator, x.parent().zero())
 
             square = 1 - x * x - y * y
             try:
@@ -10016,6 +10055,18 @@ class HyperbolicMidpoint(HyperbolicPoint):
 
     def is_finite(self):
         return True
+
+    def change(self, ring=None, geometry=None, oriented=None):
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("cannot change orientation of a point")
+
+        if ring is not None or geometry is not None:
+            self = self._segment.change(ring=ring, geometry=geometry).midpoint()
+
+        return self
 
     @cached_method
     def _coordinates_klein(self, ring, algorithm="algebraic"):
@@ -11454,11 +11505,14 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                     f"cannot determine edges when boundaries are in configuration {BC}"
                 )
 
-            edges.append(
-                self.parent().segment(
-                    B, start=start, end=end, assume_normalized=as_segments, check=False
-                )
+            segment = self.parent().segment(
+                B, start=start, end=end, assume_normalized=as_segments, check=False
             )
+
+            if segment.dimension() == 0:
+                continue
+
+            edges.append(segment)
 
         if marked_vertices and self._marked_vertices:
             edges_without_marked_vertices = edges
@@ -12463,8 +12517,14 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         if start == end:
             return start
 
+        geodesic = self._geodesic
+        if not self.is_oriented():
+            if geodesic != geodesic.unoriented().change(oriented=True):
+                geodesic = -geodesic
+                start, end = end, start
+
         return self.parent().segment(
-            self._geodesic,
+            geodesic,
             start=start,
             end=end,
             check=False,
@@ -12765,7 +12825,6 @@ class HyperbolicSegment(HyperbolicConvexFacade):
                 start=self._start,
                 end=self._end,
                 check=False,
-                assume_normalized=True,
                 oriented=oriented,
             )
 
@@ -13028,7 +13087,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
         such as a Python ``set``::
 
             sage: {s.unoriented(), (-s).unoriented()}
-            {I ↔ 2*I}
+            {2*I ↔ I}
 
         """
         return hash((frozenset([self._start, self._end]), self.geodesic()))
@@ -13049,7 +13108,7 @@ class HyperbolicUnorientedSegment(HyperbolicSegment):
 
             sage: conditions = s._isometry_conditions(s)
             sage: list(conditions)
-            [[(I → 2*I, I → 2*I)], [(I → 2*I, 2*I → I)]]
+            [[(2*I → I, 2*I → I)], [(2*I → I, I → 2*I)]]
 
         .. SEEALSO::
 
@@ -13679,7 +13738,17 @@ class OrderedSet(collections.abc.Set):
             True
 
         """
-        return set(self) == set(other)
+        if len(self) != len(other):
+            return False
+
+        if type(self) != type(other):
+            return set(self) == set(other)
+
+        for a, b in zip(self, other):
+            if a != b:
+                return False
+
+        return True
 
     def __ne__(self, other):
         r"""
@@ -14335,6 +14404,11 @@ class HyperbolicHalfSpaces(MergeableOrderedSet):
         assert hull[0] == reference
 
         hull = [H.point(*xy, model="klein") for xy in hull]
+
+        if len(hull) == 2:
+            # When the convex hull is only a segment, then we typically need to
+            # add extra half spaces for the endpoints.
+            return H.segment(H.geodesic(hull[0], hull[1]), hull[0], hull[1]).half_spaces()
 
         half_spaces = []
         for i in range(len(hull)):
