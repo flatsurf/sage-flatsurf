@@ -10037,8 +10037,6 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
 
 class HyperbolicMidpoint(HyperbolicPoint):
-    # TODO: Implement change()
-    # TODO: Make sure midpoints are returned by some_elements()
     def __init__(self, parent, segment):
         super().__init__(parent)
 
