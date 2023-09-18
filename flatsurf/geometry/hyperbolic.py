@@ -10080,7 +10080,7 @@ class HyperbolicMidpoint(HyperbolicPoint):
 
         if not start.is_finite() or not end.is_finite():
             raise NotImplementedError(
-                f"cannot compute midpoint of unbounded segment"
+                "cannot compute midpoint of unbounded segment"
             )
 
         if algorithm == "perpendicular":
@@ -12938,11 +12938,6 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         r"""
         Return the midpoint of this segment.
 
-        ALGORITHM:
-
-        We use the construction as explained on `Wikipedia
-        <https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions>`.
-
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
@@ -12988,11 +12983,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             :meth:`HyperbolicSegment.perpendicular` for the perpendicular bisector
 
         """
-        # TODO: Mention that as an alternative, we could algebraically solve
-        # with https://math.stackexchange.com/a/4167944/145897 but it leads to
-        # a quadratic equation (or taking a square root as well.)
-        midpoint = self.parent().__make_element_class__(HyperbolicMidpoint)(self.parent(), self.unoriented())
-        return midpoint
+        return self.parent().__make_element_class__(HyperbolicMidpoint)(self.parent(), self.unoriented())
 
     def perpendicular(self, point=None):
         r"""
