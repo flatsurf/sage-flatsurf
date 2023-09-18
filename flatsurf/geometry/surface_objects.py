@@ -332,7 +332,7 @@ class SurfacePoint(Element):
             (2, (1, 0))
 
         """
-        for representative in self.representatives:
+        for representative in self.representatives():
             if representative[0] == label or label is None:
                 return representative
 
