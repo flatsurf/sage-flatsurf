@@ -312,10 +312,14 @@ class SurfacePoint(Element):
         """
         return self._representatives
 
-    def representative(self):
+    def representative(self, label=None):
         r"""
-        Return a representative of this point, i.e., the first of
-        :meth:`representatives`.
+        Return a representative of this point.
+
+        INPUT:
+
+        - ``label`` -- the label of a polygon or ``None`` (default: ``None``);
+          if given, a representative in that polygon is returned.
 
         EXAMPLES::
 
@@ -328,7 +332,11 @@ class SurfacePoint(Element):
             (2, (1, 0))
 
         """
-        return next(iter(self.representatives()))
+        for representative in self.representatives:
+            if representative[0] == label or label is None:
+                return representative
+
+        raise ValueError("no representative in this polygon")
 
     def edges(self):
         r"""
@@ -501,7 +509,7 @@ class SurfacePoint(Element):
 
     def coordinates(self, label):
         r"""
-        Return coordinates for the point in the in the polygon ``label``.
+        Return coordinates for the point in the polygon ``label``.
 
         EXAMPLES::
 
@@ -513,7 +521,9 @@ class SurfacePoint(Element):
             ((0, 0), (1, 0), (0, 1), (1, 1))
 
         """
-        # TODO: Deprecate
+        import warnings
+        warnings.warn("coordinates() has been deprecated and will be removed in a future version of sage-flatsurf; use representative() or representatives() instead")
+
         return tuple(
             coordinates for (l, coordinates) in self._representatives if l == label
         )
