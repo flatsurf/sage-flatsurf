@@ -12747,7 +12747,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         if type(self) is not type(other):
             return False
         return (
-            self.geodesic() == other.geodesic() and self.vertices() == other.vertices()
+            self.geodesic() == other.geodesic() and list(self.vertices()) == list(other.vertices())
         )
 
     def change(self, ring=None, geometry=None, oriented=None):
@@ -13718,6 +13718,11 @@ class OrderedSet(collections.abc.Set):
         r"""
         Return whether this set is equal to ``other``.
 
+        .. NOTE::
+
+        :class:`MergeableOrderedSet` could implement a faster version of this
+        equality check if necessary.
+
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
@@ -13730,14 +13735,7 @@ class OrderedSet(collections.abc.Set):
         if len(self) != len(other):
             return False
 
-        if type(self) != type(other):
-            return set(self) == set(other)
-
-        for a, b in zip(self, other):
-            if a != b:
-                return False
-
-        return True
+        return set(self) == set(other)
 
     def __ne__(self, other):
         r"""
@@ -13991,10 +13989,9 @@ class MergeableOrderedSet(OrderedSet):
             sage: from flatsurf.geometry.hyperbolic import OrderedSet
             sage: H = HyperbolicPlane()
 
-            sage: vertices = H(I).segment(2*I).vertices()
+            sage: half_spaces = H(I).segment(2*I).half_spaces()
 
-            # TODO: Test something that implements _lt_
-            sage: vertices._lt_(vertices[0], vertices[1])  # not tested
+            sage: half_spaces._lt_(half_spaces[0], half_spaces[1])
             True
 
         """
