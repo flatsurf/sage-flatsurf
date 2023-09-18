@@ -86,15 +86,29 @@ class GraphicalSurface:
             "color": "grey",
             "linestyle": "--",
         },
-        "adjacent_edge_label": {},
+        "adjacent_edge_label": {
+            "position": "edge",
+            "t": 0.5,
+            "push_off": 0,
+        },
         "non_adjacent_edge_label": {
             "color": "blue",
             "label": "letter",
+            "position": "inside",
+            "t": 0.5,
+            "push_off": 0.03,
         },
-        "self_glued_edge_label": {},
+        "self_glued_edge_label": {
+            "position": "inside",
+            "t": 0.5,
+            "push_off": 0.03,
+        },
         "boundary_edge_label": {
             "color": "grey",
             "label": "number",
+            "position": "inside",
+            "t": 0.5,
+            "push_off": 0.03,
         },
     }
 
@@ -797,6 +811,43 @@ class GraphicalSurface:
             tangent_vectors.add(tangent_vector)
             yield tangent_vector
 
+    def _plot_edge_label(self, label, edge):
+        options = dict(self._edge_label_options(label, edge))
+        options.pop("label", None)
+
+        t = options.pop("t", 0.5)
+
+        pos, normal = self._edge_label_position(label, edge, t)
+
+        position = options.pop("position", "inside")
+        if position not in ["inside", "outside", "edge"]:
+            raise ValueError(
+                "The 'position' parameter must take the value 'inside', 'outside', or 'edge'."
+            )
+
+        from sage.all import sgn
+
+        if "horizontal_alignment" not in options:
+            options["horizontal_alignment"] = {
+                "outside": {1: "right", -1: "left", 0: "center"},
+                "inside": {1: "left", -1: "right", 0: "center"},
+                "edge": {1: "center", -1: "center", 0: "center"},
+            }[position][sgn(normal[0])]
+
+        if "vertical_alignment" not in options:
+            options["vertical_alignment"] = {
+                "outside": {1: "top", -1: "bottom", 0: "center"},
+                "inside": {1: "bottom", -1: "top", 0: "center"},
+                "edge": {1: "center", -1: "center", 0: "center"},
+            }[position][sgn(normal[1])]
+
+        push_off = options.pop("push_off", .03)
+        if position == "outside":
+            push_off = -push_off
+
+        from sage.all import text
+        return text(self._edge_label(label, edge), pos + push_off * normal, **options)
+
 
 class GraphicalSimilaritySurface(GraphicalSurface):
     def _layout_one_adjacent_root(self, label):
@@ -843,57 +894,13 @@ class GraphicalSimilaritySurface(GraphicalSurface):
         from sage.all import line2d
         return line2d(self._graphical_vertices(label, edge), **self._edge_options(label, edge))
 
-    def _plot_edge_label(self, label, edge):
-        from sage.all import RDF
+    def _edge_label_position(self, label, edge, t):
+        vertex = self.graphical_polygon(label).vertices()[edge]
+        edge = self.graphical_polygon(label).edges()[edge]
 
-        e = self.graphical_polygon(label).edges()[edge]
-        options = dict(self._edge_label_options(label, edge))
-        options.pop("label", None)
+        from sage.all import vector
 
-        if "position" in options:
-            if options["position"] not in ["inside", "outside", "edge"]:
-                raise ValueError(
-                    "The 'position' parameter must take the value 'inside', 'outside', or 'edge'."
-                )
-            pos = options.pop("position")
-        else:
-            pos = "inside"
-
-        from sage.all import sgn
-
-        if "horizontal_alignment" not in options:
-            # position outside polygon.
-            options["horizontal_alignment"] = {
-                "outside": {1: "left", -1: "right", 0: "center"},
-                "inside": {1: "right", -1: "left", 0: "center"},
-                "edge": {1: "center", -1: "center", 0: "center"},
-            }[pos][sgn(e[1])]
-
-        if "vertical_alignment" not in options:
-            options["vertical_alignment"] = {
-                "outside": {1: "top", -1: "bottom", 0: "center"},
-                "inside": {1: "bottom", -1: "top", 0: "center"},
-                "edge": {1: "center", -1: "center", 0: "center"},
-            }[pos][sgn(e[0])]
-
-        if "t" in options:
-            t = RDF(options.pop("t"))
-        else:
-            t = 0.3
-
-        if "push_off" in options:
-            push_off = RDF(options.pop("push_off"))
-        else:
-            push_off = 0.03
-        if pos == "outside":
-            push_off = -push_off
-        # Now push_off stores the amount it should be pushed into the polygon
-
-        from sage.all import text
-
-        V = RDF**2
-        no = V((-e[1], e[0]))
-        return text(self._edge_label(label, edge), self.graphical_polygon(label).vertices()[edge] + t * e + push_off * no, **options)
+        return vertex + t * edge, vector((-edge[1], edge[0]))
 
     def _plot_point(self, p, **kwargs):
         from sage.all import point2d
@@ -945,6 +952,10 @@ class GraphicalSimilaritySurface(GraphicalSurface):
 
 
 class GraphicalHyperbolicIsometrySurface(GraphicalSurface):
+    def __init__(self, surface, model="half_plane", **kwargs):
+        super().__init__(surface=surface, **kwargs)
+        self._model = model
+
     def _layout_one_adjacent_root(self, label):
         # We cannot place this polygon adjacent to an existing one since
         # none of its neighbors has been placed yet. Therefore, we just
@@ -961,11 +972,58 @@ class GraphicalHyperbolicIsometrySurface(GraphicalSurface):
         isometry = self._transformation[label]
         return self._surface.polygon(label).edges()[edge].apply_isometry(isometry)
 
+    def graphical_centroid(self, polygon):
+        from sage.all import RR, vector
+        vertices = [vector(vertex.change_ring(RR).coordinates(model=self._model)) for vertex in polygon.vertices()]
+        center = sum(vertices) / len(vertices)
+        return center
+
+    def _edge_label_position(self, label, edge, t):
+        edge = self.graphical_edge(label, edge)
+
+        from sage.all import RR, vector, atan2, sin, cos
+
+        start = vector(edge.change_ring(RR).start().coordinates(model=self._model))
+        end = vector(edge.change_ring(RR).end().coordinates(model=self._model))
+
+        if self._model == "half_plane":
+            if edge.geodesic().is_vertical():
+                if edge.is_finite():
+                    Δ = end - start
+                    pos = start + t * Δ
+                    normal = vector((-Δ[1], Δ[0]))
+                else:
+                    raise NotImplementedError
+            else:
+                center = vector((sum([vertex.coordinates(model=self._model)[0] for vertex in edge.geodesic().change_ring(RR).vertices()]) / 2, 0))
+
+                radius = (start - center).norm()
+
+                end = end - center
+                end = atan2(end[1], end[0])
+
+                start = start - center
+                start = atan2(start[1], start[0])
+
+                angle = (1 - t) * start + t * end
+                pos = vector((cos(angle), sin(angle))) * radius + center
+                normal = vector((pos[0] - center[0], pos[1] - center[1]))
+                if start < end:
+                    normal[1] = -normal[1]
+
+        elif self._model == "klein":
+            pos = (1 - t) * start + t * end
+            normal = vector((-(end[1] - start[1]), end[0] - start[0]))
+        else:
+            raise NotImplementedError("unsupported hyperbolic model")
+
+        return pos, normal.normalized()
+
     def _graphical_vertices(self, label, edge):
         return self.graphical_edge(label, edge).vertices()
 
     def _plot_polygon(self, label):
-        return self.graphical_polygon(label).plot(**self._polygon_options(label))
+        return self.graphical_polygon(label).plot(model=self._model, **self._polygon_options(label))
 
     def _plot_zero_flag(self, label):
         # Instead of plotting a proper "flag" we just try to color edge 0. When
@@ -984,20 +1042,17 @@ class GraphicalHyperbolicIsometrySurface(GraphicalSurface):
                 # Cannot compute midpoint over this ring.
                 pass
 
-        return start.segment(end).plot(**self._zero_flag_options(label))
+        return start.segment(end).plot(model=self._model, **self._zero_flag_options(label))
 
     def _plot_polygon_label(self, label):
-        # TODO
-        from sage.all import Graphics
-        return Graphics()
+        polygon = self.graphical_polygon(label)
+        center = self.graphical_centroid(polygon)
+
+        from sage.all import text
+        return text(str(label), center, **self._polygon_label_options(label))
 
     def _plot_edge(self, label, edge):
-        return self.graphical_edge(label, edge).plot(**self._edge_options(label, edge))
-
-    def _plot_edge_label(self, label, edge):
-        # TODO
-        from sage.all import Graphics
-        return Graphics()
+        return self.graphical_edge(label, edge).plot(model=self._model, **self._edge_options(label, edge))
 
     def _graphical_point(self, point, similarity):
         return point.apply_isometry(similarity)
