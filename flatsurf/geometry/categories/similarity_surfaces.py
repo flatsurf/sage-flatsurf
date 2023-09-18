@@ -1251,7 +1251,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     doctest:warning
                     ...
                     UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
-                    sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
+                    sage: z.representative(pc.root())[1].parent()
                     Vector space of dimension 2 over Algebraic Real Field
 
                 ::

@@ -110,8 +110,8 @@ class SurfacePoint(Element):
         sage: q = S.point(2, (1/2, 1))
         sage: p == q
         True
-        sage: p.coordinates(2)
-        ((1/2, 1),)
+        sage: p.representative(2)
+        (2, (1/2, 1))
 
     A point can have even more representations when it is a vertex::
 
