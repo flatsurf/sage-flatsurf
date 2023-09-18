@@ -165,7 +165,6 @@ class GraphicalSurface:
 
         return tuple(self._graphical_vertices(label, edge)) == tuple(self._graphical_vertices(*opposite)[::-1])
 
-
     def is_polygon_visible(self, label):
         self._ensure_layout()
         return label in self._transformation and self._polygon_options(label)
@@ -581,7 +580,7 @@ class GraphicalSurface:
             if ll == label:
                 self._layout_one_adjacent(ll, ee)
                 return
-        
+
         raise ValueError("label is not on trajectory")
 
     def _layout_one_adjacent(self, label, edge=None):
@@ -912,56 +911,22 @@ class GraphicalSimilaritySurface(GraphicalSurface):
         else:
             pos = "inside"
 
-        if pos == "outside":
+        from sage.all import sgn
+
+        if "horizontal_alignment" not in options:
             # position outside polygon.
-            if "horizontal_alignment" in options:
-                pass
-            elif e[1] > 0:
-                options["horizontal_alignment"] = "left"
-            elif e[1] < 0:
-                options["horizontal_alignment"] = "right"
-            else:
-                options["horizontal_alignment"] = "center"
+            options["horizontal_alignment"] = {
+                "outside": {1: "left", -1: "right", 0: "center"},
+                "inside": {1: "right", -1: "left", 0: "center"},
+                "edge": {1: "center", -1: "center", 0: "center"},
+            }[pos][sgn(e[1])]
 
-            if "vertical_alignment" in options:
-                pass
-            elif e[0] > 0:
-                options["vertical_alignment"] = "top"
-            elif e[0] < 0:
-                options["vertical_alignment"] = "bottom"
-            else:
-                options["vertical_alignment"] = "center"
-
-        elif pos == "inside":
-            # position inside polygon.
-            if "horizontal_alignment" in options:
-                pass
-            elif e[1] < 0:
-                options["horizontal_alignment"] = "left"
-            elif e[1] > 0:
-                options["horizontal_alignment"] = "right"
-            else:
-                options["horizontal_alignment"] = "center"
-
-            if "vertical_alignment" in options:
-                pass
-            elif e[0] < 0:
-                options["vertical_alignment"] = "top"
-            elif e[0] > 0:
-                options["vertical_alignment"] = "bottom"
-            else:
-                options["vertical_alignment"] = "center"
-
-        else:
-            # centered on edge.
-            if "horizontal_alignment" in options:
-                pass
-            else:
-                options["horizontal_alignment"] = "center"
-            if "vertical_alignment" in options:
-                pass
-            else:
-                options["vertical_alignment"] = "center"
+        if "vertical_alignment" not in options:
+            options["vertical_alignment"] = {
+                "outside": {1: "top", -1: "bottom", 0: "center"},
+                "inside": {1: "bottom", -1: "top", 0: "center"},
+                "edge": {1: "center", -1: "center", 0: "center"},
+            }[pos][sgn(e[0])]
 
         if "t" in options:
             t = RDF(options.pop("t"))
@@ -1205,6 +1170,7 @@ class DELETEME:
         ...Graphics object consisting of 13 graphics primitives
 
     """
+
     def __init__(
         self,
         surface,
