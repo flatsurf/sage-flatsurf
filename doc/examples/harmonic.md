@@ -15,7 +15,6 @@ jupyter:
 
 ```sage
 import jurigged
-import os
 watcher = jurigged.watch("/")
 ```
 
@@ -115,13 +114,11 @@ S = translation_surfaces.regular_octagon()
 
 scale = QQ(1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2))
 S = S.apply_matrix(diagonal_matrix([scale, scale]), in_place=False)
-S = S.underlying_surface()
 S.set_immutable()
 
 H = SimplicialHomology(S)
 HS = SimplicialCohomology(S, homology=H)
 a, b, c, d = HS.homology().gens()
-a, b, c, d
 
 f = {
     d: 0,
@@ -141,19 +138,7 @@ Omega = HarmonicDifferentials(S, safety=0, singularities=True)
 ```
 
 ```sage
-omega = Omega(HS(f), prec=1, check=True)
-```
-
-```sage
-%debug
-```
-
-```sage
-S = center.parent()
-```
-
-```sage
-S.angles?
+omega = Omega(HS(f), prec=3, check=True)
 ```
 
 ```sage

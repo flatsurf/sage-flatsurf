@@ -20,14 +20,13 @@ vertical `b` to zero::
     sage: Ω = HarmonicDifferentials(T)
     sage: ω = Ω(f)  # random output due to deprecation warnings
     sage: ω
-    (1.00000000000000 + O(z0_0_0^5), 1.00000000000000 + O(z0_1_0^5), 1.00000000000000 + O(z0_0_1^5), 1.00000000000000 + O(z0_0_2^5), 1.00000000000000 + O(z0_1_1^5), 1.00000000000000 + O(z0_0_3^5), 1.00000000000000 + O(z0_1_2^5), 1.00000000000000 + O(z0_1_3^5), 1.00000000000000 + O(z0_0_4^5))
+    (1.00000000000000 + O(z0^5), 1.00000000000000 + O(z1^5), 1.00000000000000 + O(z2^5), 1.00000000000000 + O(z3^5), 1.00000000000000 + O(z4^5), 1.00000000000000 + O(z5^5), 1.00000000000000 + O(z6^5), 1.00000000000000 + O(z7^5), 1.00000000000000 + O(z8^5))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 
     sage: g = H({b: 1})
     sage: Ω(g)  # tol 1e-9
-    (1.00000000000000*I + O(z0_0_0^5), 1.00000000000000*I + O(z0_1_0^5), 1.00000000000000*I + O(z0_0_1^5), 1.00000000000000*I + O(z0_0_2^5), 1.00000000000000*I + O(z0_1_1^5), 1.00000000000000*I + O(z0_0_3^5), 1.00000000000000*I + O(z0_1_2^5), 1.00000000000000*I + O(z0_1_3^5), 1.00000000000000*I + O(z0_0_4^5))
-
+    (1.00000000000000*I + O(z0^5), 1.00000000000000*I + O(z1^5), 1.00000000000000*I + O(z2^5), 1.00000000000000*I + O(z3^5), 1.00000000000000*I + O(z4^5), 1.00000000000000*I + O(z5^5), 1.00000000000000*I + O(z6^5), 1.00000000000000*I + O(z7^5), 1.00000000000000*I + O(z8^5))
 
 """
 ######################################################################
@@ -55,6 +54,14 @@ from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
+
+from cache_to_disk import cache_to_disk
+
+
+@cache_to_disk(365)
+def quad(value, a, b):
+    from scipy.integrate import quad
+    return quad(value, a, b)
 
 
 def define_solve():
@@ -140,7 +147,7 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
 
             sage: Ω(f) + Ω(f) + Ω(H({a: -2}))
-            (O(z0_0_0^5), O(z0_1_0^5), O(z0_0_1^5), O(z0_0_2^5), O(z0_1_1^5), O(z0_0_3^5), O(z0_1_2^5), O(z0_1_3^5), O(z0_0_4^5))
+            (O(z0^5), O(z1^5), O(z2^5), O(z3^5), O(z4^5), O(z5^5), O(z6^5), O(z7^5), O(z8^5))
 
         """
         return self.parent()({
@@ -255,6 +262,8 @@ class HarmonicDifferential(Element):
         Return the power series describing this harmonic differential at the
         center of the circumcircle of the given Delaunay ``triangle``.
 
+        TODO: triangle is not really a triangle anymore.
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
@@ -269,8 +278,8 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
 
-            sage: η.series((0, 0, 0))  # abstol 1e-9
-            1.00000000000000 + 1.87854000000000e-72*I + (-2.25406000000000e-73 + 1.02693000000000e-72*I)*z0_0_1 + (2.43931000000000e-12 + 2.32526000000000e-71*I)*z0_0_1^2 + (3.89566000000000e-72 - 6.49402000000000e-72*I)*z0_0_1^3 + (-6.75204000000000e-13 - 5.90057000000000e-71*I)*z0_0_1^4 + O(z0_0_1^5)
+            sage: η.series(T(0, (1/2, 1/2)))  # abstol 1e-9
+            1.00000000000000 - 6.13512000000000e-17*I + (6.58662000000000e-33 + 2.58104000000000e-32*I)*z2 + (-2.76745000000000e-31 - 7.82106000000000e-16*I)*z2^2 + (-2.29148000000000e-31 + 1.90965000000000e-31*I)*z2^3 + (1.42943000000000e-15 - 6.22435000000000e-32*I)*z2^4 + O(z2^5)
 
         """
         return self._series[triangle]
@@ -383,9 +392,14 @@ class HarmonicDifferential(Element):
         coefficients = {}
 
         for variable in expression.variables():
-            kind, label, edge, pos, k = variable.describe()
+            description = variable.describe()
+            if len(description) == 5:
+                knd, label, edge, pos, k = description
+                point = (label, edge, pos)
+            else:
+                kind, point, k = description
 
-            coefficient = self._series[(label, edge, pos)][k]
+            coefficient = self._series[point][k]
 
             if kind == "real":
                 coefficients[variable] = coefficient.real()
@@ -641,7 +655,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        (O(z0_0_0^5), O(z0_1_0^5), O(z0_0_1^5), O(z0_0_2^5), O(z0_1_1^5), O(z0_0_3^5), O(z0_1_2^5), O(z0_1_3^5), O(z0_0_4^5))
+        (O(z0^5), O(z1^5), O(z2^5), O(z3^5), O(z4^5), O(z5^5), O(z6^5), O(z7^5), O(z8^5))
 
     ::
 
@@ -868,7 +882,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return η
 
 
-class GeometricPrimitives:
+class GeometricPrimitives(UniqueRepresentation):
     def __init__(self, surface, homology_generators, singularities=False):  # TODO: Make True the default everywhere if this works out.
         # TODO: Require immutable.
         self._surface = surface
@@ -1138,16 +1152,23 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             kind = "Im" if gen % 2 else "Re"
             index = gen % (2 * len(self.parent()._gens)) // 2
-            label, edge, pos = self.parent()._gens[index]
+            point = self.parent()._gens[index]
             k = gen // (2 * len(self.parent()._gens))
 
-            return kind, label, edge, pos, k
+            if isinstance(point, tuple) and len(point) == 3:
+                return kind, *point, k
+            return kind, point, k
 
         def variable_name(gen):
             gen = decode(gen)
 
             if len(gen) == 1:
                 return f"λ{gen[0]}"
+
+            if len(gen) == 3:
+                kind, point, k = gen
+                index = self.parent()._gens.index(point)
+                return f"{kind}__open__a{index}__comma__{k}__close__"
 
             kind, label, edge, pos, k = gen
             index = self.parent()._gens.index((label, edge, pos))
@@ -1159,6 +1180,10 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             if len(gen) == 1:
                 n = gen[0]
                 return 1e9, n
+
+            if len(gen) == 3:
+                kind, point, k = gen
+                return self.parent()._gens.index(point), k, 0 if kind == "Re" else 1
 
             kind, label, edge, pos, k = gen
             return label, edge, pos, k, 0 if kind == "Re" else 1
@@ -1600,9 +1625,9 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             sage: a = R.gen(('imag', 0, 0, 0, 0))
             sage: b = R.gen(('real', 0, 0, 0, 0))
             sage: a.describe()
-            ('imag', 0, 0, 0, 0)
+            ('imag', Point (1/2, 1/2) of polygon 0, 0)
             sage: b.describe()
-            ('real', 0, 0, 0, 0)
+            ('real', Point (1/2, 1/2) of polygon 0, 0)
             sage: (a + b).describe()
             Traceback (most recent call last):
             ...
@@ -1617,13 +1642,16 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         if variable < 0:
             return ("lagrange", -variable-1)
 
-        index = variable % (2 * len(self.parent()._gens)) // 2
-        label, edge, pos = self.parent()._gens[index]
         k = variable // (2 * len(self.parent()._gens))
-        if variable % 2:
-            return ("imag", label, edge, pos, k)
+        kind = "imag" if variable % 2 else "real"
+
+        index = variable % (2 * len(self.parent()._gens)) // 2
+        gen = self.parent()._gens[index]
+        if isinstance(gen, tuple):
+            label, edge, pos = self.parent()._gens[index]
+            return (kind, label, edge, pos, k)
         else:
-            return ("real", label, edge, pos, k)
+            return (kind, gen, k)
 
     def real(self):
         r"""
@@ -1851,7 +1879,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                 b = 0
             self._gens.add((label, edge, b))
 
-        self._gens = [self._surface(*self._geometry.point_on_path_between_centers(*gen)) for gen in self._gens]
+        self._gens = [self._surface(*self._geometry.point_on_path_between_centers(*gen, wrap=True)) for gen in self._gens]
 
         if self._geometry._singularities:
             for vertex in self._surface.vertices():
@@ -1920,12 +1948,14 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                     label, edge = self._surface.opposite_edge(polygon, edge)
                     pos = 0
 
-                point = self._geometry.point_on_path_between_centers(polygon, edge, pos)
-                point = self._surface(polygon, point)
+                point = self._geometry.point_on_path_between_centers(polygon, edge, pos, wrap=True)
+                point = self._surface(*point)
 
                 return self.gen((kind, point, k))
             elif len(n) == 3:
                 kind, point, k = n
+                if isinstance(point, tuple) and len(point) == 3:
+                    return self.gen(kind, *point, k)
 
                 if point not in self._gens:
                     raise ValueError(f"{point} is not a valid generator; valid generators are {self._gens}")
@@ -2287,10 +2317,10 @@ class PowerSeriesConstraints:
 
             sage: a, b = H.gens()
             sage: C.integrate(a)  # tol 1e-9
-            0.247323113451507*Re(a2,0) + 0.247323113451507*I*Im(a2,0) + 0.236797907979275*Re(a6,0) + 0.236797907979275*I*Im(a6,0) + 0.139540535294972*Re(a7,0) + 0.139540535294972*I*Im(a7,0) + 0.139540535294972*Re(a4,0) + 0.139540535294972*I*Im(a4,0) + 0.236797907979275*Re(a1,0) + 0.236797907979275*I*Im(a1,0)
+            0.236797907979275*Re(a1,0) + 0.236797907979275*I*Im(a1,0) + 0.247323113451507*Re(a2,0) + 0.247323113451507*I*Im(a2,0) + 0.139540535294972*Re(a4,0) + 0.139540535294972*I*Im(a4,0) + 0.236797907979275*Re(a6,0) + 0.236797907979275*I*Im(a6,0) + 0.139540535294972*Re(a7,0) + 0.139540535294972*I*Im(a7,0)
 
             sage: C.integrate(b)  # tol 1e-9
-            (-0.247323113451507*I)*Re(a2,0) + 0.247323113451507*Im(a2,0) + (-0.236797907979275*I)*Re(a8,0) + 0.236797907979275*Im(a8,0) + (-0.139540535294972*I)*Re(a5,0) + 0.139540535294972*Im(a5,0) + (-0.139540535294972*I)*Re(a3,0) + 0.139540535294972*Im(a3,0) + (-0.236797907979275*I)*Re(a0,0) + 0.236797907979275*Im(a0,0)
+            (-0.236797907979275*I)*Re(a0,0) + 0.236797907979275*Im(a0,0) + (-0.247323113451507*I)*Re(a2,0) + 0.247323113451507*Im(a2,0) + (-0.139540535294972*I)*Re(a3,0) + 0.139540535294972*Im(a3,0) + (-0.139540535294972*I)*Re(a5,0) + 0.139540535294972*Im(a5,0) + (-0.236797907979275*I)*Re(a8,0) + 0.236797907979275*Im(a8,0)
 
             sage: C = PowerSeriesConstraints(T, prec=5, geometry=Ω._geometry)
             sage: C.integrate(a) + C.integrate(-a)  # tol 1e-9
@@ -2338,7 +2368,45 @@ class PowerSeriesConstraints:
 
                         Q_power *= Q
                 else:
-                    raise NotImplementedError
+                    if str(surface) != "Translation Surface in H_2(2) built from a regular octagon":
+                        raise NotImplementedError
+
+                    assert label == 0
+
+                    if edge == 0:
+                        vertex = 0
+                    elif edge == 1:
+                        vertex = 1
+                    elif edge == 2:
+                        vertex = 2
+                    elif edge == 3:
+                        vertex = 4
+                    else:
+                        raise NotImplementedError
+
+                    distance_from_center_to_vertex_chart_switch = 0.76
+
+                    from sage.all import sqrt
+                    distance_on_vertex_chart = 2 * sqrt(1.5862483667873009) - 2 * distance_from_center_to_vertex_chart_switch
+
+                    # Integrate along the line crossing over the center of the
+                    # octagon from -distance_from_center_to_vertex_chart_switch
+                    # to +distance_from_center_to_vertex_chart_switch.
+                    d = -distance_from_center_to_vertex_chart_switch
+
+                    # We have a power series Σ a_k z^k and integrate along γ(t)
+                    # = v*t from -d to d where we is the unit vector towards
+                    # the midpoint on the edge.
+                    v = surface.polygon(label).vertices()[edge] + surface.polygon(label).edges()[edge] / 2
+                    v = v / v.norm()
+
+                    # We have \int_γ a_k z^k = \int_{-d}^d a_k γ(t)^k ·γ(t) dt = a_k v^{k + 1} \int_{-d}^d t^k dt = a_k v^{k + 1}/(k+1) (d^{k + 1} - (-d)^{k + 1}).
+                    for k in range(self._prec):
+                        expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * v**(k + 1) / (k + 1) * (d**(k + 1) - (-d)**(k + 1))
+
+                    break
+
+                    # raise NotImplementedError 
 
                 pos = b
 
@@ -2460,21 +2528,22 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, prec=1, geometry=Ω._geometry)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Re(a2,0) - Re(a6,0), Im(a2,0) - Im(a6,0), Re(a6,0) - Re(a7,0), Im(a6,0) - Im(a7,0), Re(a7,0) - Re(a4,0), Im(a7,0) - Im(a4,0), Re(a4,0) - Re(a1,0), Im(a4,0) - Im(a1,0), Re(a2,0) - Re(a8,0), Im(a2,0) - Im(a8,0), Re(a8,0) - Re(a5,0), Im(a8,0) - Im(a5,0), Re(a5,0) - Re(a3,0), Im(a5,0) - Im(a3,0), Re(a3,0) - Re(a0,0), Im(a3,0) - Im(a0,0)]
+            [Re(a2,0) - Re(a6,0), Im(a2,0) - Im(a6,0), Re(a6,0) - Re(a7,0), Im(a6,0) - Im(a7,0), -Re(a4,0) + Re(a7,0), -Im(a4,0) + Im(a7,0), -Re(a1,0) + Re(a4,0), -Im(a1,0) + Im(a4,0), Re(a2,0) - Re(a8,0), Im(a2,0) - Im(a8,0), -Re(a5,0) + Re(a8,0), -Im(a5,0) + Im(a8,0), -Re(a3,0) + Re(a5,0), -Im(a3,0) + Im(a5,0), -Re(a0,0) + Re(a3,0), -Im(a0,0) + Im(a3,0)]
+
 
         If we add more coefficients, we get more complicated conditions::
 
             sage: C = PowerSeriesConstraints(T, prec=2, geometry=Ω._geometry)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1)]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, prec=2, geometry=Ω._geometry)
             sage: C.require_midpoint_derivatives(2)
             sage: C  # tol 1e-9
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a2,1) - Re(a6,1), Im(a2,1) - Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a6,1) - Re(a7,1), Im(a6,1) - Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a7,1) - Re(a4,1), Im(a7,1) - Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), Re(a4,1) - Re(a1,1), Im(a4,1) - Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a2,1) - Re(a8,1), Im(a2,1) - Im(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a8,1) - Re(a5,1), Im(a8,1) - Im(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a5,1) - Re(a3,1), Im(a5,1) - Im(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), Re(a3,1) - Re(a0,1), Im(a3,1) - Im(a0,1)]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a2,1) - Re(a6,1), Im(a2,1) - Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a6,1) - Re(a7,1), Im(a6,1) - Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a4,1) + Re(a7,1), -Im(a4,1) + Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), -Re(a1,1) + Re(a4,1), -Im(a1,1) + Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a2,1) - Re(a8,1), Im(a2,1) - Im(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a5,1) + Re(a8,1), -Im(a5,1) + Im(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a3,1) + Re(a5,1), -Im(a3,1) + Im(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), -Re(a0,1) + Re(a3,1), -Im(a0,1) + Im(a3,1)]
 
         """
         if derivatives > self._prec:
@@ -2616,23 +2685,24 @@ class PowerSeriesConstraints:
             # Maybe, take a Delaunay triangulation of the centers in a polygon and
             # then make sure that we have at least a condition on the four shortest
             # edges of each vertex.
-            cost += self._L2_consistency_between_nonsingular_points(0, 0, 137/482, 1, 137/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 1, 137/482, 2, 137/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 2, 137/482, 3, 137/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 3, 137/482, 0, 345/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 0, 345/482, 1, 345/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 1, 345/482, 2, 345/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 2, 345/482, 3, 345/482)
-            cost += self._L2_consistency_between_nonsingular_points(0, 3, 345/482, 0, 137/482)
+            from sage.all import QQ
+            cost += self._L2_consistency_between_nonsingular_points(0, 0, QQ(137)/482, 1, QQ(137)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 1, QQ(137)/482, 2, QQ(137)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 2, QQ(137)/482, 3, QQ(137)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 3, QQ(137)/482, 0, QQ(345)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 0, QQ(345)/482, 1, QQ(345)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 1, QQ(345)/482, 2, QQ(345)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 2, QQ(345)/482, 3, QQ(345)/482)
+            cost += self._L2_consistency_between_nonsingular_points(0, 3, QQ(345)/482, 0, QQ(137)/482)
 
-            cost += self._L2_consistency_between_nonsingular_points(0, 0, 427/964, 1, 427/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 1, 427/964, 2, 427/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 2, 427/964, 3, 427/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 3, 427/964, 0, 537/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 0, 537/964, 1, 537/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 1, 537/964, 2, 537/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 2, 537/964, 3, 537/964)
-            cost += self._L2_consistency_between_nonsingular_points(0, 3, 537/964, 0, 427/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 0, QQ(427)/964, 1, QQ(427)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 1, QQ(427)/964, 2, QQ(427)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 2, QQ(427)/964, 3, QQ(427)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 3, QQ(427)/964, 0, QQ(537)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 0, QQ(537)/964, 1, QQ(537)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 1, QQ(537)/964, 2, QQ(537)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 2, QQ(537)/964, 3, QQ(537)/964)
+            cost += self._L2_consistency_between_nonsingular_points(0, 3, QQ(537)/964, 0, QQ(427)/964)
         else:
             # TODO: Hardcoded octagon here.
             S = self._surface
@@ -2894,7 +2964,6 @@ class PowerSeriesConstraints:
 
                 raise NotImplementedError
 
-            from scipy.integrate import quad
             integral, error = quad(value, 0, 1)
 
             return self.real_field()(integral)
@@ -3127,24 +3196,25 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1)]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
+
             sage: f = 10*C._real_nonsingular(0, 0, 0, 0)^2 + 17*C._imag_nonsingular(0, 0, 0, 0)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1), -λ17 + λ19, -λ16 + λ18, 0.0762270995598000*λ16 + 0.160570808419475*λ18, -0.0762270995598000*λ17 - 0.160570808419475*λ19, -λ7 + λ9, -λ6 + λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.0762270995598000*λ6 + 0.160570808419475*λ8, 34.0000000000000*Im(a2,0) + λ1 - λ9 + λ11 - λ19, 20.0000000000000*Re(a2,0) + λ0 - λ8 + λ10 - λ18, 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, -λ15 + λ17, -λ14 + λ16, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, -λ5 + λ7, -λ4 + λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, -λ13 + λ15, -λ12 + λ14, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, -λ1 + λ3, -λ0 + λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.160570808419475*λ0 + 0.0762270995598000*λ2, -λ3 + λ5, -λ2 + λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, -λ11 + λ13, -λ10 + λ12, 0.160570808419475*λ10 + 0.0762270995598000*λ12, -0.160570808419475*λ11 - 0.0762270995598000*λ13]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1), -λ17 + λ19, -λ16 + λ18, 0.0762270995598000*λ16 + 0.160570808419475*λ18, -0.0762270995598000*λ17 - 0.160570808419475*λ19, -λ7 + λ9, -λ6 + λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.0762270995598000*λ6 + 0.160570808419475*λ8, 34.0000000000000*Im(a2,0) + λ1 - λ9 + λ11 - λ19, 20.0000000000000*Re(a2,0) + λ0 - λ8 + λ10 - λ18, 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, -λ15 + λ17, -λ14 + λ16, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, -λ5 + λ7, -λ4 + λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, -λ13 + λ15, -λ12 + λ14, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, -λ1 + λ3, -λ0 + λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.160570808419475*λ0 + 0.0762270995598000*λ2, -λ3 + λ5, -λ2 + λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, -λ11 + λ13, -λ10 + λ12, 0.160570808419475*λ10 + 0.0762270995598000*λ12, -0.160570808419475*λ11 - 0.0762270995598000*λ13]
 
         ::
 
             sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
             sage: C.require_midpoint_derivatives(1)
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1)]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
             sage: f = 3*C._real_nonsingular(0, 0, 0, 1)^2 + 5*C._imag_nonsingular(0, 0, 0, 1)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a7,0) + 0.0570539419087137*Re(a7,1) - Re(a4,0) + 0.0570539419087137*Re(a4,1), Im(a7,0) + 0.0570539419087137*Im(a7,1) - Im(a4,0) + 0.0570539419087137*Im(a4,1), Re(a4,0) + 0.0824865933862581*Re(a4,1) - Re(a1,0) + 0.0762270995598000*Re(a1,1), Im(a4,0) + 0.0824865933862581*Im(a4,1) - Im(a1,0) + 0.0762270995598000*Im(a1,1), -Re(a2,0) + 0.123661556725753*Re(a2,1) + Re(a1,0) + 0.160570808419475*Re(a1,1), -Im(a2,0) + 0.123661556725753*Im(a2,1) + Im(a1,0) + 0.160570808419475*Im(a1,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a8,0) + 0.0762270995598000*Im(a8,1) - Re(a5,0) + 0.0824865933862581*Im(a5,1), Im(a8,0) - 0.0762270995598000*Re(a8,1) - Im(a5,0) - 0.0824865933862581*Re(a5,1), Re(a5,0) + 0.0570539419087137*Im(a5,1) - Re(a3,0) + 0.0570539419087137*Im(a3,1), Im(a5,0) - 0.0570539419087137*Re(a5,1) - Im(a3,0) - 0.0570539419087137*Re(a3,1), Re(a3,0) + 0.0824865933862581*Im(a3,1) - Re(a0,0) + 0.0762270995598000*Im(a0,1), Im(a3,0) - 0.0824865933862581*Re(a3,1) - Im(a0,0) - 0.0762270995598000*Re(a0,1), -Re(a2,0) + 0.123661556725753*Im(a2,1) + Re(a0,0) + 0.160570808419475*Im(a0,1), -Im(a2,0) - 0.123661556725753*Re(a2,1) + Im(a0,0) - 0.160570808419475*Re(a0,1), -λ17 + λ19, -λ16 + λ18, 0.0762270995598000*λ16 + 0.160570808419475*λ18, -0.0762270995598000*λ17 - 0.160570808419475*λ19, -λ7 + λ9, -λ6 + λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.0762270995598000*λ6 + 0.160570808419475*λ8, λ1 - λ9 + λ11 - λ19, λ0 - λ8 + λ10 - λ18, 10.0000000000000*Im(a2,1) + 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, 6.00000000000000*Re(a2,1) + 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, -λ15 + λ17, -λ14 + λ16, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, -λ5 + λ7, -λ4 + λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, -λ13 + λ15, -λ12 + λ14, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, -λ1 + λ3, -λ0 + λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.160570808419475*λ0 + 0.0762270995598000*λ2, -λ3 + λ5, -λ2 + λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, -λ11 + λ13, -λ10 + λ12, 0.160570808419475*λ10 + 0.0762270995598000*λ12, -0.160570808419475*λ11 - 0.0762270995598000*λ13]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1), -λ17 + λ19, -λ16 + λ18, 0.0762270995598000*λ16 + 0.160570808419475*λ18, -0.0762270995598000*λ17 - 0.160570808419475*λ19, -λ7 + λ9, -λ6 + λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.0762270995598000*λ6 + 0.160570808419475*λ8, λ1 - λ9 + λ11 - λ19, λ0 - λ8 + λ10 - λ18, 10.0000000000000*Im(a2,1) + 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, 6.00000000000000*Re(a2,1) + 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, -λ15 + λ17, -λ14 + λ16, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, -λ5 + λ7, -λ4 + λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, -λ13 + λ15, -λ12 + λ14, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, -λ1 + λ3, -λ0 + λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.160570808419475*λ0 + 0.0762270995598000*λ2, -λ3 + λ5, -λ2 + λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, -λ11 + λ13, -λ10 + λ12, 0.160570808419475*λ10 + 0.0762270995598000*λ12, -0.160570808419475*λ11 - 0.0762270995598000*λ13]
 
         """
         if f:
@@ -3169,10 +3239,10 @@ class PowerSeriesConstraints:
 
         # We form the partial derivative with respect to the variables Re(a_k)
         # and Im(a_k).
-        for (label, edge, pos) in self.symbolic_ring()._gens:
+        for gen_ in self.symbolic_ring()._gens:
             for k in range(self._prec):
                 for kind in ["imag", "real"]:
-                    gen = self.symbolic_ring().gen((kind, label, edge, pos, k))
+                    gen = self.symbolic_ring().gen((kind, gen_, k))
 
                     if self._cost.degree(gen) <= 0:
                         # The cost function does not depend on this variable.
@@ -3220,7 +3290,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 1, geometry=Ω._geometry)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [0.247323113451507*Re(a2,0) + 0.236797907979275*Re(a6,0) + 0.139540535294972*Re(a7,0) + 0.139540535294972*Re(a4,0) + 0.236797907979275*Re(a1,0), 0.247323113451507*Im(a2,0) + 0.236797907979275*Im(a8,0) + 0.139540535294972*Im(a5,0) + 0.139540535294972*Im(a3,0) + 0.236797907979275*Im(a0,0) - 1.00000000000000]
+            [0.236797907979275*Re(a1,0) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.236797907979275*Re(a6,0) + 0.139540535294972*Re(a7,0), 0.236797907979275*Im(a0,0) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) + 0.139540535294972*Im(a5,0) + 0.236797907979275*Im(a8,0) - 1.00000000000000]
 
         If we increase precision, we see additional higher imaginary parts.
         These depend on the choice of base point of the integration and will be
@@ -3229,9 +3299,18 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
-            [0.247323113451507*Re(a2,0) + 0.236797907979275*Re(a6,0) - 0.00998620690459202*Re(a6,1) + 0.139540535294972*Re(a7,0) - 0.00177444290057350*Re(a7,1) + 0.139540535294972*Re(a4,0) + 0.00177444290057350*Re(a4,1) + 0.236797907979275*Re(a1,0) + 0.00998620690459202*Re(a1,1), 0.247323113451507*Im(a2,0) + 0.236797907979275*Im(a8,0) + 0.00998620690459202*Re(a8,1) + 0.139540535294972*Im(a5,0) + 0.00177444290057350*Re(a5,1) + 0.139540535294972*Im(a3,0) - 0.00177444290057350*Re(a3,1) + 0.236797907979275*Im(a0,0) - 0.00998620690459202*Re(a0,1) - 1.00000000000000]
+            [0.236797907979275*Re(a1,0) + 0.00998620690459202*Re(a1,1) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.00177444290057350*Re(a4,1) + 0.236797907979275*Re(a6,0) - 0.00998620690459202*Re(a6,1) + 0.139540535294972*Re(a7,0) - 0.00177444290057350*Re(a7,1), 0.236797907979275*Im(a0,0) - 0.00998620690459202*Re(a0,1) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) - 0.00177444290057350*Re(a3,1) + 0.139540535294972*Im(a5,0) + 0.00177444290057350*Re(a5,1) + 0.236797907979275*Im(a8,0) + 0.00998620690459202*Re(a8,1) - 1.00000000000000]
 
         """
+        # self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 0)) - 1)
+        # for p in range(self._prec):
+        #     self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p + 1)))
+        #     self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p + 2)))
+        # for p in range(4):
+        #     if p:
+        #         self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p)))
+        #     self.add_constraint(self.symbolic_ring().gen(("imag", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p)))
+
         for cycle in cocycle.parent().homology().gens():
             self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)), rank_check=False)
 
@@ -3337,7 +3416,7 @@ class PowerSeriesConstraints:
 
         non_lagranges = {gen: i for (i, gen) in enumerate(non_lagranges)}
 
-        if len(set(self.symbolic_ring().gen((kind, label, edge, pos, k)) for kind in ["real", "imag"] for (label, edge, pos) in self.symbolic_ring()._gens for k in range(self._prec))) != len(non_lagranges):
+        if len(set(self.symbolic_ring().gen((kind, point, k)) for kind in ["real", "imag"] for point in self.symbolic_ring()._gens for k in range(self._prec))) != len(non_lagranges):
             if not nowarn:
                 from warnings import warn
                 warn(f"Some power series coefficients are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
@@ -3367,7 +3446,7 @@ class PowerSeriesConstraints:
         return A, b, non_lagranges, set()
 
     @cached_method
-    def power_series_ring(self, label, edge, pos):
+    def power_series_ring(self, *args):
         r"""
         Return the power series ring to write down the series describing a
         harmonic differential in a Voronoi cell.
@@ -3381,15 +3460,24 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
             sage: Ω = PowerSeriesConstraints(T, 8, geometry=Ω._geometry)
-            sage: Ω.power_series_ring(0, 0, 0)
-            Power Series Ring in z0_0_1 over Complex Field with 54 bits of precision
+            sage: Ω.power_series_ring(T(0, (1/2, 1/2)))
+            Power Series Ring in z2 over Complex Field with 54 bits of precision
 
         """
         from sage.all import PowerSeriesRing
-        polygon = list(self._surface.labels()).index(label)
-        pos = [p for (lbl, e, p) in self.symbolic_ring()._gens if lbl == label and e == edge].index(pos)
+        if len(args) == 3:
+            # TODO: Remove all support for triple encoded variables?
+            label, edge, pos = args
+            polygon = list(self._surface.labels()).index(label)
+            pos = [p for (lbl, e, p) in self.symbolic_ring()._gens if lbl == label and e == edge].index(pos)
 
-        return PowerSeriesRing(self.complex_field(), f"z{polygon}_{edge}_{pos}")
+            return PowerSeriesRing(self.complex_field(), f"z{polygon}_{edge}_{pos}")
+
+        if len(args) != 1:
+            raise NotImplementedError
+
+        point = args[0]
+        return PowerSeriesRing(self.complex_field(), f"z{self.symbolic_ring()._gens.index(point)}")
 
     def solve(self, algorithm="eigen+mpfr"):
         r"""
@@ -3406,7 +3494,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
             sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - C._real_nonsingular(0, 0, 0, 1))
             sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - 1)
-            sage: C.solve()  # rondam output due to random ordering of the dict
+            sage: C.solve()  # random output due to random ordering of the dict
             ({(0, 0, 345/482): O(z0_0_0^2),
               (0, 1, 345/482): O(z0_1_0^2),
               (0, 0, 0): 1.00000000000000 + 1.00000000000000*z0_0_1 + O(z0_0_1^2),
@@ -3484,6 +3572,6 @@ class PowerSeriesConstraints:
         imag_solution = [[solution[decode[2*p + 1 + 2*P*prec]] if 2*p + 1 + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
 
         return {
-            (label, edge, pos): self.power_series_ring(label, edge, pos)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
-            for (p, (label, edge, pos)) in enumerate(self.symbolic_ring()._gens)
+            point: self.power_series_ring(point)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
+            for (p, point) in enumerate(self.symbolic_ring()._gens)
         }, residue

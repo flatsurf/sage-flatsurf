@@ -14,7 +14,7 @@ A basis of homology, with generators written as oriented edges::
     sage: H.gens()
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
 
-We can also write the generatorls as paths that cross over the edges and
+We can also write the generators as paths that cross over the edges and
 connect points on the interior of neighboring polygons::
 
     sage: H = SimplicialHomology(S, generators="voronoi")
@@ -30,7 +30,6 @@ avoiding to integrate close to the vertices::
 
 Relative homology on the unfolding of the (3, 4, 13) triangle; homology
 relative to the subset of vertices::
-
 
     sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces
     sage: P = EuclideanPolygonsWithAngles(3, 4, 13).an_element()
