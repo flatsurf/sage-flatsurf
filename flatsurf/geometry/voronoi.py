@@ -229,3 +229,10 @@ class Segment:
 
     def endpoints(self):
         return self._endpoints
+
+    def vector(self):
+        if len(self._endpoints) != 2:
+            raise NotImplementedError
+
+        from sage.all import vector
+        return vector((self._endpoints[1][0] - self._endpoints[0][0], self._endpoints[1][1] - self._endpoints[0][1]))

@@ -138,7 +138,7 @@ Omega = HarmonicDifferentials(S, safety=0, singularities=True)
 ```
 
 ```sage
-omega = Omega(HS(f), prec=3, check=True)
+omega = Omega(HS(f), prec=1, check=True)
 ```
 
 ```sage

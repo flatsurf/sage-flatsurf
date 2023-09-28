@@ -58,12 +58,6 @@ from sage.structure.element import CommutativeRingElement
 from cache_to_disk import cache_to_disk
 
 
-@cache_to_disk(365)
-def quad(value, a, b):
-    from scipy.integrate import quad
-    return quad(value, a, b)
-
-
 def define_solve():
     import cppyy
 
@@ -2328,6 +2322,30 @@ class PowerSeriesConstraints:
             sage: C.integrate(b) + C.integrate(-b)  # tol 1e-9
             0.00000000000000000
 
+        ::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: H = SimplicialHomology(S)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
+
+            sage: C.integrate(H())
+            0.000000000000000
+
+            sage: a, b, c, d = H.gens()
+            sage: C.integrate(b)
+            1.41421356237310*Re(a0,0) + 1.41421356237310*I*Im(a0,0)
+
+            sage: C.integrate(d)
+            (-1.41421356237310*I)*Re(a0,0) + 1.41421356237310*Im(a0,0)
+
+            sage: C.integrate(a)
+            (1.00000000000000 - 1.00000000000000*I)*Re(a0,0) + (1.00000000000000 + 1.00000000000000*I)*Im(a0,0)
+
         """
         surface = cycle.surface()
 
@@ -2384,29 +2402,40 @@ class PowerSeriesConstraints:
                     else:
                         raise NotImplementedError
 
-                    distance_from_center_to_vertex_chart_switch = 0.76
+                    octagon = surface.polygon(0)
+                    width = octagon.edges()[0][0] + 2 * octagon.edges()[1][0]
 
-                    from sage.all import sqrt
-                    distance_on_vertex_chart = 2 * sqrt(1.5862483667873009) - 2 * distance_from_center_to_vertex_chart_switch
+                    # Probably not exactly true but close enough.
+                    width_on_central_chart = width - octagon.edges()[0][0]
+                    width_on_vertex_chart = octagon.edges()[0][0]
 
-                    # Integrate along the line crossing over the center of the
-                    # octagon from -distance_from_center_to_vertex_chart_switch
-                    # to +distance_from_center_to_vertex_chart_switch.
-                    d = -distance_from_center_to_vertex_chart_switch
+                    # First: Integrate along the line crossing over the center of the
+                    # octagon from -δ v to +δ v where δ = width_on_central_chart/2.
+                    δ = width_on_central_chart / 2
+                    v = surface.polygon(label).vertices()[edge] + surface.polygon(label).edges()[edge] / 2 - octagon.circumscribing_circle().center()
+                    v_ = v.change_ring(self.real_field())
+                    v_ /= v_.norm()
 
-                    # We have a power series Σ a_k z^k and integrate along γ(t)
-                    # = v*t from -d to d where we is the unit vector towards
-                    # the midpoint on the edge.
-                    v = surface.polygon(label).vertices()[edge] + surface.polygon(label).edges()[edge] / 2
-                    v = v / v.norm()
-
-                    # We have \int_γ a_k z^k = \int_{-d}^d a_k γ(t)^k ·γ(t) dt = a_k v^{k + 1} \int_{-d}^d t^k dt = a_k v^{k + 1}/(k+1) (d^{k + 1} - (-d)^{k + 1}).
+                    # We integrate the summands of the power series \sum a_k z^k.
+                    # We have \int_γ a_k z^k = \int_{-δ}^δ a_k γ(t)^k ·γ(t) dt = a_k v^{k + 1} \int_{-δ}^δ t^k dt = a_k v^{k + 1}/(k+1) (δ^{k + 1} - (-δ)^{k + 1}).
                     for k in range(self._prec):
-                        expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * v**(k + 1) / (k + 1) * (d**(k + 1) - (-d)**(k + 1))
+                        expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * self.complex_field()(*v_)**(k + 1) / (k + 1) * (δ**(k + 1) - (-δ)**(k + 1))
 
+                    # Second: Integrate using the power series at the singularity.
+                    # Find segments that describe the path.
+                    segments = self._voronoi_diagram().cell(surface(0, 0))
+                    from flatsurf.geometry.euclidean import is_parallel
+                    segments = [segment for segment in segments if is_parallel(segment.segment()[1].vector(), v)]
+                    assert len(segments) == 2, "this is not the octagon"
+
+                    for segment in segments:
+                        integrator = self.Integrator(self, segment)
+                        # As described in _L2_consistency_voronoi_boundary, we integrate
+                        # f = Σ_{n ≥ -d} a_n f_n(z) along the segment γ.
+                        # TODO: 3 is hardcoded for the octagon.
+                        for n in range(-2, 3 * self._prec):
+                            expression += multiplicity * integrator.a(n) * integrator.f(n)
                     break
-
-                    # raise NotImplementedError 
 
                 pos = b
 
@@ -2704,30 +2733,184 @@ class PowerSeriesConstraints:
             cost += self._L2_consistency_between_nonsingular_points(0, 2, QQ(537)/964, 3, QQ(537)/964)
             cost += self._L2_consistency_between_nonsingular_points(0, 3, QQ(537)/964, 0, QQ(427)/964)
         else:
-            # TODO: Hardcoded octagon here.
-            S = self._surface
-            center = S(0, S.polygon(0).centroid())
-            centers = S.vertices().union([center])
-
-            def weight(center):
-                if center == S.polygon(0).centroid():
-                    from sage.all import QQ
-                    return QQ(center.norm().n())
-                if center in S.polygon(0).vertices():
-                    from sage.all import QQ
-                    return QQ(1)
-                raise NotImplementedError
-
-            from flatsurf.geometry.voronoi import FixedVoronoiWeight, VoronoiDiagram
-            V = VoronoiDiagram(S, centers, weight=FixedVoronoiWeight(weight))
+            V = self._voronoi_diagram()
+            centers = self._voronoi_diagram_centers()
 
             # We integrate L2 errors along the boundary of Voronoi cells.
             segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
             for i, segment in enumerate(segments):
-                print(i,"/",len(segments))
+                print(i, "/", len(segments))
                 cost += self._L2_consistency_voronoi_boundary(segment)
 
         return cost
+
+    class Integrator:
+        def __init__(self, constraints, segment):
+            # TODO: Verify that roots are consistent along the segment! Always the case for the octagon.
+            self._segment = segment
+            self._surface = constraints._surface
+            self._d = 2
+            self.real_field = constraints.real_field()
+            self._center, self._label, self._center_coordinates = segment.center()
+            self._opposite_center, label, self._opposite_center_coordinates = segment.opposite_center()
+            self.complex_field = constraints.complex_field()
+            self.I = self.complex_field.gen()
+            self.R = constraints.symbolic_ring(self.real_field)
+            self.C = constraints.symbolic_ring(self.complex_field)
+
+        def integral(self, α, κ, n):
+            r"""
+            Return
+
+            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
+            """
+            d = self._d
+
+            def value(part, t):
+                _, segment = self._segment.segment()
+                a, b = segment.endpoints()
+                z = self.complex_field(*((1 - t) * a + t * b))
+
+                value = self.ζ()**(κ * (n + 1)) / (d + 1) * (z-α).nth_root(d + 1)**(n - d)
+
+                if part == "real":
+                    return float(value.real())
+                if part == "imag":
+                    return float(value.imag())
+
+                raise NotImplementedError
+
+            from scipy.integrate import quad
+            real, error = quad(lambda t: value("real", t), 0, 1)
+            imag, error = quad(lambda t: value("imag", t), 0, 1)
+
+            return self.complex_field(real, imag)
+
+        def integral2(self, part, α, κ, n, β, λ, m):
+            r"""
+            Return the real/imaginary part of
+
+            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{d+1}^{λ (n+1)}/(d+1) (z-β)^\frac{m-d}{d+1}} dz
+            """
+            C = self.complex_field
+            d = self._d
+
+            from sage.all import exp, pi, I
+            ζ = C(exp(2*pi*I / (d + 1)))
+
+            def value(t):
+                _, segment = self._segment.segment()
+                a, b = segment.endpoints()
+                z = C(*((1 - t) * a + t * b))
+
+                value = self.ζ()**(κ * (n+1)) / (d+1) * (z-α).nth_root(d + 1)**(n - d) * (self.ζ()**(λ * (n+1)) / (d+1) * (z-β).nth_root(d + 1)**(m - d)).conjugate()
+
+                if part == "real":
+                    return float(value.real())
+                if part == "imag":
+                    return float(value.imag())
+
+                raise NotImplementedError
+
+            from scipy.integrate import quad
+            integral, error = quad(value, 0, 1)
+
+            return self.real_field()(integral)
+
+        def ζ(self):
+            C = self.complex_field
+            d = self._d
+
+            from sage.all import exp, pi, I
+            return C(exp(2*pi*I / (d + 1)))
+
+        def α(self):
+            return self.complex_field(*self._center_coordinates)
+
+        def β(self):
+            return self.complex_field(self._*self._opposite_center_coordinates)
+
+        def κ(self):
+            if not self._center.is_vertex():
+                return 0
+
+            return self._κλ(self._center_coordinates, self._segment.segment()[1])
+
+        def λ(self):
+            if not self._opposite_center.is_vertex():
+                return 0
+
+            return self._κλ(self._opposite_center_coordinates, self._segment.segment()[1])
+
+        def _κλ(self, center, segment):
+            low = min([endpoint[1] for endpoint in segment.endpoints()]) < center[1]
+
+            for i, vertex in enumerate(self._surface.polygon(self._label).vertices()):
+                if vertex == center:
+                    if i == 0:
+                        return 0
+                    if i == 1:
+                        return 1
+                    if i == 2:
+                        return 0 if low else 2
+                    if i == 3:
+                        return 1 if low else 0
+                    if i == 4:
+                        return 2
+                    if i == 5:
+                        return 0
+                    if i == 6:
+                        return 1
+                    if i == 7:
+                        return 2
+
+            raise NotImplementedError
+
+        def a(self, n):
+            return self.Re_a(n) + self.I * self.C(self.Im_a(n))
+
+        def Re_a(self, n):
+            return self._gen("real", self._center, n)
+
+        def Im_a(self, n):
+            return self._gen("imag", self._center, n)
+
+        def Re_b(self, n):
+            return self._gen("real", self._opposite_center, n)
+
+        def Im_b(self, n):
+            return self._gen("imag", self._opposite_center, n)
+
+        def f(self, n):
+            return self.integral(self.α(), self.κ(), n)
+
+        def _gen(self, kind, center, n):
+            return self.R.gen((kind, center, n))
+
+
+    def _voronoi_diagram_centers(self):
+        # TODO: Hardcoded octagon here.
+        S = self._surface
+        center = S(0, S.polygon(0).centroid())
+        centers = S.vertices().union([center])
+
+        return centers
+
+    def _voronoi_diagram(self):
+        # TODO: Hardcoded octagon here.
+        S = self._surface
+
+        def weight(center):
+            if center == S.polygon(0).centroid():
+                from sage.all import QQ
+                return QQ(center.norm().n())
+            if center in S.polygon(0).vertices():
+                from sage.all import QQ
+                return QQ(1)
+            raise NotImplementedError
+
+        from flatsurf.geometry.voronoi import FixedVoronoiWeight, VoronoiDiagram
+        return VoronoiDiagram(S, self._voronoi_diagram_centers(), weight=FixedVoronoiWeight(weight))
 
     def _L2_consistency_voronoi_boundary(self, boundary_segment):
         r"""
@@ -2745,9 +2928,9 @@ class PowerSeriesConstraints:
 
         To describe this power series on such a chart, let `z` denote the
         variable on that chart, we are going to have to takes `d+1`-st roots
-        `y`. Note that ``boundary_segment`` is assumed to be such that this is
-        consistently possible, namely ``boundary_segment`` does not cross the
-        horizontal line on which the singularity lives in the `z`-chart.
+        of `y`. Note that ``boundary_segment`` is assumed to be such that this
+        is consistently possible, namely ``boundary_segment`` does not cross
+        the horizontal line on which the singularity lives in the `z`-chart.
 
         Therefore, we write with the center y=0 being z=α
 
@@ -2826,13 +3009,27 @@ class PowerSeriesConstraints:
         currently have no feasible approach to compute the symbolically.
 
         """
+        # TODO: Fix the indexing of the a_k. We should not assume that all
+        # series are indexed the same but use the underlying order of the root
+        # that has been taken.
         center, label, center_coordinates = boundary_segment.center()
         opposite_center, label, opposite_center_coordinates = boundary_segment.opposite_center()
 
-        R = self.symbolic_ring(self.real_field())
-
         d = 2
-        limit = self._prec
+        limit = 3 * self._prec
+
+        Re = "real"
+        Im = "imag"
+
+        integrator = self.Integrator(self, boundary_segment)
+
+        R = integrator.R
+
+        Re_a = integrator.Re_a
+        Im_a = integrator.Im_a
+
+        Re_b = integrator.Re_b
+        Im_b = integrator.Im_b
 
         def int_f_overline_f():
             r"""
@@ -2867,106 +3064,14 @@ class PowerSeriesConstraints:
 
             return value
 
-        def gen(kind, center, n):
-            return R.gen((kind, center, n))
-
-        def Re_a(n):
-            return gen("real", center, n)
-
-        def Im_a(n):
-            return gen("imag", center, n)
-
-        def Re_b(n):
-            return gen("real", opposite_center, n)
-
-        def Im_b(n):
-            return gen("imag", opposite_center, n)
-
         def f_(part, n, m):
-            return integral(part, α(), κ(), n, α(), κ(), m)
+            return integrator.integral2(part, integrator.α(), integrator.κ(), n, integrator.α(), integrator.κ(), m)
 
         def g_(part, n, m):
-            return integral(part, β(), λ(), n, β(), λ(), m)
+            return integrator.integral2(part, integrator.β(), integrator.λ(), n, integrator.β(), integrator.λ(), m)
 
         def fg_(part, n, m):
-            return integral(part, α(), κ(), n, β(), λ(), m)
-
-        def Re(z):
-            raise NotImplementedError
-
-        def Im(z):
-            raise NotImplementedError
-
-        def α():
-            return self.complex_field()(*center_coordinates)
-
-        def β():
-            return self.complex_field()(*opposite_center_coordinates)
-
-        def κλ(center, segment):
-            low = min([endpoint[1] for endpoint in segment.endpoints()]) < center[1]
-
-            for i, vertex in enumerate(self._surface.polygon(label).vertices()):
-                if vertex == center:
-                    if i == 0:
-                        return 0
-                    if i == 1:
-                        return 1
-                    if i == 2:
-                        return 0 if low else 2
-                    if i == 3:
-                        return 1 if low else 0
-                    if i == 4:
-                        return 2
-                    if i == 5:
-                        return 0
-                    if i == 6:
-                        return 1
-                    if i == 7:
-                        return 2
-
-            raise NotImplementedError
-
-        def κ():
-            if not center.is_vertex():
-                return 0
-
-            return κλ(center_coordinates, boundary_segment.segment()[1])
-
-        def λ():
-            if not opposite_center.is_vertex():
-                return 0
-
-            return κλ(opposite_center_coordinates, boundary_segment.segment()[1])
-
-        def integral(part, α, κ, n, β, λ, m):
-            r"""
-            Return the real/imaginary part of
-
-            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{d+1}^{λ (n+1)}/(d+1) (z-β)^\frac{m-d}{d+1}} dz
-            """
-            C = self.complex_field()
-
-            from sage.all import exp, pi, I
-            ζ = C(exp(2*pi*I / d + 1))
-
-            def value(t):
-                _, segment = boundary_segment.segment()
-                a, b = segment.endpoints()
-                z = C(*((1 - t) * a + t * b))
-
-                value = ζ**(κ * (n+1)) / (d+1) * (z-α).nth_root(d + 1)**(n - d) * (ζ**(λ * (n+1)) / (d+1) * (z-β).nth_root(d + 1)**(m - d)).conjugate()
-
-                if part == Re:
-                    return float(value.real())
-                if part == Im:
-                    return float(value.imag())
-
-                raise NotImplementedError
-
-            integral, error = quad(value, 0, 1)
-
-            return self.real_field()(integral)
+            return integrator.integral2(part, integrator.α(), integrator.κ(), n, integrator.β(), integrator.λ(), m)
 
         return int_f_overline_f() - 2 * int_Re_f_overline_g() + int_g_overline_g()
 
@@ -3302,15 +3407,6 @@ class PowerSeriesConstraints:
             [0.236797907979275*Re(a1,0) + 0.00998620690459202*Re(a1,1) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.00177444290057350*Re(a4,1) + 0.236797907979275*Re(a6,0) - 0.00998620690459202*Re(a6,1) + 0.139540535294972*Re(a7,0) - 0.00177444290057350*Re(a7,1), 0.236797907979275*Im(a0,0) - 0.00998620690459202*Re(a0,1) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) - 0.00177444290057350*Re(a3,1) + 0.139540535294972*Im(a5,0) + 0.00177444290057350*Re(a5,1) + 0.236797907979275*Im(a8,0) + 0.00998620690459202*Re(a8,1) - 1.00000000000000]
 
         """
-        # self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 0)) - 1)
-        # for p in range(self._prec):
-        #     self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p + 1)))
-        #     self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p + 2)))
-        # for p in range(4):
-        #     if p:
-        #         self.add_constraint(self.symbolic_ring().gen(("real", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p)))
-        #     self.add_constraint(self.symbolic_ring().gen(("imag", self._surface(0, self._surface.polygon(0).circumscribing_circle().center()), 3*p)))
-
         for cycle in cocycle.parent().homology().gens():
             self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)), rank_check=False)
 
