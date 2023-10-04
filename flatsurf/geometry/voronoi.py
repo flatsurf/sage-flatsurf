@@ -39,9 +39,9 @@ class VoronoiDiagram:
         self._points = points
 
         # TODO: These mapping structures are too complex.
-        polygon_diagrams = {label: VoronoiDiagram_Polygon(surface.polygon(label), [coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label], create_half_space=lambda *args: weight.create_half_space(label, *args)) for label in surface.labels()}
+        self._polygon_diagrams = {label: VoronoiDiagram_Polygon(surface.polygon(label), [coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label], create_half_space=lambda *args: weight.create_half_space(label, *args)) for label in surface.labels()}
         self._segments = {point: [
-            VoronoiCellBoundarySegment(point, surface(label, other_coordinates), label, coordinates, other_coordinates, segment) for (label, coordinates) in point.representatives() for (other_coordinates, segment) in polygon_diagrams[label].segments(coordinates).items()]
+            VoronoiCellBoundarySegment(point, surface(label, other_coordinates), label, coordinates, other_coordinates, segment) for (label, coordinates) in point.representatives() for (other_coordinates, segment) in self._polygon_diagrams[label].segments(coordinates).items()]
             for point in points}
 
     def plot(self):
@@ -52,6 +52,17 @@ class VoronoiDiagram:
 
     def cell(self, center):
         return self._segments[center]
+
+    def relativize(self, point):
+        r"""
+        Return which Voronoi cell ``point`` lies in.
+
+        Returns the center of the cell as (label, coordinates) and a vector Δ
+        from that center to the ``point``.
+        """
+        for label, coordinates in point.representatives():
+            center = self._polygon_diagrams[label].relativize(coordinates)
+            return (label, center), coordinates - center
 
 
 class FixedVoronoiWeight:
@@ -74,8 +85,18 @@ class VoronoiDiagram_Polygon:
     def __init__(self, polygon, points, create_half_space):
         self._polygon = polygon
 
-        half_spaces = {center: {point: create_half_space(center, point) for point in points if point != center} for center in points}
-        self._segments = {center: self._segments(half_spaces[center]) for center in points}
+        self._half_spaces = {center: {point: create_half_space(center, point) for point in points if point != center} for center in points}
+        self._segments = {center: self._segments(self._half_spaces[center]) for center in points}
+
+    def relativize(self, coordinates):
+        r"""
+        Return the center of the Voronoi cell which ``coordinates`` lies in.
+        """
+        for center in self._half_spaces:
+            if all([half_space.contains(coordinates) for half_space in self._half_spaces[center].values()]):
+                return center
+
+        assert False
 
     def segments(self, coordinates):
         return self._segments[coordinates]

@@ -55,8 +55,29 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
 
-from cache_to_disk import cache_to_disk
 
+def integral2(part, α, κ, n, β, λ, m, d, ζ, a, b, C, R):
+    # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
+    constant = ζ**(κ * (n+1)) / (d+1) * (ζ**(λ * (n+1)) / (d+1)).conjugate() * (b - a)
+
+    def value(t):
+        z = ((1 - t) * a + t * b)
+
+        za = (z-α).nth_root(d + 1)**(n - d)
+        zb = ((z-β).nth_root(d + 1)**(m - d)).conjugate()
+        value = constant * za * zb
+
+        if part == "Re":
+            return float(value.real())
+        if part == "Im":
+            return float(value.imag())
+
+        raise NotImplementedError
+
+    from scipy.integrate import quad
+    integral, error = quad(value, 0, 1)
+
+    return R(integral)
 
 def define_solve():
     import cppyy
@@ -273,7 +294,7 @@ class HarmonicDifferential(Element):
             sage: η = Ω(f)
 
             sage: η.series(T(0, (1/2, 1/2)))  # abstol 1e-9
-            1.00000000000000 - 6.13512000000000e-17*I + (6.58662000000000e-33 + 2.58104000000000e-32*I)*z2 + (-2.76745000000000e-31 - 7.82106000000000e-16*I)*z2^2 + (-2.29148000000000e-31 + 1.90965000000000e-31*I)*z2^3 + (1.42943000000000e-15 - 6.22435000000000e-32*I)*z2^4 + O(z2^5)
+            (1.00000000000000 - 6.13512000000000e-17*I) + (6.58662000000000e-33 + 2.58104000000000e-32*I)*z2 + (-2.76745000000000e-31 - 7.82106000000000e-16*I)*z2^2 + (-2.29148000000000e-31 + 1.90965000000000e-31*I)*z2^3 + (1.42943000000000e-15 - 6.22435000000000e-32*I)*z2^4 + O(z2^5)
 
         """
         return self._series[triangle]
@@ -284,9 +305,45 @@ class HarmonicDifferential(Element):
         return PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
 
     def evaluate(self, label, edge, pos, Δ, derivative=0):
+        # TODO: This should probably be removed.
         C = self._constraints()
         return self._evaluate(C.evaluate(label, edge, pos, Δ, derivative=derivative))
 
+    def __call__(self, point):
+        r"""
+        Return the value of this differential at ``point`` on the flat
+        chart.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: H = SimplicialHomology(S)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: center = S(0, S.polygon(0).circumscribing_circle().center())
+            sage: singularity = next(iter(S.vertices()))
+
+            sage: R.<z> = CC[[]]
+            sage: ω = Ω({center: R(1, 1), singularity: R(2, 1)})
+
+            sage: ω(center)
+            1.00000000000000
+            sage: ω(singularity)  # TODO: Make this work at a singularity as well.
+            Traceback (most recent call last):
+            ...
+            NotImplementedError
+
+            sage: ω = Ω({center: R(0, 1), singularity: R(R.gen() + 1, 3)})
+            sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000000, 0)))
+            sage: ω(point)  # abs-tol 1e-6
+            1
+
+        """
+        C = self._constraints()
+        expression = C.value(point)
+        return self._evaluate(expression)
+        
     # TODO: Make this work again.
     # def roots(self):
     #     r"""
@@ -388,12 +445,18 @@ class HarmonicDifferential(Element):
         for variable in expression.variables():
             kind, point, k = variable.describe()
 
-            coefficient = self._series[point][k]
+            try:
+                coefficient = self._series[point][k]
+            except IndexError:
+                import warnings
+                warnings.warn(f"expected a {k}th coefficient of the power series around {point} but none found")
+                coefficients[variable] = 0
+                continue
 
-            if kind == "real":
+            if kind == "Re":
                 coefficients[variable] = coefficient.real()
             else:
-                assert kind == "imag"
+                assert kind == "Im"
                 coefficients[variable] = coefficient.imag()
 
         value = expression(coefficients)
@@ -407,8 +470,8 @@ class HarmonicDifferential(Element):
     def precision(self):
         # TODO: This is the number of coefficients of the power series but we use it as bit precision?
         precisions = set(series.precision_absolute() for series in self._series.values())
-        assert len(precisions) == 1
-        return next(iter(precisions))
+        # assert len(precisions) == 1
+        return min(precisions)
 
     # def cauchy_residue(self, vertex, n, angle=None):
     #     r"""
@@ -469,7 +532,7 @@ class HarmonicDifferential(Element):
     #     complex_field = self._series[0].parent().base_ring()
 
     #     # Integrate real & complex part independently.
-    #     for part in ["real", "imag"]:
+    #     for part in ["Re", "Im"]:
     #         integral = 0
 
     #         # TODO print(f"Building {part} part")
@@ -583,7 +646,7 @@ class HarmonicDifferential(Element):
 
                 return coefficient
 
-            return series.map_coefficients(compress_coefficient)
+            return series.parent()({exponent: compress_coefficient(coefficient) for (coefficient, exponent) in zip(series.coefficients(), series.exponents())} or 0).add_bigoh(series.precision_absolute())
 
         return repr(tuple(compress(series) for series in self._series.values()))
 
@@ -723,48 +786,48 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return gens
 
     def plot(self):
-        from flatsurf import TranslationSurface
+        raise NotImplementedError
+        # from flatsurf import TranslationSurface
+        # S = self._surface
+        # G = S.plot()
+        # SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
+        # for (label, edge, pos) in SR._gens:
+        #     label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
+        #     radius = self._geometry._convergence(label, edge, pos)
+        #     P = TranslationSurface(S).surface_point(label, center)
+        #     G += P.plot(color="red")
 
-        S = self._surface
-        G = S.plot()
-        SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
-        for (label, edge, pos) in SR._gens:
-            label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
-            radius = self._geometry._convergence(label, edge, pos)
-            P = TranslationSurface(S).surface_point(label, center)
-            G += P.plot(color="red")
+        #     from sage.all import circle
+        #     G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.05)
 
-            from sage.all import circle
-            G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.05)
+        # for (label, edge, pos) in SR._gens:
+        #     label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
 
-        for (label, edge, pos) in SR._gens:
-            label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
+        #     P = TranslationSurface(S).surface_point(label, center)
+        #     p = P.graphical_surface_point().points()[0]
 
-            P = TranslationSurface(S).surface_point(label, center)
-            p = P.graphical_surface_point().points()[0]
+        #     for (lbl, a_edge, a, b_edge, b, Δ0, Δ1, radius) in self._debugs:
+        #         if lbl == label and a_edge == edge and a == pos:
+        #             Δ = Δ0
+        #         elif self._surface.opposite_edge(lbl, a_edge) == (label, edge) and a == 1 - pos:
+        #             Δ = Δ0
+        #         elif lbl == label and b_edge == edge and b == pos:
+        #             Δ = Δ1
+        #         elif self._surface.opposite_edge(lbl, b_edge) == (label, edge) and b == 1 - pos:
+        #             Δ = Δ1
+        #         else:
+        #             continue
 
-            for (lbl, a_edge, a, b_edge, b, Δ0, Δ1, radius) in self._debugs:
-                if lbl == label and a_edge == edge and a == pos:
-                    Δ = Δ0
-                elif self._surface.opposite_edge(lbl, a_edge) == (label, edge) and a == 1 - pos:
-                    Δ = Δ0
-                elif lbl == label and b_edge == edge and b == pos:
-                    Δ = Δ1
-                elif self._surface.opposite_edge(lbl, b_edge) == (label, edge) and b == 1 - pos:
-                    Δ = Δ1
-                else:
-                    continue
+        #         from sage.all import vector
+        #         q = p + vector((Δ.real(), Δ.imag()))
 
-                from sage.all import vector
-                q = p + vector((Δ.real(), Δ.imag()))
+        #         from sage.all import line
+        #         G += line((p, q), color="black")
 
-                from sage.all import line
-                G += line((p, q), color="black")
+        #         from sage.all import circle
+        #         G += circle(q, radius, color="brown", fill="brown", alpha=.1)
 
-                from sage.all import circle
-                G += circle(q, radius, color="brown", fill="brown", alpha=.1)
-
-        return G
+        # return G
 
     def surface(self):
         return self._surface
@@ -1068,6 +1131,35 @@ class GeometricPrimitives(UniqueRepresentation):
             (center - polygon.vertex(edge)).change_ring(RR).norm(),
             (center - polygon.vertex((edge + 1) % len(polygon.vertices()))).change_ring(RR).norm())
 
+    def branch(self, center, Δ):
+        center_point = self._surface(*center)
+        if not center_point.is_vertex():
+            return 0, 0
+
+        # TODO: Hardcoded for octagon
+        low = Δ[1] < center[1][1]
+
+        for i, vertex in enumerate(self._surface.polygon(center[0]).vertices()):
+            if vertex == center[1]:
+                if i == 0:
+                    return 0, 2
+                if i == 1:
+                    return 1, 2
+                if i == 2:
+                    return (0 if low else 2), 2
+                if i == 3:
+                    return (1 if low else 0), 2
+                if i == 4:
+                    return 2, 2
+                if i == 5:
+                    return 0, 2
+                if i == 6:
+                    return 1, 2
+                if i == 7:
+                    return 2, 2
+
+        raise NotImplementedError
+
 
 class SymbolicCoefficientExpression(CommutativeRingElement):
     # TODO: Make sure that we never have zero coefficients as these would break degree computations.
@@ -1087,8 +1179,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a == a
             True
             sage: a == b
@@ -1115,8 +1207,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
 
         Due to the internal ordering of the generators, this generator prints
         as ``a2``. The generator ``a0`` is used for the power series developed
@@ -1139,14 +1231,9 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
             if gen < 0:
                 return -gen-1,
 
-            kind = "Im" if gen % 2 else "Re"
-            index = gen % (2 * len(self.parent()._gens)) // 2
-            point = self.parent()._gens[index]
-            k = gen // (2 * len(self.parent()._gens))
-
-            if isinstance(point, tuple) and len(point) == 3:
-                return kind, *point, k
-            return kind, point, k
+            for i, g in enumerate(self.parent()._regular_gens()):
+                if i == gen:
+                    return g
 
         def variable_name(gen):
             gen = decode(gen)
@@ -1156,12 +1243,12 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             if len(gen) == 3:
                 kind, point, k = gen
-                index = self.parent()._gens.index(point)
+                if k < 0:
+                    k = "__minus__" + str(-k)
+                index = self.parent()._centers.index(point)
                 return f"{kind}__open__a{index}__comma__{k}__close__"
 
-            kind, label, edge, pos, k = gen
-            index = self.parent()._gens.index((label, edge, pos))
-            return f"{kind}__open__a{index}__comma__{k}__close__"
+            raise NotImplementedError
 
         def key(gen):
             gen = decode(gen)
@@ -1172,7 +1259,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             if len(gen) == 3:
                 kind, point, k = gen
-                return self.parent()._gens.index(point), k, 0 if kind == "Re" else 1
+                return self.parent()._centers.index(point), k, 0 if kind == "Re" else 1
 
             kind, label, edge, pos, k = gen
             return label, edge, pos, k, 0 if kind == "Re" else 1
@@ -1193,7 +1280,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
         f = sum(coefficient * monomial(gens) for (gens, coefficient) in self._coefficients.items())
 
-        return repr(f).replace('__open__', '(').replace('__close__', ')').replace('__comma__', ',')
+        return repr(f).replace('__open__', '(').replace('__close__', ')').replace('__comma__', ',').replace("__minus__", "-")
 
     def degree(self, gen):
         r"""
@@ -1205,8 +1292,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.degree(a)
             1
             sage: (a + b).degree(a)
@@ -1236,8 +1323,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.is_monomial()
             True
             sage: (a + b).is_monomial()
@@ -1267,8 +1354,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.is_constant()
             False
             sage: (a + b).is_constant()
@@ -1305,7 +1392,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: x = R.gen(('imag', T(0, (1/2, 1/2)), 0)) + 1; x
+            sage: x = R.gen(('Im', T(0, (1/2, 1/2)), 0)) + 1; x
             Im(a2,0) + 1.00000000000000
             sage: x.norm(1)
             2.00000000000000
@@ -1326,8 +1413,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: -a
             -Im(a2,0)
             sage: -(a + b)
@@ -1353,8 +1440,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a + 1
             Im(a2,0) + 1.00000000000000
             sage: a + (-a)
@@ -1394,8 +1481,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a - 1
             Im(a2,0) - 1.00000000000000
             sage: a - a
@@ -1416,8 +1503,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a * a
             Im(a2,0)^2
             sage: a * b
@@ -1470,7 +1557,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
             sage: a * 0
             0.000000000000000
             sage: a * 1
@@ -1491,7 +1578,7 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
             sage: 0 * a
             0.000000000000000
             sage: 1 * a
@@ -1512,8 +1599,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.constant_coefficient()
             0.000000000000000
             sage: (a + b).constant_coefficient()
@@ -1536,8 +1623,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.variables()
             {Im(a2,0)}
             sage: (a + b).variables()
@@ -1575,8 +1662,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.is_variable()
             True
             sage: R.zero().is_variable()
@@ -1611,12 +1698,12 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a.describe()
-            ('imag', Point (1/2, 1/2) of polygon 0, 0)
+            ('Im', Point (1/2, 1/2) of polygon 0, 0)
             sage: b.describe()
-            ('real', Point (1/2, 1/2) of polygon 0, 0)
+            ('Re', Point (1/2, 1/2) of polygon 0, 0)
             sage: (a + b).describe()
             Traceback (most recent call last):
             ...
@@ -1631,16 +1718,9 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
         if variable < 0:
             return ("lagrange", -variable-1)
 
-        k = variable // (2 * len(self.parent()._gens))
-        kind = "imag" if variable % 2 else "real"
-
-        index = variable % (2 * len(self.parent()._gens)) // 2
-        gen = self.parent()._gens[index]
-        if isinstance(gen, tuple):
-            label, edge, pos = self.parent()._gens[index]
-            return (kind, label, edge, pos, k)
-        else:
-            return (kind, gen, k)
+        for i, g in enumerate(self.parent()._regular_gens()):
+            if i == variable:
+                return g
 
     def real(self):
         r"""
@@ -1652,8 +1732,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: c = (a + b)**2
             sage: c.real()
             Re(a2,0)^2 + 2.00000000000000*Re(a2,0)*Im(a2,0) + Im(a2,0)^2
@@ -1671,8 +1751,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: c = (a + b)**2
             sage: c.imag()
             0.000000000000000
@@ -1694,8 +1774,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a[a]
             1.00000000000000
             sage: a[b]
@@ -1726,8 +1806,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: R.zero().total_degree()
             -1
             sage: R.one().total_degree()
@@ -1751,8 +1831,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: R.zero().derivative(a)
             0.000000000000000
             sage: R.one().derivative(a)
@@ -1809,8 +1889,8 @@ class SymbolicCoefficientExpression(CommutativeRingElement):
 
             sage: from flatsurf.geometry.harmonic_differentials import SymbolicCoefficientRing, HarmonicDifferentials
             sage: R = SymbolicCoefficientRing(T, CC, HarmonicDifferentials(T)._geometry)
-            sage: a = R.gen(('imag', T(0, (1/2, 1/2)), 0))
-            sage: b = R.gen(('real', T(0, (1/2, 1/2)), 0))
+            sage: a = R.gen(('Im', T(0, (1/2, 1/2)), 0))
+            sage: b = R.gen(('Re', T(0, (1/2, 1/2)), 0))
             sage: a({a: 1})
             1.00000000000000
             sage: a({a: 2, b: 1})
@@ -1859,20 +1939,20 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         self._geometry = geometry
         self._homology_generators = geometry._homology_generators
 
-        self._gens = set()
+        self._centers = set()
         for (label, edge), a, b in self._homology_generators:
-            self._gens.add((label, edge if a else 0, a))
+            self._centers.add((label, edge if a else 0, a))
             if b == 1:
                 label, edge = self._surface.opposite_edge(label, edge)
                 edge = 0
                 b = 0
-            self._gens.add((label, edge, b))
+            self._centers.add((label, edge, b))
 
-        self._gens = [self._surface(*self._geometry.point_on_path_between_centers(*gen, wrap=True)) for gen in self._gens]
+        self._centers = [self._surface(*self._geometry.point_on_path_between_centers(*gen, wrap=True)) for gen in self._centers]
 
         if self._geometry._singularities:
             for vertex in self._surface.vertices():
-                self._gens.append(vertex)
+                self._centers.append(vertex)
 
         CommutativeRing.__init__(self, base_ring, category=category, normalize=False)
         self.register_coercion(base_ring)
@@ -1925,43 +2005,56 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         return self(self._base_ring(I))
 
     def gen(self, n):
-        if isinstance(n, tuple):
-            if len(n) == 3:
-                kind, point, k = n
-                if isinstance(point, tuple) and len(point) == 3:
-                    return self.gen(kind, *point, k)
-
-                if point not in self._gens:
-                    raise ValueError(f"{point} is not a valid generator; valid generators are {self._gens}")
-
-                if kind == "real":
-                    kind = 0
-                elif kind == "imag":
-                    kind = 1
-                else:
-                    raise NotImplementedError
-
-                n = k * 2 * len(self._gens) + 2 * self._gens.index(point) + kind
-            elif len(n) == 2:
-                kind, k = n
-
-                if kind != "lagrange":
-                    raise ValueError(kind)
-                if k < 0:
-                    raise ValueError(str(n))
-
-                n = -k-1
-            else:
-                raise ValueError(str(n))
-
         from sage.all import parent, ZZ
-        if parent(n) is ZZ:
+        if parent(n) == ZZ:
             n = int(n)
 
-        if not isinstance(n, int):
-            raise ValueError(str(n))
+        if isinstance(n, int):
+            return self((n,))
 
-        return self((n,))
+        if isinstance(n, tuple):
+            if len(n) == 2 and n[0] == "lagrange":
+                if n[1] < 0:
+                    raise ValueError
+
+                return self.gen(-n[1] - 1)
+
+            if len(n) == 3:
+                kind, center, k = n
+
+                for i, gen in enumerate(self._regular_gens()):
+                    if gen == n:
+                        return self.gen(i)
+
+        raise NotImplementedError
+
+    # TODO: Use fixed prec from constructor as default
+    @cached_method
+    def _regular_gens(self, prec=64):
+        def __regular_gens():
+            if len(self._surface.angles()) != 1:
+                raise NotImplementedError
+
+            d = self._surface.angles()[0] - 1
+
+            # Generate the power series entries corresponding to pole coefficients
+            for c in self._centers:
+                if c.is_vertex():
+                    for n in range(-d, 0):
+                        yield ("Re", c, n)
+                        yield ("Im", c, n)
+
+            # Generate the non-negative coefficients. At singularities we have to create multiple coefficients.
+            for i in range(prec):
+                for c in self._centers:
+                    if c.is_vertex():
+                        for j in range(d + 1):
+                            yield ("Re", c, i * (d + 1) + j)
+                            yield ("Im", c, i * (d + 1) + j)
+                    else:
+                        yield ("Re", c, i)
+                        yield ("Im", c, i)
+        return [gen for gen in __regular_gens()]
 
     def ngens(self):
         raise NotImplementedError
@@ -2084,7 +2177,7 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator at this point")
 
-        return self.symbolic_ring().gen(("real", self._surface(*self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)), k))
+        return self.symbolic_ring().gen(("Re", self._surface(*self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)), k))
 
     @cached_method
     def _imag_nonsingular(self, label, edge, pos, k):
@@ -2113,7 +2206,7 @@ class PowerSeriesConstraints:
         if k >= self._prec:
             raise ValueError(f"symbolic ring has no {k}-th generator at this point")
 
-        return self.symbolic_ring().gen(("imag", self._surface(*self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)), k))
+        return self.symbolic_ring().gen(("Im", self._surface(*self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)), k))
 
     @cached_method
     def lagrange(self, k):
@@ -2121,12 +2214,17 @@ class PowerSeriesConstraints:
 
     def project(self, x, part):
         r"""
-        Return the ``"real"`` or ``"imag"```inary ``part`` of ``x``.
+        Return the ``"Re"`` or ``"Im"```inary ``part`` of ``x``.
         """
-        if part not in ["real", "imag"]:
+        if part not in ["Re", "Im"]:
             raise ValueError("part must be one of real or imag")
 
-        # Return the real part of a complex number.
+        if part == "Re":
+            part = "real"
+        if part == "Im":
+            part = "imag"
+
+        # Return the real/imaginary part of a complex number.
         if hasattr(x, part):
             x = getattr(x, part)
             if callable(x):
@@ -2168,7 +2266,7 @@ class PowerSeriesConstraints:
             -2.0000000000000*Im(a2,0)
 
         """
-        return self.project(x, "real")
+        return self.project(x, "Re")
 
     def imaginary_part(self, x):
         r"""
@@ -2202,7 +2300,7 @@ class PowerSeriesConstraints:
             2*Re(a2,0)
 
         """
-        return self.project(x, "imag")
+        return self.project(x, "Im")
 
     def add_constraint(self, expression, rank_check=True):
         total_degree = expression.total_degree()
@@ -2320,14 +2418,14 @@ class PowerSeriesConstraints:
             0.000000000000000
 
             sage: a, b, c, d = H.gens()
-            sage: C.integrate(b)
-            1.41421356237310*Re(a0,0) + 1.41421356237310*I*Im(a0,0)
+            sage: C.integrate(b) # TDOO: The part concerning a1 is likely not correct.
+            1.41421356237310*Re(a0,0) + 1.41421356237310*I*Im(a0,0) + (0.521980719591107 - 5.55111512312578e-17*I)*Re(a1,-2) + (5.55111512312578e-17 + 0.521980719591107*I)*Im(a1,-2) + (2.77555756156289e-17 + 0.454692255963595*I)*Re(a1,-1) + (-0.454692255963595 + 2.77555756156289e-17*I)*Im(a1,-1) + (-0.389300863573646 + 1.38777878078145e-17*I)*Re(a1,0) + (-1.38777878078145e-17 - 0.389300863573646*I)*Im(a1,0) + (-1.04083408558608e-17 - 0.327551243899061*I)*Re(a1,1) + (0.327551243899061 - 1.04083408558608e-17*I)*Im(a1,1) + 0.270679432377470*Re(a1,2) + 0.270679432377470*I*Im(a1,2)
 
-            sage: C.integrate(d)
-            (-1.41421356237310*I)*Re(a0,0) + 1.41421356237310*Im(a0,0)
+            sage: C.integrate(d) # TODO: The part concerning a1 is likely not correct.
+            (-1.41421356237310*I)*Re(a0,0) + 1.41421356237310*Im(a0,0) + (1.66533453693773e-16 - 0.521980719591107*I)*Re(a1,-2) + (0.521980719591107 + 1.66533453693773e-16*I)*Im(a1,-2) + (-1.11022302462516e-16 + 0.454692255963595*I)*Re(a1,-1) + (-0.454692255963595 - 1.11022302462516e-16*I)*Im(a1,-1) + (5.55111512312578e-17 - 0.389300863573646*I)*Re(a1,0) + (0.389300863573646 + 5.55111512312578e-17*I)*Im(a1,0) + (-2.77555756156289e-17 + 0.327551243899061*I)*Re(a1,1) + (-0.327551243899061 - 2.77555756156289e-17*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a1,2) + 0.270679432377470*Im(a1,2)
 
-            sage: C.integrate(a)
-            (1.00000000000000 - 1.00000000000000*I)*Re(a0,0) + (1.00000000000000 + 1.00000000000000*I)*Im(a0,0)
+            sage: C.integrate(a)  # TODO: The part concerning a1 is likely not correct.
+            (1.00000000000000 - 1.00000000000000*I)*Re(a0,0) + (1.00000000000000 + 1.00000000000000*I)*Im(a0,0) + (-0.369096106471506 + 0.369096106471506*I)*Re(a1,-2) + (-0.369096106471506 - 0.369096106471506*I)*Im(a1,-2) + (-1.38777878078145e-17 + 0.454692255963596*I)*Re(a1,-1) + (-0.454692255963596 - 1.38777878078145e-17*I)*Im(a1,-1) + (0.275277280554704 + 0.275277280554704*I)*Re(a1,0) + (-0.275277280554704 + 0.275277280554704*I)*Im(a1,0) + (0.327551243899061 + 6.93889390390723e-18*I)*Re(a1,1) + (-6.93889390390723e-18 + 0.327551243899061*I)*Im(a1,1) + (0.191399262161835 - 0.191399262161835*I)*Re(a1,2) + (0.191399262161835 + 0.191399262161835*I)*Im(a1,2)
 
         """
         surface = cycle.surface()
@@ -2461,6 +2559,8 @@ class PowerSeriesConstraints:
         factor = ComplexField(54)(factorial(derivative))
 
         if edge is None and pos is None:
+            raise NotImplementedError
+            # TODO: Δ has a different meaning now.
             edge, pos, Δ = self.relativize(label, Δ)
 
         for k in range(derivative, self._prec):
@@ -2473,49 +2573,57 @@ class PowerSeriesConstraints:
 
         return value
 
+    def value(self, point):
+        r"""
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: H = SimplicialHomology(S)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(S, 1, Ω._geometry)
+            sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000, 0)))
+            sage: C.value(point)
+
+        """
+        (label, center), Δ = self.relativize(point)
+
+        Δ = self.complex_field()(*Δ)
+
+        center_point = self._surface(label, center)
+        # See, _L2_consistency_voronoi_boundary for the notation: we compute
+        # the value f(z) =
+        # Σ_{n ≥ -d} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
+        # at z = center + Δ, i.e., z-α=Δ.
+        κ, d = self._geometry.branch((label, center), Δ)
+
+        if Δ == 0 and d:
+            raise NotImplementedError
+
+        expression = self.symbolic_ring().zero()
+        for n in self._range(center_point, self._prec):
+            an = self._gen("Re", center_point, n) + self.complex_field().gen() * self.symbolic_ring(self.complex_field())(self._gen("Im", center_point, n))
+            expression += an * self.ζ(d + 1) ** (κ * (n + 1)) / (d + 1) * Δ.nth_root(d + 1)**(n - d)
+
+        return expression
+
     @cached_method
     def _circumscribing_circle_center(self, label):
         from sage.all import CC
         return CC(*self._surface.polygon(label).circumscribing_circle().center())
 
-    def relativize(self, label, Δ):
+    def relativize(self, point):
         r"""
-        Determine the power series which is best suited to evaluate a function at Δ.
+        Determine the power series which is best suited to evaluate a function at ``point``.
 
-        INPUT:
-
-        - ``label`` -- a label of a polygon in the surface
-
-        - ``Δ`` -- a complex number describing coordinates relative to the
-          center of the circumscribing circle of that polygon.
+        Returns the point at which the power series is developed as a pair
+        (label, coordinates) and a vector Δ from that point to the ``point``.
 
         """
-        # TODO: For performance reasons we compute in CC. We should probably use complex_field()
-        from sage.all import CC
-
-        Δ = CC(Δ)
-        Δ += self._circumscribing_circle_center(label)
-
-        # TODO: This sometimes fails due to numerical noise when plotting.
-        # if not self._surface.polygon(label).contains_point(Δ):
-        #     raise ValueError
-
-        from sage.all import RR
-
-        def center(edge, pos):
-            lbl, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True, ring=RR)
-            if lbl != label:
-                raise NotImplementedError
-            return CC(*center)
-
-        edge, pos = min(
-            [(edge, pos) for (lbl, edge, pos) in self.symbolic_ring()._gens if lbl == label],
-            key=lambda edge_pos: (Δ - center(*edge_pos)).norm())
-
-        # TODO: Once we treat centers that are in a different polygon, we need to take this into account here.
-        Δ -= center(edge, pos)
-
-        return edge, pos, self.complex_field()(Δ)
+        return self._voronoi_diagram().relativize(point)
 
     def require_midpoint_derivatives(self, derivatives):
         r"""
@@ -2727,10 +2835,28 @@ class PowerSeriesConstraints:
 
         return cost
 
+    @cached_method
+    def ζ(self, d):
+        from sage.all import exp, pi, I
+        return self.complex_field()(exp(2*pi*I / (d + 1)))
+
+    def _range(self, center, prec):
+        if center.is_vertex():
+            return range(-2, 3*prec)
+        return range(0, 3*prec, 3)
+
+    def _gen(self, kind, center, n):
+        if center.is_vertex():
+            return self.symbolic_ring(self.real_field()).gen((kind, center, n))
+        else:
+            assert n >= 0 and n % 3 == 0
+            return self.symbolic_ring(self.real_field()).gen((kind, center, n // 3))
+
     class Integrator:
         def __init__(self, constraints, segment):
             # TODO: Verify that roots are consistent along the segment! Always the case for the octagon.
             self._segment = segment
+            self._constraints = constraints
             self._surface = constraints._surface
             self._d = 2
             self.real_field = constraints.real_field()
@@ -2749,23 +2875,29 @@ class PowerSeriesConstraints:
             """
             d = self._d
 
+            _, segment = self._segment.segment()
+            a, b = segment.endpoints()
+            a = self.complex_field(*a)
+            b = self.complex_field(*b)
+
+            # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
+            constant = self.ζ()**(κ * (n + 1)) / (d + 1) * (b - a)
+
             def value(part, t):
-                _, segment = self._segment.segment()
-                a, b = segment.endpoints()
                 z = self.complex_field(*((1 - t) * a + t * b))
 
-                value = self.ζ()**(κ * (n + 1)) / (d + 1) * (z-α).nth_root(d + 1)**(n - d)
+                value = constant * (z-α).nth_root(d + 1)**(n - d)
 
-                if part == "real":
+                if part == "Re":
                     return float(value.real())
-                if part == "imag":
+                if part == "Im":
                     return float(value.imag())
 
                 raise NotImplementedError
 
             from scipy.integrate import quad
-            real, error = quad(lambda t: value("real", t), 0, 1)
-            imag, error = quad(lambda t: value("imag", t), 0, 1)
+            real, error = quad(lambda t: value("Re", t), 0, 1)
+            imag, error = quad(lambda t: value("Im", t), 0, 1)
 
             return self.complex_field(real, imag)
 
@@ -2776,42 +2908,21 @@ class PowerSeriesConstraints:
             \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{d+1}^{λ (n+1)}/(d+1) (z-β)^\frac{m-d}{d+1}} dz
             """
             C = self.complex_field
-            d = self._d
+            _, segment = self._segment.segment()
+            a, b = segment.endpoints()
+            a = C(*a)
+            b = C(*b)
 
-            from sage.all import exp, pi, I
-            ζ = C(exp(2*pi*I / (d + 1)))
-
-            def value(t):
-                _, segment = self._segment.segment()
-                a, b = segment.endpoints()
-                z = C(*((1 - t) * a + t * b))
-
-                value = self.ζ()**(κ * (n+1)) / (d+1) * (z-α).nth_root(d + 1)**(n - d) * (self.ζ()**(λ * (n+1)) / (d+1) * (z-β).nth_root(d + 1)**(m - d)).conjugate()
-
-                if part == "real":
-                    return float(value.real())
-                if part == "imag":
-                    return float(value.imag())
-
-                raise NotImplementedError
-
-            from scipy.integrate import quad
-            integral, error = quad(value, 0, 1)
-
-            return self.real_field()(integral)
+            return integral2(part, α, κ, n, β, λ, m, d=self._d, ζ=self.ζ(), a=a, b=b, C=C, R=self.real_field)
 
         def ζ(self):
-            C = self.complex_field
-            d = self._d
-
-            from sage.all import exp, pi, I
-            return C(exp(2*pi*I / (d + 1)))
+            return self._constraints.ζ(self._d)
 
         def α(self):
             return self.complex_field(*self._center_coordinates)
 
         def β(self):
-            return self.complex_field(self._*self._opposite_center_coordinates)
+            return self.complex_field(*self._opposite_center_coordinates)
 
         def κ(self):
             if not self._center.is_vertex():
@@ -2826,6 +2937,7 @@ class PowerSeriesConstraints:
             return self._κλ(self._opposite_center_coordinates, self._segment.segment()[1])
 
         def _κλ(self, center, segment):
+            # TODO: Mostly duplicated as "branch" in GeometricPrimitives.
             low = min([endpoint[1] for endpoint in segment.endpoints()]) < center[1]
 
             for i, vertex in enumerate(self._surface.polygon(self._label).vertices()):
@@ -2849,27 +2961,29 @@ class PowerSeriesConstraints:
 
             raise NotImplementedError
 
+        def range(self, prec):
+            return self._constraints._range(self._center, prec)
+
+        def opposite_range(self, prec):
+            return self._constraints._range(self._opposite_center, prec)
+
         def a(self, n):
             return self.Re_a(n) + self.I * self.C(self.Im_a(n))
 
         def Re_a(self, n):
-            return self._gen("real", self._center, n)
+            return self._constraints._gen("Re", self._center, n)
 
         def Im_a(self, n):
-            return self._gen("imag", self._center, n)
+            return self._constraints._gen("Im", self._center, n)
 
         def Re_b(self, n):
-            return self._gen("real", self._opposite_center, n)
+            return self._constraints._gen("Re", self._opposite_center, n)
 
         def Im_b(self, n):
-            return self._gen("imag", self._opposite_center, n)
+            return self._constraints._gen("Im", self._opposite_center, n)
 
         def f(self, n):
             return self.integral(self.α(), self.κ(), n)
-
-        def _gen(self, kind, center, n):
-            return self.R.gen((kind, center, n))
-
 
     def _voronoi_diagram_centers(self):
         # TODO: Hardcoded octagon here.
@@ -2917,7 +3031,7 @@ class PowerSeriesConstraints:
 
         Therefore, we write with the center y=0 being z=α
 
-        y(z) = ζ_{d+1}^κ (z-α)^{-(d+1)}
+        y(z) = ζ_{d+1}^κ (z-α)^{1/(d+1)}
 
         where the last part denotes the principal `d+1`-st root of `z`.
 
@@ -2999,10 +3113,9 @@ class PowerSeriesConstraints:
         opposite_center, label, opposite_center_coordinates = boundary_segment.opposite_center()
 
         d = 2
-        limit = 3 * self._prec
 
-        Re = "real"
-        Im = "imag"
+        Re = "Re"
+        Im = "Im"
 
         integrator = self.Integrator(self, boundary_segment)
 
@@ -3019,8 +3132,8 @@ class PowerSeriesConstraints:
             Return the value of `\int_γ f\overline{f}.
             """
             value = R.zero()
-            for n in range(-d, limit):
-                for m in range(-d, limit):
+            for n in integrator.range(self._prec):
+                for m in integrator.range(self._prec):
                     value += Re_a(n) * Re_a(m) * f_(Re, n, m) + Im_a(n) * Im_a(m) * f_(Re, n, m) + Re_a(n) * Im_a(m) * f_(Im, n, m) - Im_a(n) * Re_a(m) * f_(Im, n, m)
 
             return value
@@ -3030,8 +3143,8 @@ class PowerSeriesConstraints:
             Return the value of `\int_γ f\overline{g}.
             """
             value = R.zero()
-            for n in range(-d, limit):
-                for m in range(-d, limit):
+            for n in integrator.range(self._prec):
+                for m in integrator.opposite_range(self._prec):
                     value += Re_a(n) * Re_b(m) * fg_(Re, n, m) + Im_a(n) * Im_b(m) * fg_(Re, n, m) + Re_a(n) * Im_b(m) * fg_(Im, n, m) - Im_a(n) * Re_b(m) * fg_(Im, n, m)
 
             return value
@@ -3041,8 +3154,8 @@ class PowerSeriesConstraints:
             Return the value of `\int_γ g\overline{g}.
             """
             value = R.zero()
-            for n in range(-d, limit):
-                for m in range(-d, limit):
+            for n in integrator.opposite_range(self._prec):
+                for m in integrator.opposite_range(self._prec):
                     value += Re_b(n) * Re_b(m) * g_(Re, n, m) + Im_b(n) * Im_b(m) * g_(Re, n, m) + Re_b(n) * Im_b(m) * g_(Im, n, m) - Im_b(n) * Re_b(m) * g_(Im, n, m)
 
             return value
@@ -3196,14 +3309,13 @@ class PowerSeriesConstraints:
     #     return area
 
     def _squares(self):
-        cost = self.symbolic_ring().zero()
-
-        for (label, edge, pos) in self.symbolic_ring()._gens:
-            for k in range(1, self._prec):
-                cost += self.real(label, edge, pos, k)**2
-                cost += self.imag(label, edge, pos, k)**2
-
-        return cost
+        raise NotImplementedError
+        # cost = self.symbolic_ring().zero()
+        # for (label, edge, pos) in self.symbolic_ring()._gens:
+        #     for k in range(1, self._prec):
+        #         cost += self.real(label, edge, pos, k)**2
+        #         cost += self.imag(label, edge, pos, k)**2
+        # return cost
 
     # def _area_upper_bound(self):
     #     r"""
@@ -3276,7 +3388,7 @@ class PowerSeriesConstraints:
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [32.0000000000000*Im(a2,0), 20.0000000000000*Re(a2,0)]
+            [20.0000000000000*Re(a2,0), 32.0000000000000*Im(a2,0)]
 
         In this example, the constraints and the optimized values do not
         overlap, so again we do not get Lagrange multipliers::
@@ -3290,7 +3402,7 @@ class PowerSeriesConstraints:
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1), -λ17 + λ19, -λ16 + λ18, 0.0762270995598000*λ16 + 0.160570808419475*λ18, -0.0762270995598000*λ17 - 0.160570808419475*λ19, -λ7 + λ9, -λ6 + λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.0762270995598000*λ6 + 0.160570808419475*λ8, 34.0000000000000*Im(a2,0) + λ1 - λ9 + λ11 - λ19, 20.0000000000000*Re(a2,0) + λ0 - λ8 + λ10 - λ18, 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, -λ15 + λ17, -λ14 + λ16, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, -λ5 + λ7, -λ4 + λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, -λ13 + λ15, -λ12 + λ14, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, -λ1 + λ3, -λ0 + λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.160570808419475*λ0 + 0.0762270995598000*λ2, -λ3 + λ5, -λ2 + λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, -λ11 + λ13, -λ10 + λ12, 0.160570808419475*λ10 + 0.0762270995598000*λ12, -0.160570808419475*λ11 - 0.0762270995598000*λ13]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1), -λ16 + λ18, -λ17 + λ19, -λ6 + λ8, -λ7 + λ9, 20.0000000000000*Re(a2,0) + λ0 - λ8 + λ10 - λ18, 34.0000000000000*Im(a2,0) + λ1 - λ9 + λ11 - λ19, -λ14 + λ16, -λ15 + λ17, -λ4 + λ6, -λ5 + λ7, -λ12 + λ14, -λ13 + λ15, -λ0 + λ2, -λ1 + λ3, -λ2 + λ4, -λ3 + λ5, -λ10 + λ12, -λ11 + λ13, -0.0762270995598000*λ17 - 0.160570808419475*λ19, 0.0762270995598000*λ16 + 0.160570808419475*λ18, 0.0762270995598000*λ6 + 0.160570808419475*λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, 0.160570808419475*λ0 + 0.0762270995598000*λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, -0.160570808419475*λ11 - 0.0762270995598000*λ13, 0.160570808419475*λ10 + 0.0762270995598000*λ12]
 
         ::
 
@@ -3298,11 +3410,12 @@ class PowerSeriesConstraints:
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
+
             sage: f = 3*C._real_nonsingular(0, 0, 0, 1)^2 + 5*C._imag_nonsingular(0, 0, 0, 1)^2
             sage: C.optimize(f)
             sage: C._optimize_cost()
             sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1), -λ17 + λ19, -λ16 + λ18, 0.0762270995598000*λ16 + 0.160570808419475*λ18, -0.0762270995598000*λ17 - 0.160570808419475*λ19, -λ7 + λ9, -λ6 + λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 0.0762270995598000*λ6 + 0.160570808419475*λ8, λ1 - λ9 + λ11 - λ19, λ0 - λ8 + λ10 - λ18, 10.0000000000000*Im(a2,1) + 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, 6.00000000000000*Re(a2,1) + 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, -λ15 + λ17, -λ14 + λ16, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, -λ5 + λ7, -λ4 + λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, -λ13 + λ15, -λ12 + λ14, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, -λ1 + λ3, -λ0 + λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.160570808419475*λ0 + 0.0762270995598000*λ2, -λ3 + λ5, -λ2 + λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, -λ11 + λ13, -λ10 + λ12, 0.160570808419475*λ10 + 0.0762270995598000*λ12, -0.160570808419475*λ11 - 0.0762270995598000*λ13]
+            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1), -λ16 + λ18, -λ17 + λ19, -λ6 + λ8, -λ7 + λ9, λ0 - λ8 + λ10 - λ18, λ1 - λ9 + λ11 - λ19, -λ14 + λ16, -λ15 + λ17, -λ4 + λ6, -λ5 + λ7, -λ12 + λ14, -λ13 + λ15, -λ0 + λ2, -λ1 + λ3, -λ2 + λ4, -λ3 + λ5, -λ10 + λ12, -λ11 + λ13, -0.0762270995598000*λ17 - 0.160570808419475*λ19, 0.0762270995598000*λ16 + 0.160570808419475*λ18, 0.0762270995598000*λ6 + 0.160570808419475*λ8, 0.0762270995598000*λ7 + 0.160570808419475*λ9, 6.00000000000000*Re(a2,1) + 0.123661556725753*λ0 + 0.123661556725753*λ8 - 0.123661556725753*λ11 - 0.123661556725753*λ19, 10.0000000000000*Im(a2,1) + 0.123661556725753*λ1 + 0.123661556725753*λ9 + 0.123661556725753*λ10 + 0.123661556725753*λ18, -0.0570539419087137*λ15 - 0.0824865933862581*λ17, 0.0570539419087137*λ14 + 0.0824865933862581*λ16, 0.0570539419087137*λ4 + 0.0824865933862581*λ6, 0.0570539419087137*λ5 + 0.0824865933862581*λ7, -0.0824865933862581*λ13 - 0.0570539419087137*λ15, 0.0824865933862581*λ12 + 0.0570539419087137*λ14, 0.160570808419475*λ0 + 0.0762270995598000*λ2, 0.160570808419475*λ1 + 0.0762270995598000*λ3, 0.0824865933862581*λ2 + 0.0570539419087137*λ4, 0.0824865933862581*λ3 + 0.0570539419087137*λ5, -0.160570808419475*λ11 - 0.0762270995598000*λ13, 0.160570808419475*λ10 + 0.0762270995598000*λ12]
 
         """
         if f:
@@ -3327,24 +3440,21 @@ class PowerSeriesConstraints:
 
         # We form the partial derivative with respect to the variables Re(a_k)
         # and Im(a_k).
-        for gen_ in self.symbolic_ring()._gens:
-            for k in range(self._prec):
-                for kind in ["imag", "real"]:
-                    gen = self.symbolic_ring().gen((kind, gen_, k))
+        for gen in self.symbolic_ring()._regular_gens(prec=self._prec):
+            gen = self.symbolic_ring().gen(gen)
+            if self._cost.degree(gen) <= 0:
+                # The cost function does not depend on this variable.
+                # That's fine, we still need it for the Lagrange multipliers machinery.
+                pass
 
-                    if self._cost.degree(gen) <= 0:
-                        # The cost function does not depend on this variable.
-                        # That's fine, we still need it for the Lagrange multipliers machinery.
-                        pass
+            gen = self._cost.parent()(gen)
 
-                    gen = self._cost.parent()(gen)
+            L = self._cost.derivative(gen)
 
-                    L = self._cost.derivative(gen)
+            for i in range(lagranges):
+                L += g[i][gen] * self.lagrange(i)
 
-                    for i in range(lagranges):
-                        L += g[i][gen] * self.lagrange(i)
-
-                    self.add_constraint(L, rank_check=False)
+            self.add_constraint(L, rank_check=False)
 
         # We form the partial derivatives with respect to the λ_i. This yields
         # the condition -g_i=0 which is already recorded in the linear system.
@@ -3495,7 +3605,7 @@ class PowerSeriesConstraints:
 
         non_lagranges = {gen: i for (i, gen) in enumerate(non_lagranges)}
 
-        if len(set(self.symbolic_ring().gen((kind, point, k)) for kind in ["real", "imag"] for point in self.symbolic_ring()._gens for k in range(self._prec))) != len(non_lagranges):
+        if len(set(self.symbolic_ring()._regular_gens(self._prec))) != len(non_lagranges):
             if not nowarn:
                 from warnings import warn
                 warn(f"Some power series coefficients are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
@@ -3544,19 +3654,15 @@ class PowerSeriesConstraints:
 
         """
         from sage.all import PowerSeriesRing
-        if len(args) == 3:
-            # TODO: Remove all support for triple encoded variables?
-            label, edge, pos = args
-            polygon = list(self._surface.labels()).index(label)
-            pos = [p for (lbl, e, p) in self.symbolic_ring()._gens if lbl == label and e == edge].index(pos)
-
-            return PowerSeriesRing(self.complex_field(), f"z{polygon}_{edge}_{pos}")
 
         if len(args) != 1:
             raise NotImplementedError
 
         point = args[0]
-        return PowerSeriesRing(self.complex_field(), f"z{self.symbolic_ring()._gens.index(point)}")
+        return PowerSeriesRing(self.complex_field(), f"z{self.symbolic_ring()._centers.index(point)}")
+
+    def laurent_series_ring(self, *args):
+        return self.power_series_ring(*args).fraction_field()
 
     def solve(self, algorithm="eigen+mpfr"):
         r"""
@@ -3595,20 +3701,23 @@ class PowerSeriesConstraints:
         # print(f"Solving {rows}×{columns} system")
         rank = A.rank()
 
-        from sage.all import RDF
+        from sage.all import RDF, oo
         condition = A.change_ring(RDF).condition()
 
-        def cond():
-            C = A.list()
-            # numpy.random.shuffle() is much faster than random.shuffle() on large lists
-            import numpy.random
-            numpy.random.shuffle(C)
-            return A.parent()(C).change_ring(RDF).condition()
+        if condition == oo:
+            print("condition number is not finite")
+        else:
+            def cond():
+                C = A.list()
+                # numpy.random.shuffle() is much faster than random.shuffle() on large lists
+                import numpy.random
+                numpy.random.shuffle(C)
+                return A.parent()(C).change_ring(RDF).condition()
 
-        random_condition = min([cond() for i in range(8)])
+            random_condition = min([cond() for i in range(8)])
 
-        if random_condition / condition < .01:
-            print(f"condition is {condition:.1e} but could be {random_condition/condition:.1e} of that")
+            if random_condition / condition < .01:
+                print(f"condition is {condition:.1e} but could be {random_condition/condition:.1e} of that")
 
         if rank < columns:
             # TODO: Warn?
@@ -3646,11 +3755,31 @@ class PowerSeriesConstraints:
         if lagranges:
             solution = solution[:-lagranges]
 
-        P = len(self.symbolic_ring()._gens)
-        real_solution = [[solution[decode[2*p + 2*P*prec]] if 2*p + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
-        imag_solution = [[solution[decode[2*p + 1 + 2*P*prec]] if 2*p + 1 + 2*P*prec in decode else 0 for prec in range(self._prec)] for p in range(P)]
+        series = {point: {} for point in self.symbolic_ring()._centers}
 
-        return {
-            point: self.power_series_ring(point)([self.complex_field()(real_solution[p][k], imag_solution[p][k]) for k in range(self._prec)], self._prec)
-            for (p, point) in enumerate(self.symbolic_ring()._gens)
-        }, residue
+        for gen in self.symbolic_ring()._regular_gens(self._prec):
+            i = next(iter(self.symbolic_ring().gen(gen)._coefficients))[0]
+
+            if i not in decode:
+                continue
+
+            i = decode[i]
+            value = solution[i]
+
+            part, center, k = gen
+            if k not in series[center]:
+                series[center][k] = [None, None]
+
+            if part == "Re":
+                part = 0
+            elif part == "Im":
+                part = 1
+            else:
+                raise NotImplementedError
+
+            series[center][k][part] = value
+
+        series = {point:
+                  sum((self.complex_field()(*entry) * self.laurent_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.laurent_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
+
+        return series, residue
