@@ -1679,36 +1679,39 @@ def from_pyflatsurf(T):
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf, from_pyflatsurf # optional: pyflatsurf
         sage: S = translation_surfaces.veech_double_n_gon(5) # optional: pyflatsurf
-        sage: from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
+        sage: T = from_pyflatsurf(to_pyflatsurf(S)) # optional: pyflatsurf
         doctest:warning
         ...
         UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
-        TranslationSurface built from 6 polygons
+        sage: T  # optional: pyflatsurf
+        Translation Surface in H_2(2) built from 6 isosceles triangles
 
-    TESTS:
+    TESTS::
+
+        sage: from flatsurf.geometry.categories import TranslationSurfaces
+        sage: T in TranslationSurfaces()  # optional: pyflatsurf
+        True
 
     Verify that #137 has been resolved::
 
-        sage: from flatsurf import polygons
-        sage: from flatsurf.geometry.surface import Surface_list
-        sage: from flatsurf.geometry.translation_surface import TranslationSurface
+        sage: from flatsurf import polygons, MutableOrientedSimilaritySurface
         sage: from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
         sage: from flatsurf.geometry.pyflatsurf_conversion import from_pyflatsurf
         sage: P = polygons.regular_ngon(10)
-        sage: S = Surface_list(P.base_ring())
+        sage: S = MutableOrientedSimilaritySurface(P.base_ring())
         sage: S.add_polygon(P)
         0
-        sage: for i in range(5): S.set_edge_pairing(0, i, 0, 5+i)
-        sage: M = TranslationSurface(S)
+        sage: for i in range(5): S.glue((0, i), (0, 5+i))
+        sage: S.set_immutable()
+        sage: M = S
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
-        TranslationSurface built from 8 polygons
+        Translation Surface in H_2(1^2) built from 2 isosceles triangles and 6 triangles
 
     """
     import warnings
     warnings.warn("from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.")
 
-    from flatsurf.geometry.translation_surface import TranslationSurface
-    return TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(T).domain())
+    return FlatTriangulationConversion.from_pyflatsurf(T).domain()

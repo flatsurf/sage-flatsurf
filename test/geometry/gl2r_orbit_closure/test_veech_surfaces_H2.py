@@ -1,7 +1,7 @@
 r"""
 Calta-McMullen Veech surfaces in H(2)
 """
-######################################################################
+# ****************************************************************************
 # This file is part of sage-flatsurf.
 #
 #       Copyright (C) 2020 Vincent Delecroix
@@ -18,7 +18,7 @@ Calta-McMullen Veech surfaces in H(2)
 #
 # You should have received a copy of the GNU General Public License
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 

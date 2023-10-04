@@ -137,7 +137,7 @@ class GraphicalSurface:
 
     EXAMPLES::
 
-        sage: from flatsurf import *
+        sage: from flatsurf import similarity_surfaces
         sage: from flatsurf.graphical.surface import GraphicalSurface
 
         sage: s = similarity_surfaces.example()
@@ -150,23 +150,23 @@ class GraphicalSurface:
 
     def __init__(
         self,
-        similarity_surface,
+        surface,
         adjacencies=None,
         polygon_labels=True,
         edge_labels="gluings",
         default_position_function=None,
     ):
-        from flatsurf.geometry.similarity_surface import SimilaritySurface
-
-        if not isinstance(similarity_surface, SimilaritySurface):
-            raise TypeError
-        self._ss = similarity_surface
+        self._ss = surface
         self._default_position_function = default_position_function
         self._polygons = {}
-        self._visible = set([self._ss.base_label()])
+
+        if not self._ss.is_connected():
+            raise NotImplementedError("cannot plot disconnected surfaces yet")
+
+        self._visible = set(self._ss.roots())
 
         if adjacencies is None:
-            if self._ss.is_finite():
+            if self._ss.is_finite_type():
                 self.make_all_visible()
         self._edge_labels = None
 
@@ -269,7 +269,7 @@ class GraphicalSurface:
 
         TESTS::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
 
             sage: c = translation_surfaces.chamanara(1/2)
             sage: gs = c.graphical_surface()
@@ -311,7 +311,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.octagon_and_squares()
             sage: gs = s.graphical_surface()
             sage: gs.will_plot_zero_flags = True
@@ -363,7 +363,7 @@ class GraphicalSurface:
         return gs
 
     def __repr__(self):
-        return "Graphical version of Similarity Surface {!r}".format(self._ss)
+        return "Graphical representation of {!r}".format(self._ss)
 
     def visible(self):
         r"""
@@ -403,7 +403,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface()
@@ -412,7 +412,7 @@ class GraphicalSurface:
             ...Graphics object consisting of 13 graphics primitives
 
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(cached=False, adjacencies=[])
+            sage: g = s.graphical_surface(adjacencies=[])
             sage: g.make_all_visible(adjacent=False)
             sage: g.plot()
             ...Graphics object consisting of 16 graphics primitives
@@ -420,11 +420,11 @@ class GraphicalSurface:
         if adjacent is None:
             adjacent = self._default_position_function is None
         if limit is None:
-            if not self._ss.is_finite():
+            if not self._ss.is_finite_type():
                 raise NotImplementedError
             if adjacent:
-                for label, poly in self._ss.walker().label_polygon_iterator():
-                    for e in range(poly.num_edges()):
+                for label, poly in zip(self._ss.labels(), self._ss.polygons()):
+                    for e in range(len(poly.vertices())):
                         l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
                             self.make_adjacent(label, e)
@@ -432,7 +432,7 @@ class GraphicalSurface:
                 from flatsurf.geometry.similarity import SimilarityGroup
 
                 T = SimilarityGroup(self._ss.base_ring())
-                for label in self._ss.label_iterator():
+                for label in self._ss.labels():
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
@@ -451,8 +451,8 @@ class GraphicalSurface:
                 raise ValueError
             if adjacent:
                 i = 0
-                for label, poly in self._ss.walker().label_polygon_iterator():
-                    for e in range(poly.num_edges()):
+                for label, poly in zip(self._ss.labels(), self._ss.polygons()):
+                    for e in range(len(poly.vertices())):
                         l2, e2 = self._ss.opposite_edge(label, e)
                         if not self.is_visible(l2):
                             self.make_adjacent(label, e)
@@ -464,7 +464,7 @@ class GraphicalSurface:
 
                 T = SimilarityGroup(self._ss.base_ring())
                 i = 0
-                for label in self._ss.label_iterator():
+                for label in self._ss.labels():
                     if not self.is_visible(label):
                         if self._default_position_function is None:
                             # No reasonable way to display the polygon, so we do this hack:
@@ -552,7 +552,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface(adjacencies=[])
             sage: gs.graphical_polygon(0)
@@ -609,7 +609,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(adjacencies=[])
             sage: g.is_adjacent(0,0)
@@ -651,7 +651,7 @@ class GraphicalSurface:
         INPUT:
 
         - ``point`` -- Coordinates of a point in graphical coordinates to be
-            converted to graphical coordinates.
+            converted to surface coordinates.
 
         - ``v`` -- (default ``None``) If provided a tangent vector in graphical
             coordinates based at the provided point.
@@ -674,7 +674,7 @@ class GraphicalSurface:
             surface is infinite. In this case, the singularity should be
             returned but it could be infinite. Then singularity_limit controls
             how far we look for the singularity to close. This value is passed
-            to ``SimilaritySurface.surface_point``.
+            to the ``point()`` method on the surface.
 
         - ``search_all`` -- (default ``False``) By default we look just in
             polygons with visible label. If set to ``True``, then we instead
@@ -687,7 +687,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((1,-2))
@@ -695,6 +695,7 @@ class GraphicalSurface:
             sage: gs.to_surface((1,-2), v=(1,0))
             SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
 
+            sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.infinite_staircase()
             sage: gs = s.graphical_surface()
             sage: gs.to_surface((4,4), (1,1), search_all=True, search_limit=20)
@@ -715,16 +716,18 @@ class GraphicalSurface:
             Vector space of dimension 2 over Algebraic Real Field
             sage: v = gs.to_surface((3/2,3/2),(sqrt(3),sqrt(2)),ring=AA,search_all=True, search_limit=20)
             sage: v.bundle()
-            Tangent bundle of TranslationSurface built from infinitely many polygons defined over Algebraic Real Field
+            Tangent bundle of Minimal Planar Cover of Translation Surface in H_1(0) built from a square defined over Algebraic Real Field
 
         """
         surface = self.get_surface()
 
+        point = vector(point, ring or surface.base_ring())
+
         if label is None:
             if search_all:
                 if search_limit is None:
-                    if surface.is_finite():
-                        labels = surface.label_iterator()
+                    if surface.is_finite_type():
+                        labels = surface.labels()
                     else:
                         raise ValueError(
                             "If search_all=True and the surface is infinite, then a search_limit must be provided."
@@ -732,7 +735,7 @@ class GraphicalSurface:
                 else:
                     from itertools import islice
 
-                    labels = islice(surface.label_iterator(), search_limit)
+                    labels = islice(surface.labels(), search_limit)
             else:
                 labels = self.visible()
         else:
@@ -750,9 +753,7 @@ class GraphicalSurface:
 
             if v is None:
                 points.add(
-                    surface.surface_point(
-                        label, coords, ring=ring, limit=singularity_limit
-                    )
+                    surface.point(label, coords, ring=ring, limit=singularity_limit)
                 )
             else:
                 direction = (~(gp.transformation().derivative())) * vector(v)
@@ -760,13 +761,14 @@ class GraphicalSurface:
                     vertex = pos.get_vertex()
                     polygon = surface.polygon(label)
 
-                    from flatsurf.geometry.polygon import wedge_product
+                    from flatsurf.geometry.euclidean import ccw
 
-                    if wedge_product(polygon.edge(vertex), direction) < 0:
+                    if ccw(polygon.edge(vertex), direction) < 0:
                         continue
                     if (
-                        wedge_product(
-                            polygon.edge((vertex - 1) % polygon.num_edges()), direction
+                        ccw(
+                            polygon.edge((vertex - 1) % len(polygon.vertices())),
+                            direction,
                         )
                         < 0
                     ):
@@ -837,9 +839,9 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(cached=False, adjacencies=[])
+            sage: g = s.graphical_surface(adjacencies=[])
             sage: g.edge_labels(0)
             ['1', '1', '1']
             sage: g.make_all_visible(adjacent=True)
@@ -853,11 +855,11 @@ class GraphicalSurface:
             ['0', None, '0']
 
             sage: s = similarity_surfaces.example()
-            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels='number')
+            sage: g = s.graphical_surface(adjacencies=[], edge_labels='number')
             sage: g.edge_labels(0)
             ['0', '1', '2']
 
-            sage: g = s.graphical_surface(cached=False, adjacencies=[], edge_labels='gluings and number')
+            sage: g = s.graphical_surface(adjacencies=[], edge_labels='gluings and number')
             sage: g.edge_labels(0)
             ['0 -> (1, 1)', '1 -> (1, 2)', '2 -> (1, 0)']
             sage: g.make_all_visible(adjacent=True)
@@ -873,24 +875,24 @@ class GraphicalSurface:
 
         if self._edge_labels == "gluings":
             labels = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 if self.is_adjacent(lab, e):
                     labels.append(None)
                 else:
                     llab, ee = s.opposite_edge(lab, e)
                     labels.append(str(llab))
         elif self._edge_labels == "number":
-            labels = list(map(str, range(p.num_edges())))
+            labels = list(map(str, range(len(p.vertices()))))
         elif self._edge_labels == "gluings and number":
             labels = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 if self.is_adjacent(lab, e):
                     labels.append(str(e))
                 else:
                     labels.append("{} -> {}".format(e, s.opposite_edge(lab, e)))
         elif self._edge_labels == "letter":
             labels = []
-            for e in range(p.num_edges()):
+            for e in range(len(p.vertices())):
                 llab, ee = s.opposite_edge(lab, e)
                 if not self.is_visible(llab) or self.is_adjacent(lab, e):
                     labels.append(None)
@@ -1026,7 +1028,7 @@ class GraphicalSurface:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: from flatsurf.graphical.surface import GraphicalSurface
             sage: gs = GraphicalSurface(s)
@@ -1057,6 +1059,7 @@ class GraphicalSurface:
 
         Check that label options are handled correctly::
 
+            sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
             sage: S.plot(polygon_labels=True, edge_labels=True)
             ...Graphics object consisting of 10 graphics primitives
@@ -1120,7 +1123,7 @@ class GraphicalSurface:
 
             # Plot the edges
             if self.will_plot_edges:
-                for i in range(self._ss.polygon(label).num_edges()):
+                for i in range(len(self._ss.polygon(label).vertices())):
                     if self.is_adjacent(label, i):
                         if (
                             self.will_plot_adjacent_edges
@@ -1141,7 +1144,7 @@ class GraphicalSurface:
                 # get the edge labels
                 edge_labels = self.edge_labels(label)
                 if edge_labels is not None:
-                    for i in range(self._ss.polygon(label).num_edges()):
+                    for i in range(len(self._ss.polygon(label).vertices())):
                         if edge_labels[i] is not None:
                             p += self.plot_edge_label(label, i, edge_labels[i], polygon)
         return p

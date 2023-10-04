@@ -154,7 +154,7 @@ def subfield_from_elements(self, alpha, name=None, polred=True, threshold=None):
         sage: R.<x> = QQ[]
         sage: p1 = x^3 - x - 1
         sage: roots1 = p1.roots(QQbar, False)
-        sage: for _ in range(10):
+        sage: for _ in range(10):  # long time (1.5s)
         ....:     p2 = R.random_element(degree=2)
         ....:     while not p2.is_irreducible(): p2 = R.random_element(degree=2)
         ....:     roots2 = p2.roots(QQbar, False)
@@ -312,9 +312,9 @@ def chebyshev_T(n, c):
     # T_0(x) = 2
     # T_1(x) = x
     # and T_{n+1}(x) = x T_n(x) - T_{n-1}(x)
+    T0 = parent(c)(2)
     if n == 0:
-        return parent(c)(2)
-    T0 = 2
+        return T0
     T1 = c
     for i in range(n - 1):
         T0, T1 = T1, c * T1 - T0
