@@ -606,6 +606,39 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             Category of connected without boundary finite type translation surfaces
 
         """
+        class ParentMethods:
+            r"""
+            Provides methods available to all translation surfaces built from
+            finitely many polygons.
+
+            If you want to add functionality to such surfaces you most likely
+            want to put it here.
+            """
+
+            def pyflatsurf(self):
+                r"""
+                Return an isomorphism to a surface backed by libflatsurf.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+                    0
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+                    1
+
+                    sage: S.glue((0, 0), (1, 1))
+                    sage: S.glue((0, 1), (1, 2))
+                    sage: S.glue((0, 2), (1, 0))
+
+                    sage: S.pyflatsurf().codomain()  # optional: pyflatsurf
+                    FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+
+                """
+                from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+                return Surface_pyflatsurf._from_flatsurf(self)
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
@@ -623,8 +656,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             class ParentMethods:
                 r"""
-                Provides methods available to all translation surfaces that are
-                built from finitely many polygons.
+                Provides methods available to all translation surfaces without
+                boundary that are built from finitely many polygons.
 
                 If you want to add functionality for such surfaces you most likely
                 want to put it here.

@@ -12,9 +12,6 @@ The absolute homology of the regular octagon::
 A basis of homology, with generators written as oriented edges::
 
     sage: H.gens()  # TODO: Fix deprecation
-    doctest:warning
-    ...
-    UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
 
 We can also write the generatorls as paths that cross over the edges and
@@ -33,9 +30,9 @@ avoiding to integrate close to the vertices::
 Relative homology on the unfolding of the (3, 4, 13) triangle; homology
 relative to the subset of vertices::
 
-    sage: from flatsurf import EquiangularPolygons, similarity_surfaces
-    sage: P = EquiangularPolygons(3, 4, 13).an_element()
-    sage: S = similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+    sage: from flatsurf import Polygon, similarity_surfaces
+    sage: P = Polygon(angles=[3, 4, 13])
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
     sage: H = SimplicialHomology(relative=S.singularities())  # TODO: not tested
     sage: H.gens()  # TODO: not tested
 
@@ -392,12 +389,12 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
     EXAMPLES::
 
-        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: from flatsurf import translation_surfaces, SimplicialHomology, MutableOrientedSimilaritySurface
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
 
     Surfaces must be immutable to compute their homology::
 
-        sage: T = T.copy(mutable=True)
+        sage: T = MutableOrientedSimilaritySurface.from_surface(T)
         sage: SimplicialHomology(T)
         Traceback (most recent call last):
         ...
@@ -407,7 +404,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         sage: T.set_immutable()
         sage: SimplicialHomology(T)
-        H₁(TranslationSurface built from 1 polygon; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
 
     TESTS::
 
@@ -511,7 +508,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: T.set_immutable()
             sage: automorphism = T.apply_matrix_automorphism([[1, 1], [0, 1]])
 
-            sage: H = SimplicialHomology(T.underlying_surface())
+            sage: H = SimplicialHomology(T)
             sage: H.matrix(automorphism)
             doctest:warning
             ...
@@ -524,7 +521,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
             sage: automorphism = L.apply_matrix_automorphism([[1, 2], [0, 1]])
 
-            sage: H = SimplicialHomology(L.underlying_surface())
+            sage: H = SimplicialHomology(L)
             sage: H.matrix(automorphism)
             [-1  0  0  0]
             [-3  1  0  0]
@@ -534,11 +531,11 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         ::
 
             sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
-            sage: K = L.underlying_surface().base_ring()
+            sage: K = L.base_ring()
             sage: M = matrix([[1, 1], [0, 1]]).change_ring(K)
             sage: automorphism = L.apply_matrix_automorphism(M)
 
-            sage: H = SimplicialHomology(L.underlying_surface())
+            sage: H = SimplicialHomology(L)
             sage: H.matrix(automorphism)
             [1 0 0 0]
             [0 1 0 0]
@@ -601,15 +598,15 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         """
         if dimension == 0:
-            return tuple(set(self._surface.singularity(*edge) for edge in self._surface.edge_iterator()))
+            return tuple(self._surface.vertices())
         if dimension == 1:
             simplices = set()
-            for edge in self._surface.edge_iterator():
+            for edge in self._surface.edges():
                 if self._surface.opposite_edge(*edge) not in simplices:
                     simplices.add(edge)
             return tuple(simplices)
         if dimension == 2:
-            return tuple(self._surface.label_iterator())
+            return tuple(self._surface.labels())
 
         return tuple()
 
@@ -654,15 +651,15 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             C0 = self.chain_module(dimension=0)
             boundary = C0.zero()
             for edge, coefficient in chain:
-                boundary += coefficient * C0(self._surface.singularity(*self._surface.opposite_edge(*edge)))
-                boundary -= coefficient * C0(self._surface.singularity(*edge))
+                boundary += coefficient * C0(self._surface.point(*self._surface.opposite_edge(*edge)))
+                boundary -= coefficient * C0(self._surface.point(*edge))
             return boundary
 
         if chain.parent() == self.chain_module(dimension=2):
             C1 = self.chain_module(dimension=1)
             boundary = C1.zero()
             for face, coefficient in chain:
-                for edge in range(self._surface.polygon(face).num_edges()):
+                for edge in range(len(self._surface.polygon(face).edges())):
                     if (face, edge) in C1.indices():
                         boundary += coefficient * C1((face, edge))
                     else:
@@ -806,7 +803,7 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
-            H₁(TranslationSurface built from 1 polygon; Integer Ring)
+            H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
 
         """
         return f"H₁({self._surface}; {self._coefficients})"

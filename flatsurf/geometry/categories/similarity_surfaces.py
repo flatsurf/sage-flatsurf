@@ -1466,6 +1466,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Return a ``SurfaceMapping`` triangulating the surface
                 or ``None`` if the surface is already triangulated.
                 """
+                # TODO: Deprecate
                 from flatsurf.geometry.mappings import triangulation_mapping
 
                 return triangulation_mapping(self)
@@ -1485,7 +1486,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf import translation_surfaces
                     sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
-                    sage: ss=s.triangulate()
+                    sage: ss=s.triangulate().codomain()
                     sage: gs=ss.graphical_surface()
                     sage: gs.make_all_visible()
                     sage: gs
@@ -1495,7 +1496,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf import similarity_surfaces, Polygon
                     sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
-                    sage: s=s.triangulate()
+                    sage: s=s.triangulate().codomain()
                     sage: len(s.polygon(0).vertices())
                     3
                 """
@@ -1519,16 +1520,18 @@ class SimilaritySurfaces(SurfaceCategory):
                     s = MutableOrientedSimilaritySurface.from_surface(self)
                     s.triangulate(in_place=True, label=label, relabel=relabel)
                     s.set_immutable()
-                    return s
+
+                    from flatsurf.geometry.deformation import Deformation
+                    return Deformation(None, s)
 
                 if label is not None:
                     raise NotImplementedError(
                         "triangulate(label=) not implemented for infinite type surfaces"
                     )
 
+                from flatsurf.geometry.deformation import Deformation
                 from flatsurf.geometry.delaunay import LazyTriangulatedSurface
-
-                return LazyTriangulatedSurface(self)
+                return Deformation(None, LazyTriangulatedSurface(self))
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -1758,7 +1761,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: a = s0.base_ring().gens()[0]
                     sage: m = Matrix([[1,2+a],[0,1]])
                     sage: s = m*s0
-                    sage: s = s.triangulate()
+                    sage: s = s.triangulate().codomain()
                     sage: ss = s.delaunay_decomposition(triangulated=True)
                     sage: len(ss.polygons())
                     3
@@ -2073,7 +2076,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 Subdivision of this surface yields a surface with three triangles::
 
-                    sage: T = S.subdivide()
+                    sage: T = S.subdivide().codomain()
                     sage: T.labels()
                     (('Δ', 0), ('Δ', 1), ('Δ', 2))
 
@@ -2097,7 +2100,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.glue(("Δ", 0), ("□", 2))
                     sage: S.glue(("□", 1), ("□", 3))
 
-                    sage: T = S.subdivide()
+                    sage: T = S.subdivide().codomain()
 
                     sage: T.labels()
                     (('Δ', 0), ('□', 2), ('Δ', 1), ('Δ', 2), ('□', 3), ('□', 1), ('□', 0))
@@ -2152,7 +2155,10 @@ class SimilaritySurfaces(SurfaceCategory):
                         if opposite is not None:
                             surface.glue(((label, p), 0), (opposite, 0))
 
-                return surface
+                surface.set_immutable()
+
+                from flatsurf.geometry.deformation import SubdivideDeformation
+                return SubdivideDeformation(self, surface)
 
             def subdivide_edges(self, parts=2):
                 r"""
@@ -2177,7 +2183,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Subdividing this triangle yields a triangle with marked points along
                 the edges::
 
-                    sage: T = S.subdivide_edges()
+                    sage: T = S.subdivide_edges().codomain()
 
                 If we add another polygon to the original surface and glue them, we
                 can see how existing gluings are preserved when subdividing::
@@ -2188,7 +2194,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.glue(("Δ", 0), ("□", 2))
                     sage: S.glue(("□", 1), ("□", 3))
 
-                    sage: T = S.subdivide_edges()
+                    sage: T = S.subdivide_edges().codomain()
                     sage: list(sorted(T.gluings()))
                     [(('Δ', 0), ('□', 5)),
                      (('Δ', 1), ('□', 4)),
@@ -2229,7 +2235,10 @@ class SimilaritySurfaces(SurfaceCategory):
                                     ),
                                 )
 
-                return surface
+                surface.set_immutable()
+
+                from flatsurf.geometry.deformation import SubdivideEdgesDeformation
+                return SubdivideEdgesDeformation(self, surface, parts)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""

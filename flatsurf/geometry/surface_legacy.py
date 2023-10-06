@@ -219,7 +219,7 @@ class Surface(OrientedSimilaritySurface):
             sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: S.is_triangulated()
             False
-            sage: S.triangulate().is_triangulated()
+            sage: S.triangulate().codomain().is_triangulated()
             True
         """
         it = self.label_iterator()

@@ -20,12 +20,14 @@ dependencies:
   - pytest-repeat
   - sagelib>=8.8
   # sagelib<9.2 does not explicitly install libiconv which is needed in lots of places.
+  # doctests call functionality in SageMath that relies on sympy being present
+  - sympy
   - libiconv
   - scipy
   - surface-dynamics>=0.4.7,<0.5
   - pycodestyle >=2.9.1,<3
   - pyeantic>=1,<2  # optional: eantic
-  - pyexactreal>=2,<3  # optional: exactreal
-  - pyflatsurf>=3.13.3,<4  # optional: pyflatsurf
+  - pyexactreal>=3.1.0,<4  # optional: exactreal
+  - pyflatsurf>=3.10.1,<4  # optional: pyflatsurf
   - pyintervalxt>=3,<4  # optional: pyflatsurf
   - pip: [flipper]  # optional: flipper

@@ -30,7 +30,7 @@ class Deformation_to_pyflatsurf(Deformation):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().underlying_surface()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: deformation = S.pyflatsurf()
             sage: deformation._image_edge(0, 0)
             [((1, 2, 3), 0)]

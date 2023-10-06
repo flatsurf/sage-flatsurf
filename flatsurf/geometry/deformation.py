@@ -15,13 +15,13 @@ EXAMPLES:
 We can use deformations to follow a surface through a retriangulation process::
 
     sage: from flatsurf import translation_surfaces
-    sage: S = translation_surfaces.regular_octagon().underlying_surface()
+    sage: S = translation_surfaces.regular_octagon()
     sage: deformation = S.subdivide_edges(3)
     sage: deformation = deformation.codomain().subdivide() * deformation
     sage: T = deformation.codomain()
 
     sage: deformation
-    Deformation from <flatsurf.geometry.surface.Surface_list object at 0x...> to <flatsurf.geometry.surface.Surface_dict object at 0x...>
+    Deformation from Translation Surface in H_2(2) built from a regular octagon to Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
 
 We can then map points through the deformation::
 
@@ -72,25 +72,25 @@ class Deformation:
     def __init__(self, domain, codomain):
         # TODO: docstring
 
-        self._domain = None
-        if not domain.is_mutable():
-            self._domain = domain
+        self._domain = domain
+        if domain is None or domain.is_mutable():
+            self._domain = None
 
-        self._codomain = None
-        if not codomain.is_mutable():
-            self._codomain = codomain
+        self._codomain = codomain
+        if codomain is None or codomain.is_mutable():
+            self._codomain = None
 
     def domain(self):
         # TODO: docstring
         if self._domain is None:
-            raise ValueError("cannot determine the domain of a deformation if the domain is mutable")
+            raise ValueError("cannot determine the domain of this deformation")
 
         return self._domain
 
     def codomain(self):
         # TODO: docstring
         if self._codomain is None:
-            raise ValueError("cannot determine the codomain of a deformation if the codomain is mutable")
+            raise ValueError("cannot determine the codomain of this deformation")
 
         return self._codomain
 
@@ -197,7 +197,7 @@ class Deformation:
 
     def __repr__(self):
         # TODO: docstring
-        return f"Deformation from {self.domain() if self._domain is not None else 'mutable domain'} to {self.codomain() if self._codomain is not None else 'mutable codomain'}"
+        return f"Deformation from {self.domain() if self._domain is not None else '?'} to {self.codomain() if self._codomain is not None else '?'}"
 
 
 class IdentityDeformation(Deformation):
@@ -229,7 +229,7 @@ class CompositionDeformation(Deformation):
     # TODO: docstring
     def __init__(self, lhs, rhs):
         # TODO: docstring
-        super().__init__(rhs.domain(), lhs.codomain())
+        super().__init__(rhs._domain, lhs._codomain)
 
         self._lhs = lhs
         self._rhs = rhs
@@ -262,7 +262,7 @@ class SubdivideDeformation(Deformation):
             return v[0] * w[1] >= w[0] * v[1]
 
         initial_edge = ((label, 0), 0)
-        mid_edge = ((label, self.codomain().num_polygons() // self.domain().num_polygons() - 1), 1)
+        mid_edge = ((label, len(self.codomain().polygons()) // len(self.domain().polygons()) - 1), 1)
 
         face = mid_edge if ccw(self.codomain().polygon(mid_edge[0]).edge(mid_edge[1]), coordinates) else initial_edge
         face = to_pyflatsurf(face)
@@ -310,7 +310,7 @@ class SubdivideEdgesDeformation(Deformation):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.regular_octagon().underlying_surface()
+            sage: S = translation_surfaces.regular_octagon()
             sage: deformation = S.subdivide_edges(2)
 
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
@@ -477,7 +477,7 @@ class TriangulationDeformation(Deformation):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.octagon_and_squares().underlying_surface()
+            sage: S = translation_surfaces.octagon_and_squares()
             sage: triangulation = S.triangulate()
 
             sage: triangulation._image_edge(0, 0)

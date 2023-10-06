@@ -416,6 +416,7 @@ class MutablePolygonalSurface(Surface_base):
             sage: new_methods - old_methods
             {'angles',
              'apply_matrix',
+             'apply_matrix_automorphism',
              'area',
              'canonicalize',
              'canonicalize_mapping',
@@ -425,6 +426,7 @@ class MutablePolygonalSurface(Surface_base):
              'l_infinity_delaunay_triangulation',
              'minimal_translation_cover',
              'normalized_coordinates',
+             'pyflatsurf',
              'rel_deformation',
              'stratum'}
 
@@ -2070,7 +2072,7 @@ class MutableOrientedSimilaritySurface(
             sage: S1.glue((0, j0), (0, j1))
             sage: S1.set_immutable()
 
-            sage: S1.triangulate()
+            sage: S1.triangulate().codomain()
             Translation Surface in H_3(4, 0) built from 5 isosceles triangles, 6 triangles and a right triangle
 
         """
@@ -2091,8 +2093,9 @@ class MutableOrientedSimilaritySurface(
             s = self
             # Subdivide each polygon in turn.
             for label in labels:
-                s = s.triangulate(in_place=True, label=label)
-            return s
+                s.triangulate(in_place=True, label=label)
+            from flatsurf.geometry.deformation import Deformation
+            return Deformation(None, s)
 
         poly = self.polygon(label)
         n = len(poly.vertices())
@@ -2100,7 +2103,9 @@ class MutableOrientedSimilaritySurface(
             s = self
         else:
             # This polygon is already a triangle.
-            return self
+            from flatsurf.geometry.deformation import IdentityDeformation
+            return IdentityDeformation(self)
+
         from flatsurf.geometry.euclidean import ccw
 
         for i in range(n - 3):
@@ -2115,7 +2120,8 @@ class MutableOrientedSimilaritySurface(
                     if ccw(e1 + e2, e3) != 0:
                         s.subdivide_polygon(label, i, (i + 2) % n)
                         break
-        return s
+        from flatsurf.geometry.deformation import Deformation
+        return Deformation(None, s)
 
     def delaunay_single_flip(self):
         r"""

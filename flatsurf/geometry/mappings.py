@@ -1,3 +1,4 @@
+# TODO: Deprecate everything here.
 r"""Mappings between translation surfaces."""
 # *********************************************************************
 #  This file is part of sage-flatsurf.

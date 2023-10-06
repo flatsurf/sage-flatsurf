@@ -9,7 +9,7 @@ by invoking methods on the underlying surfaces::
 
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.infinite_staircase()
-    sage: S.triangulate()
+    sage: S.triangulate().codomain()
     Triangulation of The infinite staircase
 
     sage: S.delaunay_triangulation()
@@ -57,7 +57,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
-        sage: S = S.triangulate()
+        sage: S = S.triangulate().codomain()
 
     TESTS::
 
@@ -102,7 +102,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.is_mutable()
             False
 
@@ -119,7 +119,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.is_compact()
             False
 
@@ -137,7 +137,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.roots()
             ((0, (0, 1, 2)),)
 
@@ -160,7 +160,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S._triangulation(0)
             {(0, 1): (0, 1, 2),
              (0, 2): (0, 2, 3),
@@ -213,7 +213,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.polygon((0, (0, 1, 2)))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
@@ -239,7 +239,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.opposite_edge((0, (0, 1, 2)), 0)
             ((1, (0, 2, 3)), 1)
 
@@ -282,7 +282,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: hash(S.triangulate()) == hash(S.triangulate())
+            sage: hash(S.triangulate().codomain()) == hash(S.triangulate().codomain())
             True
 
         """
@@ -299,7 +299,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S.triangulate() == S.triangulate()
+            sage: S.triangulate().codomain() == S.triangulate().codomain()
             True
 
         """
@@ -318,7 +318,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.labels()
             ((0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3)), (0, (0, 2, 3)), (1, (0, 1, 2)), (2, (0, 1, 2)), (-1, (0, 1, 2)), (-2, (0, 1, 2)), (2, (0, 2, 3)), (3, (0, 2, 3)),
              (-2, (0, 2, 3)), (-3, (0, 2, 3)), (3, (0, 1, 2)), (4, (0, 1, 2)), (-3, (0, 1, 2)), (-4, (0, 1, 2)), …)
@@ -344,7 +344,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S
             Triangulation of The infinite staircase
 

@@ -559,7 +559,7 @@ class DilationSurfaces(SurfaceCategory):
                         "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
                     )
 
-                self = self.triangulate()
+                self = self.triangulate().codomain()
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 

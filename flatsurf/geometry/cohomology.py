@@ -48,9 +48,6 @@ class SimplicialCohomologyClass(Element):
             sage: H = SimplicialCohomology(T)
 
             sage: γ = H.homology().gens()[0]  # TODO: Fix deprecation
-            doctest:warning
-            ...
-            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
             sage: f = H({γ: 1.337})
             sage: f(γ)
             1.33700000000000
@@ -100,7 +97,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
     Currently, surfaces must be Delaunay triangulated to compute their homology::
 
         sage: SimplicialCohomology(T)
-        H¹(TranslationSurface built from 2 polygons; Real Field with 53 bits of precision)
+        H¹(Translation Surface in H_1(0) built from 2 isosceles triangles; Real Field with 53 bits of precision)
 
     """
     Element = SimplicialCohomologyClass
@@ -161,7 +158,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
         sage: T.set_immutable()
         sage: H = SimplicialCohomology(T)
         sage: H.homology()
-        H₁(TranslationSurface built from 2 polygons; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from 2 isosceles triangles; Integer Ring)
 
         """
         from flatsurf.geometry.homology import SimplicialHomology

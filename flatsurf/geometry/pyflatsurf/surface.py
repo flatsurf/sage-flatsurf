@@ -1,22 +1,23 @@
-from flatsurf.geometry.surface import Surface
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
-class Surface_pyflatsurf(Surface):
+class Surface_pyflatsurf(OrientedSimilaritySurface):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf import polygons
-        sage: from flatsurf.geometry.surface import Surface_dict
+        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
 
-        sage: S = Surface_dict(QQ)
-        sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
         0
-        sage: S.add_polygon(polygons(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+        sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
         1
 
-        sage: S.set_edge_pairing(0, 0, 1, 1)
-        sage: S.set_edge_pairing(0, 1, 1, 2)
-        sage: S.set_edge_pairing(0, 2, 1, 0)
+        sage: S.glue((0, 0), (1, 1))
+        sage: S.glue((0, 1), (1, 2))
+        sage: S.glue((0, 2), (1, 0))
+
+        sage: S.set_immutable()
 
         sage: T = S.pyflatsurf().codomain()  # random output due to deprecation warnings
 
@@ -38,12 +39,10 @@ class Surface_pyflatsurf(Surface):
 
         base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
-        base_face = next(iter(flat_triangulation.faces()))
-        base_label = tuple(sorted(half_edge.id() for half_edge in base_face))
+        super().__init__(base=base_ring)
 
-        super().__init__(
-            base_ring=base_ring, base_label=base_label, finite=True, mutable=False
-        )
+    def is_mutable(self):
+        return False
 
     def pyflatsurf(self):
         from flatsurf.geometry.deformation import IdentityDeformation
@@ -59,11 +58,11 @@ class Surface_pyflatsurf(Surface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().triangulate().underlying_surface()
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: Surface_pyflatsurf._from_flatsurf(S)
-            Deformation from mutable domain to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
+            Deformation from Translation Surface in H_1(0) built from 2 isosceles triangles to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
 
         """
         if isinstance(surface, Surface_pyflatsurf):
@@ -92,7 +91,7 @@ class Surface_pyflatsurf(Surface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().triangulate().underlying_surface()
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: S.pyflatsurf().codomain()
@@ -102,6 +101,9 @@ class Surface_pyflatsurf(Surface):
         return repr(self._flat_triangulation)
 
     def apply_matrix(self, m):
+        from sage.all import matrix
+        m = matrix(m, ring=self.base_ring())
+
         from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
         to_pyflatsurf = RingConversion.from_pyflatsurf_from_flat_triangulation(self._flat_triangulation)
@@ -130,11 +132,11 @@ class Surface_pyflatsurf(Surface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().triangulate().underlying_surface()
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
             sage: S = S.pyflatsurf().codomain()
 
             sage: S.polygon((1, 2, 3))
-            Polygon: (0, 0), (1, 1), (0, 1)
+            Polygon(vertices=[(0, 0), (1, 1), (0, 1)])
 
         """
         label = Surface_pyflatsurf._normalize_label(label)
@@ -147,8 +149,8 @@ class Surface_pyflatsurf(Surface):
         vector_space_conversion = VectorSpaceConversion.from_pyflatsurf_from_elements(vectors)
         vectors = [vector_space_conversion.section(vector) for vector in vectors]
 
-        from flatsurf.geometry.polygon import polygons
-        return polygons(edges=vectors)
+        from flatsurf.geometry.polygon import Polygon
+        return Polygon(edges=vectors)
 
     def opposite_edge(self, label, edge):
         r"""
@@ -157,7 +159,7 @@ class Surface_pyflatsurf(Surface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().triangulate().underlying_surface()
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
             sage: S = S.pyflatsurf().codomain()
 
             sage: S.opposite_edge((1, 2, 3), 0)
