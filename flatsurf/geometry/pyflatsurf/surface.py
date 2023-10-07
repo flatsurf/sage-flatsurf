@@ -39,10 +39,15 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
-        super().__init__(base=base_ring)
+        from flatsurf.geometry.categories import TranslationSurfaces
+        super().__init__(base=base_ring, category=TranslationSurfaces().FiniteType().Connected())
 
     def is_mutable(self):
         return False
+
+    def roots(self):
+        # TODO: This is assuming that the surface is connected. Currently that's the case for all surfaces in libflatsurf?
+        return [self._normalize_label(self._flat_triangulation.face(1))]
 
     def pyflatsurf(self):
         from flatsurf.geometry.deformation import IdentityDeformation

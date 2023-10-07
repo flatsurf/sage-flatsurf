@@ -94,6 +94,17 @@ class Deformation:
 
         return self._codomain
 
+    def __getattr__(self, name):
+        try:
+            attr = getattr(self._codomain, name)
+        except AttributeError:
+            raise
+
+        import warnings
+        warnings.warn(f"This methods returns a deformation instead of a surface. Use .codomain().{name} to access the surface instead of the deformation.")
+
+        return attr
+
     def section(self):
         return SectionDeformation(self)
 
@@ -452,45 +463,51 @@ class TriangleFlipDeformation(Deformation):
         raise NotImplementedError
 
 
-class TriangulationDeformation(Deformation):
-    def __init__(self, domain, codomain, triangles):
-        r"""
-        INPUT:
+# class TriangulationDeformation(Deformation):
+#     def __init__(self, domain, codomain, triangles):
+#         r"""
+#         INPUT:
+# 
+#         - ``domain`` -- a :class:`Surface`, the domain of this deformation
+# 
+#         - ``codomain`` -- a :class:`Surface`, the triangulated codomain of this deformation
+# 
+#         - ``triangles`` -- a dict mapping the labels of ``domain`` to sequences
+#           of triples of (counterclockwise) vertex indices of the polygon with
+#           that label
+# 
+#         """
+#         if not codomain.is_triangulated():
+#             raise ValueError("codomain must be triangulated")
+# 
+#         self._triangles = triangles
+#         super().__init__(domain, codomain)
+# 
+#     def _image_edge(self, label, edge):
+#         r"""
+#         EXAMPLES::
+# 
+#             sage: from flatsurf import translation_surfaces
+#             sage: S = translation_surfaces.octagon_and_squares()
+#             sage: triangulation = S.triangulate()
+# 
+#             sage: triangulation._image_edge(0, 0)
+#             [((0, 5), 1)]
+# 
+#         """
+#         N = self.domain().polygon(label).num_edges()
+#         for i, (v0, v1, v2) in enumerate(self._triangles[label]):
+#             if v0 == edge and v1 == (v0 + 1) % N:
+#                 return [((label, i), 0)]
+#             if v1 == edge and v2 == (v1 + 1) % N:
+#                 return [((label, i), 1)]
+#             if v2 == edge and v0 == (v2 + 1) % N:
+#                 return [((label, i), 2)]
+# 
+#         assert False
 
-        - ``domain`` -- a :class:`Surface`, the domain of this deformation
 
-        - ``codomain`` -- a :class:`Surface`, the triangulated codomain of this deformation
-
-        - ``triangles`` -- a dict mapping the labels of ``domain`` to sequences
-          of triples of (counterclockwise) vertex indices of the polygon with
-          that label
-
-        """
-        if not codomain.is_triangulated():
-            raise ValueError("codomain must be triangulated")
-
-        self._triangles = triangles
-        super().__init__(domain, codomain)
-
-    def _image_edge(self, label, edge):
-        r"""
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.octagon_and_squares()
-            sage: triangulation = S.triangulate()
-
-            sage: triangulation._image_edge(0, 0)
-            [((0, 5), 1)]
-
-        """
-        N = self.domain().polygon(label).num_edges()
-        for i, (v0, v1, v2) in enumerate(self._triangles[label]):
-            if v0 == edge and v1 == (v0 + 1) % N:
-                return [((label, i), 0)]
-            if v1 == edge and v2 == (v1 + 1) % N:
-                return [((label, i), 1)]
-            if v2 == edge and v0 == (v2 + 1) % N:
-                return [((label, i), 2)]
-
-        assert False
+class DelaunayDecompositionDeformation(Deformation):
+    def __repr__(self):
+        # TODO: docstring
+        return f"Delaunay cell decomposition of {self._domain or '?'}"

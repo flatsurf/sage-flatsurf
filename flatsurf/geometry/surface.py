@@ -416,7 +416,6 @@ class MutablePolygonalSurface(Surface_base):
             sage: new_methods - old_methods
             {'angles',
              'apply_matrix',
-             'apply_matrix_automorphism',
              'area',
              'canonicalize',
              'canonicalize_mapping',
@@ -2259,7 +2258,10 @@ class MutableOrientedSimilaritySurface(
                     s.join_polygons(l1, e1, in_place=True)
                     break
             else:
-                return s
+                break
+
+        from flatsurf.geometry.deformation import DelaunayDecompositionDeformation
+        return DelaunayDecompositionDeformation(self, s)
 
     def cmp(self, s2, limit=None):
         r"""

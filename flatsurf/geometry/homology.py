@@ -489,69 +489,70 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         """
         return self._surface
 
-    def matrix(self, deformation, homology=None):
-        r"""
-        Return a square matrix representing the ``deformation`` on the
-        :meth:`surface` by writing the images of the generators of this
-        homology in terms of the images of the ``homology`` of the codomain of
-        ``deformation``.
+    # See https://github.com/flatsurf/sage-flatsurf/issues/225
+    # def matrix(self, deformation, homology=None):
+    #     r"""
+    #     Return a square matrix representing the ``deformation`` on the
+    #     :meth:`surface` by writing the images of the generators of this
+    #     homology in terms of the images of the ``homology`` of the codomain of
+    #     ``deformation``.
 
-        INPUT:
+    #     INPUT:
 
-        - ``homology`` -- a :class:`SimplicialHomology` (default: ``None``); if
-          ``None``, the homology of the codomain is determined automatically.
+    #     - ``homology`` -- a :class:`SimplicialHomology` (default: ``None``); if
+    #       ``None``, the homology of the codomain is determined automatically.
 
-        EXAMPLES::
+    #     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-            sage: automorphism = T.apply_matrix_automorphism([[1, 1], [0, 1]])
+    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
+    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
+    #         sage: T.set_immutable()
+    #         sage: automorphism = T.apply_matrix_automorphism([[1, 1], [0, 1]])
 
-            sage: H = SimplicialHomology(T)
-            sage: H.matrix(automorphism)
-            doctest:warning
-            ...
-            UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
-            [ 1 -2]
-            [ 1 -3]
+    #         sage: H = SimplicialHomology(T)
+    #         sage: H.matrix(automorphism)
+    #         doctest:warning
+    #         ...
+    #         UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
+    #         [ 1 -2]
+    #         [ 1 -3]
 
-        ::
+    #     ::
 
-            sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-            sage: automorphism = L.apply_matrix_automorphism([[1, 2], [0, 1]])
+    #         sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+    #         sage: automorphism = L.apply_matrix_automorphism([[1, 2], [0, 1]])
 
-            sage: H = SimplicialHomology(L)
-            sage: H.matrix(automorphism)
-            [-1  0  0  0]
-            [-3  1  0  0]
-            [ 0  0  1  0]
-            [-1  0  0  1]
+    #         sage: H = SimplicialHomology(L)
+    #         sage: H.matrix(automorphism)
+    #         [-1  0  0  0]
+    #         [-3  1  0  0]
+    #         [ 0  0  1  0]
+    #         [-1  0  0  1]
 
-        ::
+    #     ::
 
-            sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
-            sage: K = L.base_ring()
-            sage: M = matrix([[1, 1], [0, 1]]).change_ring(K)
-            sage: automorphism = L.apply_matrix_automorphism(M)
+    #         sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+    #         sage: K = L.base_ring()
+    #         sage: M = matrix([[1, 1], [0, 1]]).change_ring(K)
+    #         sage: automorphism = L.apply_matrix_automorphism(M)
 
-            sage: H = SimplicialHomology(L)
-            sage: H.matrix(automorphism)
-            [1 0 0 0]
-            [0 1 0 0]
-            [1 1 1 0]
-            [0 1 0 1]
+    #         sage: H = SimplicialHomology(L)
+    #         sage: H.matrix(automorphism)
+    #         [1 0 0 0]
+    #         [0 1 0 0]
+    #         [1 1 1 0]
+    #         [0 1 0 1]
 
-        """
-        homology = homology or SimplicialHomology(deformation.codomain())
+    #     """
+    #     homology = homology or SimplicialHomology(deformation.codomain())
 
-        if deformation.domain() != self.surface() or deformation.codomain() != homology.surface():
-            raise ValueError("homologies are not compatible with the domain and codomain of this deformation")
+    #     if deformation.domain() != self.surface() or deformation.codomain() != homology.surface():
+    #         raise ValueError("homologies are not compatible with the domain and codomain of this deformation")
 
-        images = [deformation(gen) for gen in self.gens()]
+    #     images = [deformation(gen) for gen in self.gens()]
 
-        from sage.all import matrix
-        return matrix([[image.coefficient(gen) for image in images] for gen in homology.gens()])
+    #     from sage.all import matrix
+    #     return matrix([[image.coefficient(gen) for image in images] for gen in homology.gens()])
 
     @cached_method
     def chain_module(self, dimension=1):

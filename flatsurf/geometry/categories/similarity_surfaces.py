@@ -1762,18 +1762,18 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: m = Matrix([[1,2+a],[0,1]])
                     sage: s = m*s0
                     sage: s = s.triangulate().codomain()
-                    sage: ss = s.delaunay_decomposition(triangulated=True)
+                    sage: ss = s.delaunay_decomposition(triangulated=True).codomain()
                     sage: len(ss.polygons())
                     3
 
                     sage: p = Polygon(edges=[(4,0),(-2,1),(-2,-1)])
                     sage: s0 = similarity_surfaces.self_glued_polygon(p)
-                    sage: s = s0.delaunay_decomposition()
+                    sage: s = s0.delaunay_decomposition().codomain()
                     sage: TestSuite(s).run()
 
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
-                    sage: ss = s.delaunay_decomposition()
+                    sage: ss = s.delaunay_decomposition().codomain()
                     sage: ss.root()
                     (0, (0, 1, 2))
                     sage: ss.polygon(ss.root())
@@ -1803,9 +1803,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not self.is_finite_type():
                     from flatsurf.geometry.delaunay import LazyDelaunaySurface
 
-                    return LazyDelaunaySurface(
+                    s = LazyDelaunaySurface(
                         self, direction=direction, category=self.category()
                     )
+                    from flatsurf.geometry.deformation import DelaunayDecompositionDeformation
+                    return DelaunayDecompositionDeformation(self, s)
 
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
@@ -1820,7 +1822,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     relabel=relabel,
                 )
                 s.set_immutable()
-                return s
+
+                from flatsurf.geometry.deformation import DelaunayDecompositionDeformation
+                return DelaunayDecompositionDeformation(self, s)
 
             def saddle_connections(
                 self,

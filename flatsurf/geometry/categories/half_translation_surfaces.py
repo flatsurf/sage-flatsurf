@@ -131,24 +131,25 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 HalfTranslationSurfaces().parent_class, self
             ).is_translation_surface(positive=positive)
 
-        def apply_matrix_automorphism(self, m):
-            r"""
-            Return the automorphism on this surface that is induced by the 2×2
-            matrix ``m``, an element of the Veech group.
+        # See https://github.com/flatsurf/sage-flatsurf/issues/225
+        # def apply_matrix_automorphism(self, m):
+        #     r"""
+        #     Return the automorphism on this surface that is induced by the 2×2
+        #     matrix ``m``, an element of the Veech group.
 
-            EXAMPLES::
+        #     EXAMPLES::
 
-                sage: from flatsurf import translation_surfaces
-                sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-                sage: L.apply_matrix_automorphism(matrix([[1, 1, 0, 1]]))
+        #         sage: from flatsurf import translation_surfaces
+        #         sage: L = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+        #         sage: L.apply_matrix_automorphism(matrix([[1, 1, 0, 1]]))
 
-            """
-            to_pyflatsurf = self.pyflatsurf()
-            apply_matrix = to_pyflatsurf.codomain().apply_matrix(m)
-            polygonization = apply_matrix.codomain().delaunay_polygonize()
-            unpolygonization = self.delaunay_polygonize().section()
-            assert polygonization.codomain() == unpolygonization.domain()
-            return unpolygonization * polygonization * apply_matrix * to_pyflatsurf
+        #     """
+        #     to_pyflatsurf = self.pyflatsurf()
+        #     apply_matrix = to_pyflatsurf.codomain().apply_matrix(m)
+        #     polygonization = apply_matrix.codomain().delaunay_decomposition()
+        #     unpolygonization = self.delaunay_decomposition().section()
+        #     assert polygonization.codomain() == unpolygonization.domain()
+        #     return unpolygonization * polygonization * apply_matrix * to_pyflatsurf
 
     class Orientable(SurfaceCategoryWithAxiom):
         r"""
