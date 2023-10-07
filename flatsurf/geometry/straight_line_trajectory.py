@@ -21,7 +21,6 @@
 from collections import deque
 
 from flatsurf.geometry.euclidean import line_intersection
-from flatsurf.geometry.surface_objects import SaddleConnection
 
 # Vincent question:
 # using deque has the disadvantage of losing the initial points
@@ -468,6 +467,8 @@ class AbstractStraightLineTrajectory:
             Point (0, 1/2) of polygon 0
             2 2
         """
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
         # Partition the segments making up the trajectories by label.
         if isinstance(traj, SaddleConnection):
             traj = traj.trajectory()

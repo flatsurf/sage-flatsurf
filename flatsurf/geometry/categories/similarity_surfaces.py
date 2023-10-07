@@ -1898,10 +1898,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 v = p.vertex(initial_vertex)
                 last_sim = SG(-v[0], -v[1])
 
+                from flatsurf.geometry.saddle_connection import SaddleConnection
+
                 # First check the edge eminating rightward from the start_vertex.
                 e = p.edge(initial_vertex)
                 if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
-                    from flatsurf.geometry.surface_objects import SaddleConnection
 
                     sc_list.append(SaddleConnection(self, start_data, e))
 
