@@ -162,7 +162,7 @@ class GL2ROrbitClosure:
             base_ring = surface.base_ring()
             from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
 
-            self._surface = FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().underlying_surface()).codomain()
+            self._surface = FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().codomain()).codomain()
         else:
             from flatsurf.geometry.pyflatsurf_conversion import sage_ring
 
