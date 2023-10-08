@@ -633,6 +633,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     sage: S.glue((0, 1), (1, 2))
                     sage: S.glue((0, 2), (1, 0))
 
+                    sage: S.set_immutable()
+
                     sage: S.pyflatsurf().codomain()  # optional: pyflatsurf
                     FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 

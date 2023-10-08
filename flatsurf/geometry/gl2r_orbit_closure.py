@@ -101,7 +101,7 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
-        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
+        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
         sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 
         sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
