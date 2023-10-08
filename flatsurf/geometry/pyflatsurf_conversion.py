@@ -1365,13 +1365,28 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion((0, 0))
             1
 
+        We map a saddle connection that maps to a half edge::
+
+            sage: connection = S.saddle_connections(1)[0]
+            sage: conversion(connection)
+            2
+
+        We map a saddle connection that does not map to a half edge::
+
+            sage: connection = S.saddle_connections(3)[-1]
+            sage: conversion(connection)
+            ((1/2*a^2 - 1/2 ~ 1.3090170), (-1/2*a ~ -0.95105652)) from -8 to -3
+
         """
         from flatsurf.geometry.surface_objects import SurfacePoint
+        from flatsurf.geometry.saddle_connection import SaddleConnection
 
         if isinstance(x, SurfacePoint):
             return self._image_point(x)
         if isinstance(x, tuple) and len(x) == 2:
             return self._image_half_edge(*x)
+        if isinstance(x, SaddleConnection):
+            return self._image_saddle_connection(x)
 
         raise NotImplementedError(f"cannot map {type(x)} from sage-flatsurf to pyflatsurf yet")
 
@@ -1405,6 +1420,18 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion.section(half_edge)
             (0, 0)
 
+        We roundtrip a saddle connection that maps to a half edge::
+
+            sage: connection = S.saddle_connections(1)[0]
+            sage: conversion.section(conversion(connection)) == connection
+            True
+
+        We roundtrip a more general saddle connection::
+
+            sage: connection = S.saddle_connections(3)[-1]
+            sage: conversion.section(conversion(connection)) == connection
+            True
+
         """
         import pyflatsurf
 
@@ -1412,6 +1439,8 @@ class FlatTriangulationConversion(Conversion):
             return self._preimage_point(y)
         if isinstance(y, pyflatsurf.flatsurf.HalfEdge):
             return self._preimage_half_edge(y)
+        if isinstance(y, pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())]):
+            return self._preimage_saddle_connection(y)
 
         raise NotImplementedError(f"cannot compute the preimage of a {type(y)} in sage-flatsurf yet")
 
@@ -1523,6 +1552,64 @@ class FlatTriangulationConversion(Conversion):
 
         """
         return self._half_edge_to_label[half_edge.id()]
+
+    def _image_saddle_connection(self, saddle_connection):
+        r"""
+        Return the image of the ``saddle_connection``.
+
+        This is a helper method for :meth:`__call__`.
+
+        INPUT:
+
+        - ``saddle_connection`` -- a saddle connection defined in the :meth:`domain`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: conversion._image_saddle_connection(S.saddle_connections(1)[0])
+            2
+
+        """
+        import pyflatsurf
+        return pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())].inSector(self.codomain(), self._image_half_edge(*saddle_connection.start_data()), self.vector_space_conversion()(saddle_connection.holonomy()))
+
+    def _preimage_saddle_connection(self, saddle_connection):
+        r"""
+        Return the preimage of the ``saddle_connection`` in the domain of this
+        conversion.
+
+        This is a helper method for :meth:`section`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+
+            sage: connection = next(iter(conversion.codomain().connections()))
+            sage: connection
+            1
+
+            sage: preimage = conversion._preimage_saddle_connection(connection)
+            sage: preimage
+            Saddle connection in direction (3/5*a^3 - 2*a, 1) with start data (0, 0) and end data (3, 0)
+
+            sage: conversion(preimage)
+            1
+
+        """
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        return SaddleConnection(
+                surface=self.domain(),
+                start_data=self._preimage_half_edge(saddle_connection.source()),
+                direction=self.vector_space_conversion().section(saddle_connection.vector()))
 
 
 def to_pyflatsurf(S):
