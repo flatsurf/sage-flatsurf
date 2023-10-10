@@ -1582,7 +1582,16 @@ class EuclideanPolygons(Category_over_base_ring):
                     - The point in the boundary of the polygon where the trajectory exits
 
                     - a PolygonPosition object representing the combinatorial position of the stopping point
+
+                    TESTS::
+
+                        sage: from flatsurf import Polygon
+                        sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                        sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                        ((2, 3), point positioned on vertex 6 of polygon)
                     """
+                    # TODO: Maybe this should be rewritten to be less cryptic
+                    # and work more robustly for non-strictly convex polygons.
                     from flatsurf.geometry.polygon import PolygonPosition
 
                     V = self.base_ring().fraction_field() ** 2
@@ -1625,11 +1634,12 @@ class EuclideanPolygons(Category_over_base_ring):
                                     PolygonPosition.EDGE_INTERIOR, edge=i
                                 )
                         except ZeroDivisionError:
-                            # Here we know the edge and the direction are parallel
-                            if ccw(e, point - v0) == 0:
+                            # Here we know the edge and the direction are
+                            # parallel or anti-parallel.
+                            from flatsurf.geometry.euclidean import is_parallel, is_anti_parallel
+                            if point == v0 or (is_parallel(e, point - v0) and is_anti_parallel(e, point - v0 + e)):
                                 # In this case point lies on the edge.
                                 # We need to work out which direction to move in.
-                                from flatsurf.geometry.euclidean import is_parallel
 
                                 if (point - v0).is_zero() or is_parallel(e, point - v0):
                                     # exits through vertex i+1
