@@ -757,7 +757,20 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
             from sage.all import vector
             from_homology = homology.module_morphism(function=lambda x: F.from_vector(vector(list(x.lift().lift()))), codomain=F)
-            to_homology = F.module_morphism(function=lambda x: homology(cycles(x.dense_coefficient_list(order=F.get_order()))), codomain=homology)
+
+            def _to_homology(x):
+                multiplicities = x.dense_coefficient_list(order=F.get_order())
+                try:
+                    cycle = cycles(multiplicities)
+                except TypeError:
+                    if multiplicities not in cycles:
+                        raise ValueError("chain is not a cycle so it has no representation in homology")
+                    raise
+
+                return homology(cycle)
+
+
+            to_homology = F.module_morphism(function=_to_homology, codomain=homology)
 
             for gen in homology.gens():
                 assert to_homology(from_homology(gen)) == gen
