@@ -373,6 +373,7 @@ def line_intersection(p1, p2, q1, q2):
     intersection, we return None. Here p1, p2, q1 and q2 should be vectors in
     the plane.
     """
+    # TODO: This is very slow. Probably the inverse is to blame.
     if ccw(p2 - p1, q2 - q1) == 0:
         return None
 
@@ -524,6 +525,24 @@ def is_segment_intersecting(e1, e2):
             return 2  # intersection in the middle
 
     return 2  # middle intersection
+
+    # TODO: This is much easier than the old code but also ×10 slower (for no good reason I guess.)
+    ## intersection = line_intersection(e1[0], e1[1], e2[0], e2[1])
+
+    ## if intersection is None:
+    ##     # The segments are parallel
+    ##     raise NotImplementedError
+
+    ## a = ccw(e1[1] - e1[0], e2[0] - e1[0]) * ccw(e1[1] - e1[0], e2[1] - e1[0])
+    ## b = ccw(e2[1] - e2[0], e1[0] - e2[0]) * ccw(e2[1] - e2[0], e1[1] - e2[0])
+
+    ## if a == 1 or b == 1:
+    ##     return 0
+
+    ## if a == 0 and b == 0:
+    ##     return 1
+
+    ## return 2
 
 
 def is_between(e0, e1, f):
