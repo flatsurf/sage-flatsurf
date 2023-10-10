@@ -1616,6 +1616,24 @@ class MutableOrientedSimilaritySurface(
             for i, cross in enumerate(gluing_list):
                 self.glue((label, i), cross)
 
+    def refine_polygon(self, label, surface, gluings):
+        old = self.polygon(label)
+        old_gluings = [self.opposite_edge(label, e) for e in range(len(old.vertices()))]
+
+        self.remove_polygon(label)
+
+        for surface_label in surface.labels():
+            self.add_polygon(surface.polygon(surface_label), label=surface_label)
+
+        for a, b in surface.gluings():
+            self.glue(a, b)
+
+        for (edge, opposite) in gluings.items():
+            if old_gluings[edge][0] == label:
+                self.glue(gluings[old_gluings[edge][1]], opposite)
+            else:
+                self.glue(old_gluings[edge], opposite)
+
     def replace_polygon(self, label, polygon):
         r"""
         Replace the polygon ``label`` with ``polygon`` while keeping its
@@ -2072,7 +2090,7 @@ class MutableOrientedSimilaritySurface(
             sage: S1.set_immutable()
 
             sage: S1.triangulate().codomain()
-            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, 6 triangles and a right triangle
+            Triangulation of Translation Surface in H_3(4, 0) built from a non-convex tridecagon with a marked vertex
 
         """
         if relabel is not None:
@@ -2083,44 +2101,15 @@ class MutableOrientedSimilaritySurface(
             )
 
         if not in_place:
-            return super().triangulate(in_place=in_place, label=label)
+            return super().triangulate(in_place=False, label=label)
 
-        if label is None:
-            # We triangulate the whole surface
-            # Store the current labels.
-            labels = [label for label in self.labels()]
-            s = self
-            # Subdivide each polygon in turn.
-            for label in labels:
-                s.triangulate(in_place=True, label=label)
-            from flatsurf.geometry.deformation import Deformation
-            return Deformation(None, s)
+        labels = [label] if label is not None else list(self.labels())
 
-        poly = self.polygon(label)
-        n = len(poly.vertices())
-        if n > 3:
-            s = self
-        else:
-            # This polygon is already a triangle.
-            from flatsurf.geometry.deformation import IdentityDeformation
-            return IdentityDeformation(self)
+        for label in labels:
+            self.refine_polygon(label, *self.polygon(label).triangulate(base_label=label))
 
-        from flatsurf.geometry.euclidean import ccw
-
-        for i in range(n - 3):
-            poly = s.polygon(label)
-            n = len(poly.vertices())
-            for i in range(n):
-                e1 = poly.edge(i)
-                e2 = poly.edge((i + 1) % n)
-                if ccw(e1, e2) > 0:
-                    # This is in case the polygon is a triangle with subdivided edge.
-                    e3 = poly.edge((i + 2) % n)
-                    if ccw(e1 + e2, e3) != 0:
-                        s.subdivide_polygon(label, i, (i + 2) % n)
-                        break
-        from flatsurf.geometry.deformation import Deformation
-        return Deformation(None, s)
+        from flatsurf.geometry.deformation import TriangulationDeformation
+        return TriangulationDeformation(None, self)
 
     def delaunay_single_flip(self):
         r"""
@@ -3042,6 +3031,13 @@ class LabelsFromView(Labels, LabeledView):
         True
 
     """
+
+    def __eq__(self, other):
+        if isinstance(other, LabelsFromView):
+            if self._view == other._view:
+                return True
+
+        return super().__eq__(other)
 
 
 class Polygons(LabeledCollection, collections.abc.Collection):

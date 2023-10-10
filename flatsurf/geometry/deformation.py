@@ -95,10 +95,13 @@ class Deformation:
         return self._codomain
 
     def __getattr__(self, name):
+        if name in ["__cached_methods"]:
+            raise AttributeError(f"'{type(self)}' has no attribute '{name}'")
+
         try:
             attr = getattr(self._codomain, name)
         except AttributeError:
-            raise
+            raise AttributeError(f"'{type(self)}' has no attribute '{name}'")
 
         import warnings
         warnings.warn(f"This methods returns a deformation instead of a surface. Use .codomain().{name} to access the surface instead of the deformation.")
@@ -122,11 +125,19 @@ class Deformation:
         if isinstance(x, SimplicialCohomologyClass):
             return self._image_cohomology(x)
 
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        if isinstance(x, SaddleConnection):
+            return self._image_saddle_connection(x)
+
         raise NotImplementedError(f"cannot map a {type(x)} through a deformation yet")
 
     def _image_point(self, p):
         # TODO: docstring
-        raise NotImplementedError(f"a {type(self)} cannot compute the image of a point yet")
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a point yet")
+
+    def _image_saddle_connection(self, c):
+        # TODO: docstring
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a saddle connection yet")
 
     def _image_homology(self, γ):
         # TODO: docstring
@@ -144,7 +155,7 @@ class Deformation:
         return codomain_homology(to_chain(image))
 
     def _image_edge(self, label, edge):
-        raise NotImplementedError(f"a {type(self)} cannot compute the image of an edge yet")
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of an edge yet")
 
     @cached_method
     def _image_homology_matrix(self):
@@ -235,6 +246,13 @@ class SectionDeformation(Deformation):
         M = self._deformation._image_homology_matrix()
         return M.parent()(M.inverse())
 
+    def _image_edge(self, label, edge):
+        for (l, e) in self.codomain().edges():
+            if self._deformation._image_edge(l, e) == (label, edge):
+                return (l, e)
+
+        raise NotImplementedError
+
 
 class CompositionDeformation(Deformation):
     # TODO: docstring
@@ -251,6 +269,9 @@ class CompositionDeformation(Deformation):
 
     def _image_homology_matrix(self):
         return self._lhs._image_homology_matrix() * self._rhs._image_homology_matrix()
+
+    def _image_edge(self, label, edge):
+        return self._lhs._image_edge(*self._rhs._image_edge(label, edge))
 
 
 class SubdivideDeformation(Deformation):
@@ -463,48 +484,22 @@ class TriangleFlipDeformation(Deformation):
         raise NotImplementedError
 
 
-# class TriangulationDeformation(Deformation):
-#     def __init__(self, domain, codomain, triangles):
-#         r"""
-#         INPUT:
-# 
-#         - ``domain`` -- a :class:`Surface`, the domain of this deformation
-# 
-#         - ``codomain`` -- a :class:`Surface`, the triangulated codomain of this deformation
-# 
-#         - ``triangles`` -- a dict mapping the labels of ``domain`` to sequences
-#           of triples of (counterclockwise) vertex indices of the polygon with
-#           that label
-# 
-#         """
-#         if not codomain.is_triangulated():
-#             raise ValueError("codomain must be triangulated")
-# 
-#         self._triangles = triangles
-#         super().__init__(domain, codomain)
-# 
-#     def _image_edge(self, label, edge):
-#         r"""
-#         EXAMPLES::
-# 
-#             sage: from flatsurf import translation_surfaces
-#             sage: S = translation_surfaces.octagon_and_squares()
-#             sage: triangulation = S.triangulate()
-# 
-#             sage: triangulation._image_edge(0, 0)
-#             [((0, 5), 1)]
-# 
-#         """
-#         N = self.domain().polygon(label).num_edges()
-#         for i, (v0, v1, v2) in enumerate(self._triangles[label]):
-#             if v0 == edge and v1 == (v0 + 1) % N:
-#                 return [((label, i), 0)]
-#             if v1 == edge and v2 == (v1 + 1) % N:
-#                 return [((label, i), 1)]
-#             if v2 == edge and v0 == (v2 + 1) % N:
-#                 return [((label, i), 2)]
-# 
-#         assert False
+class TriangulationDeformation(Deformation):
+    def _image_edge(self, label, edge):
+        return [self._codomain._triangulation(label)[1][edge]]
+
+    def _image_saddle_connection(self, connection):
+        (label, edge) = connection.start_data()
+
+        (label, edge) = self._image_edge(label, edge)[0]
+
+        from flatsurf.geometry.euclidean import ccw
+        while ccw(connection.direction(), -self._codomain.polygon(label).edges()[(edge - 1) % len(self._codomain.polygon(label).edges())]) <= 0:
+            (label, edge) = self._codomain.opposite_edge(label, (edge - 1) % len(self._codomain.polygon(label).edges()))
+
+        # TODO: This is extremely slow.
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        return SaddleConnection(self._codomain, (label, edge), direction=connection.direction())
 
 
 class DelaunayDecompositionDeformation(Deformation):

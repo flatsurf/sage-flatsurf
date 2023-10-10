@@ -1490,14 +1490,14 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: gs=ss.graphical_surface()
                     sage: gs.make_all_visible()
                     sage: gs
-                    Graphical representation of Translation Surface in H_2(2) built from 6 isosceles triangles
+                    Graphical representation of Triangulation of Translation Surface in H_2(2) built from 3 squares
 
                 A non-strictly convex example that caused trouble:
 
                     sage: from flatsurf import similarity_surfaces, Polygon
                     sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
                     sage: s=s.triangulate().codomain()
-                    sage: len(s.polygon(0).vertices())
+                    sage: len(s.polygon((0, 0)).vertices())
                     3
                 """
                 if relabel is not None:
@@ -1512,26 +1512,16 @@ class SimilaritySurfaces(SurfaceCategory):
                         "this surface does not implement triangulate(in_place=True) yet"
                     )
 
-                if self.is_finite_type():
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
+                if self.is_mutable():
+                    from flatsurf import MutableOrientedSimilaritySurface
+                    self = MutableOrientedSimilaritySurface.from_surface(self)
+                    return self.triangulate(in_place=True, label=label)
 
-                    s = MutableOrientedSimilaritySurface.from_surface(self)
-                    s.triangulate(in_place=True, label=label, relabel=relabel)
-                    s.set_immutable()
+                labels = {label} if label is not None else self.labels()
 
-                    from flatsurf.geometry.deformation import Deformation
-                    return Deformation(None, s)
-
-                if label is not None:
-                    raise NotImplementedError(
-                        "triangulate(label=) not implemented for infinite type surfaces"
-                    )
-
-                from flatsurf.geometry.deformation import Deformation
+                from flatsurf.geometry.deformation import TriangulationDeformation
                 from flatsurf.geometry.delaunay import LazyTriangulatedSurface
-                return Deformation(None, LazyTriangulatedSurface(self))
+                return TriangulationDeformation(self, LazyTriangulatedSurface(self, labels=labels))
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -1676,8 +1666,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_triangulation()
                     sage: ss.root()
-                    (0, (0, 1, 2))
-                    sage: ss.polygon((0, (0, 1, 2)))
+                    (0, 0)
+                    sage: ss.polygon((0, 0))
                     Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated(limit=10)
@@ -1775,7 +1765,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_decomposition().codomain()
                     sage: ss.root()
-                    (0, (0, 1, 2))
+                    (0, 0)
                     sage: ss.polygon(ss.root())
                     Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: TestSuite(ss).run()

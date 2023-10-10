@@ -67,7 +67,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: Surface_pyflatsurf._from_flatsurf(S)
-            Deformation from Translation Surface in H_1(0) built from 2 isosceles triangles to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
+            Deformation from Triangulation of Translation Surface in H_1(0) built from a square to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """
         if isinstance(surface, Surface_pyflatsurf):
@@ -100,7 +100,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: S.pyflatsurf().codomain()
-            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 1), 2: (-1, 0), 3: (0, -1)}
+            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """
         return repr(self._flat_triangulation)
@@ -141,7 +141,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: S = S.pyflatsurf().codomain()
 
             sage: S.polygon((1, 2, 3))
-            Polygon(vertices=[(0, 0), (1, 1), (0, 1)])
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
         """
         label = Surface_pyflatsurf._normalize_label(label)

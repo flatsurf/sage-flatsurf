@@ -32,7 +32,7 @@ class Deformation_to_pyflatsurf(Deformation):
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: deformation = S.pyflatsurf()
-            sage: deformation._image_edge(0, 0)
+            sage: deformation._image_edge((0, 0), 0)
             [((1, 2, 3), 0)]
 
         """
@@ -41,6 +41,10 @@ class Deformation_to_pyflatsurf(Deformation):
         label = type(self.codomain())._normalize_label(face)
         edge = label.index(half_edge)
         return [(label, edge)]
+
+    def _image_saddle_connection(self, connection):
+        from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
+        return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection))
 
 
 class Deformation_from_pyflatsurf(Deformation):

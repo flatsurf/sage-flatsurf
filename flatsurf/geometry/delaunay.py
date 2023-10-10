@@ -50,8 +50,12 @@ from flatsurf.geometry.surface import (
 
 
 class LazyTriangulatedSurface(OrientedSimilaritySurface):
+    # TODO: Add checks for label clashes.
     r"""
-    Surface class used to triangulate an infinite surface.
+    A triangulated surface whose structure is computed on demand.
+
+    Used to triangulate surfaces when in-place-triangulation is not requested.
+    In particular, this is used to triangulate infinite type surface.
 
     EXAMPLES::
 
@@ -68,7 +72,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
     """
 
-    def __init__(self, similarity_surface, relabel=None, category=None):
+    def __init__(self, similarity_surface, labels=None, relabel=None, category=None):
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
@@ -81,10 +85,14 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
                     "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyTriangulatedSurface()"
                 )
 
+        if labels is None:
+            labels = similarity_surface.labels()
+
         if similarity_surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
         self._reference = similarity_surface
+        self._labels = labels
 
         OrientedSimilaritySurface.__init__(
             self,
@@ -139,17 +147,15 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.roots()
-            ((0, (0, 1, 2)),)
+            ((0, 0),)
 
         """
-        return tuple(
-            (reference_label, self._triangulation(reference_label)[(0, 1)])
-            for reference_label in self._reference.roots()
-        )
+        return tuple(self._triangulation(root)[0].root() for root in self._reference.roots())
 
+    @cached_method
     def _triangulation(self, reference_label):
         r"""
-        Return a triangulated of the ``reference_label`` in the underlying
+        Return a triangulation of the ``reference_label`` in the underlying
         (typically non-triangulated) reference surface.
 
         INPUT:
@@ -162,46 +168,39 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S._triangulation(0)
-            {(0, 1): (0, 1, 2),
-             (0, 2): (0, 2, 3),
-             (1, 2): (0, 1, 2),
-             (2, 0): (0, 1, 2),
-             (2, 3): (0, 2, 3),
-             (3, 0): (0, 2, 3)}
+            (Translation Surface with boundary built from 2 isosceles triangles,
+             bidict({0: ((0, 0), 0), 1: ((0, 0), 1), 2: ((0, 1), 1), 3: ((0, 1), 2)}))
 
         """
         reference_polygon = self._reference.polygon(reference_label)
 
-        outer_edges = [
-            (vertex, (vertex + 1) % len(reference_polygon.vertices()))
-            for vertex in range(len(reference_polygon.vertices()))
-        ]
-        inner_edges = reference_polygon.triangulation()
-        inner_edges.extend([(w, v) for (v, w) in inner_edges])
+        if reference_label not in self._labels:
+            from flatsurf import MutableOrientedSimilaritySurface
+            triangulation = MutableOrientedSimilaritySurface(self._reference.base_ring())
+            triangulation.add_polygon(reference_polygon)
 
-        edges = outer_edges + inner_edges
+            from bidict import bidict
+            return triangulation, bidict({e: (reference_label, e) for e in range(len(reference_polygon.edges()))})
 
-        def triangle(edge):
-            v, w = edge
-            next_edges = [edge for edge in edges if edge[0] == w]
-            previous_edges = [edge for edge in edges if edge[1] == v]
+        return reference_polygon.triangulate(base_label=reference_label)
 
-            next_vertices = [edge[1] for edge in next_edges]
-            previous_vertices = [edge[0] for edge in previous_edges]
+    def _reference_label(self, label):
+        if label in self._reference.labels():
+            if label not in self._labels:
+                return label
+            if len(self._reference.polygon(label).vertices()) == 3:
+                return label
 
-            other_vertex = set(next_vertices).intersection(set(previous_vertices))
+        if not isinstance(label, tuple):
+            raise KeyError
 
-            assert len(other_vertex) == 1
+        if len(label) != 2:
+            raise KeyError
 
-            other_vertex = next(iter(other_vertex))
+        if label[0] not in self._reference.labels():
+            raise KeyError
 
-            vertices = v, w, other_vertex
-            while vertices[0] != min(vertices):
-                vertices = vertices[1:] + vertices[:1]
-
-            return vertices
-
-        return {edge: triangle(edge) for edge in edges}
+        return label[0]
 
     def polygon(self, label):
         r"""
@@ -214,19 +213,15 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
-            sage: S.polygon((0, (0, 1, 2)))
+            sage: S.polygon((0, 0))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
         """
-        reference_label, vertices = label
-        reference_polygon = self._reference.polygon(reference_label)
+        reference_label = self._reference_label(label)
 
-        from flatsurf import Polygon
+        triangulation, _ = self._triangulation(reference_label)
 
-        return Polygon(
-            vertices=[reference_polygon.vertex(v) for v in vertices],
-            category=reference_polygon.category(),
-        )
+        return triangulation.polygon(label)
 
     def opposite_edge(self, label, edge):
         r"""
@@ -240,38 +235,21 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
-            sage: S.opposite_edge((0, (0, 1, 2)), 0)
-            ((1, (0, 2, 3)), 1)
+            sage: S.opposite_edge((0, 0), 0)
+            ((1, 1), 1)
 
         """
-        reference_label, vertices = label
-        reference_polygon = self._reference.polygon(reference_label)
+        reference_label = self._reference_label(label)
 
-        if vertices[(edge + 1) % 3] == (vertices[edge] + 1) % len(
-            reference_polygon.vertices()
-        ):
-            # This is an edge of the reference surface
-            cross_reference_label, cross_reference_edge = self._reference.opposite_edge(
-                reference_label, vertices[edge]
-            )
-            cross_reference_polygon = self._reference.polygon(cross_reference_label)
-            cross_vertices = self._triangulation(cross_reference_label)[
-                (
-                    cross_reference_edge,
-                    (cross_reference_edge + 1)
-                    % len(cross_reference_polygon.vertices()),
-                )
-            ]
+        triangulation, outer_edges = self._triangulation(reference_label)
 
-            cross_edge = cross_vertices.index(cross_reference_edge)
+        if (label, edge) in outer_edges.values():
+            reference_edge = outer_edges.inverse[(label, edge)]
+            opposite_reference_label, opposite_reference_edge = self._reference.opposite_edge(reference_label, reference_edge)
+            opposite_triangulation, opposite_outer_edges = self._triangulation(opposite_reference_label)
+            return opposite_outer_edges[opposite_reference_edge]
 
-            return (cross_reference_label, cross_vertices), cross_edge
-
-        # This is an edge that was added by the triangulation
-        edge = (vertices[edge], vertices[(edge + 1) % 3])
-        cross_edge = (edge[1], edge[0])
-        cross_vertices = self._triangulation(reference_label)[cross_edge]
-        return (reference_label, cross_vertices), cross_vertices.index(cross_edge[0])
+        return triangulation.opposite_edge(label, edge)
 
     def __hash__(self):
         r"""
@@ -306,7 +284,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if not isinstance(other, LazyTriangulatedSurface):
             return False
 
-        return self._reference == other._reference
+        return self._reference == other._reference and self._labels == other._labels
 
     def labels(self):
         r"""
@@ -320,24 +298,22 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.labels()
-            ((0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3)), (0, (0, 2, 3)), (1, (0, 1, 2)), (2, (0, 1, 2)), (-1, (0, 1, 2)), (-2, (0, 1, 2)), (2, (0, 2, 3)), (3, (0, 2, 3)),
-             (-2, (0, 2, 3)), (-3, (0, 2, 3)), (3, (0, 1, 2)), (4, (0, 1, 2)), (-3, (0, 1, 2)), (-4, (0, 1, 2)), …)
+            ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 
         """
 
         class LazyLabels(Labels):
             def __contains__(self, label):
-                reference_label, vertices = label
-                if reference_label not in self._surface._reference.labels():
+                try:
+                    self._surface._reference_label(label)
+                except KeyError:
                     return False
 
-                return (
-                    vertices in self._surface._triangulation(reference_label).values()
-                )
+                return True
 
         return LazyLabels(self, finite=self._reference.is_finite_type())
 
-    def __repr__(self):
+    def _repr_(self):
         r"""
         Return a printable representation of this surface.
 
@@ -349,6 +325,9 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             Triangulation of The infinite staircase
 
         """
+        if self._labels != self._reference.labels():
+            return f"Partial Triangulation of {self._reference!r}"
+
         return f"Triangulation of {self._reference!r}"
 
 

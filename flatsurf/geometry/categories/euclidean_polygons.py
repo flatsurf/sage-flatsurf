@@ -1231,6 +1231,8 @@ class EuclideanPolygons(Category_over_base_ring):
                     [(0, 4), (1, 3), (4, 1)]
 
                 """
+                # TODO: Deprecate
+
                 vertices = self.vertices()
 
                 n = len(vertices)
@@ -1308,6 +1310,95 @@ class EuclideanPolygons(Category_over_base_ring):
                             return [(i, j)] + part0 + part1
 
                 assert False
+
+            def triangulate(self, base_label=None, ):
+                # Algorithm: We use a naive ear-clipping method that is quadratic in the number of vertices, see https://en.wikipedia.org/wiki/Polygon_triangulation.
+                from flatsurf import MutableOrientedSimilaritySurface
+                triangulation = MutableOrientedSimilaritySurface(self.base_ring())
+
+                vertices = list(self.vertices())
+                nvertices = len(vertices)
+                untriangulated = list(range(len(vertices)))
+
+                triangles = {}
+
+                def next_label():
+                    if base_label is None:
+                        return len(triangles)
+                    else:
+                        return (base_label, len(triangles))
+
+                if len(untriangulated) < 3:
+                    raise ValueError("cannot triangulate such a degenerate polygon")
+
+                if len(untriangulated) == 3:
+                    # No need to triangulate. We special-case so we get nicer labels.
+                    label = triangulation.add_polygon(self, label=base_label)
+
+                    from bidict import bidict
+                    return triangulation, bidict({0: (label, 0), 1: (label, 1), 2: (label, 2)})
+
+                while len(untriangulated) > 3:
+                    for i in range(len(untriangulated)):
+                        j = (i + 1) % len(untriangulated)
+                        k = (j + 1) % len(untriangulated)
+
+                        a = untriangulated[i]
+                        b = untriangulated[j]
+                        c = untriangulated[k]
+
+                        if ccw(vertices[b] - vertices[a], vertices[c] - vertices[b]) <= 0:
+                            # The triangle (a, b, c) has non-positive area.
+                            continue
+
+                        # Check that (a, b, c) form an ear, i.e., that there
+                        # are no intersections with the polygon.
+                        from flatsurf.geometry.euclidean import is_segment_intersecting
+                        if any(
+                            is_segment_intersecting((vertices[c], vertices[a]),
+                                                    (vertices[untriangulated[m]], vertices[untriangulated[(m + 1) % len(untriangulated)]])) > 1
+                            for m in range(len(untriangulated)) if m != i and m != j):
+                            continue
+
+                        triangles[(a, b, c)] = next_label()
+                        # Note that because of this operation, this method
+                        # is quadratic in the number of vertices. So for
+                        # very large polygons this could be a bottleneck.
+                        untriangulated = untriangulated[:j] + untriangulated[j + 1:]
+                        break
+                    else:
+                        assert False, "cannot triangulate this polygon"
+
+                triangles[tuple(untriangulated)] = next_label()
+
+                # Add triangles to triangulated surface.
+                for triangle, label in triangles.items():
+                    from flatsurf import Polygon
+                    triangulation.add_polygon(Polygon(vertices=[
+                        vertices[triangle[0]],
+                        vertices[triangle[1]],
+                        vertices[triangle[2]]]),
+                        label=label)
+
+                # Establish gluings between triangles
+                edges = {
+                    **{triangle[:2]: (triangles[triangle], 0) for triangle in triangles},
+                    **{triangle[1:]: (triangles[triangle], 1) for triangle in triangles},
+                    **{(triangle[2], triangle[0]): (triangles[triangle], 2) for triangle in triangles}
+                }
+
+                outer_edges = {}
+
+                for (a, b) in edges:
+                    glued = (b, a) in edges
+                    assert not glued == (b == (a + 1) % nvertices or a == (b + 1) % nvertices)
+                    if glued:
+                        triangulation.glue(edges[(a, b)], edges[(b, a)])
+                    else:
+                        outer_edges[a] = edges[(a, b)]
+
+                from bidict import bidict
+                return triangulation, bidict(outer_edges)
 
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
