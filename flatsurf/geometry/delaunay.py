@@ -724,7 +724,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
             sage: S.roots()
-            ((0, (0, 1, 2)),)
+            ((0, 0),)
 
         """
         return self._surface.roots()
@@ -741,7 +741,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
-            sage: S.polygon((0, (0, 1, 2)))
+            sage: S.polygon((0, 0))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
         """
@@ -788,8 +788,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
-            sage: S.opposite_edge((0, (0, 1, 2)), 0)
-            ((1, (0, 2, 3)), 1)
+            sage: S.opposite_edge((0, 0), 0)
+            ((1, 1), 1)
 
         """
         self.polygon(label)
@@ -915,8 +915,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
             sage: S.labels()
-            ((0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3)), (0, (0, 2, 3)), (1, (0, 1, 2)), (2, (0, 1, 2)), (-1, (0, 1, 2)), (-2, (0, 1, 2)), (2, (0, 2, 3)), (3, (0, 2, 3)),
-             (-2, (0, 2, 3)), (-3, (0, 2, 3)), (3, (0, 1, 2)), (4, (0, 1, 2)), (-3, (0, 1, 2)), (-4, (0, 1, 2)), …)
+            ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 
         """
         return self._surface.labels()
@@ -1050,7 +1049,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
-            sage: S.polygon((0, (0, 1, 2)))
+            sage: S.polygon((0, 0))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
@@ -1082,9 +1081,9 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S._label(frozenset({
-            ....:     ((0, (0, 1, 2))),
-            ....:     ((0, (0, 2, 3)))}))
-            (0, (0, 1, 2))
+            ....:     (0, 0),
+            ....:     (0, 1)}))
+            (0, 0)
 
         """
         for label in self._delaunay_triangulation.labels():
@@ -1101,10 +1100,10 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
-            sage: S._normalize_label((0, (0, 1, 2)))
-            (0, (0, 1, 2))
-            sage: S._normalize_label((0, (0, 2, 3)))
-            (0, (0, 1, 2))
+            sage: S._normalize_label((0, 0))
+            (0, 0)
+            sage: S._normalize_label((0, 1))
+            (0, 0)
 
         """
         cell, _ = self._cell(label)
@@ -1124,12 +1123,9 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         This cell (a square) is formed by two triangles that form a cylinder,
         i.e., the two triangles are glued at two of their edges::
 
-            sage: S._cell((0, (0, 1, 2)))
-            (frozenset({(0, (0, 1, 2)), (0, (0, 2, 3))}),
-             [((0, (0, 1, 2)), 0),
-              ((0, (0, 1, 2)), 1),
-              ((0, (0, 2, 3)), 1),
-              ((0, (0, 2, 3)), 2)])
+            sage: S._cell((0, 0))
+            (frozenset({(0, 0), (0, 1)}),
+             [((0, 0), 0), ((0, 0), 1), ((0, 1), 1), ((0, 1), 2)])
 
         """
         edges = []
@@ -1183,8 +1179,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
-            sage: S.opposite_edge((0, (0, 1, 2)), 0)
-            ((1, (0, 2, 3)), 2)
+            sage: S.opposite_edge((0, 0), 0)
+            ((1, 1), 2)
 
         """
         if label not in self._delaunay_triangulation.labels():
@@ -1216,7 +1212,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.roots()
-            ((0, (0, 1, 2)),)
+            ((0, 0),)
 
         """
         return self._delaunay_triangulation.roots()
