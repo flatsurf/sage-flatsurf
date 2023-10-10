@@ -122,7 +122,11 @@ class SimilaritySurfaceTangentVector:
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
                 )
-            if wp0 == 0:
+
+            # TODO: Make sure all code paths are tested. In particular, check
+            # that saddle connections of cathedral work.
+            from flatsurf.geometry.euclidean import is_anti_parallel
+            if is_anti_parallel(edge0, vector):
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
                     polygon_label, (v - 1) % len(p.vertices())
@@ -139,7 +143,7 @@ class SimilaritySurfaceTangentVector:
                     self.surface().polygon(label2).get_point_position(point2)
                 )
             else:
-                # vector points along edge1 in that directior or points into polygons interior
+                # vector points along edge1 or points into polygons interior
                 self._polygon_label = polygon_label
                 self._point = point
                 self._vector = vector
