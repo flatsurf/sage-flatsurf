@@ -383,6 +383,44 @@ def line_intersection(p1, p2, q1, q2):
     return p1 + (m.inverse() * (q1 - p1))[0] * (p2 - p1)
 
 
+def time_on_ray(p, direction, q):
+    if direction[0]:
+        return (q[0] - p[0]) / direction[0]
+    else:
+        return (q[1] - p[1]) / direction[1]
+
+
+def ray_segment_intersection(p, direction, segment):
+    intersection = line_intersection(p, p + direction, *segment)
+
+    if intersection is None:
+        # ray and segment are parallel.
+        t0 = time_on_ray(p, direction, segment[0])
+        t1 = time_on_ray(p, direction, segment[1])
+
+        if t1 < t0:
+            t0, t1 = t1, t0
+
+        if t1 < 0:
+            return None
+
+        if t1 == 0:
+            return p
+
+        if t0 < 0:
+            return (p, p + t1 * direction)
+
+        return (p + t0 * direction, p + t1 * direction)
+
+    if time_on_ray(p, direction, intersection) < 0:
+        return None
+
+    if ccw(segment[0] - p, direction) * ccw(segment[1] - p, direction) == 1:
+        return None
+
+    return intersection
+
+
 def is_segment_intersecting(e1, e2):
     r"""
     Return whether the segments ``e1`` and ``e2`` intersect.

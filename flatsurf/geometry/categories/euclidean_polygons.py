@@ -1564,7 +1564,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         point, translation=translation
                     ).is_inside()
 
-                def flow_to_exit(self, point, direction):
+                def flow_to_exit(self, point, direction, stop_at_vertex=False):
                     r"""
                     Flow a point in the direction of holonomy until the point leaves the
                     polygon.  Note that ValueErrors may be thrown if the point is not in the
@@ -1590,77 +1590,50 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
                         ((2, 3), point positioned on vertex 6 of polygon)
                     """
-                    # TODO: Maybe this should be rewritten to be less cryptic
-                    # and work more robustly for non-strictly convex polygons.
-                    from flatsurf.geometry.polygon import PolygonPosition
+                    if not direction:
+                        raise ValueError("direction must be non-zero")
 
-                    V = self.base_ring().fraction_field() ** 2
-                    if direction == V.zero():
-                        raise ValueError("Zero vector provided as direction.")
-                    v0 = self.vertex(0)
-                    for i in range(len(self.vertices())):
-                        e = self.edge(i)
-                        from sage.all import matrix
+                    vertices = self.vertices()
 
-                        m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
-                        try:
-                            ret = m.inverse() * (point - v0)
-                            s = ret[0]
-                            t = ret[1]
-                            # What if the matrix is non-invertible?
+                    first_intersection = None
 
-                            # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
-                            # to the direction.
+                    for v in range(len(vertices)):
+                        segment = vertices[v], vertices[(v + 1) % len(vertices)]
 
-                            # s is location it intersects on edge, t is the portion of the direction to reach this intersection
-                            if t > 0 and 0 <= s and s <= 1:
-                                # The ray passes through edge i.
-                                if s == 1:
-                                    # exits through vertex i+1
-                                    v0 = v0 + e
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                if s == 0:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                                    # exits through vertex i
-                                # exits through interior of edge i
-                                prod = t * direction
-                                return point + prod, PolygonPosition(
-                                    PolygonPosition.EDGE_INTERIOR, edge=i
-                                )
-                        except ZeroDivisionError:
-                            # Here we know the edge and the direction are
-                            # parallel or anti-parallel.
-                            from flatsurf.geometry.euclidean import is_parallel, is_anti_parallel
-                            if point == v0 or (is_parallel(e, point - v0) and is_anti_parallel(e, point - v0 + e)):
-                                # In this case point lies on the edge.
-                                # We need to work out which direction to move in.
+                        from flatsurf.geometry.euclidean import ray_segment_intersection
+                        intersection = ray_segment_intersection(point, direction, segment)
 
-                                if (point - v0).is_zero() or is_parallel(e, point - v0):
-                                    # exits through vertex i+1
-                                    return self.vertex(i + 1), PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                else:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                            pass
-                        v0 = v0 + e
-                    # Our loop has terminated. This can mean one of several errors...
-                    pos = self.get_point_position(point)
-                    if pos.is_outside():
-                        raise ValueError("Started with point outside polygon")
-                    raise ValueError(
-                        "Point on boundary of polygon and direction not pointed into the polygon."
-                    )
+                        if intersection is None:
+                            continue
+
+                        if isinstance(intersection, tuple):
+                            if intersection[0] != point:
+                                # The flow overlaps with this edge but it hits
+                                # a vertex before it gets here.
+                                continue
+
+                            intersection = intersection[1]
+                            assert intersection != point
+
+                        if intersection == point:
+                            continue
+
+                        # TODO: Implement stop_at_vertex == False. (But what
+                        # should be the default actually? I think the old
+                        # version was just buggy so there is no legacy to
+                        # follow.)
+                        from flatsurf.geometry.euclidean import time_on_ray
+                        if first_intersection is None or time_on_ray(point, direction, first_intersection) > time_on_ray(point, direction, intersection):
+                            first_intersection = intersection
+
+                    if first_intersection is not None:
+                        # TODO: Do not call expensive get_point_position.
+                        return first_intersection, self.get_point_position(first_intersection)
+
+                    if self.get_point_position(point).is_outside():
+                        raise ValueError("Cannot flow from point outside of polygon")
+
+                    raise ValueError("Cannot flow from point on boundary if direction points out of the polygon")
 
                 def flow_map(self, direction):
                     r"""
