@@ -292,6 +292,7 @@ def chamanara_half_dilation_surface(alpha, n=None):
 
 class ChamanaraTranslationSurface(MinimalTranslationCover):
     def __init__(self, alpha):
+        self._alpha = alpha
         MinimalTranslationCover.__init__(self, ChamanaraSurface(alpha))
         self._refine_category_(self.category().Compact())
 
@@ -307,6 +308,30 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
             adjacencies.append((label, 3))
             label = self.opposite_edge(label, 3)[0]
         return super().graphical_surface(adjacencies=adjacencies, **kwds)
+
+    def labels(self):
+        from flatsurf.geometry.surface import Labels
+
+        class LazyLabels(Labels):
+            def __contains__(self, label):
+                if not isinstance(label, tuple):
+                    return False
+                if len(label) != 3:
+                    return False
+
+                from sage.all import ZZ
+                if label[0] not in ZZ:
+                    return False
+
+                if label[2] != 0:
+                    return False
+
+                if label[0] >= 1:
+                    return label[1] == -self._surface._alpha**(label[0] - 1)
+
+                return label[1] == self._surface._alpha**(-label[0])
+
+        return LazyLabels(self, finite=False)
 
 
 def chamanara_surface(alpha, n=None):
