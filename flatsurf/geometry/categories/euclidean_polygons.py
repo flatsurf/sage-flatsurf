@@ -1442,9 +1442,6 @@ class EuclideanPolygons(Category_over_base_ring):
                             continue
 
                         triangles[(a, b, c)] = next_label()
-                        # Note that because of this operation, this method
-                        # is quadratic in the number of vertices. So for
-                        # very large polygons this could be a bottleneck.
                         untriangulated = untriangulated[:j] + untriangulated[j + 1:]
                         break
                     else:
