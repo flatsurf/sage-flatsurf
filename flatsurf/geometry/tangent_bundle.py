@@ -334,8 +334,7 @@ class SimilaritySurfaceTangentVector:
             SimilaritySurfaceTangentVector in polygon 1 based at (2/3, 2) with vector (4, -3)
         """
         p = self.polygon()
-        point2, pos2 = p.flow_to_exit(self.point(), self.vector())
-        # diff=point2-point
+        point2 = p.flow_to_exit(self.point(), self.vector())
         new_vector = SimilaritySurfaceTangentVector(
             self.bundle(), self.polygon_label(), point2, -self.vector()
         )

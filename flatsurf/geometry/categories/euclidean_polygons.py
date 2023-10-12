@@ -1642,12 +1642,11 @@ class EuclideanPolygons(Category_over_base_ring):
                         point, translation=translation
                     ).is_inside()
 
-                def flow_to_exit(self, point, direction, stop_at_vertex=False):
+                def flow_to_exit(self, point, direction):
                     r"""
-                    Flow a point in the direction of holonomy until the point leaves the
-                    polygon.  Note that ValueErrors may be thrown if the point is not in the
-                    polygon, or if it is on the boundary and the holonomy does not point
-                    into the polygon.
+                    Flow a point in the direction of holonomy until the point
+                    leaves the polygon and return the point on the boundary
+                    where the trajectory exits.
 
                     INPUT:
 
@@ -1655,18 +1654,13 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     - ``holonomy`` -- direction of motion (a vector of non-zero length)
 
-                    OUTPUT:
-
-                    - The point in the boundary of the polygon where the trajectory exits
-
-                    - a PolygonPosition object representing the combinatorial position of the stopping point
-
                     TESTS::
 
                         sage: from flatsurf import Polygon
                         sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
                         sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
-                        ((2, 3), point positioned on vertex 6 of polygon)
+                        (2, 3)
+
                     """
                     if not direction:
                         raise ValueError("direction must be non-zero")
@@ -1696,17 +1690,12 @@ class EuclideanPolygons(Category_over_base_ring):
                         if intersection == point:
                             continue
 
-                        # TODO: Implement stop_at_vertex == False. (But what
-                        # should be the default actually? I think the old
-                        # version was just buggy so there is no legacy to
-                        # follow.)
                         from flatsurf.geometry.euclidean import time_on_ray
                         if first_intersection is None or time_on_ray(point, direction, first_intersection) > time_on_ray(point, direction, intersection):
                             first_intersection = intersection
 
                     if first_intersection is not None:
-                        # TODO: Do not call expensive get_point_position.
-                        return first_intersection, self.get_point_position(first_intersection)
+                        return first_intersection
 
                     if self.get_point_position(point).is_outside():
                         raise ValueError("Cannot flow from point outside of polygon")
