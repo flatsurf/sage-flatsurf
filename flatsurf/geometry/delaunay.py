@@ -182,7 +182,18 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             from bidict import bidict
             return triangulation, bidict({e: (reference_label, e) for e in range(len(reference_polygon.edges()))})
 
-        return reference_polygon.triangulate(base_label=reference_label)
+        # TODO: The same code is in surface.py triangulate()
+        triangulation, edge_to_edge = reference_polygon.triangulate()
+        if len(triangulation.labels()) == 1:
+            relabeling = {triangulation.root(): reference_label}
+        else:
+            relabeling = {l: (reference_label, l) for l in triangulation.labels()}
+        triangulation, no_errors = triangulation.relabel(relabeling)
+        assert no_errors
+
+        from bidict import bidict
+        edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
+        return triangulation, edge_to_edge
 
     def _reference_label(self, label):
         if label in self._reference.labels():
