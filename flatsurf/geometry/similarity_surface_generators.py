@@ -786,7 +786,7 @@ class SimilaritySurfaceGenerators:
 
         """
         if not isinstance(P, EuclideanPolygon):
-            raise TypeError("invalid input")
+            raise TypeError("P must be a polygon")
 
         if rational is not None:
             import warnings

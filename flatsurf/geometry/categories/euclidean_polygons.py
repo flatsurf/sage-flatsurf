@@ -1137,6 +1137,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
                     ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)])
                     sage: P.triangulation()
+                    doctest:warning
+                    ...
+                    UserWarning: triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead.
                     [(0, 2), (2, 8), (3, 5), (6, 8), (8, 3), (3, 6), (9, 11), (0, 9), (2, 9)]
 
                 TESTS::
