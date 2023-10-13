@@ -712,7 +712,7 @@ class SimilaritySurfaceGenerators:
         return s
 
     @staticmethod
-    def billiard(P, rational=None):
+    def billiard(P):
         r"""
         Return the ConeSurface associated to the billiard in the polygon ``P``.
 
@@ -720,18 +720,12 @@ class SimilaritySurfaceGenerators:
 
         - ``P`` -- a polygon
 
-        - ``rational`` -- a boolean or ``None`` (default: ``None``) -- whether
-          to assume that all the angles of ``P`` are a rational multiple of π.
-
         EXAMPLES::
 
             sage: from flatsurf import Polygon, similarity_surfaces
 
             sage: P = Polygon(vertices=[(0,0), (1,0), (0,1)])
-            sage: Q = similarity_surfaces.billiard(P, rational=True)
-            doctest:warning
-            ...
-            UserWarning: the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore
+            sage: Q = similarity_surfaces.billiard(P)
             sage: Q
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
             sage: from flatsurf.geometry.categories import ConeSurfaces
@@ -757,7 +751,6 @@ class SimilaritySurfaceGenerators:
 
         A quadrilateral from Eskin-McMullen-Mukamel-Wright::
 
-            sage: from flatsurf import Polygon
             sage: P = Polygon(angles=(1, 1, 1, 7))
             sage: S = similarity_surfaces.billiard(P)
             sage: TestSuite(S).run()
@@ -785,144 +778,7 @@ class SimilaritySurfaceGenerators:
             True
 
         """
-        if not isinstance(P, EuclideanPolygon):
-            raise TypeError("P must be a polygon")
-
-        if rational is not None:
-            import warnings
-
-            warnings.warn(
-                "the rational keyword argument of billiard() has been deprecated and will be removed in a future version of sage-flatsurf; rationality checking is now faster so this is not needed anymore"
-            )
-
-        from flatsurf.geometry.categories import ConeSurfaces
-
-        category = ConeSurfaces()
-        if P.is_rational():
-            category = category.Rational()
-
-        V = P.base_ring() ** 2
-
-        if not P.is_convex():
-            # triangulate non-convex ones
-            base_ring = P.base_ring()
-            comb_edges = P.triangulation()
-            vertices = P.vertices()
-            comb_triangles = SimilaritySurfaceGenerators._billiard_build_faces(
-                len(vertices), comb_edges
-            )
-            triangles = []
-            internal_edges = []  # list (p1, e1, p2, e2)
-            external_edges = []  # list (p1, e1)
-            edge_to_lab = {}
-            for num, (i, j, k) in enumerate(comb_triangles):
-                triangles.append(
-                    Polygon(
-                        vertices=[vertices[i], vertices[j], vertices[k]],
-                        base_ring=base_ring,
-                    )
-                )
-                edge_to_lab[(i, j)] = (num, 0)
-                edge_to_lab[(j, k)] = (num, 1)
-                edge_to_lab[(k, i)] = (num, 2)
-            for num, (i, j, k) in enumerate(comb_triangles):
-                if (j, i) in edge_to_lab:
-                    num2, e2 = edge_to_lab[j, i]
-                    internal_edges.append((num, 0, num2, e2))
-                else:
-                    external_edges.append((num, 0))
-                if (k, j) in edge_to_lab:
-                    num2, e2 = edge_to_lab[k, j]
-                    internal_edges.append((num, 1, num2, e2))
-                else:
-                    external_edges.append((num, 1))
-                if (i, k) in edge_to_lab:
-                    num2, e2 = edge_to_lab[i, k]
-                    internal_edges.append((num, 2, num2, e2))
-                else:
-                    external_edges.append((num, 1))
-            P = triangles
-        else:
-            internal_edges = []
-            external_edges = [(0, i) for i in range(len(P.vertices()))]
-            base_ring = P.base_ring()
-            P = [P]
-
-        surface = MutableOrientedSimilaritySurface(base_ring, category=category)
-
-        m = len(P)
-
-        for p in P:
-            surface.add_polygon(p)
-        for p in P:
-            surface.add_polygon(
-                Polygon(edges=[V((-x, y)) for x, y in reversed(p.edges())])
-            )
-        for p1, e1, p2, e2 in internal_edges:
-            surface.glue((p1, e1), (p2, e2))
-            ne1 = len(surface.polygon(p1).vertices())
-            ne2 = len(surface.polygon(p2).vertices())
-            surface.glue((m + p1, ne1 - e1 - 1), (m + p2, ne2 - e2 - 1))
-        for p, e in external_edges:
-            ne = len(surface.polygon(p).vertices())
-            surface.glue((p, e), (m + p, ne - e - 1))
-
-        surface.set_immutable()
-
-        return surface
-
-    @staticmethod
-    def _billiard_build_faces(n, edges):
-        r"""
-        Given a combinatorial list of pairs ``edges`` forming a cell-decomposition
-        of a polygon (with vertices labeled from ``0`` to ``n-1``) return the list
-        of cells.
-
-        This is a helper method for :meth:`billiard`.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-            sage: SimilaritySurfaceGenerators._billiard_build_faces(4, [(0,2)])
-            [[0, 1, 2], [2, 3, 0]]
-            sage: SimilaritySurfaceGenerators._billiard_build_faces(4, [(1,3)])
-            [[1, 2, 3], [3, 0, 1]]
-            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(0,2), (0,3)])
-            [[0, 1, 2], [3, 4, 0], [0, 2, 3]]
-            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(0,2)])
-            [[0, 1, 2], [2, 3, 4, 0]]
-            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(1,4)])
-            [[1, 2, 3, 4], [4, 0, 1]]
-            sage: SimilaritySurfaceGenerators._billiard_build_faces(5, [(1,3),(3,0)])
-            [[1, 2, 3], [3, 4, 0], [0, 1, 3]]
-        """
-        polygons = [list(range(n))]
-        for u, v in edges:
-            j = None
-            for i, p in enumerate(polygons):
-                if u in p and v in p:
-                    if j is not None:
-                        raise RuntimeError
-                    j = i
-            if j is None:
-                raise RuntimeError
-            p = polygons[j]
-            i0 = p.index(u)
-            i1 = p.index(v)
-            if i0 > i1:
-                i0, i1 = i1, i0
-            polygons[j] = p[i0 : i1 + 1]
-            polygons.append(p[i1:] + p[: i0 + 1])
-        return polygons
-
-    @staticmethod
-    def polygon_double(P):
-        r"""
-        Return the ConeSurface associated to the billiard in the polygon ``P``.
-        Differs from billiard(P) only in the graphical display. Here, we display
-        the polygons separately.
-        """
-        from sage.matrix.constructor import matrix
+        from sage.all import matrix
 
         n = len(P.vertices())
         r = matrix(2, [-1, 0, 0, 1])
@@ -935,6 +791,13 @@ class SimilaritySurfaceGenerators:
             surface.glue((0, i), (1, n - i - 1))
         surface.set_immutable()
         return surface
+
+    @staticmethod
+    def polygon_double(P):
+        import warnings
+        warnings.warn("polygon_double() has been deprecated and will be removed from a future version of sage-flatsurf. Use billiard() instead.")
+
+        return SimilaritySurfaceGenerators.billiard(P)
 
     @staticmethod
     def right_angle_triangle(w, h):

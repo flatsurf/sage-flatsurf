@@ -6,15 +6,19 @@
 
 * Changed return type of ``flow_to_exit()``. It now returns just the point where the flow exits a polygon and not a description of the point anymore. **This is a breaking change.**
 
+* Changed ``billiard()`` to not triangulate non-convex polygons before creating the billiard. To restore the old behavior call ``triangulate()`` explicitly on the returned surface. Since surfaces built from non-convex polygons are quite limited, this might be a breaking change for some.
+
 **Deprecated:**
 
-* <news item>
+* Deprecated ``polygon_double()`` since it is now identical with ``billiard()``.
 
 **Removed:**
 
 * Removed ``flatsurf.geometry.mapping`` module. It has been replaced by ``flatsurf.geometry.deformation`` that can handle more general situations.
 
 * Removed the ``mapping`` keyword from ``apply_matrix()`` of dilation surfaces. The method now always returns a deformation.
+
+* Removed the previously deprecated ``rational`` keyword from ``billiard()``.
 
 **Fixed:**
 

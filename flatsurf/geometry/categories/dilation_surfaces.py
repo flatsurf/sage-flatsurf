@@ -288,7 +288,7 @@ class DilationSurfaces(SurfaceCategory):
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False).codomain()
+                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)
 
 
             """
