@@ -275,15 +275,12 @@ class DilationSurfaces(SurfaceCategory):
 
             return True
 
-        def apply_matrix(self, m, in_place=True, mapping=False):
+        def apply_matrix(self, m, in_place=True):
             r"""
             Carry out the GL(2,R) action of m on this surface and return the result.
 
             If in_place=True, then this is done in place and changes the surface.
             This can only be carried out if the surface is finite and mutable.
-
-            If mapping=True, then we return a GL2RMapping between this surface and its image.
-            In this case in_place must be False.
 
             If in_place=False, then a copy is made before the deformation.
 
@@ -291,19 +288,12 @@ class DilationSurfaces(SurfaceCategory):
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)
+                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False).codomain()
 
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False, mapping=True)
 
             """
-            if mapping is True:
-                if in_place:
-                    raise NotImplementedError(
-                        "can not modify in place and return a mapping"
-                    )
-                from flatsurf.geometry.half_dilation_surface import GL2RMapping
+            # TODO: Return a deformation.
 
-                return GL2RMapping(self, m)
             if not in_place:
                 if self.is_finite_type():
                     from sage.structure.element import get_coercion_model

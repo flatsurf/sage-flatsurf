@@ -12,7 +12,9 @@
 
 **Removed:**
 
-* <news item>
+* Removed ``flatsurf.geometry.mapping`` module. It has been replaced by ``flatsurf.geometry.deformation`` that can handle more general situations.
+
+* Removed the ``mapping`` keyword from ``apply_matrix()`` of dilation surfaces. The method now always returns a deformation.
 
 **Fixed:**
 
