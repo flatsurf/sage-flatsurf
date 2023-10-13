@@ -2087,7 +2087,7 @@ class MutableOrientedSimilaritySurface(
         if label is None:
             # We triangulate the whole surface
             # Store the current labels.
-            labels = [label for label in self.labels()]
+            labels = list(self.labels())
             s = self
             # Subdivide each polygon in turn.
             for label in labels:

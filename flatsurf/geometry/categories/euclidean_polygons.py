@@ -519,7 +519,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
+            return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
 
         def is_equiangular(self):
             r"""

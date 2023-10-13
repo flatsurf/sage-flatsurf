@@ -148,10 +148,7 @@ class Polygons(Category_over_base_ring):
 
         def augment_if(article, attribute, *properties):
             if all(
-                [
-                    kwargs.get(property, False)
-                    for property in (properties or [attribute])
-                ]
+                kwargs.get(property, False) for property in (properties or [attribute])
             ):
                 augment(article, attribute)
                 return True
@@ -159,10 +156,8 @@ class Polygons(Category_over_base_ring):
 
         def augment_if_not(article, attribute, *properties):
             if all(
-                [
-                    kwargs.get(property, True) is False
-                    for property in (properties or [attribute])
-                ]
+                kwargs.get(property, True) is False
+                for property in (properties or [attribute])
             ):
                 augment(article, attribute)
                 return True
