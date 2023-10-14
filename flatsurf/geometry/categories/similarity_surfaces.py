@@ -393,14 +393,16 @@ class SimilaritySurfaces(SurfaceCategory):
 
         def _mul_(self, matrix, switch_sides=True):
             r"""
+            Apply the 2×2 ``matrix`` to the polygons of this surface.
+
             EXAMPLES::
 
                 sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.infinite_staircase()
                 sage: s
                 The infinite staircase
-                sage: m=Matrix([[1,2],[0,1]])
-                sage: s2=m*s
+                sage: m = matrix([[1,2],[0,1]])
+                sage: s2 = m * s
                 sage: TestSuite(s2).run()
                 sage: s2.polygon(0)
                 Polygon(vertices=[(0, 0), (1, 0), (3, 1), (2, 1)])
@@ -419,16 +421,43 @@ class SimilaritySurfaces(SurfaceCategory):
             if not switch_sides:
                 raise NotImplementedError
 
-            from sage.structure.element import is_Matrix
+            return self.apply_matrix(matrix, in_place=False).codomain()
 
-            if not is_Matrix(matrix):
-                raise NotImplementedError("only implemented for matrices")
-            if not matrix.dimensions != (2, 2):
-                raise NotImplementedError("only implemented for 2x2 matrices")
+        def apply_matrix(self, m, in_place=None):
+            r"""
+            Apply the 2×2 matrix ``m`` to the polygons of this surface.
 
-            from flatsurf.geometry.half_dilation_surface import GL2RImageSurface
+            INPUT:
 
-            return GL2RImageSurface(self, matrix)
+            - ``m`` -- a 2×2 matrix
+
+            - ``in_place`` -- a boolean (default: ``True``); whether to modify
+              this surface itself or return a modified copy of this surface
+              instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: deformation = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+                sage: deformation.codomain().polygon(0)
+                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+            """
+            if in_place is None:
+                import warnings
+                warnings.warn("The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly.")
+
+                in_place = True
+
+            if in_place:
+                raise NotImplementedError("this surface does not support applying a GL(2,R) action in-place yet")
+
+            from flatsurf.geometry.delaunay import GL2RImageSurface
+            image = GL2RImageSurface(self, m)
+
+            from flatsurf.geometry.deformation import GL2RDeformation
+            return GL2RDeformation(self, image, m)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""

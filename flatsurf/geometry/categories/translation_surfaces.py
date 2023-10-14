@@ -700,10 +700,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         sage: s in TranslationSurfaces()
                         True
                         sage: a = s.base_ring().gen()
-                        sage: mat = Matrix([[1,2+a],[0,1]])
+                        sage: mat = matrix([[1, 2 + a], [0, 1]])
                         sage: s1 = s.canonicalize()
                         sage: s1.set_immutable()
-                        sage: s2 = (mat*s).canonicalize()
+                        sage: s2 = (mat * s).canonicalize()
                         sage: s2.set_immutable()
                         sage: s1.cmp(s2) == 0
                         True

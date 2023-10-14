@@ -415,7 +415,6 @@ class MutablePolygonalSurface(Surface_base):
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
             {'angles',
-             'apply_matrix',
              'area',
              'canonicalize',
              'canonicalize_mapping',
@@ -1680,6 +1679,61 @@ class MutableOrientedSimilaritySurface(
             raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
+
+    def apply_matrix(self, m, in_place=None):
+        r"""
+        Apply the 2×2 matrix ``m`` to the polygons of this surface.
+
+        INPUT:
+
+        - ``m`` -- a 2×2 matrix
+
+        - ``in_place`` -- a boolean (default: ``True``); whether to modify
+          this surface itself or return a modified copy of this surface
+          instead.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+            sage: deformation = S.apply_matrix(matrix([[1, 2], [3, 4]]), in_place=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: apply_matrix(in_place=True) not supported with negative determinant yet
+
+            sage: deformation = S.apply_matrix(matrix([[1, 2], [3, 4]]), in_place=False)
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: deformation.codomain().polygon(0)
+            Polygon(vertices=[(0, 0), (2, 4), (3, 7), (1, 3)])
+
+        """
+        if in_place is None:
+            import warnings
+            warnings.warn("The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly.")
+
+            in_place = True
+
+        if not in_place:
+            return super().apply_matrix(m, in_place=in_place)
+
+        if not m.det():
+            raise ValueError("matrix must not be degenerate")
+
+        if m.det() < 0:
+            raise NotImplementedError("apply_matrix(in_place=True) not supported with negative determinant yet")
+
+        for label in self.labels():
+            self.replace_polygon(label, m * self.polygon(label))
+
+        from flatsurf.geometry.deformation import GL2RDeformation
+        return GL2RDeformation(None, self, m)
 
     def opposite_edge(self, label, edge=None):
         r"""

@@ -506,3 +506,11 @@ class DelaunayDecompositionDeformation(Deformation):
     def __repr__(self):
         # TODO: docstring
         return f"Delaunay cell decomposition of {self._domain or '?'}"
+
+
+class GL2RDeformation(Deformation):
+    def __init__(self, domain, codomain, m):
+        super().__init__(domain, codomain)
+
+        from sage.all import matrix
+        self._matrix = matrix(m, immutable=True)

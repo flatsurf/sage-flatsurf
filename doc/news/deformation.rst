@@ -2,6 +2,8 @@
 
 * Added ``bidict`` (providing dict encoding a bijection) as a dependency.
 
+* Added ``apply_matrix`` to all oriented similarity surfaces. (We apply the matrix to all polygons and keep the gluings intact. Probably not the most meaningful operation for non-dilation surfaces but it can be useful while building surfaces.)
+
 **Changed:**
 
 * Changed return type of ``flow_to_exit()``. It now returns just the point where the flow exits a polygon and not a description of the point anymore. **This is a breaking change.**
@@ -20,6 +22,8 @@
 
 * Removed the previously deprecated ``rational`` keyword from ``billiard()``.
 
+* Removed ability to ``apply_matrix(in_place=True)`` with matrix with negative determinant. If you rely on this feature for some reason, you can use ``MutableOrientedSimilaritySurface.from_surface(apply_matrix(in_place=False))`` instead.
+
 **Fixed:**
 
 * Fixed ``flow_to_exit()`` to also work for polygons that are not strictly convex.
@@ -27,4 +31,3 @@
 **Performance:**
 
 * <news item>
-

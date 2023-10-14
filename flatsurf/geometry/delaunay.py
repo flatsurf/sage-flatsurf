@@ -1,3 +1,4 @@
+# TODO: Rename to lazy.py
 r"""
 Triangulations, Delaunay triangulations, and Delaunay decompositions of
 infinite surfaces.
@@ -342,7 +343,347 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         return f"Triangulation of {self._reference!r}"
 
 
-class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base):
+class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
+    r"""
+    A surface that forwards all queries to an underlying reference surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.infinite_staircase()
+        sage: T = matrix([[2, 0], [0, 1]]) * S
+
+        sage: from flatsurf.geometry.delaunay import LazyOrientedSimilaritySurface
+        sage: isinstance(T, LazyOrientedSimilaritySurface)
+        True
+
+    """
+
+    def __init__(self, base_ring, reference, category=None):
+        super().__init__(base_ring, category=category or reference.category())
+        self._reference = reference
+
+    def is_compact(self):
+        r"""
+        Return whether this surface is compact as a topological space.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.is_compact()
+            True
+
+        """
+        return self._reference.is_compact()
+
+    def is_translation_surface(self, positive=True):
+        r"""
+        Return whether this surface is a translation surface, i.e., glued
+        edges can be transformed into each other by translations.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.is_translation_surface()
+            True
+
+        """
+        return self._reference.is_translation_surface(positive=positive)
+
+    def roots(self):
+        r"""
+        Return root labels for the polygons forming the connected
+        components of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+
+            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: T = LazyMutableOrientedSimilaritySurface(S)
+            sage: T.roots()
+            (0,)
+
+        """
+        return self._reference.roots()
+
+    def labels(self):
+        r"""
+        Return the labels of this surface which are just the labels of the
+        underlying reference surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+
+            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: T = LazyMutableOrientedSimilaritySurface(S)
+            sage: T.labels()
+            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+        """
+        return self._reference.labels()
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = matrix([[2, 0], [0, 1]]) * S
+            sage: T.polygon(0)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+        """
+        return self._reference.polygon(label)
+
+    def opposite_edge(self, label, edge):
+        r"""
+        Return the polygon label and edge index when crossing over the ``edge``
+        of the polygon ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = matrix([[2, 0], [0, 1]]) * S
+            sage: T.opposite_edge(0, 0)
+            (1, 2)
+
+        """
+        return self._reference.opposite_edge(label, edge)
+
+
+class GL2RImageSurface(LazyOrientedSimilaritySurface):
+    r"""
+    The GL(2,R) image of an oriented similarity surface obtained by applying a
+    matrix to each polygon while keeping the gluings intact.
+
+    EXAMPLE::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.octagon_and_squares()
+        sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+        sage: SS = r * S
+
+        sage: S.canonicalize() == SS.canonicalize()
+        True
+
+    TESTS::
+
+        sage: TestSuite(SS).run()
+
+        sage: from flatsurf.geometry.delaunay import GL2RImageSurface
+        sage: isinstance(SS, GL2RImageSurface)
+        True
+
+    """
+
+    def __init__(self, reference, m, category=None):
+        if reference.is_mutable():
+            if not reference.is_finite_type():
+                raise NotImplementedError("cannot apply matrix to mutable surface of infinite type")
+
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+            reference = MutableOrientedSimilaritySurface.from_surface(reference)
+
+        self._reference = reference
+
+        from sage.structure.element import get_coercion_model
+        cm = get_coercion_model()
+        base_ring = cm.common_parent(m.base_ring(), self._reference.base_ring())
+
+        from sage.all import matrix
+        self._matrix = matrix(base_ring, m, immutable=True)
+
+        super().__init__(base_ring, reference, category=category or self._reference.category())
+
+    @cached_method
+    def _sgn(self):
+        r"""
+        Return the sign of the determinant of the matrix underlying this
+        surface, i.e., whether the matrix reversed orientation or not.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+            sage: S._sgn()
+            -1
+
+        """
+        return self._matrix.det().sign()
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (a, -a), (a + 2, -a), (2*a + 2, 0), (2*a + 2, 2), (a + 2, a + 2), (a, a + 2), (0, 2)])
+
+        """
+        return self._matrix * self._reference.polygon(label)
+
+    def opposite_edge(self, label, edge):
+        r"""
+        Return the polygon label and edge index when crossing over the ``edge``
+        of the polygon ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.opposite_edge(0, 0)
+            (2, 0)
+
+        """
+        reference_edge = edge
+        if self._sgn() == -1:
+            reference_edge = len(self.polygon(label).edges()) - 1 - edge
+
+        opposite_label, opposite_edge = self._reference.opposite_edge(label, reference_edge)
+
+        if self._sgn() == -1:
+            opposite_edge = len(self._reference.polygon(opposite_label).edges()) - 1 - opposite_edge
+
+        return opposite_label, opposite_edge
+
+    def is_mutable(self):
+        r"""
+        Return whether this surface is mutable, i.e., return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.is_mutable()
+            False
+
+        """
+        return False
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: matrix([[0, 1], [1, 0]]) * S
+            Translation Surface in H_3(4) built from 2 squares and a regular octagon
+            sage: matrix([[0, 2], [1, 0]]) * S
+            Translation Surface in H_3(4) built from a rhombus, a rectangle and an octagon
+
+        """
+        if self.is_finite_type():
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+            S = MutableOrientedSimilaritySurface.from_surface(self)
+            S.set_immutable()
+            return repr(S)
+
+        return f"GL2RImageSurface of {self._s!r}"
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+
+            sage: hash(r * S) == hash(r * S)
+            True
+
+        """
+        return hash((self._reference, self._matrix))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this image is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of equality.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: m = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: m * S == m * S
+            True
+
+        """
+        if not isinstance(other, GL2RImageSurface):
+            return False
+
+        return (
+            self._reference == other._reference
+            and self._matrix == other._matrix
+            and self.base_ring() == other.base_ring()
+        )
+
+
+class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base):
     r"""
     A helper surface for :class:`LazyDelaunayTriangulatedSurface`.
 
@@ -385,59 +726,11 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
         if surface not in SimilaritySurfaces().Oriented().WithoutBoundary():
             raise NotImplementedError("cannot handle surfaces with boundary yet")
 
-        self._reference = surface
-
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
         self._surface = MutableOrientedSimilaritySurface(surface.base_ring())
 
-        super().__init__(surface.base_ring(), category=category or surface.category())
-
-    def roots(self):
-        r"""
-        Return root labels for the polygons forming the connected
-        components of this surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
-
-        .. NOTE::
-
-            This assumes that :meth:`glue` is never called to glue components.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase()
-
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
-            sage: T = LazyMutableOrientedSimilaritySurface(S)
-            sage: T.roots()
-            (0,)
-
-        """
-        return self._reference.roots()
-
-    def labels(self):
-        r"""
-        Return the labels of this surface which are just the labels of the
-        underlying reference surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase()
-
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
-            sage: T = LazyMutableOrientedSimilaritySurface(S)
-            sage: T.labels()
-            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
-
-        """
-        return self._reference.labels()
+        super().__init__(surface.base_ring(), surface, category=category or surface.category())
 
     def is_mutable(self):
         r"""
