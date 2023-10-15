@@ -2216,8 +2216,8 @@ def SurfaceClass(surface, name, category, *args, **kwargs):
     category = category.Oriented().Connected().WithoutBoundary()
 
     message = f"{name} has been deprecated and will be removed in a future "
-    "version of sage-flatsurf; there is no distinction between "
-    "an (underlying) Surface and the SimilaritySurface types anymore."
+    message += "version of sage-flatsurf; there is no distinction between "
+    message += "an (underlying) Surface and the SimilaritySurface types anymore."
 
     if surface.is_finite_type():
         message += f" Calling set_immutable() on this surface should determine the category of this surface automatically so calling {name} should not be necessary in this case."
