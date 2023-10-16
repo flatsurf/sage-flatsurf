@@ -310,6 +310,17 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
         return super().graphical_surface(adjacencies=adjacencies, **kwds)
 
     def labels(self):
+        r"""
+        Return the polygon labels of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.labels()
+            ((0, 1, 0), (1, -1, 0), (-1, 1/2, 0), (2, -1/2, 0), (-2, 1/4, 0), (3, -1/4, 0), (-3, 1/8, 0), (4, -1/8, 0), (-4, 1/16, 0), (5, -1/16, 0), (-5, 1/32, 0), (6, -1/32, 0), (-6, 1/64, 0), (7, -1/64, 0), (-7, 1/128, 0), (8, -1/128, 0), …)
+
+        """
         from flatsurf.geometry.surface import Labels
 
         class LazyLabels(Labels):
