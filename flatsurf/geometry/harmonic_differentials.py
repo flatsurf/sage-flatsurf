@@ -2037,13 +2037,6 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
 
             d = self._surface.angles()[0] - 1
 
-            # Generate the power series entries corresponding to pole coefficients
-            for c in self._centers:
-                if c.is_vertex():
-                    for n in range(-d, 0):
-                        yield ("Re", c, n)
-                        yield ("Im", c, n)
-
             # Generate the non-negative coefficients. At singularities we have to create multiple coefficients.
             for i in range(prec):
                 for c in self._centers:
@@ -2514,7 +2507,7 @@ class PowerSeriesConstraints:
                         # As described in _L2_consistency_voronoi_boundary, we integrate
                         # f = Σ_{n ≥ -d} a_n f_n(z) along the segment γ.
                         # TODO: 3 is hardcoded for the octagon.
-                        for n in range(-2, 3 * self._prec):
+                        for n in range(3 * self._prec):
                             expression += multiplicity * integrator.a(n) * integrator.f(n)
                     break
 
@@ -2842,7 +2835,7 @@ class PowerSeriesConstraints:
 
     def _range(self, center, prec):
         if center.is_vertex():
-            return range(-2, 3*prec)
+            return range(3*prec)
         return range(0, 3*prec, 3)
 
     def _gen(self, kind, center, n):
@@ -3017,7 +3010,7 @@ class PowerSeriesConstraints:
         can on these cells abstractly be described as a Laurent series around
         the center of the cell
 
-        g(y) = Σ_{n ≥ -d} a_n y^n
+        g(y) = Σ_{n ≥ 0} a_n y^n
 
         where ``d`` is the order of the singularity at the center; this is,
         however, not the representation on any of the charts in which the
@@ -3038,9 +3031,9 @@ class PowerSeriesConstraints:
         Hence, we can rewrite `g(y)dy` on the `z`-chart:
 
         g(y)dy = g(y(z)) dy/dz dz
-               = Σ_{n ≥ -d} a_n ζ_{d+1}^{κ n} (z-α)^{n/(d+1)} ζ_{d+1}^κ 1/(d+1) (z-α)^{-d/(d+1)}dz
-               = Σ_{n ≥ -d} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} dz
-               = Σ_{n ≥ -d} a_n f_n(z) dz
+               = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ n} (z-α)^{n/(d+1)} ζ_{d+1}^κ 1/(d+1) (z-α)^{-d/(d+1)}dz
+               = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} dz
+               = Σ_{n ≥ 0} a_n f_n(z) dz
                = f(z) dz
 
         Now, we want to describe the error between two such series when
@@ -3051,9 +3044,9 @@ class PowerSeriesConstraints:
 
         As discussed above, we have
 
-        f = Σ_{n ≥ -d} a_n f_n(z),
+        f = Σ_{n ≥ 0} a_n f_n(z),
 
-        g = Σ_{m ≥ -d} b_m g_m(z).
+        g = Σ_{m ≥ 0} b_m g_m(z).
 
         Note that we can assume that both have the same `d` by taking their
         least common multiple.
@@ -3077,8 +3070,8 @@ class PowerSeriesConstraints:
         expression, we have
 
         \int_γ f\overline{f}
-        = Σ_{n,m ≥ -d} a_n \overline{a_m} \int_γ f_n(z)\overline{f_m(z)}
-        = Σ_{n,m ≥ -d} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
+        = Σ_{n,m ≥ 0} a_n \overline{a_m} \int_γ f_n(z)\overline{f_m(z)}
+        = Σ_{n,m ≥ 0} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
 
         We can simplify things a bit since we know that the result is real;
         inside the series we have therefore
@@ -3093,8 +3086,8 @@ class PowerSeriesConstraints:
 
         - \int_γ 2 \Re f\overline{g}
         = - 2 \Re \int_γ f\overline{g}
-        = - 2 \Re Σ_{n,m ≥ -d} a_n \overline{b_m} \int_γ f_n{z)\overline{g_m(z)}
-        = - 2 \Re Σ_{n,m ≥ -d} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+        = - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} \int_γ f_n{z)\overline{g_m(z)}
+        = - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
 
         Again we can simplify and get inside the series
 
@@ -3111,8 +3104,6 @@ class PowerSeriesConstraints:
         # that has been taken.
         center, label, center_coordinates = boundary_segment.center()
         opposite_center, label, opposite_center_coordinates = boundary_segment.opposite_center()
-
-        d = 2
 
         Re = "Re"
         Im = "Im"
