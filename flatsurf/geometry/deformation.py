@@ -25,8 +25,7 @@ We can use deformations to follow a surface through a retriangulation process::
 
 We can then map points through the deformation::
 
-    sage: from flatsurf.geometry.surface_objects import SurfacePoint
-    sage: p = SurfacePoint(S, 0, (0, 0))
+    sage: p = S(0, (0, 0))
     sage: p
     Vertex 0 of polygon 0
 
@@ -36,7 +35,7 @@ We can then map points through the deformation::
 
 A non-singular point::
 
-    sage: p = SurfacePoint(S, 0, (1, 1))
+    sage: p = S(0, (1, 1))
     sage: p
     Point (1, 1) of polygon 0
 
@@ -65,34 +64,49 @@ A non-singular point::
 # ********************************************************************
 
 from sage.misc.cachefunc import cached_method
+from sage.categories.morphism import Morphism
+from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
-class Deformation:
-    # TODO: docstring
-    def __init__(self, domain, codomain):
+class UnknownSurface(OrientedSimilaritySurface):
+    pass
+
+
+class Deformation(Morphism):
+    r"""
+    Abstract base class for all deformation that maps from a ``domain`` surface
+    to a ``codomain`` surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: deformation = S.apply_matrix(matrix([[1, 2], [0, 4]]))
+        sage: deformation.domain()
+        sage: deformation.codomain()
+    
+    TESTS::
+
+        sage: from flatsurf.geometry.deformation import Deformation
+        sage: isinstance(deformation, Deformation)
+        True
+
+    """
+    def __init__(self, domain, codomain, category=None):
         # TODO: docstring
+        if domain is None:
+            domain = UnknownSurface(codomain.base_ring())
+        elif domain.is_mutable():
+            domain = UnknownSurface(domain.base_ring())
 
-        self._domain = domain
-        if domain is None or domain.is_mutable():
-            self._domain = None
+        if codomain is None:
+            codomain = UnknownSurface(domain.base_ring())
+        elif codomain.is_mutable():
+            codomain = UnknownSurface(codomain.base_ring())
 
-        self._codomain = codomain
-        if codomain is None or codomain.is_mutable():
-            self._codomain = None
-
-    def domain(self):
-        # TODO: docstring
-        if self._domain is None:
-            raise ValueError("cannot determine the domain of this deformation")
-
-        return self._domain
-
-    def codomain(self):
-        # TODO: docstring
-        if self._codomain is None:
-            raise ValueError("cannot determine the codomain of this deformation")
-
-        return self._codomain
+        from sage.all import Hom
+        parent = Hom(domain, codomain, category=category)
+        super().__init__(parent)
 
     def __getattr__(self, name):
         if name in ["__cached_methods"]:
