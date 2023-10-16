@@ -415,10 +415,7 @@
 
         <span class="k">def</span> <span class="nf">augment_if</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
-                <span class="p">]</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
             <span class="p">):</span>
                 <span class="n">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>
@@ -426,10 +423,8 @@
 
         <span class="k">def</span> <span class="nf">augment_if_not</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="o">*</span><span class="n">properties</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
-                    <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
-                <span class="p">]</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
             <span class="p">):</span>
                 <span class="n">augment</span><span class="p">(</span><span class="n">article</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>

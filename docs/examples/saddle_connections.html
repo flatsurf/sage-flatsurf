@@ -284,7 +284,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3c2dc85c0eaab1e94c522d34f1566437aa14d8cdad2070cedcb783e693155927.png" src="../_images/3c2dc85c0eaab1e94c522d34f1566437aa14d8cdad2070cedcb783e693155927.png" />
+<img alt="../_images/54b3cef6d141a97e0e385de4a48a1071cfeebc61002de800810024f9a43c9573.png" src="../_images/54b3cef6d141a97e0e385de4a48a1071cfeebc61002de800810024f9a43c9573.png" />
 </div>
 </div>
 <p>We get a list of all saddle connections of length less than 10.</p>
@@ -308,7 +308,7 @@
 <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_list</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">sc</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sc_set</span><span class="p">:</span>
         <span class="n">sc_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
-<span class="n">sc_list2</span> <span class="o">=</span> <span class="p">[</span><span class="n">sc</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">sc_set</span><span class="p">]</span>
+<span class="n">sc_list2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sc_set</span><span class="p">)</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">sc_list2</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -350,7 +350,7 @@ Holonomy of sc2 is(-1/2*a^2 + 1/2, -a^3 + 5/2*a) = (-1.30901699437495, -2.126627
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/3a018ca6a64f2e19fd3c167746048e3276bad7f214cb75c9cb1395438750c02c.png" src="../_images/3a018ca6a64f2e19fd3c167746048e3276bad7f214cb75c9cb1395438750c02c.png" />
+<img alt="../_images/28b59284fd0be153e72ea48f1e29358e8e2b54a65c8d7d12c5c1014da7c3cc30.png" src="../_images/28b59284fd0be153e72ea48f1e29358e8e2b54a65c8d7d12c5c1014da7c3cc30.png" />
 </div>
 </div>
 <p>We can test that they intersect. By default the singularity does not count.</p>
@@ -384,7 +384,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 <p>It is a good idea to store the intersections in a list if you want to reuse them:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">intersections</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sc1</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">sc2</span><span class="p">)]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">intersections</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sc1</span><span class="o">.</span><span class="n">intersections</span><span class="p">(</span><span class="n">sc2</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -400,7 +400,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/64e50c6a840d4d77ba6ba9919206631a012aa56ca3090140084b96d3277d3571.png" src="../_images/64e50c6a840d4d77ba6ba9919206631a012aa56ca3090140084b96d3277d3571.png" />
+<img alt="../_images/7ec7d37065913b829c3b15e0709f04eeee7e07cb8b1ef2dac01aa83f520ad555.png" src="../_images/7ec7d37065913b829c3b15e0709f04eeee7e07cb8b1ef2dac01aa83f520ad555.png" />
 </div>
 </div>
 <p>We can plot all the saddle connections:</p>
@@ -414,7 +414,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/66b4792b87fed079953137b2ba7b5f41d7942f20f9119f1b8c69d428f38b5388.png" src="../_images/66b4792b87fed079953137b2ba7b5f41d7942f20f9119f1b8c69d428f38b5388.png" />
+<img alt="../_images/6190ff23a0a9f0ab8c7d205566b952f892f7d1720d52b0b0007307a61cbb5f48.png" src="../_images/6190ff23a0a9f0ab8c7d205566b952f892f7d1720d52b0b0007307a61cbb5f48.png" />
 </div>
 </div>
 <p>We will build a subset of the saddle connection graph where vertices are saddle connections and two vertices are joined by an edge if and only if the saddle connections do not intersect (on their interiors).</p>
@@ -460,7 +460,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e74b1a982cdb94c85fe7e6a6b5f6b3229f516034488d3fc5d80251eec03cf087.png" src="../_images/e74b1a982cdb94c85fe7e6a6b5f6b3229f516034488d3fc5d80251eec03cf087.png" />
+<img alt="../_images/25c9b9d18bbfe778c9e50314d65028cbb9f644bb0517b5a778f32812d3930c01.png" src="../_images/25c9b9d18bbfe778c9e50314d65028cbb9f644bb0517b5a778f32812d3930c01.png" />
 </div>
 </div>
 </section>
