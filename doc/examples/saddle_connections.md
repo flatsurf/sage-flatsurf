@@ -54,7 +54,7 @@ sc_set = set()
 for sc in sc_list:
     if sc.invert() not in sc_set:
         sc_set.add(sc)
-sc_list2 = [sc for sc in sc_set]
+sc_list2 = list(sc_set)
 len(sc_list2)
 ```
 
@@ -116,7 +116,7 @@ It is a good idea to store the intersections in a list if you want to reuse them
 jupyter:
   outputs_hidden: false
 ---
-intersections = [p for p in sc1.intersections(sc2)]
+intersections = list(sc1.intersections(sc2))
 ```
 
 We can plot the intersection points:
