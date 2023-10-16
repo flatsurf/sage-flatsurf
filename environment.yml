@@ -21,6 +21,7 @@ dependencies:
   - sagelib>=8.8
   # sagelib<9.2 does not explicitly install libiconv which is needed in lots of places.
   - libiconv
+  - ruff=0.0.292
   - scipy
   - surface-dynamics>=0.4.7,<0.5
   - pycodestyle >=2.9.1,<3
