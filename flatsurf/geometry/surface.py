@@ -1885,7 +1885,7 @@ class MutableOrientedSimilaritySurface(
                 glue_list.append((p4, e4))
 
         if p2 in s.roots():
-            s.set_roots((p1 if label == p2 else label for label in s.roots()))
+            s.set_roots(p1 if label == p2 else label for label in s.roots())
 
         s.remove_polygon(p2)
 

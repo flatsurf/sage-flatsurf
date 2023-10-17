@@ -376,7 +376,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         category = category or Sets()
 
-        return super(HyperbolicPlane, cls).__classcall__(
+        return super().__classcall__(
             cls, base_ring=base_ring, geometry=geometry, category=category
         )
 
