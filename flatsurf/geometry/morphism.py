@@ -1,36 +1,37 @@
-# TODO: Rename to morphism.
 r"""
-Deformations between Surfaces
+Morphisms between Surfaces
 
 .. NOTE::
 
-    We call this a deformation because it might not actually be a map between
-    surfaces.
-
     For all practical purposes, one should think of these as maps. However,
-    they might not be maps on the points of the surface or really on anything
-    in some extreme cases.
+    they might often not be maps on the points of the surface but just on
+    homology, or in some cases, they might not be meaningful as maps anywhere.
+
+    Technically, these are at worst morphisms in the category of objects where
+    being a morphism does not really have any mathematical meaning.
 
 EXAMPLES:
 
-We can use deformations to follow a surface through a retriangulation process::
+We can use morphisms to follow a surface through a retriangulation process::
 
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.regular_octagon()
-    sage: deformation = S.subdivide_edges(3)
-    sage: deformation = deformation.codomain().subdivide() * deformation
-    sage: T = deformation.codomain()
+    sage: morphism = S.subdivide_edges(3)
+    sage: morphism = morphism.codomain().subdivide() * morphism
+    sage: T = morphism.codomain()
 
-    sage: deformation
-    Deformation from Translation Surface in H_2(2) built from a regular octagon to Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
+    sage: morphism
+    Generic morphism:
+      From: Translation Surface in H_2(2) built from a regular octagon
+      To:   Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
 
-We can then map points through the deformation::
+We can then map points through the morphism::
 
     sage: p = S(0, (0, 0))
     sage: p
     Vertex 0 of polygon 0
 
-    sage: q = deformation(p)
+    sage: q = morphism(p)
     sage: q
     Vertex 0 of polygon (0, 0)
 
@@ -40,7 +41,7 @@ A non-singular point::
     sage: p
     Point (1, 1) of polygon 0
 
-    sage: q = deformation(p)
+    sage: q = morphism(p)
     sage: q
     Point (1, 1) of polygon (0, 5)
 
@@ -65,45 +66,149 @@ A non-singular point::
 # ********************************************************************
 
 from sage.misc.cachefunc import cached_method
+from sage.rings.ring import Ring
+from sage.structure.unique_representation import UniqueRepresentation
 from sage.categories.morphism import Morphism
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
-class UnknownSurface(OrientedSimilaritySurface):
-    pass
-
-
-class Deformation(Morphism):
+class UnknownRing(UniqueRepresentation, Ring):
     r"""
-    Abstract base class for all deformation that maps from a ``domain`` surface
-    to a ``codomain`` surface.
+    A placeholder for a SageMath ring that has been lost in the process of
+    creating a morphism.
+
+    Ideally, every morphism has a domain and a codomain. However, when
+    migrating code that did not produce a morphism originally, it can be
+    complicated to get a hold of the actual domain/codomain of a morphism.
+
+    Instead, it is often convenient to set the domain/codomain to ``None``,
+    i.e., stating that the domain/codomain is unknown. When this happens, also
+    the ring over which the domain/codomain is defined is technically unknown.
+    We use this placeholder ring in these situations since a surface requires a
+    ring it is defined over.
+
+    This ring provides no functionality other than being in the category of
+    rings.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+        sage: S = translation_surfaces.square_torus()
+        sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+
+        sage: triangulation = S.triangulate(in_place=True)
+        sage: triangulation.domain()
+        Unknown Surface
+        sage: triangulation.domain().base_ring()
+        The Unknown Ring
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import UnknownRing
+        sage: isinstance(triangulation.domain().base_ring(), UnknownRing)
+        True
+        sage: isinstance(triangulation.codomain().base_ring(), UnknownRing)
+        False
+
+    """
+
+    def __init__(self):
+        from sage.all import ZZ
+        super().__init__(ZZ)
+
+    def _repr_(self):
+        return "The Unknown Ring"
+
+
+class UnknownSurface(OrientedSimilaritySurface):
+    r"""
+    A placeholder surface for a morphism's domain or codomain when that
+    codomain is unknown or mutable.
+
+    In SageMath a morphism must have an explicit domain and codomain. However,
+    the domain of a morphism might not actually be known, for example when
+    deforming a mutable surface, or exposing it might break things when it is
+    mutable.
+
+    In such cases, we replace the domain with this unknown surface which has no
+    functionality other than being a surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+        sage: S = translation_surfaces.square_torus()
+        sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+        sage: S
+        Translation Surface built from a square
+
+        sage: triangulation = S.triangulate(in_place=True)
+        sage: S
+        Translation Surface built from 2 isosceles triangles
+
+        sage: triangulation.domain()
+        Unknown Surface
+        sage: triangulation.codomain()
+        Unknown Surface
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import UnknownSurface
+        sage: isinstance(triangulation.domain(), UnknownSurface)
+        True
+
+    """
+
+    def _repr_(self):
+        return "Unknown Surface"
+
+
+class SurfaceMorphism(Morphism):
+    r"""
+    Abstract base class for all morphisms that map from a ``domain`` surface to
+    a ``codomain`` surface.
+
+    INPUT:
+
+    - ``domain`` -- a surface or ``None``; if ``None`` (or if the domain is
+      mutable), the domain is replaced with the :class:`UnknownSurface` which
+      means that almost all queries related to the domain are going to fail.
+
+    - ``codomain`` -- a surface or ``None``; if ``None`` (or if the codomain is
+      mutable), the codomain is replaced with the :class:`UnknownSurface` which
+      means that almost all queries related to the codomain are going to fail.
 
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.square_torus()
-        sage: deformation = S.apply_matrix(matrix([[1, 2], [0, 4]]))
-        sage: deformation.domain()
-        sage: deformation.codomain()
-    
+        sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+        sage: morphism.domain()
+        Translation Surface in H_1(0) built from a square
+        sage: morphism.codomain()
+        Translation Surface in H_1(0) built from a rectangle
+
     TESTS::
 
-        sage: from flatsurf.geometry.deformation import Deformation
-        sage: isinstance(deformation, Deformation)
+        sage: from flatsurf.geometry.morphism import SurfaceMorphism
+        sage: isinstance(morphism, SurfaceMorphism)
         True
 
     """
+
     def __init__(self, domain, codomain, category=None):
-        # TODO: docstring
         if domain is None:
-            domain = UnknownSurface(codomain.base_ring())
+            domain = UnknownSurface(UnknownRing())
         elif domain.is_mutable():
             domain = UnknownSurface(domain.base_ring())
 
         if codomain is None:
-            codomain = UnknownSurface(domain.base_ring())
+            codomain = UnknownSurface(UnknownRing())
         elif codomain.is_mutable():
             codomain = UnknownSurface(codomain.base_ring())
+
+        if category is None:
+            from sage.categories.all import Objects
+            category = Objects()
 
         from sage.all import Hom
         parent = Hom(domain, codomain, category=category)
@@ -114,17 +219,17 @@ class Deformation(Morphism):
             raise AttributeError(f"'{type(self)}' has no attribute '{name}'")
 
         try:
-            attr = getattr(self._codomain, name)
+            attr = getattr(self.codomain(), name)
         except AttributeError:
             raise AttributeError(f"'{type(self)}' has no attribute '{name}'")
 
         import warnings
-        warnings.warn(f"This methods returns a deformation instead of a surface. Use .codomain().{name} to access the surface instead of the deformation.")
+        warnings.warn(f"This methods returns a morphism instead of a surface. Use .codomain().{name} to access the surface instead of the morphism.")
 
         return attr
 
     def section(self):
-        return SectionDeformation(self)
+        return SectionMorphism(self)
 
     def __call__(self, x):
         # TODO: docstring
@@ -144,7 +249,7 @@ class Deformation(Morphism):
         if isinstance(x, SaddleConnection):
             return self._image_saddle_connection(x)
 
-        raise NotImplementedError(f"cannot map a {type(x)} through a deformation yet")
+        raise NotImplementedError(f"cannot map a {type(x)} through this morphism yet")
 
     def _image_point(self, p):
         # TODO: docstring
@@ -230,14 +335,10 @@ class Deformation(Morphism):
 
     def __mul__(self, other):
         # TODO: docstring
-        return CompositionDeformation(self, other)
-
-    def __repr__(self):
-        # TODO: docstring
-        return f"Deformation from {self.domain() if self._domain is not None else '?'} to {self.codomain() if self._codomain is not None else '?'}"
+        return CompositionMorphism(self, other)
 
 
-class IdentityDeformation(Deformation):
+class IdentityMorphism(SurfaceMorphism):
     # TODO: docstring
     def __init__(self, domain):
         super().__init__(domain, domain)
@@ -252,28 +353,28 @@ class IdentityDeformation(Deformation):
         return [(label, edge)]
 
 
-class SectionDeformation(Deformation):
-    def __init__(self, deformation):
-        self._deformation = deformation
-        super().__init__(deformation.codomain(), deformation.domain())
+class SectionMorphism(SurfaceMorphism):
+    def __init__(self, morphism):
+        self._morphism = morphism
+        super().__init__(morphism.codomain(), morphism.domain())
 
     def _image_homology_matrix(self):
-        M = self._deformation._image_homology_matrix()
+        M = self._morphism._image_homology_matrix()
         return M.parent()(M.inverse())
 
     def _image_edge(self, label, edge):
         for (l, e) in self.codomain().edges():
-            if self._deformation._image_edge(l, e) == (label, edge):
+            if self._morphism._image_edge(l, e) == (label, edge):
                 return (l, e)
 
         raise NotImplementedError
 
 
-class CompositionDeformation(Deformation):
+class CompositionMorphism(SurfaceMorphism):
     # TODO: docstring
     def __init__(self, lhs, rhs):
         # TODO: docstring
-        super().__init__(rhs._domain, lhs._codomain)
+        super().__init__(rhs.domain(), lhs.codomain())
 
         self._lhs = lhs
         self._rhs = rhs
@@ -289,7 +390,7 @@ class CompositionDeformation(Deformation):
         return self._lhs._image_edge(*self._rhs._image_edge(label, edge))
 
 
-class SubdivideDeformation(Deformation):
+class SubdivideMorphism(SurfaceMorphism):
     # TODO: docstring
     def _image_point(self, p):
         # TODO: docstring
@@ -343,7 +444,7 @@ class SubdivideDeformation(Deformation):
         return image
 
 
-class SubdivideEdgesDeformation(Deformation):
+class SubdivideEdgesMorphism(SurfaceMorphism):
     # TODO: docstring
 
     def __init__(self, domain, codomain, parts):
@@ -358,12 +459,12 @@ class SubdivideEdgesDeformation(Deformation):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
-            sage: deformation = S.subdivide_edges(2)
+            sage: morphism = S.subdivide_edges(2)
 
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
             sage: p = SurfacePoint(S, 0, (1, 1))
 
-            sage: deformation._image_point(p)
+            sage: morphism._image_point(p)
             Point (1, 1) of polygon 0
 
         """
@@ -398,7 +499,7 @@ class SubdivideEdgesDeformation(Deformation):
     #     return image
 
 
-class TrianglesFlipDeformation(Deformation):
+class TrianglesFlipMorphism(SurfaceMorphism):
     # TODO: docstring
     def __init__(self, domain, codomain, flip_sequence):
         # TODO: docstring
@@ -407,7 +508,7 @@ class TrianglesFlipDeformation(Deformation):
         self._flip_sequence = flip_sequence
 
     @cached_method
-    def _flip_deformation(self):
+    def _flip_morphism(self):
         domains = [self.domain()]
 
         for flip in self._flip_sequence:
@@ -422,23 +523,23 @@ class TrianglesFlipDeformation(Deformation):
         domains.append(self.codomain())
 
         # TODO: Get rid of this trivial step.
-        deformation = IdentityDeformation(self.domain())
+        morphism = IdentityMorphism(self.domain())
         for i, flip in enumerate(self._flip_sequence):
-            deformation = TriangleFlipDeformation(domains[i], domains[i + 1], flip) * deformation
+            morphism = TriangleFlipMorphism(domains[i], domains[i + 1], flip) * morphism
 
-        return deformation
+        return morphism
 
     def _image_homology(self,  γ):
-        return self._flip_deformation()._image_homology(γ)
+        return self._flip_morphism()._image_homology(γ)
 
     def _image_homology_matrix(self):
-        return self._flip_deformation()._image_homology_matrix()
+        return self._flip_morphism()._image_homology_matrix()
 
     def _image_point(self, p):
-        return self._flip_deformation()(p)
+        return self._flip_morphism()(p)
 
 
-class TriangleFlipDeformation(Deformation):
+class TriangleFlipMorphism(SurfaceMorphism):
     # TODO: docstring
     def __init__(self, domain, codomain, flip):
         # TODO: docstring
@@ -499,9 +600,9 @@ class TriangleFlipDeformation(Deformation):
         raise NotImplementedError
 
 
-class TriangulationDeformation(Deformation):
+class TriangulationMorphism(SurfaceMorphism):
     def _image_edge(self, label, edge):
-        return [self._codomain._triangulation(label)[1][edge]]
+        return [self.codomain()._triangulation(label)[1][edge]]
 
     def _image_saddle_connection(self, connection):
         (label, edge) = connection.start_data()
@@ -509,21 +610,21 @@ class TriangulationDeformation(Deformation):
         (label, edge) = self._image_edge(label, edge)[0]
 
         from flatsurf.geometry.euclidean import ccw
-        while ccw(connection.direction(), -self._codomain.polygon(label).edges()[(edge - 1) % len(self._codomain.polygon(label).edges())]) <= 0:
-            (label, edge) = self._codomain.opposite_edge(label, (edge - 1) % len(self._codomain.polygon(label).edges()))
+        while ccw(connection.direction(), -self.codomain().polygon(label).edges()[(edge - 1) % len(self.codomain().polygon(label).edges())]) <= 0:
+            (label, edge) = self.codomain().opposite_edge(label, (edge - 1) % len(self.codomain().polygon(label).edges()))
 
         # TODO: This is extremely slow.
         from flatsurf.geometry.saddle_connection import SaddleConnection
-        return SaddleConnection(self._codomain, (label, edge), direction=connection.direction())
+        return SaddleConnection(self.codomain(), (label, edge), direction=connection.direction())
 
 
-class DelaunayDecompositionDeformation(Deformation):
+class DelaunayDecompositionMorphism(SurfaceMorphism):
     def __repr__(self):
         # TODO: docstring
-        return f"Delaunay cell decomposition of {self._domain or '?'}"
+        return f"Delaunay cell decomposition of {self.domain()}"
 
 
-class GL2RDeformation(Deformation):
+class GL2RMorphism(SurfaceMorphism):
     def __init__(self, domain, codomain, m):
         super().__init__(domain, codomain)
 

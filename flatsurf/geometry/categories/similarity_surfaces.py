@@ -439,8 +439,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
-                sage: deformation = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-                sage: deformation.codomain().polygon(0)
+                sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+                sage: morphism.codomain().polygon(0)
                 Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
 
             """
@@ -456,8 +456,8 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.delaunay import GL2RImageSurface
             image = GL2RImageSurface(self, m)
 
-            from flatsurf.geometry.deformation import GL2RDeformation
-            return GL2RDeformation(self, image, m)
+            from flatsurf.geometry.morphism import GL2RMorphism
+            return GL2RMorphism(self, image, m)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
@@ -1548,9 +1548,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 labels = {label} if label is not None else self.labels()
 
-                from flatsurf.geometry.deformation import TriangulationDeformation
+                from flatsurf.geometry.morphism import TriangulationMorphism
                 from flatsurf.geometry.delaunay import LazyTriangulatedSurface
-                return TriangulationDeformation(self, LazyTriangulatedSurface(self, labels=labels))
+                return TriangulationMorphism(self, LazyTriangulatedSurface(self, labels=labels))
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -1825,8 +1825,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     s = LazyDelaunaySurface(
                         self, direction=direction, category=self.category()
                     )
-                    from flatsurf.geometry.deformation import DelaunayDecompositionDeformation
-                    return DelaunayDecompositionDeformation(self, s)
+                    from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+                    return DelaunayDecompositionMorphism(self, s)
 
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
@@ -1842,8 +1842,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
                 s.set_immutable()
 
-                from flatsurf.geometry.deformation import DelaunayDecompositionDeformation
-                return DelaunayDecompositionDeformation(self, s)
+                from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+                return DelaunayDecompositionMorphism(self, s)
 
             def saddle_connections(
                 self,
@@ -2181,8 +2181,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 surface.set_immutable()
 
-                from flatsurf.geometry.deformation import SubdivideDeformation
-                return SubdivideDeformation(self, surface)
+                from flatsurf.geometry.morphism import SubdivideMorphism
+                return SubdivideMorphism(self, surface)
 
             def subdivide_edges(self, parts=2):
                 r"""
@@ -2261,8 +2261,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 surface.set_immutable()
 
-                from flatsurf.geometry.deformation import SubdivideEdgesDeformation
-                return SubdivideEdgesDeformation(self, surface, parts)
+                from flatsurf.geometry.morphism import SubdivideEdgesMorphism
+                return SubdivideEdgesMorphism(self, surface, parts)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""

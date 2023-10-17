@@ -67,7 +67,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
             sage: Surface_pyflatsurf._from_flatsurf(S)
-            Deformation from Triangulation of Translation Surface in H_1(0) built from a square to FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+            Generic morphism:
+              From: Triangulation of Translation Surface in H_1(0) built from a square
+              To:   FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """
         if isinstance(surface, Surface_pyflatsurf):
@@ -84,9 +86,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         surface_pyflatsurf = Surface_pyflatsurf(to_pyflatsurf.codomain())
 
-        from flatsurf.geometry.pyflatsurf.deformation import Deformation_to_pyflatsurf
+        from flatsurf.geometry.pyflatsurf.morphism import Morphism_to_pyflatsurf
 
-        return Deformation_to_pyflatsurf(surface, surface_pyflatsurf, to_pyflatsurf)
+        return Morphism_to_pyflatsurf(surface, surface_pyflatsurf, to_pyflatsurf)
 
     def __repr__(self):
         r"""

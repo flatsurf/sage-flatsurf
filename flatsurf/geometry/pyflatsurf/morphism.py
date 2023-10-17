@@ -16,10 +16,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
-from flatsurf.geometry.deformation import Deformation
+from flatsurf.geometry.morphism import SurfaceMorphism
 
 
-class Deformation_to_pyflatsurf(Deformation):
+class Morphism_to_pyflatsurf(SurfaceMorphism):
     def __init__(self, domain, codomain, pyflatsurf_conversion):
         self._pyflatsurf_conversion = pyflatsurf_conversion
         super().__init__(domain, codomain)
@@ -47,13 +47,13 @@ class Deformation_to_pyflatsurf(Deformation):
         return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection))
 
 
-class Deformation_from_pyflatsurf(Deformation):
+class Morphism_from_pyflatsurf(SurfaceMorphism):
     pass
 
 
-class Deformation_pyflatsurf(Deformation):
-    def __init__(self, domain, codomain, pyflatsurf_deformation):
-        self._pyflatsurf_deformation = pyflatsurf_deformation
+class Morphism_from_Deformation(SurfaceMorphism):
+    def __init__(self, domain, codomain, deformation):
+        self._deformation = deformation
         super().__init__(domain, codomain)
 
     def _image_edge(self, label, edge):
@@ -64,7 +64,7 @@ class Deformation_pyflatsurf(Deformation):
         saddle_connection = flatsurf.SaddleConnection[type(self.domain()._flat_triangulation)](self.domain()._flat_triangulation, flatsurf.HalfEdge(half_edge))
         path = flatsurf.Path[type(self.domain()._flat_triangulation)](saddle_connection)
 
-        path = self._pyflatsurf_deformation(path)
+        path = self._deformation(path)
 
         if not path:
             raise NotImplementedError("cannot map edge through this deformation in pyflatsurf yet")

@@ -1732,8 +1732,8 @@ class MutableOrientedSimilaritySurface(
         for label in self.labels():
             self.replace_polygon(label, m * self.polygon(label))
 
-        from flatsurf.geometry.deformation import GL2RDeformation
-        return GL2RDeformation(None, self, m)
+        from flatsurf.geometry.morphism import GL2RMorphism
+        return GL2RMorphism(None, self, m)
 
     def opposite_edge(self, label, edge=None):
         r"""
@@ -2127,8 +2127,8 @@ class MutableOrientedSimilaritySurface(
             edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
             self.refine_polygon(label, triangulation, edge_to_edge)
 
-        from flatsurf.geometry.deformation import TriangulationDeformation
-        return TriangulationDeformation(None, self)
+        from flatsurf.geometry.morphism import TriangulationMorphism
+        return TriangulationMorphism(None, self)
 
     def delaunay_single_flip(self):
         r"""
@@ -2268,8 +2268,8 @@ class MutableOrientedSimilaritySurface(
             else:
                 break
 
-        from flatsurf.geometry.deformation import DelaunayDecompositionDeformation
-        return DelaunayDecompositionDeformation(self, s)
+        from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+        return DelaunayDecompositionMorphism(self, s)
 
     def cmp(self, s2, limit=None):
         r"""

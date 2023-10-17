@@ -16,9 +16,9 @@
 
 **Removed:**
 
-* Removed ``flatsurf.geometry.mapping`` module. It has been replaced by ``flatsurf.geometry.deformation`` that can handle more general situations.
+* Removed ``flatsurf.geometry.mapping`` module. It has been replaced by ``flatsurf.geometry.morphism`` that can handle more general situations.
 
-* Removed the ``mapping`` keyword from ``apply_matrix()`` of dilation surfaces. The method now always returns a deformation.
+* Removed the ``mapping`` keyword from ``apply_matrix()`` of dilation surfaces. The method now always returns a morphism.
 
 * Removed the previously deprecated ``rational`` keyword from ``billiard()``.
 
