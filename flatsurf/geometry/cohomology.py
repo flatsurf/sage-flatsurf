@@ -135,12 +135,16 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
     def _repr_(self):
         return f"H¹({self._surface}; {self._coefficients})"
 
+    def surface(self):
+        return self._surface
+
     def _element_constructor_(self, x):
         if not x:
             x = {}
 
         if isinstance(x, dict):
             assert all(k in self.homology().gens() for k in x.keys())
+            x = {gen: value for (gen, value) in x.items() if value}
             return self.element_class(self, x)
 
         raise NotImplementedError
@@ -163,3 +167,6 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
         """
         from flatsurf.geometry.homology import SimplicialHomology
         return SimplicialHomology(self._surface)
+
+    def gens(self):
+        return [self({gen: 1}) for gen in self.homology().gens()]

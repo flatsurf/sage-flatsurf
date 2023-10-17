@@ -215,7 +215,38 @@ class SurfaceMorphism(Morphism):
         super().__init__(parent)
 
     def __getattr__(self, name):
+        r"""
+        Redirect attribute lookup to the codomain.
+
+        A lot of methods that used to return a surface now return a morphism.
+        To make transition of existing code easier, we look up attributes that
+        cannot be found on the morphism up on the codomain and issue a
+        deprecation warning.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+            sage: morphism.is_triangulated()
+            doctest:warning
+            ...
+            UserWarning: This methods returns a morphism instead of a surface. Use .codomain().is_triangulated to access the surface instead of the morphism.
+            False
+
+            sage: morphism.codomain().is_triangulated()
+            False
+
+            sage: morphism.is_foo()
+            Traceback (most recent call last):
+            ...
+            AttributeError: ... has no attribute 'is_foo'
+
+        """
         if name in ["__cached_methods"]:
+            # Do not redirect __cached_methods to the surface since we do not
+            # want to get the morphism and the surface cache mixed up.
             raise AttributeError(f"'{type(self)}' has no attribute '{name}'")
 
         try:
@@ -229,27 +260,126 @@ class SurfaceMorphism(Morphism):
         return attr
 
     def section(self):
+        r"""
+        Return a section of this morphism from its codomain to its domain.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: morphism.section()
+            Generic morphism:
+              From: Translation Surface in H_1(0) built from a rectangle
+              To:   Translation Surface in H_1(0) built from a square
+
+        """
         return SectionMorphism(self)
 
     def __call__(self, x):
-        # TODO: docstring
+        r"""
+        Return the image of ``x`` under this morphism.
+
+        INPUT:
+
+        - ``x`` -- a point of the domain of this morphism or an object defined
+          on the domain such as a homology class, a saddle connection or a
+          cohomology class. (Mapping of most of these inputs might not be
+          implemented, either because it makes no real mathematical sense or
+          because it has simply not been implemented yet.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a point::
+
+            sage: morphism(S(0, (1/2, 0)))
+            Point (1, 0) of polygon 0
+
+            sage: morphism(_)
+            Traceback (most recent call last):
+            ...
+            ValueError: point must be in the domain of this morphism
+
+        The image of a saddle connection::
+
+            sage: saddle_connection = next(iter(S.saddle_connections(1)))
+            sage: saddle_connection
+            Saddle connection in direction (1, 0) with start data (0, 0) and end data (0, 2)
+            sage: morphism(saddle_connection)
+            Saddle connection in direction (1, 0) with start data (0, 0) and end data (0, 2)
+
+            sage: morphism(_)
+            Traceback (most recent call last):
+            ...
+            ValueError: saddle connection must be in the domain of this morphism
+
+        The image of a homology class::
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: a, b = H.gens()
+            sage: a
+            B[(0, 1)]
+            sage: morphism(a)
+            B[(0, 1)]
+
+            sage: morphism(_)
+            Traceback (most recent call last):
+            ...
+            ValueError: homology class must be defined over the domain of this morphism
+
+        The image of a cohomology class::
+
+            sage: from flatsurf import SimplicialCohomology
+            sage: H = SimplicialCohomology(S)
+            sage: a, b = H.gens()
+            sage: a
+            {B[(0, 1)]: 1}
+            sage: morphism(a)
+            {B[(0, 1)]: 1}
+
+            sage: morphism(_)
+            Traceback (most recent call last):
+            ...
+            ValueError: cohomology class must be defined over the domain of this morphism
+
+        TESTS::
+
+            sage: morphism(42)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot map Integer through this morphism yet
+
+        """
         from flatsurf.geometry.surface_objects import SurfacePoint
         if isinstance(x, SurfacePoint):
+            if x.parent() is not self.domain():
+                raise ValueError("point must be in the domain of this morphism")
             return self._image_point(x)
 
         from flatsurf.geometry.homology import SimplicialHomologyClass
         if isinstance(x, SimplicialHomologyClass):
+            if x.parent().surface() is not self.domain():
+                raise ValueError("homology class must be defined over the domain of this morphism")
             return self._image_homology(x)
 
         from flatsurf.geometry.cohomology import SimplicialCohomologyClass
         if isinstance(x, SimplicialCohomologyClass):
+            if x.parent().surface() is not self.domain():
+                raise ValueError("cohomology class must be defined over the domain of this morphism")
             return self._image_cohomology(x)
 
         from flatsurf.geometry.saddle_connection import SaddleConnection
         if isinstance(x, SaddleConnection):
+            if x.surface() is not self.domain():
+                raise ValueError("saddle connection must be in the domain of this morphism")
             return self._image_saddle_connection(x)
 
-        raise NotImplementedError(f"cannot map a {type(x)} through this morphism yet")
+        raise NotImplementedError(f"cannot map {type(x).__name__} through this morphism yet")
 
     def _image_point(self, p):
         # TODO: docstring
@@ -314,6 +444,7 @@ class SurfaceMorphism(Morphism):
 
     def _image_cohomology(self, f):
         # TODO: docstring
+        # TODO: Is this really a meaningful operation or should we restrict to computing sections of cohomology? Here and in __call__.
         from sage.all import ZZ, matrix
 
         from flatsurf.geometry.homology import SimplicialHomology
@@ -630,3 +761,24 @@ class GL2RMorphism(SurfaceMorphism):
 
         from sage.all import matrix
         self._matrix = matrix(m, immutable=True)
+
+    def _image_point(self, point):
+        label, coordinates = point.representative()
+        return self.codomain()(label, self._matrix * coordinates)
+
+    def _image_saddle_connection(self, connection):
+        if self._matrix.det() <= 0:
+            raise NotImplementedError("cannot compute the image of a saddle connection for this matrix yet")
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        return SaddleConnection(
+            surface=self.codomain(),
+            start_data=connection.start_data(),
+            direction=self._matrix * connection.direction(),
+            end_data=connection.end_data(),
+            holonomy=self._matrix * connection.holonomy(),
+            end_holonomy=self._matrix * connection.end_holonomy(),
+            check=False)
+
+    def _image_edge(self, label, edge):
+        return [(label, edge)]
