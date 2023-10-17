@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.0
+      jupytext_version: 1.15.2
   kernelspec:
     display_name: SageMath 10.0
     language: sage
@@ -138,27 +138,15 @@ Omega = HarmonicDifferentials(S, safety=0, singularities=True)
 ```
 
 ```sage
-omega = Omega(HS(f), prec=1, check=True)
-```
-
-```sage
-Omega.plot()
+omega = Omega(HS(f), prec=1, check=False)
 ```
 
 ```sage
 omega.error(verbose=True)
 ```
 
-```sage
-omega.plot()
-```
-
 ### An Explicit Series for the Octagon
 We can provide the series for the Voronoi cells explicitly if we don't want to solve for a cohomology class.
-
-```sage
-OmegaExact = HarmonicDifferentials(S, safety=1)
-```
 
 ```sage
 R.<z> = CC[[]]
@@ -166,27 +154,21 @@ g = z^2 - 1/9*z^10 + 20/1377*z^18 - 14/6885*z^26 + 2044/6952473*z^34 - 111097/25
 ```
 
 ```sage
-width = S.polygon(0).edge(0)[0] + 2*S.polygon(0).edge(1)[0]
-Δ = 137/482 * width / 1.41421356237310 * (1 + I)
-Δ = 1/5 * (1 + I)
-Δ = (4 + I) / 5
-g.polynomial()(Δ)
+omega_exact = Omega({
+    S(0, S.polygon(0).circumscribing_circle().center()): g.change_ring(RR).add_bigoh(3),
+    next(iter(S.vertices())): g.change_ring(RR).add_bigoh(9) * 1000 + z**3})
 ```
 
 ```sage
-omega_exact_truncated = OmegaExact({(0, 0, 0): g.add_bigoh(30).change_ring(RR)})
+omega_exact
 ```
 
 ```sage
-omega_exact = OmegaExact({(0, 0, 0): g.change_ring(RR)})
+omega_exact.error(verbose=True)
 ```
 
 ```sage
-omega_exact_truncated.plot(versus=omega_exact)
-```
-
-```sage
-omega.plot(versus=omega_exact_truncated)
+omega.plot(versus=omega_exact)
 ```
 
 We integrate to find the cohomology class this corresponds to.

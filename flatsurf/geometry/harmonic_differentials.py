@@ -1,5 +1,6 @@
 r"""
 TODO: Document this module.
+TODO: Rename this module?
 
 EXAMPLES:
 
@@ -230,24 +231,24 @@ class HarmonicDifferential(Element):
                         if not verbose:
                             return error
 
-        if kind is None or "midpoint_derivatives" in kind:
-            C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-            for derivative in range(self.precision()//3):
-                for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
-                    opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
-                    expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b)), derivative)
-                    other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a)), derivative)
+        # if kind is None or "midpoint_derivatives" in kind:
+        #     C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
+        #     for derivative in range(self.precision()//3):
+        #         for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
+        #             opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
+        #             expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b)), derivative)
+        #             other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a)), derivative)
 
-                    abs_error, rel_error = errors(expected, other)
+        #             abs_error, rel_error = errors(expected, other)
 
-                    if abs_error > abs_tol or rel_error > rel_tol:
-                        report = f"Power series defining harmonic differential are not consistent where triangles meet. {derivative}th derivative does not match between {(label, edge, a)} where it is {expected} and {(label, edge, b)} where it is {other}, i.e., there is an absolute error of {abs_error} and a relative error of {rel_error}."
-                        if verbose:
-                            print(report)
+        #             if abs_error > abs_tol or rel_error > rel_tol:
+        #                 report = f"Power series defining harmonic differential are not consistent where triangles meet. {derivative}th derivative does not match between {(label, edge, a)} where it is {expected} and {(label, edge, b)} where it is {other}, i.e., there is an absolute error of {abs_error} and a relative error of {rel_error}."
+        #                 if verbose:
+        #                     print(report)
 
-                        error = report
-                        if not verbose:
-                            return error
+        #                 error = report
+        #                 if not verbose:
+        #                     return error
 
         # if kind is None or "area" in kind:
         #     if verbose:
@@ -259,7 +260,9 @@ class HarmonicDifferential(Element):
 
         if kind is None or "L2" in kind:
             C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-            abs_error = self._evaluate(C._L2_consistency())
+            consistency = C._L2_consistency()
+            # print(consistency)
+            abs_error = self._evaluate(consistency)
 
             report = f"L2 norm of differential is {abs_error}."
             if verbose:
@@ -469,6 +472,9 @@ class HarmonicDifferential(Element):
     @cached_method
     def precision(self):
         # TODO: This is the number of coefficients of the power series but we use it as bit precision?
+        # TODO: There should not be a single global precision. Instead each
+        # cell has its own precision. Also these precisions are not comparable,
+        # since depending on the degree of the root, we need to scale things.
         precisions = set(series.precision_absolute() for series in self._series.values())
         # assert len(precisions) == 1
         return min(precisions)
@@ -2026,7 +2032,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
                     if gen == n:
                         return self.gen(i)
 
-        raise NotImplementedError
+        raise ValueError(f"symbolic ring has no generator {n}")
 
     # TODO: Use fixed prec from constructor as default
     @cached_method
@@ -2754,9 +2760,10 @@ class PowerSeriesConstraints:
 
     def _L2_consistency(self):
         r"""
+        # TODO: This description is not accurate anymore.
         For each pair of adjacent centers along a homology path we use for
         integrating, let `v` be the weighed midpoint (weighed according to the
-        radii of convergence at the adjacent cents.)
+        radii of convergence at the adjacent centers.)
         We develop the power series coming from both triangles around that
         midpoint and check them for agreement. Namely, we integrate the square
         of their difference on the circle of maximal radius around `v` as a
