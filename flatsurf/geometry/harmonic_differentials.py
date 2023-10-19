@@ -313,9 +313,18 @@ class HarmonicDifferential(Element):
         return self._evaluate(C.evaluate(label, edge, pos, Δ, derivative=derivative))
 
     def __call__(self, point):
+        # TODO: Don't call this __call__. Make it clear in the name that this does not mean anything.
         r"""
-        Return the value of this differential at ``point`` on the flat
-        chart.
+        Return the value of this differential at ``point`` on the chart that is
+        best suited for evaluating it.
+
+        .. NOTE::
+
+            This operation has no real mathematical meaning. A differential is
+            not a function on the surface so it cannot really be evaluated.
+            This method exists to compare two differentials, e.g., to plot the
+            error between an exact differentials and its numerical
+            approximation.
 
         EXAMPLES::
 
@@ -330,23 +339,27 @@ class HarmonicDifferential(Element):
             sage: R.<z> = CC[[]]
             sage: ω = Ω({center: R(1, 1), singularity: R(2, 1)})
 
-            sage: ω(center)
-            1.00000000000000
+            sage: ω(center)  # TODO: Make this work when there are series at singularities as well.
+            Traceback (most recent call last):
+            ...
+            NotImplementedError
             sage: ω(singularity)  # TODO: Make this work at a singularity as well.
             Traceback (most recent call last):
             ...
             NotImplementedError
 
-            sage: ω = Ω({center: R(0, 1), singularity: R(R.gen() + 1, 3)})
+            sage: ω = Ω({center: R(0, 1), singularity: R(1, 3)})
             sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000000, 0)))
-            sage: ω(point)  # abs-tol 1e-6
-            1
+            sage: ω(point)  # TODO: Make this work close to a singularity as well.
+            Traceback (most recent call last):
+            ...
+            NotImplementedError
 
         """
         C = self._constraints()
         expression = C.value(point)
         return self._evaluate(expression)
-        
+
     # TODO: Make this work again.
     # def roots(self):
     #     r"""
@@ -2417,14 +2430,14 @@ class PowerSeriesConstraints:
             0.000000000000000
 
             sage: a, b, c, d = H.gens()
-            sage: C.integrate(b) # TDOO: The part concerning a1 is likely not correct.
-            1.41421356237310*Re(a0,0) + 1.41421356237310*I*Im(a0,0) + (0.521980719591107 - 5.55111512312578e-17*I)*Re(a1,-2) + (5.55111512312578e-17 + 0.521980719591107*I)*Im(a1,-2) + (2.77555756156289e-17 + 0.454692255963595*I)*Re(a1,-1) + (-0.454692255963595 + 2.77555756156289e-17*I)*Im(a1,-1) + (-0.389300863573646 + 1.38777878078145e-17*I)*Re(a1,0) + (-1.38777878078145e-17 - 0.389300863573646*I)*Im(a1,0) + (-1.04083408558608e-17 - 0.327551243899061*I)*Re(a1,1) + (0.327551243899061 - 1.04083408558608e-17*I)*Im(a1,1) + 0.270679432377470*Re(a1,2) + 0.270679432377470*I*Im(a1,2)
+            sage: C.integrate(b)
+            1.41421356237310*Re(a0,0) + 1.41421356237310*I*Im(a0,0) + (-0.389300863573646 + 1.38777878078145e-17*I)*Re(a1,0) + (-1.38777878078145e-17 - 0.389300863573646*I)*Im(a1,0) + (-1.04083408558608e-17 - 0.327551243899061*I)*Re(a1,1) + (0.327551243899061 - 1.04083408558608e-17*I)*Im(a1,1) + 0.270679432377470*Re(a1,2) + 0.270679432377470*I*Im(a1,2)
 
-            sage: C.integrate(d) # TODO: The part concerning a1 is likely not correct.
-            (-1.41421356237310*I)*Re(a0,0) + 1.41421356237310*Im(a0,0) + (1.66533453693773e-16 - 0.521980719591107*I)*Re(a1,-2) + (0.521980719591107 + 1.66533453693773e-16*I)*Im(a1,-2) + (-1.11022302462516e-16 + 0.454692255963595*I)*Re(a1,-1) + (-0.454692255963595 - 1.11022302462516e-16*I)*Im(a1,-1) + (5.55111512312578e-17 - 0.389300863573646*I)*Re(a1,0) + (0.389300863573646 + 5.55111512312578e-17*I)*Im(a1,0) + (-2.77555756156289e-17 + 0.327551243899061*I)*Re(a1,1) + (-0.327551243899061 - 2.77555756156289e-17*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a1,2) + 0.270679432377470*Im(a1,2)
+            sage: C.integrate(d)
+            (-1.41421356237310*I)*Re(a0,0) + 1.41421356237310*Im(a0,0) + (5.55111512312578e-17 - 0.389300863573646*I)*Re(a1,0) + (0.389300863573646 + 5.55111512312578e-17*I)*Im(a1,0) + (-2.77555756156289e-17 + 0.327551243899061*I)*Re(a1,1) + (-0.327551243899061 - 2.77555756156289e-17*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a1,2) + 0.270679432377470*Im(a1,2)
 
-            sage: C.integrate(a)  # TODO: The part concerning a1 is likely not correct.
-            (1.00000000000000 - 1.00000000000000*I)*Re(a0,0) + (1.00000000000000 + 1.00000000000000*I)*Im(a0,0) + (-0.369096106471506 + 0.369096106471506*I)*Re(a1,-2) + (-0.369096106471506 - 0.369096106471506*I)*Im(a1,-2) + (-1.38777878078145e-17 + 0.454692255963596*I)*Re(a1,-1) + (-0.454692255963596 - 1.38777878078145e-17*I)*Im(a1,-1) + (0.275277280554704 + 0.275277280554704*I)*Re(a1,0) + (-0.275277280554704 + 0.275277280554704*I)*Im(a1,0) + (0.327551243899061 + 6.93889390390723e-18*I)*Re(a1,1) + (-6.93889390390723e-18 + 0.327551243899061*I)*Im(a1,1) + (0.191399262161835 - 0.191399262161835*I)*Re(a1,2) + (0.191399262161835 + 0.191399262161835*I)*Im(a1,2)
+            sage: C.integrate(a)
+            (1.00000000000000 - 1.00000000000000*I)*Re(a0,0) + (1.00000000000000 + 1.00000000000000*I)*Im(a0,0) + (0.275277280554704 + 0.275277280554704*I)*Re(a1,0) + (-0.275277280554704 + 0.275277280554704*I)*Im(a1,0) + (0.327551243899061 + 6.93889390390723e-18*I)*Re(a1,1) + (-6.93889390390723e-18 + 0.327551243899061*I)*Im(a1,1) + (0.191399262161835 - 0.191399262161835*I)*Re(a1,2) + (0.191399262161835 + 0.191399262161835*I)*Im(a1,2)
 
         """
         surface = cycle.surface()
@@ -2511,7 +2524,7 @@ class PowerSeriesConstraints:
                     for segment in segments:
                         integrator = self.Integrator(self, segment)
                         # As described in _L2_consistency_voronoi_boundary, we integrate
-                        # f = Σ_{n ≥ -d} a_n f_n(z) along the segment γ.
+                        # f = Σ_{n ≥ -3} a_n f_n(z) along the segment γ.
                         # TODO: 3 is hardcoded for the octagon.
                         for n in range(3 * self._prec):
                             expression += multiplicity * integrator.a(n) * integrator.f(n)
@@ -2573,6 +2586,8 @@ class PowerSeriesConstraints:
         return value
 
     def value(self, point):
+        # TODO: Make the chart a parameter.
+        # TODO: Clarify that this has no real mathematical meaning but depends on the exact charts/variables chosen. Probably rename.
         r"""
         EXAMPLES::
 
@@ -2586,6 +2601,9 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(S, 1, Ω._geometry)
             sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000, 0)))
             sage: C.value(point)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError
 
         """
         (label, center), Δ = self.relativize(point)
@@ -2622,6 +2640,8 @@ class PowerSeriesConstraints:
         (label, coordinates) and a vector Δ from that point to the ``point``.
 
         """
+        if self._geometry._singularities:
+            raise NotImplementedError
         return self._voronoi_diagram().relativize(point)
 
     def require_midpoint_derivatives(self, derivatives):
