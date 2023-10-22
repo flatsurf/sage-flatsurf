@@ -50,7 +50,7 @@ The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 ######################################################################
 from sage.structure.parent import Parent
 from sage.structure.element import Element
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_method, cached_function
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
@@ -64,8 +64,16 @@ def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     def value(t):
         z = ((1 - t) * a + t * b)
 
-        za = (z-α).nth_root(d + 1)**(n - d)
-        zb = ((z-β).nth_root(dd + 1)**(m - dd)).conjugate()
+        if d == 0:
+            za = (z-α) ** n
+        else:
+            za = (z-α).nth_root(d + 1)**(n - d)
+
+        if dd == 0:
+            zb = ((z-β) ** m).conjugate()
+        else:
+            zb = ((z-β).nth_root(dd + 1)**(m - dd)).conjugate()
+
         value = constant * za * zb
 
         if part == "Re":
@@ -79,6 +87,12 @@ def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     integral, error = quad(value, 0, 1)
 
     return R(integral)
+
+
+@cached_function
+def Cab(C, a):
+    return C(*a)
+
 
 def define_solve():
     import cppyy
@@ -2971,9 +2985,12 @@ class PowerSeriesConstraints:
             C = self.complex_field
             _, segment = self._segment.segment()
             a, b = segment.endpoints()
-            a = C(*a)
-            b = C(*b)
+            # 20s
+            a = Cab(C, a)
+            # 20s
+            b = Cab(C, b)
 
+            # 100s
             return integral2(part, α, κ, d, self.ζ(d), n, β, λ, dd, self.ζ(dd), m, a=a, b=b, C=C, R=self.real_field)
 
         def ζ(self, d):
