@@ -2526,7 +2526,7 @@ class PowerSeriesConstraints:
                     for segment in segments:
                         integrator = self.Integrator(self, segment)
                         # As described in _L2_consistency_voronoi_boundary, we integrate
-                        # f = Σ_{n ≥ -3} a_n f_n(z) along the segment γ.
+                        # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
                         # TODO: 3 is hardcoded for the octagon.
                         for n in range(3 * self._prec):
                             expression += multiplicity * integrator.a(n) * integrator.f(n)
