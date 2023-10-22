@@ -57,15 +57,15 @@ from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
 
 
-def integral2(part, α, κ, n, β, λ, m, d, ζ, a, b, C, R):
+def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
-    constant = ζ**(κ * (n+1)) / (d+1) * (ζ**(λ * (n+1)) / (d+1)).conjugate() * (b - a)
+    constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * (b - a)
 
     def value(t):
         z = ((1 - t) * a + t * b)
 
         za = (z-α).nth_root(d + 1)**(n - d)
-        zb = ((z-β).nth_root(d + 1)**(m - d)).conjugate()
+        zb = ((z-β).nth_root(dd + 1)**(m - dd)).conjugate()
         value = constant * za * zb
 
         if part == "Re":
@@ -339,10 +339,8 @@ class HarmonicDifferential(Element):
             sage: R.<z> = CC[[]]
             sage: ω = Ω({center: R(1, 1), singularity: R(2, 1)})
 
-            sage: ω(center)  # TODO: Make this work when there are series at singularities as well.
-            Traceback (most recent call last):
-            ...
-            NotImplementedError
+            sage: ω(center)
+            1.00000000000000
             sage: ω(singularity)  # TODO: Make this work at a singularity as well.
             Traceback (most recent call last):
             ...
@@ -619,7 +617,8 @@ class HarmonicDifferential(Element):
 
     #     return complex_field(*parts) / complex_field(0, 2*3.14159265358979)
 
-    def integrate(self, cycle):
+    def integrate(self, cycle, numerical=False):
+        # TODO: Generalize to more than just cycles.
         r"""
         Return the integral of this differential along the homology class
         ``cycle``.
@@ -649,6 +648,9 @@ class HarmonicDifferential(Element):
             0
 
         """
+        if numerical:
+            raise NotImplementedError
+
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
         return self._evaluate(C.integrate(cycle))
 
@@ -2587,8 +2589,18 @@ class PowerSeriesConstraints:
 
     def value(self, point):
         # TODO: Make the chart a parameter.
-        # TODO: Clarify that this has no real mathematical meaning but depends on the exact charts/variables chosen. Probably rename.
         r"""
+        Return f(point) for a differential f dz with z the flat coordinate of
+        the polygon containing ``point``.
+
+        This uses the power series that is best suited to describe the value of
+        f at the point, e.g., when close to a singularity, it uses the power
+        series there.
+
+        INPUT:
+
+        - ``point`` -- a non-singular point
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
@@ -2598,19 +2610,21 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, 1, Ω._geometry)
-            sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000, 0)))
-            sage: C.value(point)
-            Traceback (most recent call last):
-            ...
-            NotImplementedError
+            sage: C = PowerSeriesConstraints(S, 2, Ω._geometry)
+
+            sage: center = S(0, S.polygon(0).circumscribing_circle().center())
+            sage: C.value(center)
+            Re(a0,0) + 1.00000000000000*I*Im(a0,0)
+
+            sage: off_center = S(0, S.polygon(0).circumscribing_circle().center() + vector((1/2, 0)))
+            sage: C.value(off_center)
+            Re(a0,0) + 1.00000000000000*I*Im(a0,0) + 0.500000000000000*Re(a0,1) + 0.500000000000000*I*Im(a0,1)
 
         """
         (label, center), Δ = self.relativize(point)
 
         Δ = self.complex_field()(*Δ)
 
-        center_point = self._surface(label, center)
         # See, _L2_consistency_voronoi_boundary for the notation: we compute
         # the value f(z) =
         # Σ_{n ≥ -d} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
@@ -2618,7 +2632,9 @@ class PowerSeriesConstraints:
         κ, d = self._geometry.branch((label, center), Δ)
 
         if Δ == 0 and d:
-            raise NotImplementedError
+            raise ValueError("point must be non-singular")
+
+        center_point = self._surface(label, center)
 
         expression = self.symbolic_ring().zero()
         for n in self._range(center_point, self._prec):
@@ -2639,9 +2655,37 @@ class PowerSeriesConstraints:
         Returns the point at which the power series is developed as a pair
         (label, coordinates) and a vector Δ from that point to the ``point``.
 
+        .. NOTE::
+
+            We do not just return the point at which the power series is
+            developed as a surface point since when that center is a
+            singularity the information can be ambiguous.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: H = SimplicialHomology(S)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(S, 1, Ω._geometry)
+
+            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center()))
+            ((0, (1/2, 1/2*a + 1/2)), (0, 0))
+
+
+            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center() + vector((1/2, 1/2))))
+            ((0, (1/2, 1/2*a + 1/2)), (1/2, 1/2))
+
+            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center() + vector((2/3, 2/3))))
+            ((0, (1, a + 1)), (1/6, -1/2*a + 1/6))
+
+            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center() + vector((2/3, 2/3 - 1/1024))))
+            ((0, (1/2*a + 1, 1/2*a + 1)), (-1/2*a + 1/6, 509/3072))
+
         """
-        if self._geometry._singularities:
-            raise NotImplementedError
         return self._voronoi_diagram().relativize(point)
 
     def require_midpoint_derivatives(self, derivatives):
@@ -2778,6 +2822,7 @@ class PowerSeriesConstraints:
 
         return cost
 
+    @cached_method
     def _L2_consistency(self):
         r"""
         # TODO: This description is not accurate anymore.
@@ -2863,14 +2908,13 @@ class PowerSeriesConstraints:
     def _range(self, center, prec):
         if center.is_vertex():
             return range(3*prec)
-        return range(0, 3*prec, 3)
+        return range(prec)
 
     def _gen(self, kind, center, n):
         if center.is_vertex():
             return self.symbolic_ring(self.real_field()).gen((kind, center, n))
         else:
-            assert n >= 0 and n % 3 == 0
-            return self.symbolic_ring(self.real_field()).gen((kind, center, n // 3))
+            return self.symbolic_ring(self.real_field()).gen((kind, center, n))
 
     class Integrator:
         def __init__(self, constraints, segment):
@@ -2878,7 +2922,6 @@ class PowerSeriesConstraints:
             self._segment = segment
             self._constraints = constraints
             self._surface = constraints._surface
-            self._d = 2
             self.real_field = constraints.real_field()
             self._center, self._label, self._center_coordinates = segment.center()
             self._opposite_center, label, self._opposite_center_coordinates = segment.opposite_center()
@@ -2887,21 +2930,19 @@ class PowerSeriesConstraints:
             self.R = constraints.symbolic_ring(self.real_field)
             self.C = constraints.symbolic_ring(self.complex_field)
 
-        def integral(self, α, κ, n):
+        def integral(self, α, κ, d, n):
             r"""
             Return
 
             \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
             """
-            d = self._d
-
             _, segment = self._segment.segment()
             a, b = segment.endpoints()
             a = self.complex_field(*a)
             b = self.complex_field(*b)
 
             # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
-            constant = self.ζ()**(κ * (n + 1)) / (d + 1) * (b - a)
+            constant = self.ζ(d)**(κ * (n + 1)) / (d + 1) * (b - a)
 
             def value(part, t):
                 z = self.complex_field(*((1 - t) * a + t * b))
@@ -2921,11 +2962,11 @@ class PowerSeriesConstraints:
 
             return self.complex_field(real, imag)
 
-        def integral2(self, part, α, κ, n, β, λ, m):
+        def integral2(self, part, α, κ, d, n, β, λ, dd, m):
             r"""
             Return the real/imaginary part of
 
-            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{d+1}^{λ (n+1)}/(d+1) (z-β)^\frac{m-d}{d+1}} dz
+            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (n+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
             """
             C = self.complex_field
             _, segment = self._segment.segment()
@@ -2933,10 +2974,10 @@ class PowerSeriesConstraints:
             a = C(*a)
             b = C(*b)
 
-            return integral2(part, α, κ, n, β, λ, m, d=self._d, ζ=self.ζ(), a=a, b=b, C=C, R=self.real_field)
+            return integral2(part, α, κ, d, self.ζ(d), n, β, λ, dd, self.ζ(dd), m, a=a, b=b, C=C, R=self.real_field)
 
-        def ζ(self):
-            return self._constraints.ζ(self._d)
+        def ζ(self, d):
+            return self._constraints.ζ(d)
 
         def α(self):
             return self.complex_field(*self._center_coordinates)
@@ -2950,11 +2991,23 @@ class PowerSeriesConstraints:
 
             return self._κλ(self._center_coordinates, self._segment.segment()[1])
 
+        def d(self):
+            if not self._center.is_vertex():
+                return 0
+
+            return 2
+
         def λ(self):
             if not self._opposite_center.is_vertex():
                 return 0
 
             return self._κλ(self._opposite_center_coordinates, self._segment.segment()[1])
+
+        def dd(self):
+            if not self._opposite_center.is_vertex():
+                return 0
+
+            return 2
 
         def _κλ(self, center, segment):
             # TODO: Mostly duplicated as "branch" in GeometricPrimitives.
@@ -3003,7 +3056,7 @@ class PowerSeriesConstraints:
             return self._constraints._gen("Im", self._opposite_center, n)
 
         def f(self, n):
-            return self.integral(self.α(), self.κ(), n)
+            return self.integral(self.α(), self.κ(), self.d(), n)
 
     def _voronoi_diagram_centers(self):
         # TODO: Hardcoded octagon here.
@@ -3063,6 +3116,9 @@ class PowerSeriesConstraints:
                = Σ_{n ≥ 0} a_n f_n(z) dz
                = f(z) dz
 
+        Note that the formulas above hold when the center is not an actual
+        singularity, i.e., d = 0.
+
         Now, we want to describe the error between two such series when
         integrating along the ``boundary_segment``, namely, for two such
         differentials `f(z)dz` and `g(z)dz` we compute the L2 norm of `f-g` or
@@ -3074,9 +3130,6 @@ class PowerSeriesConstraints:
         f = Σ_{n ≥ 0} a_n f_n(z),
 
         g = Σ_{m ≥ 0} b_m g_m(z).
-
-        Note that we can assume that both have the same `d` by taking their
-        least common multiple.
 
         The `a_n` and `b_n` are symbolic variables since we are going to
         optimize for these later. If we evaluate that L2 norm squared we get a
@@ -3122,8 +3175,8 @@ class PowerSeriesConstraints:
         = \Re a_n \Re b_m (f,g)_{\Re, n, m} + \Im a_n \Im b_m (f,g)_{\Re, n, m} + \Re a_n \Im b_m (f,g)_{\Im, n, m} - \Im a_n \Re b_m (f,g)_{\Im, n, m}
 
         The integrals `f_{\Re, n, m}`, `f_{\Im, n, m}`, `(f,g)_{\Re, n, m}`,
-        and `(f,g)_{\Im, n, m}` are currently all computed numerically. We
-        currently have no feasible approach to compute the symbolically.
+        and `(f,g)_{\Im, n, m}` are currently all computed numerically. We know
+        of but have not implemented a better approach, yet.
 
         """
         # TODO: Fix the indexing of the a_k. We should not assume that all
@@ -3179,13 +3232,13 @@ class PowerSeriesConstraints:
             return value
 
         def f_(part, n, m):
-            return integrator.integral2(part, integrator.α(), integrator.κ(), n, integrator.α(), integrator.κ(), m)
+            return integrator.integral2(part, integrator.α(), integrator.κ(), integrator.d(), n, integrator.α(), integrator.κ(), integrator.d(), m)
 
         def g_(part, n, m):
-            return integrator.integral2(part, integrator.β(), integrator.λ(), n, integrator.β(), integrator.λ(), m)
+            return integrator.integral2(part, integrator.β(), integrator.λ(), integrator.dd(), n, integrator.β(), integrator.λ(), integrator.dd(), m)
 
         def fg_(part, n, m):
-            return integrator.integral2(part, integrator.α(), integrator.κ(), n, integrator.β(), integrator.λ(), m)
+            return integrator.integral2(part, integrator.α(), integrator.κ(), integrator.d(), n, integrator.β(), integrator.λ(), integrator.dd(), m)
 
         return int_f_overline_f() - 2 * int_Re_f_overline_g() + int_g_overline_g()
 
