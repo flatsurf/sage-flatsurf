@@ -886,7 +886,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # we do not need to recompute them. (But currently, we probably do
         # because they live in the constraints instance.)
 
-        # We develop a consistent system of Laurent series at each vertex of the Voronoi diagram
+        # We develop a consistent system of power series at each vertex of the Voronoi diagram
         # to describe a differential.
 
         # Let η be the differential we are looking for. To describe η we will use ω, the differential
@@ -3104,7 +3104,7 @@ class PowerSeriesConstraints:
         ALGORITHM:
 
         Two cells meet at the ``boundary_segment``. The harmonic differential
-        can on these cells abstractly be described as a Laurent series around
+        can on these cells abstractly be described as a power series around
         the center of the cell
 
         g(y) = Σ_{n ≥ 0} a_n y^n
