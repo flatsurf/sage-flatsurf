@@ -152,6 +152,18 @@ class VoronoiCellBoundarySegment:
     def split_vertically(self, y):
         return [VoronoiCellBoundarySegment(self._center, self._other, self._label, self._coordinates, self._other_coordinates, segment) for segment in self._segment.split_vertically(y)]
 
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __eq__(self, other):
+        if not isinstance(other, VoronoiCellBoundarySegment):
+            return False
+
+        return self._center == other._center and self._other == other._other and self._label == other._label and self._coordinates == other._coordinates and self._other_coordinates == other._other_coordinates and self._segment == other._segment
+
+    def __neg__(self):
+        return VoronoiCellBoundarySegment(self._other, self._center, self._label, self._other_coordinates, self._coordinates, -self._segment)
+
 
 class HalfSpace:
     r"""
@@ -222,6 +234,29 @@ class HalfSpace:
     def contains(self, point):
         return self._a * point[0] + self._b * point[1] + self._c >= 0
 
+    def __eq__(self, other):
+        if not isinstance(other, HalfSpace):
+            return False
+
+        from sage.all import sgn
+
+        if sgn(self._a) != sgn(other._a):
+            return False
+
+        if sgn(self._b) != sgn(other._b):
+            return False
+
+        if sgn(self._c) != sgn(other._c):
+            return False
+
+        return self._a * other._b == self._b * other._a and self._a * other._c == self._c * other._a and self._b * other._c == self._c * other._b
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __neg__(self):
+        return HalfSpace(-self._a, -self._b, -self._c)
+
 
 class Segment:
     def __init__(self, half_space, endpoints):
@@ -257,3 +292,15 @@ class Segment:
 
         from sage.all import vector
         return vector((self._endpoints[1][0] - self._endpoints[0][0], self._endpoints[1][1] - self._endpoints[0][1]))
+
+    def __eq__(self, other):
+        if not isinstance(other, Segment):
+            return False
+
+        return self._half_space == other._half_space and self._endpoints == other._endpoints
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __neg__(self):
+        return Segment(-self._half_space, self._endpoints[::-1])

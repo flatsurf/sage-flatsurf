@@ -58,11 +58,11 @@ from sage.structure.element import CommutativeRingElement
 
 
 def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
-    # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
-    constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * (b - a)
+    # Since γ(t) = (1 - t)a + tb, we have |·γ(t)| = |b - a|
+    constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * abs(b - a)
 
     def value(t):
-        z = ((1 - t) * a + t * b)
+        z = (1 - t) * a + t * b
 
         if d == 0:
             za = (z-α) ** n
@@ -358,14 +358,12 @@ class HarmonicDifferential(Element):
             sage: ω(singularity)  # TODO: Make this work at a singularity as well.
             Traceback (most recent call last):
             ...
-            NotImplementedError
+            ValueError: ...
 
             sage: ω = Ω({center: R(0, 1), singularity: R(1, 3)})
             sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000000, 0)))
-            sage: ω(point)  # TODO: Make this work close to a singularity as well.
-            Traceback (most recent call last):
-            ...
-            NotImplementedError
+            sage: ω(point)  # TODO: Does this make any sense?
+            3333.33333333333
 
         """
         C = self._constraints()
@@ -2611,6 +2609,8 @@ class PowerSeriesConstraints:
         f at the point, e.g., when close to a singularity, it uses the power
         series there.
 
+        TODO: The above statement does not really make sense.
+
         INPUT:
 
         - ``point`` -- a non-singular point
@@ -2908,9 +2908,12 @@ class PowerSeriesConstraints:
 
             # We integrate L2 errors along the boundary of Voronoi cells.
             segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
+            assert all([s for s in segments if s == -segment] for segment in segments)
             for i, segment in enumerate(segments):
+                if -segment in segments[:i]:
+                    continue
                 print(i, "/", len(segments))
-                cost += self._L2_consistency_voronoi_boundary(segment)
+                cost += 2 * self._L2_consistency_voronoi_boundary(segment)
 
         return cost
 
@@ -2980,7 +2983,7 @@ class PowerSeriesConstraints:
             r"""
             Return the real/imaginary part of
 
-            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (n+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
+            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (m+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
             """
             C = self.complex_field
             _, segment = self._segment.segment()
@@ -2997,10 +3000,14 @@ class PowerSeriesConstraints:
             return self._constraints.ζ(d)
 
         def α(self):
-            return self.complex_field(*self._center_coordinates)
+            return self.complex_field(*self._center_coordinates) - self.midpoint()
 
         def β(self):
-            return self.complex_field(*self._opposite_center_coordinates)
+            return self.complex_field(*self._opposite_center_coordinates) - self.midpoint()
+
+        def midpoint(self):
+            # TODO: Does it matter where we chose the midpoint? Should it be the weighed midpoint?
+            return (self.complex_field(*self._center_coordinates) + self.complex_field(*self._opposite_center_coordinates)) / 2
 
         def κ(self):
             if not self._center.is_vertex():
@@ -3130,8 +3137,8 @@ class PowerSeriesConstraints:
         g(y)dy = g(y(z)) dy/dz dz
                = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ n} (z-α)^{n/(d+1)} ζ_{d+1}^κ 1/(d+1) (z-α)^{-d/(d+1)}dz
                = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} dz
-               = Σ_{n ≥ 0} a_n f_n(z) dz
-               = f(z) dz
+               =: Σ_{n ≥ 0} a_n f_n(z) dz
+               =: f(z) dz
 
         Note that the formulas above hold when the center is not an actual
         singularity, i.e., d = 0.
@@ -3141,6 +3148,9 @@ class PowerSeriesConstraints:
         differentials `f(z)dz` and `g(z)dz` we compute the L2 norm of `f-g` or
         rather the square thereof `\int_γ (f-g)\overline{(f-g)} dz` where γ is
         the ``boundary_segment``.
+
+        TODO: This is not actually the integral but a norm, we get |·γ| in the
+        integration and not just the signed derivative.
 
         As discussed above, we have
 
@@ -3156,6 +3166,8 @@ class PowerSeriesConstraints:
 
         (f-g)\overline{(f-g)} = f\overline{f} - 2 \Re f\overline{g} + g\overline{g}.
 
+        Note that all terms are real.
+
         The first term is going to yield polynomials in `a_n a_m`, the second
         term mixed polynomials `a_n b_m`, and the last term polynomials in `b_n
         b_m`.
@@ -3168,12 +3180,12 @@ class PowerSeriesConstraints:
 
         \int_γ f\overline{f}
         = Σ_{n,m ≥ 0} a_n \overline{a_m} \int_γ f_n(z)\overline{f_m(z)}
-        = Σ_{n,m ≥ 0} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
+        =: Σ_{n,m ≥ 0} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
 
         We can simplify things a bit since we know that the result is real;
         inside the series we have therefore
 
-        a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
+        \Re (a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m}))
         = (\Re a_n \Re a_m + \Im a_n \Im a_m - i \Re a_n \Im a_m + i \Im a_n \Re a_m) (f_{\Re, n, m} + i f_{\Im, n, m})
         = \Re a_n \Re a_m f_{\Re, n, m} + \Im a_n \Im a_m f_{\Re, n, m} + \Re a_n \Im a_m f_{\Im, n, m} - \Im a_n \Re a_m f_{\Im, n, m}.
 
@@ -3184,80 +3196,118 @@ class PowerSeriesConstraints:
         - \int_γ 2 \Re f\overline{g}
         = - 2 \Re \int_γ f\overline{g}
         = - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} \int_γ f_n{z)\overline{g_m(z)}
-        = - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+        =: - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
 
         Again we can simplify and get inside the series
 
-        \Re a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+        \Re (a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m}))
         = \Re a_n \Re b_m (f,g)_{\Re, n, m} + \Im a_n \Im b_m (f,g)_{\Re, n, m} + \Re a_n \Im b_m (f,g)_{\Im, n, m} - \Im a_n \Re b_m (f,g)_{\Im, n, m}
 
         The integrals `f_{\Re, n, m}`, `f_{\Im, n, m}`, `(f,g)_{\Re, n, m}`,
         and `(f,g)_{\Im, n, m}` are currently all computed numerically. We know
         of but have not implemented a better approach, yet.
 
+        TESTS::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+            sage: H = SimplicialHomology(S)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(S, prec=3, geometry=Ω._geometry)
+            sage: V = C._voronoi_diagram()
+            sage: centers = C._voronoi_diagram_centers()
+            sage: segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
+
+            sage: segment = segments[0]
+            sage: segment._center, segment._other
+            (Vertex 0 of polygon 0, Vertex 0 of polygon 0)
+
+            sage: E = C._L2_consistency_voronoi_boundary(segment)
+            sage: F = C._L2_consistency_voronoi_boundary(-segment)
+            sage: (E - F).map_coefficients(lambda c: c if abs(c) > 1e-15 else 0)
+            0.000000000000000
+
+            sage: segment = segments[-1]
+            sage: segment._center, segment._other
+            (Point (1/2, 1/2*a + 1/2) of polygon 0, Vertex 0 of polygon 0)
+
+            sage: E = C._L2_consistency_voronoi_boundary(segment)
+            sage: F = C._L2_consistency_voronoi_boundary(-segment)
+            sage: (E - F).map_coefficients(lambda c: c if abs(c) > 1e-9 else 0)
+            0.000000000000000
+
         """
-        # TODO: Fix the indexing of the a_k. We should not assume that all
-        # series are indexed the same but use the underlying order of the root
-        # that has been taken.
-        center, label, center_coordinates = boundary_segment.center()
-        opposite_center, label, opposite_center_coordinates = boundary_segment.opposite_center()
+        integrator = self.Integrator_(self.Integrator(self, boundary_segment), self._prec)
 
-        Re = "Re"
-        Im = "Im"
+        ff = integrator.int_f_overline_f()
+        gg = integrator.int_g_overline_g()
+        fg = integrator.int_Re_f_overline_g()
 
-        integrator = self.Integrator(self, boundary_segment)
+        return ff - 2*fg + gg
 
-        R = integrator.R
+    class Integrator_:
+        def __init__(self, integrator, prec):
+            self._integrator = integrator
+            self._prec = prec
 
-        Re_a = integrator.Re_a
-        Im_a = integrator.Im_a
+            self._center, self._label, self._center_coordinates = self._integrator._segment.center()
+            self._opposite_center, self._label, self._opposite_center_coordinates = self._integrator._segment.opposite_center()
 
-        Re_b = integrator.Re_b
-        Im_b = integrator.Im_b
+            self._Re = "Re"
+            self._Im = "Im"
 
-        def int_f_overline_f():
+            self._integrator = integrator
+
+            self._R = integrator.R
+
+            self._Re_a = integrator.Re_a
+            self._Im_a = integrator.Im_a
+
+            self._Re_b = integrator.Re_b
+            self._Im_b = integrator.Im_b
+
+        def int_f_overline_f(self):
             r"""
             Return the value of `\int_γ f\overline{f}.
             """
-            value = R.zero()
-            for n in integrator.range(self._prec):
-                for m in integrator.range(self._prec):
-                    value += Re_a(n) * Re_a(m) * f_(Re, n, m) + Im_a(n) * Im_a(m) * f_(Re, n, m) + Re_a(n) * Im_a(m) * f_(Im, n, m) - Im_a(n) * Re_a(m) * f_(Im, n, m)
+            value = self._R.zero()
+            for n in self._integrator.range(self._prec):
+                for m in self._integrator.range(self._prec):
+                    value += (self._Re_a(n) * self._Re_a(m) + self._Im_a(n) * self._Im_a(m)) * self.f_(self._Re, n, m) + (self._Re_a(n) * self._Im_a(m) - self._Im_a(n) * self._Re_a(m)) * self.f_(self._Im, n, m)
 
             return value
 
-        def int_Re_f_overline_g():
-            r"""
-            Return the value of `\int_γ f\overline{g}.
-            """
-            value = R.zero()
-            for n in integrator.range(self._prec):
-                for m in integrator.opposite_range(self._prec):
-                    value += Re_a(n) * Re_b(m) * fg_(Re, n, m) + Im_a(n) * Im_b(m) * fg_(Re, n, m) + Re_a(n) * Im_b(m) * fg_(Im, n, m) - Im_a(n) * Re_b(m) * fg_(Im, n, m)
-
-            return value
-
-        def int_g_overline_g():
+        def int_g_overline_g(self):
             r"""
             Return the value of `\int_γ g\overline{g}.
             """
-            value = R.zero()
-            for n in integrator.opposite_range(self._prec):
-                for m in integrator.opposite_range(self._prec):
-                    value += Re_b(n) * Re_b(m) * g_(Re, n, m) + Im_b(n) * Im_b(m) * g_(Re, n, m) + Re_b(n) * Im_b(m) * g_(Im, n, m) - Im_b(n) * Re_b(m) * g_(Im, n, m)
+            value = self._R.zero()
+            for n in self._integrator.opposite_range(self._prec):
+                for m in self._integrator.opposite_range(self._prec):
+                    value += (self._Re_b(n) * self._Re_b(m) + self._Im_b(n) * self._Im_b(m)) * self.g_(self._Re, n, m) + (self._Re_b(n) * self._Im_b(m) - self._Im_b(n) * self._Re_b(m)) * self.g_(self._Im, n, m)
 
             return value
 
-        def f_(part, n, m):
-            return integrator.integral2(part, integrator.α(), integrator.κ(), integrator.d(), n, integrator.α(), integrator.κ(), integrator.d(), m)
+        def int_Re_f_overline_g(self):
+            r"""
+            Return the value of `\int_γ f\overline{g}.
+            """
+            value = self._R.zero()
+            for n in self._integrator.range(self._prec):
+                for m in self._integrator.opposite_range(self._prec):
+                    value += (self._Re_a(n) * self._Re_b(m) + self._Im_a(n) * self._Im_b(m)) * self.fg_(self._Re, n, m) + (self._Re_a(n) * self._Im_b(m) - self._Im_a(n) * self._Re_b(m)) * self.fg_(self._Im, n, m)
 
-        def g_(part, n, m):
-            return integrator.integral2(part, integrator.β(), integrator.λ(), integrator.dd(), n, integrator.β(), integrator.λ(), integrator.dd(), m)
+            return value
 
-        def fg_(part, n, m):
-            return integrator.integral2(part, integrator.α(), integrator.κ(), integrator.d(), n, integrator.β(), integrator.λ(), integrator.dd(), m)
+        def f_(self, part, n, m):
+            return self._integrator.integral2(part, self._integrator.α(), self._integrator.κ(), self._integrator.d(), n, self._integrator.α(), self._integrator.κ(), self._integrator.d(), m)
 
-        return int_f_overline_f() - 2 * int_Re_f_overline_g() + int_g_overline_g()
+        def g_(self, part, n, m):
+            return self._integrator.integral2(part, self._integrator.β(), self._integrator.λ(), self._integrator.dd(), n, self._integrator.β(), self._integrator.λ(), self._integrator.dd(), m)
+
+        def fg_(self, part, n, m):
+            return self._integrator.integral2(part, self._integrator.α(), self._integrator.κ(), self._integrator.d(), n, self._integrator.β(), self._integrator.λ(), self._integrator.dd(), m)
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):
