@@ -3000,14 +3000,10 @@ class PowerSeriesConstraints:
             return self._constraints.ζ(d)
 
         def α(self):
-            return self.complex_field(*self._center_coordinates) - self.midpoint()
+            return self.complex_field(*self._center_coordinates)
 
         def β(self):
-            return self.complex_field(*self._opposite_center_coordinates) - self.midpoint()
-
-        def midpoint(self):
-            # TODO: Does it matter where we chose the midpoint? Should it be the weighed midpoint?
-            return (self.complex_field(*self._center_coordinates) + self.complex_field(*self._opposite_center_coordinates)) / 2
+            return self.complex_field(*self._opposite_center_coordinates)
 
         def κ(self):
             if not self._center.is_vertex():
