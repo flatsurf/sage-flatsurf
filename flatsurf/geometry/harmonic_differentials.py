@@ -666,22 +666,29 @@ class HarmonicDifferential(Element):
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
         return self._evaluate(C.integrate(cycle))
 
-    def _repr_(self):
+    def _repr_(self, prec=1e-6):
         # TODO: Tune this so we do not loose important information.
         # TODO: Do not print that many digits.
         # TODO: Make it visually clear that we are not printing everything.
         def compress(series):
             def compress_coefficient(coefficient):
-                if coefficient.imag().abs() < 1e-9:
+                if coefficient.imag().abs() < prec:
                     coefficient = coefficient.parent()(coefficient.real())
-                if coefficient.real().abs() < 1e-9:
+                if coefficient.real().abs() < prec:
                     coefficient = coefficient.parent()(coefficient.parent().gen() * coefficient.imag())
 
                 return coefficient
 
-            return series.parent()({exponent: compress_coefficient(coefficient) for (coefficient, exponent) in zip(series.coefficients(), series.exponents())} or 0).add_bigoh(series.precision_absolute())
+            from sage.all import ComplexField
+            return series.parent()({exponent: compress_coefficient(coefficient) for (coefficient, exponent) in zip(series.coefficients(), series.exponents())} or 0).change_ring(ComplexField(20)).add_bigoh(series.precision_absolute())
 
-        return repr(tuple(compress(series) for series in self._series.values()))
+        ret = repr(tuple(compress(series) for series in self._series.values()))
+
+        # TODO: Why are zero coefficients not filtered automatically?
+        import re
+        ret = re.sub(r'[+-] 0\.0*\*z[01](\^\d*|) ', '', ret)
+
+        return ret
 
     def plot(self, versus=None):
         from sage.all import RealField, I, vector, complex_plot, oo
