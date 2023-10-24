@@ -2519,9 +2519,9 @@ class PowerSeriesConstraints:
                     octagon = surface.polygon(0)
                     width = octagon.edges()[0][0] + 2 * octagon.edges()[1][0]
 
-                    # Probably not exactly true but close enough.
-                    width_on_central_chart = width - octagon.edges()[0][0]
-                    width_on_vertex_chart = octagon.edges()[0][0]
+                    # TODO: Hardcoded for the octagon.
+                    width_on_vertex_chart = self.complex_field()(0.406019148566206 * 2)
+                    width_on_central_chart = width - width_on_vertex_chart
 
                     # First: Integrate along the line crossing over the center of the
                     # octagon from -δ v to +δ v where δ = width_on_central_chart/2.
@@ -2542,13 +2542,14 @@ class PowerSeriesConstraints:
                     segments = [segment for segment in segments if is_parallel(segment.segment()[1].vector(), v)]
                     assert len(segments) == 2, "this is not the octagon"
 
-                    for segment in segments:
-                        integrator = self.Integrator(self, segment)
-                        # As described in _L2_consistency_voronoi_boundary, we integrate
-                        # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
-                        # TODO: 3 is hardcoded for the octagon.
-                        for n in range(3 * self._prec):
-                            expression += multiplicity * integrator.a(n) * integrator.f(n)
+                    for s in segments:
+                        for segment in s.segments_with_uniform_roots():
+                            integrator = self.Integrator(self, segment)
+                            # As described in _L2_consistency_voronoi_boundary, we integrate
+                            # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
+                            # TODO: 3 is hardcoded for the octagon.
+                            for n in range(3 * self._prec):
+                                expression += multiplicity * integrator.a(n) * integrator.f(n)
                     break
 
                 pos = b
