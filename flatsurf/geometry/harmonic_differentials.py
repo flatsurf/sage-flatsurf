@@ -29,6 +29,34 @@ The harmonic differential that integrates as 0 along `a` but 1 along `b`::
     sage: Ω(g)  # tol 1e-9
     (1.00000000000000*I + O(z0^5), 1.00000000000000*I + O(z1^5), 1.00000000000000*I + O(z2^5), 1.00000000000000*I + O(z3^5), 1.00000000000000*I + O(z4^5), 1.00000000000000*I + O(z5^5), 1.00000000000000*I + O(z6^5), 1.00000000000000*I + O(z7^5), 1.00000000000000*I + O(z8^5))
 
+A less trivial example, the regular octagon::
+
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
+    sage: S = translation_surfaces.regular_octagon()
+
+    sage: scale = QQ(1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2))
+    sage: S = S.apply_matrix(diagonal_matrix([scale, scale]), in_place=False)
+    sage: S.set_immutable()
+
+    sage: H = SimplicialHomology(S)
+    sage: HS = SimplicialCohomology(S, homology=H)
+    sage: a, b, c, d = HS.homology().gens()
+
+    sage: f = {
+    ....:     d: 0,
+    ....:     a: -0.681616747143081,
+    ....:     b: 0.963951648150378,
+    ....:     c: -0.681616747143081,
+    ....: }
+
+    sage: f = HS(f)
+    sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
+
+    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True)
+    sage: omega = Omega(HS(f), prec=3, check=False)
+    sage: omega  # TODO: Increase precision once this is faster.
+    ((-0.000039465 + 0.000010923*I) - 0.00076051*I*z0 + (1.0005 - 0.000026380*I)*z0^2 + O(z0^3), (-1.4135 + 0.000037271*I) + 0.0010854*I*z1 + (-0.00011840 + 0.000032770*I)*z1^2 - 0.0038705*I*z1^3 + 0.0032736*I*z1^5 + 0.0087739*z1^6 + 0.0015016*I*z1^7 + (-2.3211 + 0.000061201*I)*z1^8 + O(z1^9))
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
@@ -629,7 +657,7 @@ class HarmonicDifferential(Element):
 
     #     return complex_field(*parts) / complex_field(0, 2*3.14159265358979)
 
-    def integrate(self, cycle, numerical=False):
+    def integrate(self, cycle, numerical=False, part=None):  # TODO: Remove debugging hack "part"
         # TODO: Generalize to more than just cycles.
         r"""
         Return the integral of this differential along the homology class
@@ -664,7 +692,7 @@ class HarmonicDifferential(Element):
             raise NotImplementedError
 
         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-        return self._evaluate(C.integrate(cycle))
+        return self._evaluate(C.integrate(cycle, part=part))
 
     def _repr_(self, prec=1e-6):
         # TODO: Tune this so we do not loose important information.
@@ -2402,7 +2430,7 @@ class PowerSeriesConstraints:
     def develop_singular(self, label, vertex, Δ, radius):
         raise NotImplementedError
 
-    def integrate(self, cycle):
+    def integrate(self, cycle, part=None):  # TODO: Remove (or rework) debugging hack "part"
         r"""
         Return the linear combination of the power series coefficients that
         describe the integral of a differential along the homology class
@@ -2519,21 +2547,11 @@ class PowerSeriesConstraints:
                     octagon = surface.polygon(0)
                     width = octagon.edges()[0][0] + 2 * octagon.edges()[1][0]
 
-                    # TODO: Hardcoded for the octagon.
-                    width_on_vertex_chart = self.complex_field()(0.406019148566206 * 2)
-                    width_on_central_chart = width - width_on_vertex_chart
-
                     # First: Integrate along the line crossing over the center of the
                     # octagon from -δ v to +δ v where δ = width_on_central_chart/2.
-                    δ = width_on_central_chart / 2
                     v = surface.polygon(label).vertices()[edge] + surface.polygon(label).edges()[edge] / 2 - octagon.circumscribing_circle().center()
                     v_ = v.change_ring(self.real_field())
                     v_ /= v_.norm()
-
-                    # We integrate the summands of the power series \sum a_k z^k.
-                    # We have \int_γ a_k z^k = \int_{-δ}^δ a_k γ(t)^k ·γ(t) dt = a_k v^{k + 1} \int_{-δ}^δ t^k dt = a_k v^{k + 1}/(k+1) (δ^{k + 1} - (-δ)^{k + 1}).
-                    for k in range(self._prec):
-                        expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * self.complex_field()(*v_)**(k + 1) / (k + 1) * (δ**(k + 1) - (-δ)**(k + 1))
 
                     # Second: Integrate using the power series at the singularity.
                     # Find segments that describe the path.
@@ -2542,14 +2560,31 @@ class PowerSeriesConstraints:
                     segments = [segment for segment in segments if is_parallel(segment.segment()[1].vector(), v)]
                     assert len(segments) == 2, "this is not the octagon"
 
+                    # TODO: Hardcoded for the octagon situation
+                    width_on_vertex_chart = self.complex_field()(2 * segments[0].segment()[1].vector().norm())
+                    width_on_central_chart = width - width_on_vertex_chart
+
+                    # So, the first integration.
+                    # We integrate the summands of the power series \sum a_k z^k.
+                    # We have \int_γ a_k z^k = \int_{-δ}^δ a_k γ(t)^k ·γ(t) dt = a_k v^{k + 1} \int_{-δ}^δ t^k dt = a_k v^{k + 1}/(k+1) (δ^{k + 1} - (-δ)^{k + 1}).
+                    δ = width_on_central_chart / 2
+                    if part is None or part == "center":
+                        for k in range(self._prec):
+                            expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * self.complex_field()(*v_)**(k + 1) / (k + 1) * (δ**(k + 1) - (-δ)**(k + 1))
+
+                    # And the second integration.
                     for s in segments:
+                        segment_length = s.segment()[1].vector().norm()
+                        assert abs(segment_length * 2 - width_on_vertex_chart) < 1e-9
                         for segment in s.segments_with_uniform_roots():
+
                             integrator = self.Integrator(self, segment)
                             # As described in _L2_consistency_voronoi_boundary, we integrate
                             # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
                             # TODO: 3 is hardcoded for the octagon.
-                            for n in range(3 * self._prec):
-                                expression += multiplicity * integrator.a(n) * integrator.f(n)
+                            if part is None or part == "vertex":
+                                for n in range(3 * self._prec):
+                                    expression += multiplicity * integrator.a(n) * integrator.f(n)
                     break
 
                 pos = b
@@ -2920,7 +2955,6 @@ class PowerSeriesConstraints:
             for i, segment in enumerate(segments):
                 if -segment in segments[:i]:
                     continue
-                print(i, "/", len(segments))
                 cost += 2 * self._L2_consistency_voronoi_boundary(segment)
 
         return cost
