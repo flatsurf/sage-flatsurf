@@ -72,7 +72,7 @@ jobs:
       - name: Run ruff
         shell: bash -l {0}
         run: |
-          ruff check --fix --select C4 .
+          ruff check --select C4,UP008,UP031,UP034 .
       - name: Detect changes
         shell: bash -l {0}
         run: git diff --exit-code
