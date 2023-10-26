@@ -44,7 +44,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
     def _image_saddle_connection(self, connection):
         from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
-        return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection))
+        return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection), self.codomain())
 
 
 class Morphism_from_pyflatsurf(SurfaceMorphism):

@@ -3,9 +3,9 @@ Morphisms between Surfaces
 
 .. NOTE::
 
-    For all practical purposes, one should think of these as maps. However,
-    they might often not be maps on the points of the surface but just on
-    homology, or in some cases, they might not be meaningful as maps anywhere.
+    One should think of these as maps between surfaces. However, they might
+    often not be maps on the points of the surface but just on homology, or in
+    some cases, they might not be meaningful as maps anywhere.
 
     Technically, these are at worst morphisms in the category of objects where
     being a morphism does not really have any mathematical meaning.
@@ -359,34 +359,97 @@ class SurfaceMorphism(Morphism):
         if isinstance(x, SurfacePoint):
             if x.parent() is not self.domain():
                 raise ValueError("point must be in the domain of this morphism")
-            return self._image_point(x)
+            image = self._image_point(x)
+            assert image.parent() is self.codomain()
+            return image
 
         from flatsurf.geometry.homology import SimplicialHomologyClass
         if isinstance(x, SimplicialHomologyClass):
             if x.parent().surface() is not self.domain():
                 raise ValueError("homology class must be defined over the domain of this morphism")
-            return self._image_homology(x)
+            image = self._image_homology(x)
+            assert image.parent().surface() is self.codomain()
+            return image
 
         from flatsurf.geometry.cohomology import SimplicialCohomologyClass
         if isinstance(x, SimplicialCohomologyClass):
             if x.parent().surface() is not self.domain():
                 raise ValueError("cohomology class must be defined over the domain of this morphism")
-            return self._image_cohomology(x)
+            image = self._image_cohomology(x)
+            assert image.parent().surface() is self.codomain()
+            return image
 
         from flatsurf.geometry.saddle_connection import SaddleConnection
         if isinstance(x, SaddleConnection):
             if x.surface() is not self.domain():
                 raise ValueError("saddle connection must be in the domain of this morphism")
-            return self._image_saddle_connection(x)
+            image = self._image_saddle_connection(x)
+            assert image.surface() is self.codomain()
+            return image
 
         raise NotImplementedError(f"cannot map {type(x).__name__} through this morphism yet")
 
     def _image_point(self, p):
-        # TODO: docstring
+        r"""
+        Return the image of the surface point ``p`` under this morphism.
+
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses should implement this method if the morphism is meaningful
+        on the level of points.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a point::
+
+            sage: morphism(S(0, (1/2, 0)))  # indirect doctest
+            Point (1, 0) of polygon 0
+
+        Not all morphisms are meaningful on the level of points::
+
+            TODO: Add an example of such a morphism.
+
+        """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a point yet")
 
     def _image_saddle_connection(self, c):
-        # TODO: docstring
+        r"""
+        Return the image of saddle connection ``c`` under this morphism.
+
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses should implement this method if the morphism is meaningful
+        on the level of saddle connections.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a saddle connection::
+
+            sage: from flatsurf.geometry.saddle_connection import SaddleConnection
+            sage: c = SaddleConnection(S, (0, 0), (1, 1))
+            sage: c
+            Saddle connection in direction (1, 1) with start data (0, 0) and end data (0, 2)
+
+            sage: morphism(c)
+            Saddle connection in direction (1, 1/2) with start data (0, 0) and end data (0, 2)
+
+        Not all morphisms are meaningful on the level of saddle connections::
+
+            sage: morphism = S.subdivide()
+            sage: morphism(c)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: a SubdivideMorphism cannot compute the image of a saddle connection yet
+
+        """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a saddle connection yet")
 
     def _image_homology(self, γ):
