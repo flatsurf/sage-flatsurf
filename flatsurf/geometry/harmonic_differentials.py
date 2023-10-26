@@ -86,6 +86,13 @@ from sage.structure.element import CommutativeRingElement
 
 
 def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
+    r"""
+    Return the real/imaginary part of
+
+    \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (m+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
+
+    where γ(t) = (1-t)a + tb.
+    """
     # Since γ(t) = (1 - t)a + tb, we have |·γ(t)| = |b - a|
     constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * abs(b - a)
 
