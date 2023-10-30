@@ -249,16 +249,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             return identity_matrix(self.base_ring(), 2)
 
-        def canonicalize_mapping(self):
-            r"""
-            Return a SurfaceMapping canonicalizing this translation surface.
-            """
-            from flatsurf.geometry.mappings import (
-                canonicalize_translation_surface_mapping,
-            )
-
-            return canonicalize_translation_surface_mapping(self)
-
         def rel_deformation(self, deformation, local=False, limit=100):
             r"""
             Perform a rel deformation of the surface and return the result.
@@ -684,6 +674,26 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     return AbelianStratum([ZZ(a - 1) for a in self.angles()])
 
+                def canonicalize_mapping(self):
+                    r"""
+                    Return a SurfaceMapping canonicalizing this translation surface.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: s = translation_surfaces.octagon_and_squares()
+                        sage: s.canonicalize_mapping()
+                        doctest:warning
+                        ...
+                        UserWarning: canonicalize_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use canonicalize() instead
+                        Translation Surface in H_3(4) built from 2 squares and a regular octagon
+
+                    """
+                    import warnings
+                    warnings.warn("canonicalize_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use canonicalize() instead")
+
+                    return self.canonicalize()
+
                 def canonicalize(self, in_place=None):
                     r"""
                     Return a canonical version of this translation surface.
@@ -711,6 +721,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         True
 
                     """
+                    # TODO: Return a morphism.
                     if in_place is not None:
                         if in_place:
                             raise NotImplementedError(
