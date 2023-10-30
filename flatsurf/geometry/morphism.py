@@ -194,8 +194,6 @@ class SurfaceMorphism(Morphism):
         True
 
     """
-    # TODO: Implement push_vector_forward() and pull_vector_back() to replicate old mapping interface.
-
     def __init__(self, domain, codomain, category=None):
         if domain is None:
             domain = UnknownSurface(UnknownRing())
@@ -348,6 +346,12 @@ class SurfaceMorphism(Morphism):
             ...
             ValueError: cohomology class must be defined over the domain of this morphism
 
+        The image of a tangent vector::
+
+            sage: t = S.tangent_vector(0, (0, 0), (1, 1))
+            sage: morphism(t)
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
+
         TESTS::
 
             sage: morphism(42)
@@ -385,6 +389,14 @@ class SurfaceMorphism(Morphism):
             if x.surface() is not self.domain():
                 raise ValueError("saddle connection must be in the domain of this morphism")
             image = self._image_saddle_connection(x)
+            assert image.surface() is self.codomain()
+            return image
+
+        from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
+        if isinstance(x, SimilaritySurfaceTangentVector):
+            if x.surface() is not self.domain():
+                raise ValueError("tangent vector must be on the domain of this morphism")
+            image = self._image_tangent_vector(x)
             assert image.surface() is self.codomain()
             return image
 
@@ -452,6 +464,34 @@ class SurfaceMorphism(Morphism):
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a saddle connection yet")
+
+    def _image_tangent_vector(self, t):
+        r"""
+        Return the image of the tangent vector ``v`` under this morphism.
+
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses should implement this method if the morphism is meaningful
+        on the level of tangent vectors.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a tangent vector::
+
+            sage: t = S.tangent_vector(0, (0, 0), (1, 1))
+            sage: morphism(t)
+            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
+
+        Not all morphisms are meaningful on the level of saddle connections::
+
+            TODO: Add an example of such a morphism
+
+        """
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a tangent vector yet")
 
     def _image_homology(self, γ):
         # TODO: docstring
@@ -531,6 +571,18 @@ class SurfaceMorphism(Morphism):
     def __mul__(self, other):
         # TODO: docstring
         return CompositionMorphism(self, other)
+
+    def push_vector_forward(self, tangent_vector):
+        import warnings
+        warnings.warn("push_vector_forward() has been deprecated and will be removed in a future version of sage-flatsurf; call the morphism with the tangent vector instead, i.e., instead of morphism.push_vector_forward(t) use morphism(t)")
+
+        return self(tangent_vector)
+
+    def pull_vector_back(self, tangent_vector):
+        import warnings
+        warnings.warn("pull_vector_back() has been deprecated and will be removed in a future version of sage-flatsurf; call a section of morphism with the tangent vector instead, i.e., instead of morphism.pull_vector_back(t) use morphism.section()(t)")
+
+        return self.section()(tangent_vector)
 
 
 class IdentityMorphism(SurfaceMorphism):
@@ -846,3 +898,9 @@ class GL2RMorphism(SurfaceMorphism):
 
     def _image_edge(self, label, edge):
         return [(label, edge)]
+
+    def _image_tangent_vector(self, t):
+        return self.codomain().tangent_vector(
+            t.polygon_label(),
+            self._matrix * t.point(),
+            self._matrix * t.vector())
