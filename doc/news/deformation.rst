@@ -14,6 +14,10 @@
 
 * Deprecated ``polygon_double()`` since it is now identical with ``billiard()``.
 
+* Deprecated ``triangulation_mapping()`` since ``triangulate()`` now returns a morphism.
+
+* Deprecated ``canonicalize_mapping()`` (and moved it to the correct category) since ``canonicalize()`` now returns a morphism.
+
 **Removed:**
 
 * Removed ``flatsurf.geometry.mapping`` module. It has been replaced by ``flatsurf.geometry.morphism`` that can handle more general situations.
