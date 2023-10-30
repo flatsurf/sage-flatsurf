@@ -1225,8 +1225,9 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;cannot turn </span><span class="si">%s</span><span class="s2">, i.e., a </span><span class="si">%s</span><span class="s2">, into a rational vector yet&quot;</span>
-                    <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                    <span class="s2">&quot;cannot turn </span><span class="si">{}</span><span class="s2">, i.e., a </span><span class="si">{}</span><span class="s2">, into a rational vector yet&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
 
             <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="n">QQ</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">)</span>
