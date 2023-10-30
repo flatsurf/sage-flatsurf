@@ -182,7 +182,7 @@ class GL2ROrbitClosure:
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
         t, m = self._spanning_tree()
-        assert set(t.keys()) == set(f[2] for f in self._surface.faces())
+        assert set(t.keys()) == {f[2] for f in self._surface.faces()}
         self.spanning_set = []
         v = set(t.values())
         for e in self._surface.edges():
@@ -600,7 +600,7 @@ class GL2ROrbitClosure:
         """
         d = len(spanning_set)
         h = spanning_set[0].positive()
-        all_edges = set([e.positive() for e in spanning_set])
+        all_edges = {e.positive() for e in spanning_set}
         all_edges.update([e.negative() for e in spanning_set])
         contour = []
         contour_inv = {}  # half edge -> position in contour
@@ -880,9 +880,7 @@ class GL2ROrbitClosure:
             try:
                 return [x.parent()(x / y) for x, y in fractions]
             except (ValueError, ArithmeticError, NotImplementedError):
-                denominators = set(
-                    [denominator for numerator, denominator in fractions]
-                )
+                denominators = {denominator for numerator, denominator in fractions}
                 return [
                     numerator * prod([d for d in denominators if denominator != d])
                     for (numerator, denominator) in fractions
@@ -960,8 +958,9 @@ class GL2ROrbitClosure:
                 )
             else:
                 raise NotImplementedError(
-                    "cannot turn %s, i.e., a %s, into a rational vector yet"
-                    % (x, type(x))
+                    "cannot turn {}, i.e., a {}, into a rational vector yet".format(
+                        x, type(x)
+                    )
                 )
 
             assert all(y in QQ for y in ret)

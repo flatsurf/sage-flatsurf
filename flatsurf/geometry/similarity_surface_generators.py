@@ -436,7 +436,7 @@ class TFractalSurface(OrientedSimilaritySurface):
         return False
 
     def _repr_(self):
-        return "The T-fractal surface with parameters w=%s, r=%s, h1=%s, h2=%s" % (
+        return "The T-fractal surface with parameters w={}, r={}, h1={}, h2={}".format(
             self._w,
             self._r,
             self._h1,
@@ -1151,8 +1151,9 @@ class HalfTranslationSurfaceGenerators:
 
         S = MutableOrientedSimilaritySurface(base_ring)
         S.rename(
-            "StepBilliard(w=[%s], h=[%s])"
-            % (", ".join(map(str, w)), ", ".join(map(str, h)))
+            "StepBilliard(w=[{}], h=[{}])".format(
+                ", ".join(map(str, w)), ", ".join(map(str, h))
+            )
         )
         for p in P:
             S.add_polygon(p)  # get labels 0, ..., n-1

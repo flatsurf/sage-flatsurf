@@ -1885,7 +1885,7 @@ class MutableOrientedSimilaritySurface(
                 glue_list.append((p4, e4))
 
         if p2 in s.roots():
-            s.set_roots((p1 if label == p2 else label for label in s.roots()))
+            s.set_roots(p1 if label == p2 else label for label in s.roots())
 
         s.remove_polygon(p2)
 
@@ -2087,7 +2087,7 @@ class MutableOrientedSimilaritySurface(
         if label is None:
             # We triangulate the whole surface
             # Store the current labels.
-            labels = [label for label in self.labels()]
+            labels = list(self.labels())
             s = self
             # Subdivide each polygon in turn.
             for label in labels:

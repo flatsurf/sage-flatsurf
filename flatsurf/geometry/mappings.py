@@ -882,7 +882,7 @@ def canonicalize_translation_surface_mapping(s):
 
     s2copy = MutableOrientedSimilaritySurface.from_surface(s2)
     ss = MutableOrientedSimilaritySurface.from_surface(s2)
-    labels = {label for label in s2.labels()}
+    labels = set(s2.labels())
     for label in labels:
         ss.set_roots([label])
         if ss.cmp(s2copy) > 0:

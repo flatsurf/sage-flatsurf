@@ -2137,7 +2137,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     for p, polygon in enumerate(subdivision):
                         surface.add_polygon(polygon, label=(label, p))
 
-                surface.set_roots(((label, 0) for label in self.roots()))
+                surface.set_roots((label, 0) for label in self.roots())
 
                 # Add gluings between subdivided polygons
                 for s, subdivision in enumerate(subdivisions):
