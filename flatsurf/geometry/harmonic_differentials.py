@@ -3139,6 +3139,7 @@ class PowerSeriesConstraints:
 
             return self._κλ(self._center_coordinates, self._segment.segment()[1])
 
+        @cached_method
         def d(self):
             if not self._center.is_vertex():
                 return 0
@@ -3151,6 +3152,7 @@ class PowerSeriesConstraints:
 
             return self._κλ(self._opposite_center_coordinates, self._segment.segment()[1])
 
+        @cached_method
         def dd(self):
             if not self._opposite_center.is_vertex():
                 return 0
