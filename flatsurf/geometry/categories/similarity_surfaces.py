@@ -1492,13 +1492,26 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def triangulation_mapping(self):
                 r"""
-                Return a ``SurfaceMapping`` triangulating the surface
-                or ``None`` if the surface is already triangulated.
-                """
-                # TODO: Deprecate
-                from flatsurf.geometry.mappings import triangulation_mapping
+                Return a ``SurfaceMapping`` triangulating the surface or
+                ``None`` if the surface is already triangulated.
 
-                return triangulation_mapping(self)
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+                    sage: S.triangulation_mapping()
+                    doctest:warning
+                    ...
+                    UserWarning: triangulation_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use triangulate() instead
+                    Generic morphism:
+                      From: Translation Surface in H_2(2) built from 3 squares
+                      To:   Triangulation of Translation Surface in H_2(2) built from 3 squares
+
+                """
+                import warnings
+                warnings.warn("triangulation_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use triangulate() instead")
+
+                return self.triangulate()
 
             def triangulate(self, in_place=False, label=None, relabel=None):
                 r"""

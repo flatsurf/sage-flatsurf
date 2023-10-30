@@ -194,6 +194,7 @@ class SurfaceMorphism(Morphism):
         True
 
     """
+    # TODO: Implement push_vector_forward() and pull_vector_back() to replicate old mapping interface.
 
     def __init__(self, domain, codomain, category=None):
         if domain is None:
