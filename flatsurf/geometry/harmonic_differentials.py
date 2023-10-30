@@ -2160,6 +2160,7 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         from sage.all import I
         return self(self._base_ring(I))
 
+    @cached_method
     def gen(self, n):
         from sage.all import parent, ZZ
         if parent(n) == ZZ:
@@ -3058,10 +3059,7 @@ class PowerSeriesConstraints:
         return range(prec)
 
     def _gen(self, kind, center, n):
-        if center.is_vertex():
-            return self.symbolic_ring(self.real_field()).gen((kind, center, n))
-        else:
-            return self.symbolic_ring(self.real_field()).gen((kind, center, n))
+        return self.symbolic_ring(self.real_field()).gen((kind, center, n))
 
     class Integrator:
         def __init__(self, constraints, segment):
