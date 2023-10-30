@@ -6,7 +6,7 @@ EXAMPLES:
 
 We compute harmonic differentials on the square torus::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology  # random output due to deprecation warnings
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
@@ -19,7 +19,7 @@ vertical `b` to zero::
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: ω = Ω(f)  # random output due to deprecation warnings
+    sage: ω = Ω(f)
     sage: ω
     (1.0000 + O(z0^5), 1.0000 + O(z1^5), 1.0000 + O(z2^5), 1.0000 + O(z3^5), 1.0000 + O(z4^5), 1.0000 + O(z5^5), 1.0000 + O(z6^5), 1.0000 + O(z7^5), 1.0000 + O(z8^5))
 
@@ -83,6 +83,87 @@ from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
+
+
+import cppyy
+cppyy.include('complex')
+complex = cppyy.gbl.std.complex['double']
+
+Ccpp = lambda x: complex(float(x.real()), float(x.imag()))
+
+def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
+    r"""
+    Return the real/imaginary part of
+
+    \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (m+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
+
+    where γ(t) = (1-t)a + tb.
+    """
+    # Since γ(t) = (1 - t)a + tb, we have |·γ(t)| = |b - a|
+    constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * abs(b - a)
+
+    constant = Ccpp(constant)
+
+    α = Ccpp(α)
+    β = Ccpp(β)
+    a = Ccpp(a)
+    b = Ccpp(b)
+
+    n = int(n)
+    m = int(m)
+    d = int(d)
+    dd = int(dd)
+
+    if not hasattr(cppyy.gbl, "value"):
+        cppyy.cppdef(r"""
+        #include <complex>
+
+        using complex = std::complex<double>;
+
+        complex pow(complex z, double e) {
+            if (e == 0) return 1;
+            if (e == 1) return z;
+            return std::pow(z, e);
+        }
+
+        complex value(double t, complex constant, complex a, complex alpha, int d, int n, complex b, complex beta, int dd, int m) {
+            complex z = (1 - t) * a + t * b;
+
+            complex za = pow(pow(z - alpha, 1 / (double)(d + 1)), n - d);
+            complex zb = std::conj(pow(pow(z - beta, 1 / (double)(dd + 1)), m - dd));
+
+            return constant * za * zb;
+        }
+        """)
+
+    def pow(z, e):
+        z = complex(z)
+        e = complex(e)
+
+        if e == 0:
+            return complex(1)
+
+        if e == 1:
+            return z
+
+        return cppyy.gbl.std.pow(z, e)
+
+    conj = cppyy.gbl.std.conj
+
+    def value(t):
+        value = cppyy.gbl.value(t, constant, a, α, d, n, b, β, dd, m)
+
+        if part == "Re":
+            return value.real
+        if part == "Im":
+            return value.imag
+
+        raise NotImplementedError
+
+    from scipy.integrate import quad
+    integral, error = quad(value, 0, 1)
+
+    return R(integral)
 
 
 def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
@@ -3043,7 +3124,7 @@ class PowerSeriesConstraints:
             b = Cab(C, b)
 
             # 100s
-            return integral2(part, α, κ, d, self.ζ(d), n, β, λ, dd, self.ζ(dd), m, a=a, b=b, C=C, R=self.real_field)
+            return integral2cpp(part, α, κ, d, self.ζ(d), n, β, λ, dd, self.ζ(dd), m, a=a, b=b, C=C, R=self.real_field)
 
         def ζ(self, d):
             return self._constraints.ζ(d)
