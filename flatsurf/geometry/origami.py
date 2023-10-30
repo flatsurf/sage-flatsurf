@@ -173,7 +173,7 @@ class Origami(AbstractOrigami):
         return self.opposite_edge(label, 3)[0]
 
     def _repr_(self):
-        return "Origami defined by r=%s and u=%s" % (self._r, self._u)
+        return "Origami defined by r={} and u={}".format(self._r, self._u)
 
     def __eq__(self, other):
         if not isinstance(other, Origami):

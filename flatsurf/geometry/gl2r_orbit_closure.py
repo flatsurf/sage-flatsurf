@@ -958,8 +958,9 @@ class GL2ROrbitClosure:
                 )
             else:
                 raise NotImplementedError(
-                    "cannot turn %s, i.e., a %s, into a rational vector yet"
-                    % (x, type(x))
+                    "cannot turn {}, i.e., a {}, into a rational vector yet".format(
+                        x, type(x)
+                    )
                 )
 
             assert all(y in QQ for y in ret)
