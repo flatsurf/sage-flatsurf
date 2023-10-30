@@ -73,9 +73,6 @@ jobs:
         shell: bash -l {0}
         run: |
           ruff check --select C4,UP008,UP031,UP034 .
-      - name: Detect changes
-        shell: bash -l {0}
-        run: git diff --exit-code
   black:
     runs-on: ubuntu-20.04
     steps:
