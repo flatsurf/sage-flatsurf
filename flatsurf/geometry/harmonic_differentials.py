@@ -91,6 +91,200 @@ complex = cppyy.gbl.std.complex['double']
 
 Ccpp = lambda x: complex(float(x.real()), float(x.imag()))
 
+
+def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
+    r"""
+    Return the real/imaginary part of
+
+    \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (m+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
+
+    where γ(t) = (1-t)a + tb.
+    """
+    if not hasattr(cppyy.gbl, "integral2arb"):
+        cppyy.cppdef(r"""
+        #include <acb_calc.h>
+        #include <string>
+
+        const int ARB_PREC=32;
+
+        struct Arb {
+            Arb() {
+                arb_init(value);
+            }
+
+            Arb(double d) {
+                arb_init(value);
+                arb_set_d(value, d);
+            }
+
+            ~Arb() {
+                arb_clear(value);
+            }
+
+            operator const arb_t&() const {
+                return value;
+            }
+
+            operator arb_t&() {
+                return value;
+            }
+
+            operator double() {
+                return arf_get_d(arb_midref(value), ARF_RND_NEAR);
+            }
+
+            arb_t value;
+        };
+
+        struct Mag {
+            Mag(double d) {
+                mag_init(value);
+                mag_set_d(value, d);
+            }
+
+            ~Mag() {
+                mag_clear(value);
+            }
+
+            operator const mag_t&() const {
+                return value;
+            }
+
+            mag_t value;
+        };
+
+        struct Acb {
+            Acb() {
+                acb_init(value);
+            }
+
+            Acb(const acb_t v) {
+                acb_init(value);
+                acb_set(value, v);
+            }
+
+            Acb(double re, double im) {
+                acb_init(value);
+                acb_set_d_d(value, re, im);
+            }
+
+            Arb real() {
+                Arb real;
+                acb_get_real(real, value);
+                return real;
+            }
+
+            Arb imag() {
+                Arb imag;
+                acb_get_imag(imag, value);
+                return imag;
+            }
+
+            ~Acb() {
+                acb_clear(value);
+            }
+
+            operator const acb_t&() const {
+                return value;
+            }
+
+            operator acb_t&() {
+                return value;
+            }
+
+            acb_t value;
+        };
+
+        struct Args {
+            Args(double Re_alpha, double Im_alpha, int kappa, int d, double Re_zeta_d, double Im_zeta_d, int n, double Re_beta, double Im_beta, int lambda, int dd, double Re_zeta_dd, double Im_zeta_dd, int m, double Re_a, double Im_a, double Re_b, double Im_b) :
+                alpha(Re_alpha, Im_alpha),
+                beta(Re_beta, Im_beta),
+                d(d),
+                dd(dd),
+                n(n),
+                m(m) {
+
+                Acb zeta_d_power(Re_zeta_d, Im_zeta_d);
+                acb_pow_si(zeta_d_power, zeta_d_power, kappa * (n + 1), ARB_PREC);
+                acb_div_si(zeta_d_power, zeta_d_power, d + 1, ARB_PREC);
+
+                Acb zeta_dd_power(Re_zeta_dd, Im_zeta_dd);
+                acb_pow_si(zeta_dd_power, zeta_dd_power, lambda * (m + 1), ARB_PREC);
+                acb_div_si(zeta_dd_power, zeta_dd_power, dd + 1, ARB_PREC);
+                acb_conj(zeta_dd_power, zeta_dd_power);
+
+                acb_sub(ba, Acb(Re_b, Im_b), Acb(Re_a, Im_a), ARB_PREC);
+
+                acb_abs(ba_, ba, ARB_PREC);
+
+                Acb ba__;
+                acb_set_round_arb(ba__, ba_, ARB_PREC);
+
+                acb_mul(constant, ba__, zeta_d_power, ARB_PREC);
+                acb_mul(constant, constant, zeta_dd_power, ARB_PREC);
+            }
+
+            Acb alpha, beta;
+            Acb ba;
+            Arb ba_;
+            int d, dd;
+            int n, m;
+            Acb constant;
+        };
+
+        double integral2arb(std::string part, double Re_alpha, double Im_alpha, int kappa, int d, double Re_zeta_d, double Im_zeta_d, int n, double Re_beta, double Im_beta, int lambda, int dd, double Re_zeta_dd, double Im_zeta_dd, int m, double Re_a, double Im_a, double Re_b, double Im_b) {
+            double res_d;
+
+            Acb res;
+
+            Args args(Re_alpha, Im_alpha, kappa, d, Re_zeta_d, Im_zeta_d, n, Re_beta, Im_beta, lambda, dd, Re_zeta_dd, Im_zeta_dd, m, Re_a, Im_a, Re_b, Im_b);
+
+            const auto func = [](acb_ptr out, const acb_t z, void * param, slong order, slong prec) -> int {
+                const Args* args = (const Args*)param;
+
+                if (order > 1) {
+                    // TODO: When order == 1 we need to verify that we are holomorphic somewhere. But where exactly?
+                    throw std::logic_error("derivatives of function not implemented/function not holomorphic");
+                }
+
+                Acb za(z);
+                acb_sub(za, za, args->alpha, ARB_PREC);
+                acb_pow_arb(za, za, Arb(1 / (double)(args->d + 1)), ARB_PREC);
+                acb_pow_si(za, za, args->n - args->d, ARB_PREC);
+
+                Acb zb(z);
+                acb_sub(zb, zb, args->beta, ARB_PREC);
+                acb_pow_arb(zb, zb, Arb(1 / (double)(args->dd + 1)), ARB_PREC);
+                acb_pow_si(zb, zb, args->m - args->dd, ARB_PREC);
+                acb_conj(zb, zb);
+
+                acb_mul(out, za, zb, ARB_PREC);
+
+                return 0;
+            };
+
+            if (acb_calc_integrate(res, func, &args, Acb(Re_a, Im_a), Acb(Re_b, Im_b), ARB_PREC /* rel_goal */, Mag(1e-64) /* abs_tol */, nullptr /* options */, ARB_PREC) != ARB_CALC_SUCCESS) {
+                throw std::logic_error("acb_calc_integrate() did not converge");
+            }
+
+            acb_mul(res, res, args.constant, ARB_PREC);
+            acb_div(res, res, args.ba, ARB_PREC);
+
+            if (part == "Re") {
+                return res.real();
+            } else if (part == "Im") {
+                return res.imag();
+            } else {
+                throw std::logic_error("unknown part");
+            }
+        }
+        """)
+
+        cppyy.load_library("arb");
+
+    return R(cppyy.gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
+
+
 def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     r"""
     Return the real/imaginary part of
@@ -265,6 +459,8 @@ def define_solve():
         ''')
 
     return cppyy.gbl.solve
+
+define_solve()
 
 
 class HarmonicDifferential(Element):
@@ -3116,13 +3312,11 @@ class PowerSeriesConstraints:
             C = self.complex_field
             _, segment = self._segment.segment()
             a, b = segment.endpoints()
-            # 20s
             a = Cab(C, a)
-            # 20s
             b = Cab(C, b)
 
-            # 100s
             return integral2cpp(part, α, κ, d, self.ζ(d), n, β, λ, dd, self.ζ(dd), m, a=a, b=b, C=C, R=self.real_field)
+            # return integral2arb(part, α, κ, d, self.ζ(d), n, β, λ, dd, self.ζ(dd), m, a=a, b=b, C=C, R=self.real_field)
 
         def ζ(self, d):
             return self._constraints.ζ(d)
