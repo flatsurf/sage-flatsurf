@@ -194,6 +194,7 @@ class SurfaceMorphism(Morphism):
         True
 
     """
+
     def __init__(self, domain, codomain, category=None):
         if domain is None:
             domain = UnknownSurface(UnknownRing())
@@ -486,21 +487,51 @@ class SurfaceMorphism(Morphism):
             sage: morphism(t)
             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
 
-        Not all morphisms are meaningful on the level of saddle connections::
+        Not all morphisms are meaningful on the level of tangent vectors::
 
             TODO: Add an example of such a morphism
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a tangent vector yet")
 
-    def _image_homology(self, γ):
-        # TODO: docstring
+    def _image_homology(self, g):
+        r"""
+        Return the image of the homology class ``g`` under this morphism.
 
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses can override this method if the morphism is meaningful on
+        the level of homology.
+
+        However, it's usually easier to override :meth:`_image_edge`,
+        :meth:`_image_homology_gen`, or :meth:`_image_homology_matrix` to
+        support mapping homology classes.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+        The image of a homology class::
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: a, b = H.gens()
+
+            sage: morphism(a)
+            B[(0, 1)]
+
+        Not all morphisms are meaningful on the level of homology::
+
+            TODO: Add an example of such a morphism
+
+        """
         from flatsurf.geometry.homology import SimplicialHomology
         codomain_homology = SimplicialHomology(self.codomain())
 
         from sage.all import vector
-        image = self._image_homology_matrix() * vector(γ._homology())
+        image = self._image_homology_matrix() * vector(g._homology())
 
         homology, to_chain, to_homology = codomain_homology._homology()
 
@@ -508,12 +539,34 @@ class SurfaceMorphism(Morphism):
 
         return codomain_homology(to_chain(image))
 
-    def _image_edge(self, label, edge):
-        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of an edge yet")
-
     @cached_method
     def _image_homology_matrix(self):
-        # TODO: docstring
+        r"""
+        Return the matrix `M` describing how this morphism acts on homology,
+        i.e., for a homology class given by a vector `c` with respect to a
+        basis of homology of the domain, the image is `M c` with respect to the
+        basis of homology of the codomain.
+
+        This is a helper method for :meth:`__call__` and
+        :meth:`_image_homology`.
+
+        Subclasses can override this method if the morphism is meaningful (and
+        linear) on the level of homology.
+
+        However, it is often easier to override :meth:`_image_edge` or
+        :meth:`_image_homology_gen`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+            sage: morphism._image_homology_matrix()
+            [1 0]
+            [0 1]
+
+        """
         from flatsurf.geometry.homology import SimplicialHomology
         domain_homology = SimplicialHomology(self.domain())
         codomain_homology = SimplicialHomology(self.codomain())
@@ -533,6 +586,33 @@ class SurfaceMorphism(Morphism):
         return M
 
     def _image_homology_gen(self, gen):
+        r"""
+        Return the image of a generator of homology ``gen``.
+
+        This is a helper method for :meth:`__call__` and
+        :meth:`_image_homology_matrix`.
+
+        Subclasses can override this method if the morphism is meaningful (and
+        linear) on the level of homology.
+
+        However, it is often easier to override :meth:`_image_edge` instead.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: a, b = H.gens()
+
+            sage: morphism._image_homology_gen(a)
+            B[(0, 1)]
+            sage: morphism._image_homology_gen(b)
+            B[(0, 0)]
+
+        """
         from flatsurf.geometry.homology import SimplicialHomology
         codomain_homology = SimplicialHomology(self.codomain())
 
@@ -545,6 +625,31 @@ class SurfaceMorphism(Morphism):
                 image += coefficient * image.parent()(step)
 
         return codomain_homology(image)
+
+    def _image_edge(self, label, edge):
+        r"""
+        Return the image of the homology class generated by ``edge`` in the
+        polygon ``label`` under this morphism.
+
+        This is a helper method for :meth:`__call__` and
+        :meth:`_image_homolyg_gen`.
+
+        Subclasses can override this method if the morphism is meaningful (and
+        linear) on the level of homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+            sage: morphism._image_edge(0, 0)
+            [(0, 0)]
+            sage: morphism._image_edge(0, 1)
+            [(0, 1)]
+
+        """
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of an edge yet")
 
     def _image_cohomology(self, f):
         # TODO: docstring

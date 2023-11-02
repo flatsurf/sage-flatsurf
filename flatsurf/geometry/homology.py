@@ -59,7 +59,6 @@ TODO: Add examples.
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
-from sage.structure.unique_representation import UniqueRepresentation
 
 from sage.misc.cachefunc import cached_method
 
@@ -119,9 +118,9 @@ class SimplicialHomologyClass(Element):
         _, _, to_homology = self.parent()._homology()
         return tuple(to_homology(self._chain))
 
-    def _richcmp_(self, other, op):
+    def __eq__(self, other):
         r"""
-        Compare homology classes with respect to ``op``.
+        Return whether this class is indistinguishable from ``other``.
 
         EXAMPLES::
 
@@ -135,15 +134,16 @@ class SimplicialHomologyClass(Element):
             False
 
         """
-        from sage.structure.richcmp import op_EQ, op_NE
+        if self is other:
+            return True
 
-        if op == op_NE:
-            return not (self == other)
+        if not isinstance(other, SimplicialHomologyClass):
+            return False
 
-        if op == op_EQ:
-            return self._homology() == other._homology()
+        if self.parent() != other.parent():
+            return False
 
-        raise NotImplementedError
+        return self._homology() == other._homology()
 
     def __hash__(self):
         return hash(self._homology())
@@ -364,7 +364,7 @@ class SimplicialHomologyClass(Element):
         return self.parent().surface()
 
 
-class SimplicialHomology(UniqueRepresentation, Parent):
+class SimplicialHomology_(Parent):
     r"""
     Absolute and relative simplicial homology of the ``surface`` with
     ``coefficients``.
@@ -420,36 +420,6 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
     """
     Element = SimplicialHomologyClass
-
-    @staticmethod
-    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
-        r"""
-        Normalize parameters used to construct homology.
-
-        TESTS:
-
-        Homology is unique and cached::
-
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-            sage: SimplicialHomology(T) is SimplicialHomology(T)
-            True
-
-        """
-        # TODO: Change default implementation to spanning_tree
-        if surface.is_mutable():
-            raise ValueError("surface must be immutable to compute homology")
-
-        from sage.all import ZZ
-        coefficients = coefficients or ZZ
-
-        # TODO: Use a better category.
-        from sage.all import Sets
-        category = category or Sets()
-        subset = frozenset(subset or {})
-
-        return super().__classcall__(cls, surface, coefficients, generators, subset, implementation, category)
 
     def __init__(self, surface, coefficients, generators, subset, implementation, category):
         Parent.__init__(self, category=category)
@@ -918,3 +888,28 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     #     """
     #     TODO: This does not really make sense probably.
     #     return [gen._path(voronoi=voronoi) for gen in self.gens()]
+
+    def __eq__(self, other):
+        if not isinstance(other, SimplicialHomology_):
+            return False
+
+        return self._surface == other._surface and self._coefficients == other._coefficients and self._generators == other._generators and self._subset == other._subset and self._implementation == other._implementation and self.category() == other.category()
+
+    def __hash__(self):
+        return hash((self._surface, self._coefficients, self._generators, self._subset, self._implementation, self.category()))
+
+
+def SimplicialHomology(surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
+    r"""
+    TESTS:
+
+    Homology is unique and cached::
+
+        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T.set_immutable()
+        sage: SimplicialHomology(T) is SimplicialHomology(T)
+        True
+
+    """
+    return surface.homology(coefficients, generators, subset, implementation, category)

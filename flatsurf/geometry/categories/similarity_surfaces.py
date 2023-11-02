@@ -423,6 +423,26 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return self.apply_matrix(matrix, in_place=False).codomain()
 
+        def homology(self, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
+            # TODO: Change default implementation to spanning_tree
+            if self.is_mutable():
+                raise ValueError("surface must be immutable to compute homology")
+
+            from sage.all import ZZ
+            coefficients = coefficients or ZZ
+
+            # TODO: Use a better category.
+            from sage.all import Sets
+            category = category or Sets()
+            subset = frozenset(subset or {})
+
+            return self._homology(coefficients, generators, subset, implementation, category)
+
+        @cached_method
+        def _homology(self, coefficients, generators, subset, implementation, category):
+            from flatsurf.geometry.homology import SimplicialHomology_
+            return SimplicialHomology_(self, coefficients, generators, subset, implementation, category)
+
         def apply_matrix(self, m, in_place=None):
             r"""
             Apply the 2×2 matrix ``m`` to the polygons of this surface.

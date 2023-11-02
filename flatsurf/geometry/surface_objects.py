@@ -538,7 +538,7 @@ class SurfacePoint(Element):
             return True
         if not isinstance(other, SurfacePoint):
             return False
-        if not self._surface == other._surface:
+        if self._surface != other._surface:
             return False
         return self._representatives == other._representatives
 
