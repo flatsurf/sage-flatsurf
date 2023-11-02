@@ -34,20 +34,11 @@ A less trivial example, the regular octagon::
     sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
     sage: S = translation_surfaces.regular_octagon()
 
-    sage: scale = QQ(1.163592571218269375302518142809178538757590879116270587397 / ((1 + N(sqrt(2)))/2))
-    sage: S = S.apply_matrix(diagonal_matrix([scale, scale]), in_place=False)
-    sage: S.set_immutable()
-
     sage: H = SimplicialHomology(S)
     sage: HS = SimplicialCohomology(S, homology=H)
     sage: a, b, c, d = HS.homology().gens()
 
-    sage: f = {
-    ....:     d: 0,
-    ....:     a: -0.681616747143081,
-    ....:     b: 0.963951648150378,
-    ....:     c: -0.681616747143081,
-    ....: }
+    sage: f = { a: -1, b: sqrt(2), c: -1, d: 0}
 
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
@@ -55,7 +46,7 @@ A less trivial example, the regular octagon::
     sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True)
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
-    ((-0.000039465 + 0.000010923*I) - 0.00076051*I*z0 + (1.0005 - 0.000026380*I)*z0^2 + O(z0^3), (-1.4135 + 0.000037271*I) + 0.0010854*I*z1 + (-0.00011840 + 0.000032770*I)*z1^2 - 0.0038705*I*z1^3 + 0.0032736*I*z1^5 + 0.0087739*z1^6 + 0.0015016*I*z1^7 + (-2.3211 + 0.000061201*I)*z1^8 + O(z1^9))
+    ((-0.000048417 + 0.000014772*I) - 0.00092363*I*z0 + (1.3146 - 0.000033146*I)*z0^2 + O(z0^3), (-2.0500 + 0.000051690*I) + 0.0014250*I*z1 + (-0.00014525 + 0.000044316*I)*z1^2 - 0.0049924*I*z1^3 + 0.0041365*I*z1^5 + 0.011334*z1^6 + 0.0018723*I*z1^7 + (-3.0794 + 0.000077645*I)*z1^8 + O(z1^9))
 
 """
 ######################################################################
