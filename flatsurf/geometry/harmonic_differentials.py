@@ -2857,19 +2857,24 @@ class PowerSeriesConstraints:
                         for k in range(self._prec):
                             expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * self.complex_field()(*v_)**(k + 1) / (k + 1) * (δ**(k + 1) - (-δ)**(k + 1))
 
+                    from sage.all import parallel
+
                     # And the second integration.
+                    # As described in _L2_consistency_voronoi_boundary, we integrate
+                    # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
+
                     for s in segments:
                         segment_length = s.segment()[1].vector().norm()
                         assert abs(segment_length * 2 - width_on_vertex_chart) < 1e-9
-                        for segment in s.segments_with_uniform_roots():
 
-                            integrator = self.Integrator(self, segment)
-                            # As described in _L2_consistency_voronoi_boundary, we integrate
-                            # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
-                            # TODO: 3 is hardcoded for the octagon.
-                            if part is None or part == "vertex":
-                                for n in range(3 * self._prec):
-                                    expression += multiplicity * integrator.a(n) * integrator.f(n)
+                    @parallel
+                    def create_expression(segment):
+                        integrator = self.Integrator(self, segment)
+                        return sum(multiplicity * integrator.a(n) * integrator.f(n) for n in range(3*self._prec))
+
+                    # TODO: 3 is hardcoded for the octagon.
+                    expression += sum(e for (_, e) in create_expression([segment for s in segments for segment in s.segments_with_uniform_roots()]))
+
                     break
 
                 pos = b
@@ -3237,10 +3242,16 @@ class PowerSeriesConstraints:
             # We integrate L2 errors along the boundary of Voronoi cells.
             segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
             assert all([s for s in segments if s == -segment] for segment in segments)
-            for i, segment in enumerate(segments):
-                if -segment in segments[:i]:
-                    continue
-                cost += 2 * self._L2_consistency_voronoi_boundary(segment)
+
+            from sage.all import parallel
+
+            @parallel
+            def create_cost(segment):
+                return 2 * self._L2_consistency_voronoi_boundary(segment)
+
+            segments = [segment for (i, segment) in enumerate(segments) if -segment not in segments[:i]]
+
+            cost += sum([c for (_, c) in create_cost(segments)])
 
         return cost
 
