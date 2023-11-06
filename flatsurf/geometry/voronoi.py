@@ -52,6 +52,22 @@ class VoronoiDiagram:
         sage: V.plot()
         Graphics object consisting of 75 graphics primitives
 
+    We can also choose strange such that there is a saddle connection between a
+    vertex and itself without leaving the cell::
+
+        sage: def weight(label, center):
+        ....:     P = S.polygon(label)
+        ....:     vertex = list(P.vertices()).index(center)
+        ....:     angle = P.angle(vertex)
+        ....:     if angle == 1/8:
+        ....:         return polygons.regular_ngon(8).centroid().norm().n()
+        ....:     assert angle == 3/16, angle
+        ....:     return 1/6
+
+        sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
+        sage: V = VoronoiDiagram(S, S.vertices(), weight=FixedVoronoiWeight(weight))
+        sage: V.plot()
+        Graphics object consisting of 59 graphics primitives
     """
 
     def __init__(self, surface, points, weight=None):
@@ -168,7 +184,15 @@ class VoronoiDiagram_Polygon:
 
             segments = [Polyhedron(vertices=segment.vertices()) for segment in segments]
 
-            segments = [segment for segment in segments if center not in segment]
+            # Filter out segments that are nearly edges of the polygon; they
+            # are an artifact of how we computed the segments here.
+            # TODO: This is very expensive in comparison to a simple:
+            #   segments = [segment for segment in segments if center not in segment]
+            # But is it actually correct? Does it make any sense to have such
+            # Voronoi cells? (I mean, they are not really Voronoi cells since
+            # the boundaries should not be straight line segments but curved
+            # anyway…
+            segments = [segment for segment in segments if all(segment.intersection(edge_half_space.faces(1)[0].as_polyhedron()) != segment for edge_half_space in self._polygon_half_spaces())]
 
             assert segments
 
