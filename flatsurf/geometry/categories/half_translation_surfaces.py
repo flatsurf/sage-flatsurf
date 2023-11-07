@@ -468,6 +468,16 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 """
 
+                class ElementMethods:
+                    def angle(self, numerical=False):
+                        if not self.is_vertex():
+                            # TODO: This is not true for points on a self-glued vertex.
+                            return 1
+
+                        angle = [angle for (angle, edges) in self._surface.angles(return_adjacent_edges=True) if self._surface(*edges[0]) == self]
+                        assert len(angle) == 1
+                        return angle[0]
+
                 class ParentMethods:
                     r"""
                     Provides methods available to all oriented half-translation

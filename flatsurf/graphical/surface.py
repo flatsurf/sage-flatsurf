@@ -425,7 +425,10 @@ class GraphicalSurface:
             if adjacent:
                 for label, poly in zip(self._ss.labels(), self._ss.polygons()):
                     for e in range(len(poly.vertices())):
-                        l2, e2 = self._ss.opposite_edge(label, e)
+                        opposite = self._ss.opposite_edge(label, e)
+                        if opposite is None:
+                            continue
+                        l2, e2 = opposite
                         if not self.is_visible(l2):
                             self.make_adjacent(label, e)
             else:
@@ -622,7 +625,10 @@ class GraphicalSurface:
             sage: g.is_adjacent(0,1)
             False
         """
-        pp, ee = self.opposite_edge(p, e)
+        opposite = self.opposite_edge(p, e)
+        if opposite is None:
+            return False
+        pp, ee = opposite
         if not self.is_visible(pp):
             return False
         g = self.graphical_polygon(p)
@@ -877,6 +883,8 @@ class GraphicalSurface:
             labels = []
             for e in range(len(p.vertices())):
                 if self.is_adjacent(lab, e):
+                    labels.append(None)
+                elif s.opposite_edge(lab, e) is None:
                     labels.append(None)
                 else:
                     llab, ee = s.opposite_edge(lab, e)

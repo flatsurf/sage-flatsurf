@@ -31,7 +31,7 @@ The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 
 A less trivial example, the regular octagon::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, TranslationSurface
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
     sage: S = translation_surfaces.regular_octagon()
 
     sage: H = SimplicialHomology(S)
@@ -43,10 +43,65 @@ A less trivial example, the regular octagon::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True)
+    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
     ((-0.000048417 + 0.000014772*I) - 0.00092363*I*z0 + (1.3146 - 0.000033146*I)*z0^2 + O(z0^3), (-2.0500 + 0.000051690*I) + 0.0014250*I*z1 + (-0.00014525 + 0.000044316*I)*z1^2 - 0.0049924*I*z1^3 + 0.0041365*I*z1^5 + 0.011334*z1^6 + 0.0018723*I*z1^7 + (-3.0794 + 0.000077645*I)*z1^8 + O(z1^9))
+
+
+The same computation on a triangulation of the octagon::
+
+    sage: from flatsurf import HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, Polygon, translation_surfaces
+    sage: S = translation_surfaces.regular_octagon()
+    sage: S = S.subdivide().codomain()
+
+    sage: H = SimplicialHomology(S)
+    sage: HS = SimplicialCohomology(S, homology=H)
+    sage: a, b, c, d = HS.homology().gens()
+
+    sage: f = { a: -1, b: sqrt(2), c: -1, d: 0}
+
+    sage: f = HS(f)
+    sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
+
+    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
+    sage: omega = Omega(HS(f), prec=3, check=False)
+    sage: omega  # TODO: Increase precision once this is faster.
+
+The same surface but built as the unfolding of a right triangle::
+
+    sage: from flatsurf import similarity_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology, Polygon
+    sage: S = similarity_surfaces.billiard(Polygon(angles=[3/8, 1/2, 1/8], lengths=[1/2])).minimal_cover('translation')
+
+    sage: H = SimplicialHomology(S)
+    sage: HS = SimplicialCohomology(S, homology=H)
+    sage: a, b, c, d = H.gens()
+
+    sage: f = { a: -1, b: sqrt(2), c: -1, d: 0}
+
+    sage: f = HS(f)
+    sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
+
+    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=False)
+    sage: omega = Omega(HS(f), prec=3, check=False)
+    sage: omega  # TODO: Increase precision once this is faster.
+
+Much more complicated, the unfolding of the (3, 4, 13) triangle::
+
+    sage: from flatsurf import similarity_surfaces, SimplicialHomology, SimplicialCohomology, HarmonicDifferentials, Polygon
+
+    sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
+    sage: S = S.erase_marked_points()
+
+    sage: H = SimplicialHomology(S)
+    sage: HS = SimplicialCohomology(S, homology=H)
+    sage: gens = H.gens()
+
+    sage: f = HS({ g: 0 for g in gens})
+    sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
+
+    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=False)
+    sage: omega = Omega(HS(f), prec=3, check=False)
 
 """
 ######################################################################
@@ -649,7 +704,7 @@ class HarmonicDifferential(Element):
             sage: S = translation_surfaces.regular_octagon()
 
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
             sage: center = S(0, S.polygon(0).circumscribing_circle().center())
             sage: singularity = next(iter(S.vertices()))
 
@@ -1066,7 +1121,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     Element = HarmonicDifferential
 
     @staticmethod
-    def __classcall__(cls, surface, safety=None, singularities=False, category=None):
+    def __classcall__(cls, surface, safety=None, singularities=False, centers=True, category=None):
         r"""
         Normalize parameters when creating the space of harmonic differentials.
 
@@ -1080,16 +1135,16 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             True
 
         """
-        return super().__classcall__(cls, surface, HarmonicDifferentials._homology_generators(surface, safety), singularities, category or SetsWithPartialMaps())
+        return super().__classcall__(cls, surface, HarmonicDifferentials._homology_generators(surface, safety), singularities, centers, category or SetsWithPartialMaps())
 
-    def __init__(self, surface, homology_generators, singularities, category):
+    def __init__(self, surface, homology_generators, singularities, centers, category):
         Parent.__init__(self, category=category)
 
         self._surface = surface
         # TODO: Find a better way to track the L2 circles.
         self._debugs = []
 
-        self._geometry = GeometricPrimitives(surface, homology_generators, singularities=singularities)
+        self._geometry = GeometricPrimitives(surface, homology_generators, singularities=singularities, centers=centers)
 
     @staticmethod
     def _homology_generators(surface, safety=None):
@@ -1107,7 +1162,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         gens = []
         if safety is None:
             for path in voronoi_paths:
-                # TODO: Hardcoded for the octagon
+                # TODO: Hardcoded for the octagon OCTAGON
                 gens.append((path, QQ(0), QQ(274)/964))
                 gens.append((path, QQ(274)/964, QQ(427)/964))
                 gens.append((path, QQ(427)/964, QQ(537)/964))
@@ -1278,11 +1333,12 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
 
 class GeometricPrimitives(UniqueRepresentation):
-    def __init__(self, surface, homology_generators, singularities=False):  # TODO: Make True the default everywhere if this works out.
+    def __init__(self, surface, homology_generators, singularities=False, centers=False):  # TODO: Make True the default everywhere if this works out.
         # TODO: Require immutable.
         self._surface = surface
         self._homology_generators = homology_generators
         self._singularities = singularities
+        self._centers = centers
 
     @cached_method
     def midpoint_on_path_between_centers(self, label, a_edge, a, b_edge, b):
@@ -1479,7 +1535,7 @@ class GeometricPrimitives(UniqueRepresentation):
         if not center_point.is_vertex():
             return 0, 0
 
-        # TODO: Hardcoded for octagon
+        # TODO: Hardcoded for OCTAGON
         low = Δ[1] < center[1][1]
 
         for i, vertex in enumerate(self._surface.polygon(center[0]).vertices()):
@@ -2282,16 +2338,18 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         self._geometry = geometry
         self._homology_generators = geometry._homology_generators
 
-        self._centers = set()
-        for (label, edge), a, b in self._homology_generators:
-            self._centers.add((label, edge if a else 0, a))
-            if b == 1:
-                label, edge = self._surface.opposite_edge(label, edge)
-                edge = 0
-                b = 0
-            self._centers.add((label, edge, b))
+        self._centers = []
+        if self._geometry._centers:
+            centers = set()
+            for (label, edge), a, b in self._homology_generators:
+                centers.add((label, edge if a else 0, a))
+                if b == 1:
+                    label, edge = self._surface.opposite_edge(label, edge)
+                    edge = 0
+                    b = 0
+                centers.add((label, edge, b))
 
-        self._centers = [self._surface(*self._geometry.point_on_path_between_centers(*gen, wrap=True)) for gen in self._centers]
+            self._centers = [self._surface(*self._geometry.point_on_path_between_centers(*gen, wrap=True)) for gen in centers]
 
         if self._geometry._singularities:
             for vertex in self._surface.vertices():
@@ -2376,21 +2434,13 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
     @cached_method
     def _regular_gens(self, prec=64):
         def __regular_gens():
-            if len(self._surface.angles()) != 1:
-                raise NotImplementedError
-
-            d = self._surface.angles()[0] - 1
-
             # Generate the non-negative coefficients. At singularities we have to create multiple coefficients.
             for i in range(prec):
                 for c in self._centers:
-                    if c.is_vertex():
-                        for j in range(d + 1):
-                            yield ("Re", c, i * (d + 1) + j)
-                            yield ("Im", c, i * (d + 1) + j)
-                    else:
-                        yield ("Re", c, i)
-                        yield ("Im", c, i)
+                    angle = c.angle()
+                    for j in range(angle):
+                        yield ("Re", c, i * angle + j)
+                        yield ("Im", c, i * angle + j)
         return [gen for gen in __regular_gens()]
 
     def ngens(self):
@@ -2746,7 +2796,7 @@ class PowerSeriesConstraints:
             sage: S = translation_surfaces.regular_octagon()
 
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
@@ -2804,21 +2854,11 @@ class PowerSeriesConstraints:
 
                         Q_power *= Q
                 else:
+                    # TODO: OCTAGON
                     if str(surface) != "Translation Surface in H_2(2) built from a regular octagon":
                         raise NotImplementedError
 
                     assert label == 0
-
-                    if edge == 0:
-                        vertex = 0
-                    elif edge == 1:
-                        vertex = 1
-                    elif edge == 2:
-                        vertex = 2
-                    elif edge == 3:
-                        vertex = 4
-                    else:
-                        raise NotImplementedError
 
                     octagon = surface.polygon(0)
                     width = octagon.edges()[0][0] + 2 * octagon.edges()[1][0]
@@ -2833,11 +2873,11 @@ class PowerSeriesConstraints:
                     # Find segments that describe the path.
                     segments = self._voronoi_diagram().cell(surface(0, 0))
                     from flatsurf.geometry.euclidean import is_parallel
-                    segments = [segment for segment in segments if is_parallel(segment.segment()[1].vector(), v)]
+                    segments = [segment for segment in segments if is_parallel(segment.vector(), v)]
                     assert len(segments) == 2, "this is not the octagon"
 
                     # TODO: Hardcoded for the octagon situation
-                    width_on_vertex_chart = self.complex_field()(2 * segments[0].segment()[1].vector().norm())
+                    width_on_vertex_chart = self.complex_field()(2 * segments[0].vector().norm())
                     width_on_central_chart = width - width_on_vertex_chart
 
                     # So, the first integration.
@@ -2855,7 +2895,7 @@ class PowerSeriesConstraints:
                     # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
 
                     for s in segments:
-                        segment_length = s.segment()[1].vector().norm()
+                        segment_length = s.vector().norm()
                         assert abs(segment_length * 2 - width_on_vertex_chart) < 1e-9
 
                     @parallel
@@ -2945,7 +2985,7 @@ class PowerSeriesConstraints:
             sage: S = translation_surfaces.regular_octagon()
 
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, 2, Ω._geometry)
@@ -3005,7 +3045,7 @@ class PowerSeriesConstraints:
             sage: S = translation_surfaces.regular_octagon()
 
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, 1, Ω._geometry)
@@ -3232,15 +3272,12 @@ class PowerSeriesConstraints:
 
             # We integrate L2 errors along the boundary of Voronoi cells.
             segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
-            assert all([s for s in segments if s == -segment] for segment in segments)
 
             from sage.all import parallel
 
             @parallel
             def create_cost(segment):
                 return 2 * self._L2_consistency_voronoi_boundary(segment)
-
-            segments = [segment for (i, segment) in enumerate(segments) if -segment not in segments[:i]]
 
             cost += sum([c for (_, c) in create_cost(segments)])
 
@@ -3279,8 +3316,7 @@ class PowerSeriesConstraints:
 
             \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
             """
-            _, segment = self._segment.segment()
-            a, b = segment.endpoints()
+            a, b = self._segment.endpoints()
             a = self.complex_field(*a)
             b = self.complex_field(*b)
 
@@ -3312,8 +3348,7 @@ class PowerSeriesConstraints:
             \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} \overline{ζ_{dd+1}^{λ (m+1)}/(dd+1) (z-β)^\frac{m-dd}{dd+1}} dz
             """
             C = self.complex_field
-            _, segment = self._segment.segment()
-            a, b = segment.endpoints()
+            a, b = self._segment.endpoints()
             a = Cab(C, a)
             b = Cab(C, b)
 
@@ -3333,7 +3368,7 @@ class PowerSeriesConstraints:
             if not self._center.is_vertex():
                 return 0
 
-            return self._κλ(self._center_coordinates, self._segment.segment()[1])
+            return self._κλ(self._center_coordinates, self._segment)
 
         @cached_method
         def d(self):
@@ -3346,7 +3381,7 @@ class PowerSeriesConstraints:
             if not self._opposite_center.is_vertex():
                 return 0
 
-            return self._κλ(self._opposite_center_coordinates, self._segment.segment()[1])
+            return self._κλ(self._opposite_center_coordinates, self._segment)
 
         @cached_method
         def dd(self):
@@ -3405,22 +3440,27 @@ class PowerSeriesConstraints:
             return self.integral(self.α(), self.κ(), self.d(), n)
 
     def _voronoi_diagram_centers(self):
-        # TODO: Hardcoded octagon here.
+        # TODO: Hardcoded octagon here. OCTAGON
         S = self._surface
-        center = S(0, S.polygon(0).centroid())
-        centers = S.vertices().union([center])
+
+        centers = set()
+        if self._geometry._centers:
+            centers = set(S(label, S.polygon(label).centroid()) for label in S.labels())
+        if self._geometry._singularities:
+            centers = S.vertices().union(centers)
 
         return centers
 
     def _voronoi_diagram(self):
-        # TODO: Hardcoded octagon here.
+        # TODO: Hardcoded octagon here. OCTAGON
         S = self._surface
 
-        def weight(center):
-            if center == S.polygon(0).centroid():
+        def weight(label, center):
+            # TODO: Hardcoded octagon here.
+            if center == S.polygon(label).centroid():
                 from sage.all import QQ
                 return QQ(center.norm().n())
-            if center in S.polygon(0).vertices():
+            if center in S.polygon(label).vertices():
                 from sage.all import QQ
                 return QQ(1)
             raise NotImplementedError
@@ -3534,7 +3574,7 @@ class PowerSeriesConstraints:
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
             sage: S = translation_surfaces.regular_octagon()
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True)
+            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, prec=3, geometry=Ω._geometry)
             sage: V = C._voronoi_diagram()

@@ -245,10 +245,10 @@ class VoronoiDiagram_Polygon:
 class VoronoiCellBoundarySegment:
     def __init__(self, center, other, label, coordinates, other_coordinates, segment):
         self._center = center
-        self._other = other
+        self._opposite_center = other
         self._label = label
         self._coordinates = coordinates
-        self._other_coordinates = other_coordinates
+        self._opposite_coordinates = other_coordinates
         self._segment = segment
 
     def plot(self, gs=None, **kwargs):
@@ -263,7 +263,21 @@ class VoronoiCellBoundarySegment:
         return self._center, self._label, self._coordinates
 
     def opposite_center(self):
-        return self._other, self._label, self._other_coordinates
+        return self._opposite_center, self._label, self._opposite_coordinates
+
+    def endpoints(self):
+        a, b = self._segment.vertices()
+        a = a.vector()
+        b = b.vector()
+        from flatsurf.geometry.euclidean import ccw
+        if ccw(a - self._coordinates, b - self._coordinates) < 0:
+            return a, b
+        else:
+            return b, a
+
+    def vector(self):
+        a, b = self.endpoints()
+        return b - a
 
     def segment(self):
         return self._label, self._segment
@@ -273,15 +287,33 @@ class VoronoiCellBoundarySegment:
 
         import itertools
 
-        if self._center.is_vertex():
-            segments = itertools.chain.from_iterable(segment.split_vertically(self._coordinates[1]) for segment in segments)
-        if self._other.is_vertex():
-            segments = itertools.chain.from_iterable(segment.split_vertically(self._other_coordinates[1]) for segment in segments)
+        def split(segment, y):
+            from sage.all import Polyhedron
+            horizontal = Polyhedron(eqns=[(-y, 0, 1)])
+            intersection = segment._segment.intersection(horizontal)
+            if intersection.dimension() > 0:
+                raise NotImplementedError("cannot produce uniform roots yet when an integration path is horizontal next to a vertex")
+            if intersection.is_empty():
+                return [segment]
+            x, = intersection.vertices()
+            if x in segment._segment.vertices():
+                return [segment]
+            return [
+                VoronoiCellBoundarySegment(
+                    center=self._center,
+                    other=self._opposite_center,
+                    label=self._label,
+                    coordinates=self._coordinates,
+                    other_coordinates=self._opposite_coordinates,
+                    segment=Polyhedron(vertices=[v, x]))
+                for v in segment._segment.vertices()]
+
+        if self._center.angle() > 1:
+            segments = itertools.chain.from_iterable(split(segment, self._coordinates[1]) for segment in segments)
+        if self._opposite_center.angle() > 1:
+            segments = itertools.chain.from_iterable(split(segment, self._opposite_coordinates[1]) for segment in segments)
 
         return list(segments)
-
-    def split_vertically(self, y):
-        return [VoronoiCellBoundarySegment(self._center, self._other, self._label, self._coordinates, self._other_coordinates, segment) for segment in self._segment.split_vertically(y)]
 
     def __ne__(self, other):
         return not (self == other)
@@ -290,10 +322,10 @@ class VoronoiCellBoundarySegment:
         if not isinstance(other, VoronoiCellBoundarySegment):
             return False
 
-        return self._center == other._center and self._other == other._other and self._label == other._label and self._coordinates == other._coordinates and self._other_coordinates == other._other_coordinates and self._segment == other._segment
+        return self._center == other._center and self._opposite_center == other._opposite_center and self._label == other._label and self._coordinates == other._coordinates and self._opposite_coordinates == other._opposite_coordinates and self._segment == other._segment
 
     def __neg__(self):
-        return VoronoiCellBoundarySegment(self._other, self._center, self._label, self._other_coordinates, self._coordinates, -self._segment)
+        return VoronoiCellBoundarySegment(self._opposite_center, self._center, self._label, self._opposite_coordinates, self._coordinates, -self._segment)
 
 
 # TODO: Deleteme

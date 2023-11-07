@@ -1450,5 +1450,4 @@ def from_pyflatsurf(T):
     import warnings
     warnings.warn("from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.")
 
-    from flatsurf.geometry.translation_surface import TranslationSurface
-    return TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(T).domain())
+    return FlatTriangulationConversion.from_pyflatsurf(T).domain()
