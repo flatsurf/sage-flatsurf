@@ -150,7 +150,7 @@ class VoronoiDiagram_Polygon:
         ....:     return 1
 
         sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon, FixedVoronoiWeight
-        sage: VoronoiDiagram_Polygon(P, points, lambda *args: FixedVoronoiWeight(weight).create_half_space(None, *args))
+        sage: _ = VoronoiDiagram_Polygon(P, points, lambda *args: FixedVoronoiWeight(weight).create_half_space(None, *args))
 
     """
 
