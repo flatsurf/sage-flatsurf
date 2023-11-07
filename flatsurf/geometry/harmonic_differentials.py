@@ -46,7 +46,7 @@ A less trivial example, the regular octagon::
     sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
-    ((-0.000048417 + 0.000014772*I) - 0.00092363*I*z0 + (1.3146 - 0.000033146*I)*z0^2 + O(z0^3), (-2.0500 + 0.000051690*I) + 0.0014250*I*z1 + (-0.00014525 + 0.000044316*I)*z1^2 - 0.0049924*I*z1^3 + 0.0041365*I*z1^5 + 0.011334*z1^6 + 0.0018723*I*z1^7 + (-3.0794 + 0.000077645*I)*z1^8 + O(z1^9))
+    ((-0.000048417 + 0.000014772*I) + 0.00092363*I*z0 + (1.3146 - 0.000033146*I)*z0^2 + O(z0^3), (-2.0500 + 0.000051690*I) - 0.0014250*I*z1 + (-0.00014525 + 0.000044316*I)*z1^2 + 0.0049924*I*z1^3 - 0.0041365*I*z1^5 + 0.011334*z1^6 - 0.0018723*I*z1^7 + (-3.0794 + 0.000077645*I)*z1^8 + O(z1^9))
 
 
 The same computation on a triangulation of the octagon::
@@ -92,6 +92,12 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
     sage: S = S.erase_marked_points()
+    doctest:warning
+    ...
+    UserWarning: to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate()).codomain() instead.
+    doctest:warning
+    ...
+    UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
 
     sage: H = SimplicialHomology(S)
     sage: HS = SimplicialCohomology(S, homology=H)
