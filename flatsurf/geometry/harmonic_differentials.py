@@ -64,7 +64,7 @@ The same computation on a triangulation of the octagon::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
+    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=False)
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
 
