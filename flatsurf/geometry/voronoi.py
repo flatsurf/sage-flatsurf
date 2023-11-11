@@ -1,11 +1,32 @@
-# TODO: Documentation
 # TODO: Drop all use of coordinates. Use EuclideanPolygonPoint instead of (label, coordinates)
 # TODO: SageMath already has a VoronoiDiagram so maybe not use that name. Explain that we cannot use the builtin version since it has no weights.
 
 from sage.misc.cachefunc import cached_method
 
+
 class VoronoiDiagram:
     r"""
+    ALGORITHM:
+
+    Internally, a Voronoi diagram is composed by :class:`VoronoiCell`s. Each
+    cell is the union of :class:`VoronoiPolygonCell` which represents the
+    intersection of a Voronoi cell with an Euclidean polygon making up the
+    surface. To compute these cells on the level of polygons, we determine the
+    segments that bound the Voronoi cell where each such segment is half way (up
+    to optional weights) between the centers of two Voronoi cells.
+
+    TODO: Reducing the computation to the level of polygons is not correct in
+    general. When centers are close to edges, the polygon on the other side of
+    the edge does not see that center. Can this be fixed? Or should we just say
+    that this is an approximation of the Voronoi diagram? And is it correct
+    without weighing and with centers at the vertices of a Delaunay cell
+    decomposition?
+
+    TODO: Explain how these cells are not minimal. The same point that exists
+    twice in a polygon produces a boundary of the Voronoi cell with itself. Add
+    a method that gets rid of these boundaries (and throw a NotImplementedError
+    since it is unclear how to represent cells that contain an entire polygon?)
+
     EXAMPLES::
 
         sage: from flatsurf.geometry.voronoi import VoronoiDiagram  # random output due to deprecation warnings
@@ -14,18 +35,10 @@ class VoronoiDiagram:
         sage: center = S(0, S.polygon(0).centroid())
         sage: V = VoronoiDiagram(S, S.vertices().union([center]))
         sage: V.plot()
-        Graphics object consisting of 43 graphics primitives
-
-        sage: def weight(label, center):
-        ....:     if center == S.polygon(0).centroid():
-        ....:         return QQ(center.norm().n())
-        ....:     if center in S.polygon(0).vertices():
-        ....:         return 1
-        ....:     raise NotImplementedError
-        sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
-        sage: V = VoronoiDiagram(S, S.vertices().union([center]), weight=FixedVoronoiWeight(weight))
+        Graphics object consisting of 41 graphics primitives
+        sage: V = VoronoiDiagram(S, S.vertices().union([center]), weight="radius_of_convergence")
         sage: V.plot()
-        Graphics object consisting of 43 graphics primitives
+        Graphics object consisting of 41 graphics primitives
 
     The same Voronoi diagram but starting from a more complicated description
     of the octagon::
@@ -36,436 +49,1032 @@ class VoronoiDiagram:
         sage: S = S.subdivide().codomain()
         sage: V = VoronoiDiagram(S, S.vertices())
         sage: V.plot()
-        Graphics object consisting of 75 graphics primitives
+        Graphics object consisting of 73 graphics primitives
 
-        sage: def weight(label, center):
-        ....:     P = S.polygon(label)
-        ....:     vertex = list(P.vertices()).index(center)
-        ....:     angle = P.angle(vertex)
-        ....:     if angle == 1/8:
-        ....:         return polygons.regular_ngon(8).centroid().norm().n()
-        ....:     assert angle == 3/16, angle
-        ....:     return 1
-
-        sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
-        sage: V = VoronoiDiagram(S, S.vertices(), weight=FixedVoronoiWeight(weight))
+        sage: V = VoronoiDiagram(S, S.vertices(), weight="radius_of_convergence")
         sage: V.plot()
-        Graphics object consisting of 75 graphics primitives
+        Graphics object consisting of 73 graphics primitives
 
-    We can also choose strange such that there is a saddle connection between a
-    vertex and itself without leaving the cell::
-
-        sage: def weight(label, center):
-        ....:     P = S.polygon(label)
-        ....:     vertex = list(P.vertices()).index(center)
-        ....:     angle = P.angle(vertex)
-        ....:     if angle == 1/8:
-        ....:         return polygons.regular_ngon(8).centroid().norm().n()
-        ....:     assert angle == 3/16, angle
-        ....:     return 1/6
-
-        sage: from flatsurf.geometry.voronoi import FixedVoronoiWeight
-        sage: V = VoronoiDiagram(S, S.vertices(), weight=FixedVoronoiWeight(weight))
-        sage: V.plot()
-        Graphics object consisting of 59 graphics primitives
     """
 
     def __init__(self, surface, points, weight=None):
+        if surface.is_mutable():
+            raise ValueError("surface must be immutable")
+
         if weight is None:
-            weight = FixedVoronoiWeight()
-
-        points = set(points)
-
-        if not surface.vertices().issubset(points):
-            raise NotImplementedError("can only compute Voronoi diagrams when all vertices are centers")
+            weight = "classical"
 
         self._surface = surface
-        self._points = points
-
-        # TODO: These mapping structures are too complex.
-        self._polygon_diagrams = {label: VoronoiDiagram_Polygon(surface.polygon(label), [coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label], create_half_space=lambda *args: weight.create_half_space(label, *args)) for label in surface.labels()}
-        self._segments = {point: [
-            VoronoiCellBoundarySegment(point, surface(label, other_center), label, center, other_center, segment) for (label, center) in point.representatives() for (other_center, segment) in self._polygon_diagrams[label].boundary_segments(center).items()]
-            for point in points}
-
-    def plot(self, gs=None):
-        # TODO: Generalize
-        colors = ["red", "green", "orange", "purple", "cyan", "blue"]
-        if gs is None:
-            gs = self._surface.graphical_surface(edge_labels=False, polygon_labels=False)
-        return gs.plot() + \
-            sum(center.plot(gs, color=colors[i]) for i, center in enumerate(self._segments)) + \
-            sum(segment.plot(gs=gs, color=colors[i]) for i, point in enumerate(self._segments) for segment in self._segments[point])
-
-    def cell(self, center):
-        return self._segments[center]
-
-    def relativize(self, point):
-        r"""
-        Return which Voronoi cell ``point`` lies in.
-
-        Returns the center of the cell as (label, coordinates) and a vector Δ
-        from that center to the ``point``.
-        """
-        for label, coordinates in point.representatives():
-            center = self._polygon_diagrams[label].relativize(coordinates)
-            return (label, center), coordinates - center
-
-
-class FixedVoronoiWeight:
-    def __init__(self, weight=None):
-        if weight is None:
-            def weight(_, __): return 1
-
+        self._centers = set(points)
         self._weight = weight
 
-    def create_half_space(self, label, center, point):
-        a, b = center - point
-        # TODO: Generalize this to get half spaces that are weighted by the radii of convergence.
-        weights = self._weight(label, point), self._weight(label, center)
-        midpoint = (weights[1] * point + weights[0] * center) / sum(weights)
-        c = a * midpoint[0] + b * midpoint[1]
+        if not surface.vertices().issubset(self._centers):
+            # This probably essentially works. However, we cannot represent
+            # cells that contain an entire polygon yet, so this is not
+            # implemented in general.
+            raise NotImplementedError("can only compute Voronoi diagrams when all vertices are centers")
 
-        from sage.all import Polyhedron
-        return Polyhedron(ieqs=[(-c, a, b)])
+        self._cells = {center: VoronoiCell(self, center) for center in self._centers}
+
+    def surface(self):
+        r"""
+        Return the surface which this diagram is breaking up into cells.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: V.surface() is S
+            True
+
+        """
+        return self._surface
+
+    def plot(self, graphical_surface=None):
+        r"""
+        Return a graphical representation of this Voronoi diagram.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: V.plot()
+            Graphics object consisting of 41 graphics primitives
+
+        The underlying surface is not plotted automatically when it is provided
+        as a keyword argument::
+
+            sage: V.plot(graphical_surface=S.graphical_surface())
+            Graphics object consisting of 32 graphics primitives
+
+        """
+        plot_surface = graphical_surface is None
+
+        if graphical_surface is None:
+            graphical_surface = self._surface.graphical_surface(edge_labels=False, polygon_labels=False)
+
+        plot = []
+        if plot_surface:
+            plot.append(graphical_surface.plot())
+
+        for cell in self._cells.values():
+            plot.append(cell.plot(graphical_surface))
+
+        return sum(plot)
+
+    def cell(self, point):
+        r"""
+        Return a Voronoi cell that contains ``point``.
+m
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: cell = V.cell(center)
+            sage: cell.contains_point(center)
+            True
+
+        """
+        return next(iter(self.cells(point)))
+
+    def cells(self, point=None):
+        r"""
+        Return the Voronoi cells that contain ``point``.
+
+        If no ``point`` is given, return all cells.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: cells = V.cells(S(0, (1/2, 0)))
+            sage: list(cells)
+            [Voronoi cell at Vertex 0 of polygon 0]
+
+        """
+        for cell in self._cells.values():
+            if point is None or cell.contains_point(point):
+                yield cell
+
+    def polygon_cell(self, label, coordinates):
+        r"""
+        Return a Voronoi cell that contains the point ``coordinates`` of the
+        polygon with ``label``.
+
+        This is to :meth:`polygon_cells` what :meth:`cell` is to :meth:`cells`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: V.polygon_cell(0, S.polygon(0).centroid())
+            Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2)
+
+        """
+        return next(iter(self.polygon_cells(label, coordinates)))
+
+    def polygon_cells(self, label, coordinates):
+        r"""
+        Return the Voronoi cells that contain the point ``coordinates`` of the
+        polygon with ``label``.
+
+        This is similar to :meth:`cells` but it returns the
+        :class:`VoronoiPolygonCell`s instead of the full :class:`VoronoiCell`s.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: V.polygon_cells(0, (1/2, 0))
+            [Voronoi cell in polygon 0 at (0, 0), Voronoi cell in polygon 0 at (1, 0)]
+
+        """
+        diagram = VoronoiDiagram_Polygon(self, label, self._weight)
+        return diagram.polygon_cells(coordinates)
+
+    def split_segment(self, label, a, b):
+        r"""
+        Return the segment [a, b] split into shorter segments that each lie in
+        a single Voronoi cell.
+
+        The segments are returned as a dict mapping the Voronoi cell to the
+        shorter segments.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: V.split_segment(0, (0, 0), (1, 1))
+            {Voronoi cell in polygon 0 at (0, 0): OrientedSegment((0, 0), (1/2, 1/2)),
+             Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1, 1))}
+
+        When there are multiple ways to split the segment, the choice is made
+        randomly. Here, the first segment, is on the boundary of two cells::
+
+            sage: V.split_segment(0, (1/2, 0), (1/2, 1))
+            {Voronoi cell in polygon 0 at (...): OrientedSegment((1/2, 0), (1/2, 1/2)),
+             Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1/2, 1))}
+
+        """
+        segments = {}
+
+        while a != b:
+            a_cells = set(self.polygon_cells(label, a))
+            b_cells = set(self.polygon_cells(label, b))
+
+            shared_cells = set(a_cells).intersection(b_cells)
+
+            if shared_cells:
+                # Both endpoints are in the same Voronoi cell.
+                cell = next(iter(shared_cells))
+                assert cell not in segments
+
+                from flatsurf.geometry.euclidean import OrientedSegment
+                segments[cell] = OrientedSegment(a, b)
+
+                break
+
+            # Bisect the segment [a, b] until we find a point c such that [a,
+            # c] crosses the boundary between two neighboring Voronoi cells.
+            c = b
+            while True:
+                split = self._split_segment_at_boundary_point(label, a, c)
+
+                if split is None:
+                    c = (a + c) / 2
+                    continue
+
+                segment, _ = split
+
+                cell = next(iter(cell for cell in a_cells if cell.contains_segment(segment)))
+
+                assert cell not in segments
+                segments[cell] = segment
+                a = segment.end()
+                break
+
+        return segments
+
+    def _split_segment_at_boundary_point(self, label, a, b):
+        r"""
+        Return the point that lies on the segment [a, b] and on the boundary
+        between the Voronoi cells containing a and b respectively.
+
+        Return ``None`` if no such point exists.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: V._split_segment_at_boundary_point(0, (0, 0), (1, 0))
+            (OrientedSegment((0, 0), (1/2, 0)), OrientedSegment((1/2, 0), (1, 0)))
+            sage: V._split_segment_at_boundary_point(0, (0, 0), (1, 1))
+            (OrientedSegment((0, 0), (1/2, 1/2)), OrientedSegment((1/2, 1/2), (1, 1)))
+            sage: V._split_segment_at_boundary_point(0, (0, 0), (5/4, 5/4))
+
+        """
+        a_cells = set(self.polygon_cells(label, a))
+        a_cell_centers = set(cell.center() for cell in a_cells)
+        b_cells = set(self.polygon_cells(label, b))
+
+        from flatsurf.geometry.euclidean import OrientedSegment
+        ab = OrientedSegment(a, b)
+
+        for b_cell in b_cells:
+            for opposite_center, boundary in b_cell.boundary().items():
+                if opposite_center in a_cell_centers:
+                    intersection = ab.intersection(boundary)
+                    if intersection is None:
+                        continue
+                    if isinstance(intersection, OrientedSegment):
+                        raise NotImplementedError  # would need to extract the endpoint closest to c here.
+
+                    return OrientedSegment(a, intersection), OrientedSegment(intersection, b)
+
+        return None
+
+
+class VoronoiCell:
+    r"""
+    A cell of a :class:`VoronoiDiagram`.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.regular_octagon()
+        sage: V = VoronoiDiagram(S, S.vertices())
+        sage: cells = V.cells()
+        sage: list(cells)
+        [Voronoi cell at Vertex 0 of polygon 0]
+
+    """
+
+    def __init__(self, diagram, center):
+        self._parent = diagram
+        self._center = center
+
+    def plot(self, graphical_surface=None):
+        r"""
+        Return a graphical representation of this cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.cell(S(0, 0))
+            sage: cell.plot()
+            Graphics object consisting of 34 graphics primitives
+
+        """
+        plot_surface = graphical_surface is None
+
+        if graphical_surface is None:
+            graphical_surface = self.surface().graphical_surface()
+
+        plot = []
+        if plot_surface:
+            plot.append(graphical_surface.plot())
+
+        for polygon_cell in self.polygon_cells():
+            plot.append(polygon_cell.plot(graphical_polygon=graphical_surface.graphical_polygon(polygon_cell.label())))
+
+        return sum(plot)
+
+    def surface(self):
+        r"""
+        Return this surface which this cell is a subset of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.cell(S(0, 0))
+            sage: cell.surface() is S
+            True
+
+        """
+        return self._parent.surface()
+
+    def polygon_cells(self, label=None):
+        r"""
+        Return this cell broken into pieces that live entirely inside a
+        polygon.
+
+        If ``label`` is specified, only the bits that are inside the polygon
+        with ``label`` are returned.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.cell(S(0, 0))
+            sage: cell.polygon_cells()
+            [Voronoi cell in polygon 0 at (0, a + 1),
+             Voronoi cell in polygon 0 at (1, a + 1),
+             Voronoi cell in polygon 0 at (0, 0),
+             Voronoi cell in polygon 0 at (1/2*a + 1, 1/2*a + 1),
+             Voronoi cell in polygon 0 at (1, 0),
+             Voronoi cell in polygon 0 at (-1/2*a, 1/2*a),
+             Voronoi cell in polygon 0 at (-1/2*a, 1/2*a + 1),
+             Voronoi cell in polygon 0 at (1/2*a + 1, 1/2*a)]
+
+        """
+        cells = []
+
+        for (lbl, coordinates) in self._center.representatives():
+            if label is not None and label != lbl:
+                continue
+
+            for c in self._parent.polygon_cells(lbl, coordinates):
+                cells.append(c)
+
+        return cells
+
+    def contains_point(self, point):
+        r"""
+        Return whether this cell contains the ``point`` of the surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.cell(S(0, 0))
+            sage: point = S(0, (0, 0))
+            sage: cell.contains_point(point)
+            True
+
+        """
+        label, coordinates = point.representative()
+        return any(cell.contains_point(coordinates) for cell in self.polygon_cells(label=label))
+
+    def __repr__(self):
+        return f"Voronoi cell at {self._center}"
 
 
 class VoronoiDiagram_Polygon:
     r"""
-    The part of the Voronoi diagram inside ``polygon`` with cells centered at
-    ``points``.
+    The part of a :class:`VoronoiDiagram" inside the polygon with ``label``.
 
-    TESTS::
+    EXAMPLES::
 
-        sage: from flatsurf import Polygon
-        sage: K.<a> = QuadraticField(2)
-        sage: P = Polygon(vertices=([(1, 0), (1/2*a + 1, 1/2*a), (1/2, 1/2*a + 1/2)]))
-        sage: points = list(P.vertices())
-        sage: points = points[1:] + points[:1]
+        sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.regular_octagon()
+        sage: V = VoronoiDiagram(S, S.vertices())
 
-        sage: def weight(_, center):
-        ....:     assert center in points
-        ....:     if center == points[2]:
-        ....:         return 1/8
-        ....:     return 1
-
-        sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon, FixedVoronoiWeight
-        sage: _ = VoronoiDiagram_Polygon(P, points, lambda *args: FixedVoronoiWeight(weight).create_half_space(None, *args))
+        sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+        sage: VoronoiDiagram_Polygon(V, 0)
+        Voronoi diagram in polygon 0
 
     """
 
-    def __init__(self, polygon, centers, create_half_space):
-        self._polygon = polygon
-        self._centers = centers
-        self._create_half_space = create_half_space
-
-        # Determine the segments that bound each Voronoi cell within this
-        # polygon, indexed by the coordinates of the center of the Voronoi
-        # cell.
-        self._cell_boundary = {}
-        for center in centers:
-            self._cell_boundary[center] = {}
-
-            # Each segment is on the boundary of one of the half spaces
-            # defining this Voronoi cell. Namely, if the half space is not
-            # trivial in the intersection, then it contributes a segment to the
-            # boundary of the cell.
-            half_spaces = list(self._boundary_half_spaces(center).values()) + self._polygon_half_spaces()
-
-            from itertools import chain
-            from sage.all import Polyhedron
-            intersection = Polyhedron(ieqs=chain.from_iterable(half_space.inequalities() for half_space in half_spaces))
-
-            assert not intersection.is_empty()
-            assert intersection.dimension() == 2
-
-            segments = intersection.faces(1)
-            assert all(segment.is_compact() for segment in segments)
-
-            segments = [Polyhedron(vertices=segment.vertices()) for segment in segments]
-
-            # Filter out segments that are nearly edges of the polygon; they
-            # are an artifact of how we computed the segments here.
-            # TODO: This is very expensive in comparison to a simple:
-            #   segments = [segment for segment in segments if center not in segment]
-            # But is it actually correct? Does it make any sense to have such
-            # Voronoi cells? (I mean, they are not really Voronoi cells since
-            # the boundaries should not be straight line segments but curved
-            # anyway…
-            segments = [segment for segment in segments if all(segment.intersection(edge_half_space.faces(1)[0].as_polyhedron()) != segment for edge_half_space in self._polygon_half_spaces())]
-
-            assert segments
-
-            # Associate with each segment which pair of vertices produced it,
-            # i.e., apart from center which other point.
-            for segment in segments:
-                opposite_centers = [opposite_center for opposite_center, half_space in self._boundary_half_spaces(center).items() if segment.intersection(half_space.faces(1)[0].as_polyhedron()) == segment]
-                assert len(opposite_centers) == 1, "segment must be induced by exactly one other center of a Voronoi cell"
-
-                opposite_center = opposite_centers[0]
-                assert opposite_center not in self._cell_boundary[center]
-
-                self._cell_boundary[center][opposite_center] = segment
-
-    @cached_method
-    def _boundary_half_spaces(self, center):
-        r"""
-        Return half spaces whose intersection is the Voronoi cell at
-        ``center`` one for each other center of a Voronoi cell.
-        """
-        return {opposite_center: self._create_half_space(center, opposite_center) for opposite_center in self._centers if opposite_center != center}
-
-    @cached_method
-    def _polygon_half_spaces(self):
-        r"""
-        Return the half spaces whose intersection is the underlying polygon.
-        """
-        # TODO: Implement this in polygon?
-        from sage.all import Polyhedron
-        return [Polyhedron(ieqs=[(vertex[0] * edge[1] - vertex[1] * edge[0], -edge[1], edge[0])]) for (vertex, edge) in zip(self._polygon.vertices(), self._polygon.edges())]
-
-    def relativize(self, coordinates):
-        r"""
-        Return the center of the Voronoi cell which ``coordinates`` lies in.
-        """
-        for center in self._half_spaces:
-            if all([half_space.contains(coordinates) for half_space in self._half_spaces[center].values()]):
-                return center
-
-        assert False
-
-    def boundary_segments(self, center):
-        r"""
-        Return the segments bounding the Voronoi cell centered at the
-        coordinates ``center`` in this polygon.
-        """
-        return self._cell_boundary[center]
-
-
-class VoronoiCellBoundarySegment:
-    def __init__(self, center, other, label, coordinates, other_coordinates, segment):
-        self._center = center
-        self._opposite_center = other
+    def __init__(self, parent, label, weight=None):
+        self._parent = parent
         self._label = label
-        self._coordinates = coordinates
-        self._opposite_coordinates = other_coordinates
-        self._segment = segment
+        self._weight = weight or "classical"
 
-    def plot(self, gs=None, **kwargs):
-        shift = None
-        if gs is not None:
-            graphical_polygon = gs.graphical_polygon(self._label)
-            polygon = graphical_polygon.base_polygon()
-            shift = graphical_polygon.transformed_vertex(0) - polygon.vertex(0)
-        return (self._segment + shift).plot(point=False, **kwargs)
+    @cached_method
+    def _cells(self):
+        r"""
+        Return the cells that make up this Voronoi diagram indexed by their
+        centers.
 
-    def center(self):
-        return self._center, self._label, self._coordinates
+        EXAMPLES::
 
-    def opposite_center(self):
-        return self._opposite_center, self._label, self._opposite_coordinates
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
 
-    def endpoints(self):
-        a, b = self._segment.vertices()
-        a = a.vector()
-        b = b.vector()
-        from flatsurf.geometry.euclidean import ccw
-        if ccw(a - self._coordinates, b - self._coordinates) < 0:
-            return a, b
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VD = VoronoiDiagram_Polygon(V, 0)
+            sage: VD._cells()
+            {(-1/2*a, 1/2*a): Voronoi cell in polygon 0 at (-1/2*a, 1/2*a),
+             (-1/2*a, 1/2*a + 1): Voronoi cell in polygon 0 at (-1/2*a, 1/2*a + 1),
+             (0, 0): Voronoi cell in polygon 0 at (0, 0),
+             (0, a + 1): Voronoi cell in polygon 0 at (0, a + 1),
+             (1, 0): Voronoi cell in polygon 0 at (1, 0),
+             (1, a + 1): Voronoi cell in polygon 0 at (1, a + 1),
+             (1/2*a + 1, 1/2*a): Voronoi cell in polygon 0 at (1/2*a + 1, 1/2*a),
+             (1/2*a + 1, 1/2*a + 1): Voronoi cell in polygon 0 at (1/2*a + 1, 1/2*a + 1)}
+
+        """
+        return {center: VoronoiPolygonCell(self, center) for center in self.centers()}
+
+    def label(self):
+        r"""
+        Return the label of the polygon that this diagram breaks into Voronoi
+        cells.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VD = VoronoiDiagram_Polygon(V, 0)
+            sage: VD.label()
+            0
+
+        """
+        return self._label
+
+    @cached_method
+    def centers(self):
+        r"""
+        Return the coordinates of the centers of Voronoi cells in this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VD = VoronoiDiagram_Polygon(V, 0)
+            sage: VD.centers()
+            [(0, a + 1),
+             (1, a + 1),
+             (0, 0),
+             (1/2*a + 1, 1/2*a + 1),
+             (1, 0),
+             (-1/2*a, 1/2*a),
+             (-1/2*a, 1/2*a + 1),
+             (1/2*a + 1, 1/2*a)]
+
+        """
+        return [center_coordinates for center in self._parent._centers for (label, center_coordinates) in center.representatives() if label == self._label]
+
+    def surface(self):
+        r"""
+        Return the surface containing this polygon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VD = VoronoiDiagram_Polygon(V, 0)
+            sage: VD.surface() is S
+            True
+
+        """
+        return self._parent.surface()
+
+    def polygon(self):
+        r"""
+        Return the polygon that this diagram breaks up into cells.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VD = VoronoiDiagram_Polygon(V, 0)
+            sage: VD.polygon() == S.polygon(0)
+            True
+
+        """
+        return self.surface().polygon(self._label)
+
+    def polygon_cells(self, coordinates):
+        r"""
+        Return the :class:`VoronoiPolygonCell`s that contain the point at
+        ``coordinates``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VP = VoronoiDiagram_Polygon(V, 0)
+
+            sage: VP.polygon_cells((0, 0))
+            [Voronoi cell in polygon 0 at (0, 0)]
+            sage: VP.polygon_cells((1, 1))
+            [Voronoi cell in polygon 0 at (1/2*a + 1, 1/2*a)]
+
+        """
+        return [cell for cell in self._cells().values() if cell.contains_point(coordinates)]
+
+    def _half_space(self, center, opposite_center):
+        r"""
+        Return the half space containing ``center`` but not containing
+        ``opposite_center`` that sits half-way (up to weighting) between these
+        two points.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VP = VoronoiDiagram_Polygon(V, 0)
+            sage: VP._half_space(vector((0, 0)), vector((1, 0)))
+            {-x ≥ -1/2}
+
+        """
+        if self._weight == "classical":
+            return self._half_space_weighted(center, opposite_center, 1)
+        elif self._weight == "radius_of_convergence":
+            return self._half_space_radius_of_convergence(center, opposite_center)
         else:
-            return b, a
+            raise NotImplementedError("unsupported weight for Voronoi cells")
 
-    def vector(self):
-        a, b = self.endpoints()
-        return b - a
+    def _half_space_weighted(self, center, opposite_center, weight=1):
+        r"""
+        Return the half space containing ``center`` but not containing
+        ``opposite_center``.
 
-    def segment(self):
-        return self._label, self._segment
+        This produces a weighted version of that half space, i.e., the boundary
+        point on the segment between the two centers is shifted according to
+        the weight towards the ``opposite_center``.
 
-    def segments_with_uniform_roots(self):
-        segments = [self]
+        Note that this is not a natural generalization of Voronoi cells.
+        Normally, one would all points on the boundary to have a distance that
+        is weighted in that way. However, this is a bit more complicated to
+        implement as you get a more complicated curve and then also harder to
+        integrate along later. So we opted for not implementing that.
 
-        import itertools
+        EXAMPLES::
 
-        def split(segment, y):
-            from sage.all import Polyhedron
-            horizontal = Polyhedron(eqns=[(-y, 0, 1)])
-            intersection = segment._segment.intersection(horizontal)
-            if intersection.dimension() > 0:
-                raise NotImplementedError("cannot produce uniform roots yet when an integration path is horizontal next to a vertex")
-            if intersection.is_empty():
-                return [segment]
-            x, = intersection.vertices()
-            if x in segment._segment.vertices():
-                return [segment]
-            return [
-                VoronoiCellBoundarySegment(
-                    center=self._center,
-                    other=self._opposite_center,
-                    label=self._label,
-                    coordinates=self._coordinates,
-                    other_coordinates=self._opposite_coordinates,
-                    segment=Polyhedron(vertices=[v, x]))
-                for v in segment._segment.vertices()]
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
 
-        if self._center.angle() > 1:
-            segments = itertools.chain.from_iterable(split(segment, self._coordinates[1]) for segment in segments)
-        if self._opposite_center.angle() > 1:
-            segments = itertools.chain.from_iterable(split(segment, self._opposite_coordinates[1]) for segment in segments)
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VP = VoronoiDiagram_Polygon(V, 0)
+            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 1)
+            {-x ≥ -1/2}
+            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 2)
+            {-x ≥ -2/3}
+            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 1/2)
+            {-x ≥ -1/3}
 
-        return list(segments)
+        """
+        if weight <= 0:
+            raise ValueError("weight must be positive")
 
-    def __ne__(self, other):
-        return not (self == other)
+        a, b = center - opposite_center
+        midpoint = (weight * opposite_center + center) / (weight + 1)
+        c = a * midpoint[0] + b * midpoint[1]
 
-    def __eq__(self, other):
-        if not isinstance(other, VoronoiCellBoundarySegment):
-            return False
+        from flatsurf.geometry.euclidean import HalfSpace
+        return HalfSpace(-c, a, b)
 
-        return self._center == other._center and self._opposite_center == other._opposite_center and self._label == other._label and self._coordinates == other._coordinates and self._opposite_coordinates == other._opposite_coordinates and self._segment == other._segment
+    def _half_space_radius_of_convergence(self, center, opposite_center):
+        r"""
+        Return the half space containing ``center`` but not containing
+        ``opposite_center``.
 
-    def __neg__(self):
-        return VoronoiCellBoundarySegment(self._opposite_center, self._center, self._label, self._opposite_coordinates, self._coordinates, -self._segment)
+        The point on the boundary of that half space and the segment connecting
+        the two centers is shifted relative to the respective radius of
+        convergence at these centers.
 
+        Note that we do not really compute the radius of convergence but just
+        pretend that it is the minimum distance to any other vertex in the
+        polygon (even if it is not a singularity of the surface.) Also, there
+        might be closer singularities in other nearby polygons that we ignore
+        for this computation.
 
-# TODO: Deleteme
-class HalfSpace:
-    r"""
-    The half space ax + by + c ≥ 0.
-    """
+        EXAMPLES::
 
-    def __init__(self, a, b, c):
-        self._a = a
-        self._b = b
-        self._c = c
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
 
-    def plot(self, polygon):
-        endpoints = self.polygon_boundary_intersection(polygon)
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VP = VoronoiDiagram_Polygon(V, 0)
+            sage: VP._half_space_radius_of_convergence(vector((0, 0)), vector((1, 0)))
+            {-x ≥ -1/2}
+            sage: VP._half_space_radius_of_convergence(vector((0, 0)), S.polygon(0).vertices()[4])
+            {-x - (-a - 1) * y ≥ -a - 2}
 
-        from sage.all import line
-        return line(endpoints)
+        """
+        weight = min((v[0] - center[0])**2 + (v[1] - center[1])**2 for v in self.polygon().vertices() if v != center)
+        opposite_weight = min((v[0] - opposite_center[0])**2 + (v[1] - opposite_center[1])**2 for v in self.polygon().vertices() if v != opposite_center)
+
+        relative_weight = weight / opposite_weight
+        try:
+            relative_weight = relative_weight.parent()(relative_weight.sqrt())
+        except Exception:
+            # When the weight does not exist in the base ring we take an
+            # approximation (with possibly huge coefficients.)
+            relative_weight = relative_weight.parent()(float(relative_weight.sqrt()))
+
+        return self._half_space_weighted(center, opposite_center, relative_weight)
+
+    def half_spaces(self, center):
+        r"""
+        Return the half spaces that define the Voronoi cell centered at
+        ``center`` in this polygon, indexed by the other center that is
+        defining the half space.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VP = VoronoiDiagram_Polygon(V, 0)
+            sage: VP.half_spaces((0, 0))
+            {(-1/2*a, 1/2*a): {(1/4*a + 1/2) * x - (-1/4*a - 1/2) * y ≥ -1/4*a - 1/4},
+             (1, 0): {(-1/2*a - 1/2) * x ≥ -1/4*a - 1/4}}
+
+        """
+        return {opposite_center: segment.left_half_space() for (opposite_center, segment) in self.boundary(center).items()}
+
+    @cached_method
+    def boundary(self, center):
+        r"""
+        Return the boundary segment that define the Voronoi cell centered at
+        ``center`` in this polygon, indexed by the other center that is
+        defining the segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VP = VoronoiDiagram_Polygon(V, 0)
+            sage: VP.boundary((0, 0))
+            {(-1/2*a, 1/2*a): OrientedSegment((1/2, 1/2*a + 1/2), (-1/4*a, 1/4*a)),
+             (1, 0): OrientedSegment((1/2, 0), (1/2, 1/2*a + 1/2))}
+
+        """
+        from sage.all import vector
+        center = vector(center)
+
+        if center not in self.centers():
+            raise ValueError("center must be a center of a Voronoi cell")
+
+        voronoi_half_spaces = {opposite_center: self._half_space(center, opposite_center) for opposite_center in self.centers() if opposite_center != center}
+
+        # The half spaces whose intersection is the entire polygon.
+        from flatsurf.geometry.euclidean import HalfSpace
+        polygon = self.polygon()
+        polygon_half_spaces = [HalfSpace(vertex[0] * edge[1] - vertex[1] * edge[0], -edge[1], edge[0]) for (vertex, edge) in zip(polygon.vertices(), polygon.edges())]
+
+        # Each segment defining this Voronoi cell is on the boundary of one of
+        # the half spaces defining this Voronoi cell. Namely, if the half space
+        # is not trivial in the intersection, then it contributes a segment to
+        # the boundary of the cell.
+
+        segments = HalfSpace.compact_intersection(*voronoi_half_spaces.values(), *polygon_half_spaces)
+
+        assert segments, "Voronoi cell is empty"
+
+        # Filter out segments that are mearly edges of the polygon; they
+        # are an artifact of how we computed the segments here.
+        # TODO: This is very expensive in comparison to a simple:
+        #   segments = [segment for segment in segments if center not in segment]
+        # But that misses some degenerate cases. But do these cases actually
+        # make any sense?
+
+        from flatsurf.geometry.euclidean import OrientedSegment
+        polygon_edges = [OrientedSegment(polygon.vertex(i), polygon.vertex(i + 1)) for i in range(len(polygon.vertices()))]
+        voronoi_segments = [segment for segment in segments if not any(segment.is_subset(edge) for edge in polygon_edges)]
+
+        assert voronoi_segments
+
+        # Associate with each segment which other center produced it.
+        boundary = {}
+        for segment in voronoi_segments:
+            opposite_center = [c for (c, half_space) in voronoi_half_spaces.items() if half_space == segment.left_half_space()]
+            assert len(opposite_center) == 1, "segment must be induced by exactly one other center of a Voronoi cell"
+            opposite_center = next(iter(opposite_center))
+            assert opposite_center not in boundary
+
+            boundary[opposite_center] = segment
+
+        return boundary
 
     def __repr__(self):
-        return f"({self._a})*x + ({self._b})*y + {self._c} ≥ 0"
-
-    def half_space_boundary_intersections(self, other):
-        if not isinstance(other, HalfSpace):
-            raise NotImplementedError
-
-        from sage.all import matrix, vector
-        A = matrix([
-            [self._a, self._b],
-            [other._a, other._b],
-        ])
-        b = vector((-self._c, -other._c))
-        try:
-            intersection = A.solve_right(b)
-        except ValueError:
-            return []
-
-        intersection.set_immutable()
-
-        return [intersection]
-
-    def polygon_boundary_intersection(self, polygon):
-        intersections = set()
-        for (vertex, edge) in zip(polygon.vertices(), polygon.edges()):
-            a, b = -edge[1], edge[0]
-            c = - a*vertex[0] - b*vertex[1]
-
-            from sage.all import matrix, vector
-            A = matrix([
-                [self._a, self._b],
-                [a, b],
-            ])
-            b = vector((-self._c, -c))
-
-            try:
-                intersection = A.solve_right(b)
-            except ValueError:
-                continue
-
-            if not polygon.contains_point(intersection):
-                continue
-
-            intersection.set_immutable()
-
-            intersections.add(intersection)
-
-        assert len(intersections) <= 2 or not polygon.is_convex()
-        return intersections
-
-    def contains(self, point):
-        return self._a * point[0] + self._b * point[1] + self._c >= 0
+        return f"Voronoi diagram in polygon {self.label()}"
 
     def __eq__(self, other):
-        if not isinstance(other, HalfSpace):
+        r"""
+        Return whether this Voronoi diagram is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+            sage: VoronoiDiagram_Polygon(V, 0) == VoronoiDiagram_Polygon(V, 0)
+            True
+
+        """
+        if not isinstance(other, VoronoiDiagram_Polygon):
             return False
 
-        from sage.all import sgn
-
-        if sgn(self._a) != sgn(other._a):
-            return False
-
-        if sgn(self._b) != sgn(other._b):
-            return False
-
-        if sgn(self._c) != sgn(other._c):
-            return False
-
-        return self._a * other._b == self._b * other._a and self._a * other._c == self._c * other._a and self._b * other._c == self._c * other._b
+        return self._parent == other._parent and self._label == other._label and self._weight == other._weight
 
     def __ne__(self, other):
         return not (self == other)
 
-    def __neg__(self):
-        return HalfSpace(-self._a, -self._b, -self._c)
+    def __hash__(self):
+        return hash((self._parent, self._label, self._weight))
 
 
-class Segment:
-    def __init__(self, half_space, endpoints):
-        if len(endpoints) != 2:
-            raise NotImplementedError
+class VoronoiPolygonCell:
+    r"""
+    The part of a Voronoi cell that lives entirely within a single polygon that
+    makes up a surface.
 
-        # Sort endpoints so that they are in counterclockwise order when seen
-        # from the center.
-        if not isinstance(half_space, HalfSpace):
-            raise NotImplementedError
-        endpoints.sort(key=lambda xy: xy[0] * half_space._b - xy[1] * half_space._a)
+    EXAMPLES::
 
-        self._half_space = half_space
-        self._endpoints = endpoints
+        sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.regular_octagon()
+        sage: V = VoronoiDiagram(S, S.vertices())
+        sage: V.polygon_cell(0, (0, 0))
+        Voronoi cell in polygon 0 at (0, 0)
 
-    def plot(self, shift=None, **kwargs):
-        from sage.all import arrow
-        endpoints = [e + shift for e in self._endpoints]
-        return arrow(*endpoints, arrowsize=3, **kwargs)
+    """
 
-    def split_vertically(self, y):
-        if (self._endpoints[0][1] < y and self._endpoints[1][1] > y) or (self._endpoints[0][1] > y and self._endpoints[1][1] < y):
-            split = self._half_space.half_space_boundary_intersections(HalfSpace(0, 1, -y))[0]
-            return [Segment(self._half_space, [self._endpoints[0], split]), Segment(self._half_space, [split, self._endpoints[1]])]
+    def __init__(self, parent, center):
+        self._parent = parent
+        self._center = center
 
-        return [self]
+        assert self.contains_point(center)
 
-    def endpoints(self):
-        return self._endpoints
+    def half_spaces(self):
+        r"""
+        Return the half spaces that delimit this cell inside its polygon,
+        indexed by the two centers defining the half space.
 
-    def vector(self):
-        if len(self._endpoints) != 2:
-            raise NotImplementedError
+        EXAMPLES::
 
-        from sage.all import vector
-        return vector((self._endpoints[1][0] - self._endpoints[0][0], self._endpoints[1][1] - self._endpoints[0][1]))
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.half_spaces()
+            {(-1/2*a, 1/2*a): {(1/4*a + 1/2) * x - (-1/4*a - 1/2) * y ≥ -1/4*a - 1/4},
+             (1, 0): {(-1/2*a - 1/2) * x ≥ -1/4*a - 1/4}}
 
-    def __eq__(self, other):
-        if not isinstance(other, Segment):
+        """
+        return self._parent.half_spaces(self._center)
+
+    def boundary(self):
+        r"""
+        Return the segments that delimit this cell inside its polygon indexed
+        by the other centers defining the half space.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.boundary()
+            {(-1/2*a, 1/2*a): OrientedSegment((1/2, 1/2*a + 1/2), (-1/4*a, 1/4*a)),
+             (1, 0): OrientedSegment((1/2, 0), (1/2, 1/2*a + 1/2))}
+
+        """
+        return self._parent.boundary(self._center)
+
+    def polygon(self):
+        r"""
+        Return the polygon which contains this cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.polygon()
+            Polygon(vertices=[(0, 0), (1, 0), (1/2*a + 1, 1/2*a), (1/2*a + 1, 1/2*a + 1), (1, a + 1), (0, a + 1), (-1/2*a, 1/2*a + 1), (-1/2*a, 1/2*a)])
+
+        """
+        return self._parent.polygon()
+
+    def label(self):
+        r"""
+        Return the label of the polygon this cell is a part of.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.label()
+            0
+
+        """
+        return self._parent.label()
+
+    def center(self):
+        r"""
+        Return the coordinates of the center of this Voronoi cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.center()
+            (0, 0)
+
+        """
+        return self._center
+
+    def surface(self):
+        r"""
+        Return the surface containing the :meth:`polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.surface() is S
+            True
+
+        """
+        return self._parent.surface()
+
+    def contains_point(self, point):
+        r"""
+        Return whether this cell contains the ``point``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+
+            sage: cell.contains_point((0, 0))
+            True
+            sage: cell.contains_point((1/2, 1/2))
+            True
+            sage: cell.contains_point((1, 1))
+            False
+
+        """
+        if self.polygon().get_point_position(point).is_outside():
             return False
 
-        return self._half_space == other._half_space and self._endpoints == other._endpoints
+        return all(half_space.contains_point(point) for half_space in self.half_spaces().values())
+
+    def contains_segment(self, segment):
+        r"""
+        Return whether the ``segment`` is a subset of this cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: cell.contains_segment(OrientedSegment((0, 0), (1, 0)))
+            False
+
+        """
+        if isinstance(segment, tuple):
+            from flatsurf.geometry.euclidean import OrientedSegment
+            segment = OrientedSegment(*segment)
+
+        return self.contains_point(segment.start()) and self.contains_point(segment.end())
+
+    def plot(self, graphical_polygon=None):
+        r"""
+        Return a graphical representation of this cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+            sage: cell.plot()
+            Graphics object consisting of 3 graphics primitives
+
+        """
+        plot_polygon = graphical_polygon is None
+
+        if graphical_polygon is None:
+            graphical_polygon = self.surface().graphical_surface().graphical_polygon(self.label())
+
+        shift = graphical_polygon.transformed_vertex(0) - self.polygon().vertex(0)
+
+        plot = sum((segment.translate(shift)).plot(point=False) for segment in self.boundary().values())
+
+        if plot_polygon:
+            plot = graphical_polygon.plot_polygon() + plot
+
+        return plot
+
+    def __repr__(self):
+        r"""
+        Return a printable representation of this Voronoi cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: V.polygon_cell(0, (0, 0))
+            Voronoi cell in polygon 0 at (0, 0)
+
+        """
+        return f"Voronoi cell in polygon {self.label()} at {self._center}"
+
+    def __eq__(self, other):
+        r"""
+        Return whether this cell is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: V.polygon_cell(0, (0, 0)) == V.polygon_cell(0, (0, 1/3))
+            True
+
+        """
+        if not isinstance(other, VoronoiPolygonCell):
+            return False
+        return self._center == other._center and self._parent == other._parent
 
     def __ne__(self, other):
         return not (self == other)
 
-    def __neg__(self):
-        return Segment(-self._half_space, self._endpoints[::-1])
+    def __hash__(self):
+        return hash((self._parent, self._center))
