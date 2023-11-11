@@ -137,11 +137,22 @@ from sage.rings.ring import CommutativeRing
 from sage.structure.element import CommutativeRingElement
 
 
-import cppyy
-cppyy.include('complex')
-complex = cppyy.gbl.std.complex['double']
+complex = None
 
-Ccpp = lambda x: complex(float(x.real()), float(x.imag()))
+
+def cppyy():
+    import cppyy
+
+    global complex
+    if complex is None:
+        cppyy.include('complex')
+        complex = cppyy.gbl.std.complex['double']
+    return cppyy
+
+
+def Ccpp(x):
+    cppyy()
+    return complex(float(x.real()), float(x.imag()))
 
 
 def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
@@ -152,8 +163,8 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
 
     where γ(t) = (1-t)a + tb.
     """
-    if not hasattr(cppyy.gbl, "integral2arb"):
-        cppyy.cppdef(r"""
+    if not hasattr(cppyy().gbl, "integral2arb"):
+        cppyy().cppdef(r"""
         #include <acb_calc.h>
         #include <string>
 
@@ -332,9 +343,9 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
         }
         """)
 
-        cppyy.load_library("arb");
+        cppyy().load_library("arb");
 
-    return R(cppyy.gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
+    return R(cppyy().gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
 
 
 def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
@@ -360,8 +371,8 @@ def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     d = int(d)
     dd = int(dd)
 
-    if not hasattr(cppyy.gbl, "value"):
-        cppyy.cppdef(r"""
+    if not hasattr(cppyy().gbl, "value"):
+        cppyy().cppdef(r"""
         #include <complex>
 
         using complex = std::complex<double>;
@@ -392,12 +403,10 @@ def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
         if e == 1:
             return z
 
-        return cppyy.gbl.std.pow(z, e)
-
-    conj = cppyy.gbl.std.conj
+        return cppyy().gbl.std.pow(z, e)
 
     def value(t):
-        value = cppyy.gbl.value(t, constant, a, α, d, n, b, β, dd, m)
+        value = cppyy().gbl.value(t, constant, a, α, d, n, b, β, dd, m)
 
         if part == "Re":
             return value.real
@@ -457,10 +466,8 @@ def Cab(C, a):
 
 
 def define_solve():
-    import cppyy
-
-    if not hasattr(cppyy.gbl, "solve"):
-        cppyy.cppdef(r'''
+    if not hasattr(cppyy().gbl, "solve"):
+        cppyy().cppdef(r'''
         #include <cassert>
         #include <vector>
         #include <iostream>
@@ -510,9 +517,7 @@ def define_solve():
         }
         ''')
 
-    return cppyy.gbl.solve
-
-define_solve()
+    return cppyy().gbl.solve
 
 
 class HarmonicDifferential(Element):
@@ -4243,9 +4248,7 @@ class PowerSeriesConstraints:
             Cb = b.change_ring(RDF)
             solution = CA.solve_right(Cb)
         elif algorithm == "eigen+mpfr":
-            import cppyy
-
-            cppyy.load_library("mpfr")
+            cppyy().load_library("mpfr")
 
             solution = define_solve()(A, b)
 
