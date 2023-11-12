@@ -750,6 +750,27 @@ class OrientedSegment:
         else:
             raise NotImplementedError
 
+    def contains_point(self, point):
+        r"""
+        Return whether this segment contains ``point``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: S = OrientedSegment((0, 0), (1, 1))
+            sage: S.contains_point((0, 0))
+            True
+            sage: S.contains_point((-1, -1))
+            False
+            sage: S.contains_point((-1, 0))
+            False
+
+        """
+        t = self._parametrize(point)
+        if t is None:
+            return False
+        return 0 <= t <= 1
+
     def left_half_space(self):
         r"""
         Return the half space to the left of the line extending this segment.
