@@ -1098,6 +1098,45 @@ class SimilaritySurfaces(SurfaceCategory):
                 s.set_immutable()
                 return s
 
+            def random_flip(self, repeat=1, in_place=False):
+                r"""
+                Perform random edge flip on a triangulated surface.
+
+                INPUT:
+
+                - ``repeat`` -- integer (default ``1``). The number of edge flip to perform.
+
+                - ``in_place`` -- whether the transformation is done in place.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: ss = translation_surfaces.ward(3).triangulate()
+                    sage: ss.random_flip(15)  # random
+                    Translation Surface in H_1(0^3) built from 6 triangles
+
+                """
+                if not self.is_triangulated():
+                    raise ValueError('random_flip only works for triangulated surfaces')
+                if not in_place:
+                    from flatsurf.geometry.surface import (
+                        MutableOrientedSimilaritySurface,
+                    )
+                    self = MutableOrientedSimilaritySurface.from_surface(self)
+                labels = list(self.labels())
+                i = 0
+                from sage.misc.prandom import choice
+                while i < repeat:
+                    p1 = choice(labels)
+                    e1 = choice(range(3))
+                    if not self.triangle_flip(p1, e1, test=True):
+                        continue
+                    self.triangle_flip(p1, e1, in_place=True)
+                    i += 1
+                if not in_place:
+                    self.set_immutable()
+                return self
+
             def join_polygons(self, p1, e1, test=False, in_place=False):
                 r"""
                 Join polygons across the provided edge (p1,e1). By default,
