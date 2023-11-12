@@ -776,10 +776,11 @@ class DilationSurfaces(SurfaceCategory):
                             self.triangle_flip(
                                 p1, e1, in_place=True, direction=direction
                             )
-                            assert self.is_triangulated()
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1
+                            if not limit:
+                                break
                 self.set_immutable()
                 assert self.is_triangulated()
                 return self
