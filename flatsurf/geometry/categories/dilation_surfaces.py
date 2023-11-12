@@ -608,10 +608,20 @@ class DilationSurfaces(SurfaceCategory):
                     sage: p = matrix(t0.base_ring(), [
                     ....:    [ 1, 2+2*sqrt(2) ],
                     ....:    [ 0, 1 ]])
+
                     sage: t = (r * p * r * t0).l_infinity_delaunay_triangulation()
-                    sage: assert t.is_veering_triangulated()
+                    sage: systole_count = 0
+                    sage: for l, e in t.edges():
+                    ....:     v = t.polygon(l).edge(e)
+                    ....:     systole_count += v[0]**2 + v[1]**2 == 1
+                    sage: assert t.is_veering_triangulated() and systole_count == 8, (systole_count, {lab: t.polygon(lab) for lab in t.labels()}, t.gluings())
+
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).l_infinity_delaunay_triangulation()
-                    sage: assert t.is_veering_triangulated()
+                    sage: systole_count = 0
+                    sage: for l, e in t.edges():
+                    ....:     v = t.polygon(l).edge(e)
+                    ....:     systole_count += v[0]**2 + v[1]**2 == 1
+                    sage: assert t.is_veering_triangulated() and systole_count == 8, (systole_count, {lab: t.polygon(lab) for lab in t.labels()}, t.gluings())
 
                 TESTS:
 
@@ -659,6 +669,10 @@ class DilationSurfaces(SurfaceCategory):
                 flips to get closer to the Delaunay decomposition.
 
                 INPUT:
+
+                - ``l_infinity`` -- optional (boolean, default ``False``).
+                  Whether to return a L^oo-Delaunay triangulation or any
+                  veering triangulation.
 
                 - ``limit`` -- optional (positive integer) If provided, then at most ``limit``
                     many diagonal flips will be done.
