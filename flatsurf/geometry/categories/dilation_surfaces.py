@@ -388,6 +388,7 @@ class DilationSurfaces(SurfaceCategory):
                 sage: m = matrix(ZZ, 2, 2, [5, 3, 3, 2])
                 sage: (m * s).is_veering_triangulated()
                 False
+
             """
             from flatsurf.geometry.euclidean import slope
 
@@ -437,7 +438,8 @@ class DilationSurfaces(SurfaceCategory):
 
                 sage: ss = matrix(2, [1,0,2,1]) * s
                 sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
-                [0, 0, 0]
+                [1, 0, 0]
+
             """
             assert self.opposite_edge(p1, e1) == (p2, e2), "not opposite edges"
 
@@ -478,26 +480,37 @@ class DilationSurfaces(SurfaceCategory):
             edge1new = edge2L + edge1R
             xnew = abs(edge1new[0])
             ynew = abs(edge1new[1])
-            monochromatic = (s == s1L == s1R) + (s == s2L == s2R)
+            monochromatic1 = s == s1L == s1R
+            monochromatic2 = s == s2L == s2R
 
-            # 1. flip to turn to a veering triangulation
-            if monochromatic:
-                # monochromatic triangle
+            # 1. flip to get closer to a veering triangulation
+            if monochromatic1 and monochromatic2:
+                # two monochromatic triangles
                 m = max(x, y)
                 mnew = max(xnew, ynew)
                 snew = slope(edge1new)
-                new_monochromatic = (snew == s1L == s1R) + (snew == s2L == s2R)
-                needs_flip = new_monochromatic < monochromatic or (
-                    new_monochromatic == monochromatic and mnew < m
-                )
+                killed_monochromatic = snew != s
+                needs_flip = killed_monochromatic or mnew < m
+                return 2 if needs_flip else 0
+            if monochromatic1:
+                # only the first triangle is monochromatic
+                needs_flip = x == abs(edge1L[0]) + abs(edge1R[0]) and y == abs(edge1L[1]) + abs(edge1R[1])
+                return 2 if needs_flip else 0
+            if monochromatic2:
+                # only the second triangle is monochromatic
+                needs_flip = x == abs(edge2L[0]) + abs(edge2R[0]) and y == abs(edge2L[1]) + abs(edge2R[1])
                 return 2 if needs_flip else 0
 
-            # 2. flip to turn to the l-infinity delaunay
+            # 2. flip to get closer to the l-infinity delaunay
             if s1L == s2L == 1 and s1R == s2R == -1:
                 # veering backward flip
+                assert x == abs(edge1L[0]) + abs(edge1R[0])
+                assert x == abs(edge2L[0]) + abs(edge2R[0])
                 return 1 if ynew < x else 0
-            if s1L == s2L == -1 and s1R == s2R == -1:
+            if s1L == s2L == -1 and s1R == s2R == 1:
                 # veering forward flip
+                assert y == abs(edge1L[1]) + abs(edge1R[1])
+                assert y == abs(edge2L[1]) + abs(edge2R[1])
                 return 1 if xnew < y else 0
 
             return 0
