@@ -613,3 +613,70 @@ def projectivization(x, y, signed=True, denominator=None):
         return (parent(-1), parent(0))
     else:
         return (parent(1), parent(0))
+
+
+def slope(a, rotate=1):
+    r"""
+    Return either ``1`` (positive slope) or ``-1`` (negative slope).
+
+    If ``rotate`` is set to 1 then consider the edge as if it was rotated counterclockwise
+    infinitesimally.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import slope
+        sage: slope((1, 1))
+        1
+        sage: slope((-1, 1))
+        -1
+        sage: slope((-1, -1))
+        1
+        sage: slope((1, -1))
+        -1
+
+        sage: slope((1, 0))
+        1
+        sage: slope((0, 1))
+        -1
+        sage: slope((-1, 0))
+        1
+        sage: slope((0, -1))
+        -1
+
+        sage: slope((1, 0), rotate=-1)
+        -1
+        sage: slope((0, 1), rotate=-1)
+        1
+        sage: slope((-1, 0), rotate=-1)
+        -1
+        sage: slope((0, -1), rotate=-1)
+        1
+
+        sage: slope((1, 0), rotate=0)
+        0
+        sage: slope((0, 1), rotate=0)
+        0
+        sage: slope((-1, 0), rotate=0)
+        0
+        sage: slope((0, -1), rotate=0)
+        0
+
+        sage: slope((0, 0))
+        Traceback (most recent call last):
+        ...
+        ValueError: zero vector
+    """
+    x, y = a
+    if not x and not y:
+        raise ValueError('zero vector')
+    if (x > 0 and y > 0) or (x < 0 and y < 0):
+        return 1
+    elif (x > 0 and y < 0) or (x < 0 and y > 0):
+        return -1
+    if rotate == 0:
+        return 0
+    if rotate == 1:
+        return 1 if x else -1
+    if rotate == -1:
+        return 1 if y else -1
+    raise ValueError('invalid argument rotate={}'.format(rotate))

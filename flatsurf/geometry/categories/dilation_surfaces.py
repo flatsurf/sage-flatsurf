@@ -362,10 +362,51 @@ class DilationSurfaces(SurfaceCategory):
                         us.glue((p1, e1), (p2, e2))
                 return self
 
+        def is_veering_triangulated(self, certificate=False):
+            r"""
+            Return whether this dilation surface is given by a veering triangulation.
+
+            A triangulation is *veering* if none of its triangle are made of
+            three edges of the same slope (positive or negative).
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+
+                sage: s = MutableOrientedSimilaritySurface(QQ)
+                sage: s.add_polygon(Polygon(vertices=[(0,0), (1,1), (-1,2)]))
+                0
+                sage: s.add_polygon(Polygon(vertices=[(0,0), (-1,2), (-2,1)]))
+                1
+                sage: s.glue((0, 0), (1, 1))
+                sage: s.glue((0, 1), (1, 2))
+                sage: s.glue((0, 2), (1, 0))
+                sage: s.set_immutable()
+                sage: s.is_veering_triangulated()
+                True
+
+                sage: m = matrix(ZZ, 2, 2, [5, 3, 3, 2])
+                sage: (m * s).is_veering_triangulated()
+                False
+            """
+            from flatsurf.geometry.euclidean import slope
+            for label in self.labels():
+                p = self.polygon(label)
+                edges = p.edges()
+                if len(edges) != 3:
+                    return (False, label) if certificate else False
+                s0, s1, s2 = map(slope, edges)
+                if s0 == s1 == s2:
+                    return (False, label) if certificate else False
+            return (True, None) if certificate else True
+
         def _delaunay_edge_needs_flip_Linfinity(self, p1, e1, p2, e2):
             r"""
-            Check whether the provided edge which bounds two triangles should be flipped
+            Return whether the provided edge which bounds two triangles should be flipped
             to get closer to the L-infinity Delaunay decomposition.
+
+            The return code is either ``0``: no flip needed, ``2``: filp needed to make
+            it veering, ``1``: flip needed to make it L-infinity.
 
             TESTS::
 
@@ -380,22 +421,22 @@ class DilationSurfaces(SurfaceCategory):
                 sage: s.glue((0, 2), (1, 2))
                 sage: s.set_immutable()
                 sage: [s._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
-                [False, False, False]
+                [0, 0, 0]
 
                 sage: ss = matrix(2, [1,1,0,1]) * s
                 sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
-                [False, False, False]
+                [0, 0, 0]
                 sage: ss = matrix(2, [1,0,1,1]) * s
                 sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
-                [False, False, False]
+                [0, 0, 0]
 
                 sage: ss = matrix(2, [1,2,0,1]) * s
                 sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
-                [False, False, True]
+                [0, 0, 2]
 
                 sage: ss = matrix(2, [1,0,2,1]) * s
                 sage: [ss._delaunay_edge_needs_flip_Linfinity(0, i, 1, i) for i in range(3)]
-                [True, False, False]
+                [0, 0, 0]
             """
             assert self.opposite_edge(p1, e1) == (p2, e2), "not opposite edges"
 
@@ -412,6 +453,7 @@ class DilationSurfaces(SurfaceCategory):
             edge2L = poly2.edge(e2 - 1)
             edge2R = poly2.edge(e2 + 1)
 
+            # if one of the triangle is monochromatic and the edge is the largest
             sim = self.edge_transformation(p2, e2)
             m = sim.derivative()  # matrix carrying p2 to p1
             if not m.is_one():
@@ -420,16 +462,45 @@ class DilationSurfaces(SurfaceCategory):
                 edge2R = m * edge2R
 
             # convexity check of the quadrilateral
-            from flatsurf.geometry.euclidean import ccw
+            from flatsurf.geometry.euclidean import ccw, slope
 
             if ccw(edge2L, edge1R) <= 0 or ccw(edge1L, edge2R) <= 0:
                 return False
 
-            # compare the norms
-            new_edge = edge2L + edge1R
-            n1 = max(abs(edge1[0]), abs(edge1[1]))
-            n = max(abs(new_edge[0]), abs(new_edge[1]))
-            return n < n1
+            s = slope(edge1)
+            s1L = slope(edge1L)
+            s1R = slope(edge1R)
+            s2L = slope(edge2L)
+            s2R = slope(edge2R)
+            x = abs(edge1[0])
+            y = abs(edge1[1])
+            edge1new = edge2L + edge1R
+            xnew = abs(edge1new[0])
+            ynew = abs(edge1new[1])
+            monochromatic1 = s == s1L == s1R
+            monochromatic2 = s == s2L == s2R
+
+            # 1. flip to turn to a veering triangulation
+            if monochromatic1 or monochromatic2:
+                # monochromatic triangle
+                m = max(x, y)
+                mnew = max(xnew, ynew)
+                snew = slope(edge1new)
+                new_monochromatic1 = snew == s1L == s1R
+                new_monochromatic2 = snew == s2L == s2R
+                needs_flip = ((new_monochromatic1 + new_monochromatic2 < monochromatic1 + monochromatic2) or
+                              (new_monochromatic1 + new_monochromatic2 == monochromatic1 + monochromatic2 and mnew < m))
+                return 2 if needs_flip else 0
+
+            # 2. flip to turn to the l-infinity delaunay
+            if s1L == s2L == 1 and s1R == s2R == -1:
+                # veering backward flip
+                return 1 if ynew < x else 0
+            if s1L == s2L == -1 and s1R == s2R == -1:
+                # veering forward flip
+                return 1 if xnew < y else 0
+
+            return 0
 
         def _test_dilation_surface(self, **options):
             r"""
@@ -480,7 +551,6 @@ class DilationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
-
             def l_infinity_delaunay_triangulation(
                 self, triangulated=None, in_place=None, limit=None, direction=None
             ):
@@ -515,15 +585,32 @@ class DilationSurfaces(SurfaceCategory):
 
                     sage: s = m*s0
                     sage: s = s.l_infinity_delaunay_triangulation()
+                    sage: assert s.is_veering_triangulated()
                     sage: TestSuite(s).run()
 
                     sage: s = (m**2)*s0
-                    sage: s = s.l_infinity_delaunay_triangulation()  # long time (.5s)
-                    sage: TestSuite(s).run()  # long time (see above)
+                    sage: s = s.l_infinity_delaunay_triangulation()
+                    sage: assert s.is_veering_triangulated()
+                    sage: TestSuite(s).run()
 
                     sage: s = (m**3)*s0
-                    sage: s = s.l_infinity_delaunay_triangulation()  # long time (.8s)
-                    sage: TestSuite(s).run()  # long time (see above)
+                    sage: s = s.l_infinity_delaunay_triangulation()
+                    sage: assert s.is_veering_triangulated()
+                    sage: TestSuite(s).run()
+
+                The octagon which has horizontal and vertical edges::
+
+                    sage: t0 = translation_surfaces.regular_octagon()
+                    sage: r = matrix(t0.base_ring(), [
+                    ....:    [ sqrt(2)/2, -sqrt(2)/2 ],
+                    ....:    [ sqrt(2)/2, sqrt(2)/2 ]])
+                    sage: p = matrix(t0.base_ring(), [
+                    ....:    [ 1, 2+2*sqrt(2) ],
+                    ....:    [ 0, 1 ]])
+                    sage: t = (r * p * r * t0).l_infinity_delaunay_triangulation()
+                    sage: assert t.is_veering_triangulated()
+                    sage: t = (r**4 * p * r**5 * p**2 * r * t0).l_infinity_delaunay_triangulation()
+                    sage: assert t.is_veering_triangulated()
 
                 TESTS:
 
@@ -559,6 +646,62 @@ class DilationSurfaces(SurfaceCategory):
                         "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
                     )
 
+                return self.veering_triangulation(l_infinity=True, limit=limit, direction=direction)
+
+            def veering_triangulation(self, l_infinity=False, limit=None, direction=None):
+                r"""
+                Return a veering triangulated surface, or make some triangle
+                flips to get closer to the Delaunay decomposition.
+
+                INPUT:
+
+                - ``limit`` -- optional (positive integer) If provided, then at most ``limit``
+                    many diagonal flips will be done.
+
+                - ``direction`` -- optional (vector). Used to determine labels when a
+                  pair of triangles is flipped. Each triangle has a unique separatrix
+                  which points in the provided direction or its negation. As such a
+                  vector determines a sign for each triangle.  A pair of adjacent
+                  triangles have opposite signs. Labels are chosen so that this sign is
+                  preserved (as a function of labels).
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: s0 = translation_surfaces.veech_double_n_gon(5)
+                    sage: field = s0.base_ring()
+                    sage: a = field.gen()
+                    sage: m = matrix(field, 2, [2,a,1,1])
+
+                    sage: s = m*s0
+                    sage: s = s.veering_triangulation()
+                    sage: assert s.is_veering_triangulated()
+                    sage: TestSuite(s).run()
+
+                    sage: s = (m**2)*s0
+                    sage: s = s.veering_triangulation()
+                    sage: assert s.is_veering_triangulated()
+                    sage: TestSuite(s).run()
+
+                    sage: s = (m**3)*s0
+                    sage: s = s.veering_triangulation()
+                    sage: assert s.is_veering_triangulated()
+                    sage: TestSuite(s).run()
+
+                The octagon which has horizontal and vertical edges::
+
+                    sage: t0 = translation_surfaces.regular_octagon()
+                    sage: r = matrix(t0.base_ring(), [
+                    ....:    [ sqrt(2)/2, -sqrt(2)/2 ],
+                    ....:    [ sqrt(2)/2, sqrt(2)/2 ]])
+                    sage: p = matrix(t0.base_ring(), [
+                    ....:    [ 1, 2+2*sqrt(2) ],
+                    ....:    [ 0, 1 ]])
+                    sage: t = (r * p * r * t0).veering_triangulation()
+                    sage: assert t.is_veering_triangulated()
+                    sage: t = (r**4 * p * r**5 * p**2 * r * t0).veering_triangulation()
+                    sage: assert t.is_veering_triangulated()
+                """
                 self = self.triangulate()
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -574,6 +717,8 @@ class DilationSurfaces(SurfaceCategory):
                 if direction.is_zero():
                     raise ValueError("direction must be non-zero")
 
+                flip_bound = 1 if l_infinity else 2
+
                 triangles = set(self.labels())
                 if limit is None:
                     limit = -1
@@ -583,14 +728,17 @@ class DilationSurfaces(SurfaceCategory):
                     p1 = triangles.pop()
                     for e1 in range(3):
                         p2, e2 = self.opposite_edge(p1, e1)
-                        if self._delaunay_edge_needs_flip_Linfinity(p1, e1, p2, e2):
+                        needs_flip = self._delaunay_edge_needs_flip_Linfinity(p1, e1, p2, e2)
+                        if needs_flip >= flip_bound:
                             self.triangle_flip(
                                 p1, e1, in_place=True, direction=direction
                             )
+                            assert self.is_triangulated()
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1
                 self.set_immutable()
+                assert self.is_triangulated()
                 return self
 
 
