@@ -494,11 +494,15 @@ class DilationSurfaces(SurfaceCategory):
                 return 2 if needs_flip else 0
             if monochromatic1:
                 # only the first triangle is monochromatic
-                needs_flip = x == abs(edge1L[0]) + abs(edge1R[0]) and y == abs(edge1L[1]) + abs(edge1R[1])
+                needs_flip = (x == abs(edge1L[0]) + abs(edge1R[0])) and (
+                    y == abs(edge1L[1]) + abs(edge1R[1])
+                )
                 return 2 if needs_flip else 0
             if monochromatic2:
                 # only the second triangle is monochromatic
-                needs_flip = x == abs(edge2L[0]) + abs(edge2R[0]) and y == abs(edge2L[1]) + abs(edge2R[1])
+                needs_flip = (x == abs(edge2L[0]) + abs(edge2R[0])) and (
+                    y == abs(edge2L[1]) + abs(edge2R[1])
+                )
                 return 2 if needs_flip else 0
 
             # 2. flip to get closer to the l-infinity delaunay

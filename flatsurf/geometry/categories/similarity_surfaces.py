@@ -1117,15 +1117,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if not self.is_triangulated():
-                    raise ValueError('random_flip only works for triangulated surfaces')
+                    raise ValueError("random_flip only works for triangulated surfaces")
                 if not in_place:
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
+
                     self = MutableOrientedSimilaritySurface.from_surface(self)
                 labels = list(self.labels())
                 i = 0
                 from sage.misc.prandom import choice
+
                 while i < repeat:
                     p1 = choice(labels)
                     e1 = choice(range(3))
