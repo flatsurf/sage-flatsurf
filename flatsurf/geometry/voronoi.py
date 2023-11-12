@@ -700,18 +700,27 @@ class VoronoiDiagram_Polygon:
             {-x - (-a - 1) * y ≥ -a - 2}
 
         """
+        return self._half_space_weighted(center, opposite_center, self._half_space_radius_of_convergence_weight(center, opposite_center))
+
+    def _half_space_radius_of_convergence_weight(self, center, opposite_center):
+        r"""
+        Return the quotient of the radii of convergence at ``center`` and
+        ``opposite_center`` (when restricted to thei polygon.)
+        """
         weight = min((v[0] - center[0])**2 + (v[1] - center[1])**2 for v in self.polygon().vertices() if v != center)
         opposite_weight = min((v[0] - opposite_center[0])**2 + (v[1] - opposite_center[1])**2 for v in self.polygon().vertices() if v != opposite_center)
 
         relative_weight = weight / opposite_weight
         try:
-            relative_weight = relative_weight.parent()(relative_weight.sqrt())
+            return relative_weight.parent()(relative_weight.sqrt())
         except Exception:
             # When the weight does not exist in the base ring we take an
             # approximation (with possibly huge coefficients.)
-            relative_weight = relative_weight.parent()(float(relative_weight.sqrt()))
-
-        return self._half_space_weighted(center, opposite_center, relative_weight)
+            if relative_weight > 1:
+                # Make rounding errors symmetric so that two neighboring half
+                # space are actually the negative of each other.
+                return 1 / self._half_space_radius_of_convergence_weight(opposite_center, center)
+            return relative_weight.parent()(float(relative_weight.sqrt()))
 
     def half_spaces(self, center):
         r"""
