@@ -601,7 +601,6 @@ class HalfTranslationSurfaces(SurfaceCategory):
                                 if return_adjacent_edges:
                                     angles.append((float(angle) / 2, adjacent_edges))
                                 else:
-
                                     angles.append(float(angle) / 2)
                             else:
                                 if return_adjacent_edges:

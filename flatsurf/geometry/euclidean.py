@@ -668,7 +668,7 @@ def slope(a, rotate=1):
     """
     x, y = a
     if not x and not y:
-        raise ValueError('zero vector')
+        raise ValueError("zero vector")
     if (x > 0 and y > 0) or (x < 0 and y < 0):
         return 1
     elif (x > 0 and y < 0) or (x < 0 and y > 0):
@@ -679,4 +679,4 @@ def slope(a, rotate=1):
         return 1 if x else -1
     if rotate == -1:
         return 1 if y else -1
-    raise ValueError('invalid argument rotate={}'.format(rotate))
+    raise ValueError("invalid argument rotate={}".format(rotate))

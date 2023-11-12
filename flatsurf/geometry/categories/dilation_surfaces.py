@@ -390,6 +390,7 @@ class DilationSurfaces(SurfaceCategory):
                 False
             """
             from flatsurf.geometry.euclidean import slope
+
             for label in self.labels():
                 p = self.polygon(label)
                 edges = p.edges()
@@ -405,7 +406,7 @@ class DilationSurfaces(SurfaceCategory):
             Return whether the provided edge which bounds two triangles should be flipped
             to get closer to the L-infinity Delaunay decomposition.
 
-            The return code is either ``0``: no flip needed, ``2``: filp needed to make
+            The return code is either ``0``: no flip needed, ``2``: flip needed to make
             it veering, ``1``: flip needed to make it L-infinity.
 
             TESTS::
@@ -477,19 +478,18 @@ class DilationSurfaces(SurfaceCategory):
             edge1new = edge2L + edge1R
             xnew = abs(edge1new[0])
             ynew = abs(edge1new[1])
-            monochromatic1 = s == s1L == s1R
-            monochromatic2 = s == s2L == s2R
+            monochromatic = (s == s1L == s1R) + (s == s2L == s2R)
 
             # 1. flip to turn to a veering triangulation
-            if monochromatic1 or monochromatic2:
+            if monochromatic:
                 # monochromatic triangle
                 m = max(x, y)
                 mnew = max(xnew, ynew)
                 snew = slope(edge1new)
-                new_monochromatic1 = snew == s1L == s1R
-                new_monochromatic2 = snew == s2L == s2R
-                needs_flip = ((new_monochromatic1 + new_monochromatic2 < monochromatic1 + monochromatic2) or
-                              (new_monochromatic1 + new_monochromatic2 == monochromatic1 + monochromatic2 and mnew < m))
+                new_monochromatic = (snew == s1L == s1R) + (snew == s2L == s2R)
+                needs_flip = new_monochromatic < monochromatic or (
+                    new_monochromatic == monochromatic and mnew < m
+                )
                 return 2 if needs_flip else 0
 
             # 2. flip to turn to the l-infinity delaunay
@@ -551,6 +551,7 @@ class DilationSurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
             def l_infinity_delaunay_triangulation(
                 self, triangulated=None, in_place=None, limit=None, direction=None
             ):
@@ -646,9 +647,13 @@ class DilationSurfaces(SurfaceCategory):
                         "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
                     )
 
-                return self.veering_triangulation(l_infinity=True, limit=limit, direction=direction)
+                return self.veering_triangulation(
+                    l_infinity=True, limit=limit, direction=direction
+                )
 
-            def veering_triangulation(self, l_infinity=False, limit=None, direction=None):
+            def veering_triangulation(
+                self, l_infinity=False, limit=None, direction=None
+            ):
                 r"""
                 Return a veering triangulated surface, or make some triangle
                 flips to get closer to the Delaunay decomposition.
@@ -728,7 +733,9 @@ class DilationSurfaces(SurfaceCategory):
                     p1 = triangles.pop()
                     for e1 in range(3):
                         p2, e2 = self.opposite_edge(p1, e1)
-                        needs_flip = self._delaunay_edge_needs_flip_Linfinity(p1, e1, p2, e2)
+                        needs_flip = self._delaunay_edge_needs_flip_Linfinity(
+                            p1, e1, p2, e2
+                        )
                         if needs_flip >= flip_bound:
                             self.triangle_flip(
                                 p1, e1, in_place=True, direction=direction

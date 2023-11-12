@@ -2303,7 +2303,6 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 for label in labels:
                     for edge in range(len(surface.polygon(label).vertices())):
-
                         cross = surface.opposite_edge(label, edge)
 
                         if cross is None:
