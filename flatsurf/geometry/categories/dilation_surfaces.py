@@ -596,6 +596,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: field = s0.base_ring()
                     sage: a = field.gen()
                     sage: m = matrix(field, 2, [2,a,1,1])
+                    sage: for _ in range(5): assert s0.triangulate().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
 
                     sage: s = m*s0
                     sage: s = s.l_infinity_delaunay_triangulation()
@@ -615,6 +616,7 @@ class DilationSurfaces(SurfaceCategory):
                 The octagon which has horizontal and vertical edges::
 
                     sage: t0 = translation_surfaces.regular_octagon()
+                    sage: for _ in range(5): assert t0.triangulate().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
                     sage: r = matrix(t0.base_ring(), [
                     ....:    [ sqrt(2)/2, -sqrt(2)/2 ],
                     ....:    [ sqrt(2)/2, sqrt(2)/2 ]])
@@ -704,6 +706,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: field = s0.base_ring()
                     sage: a = field.gen()
                     sage: m = matrix(field, 2, [2,a,1,1])
+                    sage: for _ in range(5): assert s0.triangulate().random_flip(5).veering_triangulation().is_veering_triangulated()
 
                     sage: s = m*s0
                     sage: s = s.veering_triangulation()
@@ -722,7 +725,13 @@ class DilationSurfaces(SurfaceCategory):
 
                 The octagon which has horizontal and vertical edges::
 
-                    sage: t0 = translation_surfaces.regular_octagon()
+                    sage: t0 = translation_surfaces.regular_octagon().triangulate()
+                    sage: t0.is_veering_triangulated()
+                    False
+                    sage: t0.veering_triangulation().is_veering_triangulated()
+                    True
+                    sage: for _ in range(5): assert t0.random_flip(5).veering_triangulation().is_veering_triangulated()
+
                     sage: r = matrix(t0.base_ring(), [
                     ....:    [ sqrt(2)/2, -sqrt(2)/2 ],
                     ....:    [ sqrt(2)/2, sqrt(2)/2 ]])
