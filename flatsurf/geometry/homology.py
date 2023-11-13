@@ -42,6 +42,7 @@ TODO: Add examples.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2022-2023 Julian Rüth
+#                           2023 Julien Boulanger
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -81,6 +82,69 @@ class SimplicialHomologyClass(Element):
         super().__init__(parent)
 
         self._chain = chain
+
+    def algebraic_intersection(self, other):
+        r"""
+        Return the algebraic intersection of this class of a closed curve with
+        ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+            sage: H = SimplicialHomology(S)
+
+            sage: H((0, 0)).algebraic_intersection(H((0, 1)))
+            1
+
+            sage: a = H((0, 1))
+            sage: b = 3 * H((0, 0)) + 5 * H((0, 2)) - 2 * H((0, 4))
+            sage: a.algebraic_intersection(b)
+            0
+
+            sage: a = 2 * H((0, 0)) + H((0, 1)) + 3 * H((0, 2)) + H((0, 3)) + H((0, 4)) + H((0, 5)) + H((0, 7))
+            sage: b = H((0, 0)) + 2 * H((0, 1)) + H((0, 2)) + H((0, 3)) + 2 * H((0, 4)) + 3 * H((0, 5)) + 4 * H((0, 6)) + 3 * H((0, 7))
+            sage: a.algebraic_intersection(b)
+            1
+
+            sage: S = translation_surfaces.cathedral(1, 4)
+            sage: H = SimplicialHomology(S)
+            sage: a = H((0, 3))
+            sage: b = H((2, 1))
+            sage: a.algebraic_intersection(b)
+            0
+
+            sage: a = H((0, 3))
+            sage: b = H((3, 4)) + 3 * H((0, 3)) + 2 * H((0, 0)) - H((1, 7)) + 7 * H((2, 1)) - 2 * H((2, 2))
+            sage: a.algebraic_intersection(b)
+            2
+
+        """
+        intersection = 0
+
+        multiplicities = dict(self._chain)
+        other_multiplicities = dict(other._chain)
+
+        for _, adjacent_edges in self.parent().surface().angles(return_adjacent_edges=True):
+            counter = 0
+            other_counter = 0
+            for edge in adjacent_edges:
+                opposite_edge = self.parent().surface().opposite_edge(*edge)
+
+                counter += multiplicities.get(edge, 0)
+                intersection += counter * other_multiplicities.get(edge, 0)
+                intersection -= counter * other_multiplicities.get(opposite_edge, 0)
+
+                counter -= multiplicities.get(opposite_edge, 0)
+                other_counter += other_multiplicities.get(edge, 0)
+                other_counter -= other_multiplicities.get(opposite_edge, 0)
+
+            if counter:
+                raise TypeError("homology class does not correspond to a closed curve")
+            if other_counter:
+                raise ValueError("homology class does not correspond to a closed curve")
+
+        return intersection
 
     def _acted_upon_(self, c, self_on_left=None):
         r"""
@@ -221,6 +285,9 @@ class SimplicialHomologyClass(Element):
 
         """
         return self.parent()(self._chain + other._chain)
+
+    def _sub_(self, other):
+        return self.parent()(self._chain - other._chain)
 
     def _neg_(self):
         r"""
