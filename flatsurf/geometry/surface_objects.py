@@ -415,7 +415,7 @@ class SurfacePoint(Element):
             {0, 1, 2}
 
         """
-        return set(label for (label, _) in self._representatives)
+        return {label for (label, _) in self._representatives}
 
     def coordinates(self, label):
         r"""

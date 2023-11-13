@@ -543,7 +543,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
                 a = self._ring(x)
             else:
                 raise ValueError(
-                    "element in %s cannot be used to create element in %s" % (p, self)
+                    "element in {} cannot be used to create element in {}".format(
+                        p, self
+                    )
                 )
 
         if (a * a + b * b).is_zero():

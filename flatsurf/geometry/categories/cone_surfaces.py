@@ -341,7 +341,7 @@ class ConeSurfaces(SurfaceCategory):
                                 "cannot compute exact angles in this surface built from non-rational polygons yet"
                             )
 
-                        edges = [pair for pair in self.edges()]
+                        edges = list(self.edges())
                         edges = set(edges)
                         angles = []
 
