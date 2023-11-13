@@ -1087,3 +1087,55 @@ class VoronoiPolygonCell:
 
     def __hash__(self):
         return hash((self._parent, self._center))
+
+    def split_segment_uniform_root_branch(self, segment):
+        r"""
+        Return the ``segment`` split into smaller segments such that these
+        segments do not cross the horizontal line left of the center of the
+        cell (if that center is an actual singularity and not just a marked
+        point.)
+
+        On such a shorter segment, we can then develop an n-th root
+        consistently where n-1 is the order of the singularity.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell((1, 0))
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: cell.split_segment_uniform_root_branch(OrientedSegment((0, -1), (0, 1)))
+            TODO
+
+        """
+        d = self.surface()(self.label(), self.center()).angle()
+
+        assert d >= 1
+        if d == 1:
+            return [segment]
+
+        raise NotImplementedError
+
+    def root_branch(self, segment):
+        r"""
+        Return which branch can be taken consistently along the ``segment``
+        when developing an n-th root at the center of this Voronoi cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell((1, 0))
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: cell.root_branch(OrientedSegment((0, -1), (0, 1)))
+            sage: cell.root_branch(OrientedSegment((0, -1), (0, 0)))
+            sage: cell.root_branch(OrientedSegment((0, 0), (0, 1)))
+
+        """
+        raise NotImplementedError

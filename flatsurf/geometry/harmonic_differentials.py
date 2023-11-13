@@ -6,7 +6,7 @@ EXAMPLES:
 
 We compute harmonic differentials on the square torus::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology  # random output due to deprecation warnings
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
@@ -19,7 +19,7 @@ vertical `b` to zero::
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: ω = Ω(f)
+    sage: ω = Ω(f)  # random output due to deprecation warnings
     sage: ω
     (1.0000 + O(z0^5), 1.0000 + O(z1^5), 1.0000 + O(z2^5), 1.0000 + O(z3^5), 1.0000 + O(z4^5), 1.0000 + O(z5^5), 1.0000 + O(z6^5), 1.0000 + O(z7^5), 1.0000 + O(z8^5))
 
@@ -1132,7 +1132,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     Element = HarmonicDifferential
 
     @staticmethod
-    def __classcall__(cls, surface, safety=None, singularities=False, centers=True, category=None):
+    def __classcall__(cls, surface, centers=None, homology_generators=None, category=None):
         r"""
         Normalize parameters when creating the space of harmonic differentials.
 
@@ -1146,53 +1146,92 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             True
 
         """
-        return super().__classcall__(cls, surface, HarmonicDifferentials._homology_generators(surface, safety), singularities, centers, category or SetsWithPartialMaps())
+        centers = HarmonicDifferentials._centers(surface, centers)
+        homology_generators = HarmonicDifferentials._homology_generators(surface, centers, homology_generators)
+        return super().__classcall__(cls, surface, centers, homology_generators, category or SetsWithPartialMaps())
 
-    def __init__(self, surface, homology_generators, singularities, centers, category):
+    def __init__(self, surface, centers, homology_generators, category):
         Parent.__init__(self, category=category)
 
         self._surface = surface
-        # TODO: Find a better way to track the L2 circles.
-        self._debugs = []
 
-        self._geometry = GeometricPrimitives(surface, homology_generators, singularities=singularities, centers=centers)
+        self._geometry = GeometricPrimitives(surface, centers, homology_generators)
 
     @staticmethod
-    def _homology_generators(surface, safety=None):
-        # The generators of homology will come from paths crossing from a
-        # center of a Delaunay cell to the center of a neighbouring Delaunay
-        # cell.
-        voronoi_paths = set()
-        for label, edge in surface.edges():
-            if surface.opposite_edge(label, edge) not in voronoi_paths:
-                voronoi_paths.add((label, edge))
+    def _centers(surface, algorithm):
+        if algorithm is None:
+            algorithm = "vertices+centers"
 
-        # We now subdivide these generators to attain the required safety.
-        # TODO: For now, we just add two more equally spaced points to the path.
-        from sage.all import QQ
-        gens = []
-        if safety is None:
-            for path in voronoi_paths:
-                # TODO: Hardcoded for the octagon OCTAGON
-                gens.append((path, QQ(0), QQ(274)/964))
-                gens.append((path, QQ(274)/964, QQ(427)/964))
-                gens.append((path, QQ(427)/964, QQ(537)/964))
-                gens.append((path, QQ(537)/964, QQ(690)/964))
-                gens.append((path, QQ(690)/964, QQ(964)/964))
-        elif safety == QQ(1)/3:
-            for path in voronoi_paths:
-                # TODO: We are not actually doing safety 1/3 here currently but just break paths up evenly in thirds.
-                gens.append((path, QQ(0), QQ(1)/3))
-                gens.append((path, QQ(1)/3, QQ(2)/3))
-                gens.append((path, QQ(2)/3, QQ(1)))
-        else:
-            # TODO: Currently, we ignore the safety.
-            for path in voronoi_paths:
-                gens.append((path, QQ(0), QQ(1)))
+        if algorithm == "vertices":
+            return HarmonicDifferentials._centers_vertices(surface)
 
-        gens = tuple(gens)
+        if algorithm == "vertices+centers":
+            return HarmonicDifferentials._centers_vertices_and_centers(surface)
 
-        return gens
+        from flatsurf.geometry.surface_objects import SurfacePoint
+        if all(isinstance(center, SurfacePoint) for center in algorithm):
+            return frozenset(algorithm)
+
+        raise NotImplementedError("unsupported algorithm for determining centers of power series")
+
+    @staticmethod
+    def _centers_vertices(surface):
+        r"""
+        Return the vertices of ``surface`` to develop power series around them.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: HarmonicDifferentials._centers_vertices(S)
+            frozenset({Vertex 0 of polygon 0})
+
+        """
+        return frozenset(surface.vertices())
+
+    @staticmethod
+    def _centers_vertices_and_centers(surface):
+        return frozenset(list(surface.vertices()) + [surface(label, surface.polygon(label).centroid()) for label in surface.labels()])
+
+    @staticmethod
+    def _homology_generators(surface, centers, algorithm):
+        if algorithm is None:
+            algorithm = "centers"
+
+        if algorithm == "centers":
+            return HarmonicDifferentials._homology_generators_centers(surface)
+
+        if all(isinstance(generator, Path) for generator in algorithm):
+            return frozenset(algorithm)
+
+        raise NotImplementedError("unsupported algorithm for determining homology generators")
+
+    @staticmethod
+    def _homology_generators_centers(surface):
+        r"""
+        Return all possible paths (up to orientation) connecting the centroids
+        of neighboring polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: gens = HarmonicDifferentials._homology_generators_centers(S)
+            sage: len(gens)
+            8
+
+        """
+        generators = set()
+        for label in surface.labels():
+            polygon = surface.polygon(label)
+            for edge in range(len(polygon.edges())):
+                path = GeodesicPath.across_edge(surface, label, edge)
+                if -path not in generators:
+                    generators.add(path)
+
+        return frozenset(generators)
 
     def plot(self):
         raise NotImplementedError
@@ -1294,6 +1333,11 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             algorithm = [a for a in algorithm if a != "midpoint_derivatives"]
             constraints.require_midpoint_derivatives(derivatives)
 
+        # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
+        # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
+        # convergence.
+        constraints.require_cohomology(cocycle)
+
         # (1') TODO: Describe L2 optimization.
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
@@ -1305,11 +1349,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             weight = get_parameter("squares", 1)
             algorithm = [a for a in algorithm if a != "squares"]
             constraints.optimize(weight * constraints._squares())
-
-        # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
-        # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
-        # convergence.
-        constraints.require_cohomology(cocycle)
 
         # (3) Since the area ∫ η \wedge \overline{η} must be finite [TODO:
         # REFERENCE?] we optimize for a proxy of this quantity to be minimal.
@@ -1344,12 +1383,36 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
 
 class GeometricPrimitives(UniqueRepresentation):
-    def __init__(self, surface, homology_generators, singularities=False, centers=False):  # TODO: Make True the default everywhere if this works out.
-        # TODO: Require immutable.
+    def __init__(self, surface, centers, homology_generators):
+        if surface.is_mutable():
+            raise TypeError("surface must be immutable")
+
         self._surface = surface
         self._homology_generators = homology_generators
-        self._singularities = singularities
         self._centers = centers
+
+    def path_across_edge(self, label, edge):
+        r"""
+        Return the path from the centroid of the polygon ``label`` to the
+        centroid of the polygon on the other side of ``edge`` into a
+        :class:`Path` that we can integrate along.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: S = translation_surfaces.regular_octagon()
+            sage: Ω = HarmonicDifferentials(S)
+            sage: Ω._geometry.path_across_edge(0, 0)
+            [(1, Path (0, -a - 1) from (1/2, 1/2*a + 1/2) in polygon 0 to (1/2, 1/2*a + 1/2) in polygon 0)]
+
+        """
+        path = GeodesicPath.across_edge(self._surface, label, edge)
+        if path in self._homology_generators:
+            return [(1, path)]
+        if -path in self._homology_generators:
+            return [(-1, -path)]
+
+        raise NotImplementedError("cannot rewrite this path as a sum of supported paths yet")
 
     @cached_method
     def midpoint_on_path_between_centers(self, label, a_edge, a, b_edge, b):
@@ -1542,11 +1605,11 @@ class GeometricPrimitives(UniqueRepresentation):
             (center - polygon.vertex((edge + 1) % len(polygon.vertices()))).change_ring(RR).norm())
 
     def branch(self, center, Δ):
+        raise NotImplementedError  # use voronoi functionality instead
         center_point = self._surface(*center)
         if not center_point.is_vertex():
             return 0, 0
 
-        # TODO: Hardcoded for OCTAGON
         low = Δ[1] < center[1][1]
 
         for i, vertex in enumerate(self._surface.polygon(center[0]).vertices()):
@@ -2347,24 +2410,6 @@ class SymbolicCoefficientRing(UniqueRepresentation, CommutativeRing):
         self._surface = surface
         self._base_ring = base_ring
         self._geometry = geometry
-        self._homology_generators = geometry._homology_generators
-
-        self._centers = []
-        if self._geometry._centers:
-            centers = set()
-            for (label, edge), a, b in self._homology_generators:
-                centers.add((label, edge if a else 0, a))
-                if b == 1:
-                    label, edge = self._surface.opposite_edge(label, edge)
-                    edge = 0
-                    b = 0
-                centers.add((label, edge, b))
-
-            self._centers = [self._surface(*self._geometry.point_on_path_between_centers(*gen, wrap=True)) for gen in centers]
-
-        if self._geometry._singularities:
-            for vertex in self._surface.vertices():
-                self._centers.append(vertex)
 
         CommutativeRing.__init__(self, base_ring, category=category, normalize=False)
         self.register_coercion(base_ring)
@@ -2826,100 +2871,68 @@ class PowerSeriesConstraints:
             (1.13290899470104 - 1.13290899470104*I)*Re(a0,0) + (1.13290899470104 + 1.13290899470104*I)*Im(a0,0) + (0.275277280554704 + 0.275277280554704*I)*Re(a1,0) + (-0.275277280554704 + 0.275277280554704*I)*Im(a1,0) + (0.327551243899061 + 6.93889390390723e-18*I)*Re(a1,1) + (-6.93889390390723e-18 + 0.327551243899061*I)*Im(a1,1) + (0.191399262161835 - 0.191399262161835*I)*Re(a1,2) + (0.191399262161835 + 0.191399262161835*I)*Im(a1,2)
 
         """
-        surface = cycle.surface()
+        return sum(multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._geometry.path_across_edge(label, edge))
 
-        R = self.symbolic_ring()
+    def _integrate_path(self, path):
+        r"""
+        Return the linear combination of the power series coefficients that
+        describe the integral along the ``path``.
 
-        expression = R.zero()
+        EXAMPLES::
 
-        for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items():
-            # Integrate along the path crossing the edge into the opposite face.
-            pos = 0
-            while pos != 1:
-                for gen in self._geometry._homology_generators:
-                    if gen[0] == (label, edge) and gen[1] == pos:
-                        break
-                else:
-                    assert False, f"cannot continue path from {label}, {edge}, {pos} with generators {self._geometry._homology_generators}"
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
 
-                if not self._geometry._singularities:
-                    # We develop exactly around the endpoints of the generators of homology.
-                    a = gen[1]
-                    b = gen[2]
-                    P = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b))
+            sage: Ω = HarmonicDifferentials(S)
 
-                    P_power = P
+            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+            sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
 
-                    for k in range(self._prec):
-                        expression += multiplicity * self._gen_nonsingular(label, edge, a, k) / (k + 1) * P_power
-                        P_power *= P
+            sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
+            sage: path = GeodesicPath.across_edge(S, 0, 0)
 
-                    opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+            sage: C._integrate_path(path)
 
-                    Q = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a))
+        """
+        return sum(self._integrate_path_polygon(label, segment) for (label, segment) in path.split())
 
-                    Q_power = Q
+    def _integrate_across_edge(self, label, edge):
+        r"""
+        Return a symbolic expression describing the integral from the center of
+        the circumscribing circle of the polygon with ``label`` to the center
+        of the circumscribing circle of the polygon on the other side of
+        ``edge``.
+        """
+        opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
 
-                    for k in range(self._prec):
-                        expression -= multiplicity * self._gen_nonsingular(opposite_label, opposite_edge, 1-b, k) / (k + 1) * Q_power
+        # TODO: Currently, there is no concept of a segment in a surface in
+        # sage-flatsurf other than a saddle connection or a flow starting at a
+        # vertex. It would be nice to have a proper type for such objects.
 
-                        Q_power *= Q
-                else:
-                    # TODO: OCTAGON
-                    if str(surface) != "Translation Surface in H_2(2) built from a regular octagon":
-                        raise NotImplementedError
+        # We integrate from the center of the circumscribing circle of one
+        # polygon to the edge and then from the edge to the center of the other
+        # circumscribing circle.
+        return self._integrate_center_to_edge(label, edge) - self._integrate_center_to_edge(opposite_label, opposite_edge)
 
-                    assert label == 0
+    def _integrate_center_to_edge(self, label, edge):
+        r"""
+        Return a symbolic expression describing the integral from the center of
+        the circumscribing circle of the polygon with ``label`` to the midpoint
+        of the ``edge``.
+        """
+        # Split the segment from the center to the edge into segments that are
+        # in a single Voronoi cell.
+        V = self._voronoi_diagram()
 
-                    octagon = surface.polygon(0)
-                    width = octagon.edges()[0][0] + 2 * octagon.edges()[1][0]
+        polygon = self._surface.polygon(label)
 
-                    # First: Integrate along the line crossing over the center of the
-                    # octagon from -δ v to +δ v where δ = width_on_central_chart/2.
-                    v = surface.polygon(label).vertices()[edge] + surface.polygon(label).edges()[edge] / 2 - octagon.circumscribing_circle().center()
-                    v_ = v.change_ring(self.real_field())
-                    v_ /= v_.norm()
+        expression = self.symbolic_ring().zero()
 
-                    # Second: Integrate using the power series at the singularity.
-                    # Find segments that describe the path.
-                    segments = self._voronoi_diagram().cell(surface(0, 0))
-                    from flatsurf.geometry.euclidean import is_parallel
-                    segments = [segment for segment in segments if is_parallel(segment.vector(), v)]
-                    assert len(segments) == 2, "this is not the octagon"
+        for cell, segment in V.split_segment(label, polygon.circumscribing_circle().center(), polygon.vertices()[edge] + polygon.edges()[edge]/2).items():
+            integrator = self.CellIntegrator(self, cell)
 
-                    # TODO: Hardcoded for the octagon situation
-                    width_on_vertex_chart = self.complex_field()(2 * segments[0].vector().norm())
-                    width_on_central_chart = width - width_on_vertex_chart
-
-                    # So, the first integration.
-                    # We integrate the summands of the power series \sum a_k z^k.
-                    # We have \int_γ a_k z^k = \int_{-δ}^δ a_k γ(t)^k ·γ(t) dt = a_k v^{k + 1} \int_{-δ}^δ t^k dt = a_k v^{k + 1}/(k+1) (δ^{k + 1} - (-δ)^{k + 1}).
-                    δ = width_on_central_chart / 2
-                    if part is None or part == "center":
-                        for k in range(self._prec):
-                            expression += multiplicity * self._gen_nonsingular(0, 0, 0, k) * self.complex_field()(*v_)**(k + 1) / (k + 1) * (δ**(k + 1) - (-δ)**(k + 1))
-
-                    from sage.all import parallel
-
-                    # And the second integration.
-                    # As described in _L2_consistency_voronoi_boundary, we integrate
-                    # f = Σ_{n ≥ 0} a_n f_n(z) along the segment γ.
-
-                    for s in segments:
-                        segment_length = s.vector().norm()
-                        assert abs(segment_length * 2 - width_on_vertex_chart) < 1e-9
-
-                    @parallel
-                    def create_expression(segment):
-                        integrator = self.Integrator(self, segment)
-                        return sum(multiplicity * integrator.a(n) * integrator.f(n) for n in range(3*self._prec))
-
-                    # TODO: 3 is hardcoded for the octagon.
-                    expression += sum(e for (_, e) in create_expression([segment for s in segments for segment in s.segments_with_uniform_roots()]))
-
-                    break
-
-                pos = b
+            for n in range(self._surface(label, edge).angle() * self._prec):
+                expression += integrator.a(n) * integrator.f(n, segment)
 
         return expression
 
@@ -3307,7 +3320,68 @@ class PowerSeriesConstraints:
     def _gen(self, kind, center, n):
         return self.symbolic_ring(self.real_field()).gen((kind, center, n))
 
-    class Integrator:
+    class CellIntegrator:
+        def __init__(self, constraints, cell):
+            self._constraints = constraints
+            self._cell = cell
+
+        def a(self, n):
+            return self.Re_a(n) + self._constraints.complex_field().gen() * self._constraints.symbolic_ring(self._constraints.complex_field())(self.Im_a(n))
+
+        def Re_a(self, n):
+            return self._constraints._gen("Re", self._cell.surface()(self._cell.label(), self._cell.center()), n)
+
+        def Im_a(self, n):
+            return self._constraints._gen("Im", self._cell.surface()(self._cell.label(), self._cell.center()), n)
+
+        def f(self, n, segment):
+            r"""
+            Return the sum of
+
+            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
+
+            where `d` is the order of the singularity at the center of the
+            Voronoi cell containing ``segment``, γ are segments that partition
+            ``segment`` such that the `d+1`st root of `z-α` can be taken
+            consistently on the smaller segment and it is precisely the main
+            branch of the root up to `ζ^κ` where `ζ` is a `d+1`st root of
+            unity, `α` is the center of the Voronoi cell containing the
+            segment,
+            """
+            sum = self._constraints.complex_field().zero()
+
+            C = self._constraints.complex_field()
+
+            d = self._cell.surface()(self._cell.label(), self._cell.center()).angle()
+            α = C(*self._cell.center())
+
+            for γ in self._cell.split_segment_uniform_roots(segment):
+                a = C(*segment.start())
+                b = C(*segment.end())
+
+                constant = self._constraints.ζ(d) ** (self._cell.root_branch(segment) * (n + 1)) / (d + 1) * (C(b) - C(a))
+
+                def value(part, t):
+                    z = self.complex_field(*((1 - t) * a + t * b))
+
+                    value = constant * (z-α).nth_root(d + 1)**(n - d)
+
+                    if part == "Re":
+                        return float(value.real())
+                    if part == "Im":
+                        return float(value.imag())
+
+                    raise NotImplementedError
+
+                from scipy.integrate import quad
+                real, error = quad(lambda t: value("Re", t), 0, 1)
+                imag, error = quad(lambda t: value("Im", t), 0, 1)
+
+                sum = C(real, imag)
+
+            return sum
+
+    class CellBoundaryIntegrator:
         def __init__(self, constraints, segment):
             # TODO: Verify that roots are consistent along the segment! Always the case for the octagon.
             self._segment = segment
@@ -3450,34 +3524,16 @@ class PowerSeriesConstraints:
         def f(self, n):
             return self.integral(self.α(), self.κ(), self.d(), n)
 
-    def _voronoi_diagram_centers(self):
-        # TODO: Hardcoded octagon here. OCTAGON
-        S = self._surface
-
+    @cached_method
+    def _voronoi_diagram(self):
         centers = set()
         if self._geometry._centers:
-            centers = set(S(label, S.polygon(label).centroid()) for label in S.labels())
+            centers = set(self._surface(label, self._surface.polygon(label).centroid()) for label in self._surface.labels())
         if self._geometry._singularities:
-            centers = S.vertices().union(centers)
+            centers = self._surface.vertices().union(centers)
 
-        return centers
-
-    def _voronoi_diagram(self):
-        # TODO: Hardcoded octagon here. OCTAGON
-        S = self._surface
-
-        def weight(label, center):
-            # TODO: Hardcoded octagon here.
-            if center == S.polygon(label).centroid():
-                from sage.all import QQ
-                return QQ(center.norm().n())
-            if center in S.polygon(label).vertices():
-                from sage.all import QQ
-                return QQ(1)
-            raise NotImplementedError
-
-        from flatsurf.geometry.voronoi import FixedVoronoiWeight, VoronoiDiagram
-        return VoronoiDiagram(S, self._voronoi_diagram_centers(), weight=FixedVoronoiWeight(weight))
+        from flatsurf.geometry.voronoi import VoronoiDiagram
+        return VoronoiDiagram(self._surface, centers, weight="radius_of_convergence")
 
     def _L2_consistency_voronoi_boundary(self, boundary_segment):
         r"""
@@ -3590,7 +3646,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(S, prec=3, geometry=Ω._geometry)
             sage: V = C._voronoi_diagram()
             sage: centers = C._voronoi_diagram_centers()
-            sage: segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_roots()]
+            sage: segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_root_branch()]
 
             sage: segment = segments[0]
             sage: segment._center, segment._other
@@ -3611,7 +3667,7 @@ class PowerSeriesConstraints:
             0.000000000000000
 
         """
-        integrator = self.Integrator_(self.Integrator(self, boundary_segment), self._prec)
+        integrator = self.Integrator_(self.CellBoundaryIntegrator(self, boundary_segment), self._prec)
 
         ff = integrator.int_f_overline_f()
         gg = integrator.int_g_overline_g()
@@ -4292,3 +4348,134 @@ class PowerSeriesConstraints:
                   sum((self.complex_field()(*entry) * self.laurent_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.laurent_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
 
         return series, residue
+
+
+class Path:
+    pass
+
+
+class GeodesicPath(Path):
+    def __init__(self, surface, start, end, holonomy):
+        if holonomy.is_mutable():
+            raise TypeError("holonomy must be immutable")
+        if start[1].is_mutable():
+            raise TypeError("start point must be immutable")
+        if end[1].is_mutable():
+            raise TypeError("end point must be immutable")
+
+        self._surface = surface
+        self._start = start
+        self._end = end
+        self._holonomy = holonomy
+
+    @staticmethod
+    def across_edge(surface, label, edge):
+        r"""
+        Return the :class:`GeodesicPath` that crosses from the center of the
+        polygon ``label`` to the center of the polygon across the ``edge`` in
+        a straight line.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
+            sage: GeodesicPath.across_edge(S, 0, 0)
+            Path (0, -a - 1) from (1/2, 1/2*a + 1/2) in polygon 0 to (1/2, 1/2*a + 1/2) in polygon 0
+
+        """
+        polygon = surface.polygon(label)
+
+        if not polygon.is_convex():
+            raise NotImplementedError
+
+        opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+        opposite_polygon = surface.polygon(opposite_label)
+
+        holonomy = polygon.vertex(edge) - polygon.centroid() + opposite_polygon.centroid() - opposite_polygon.vertex(opposite_edge + 1)
+        holonomy.set_immutable()
+
+        return GeodesicPath(surface, (label, polygon.centroid()), (opposite_label, opposite_polygon.centroid()), holonomy)
+
+    def split(self):
+        r"""
+        Return the path as a sequence of segments in polygons.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
+            sage: path = GeodesicPath.across_edge(S, 0, 0)
+            sage: path.split()
+            [(0, OrientedSegment((1/2, 1/2*a + 1/2), (1/2, 0))),
+             (0, OrientedSegment((1/2, a + 1), (1/2, 1/2*a + 1/2)))]
+
+        """
+        polygon = self._surface.polygon(self._start[0])
+        if not polygon.is_convex():
+            raise NotImplementedError
+
+        from flatsurf.geometry.euclidean import OrientedSegment
+        if self._end[0] == self._start[0] and self._start[1] + self._holonomy == self._end[1]:
+            return [(self._start[0], OrientedSegment(self._start[1], self._end[1]))]
+
+        path = OrientedSegment(self._start[1], self._start[1] + self._holonomy)
+        for v in range(len(polygon.vertices())):
+            edge = OrientedSegment(polygon.vertex(v), polygon.vertex(v + 1))
+            intersection = edge.intersection(path)
+
+            if intersection is None:
+                continue
+
+            if intersection == self._start[1]:
+                continue
+
+            assert self._surface(self._start[0], intersection).angle() == 1, "path crosses over a singularity"
+
+            segment = OrientedSegment(self._start[1], intersection)
+
+            prefix = [(self._start[0], segment)]
+
+            holonomy = self._holonomy - (intersection - self._start[1])
+            holonomy.set_immutable()
+
+            if not holonomy:
+                return prefix
+
+            from flatsurf.geometry.euclidean import is_parallel
+            assert is_parallel(holonomy, self._holonomy)
+
+            opposite_label, opposite_edge = self._surface.opposite_edge(self._start[0], v)
+
+            new_start = self._surface.polygon(opposite_label).vertex(opposite_edge + 1) + (intersection - polygon.vertex(v))
+            new_start.set_immutable()
+
+            return prefix + GeodesicPath(self._surface, (opposite_label, new_start), self._end, holonomy).split()
+
+        assert False
+
+    def __neg__(self):
+        holonomy = -self._holonomy
+        holonomy.set_immutable()
+        return GeodesicPath(self._surface, self._end, self._start, holonomy)
+
+    def __repr__(self):
+        return f"Path {self._holonomy} from {self._start[1]} in polygon {self._start[0]} to {self._end[1]} in polygon {self._end[0]}"
+
+    def __eq__(self, other):
+        if not isinstance(other, GeodesicPath):
+            return False
+        if self._start == other._start and self._holonomy == other._holonomy:
+            assert self._end == other._end
+            return True
+
+        return False
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __hash__(self):
+        return hash((self._start, self._holonomy))
