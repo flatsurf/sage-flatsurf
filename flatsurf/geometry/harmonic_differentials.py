@@ -91,7 +91,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: from flatsurf import similarity_surfaces, SimplicialHomology, SimplicialCohomology, HarmonicDifferentials, Polygon
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
-    sage: S = S.erase_marked_points()
+    sage: S = S.erase_marked_points().delaunay_decomposition()
     doctest:warning
     ...
     UserWarning: to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate()).codomain() instead.
@@ -106,7 +106,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: f = HS({ g: 0 for g in gens})
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=False)
+    sage: Omega = HarmonicDifferentials(S)
     sage: omega = Omega(HS(f), prec=3, check=False)
 
 """
