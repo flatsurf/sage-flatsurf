@@ -3331,12 +3331,15 @@ class PowerSeriesConstraints:
             self._constraints = constraints
             self._cell = cell
 
+        @cached_method
         def a(self, n):
             return self.Re_a(n) + self._constraints.complex_field().gen() * self._constraints.symbolic_ring(self._constraints.complex_field())(self.Im_a(n))
 
+        @cached_method
         def Re_a(self, n):
             return self._constraints._gen("Re", self._cell.surface()(self._cell.label(), self._cell.center()), n)
 
+        @cached_method
         def Im_a(self, n):
             return self._constraints._gen("Im", self._cell.surface()(self._cell.label(), self._cell.center()), n)
 
