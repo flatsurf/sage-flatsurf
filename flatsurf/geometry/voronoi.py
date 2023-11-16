@@ -207,8 +207,11 @@ m
             [Voronoi cell in polygon 0 at (0, 0), Voronoi cell in polygon 0 at (1, 0)]
 
         """
-        diagram = VoronoiDiagram_Polygon(self, label, self._weight)
-        return diagram.polygon_cells(coordinates)
+        return self._diagram_polygon(label).polygon_cells(coordinates)
+
+    @cached_method
+    def _diagram_polygon(self, label):
+        return VoronoiDiagram_Polygon(self, label, self._weight)
 
     def split_segment(self, label, segment):
         r"""
@@ -901,8 +904,7 @@ class VoronoiPolygonCell:
         self._parent = parent
         self._center = center
 
-        assert self.contains_point(center)
-
+    @cached_method
     def half_spaces(self):
         r"""
         Return the half spaces that delimit this cell inside its polygon,
