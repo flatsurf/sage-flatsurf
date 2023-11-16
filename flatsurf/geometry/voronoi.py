@@ -1197,6 +1197,10 @@ class VoronoiPolygonCell:
             sage: cell.root_branch(OrientedSegment((0, 0), (0, 1/2)))
             1
 
+            sage: a = S.base_ring().gen()
+            sage: cell = V.polygon_cell(0, (1 + a/2, a/2))
+            sage: cell.root_branch(OrientedSegment((1, 1/2 + a/2), (1 + a/2, 1/2 + a/2)))
+
         """
         if self.split_segment_uniform_root_branch(segment) != [segment]:
             raise ValueError("segment does not permit a consistent choice of root")
@@ -1205,10 +1209,10 @@ class VoronoiPolygonCell:
 
         center = S(self.label(), self.center())
 
-        d = center.angle()
+        angle = center.angle()
 
-        assert d >= 1
-        if d == 1:
+        assert angle >= 1
+        if angle == 1:
             return 0
 
         # Choose a horizontal ray to the right, that defines where the
@@ -1233,17 +1237,15 @@ class VoronoiPolygonCell:
         vertex = primitive_vertex
 
         while True:
-            assert branch < d
-
             polygon = S.polygon(label)
             if label == self.label() and polygon.vertex(vertex) == self.center():
                 low = ccw((-1, 0), polygon.edge(vertex)) <= 0 and ccw((-1, 0), point - polygon.vertex(vertex)) > 0
                 if low:
-                    assert branch + 1 < d
-                    return branch + 1
+                    return (branch + 1) % angle
                 return branch
 
-            if ccw((-1, 0), polygon.edge(vertex)) <= 0 and ccw((-1, 0), polygon.edge(vertex - 1)) > 0:
+            if ccw((-1, 0), polygon.edge(vertex)) <= 0 and ccw((-1, 0), -polygon.edge(vertex - 1)) > 0:
                 branch += 1
+                branch %= angle
 
             label, vertex = S.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))

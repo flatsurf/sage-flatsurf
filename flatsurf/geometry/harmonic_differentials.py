@@ -3362,10 +3362,10 @@ class PowerSeriesConstraints:
             α = C(*self._cell.center())
 
             for γ in self._cell.split_segment_uniform_root_branch(segment):
-                a = C(*segment.start())
-                b = C(*segment.end())
+                a = C(*γ.start())
+                b = C(*γ.end())
 
-                constant = self._constraints.ζ(d + 1) ** (self._cell.root_branch(segment) * (n + 1)) / (d + 1) * (C(b) - C(a))
+                constant = self._constraints.ζ(d + 1) ** (self._cell.root_branch(γ) * (n + 1)) / (d + 1) * (C(b) - C(a))
 
                 def value(part, t):
                     z = self._constraints.complex_field()(*((1 - t) * a + t * b))
@@ -3391,6 +3391,7 @@ class PowerSeriesConstraints:
             # TODO: In the actual computation we are throwing an absolute value
             # in somewhere, i.e., we are not using γ.(t) but |γ.(t)|.
             # That's fine but the documentation is wrong here and some other places.
+            # TODO: It's weird that this one does not split for inuform roots but integral() does.
             r"""
             Return the real/imaginary part of
 
