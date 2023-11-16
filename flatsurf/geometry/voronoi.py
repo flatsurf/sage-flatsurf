@@ -756,7 +756,9 @@ class VoronoiDiagram_Polygon:
                 # Make rounding errors symmetric so that two neighboring half
                 # space are actually the negative of each other.
                 return 1 / self._half_space_radius_of_convergence_weight(opposite_center, center)
-            return relative_weight.parent()(float(relative_weight.sqrt()))
+
+            from math import sqrt
+            return relative_weight.parent()(sqrt(float(relative_weight)))
 
     def half_spaces(self, center):
         r"""
