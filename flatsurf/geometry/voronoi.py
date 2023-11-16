@@ -210,10 +210,10 @@ m
         diagram = VoronoiDiagram_Polygon(self, label, self._weight)
         return diagram.polygon_cells(coordinates)
 
-    def split_segment(self, label, a, b):
+    def split_segment(self, label, segment):
         r"""
-        Return the segment [a, b] split into shorter segments that each lie in
-        a single Voronoi cell.
+        Return the ``segment`` split into shorter segments that each lie in a
+        single Voronoi cell.
 
         The segments are returned as a dict mapping the Voronoi cell to the
         shorter segments.
@@ -221,23 +221,27 @@ m
         EXAMPLES::
 
             sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
             sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: V.split_segment(0, (0, 0), (1, 1))
+            sage: V.split_segment(0, OrientedSegment((0, 0), (1, 1)))
             {Voronoi cell in polygon 0 at (0, 0): OrientedSegment((0, 0), (1/2, 1/2)),
              Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1, 1))}
 
         When there are multiple ways to split the segment, the choice is made
         randomly. Here, the first segment, is on the boundary of two cells::
 
-            sage: V.split_segment(0, (1/2, 0), (1/2, 1))
+            sage: V.split_segment(0, OrientedSegment((1/2, 0), (1/2, 1)))
             {Voronoi cell in polygon 0 at (...): OrientedSegment((1/2, 0), (1/2, 1/2)),
              Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1/2, 1))}
 
         """
         segments = {}
+
+        a = segment.start()
+        b = segment.end()
 
         while a != b:
             a_cells = set(self.polygon_cells(label, a))
@@ -316,6 +320,38 @@ m
                     return OrientedSegment(a, intersection), OrientedSegment(intersection, b)
 
         return None
+
+    def boundaries(self):
+        r"""
+        Return the boundaries between Voronoi cells.
+
+        The bondary segments are indexed by the two :class:`VoronoiPolygonCell`
+        defining the segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: boundaries = V.boundaries()
+            sage: len(boundaries)
+            16
+
+            sage: key = frozenset([V.polygon_cell(0, (0, 0)), V.polygon_cell(0, (1, 0))])
+            sage: boundaries[key]
+            OrientedSegment((1/2, 1/2), (1/2, 0))
+
+        """
+        boundaries = {}
+
+        for cell in self.cells():
+            for polygon_cell in cell.polygon_cells():
+                for opposite_center, boundary_segment in polygon_cell.boundary().items():
+                    boundaries[frozenset([polygon_cell, self.polygon_cell(polygon_cell.label(), opposite_center)])] = boundary_segment
+
+        return boundaries
 
 
 class VoronoiCell:
@@ -1104,11 +1140,11 @@ class VoronoiPolygonCell:
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: V = VoronoiDiagram(S, S.vertices())
-            sage: cell = V.polygon_cell((1, 0))
+            sage: cell = V.polygon_cell(0, (1, 0))
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
             sage: cell.split_segment_uniform_root_branch(OrientedSegment((0, -1), (0, 1)))
-            TODO
+            [OrientedSegment((0, -1), (0, 0)), OrientedSegment((0, 0), (0, 1))]
 
         """
         d = self.surface()(self.label(), self.center()).angle()
@@ -1117,7 +1153,23 @@ class VoronoiPolygonCell:
         if d == 1:
             return [segment]
 
-        raise NotImplementedError
+        from flatsurf.geometry.euclidean import OrientedSegment
+
+        if segment.contains_point(self.center()) and segment.start() != self.center() and segment.end() != self.center():
+            return [OrientedSegment(segment.start(), self.center()), OrientedSegment(self.center(), segment.end())]
+
+        from flatsurf.geometry.euclidean import Ray
+        ray = Ray(self.center(), (-1, 0))
+
+        if ray.contains_point(segment.start()) or ray.contains_point(segment.end()):
+            return [segment]
+
+        intersection = ray.intersection(segment)
+
+        if intersection is None:
+            return [segment]
+
+        return [OrientedSegment(segment.start(), intersection), OrientedSegment(intersection, segment.end())]
 
     def root_branch(self, segment):
         r"""
@@ -1130,12 +1182,68 @@ class VoronoiPolygonCell:
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: V = VoronoiDiagram(S, S.vertices())
-            sage: cell = V.polygon_cell((1, 0))
+            sage: cell = V.polygon_cell(0, (0, 0))
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
             sage: cell.root_branch(OrientedSegment((0, -1), (0, 1)))
-            sage: cell.root_branch(OrientedSegment((0, -1), (0, 0)))
-            sage: cell.root_branch(OrientedSegment((0, 0), (0, 1)))
+            Traceback (most recent call last):
+            ...
+            ValueError: segment does not permit a consistent choice of root
+
+            sage: cell.root_branch(OrientedSegment((0, 0), (0, 1/2)))
+            0
+
+            sage: cell = V.polygon_cell(0, (1, 0))
+            sage: cell.root_branch(OrientedSegment((0, 0), (0, 1/2)))
+            1
 
         """
-        raise NotImplementedError
+        if self.split_segment_uniform_root_branch(segment) != [segment]:
+            raise ValueError("segment does not permit a consistent choice of root")
+
+        S = self.surface()
+
+        center = S(self.label(), self.center())
+
+        d = center.angle()
+
+        assert d >= 1
+        if d == 1:
+            return 0
+
+        # Choose a horizontal ray to the right, that defines where the
+        # principal root is being used. We use the "smallest" vertex in the
+        # "smallest" polygon containing such a ray.
+        primitive_label = min(label for (label, _) in center.representatives())
+
+        primitive_polygon = S.polygon(primitive_label)
+
+        from flatsurf.geometry.euclidean import ccw
+        primitive_vertex = min(vertex for vertex in range(len(primitive_polygon.vertices()))
+            if S(primitive_label, vertex) == center and
+               ccw((1, 0), primitive_polygon.edge(vertex)) <= 0 and
+               ccw((1, 0), -primitive_polygon.edge(vertex - 1)) >= 0)
+
+        # Walk around the vertex to determine the branch of the root for the
+        # (midpoint of) the segment.
+        point = segment.midpoint()
+
+        branch = 0
+        label = primitive_label
+        vertex = primitive_vertex
+
+        while True:
+            assert branch < d
+
+            polygon = S.polygon(label)
+            if label == self.label() and polygon.vertex(vertex) == self.center():
+                low = ccw((-1, 0), polygon.edge(vertex)) <= 0 and ccw((-1, 0), point - polygon.vertex(vertex)) > 0
+                if low:
+                    assert branch + 1 < d
+                    return branch + 1
+                return branch
+
+            if ccw((-1, 0), polygon.edge(vertex)) <= 0 and ccw((-1, 0), polygon.edge(vertex - 1)) > 0:
+                branch += 1
+
+            label, vertex = S.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))

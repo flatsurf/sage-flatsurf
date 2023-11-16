@@ -850,7 +850,10 @@ class OrientedSegment:
             (0, 0)
 
         """
+        # TODO: Test that everything can intersect with everything else and that the orientation of self is preserved in the intersection.
+        # TODO: Deprecate intersection functions (and everything else) defined at the top of this file.
         if isinstance(other, OrientedSegment):
+            # TODO: Rewrite using line intersection.
             intersecting = is_segment_intersecting((self._a, self._b), (other._a, other._b))
             if not intersecting:
                 return None
@@ -905,6 +908,35 @@ class OrientedSegment:
 
         """
         return self._b
+
+    def line(self):
+        r"""
+        Return a line containing this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: S = OrientedSegment((0, 0), (1, 1))
+            sage: S.line()
+            {-x + y = 0}
+
+        """
+        return Ray(self.start(), self.end() - self.start()).line()
+
+    def midpoint(self):
+        r"""
+        Return the barycenter of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: S = OrientedSegment((0, 0), (1, 1))
+            sage: S.midpoint()
+            (1/2, 1/2)
+
+        """
+        from sage.all import vector
+        return vector((self.start() + self.end()) / 2, immutable=True)
 
 
 class HalfSpace:
@@ -1130,3 +1162,239 @@ class OrientedLine:
 
         """
         return self._half_space.as_polyhedron().faces(1)[0].as_polyhedron()
+
+    def __neg__(self):
+        return OrientedLine(-self._half_space._a, -self._half_space._b, -self._half_space._c)
+
+    def intersection(self, other):
+        r"""
+        Return the intersection of this line with the object ``other``.
+
+        Return ``None`` if they do not intersect.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import OrientedLine
+            sage: L = OrientedLine(1, 2, 3)
+            sage: M = OrientedLine(1, 2, 4)
+            sage: L.intersection(M)
+            (-1/2, 0)
+
+        """
+        if isinstance(other, OrientedLine):
+            if self == other:
+                return self
+            if self == -other:
+                return self
+            return line_intersection(*self._points(), *other._points())
+        if isinstance(other, OrientedSegment):
+            intersection = self.intersection(other.line())
+            if intersection is None:
+                return None
+            if intersection == self:
+                return other
+            if other.contains_point(intersection):
+                return intersection
+            return None
+        raise NotImplementedError("cannot intersect a line with this object yet")
+
+    def contains_point(self, point):
+        r"""
+        Return whether ``point`` is on this line.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import OrientedLine
+            sage: L = OrientedLine(1, 2, 3)
+            sage: L.contains_point((-1/2, 0))
+            True
+
+        """
+        return self._half_space._a + point[0] * self._half_space._b + point[1] * self._half_space._c == 0
+
+    def _points(self):
+        r"""
+        Return a pair of points on this line.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import OrientedLine
+            sage: L = OrientedLine(1, 2, 3)
+            sage: L._points()
+            ((0, -1/3), (1, -1))
+
+        """
+        a, b, c = self._half_space._a, self._half_space._b, self._half_space._c
+
+        from sage.all import vector
+        if not c:
+            assert b
+            return vector((-a / b, 0)), vector((-a / b, 1))
+
+        return vector((0, -a / c)), vector((1, (-a - b) / c))
+
+
+class Ray:
+    r"""
+    The infinite ray in the Euclidean plane from a finite point towards a direction.
+
+    .. NOTE::
+
+        SageMath provides polyhedra that implement more functionality than this
+        object. However, these polyhedra are notoriously slow for computations
+        in the Euclidean plane since they were (apparently) never optimized for
+        computations in low dimensions.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import Ray
+        sage: R = Ray((0, 0), (-1, 0))
+        sage: R
+        (0, 0) + λ (-1, 0)
+
+    """
+
+    def __init__(self, point, direction):
+        from sage.all import vector
+        self._point = vector(point, immutable=True)
+        self._direction = vector(direction, immutable=True)
+
+    def _normalized_direction(self):
+        r"""
+        Return the direction of this ray, normalized up to scaling.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import Ray
+            sage: R = Ray((0, 0), (-2, 0))
+            sage: R._normalized_direction()
+            (-1, 0)
+            sage: R = Ray((0, 0), (2, 0))
+            sage: R._normalized_direction()
+            (1, 0)
+            sage: R = Ray((0, 0), (-2, 3))
+            sage: R._normalized_direction()
+            (-2/3, 1)
+            sage: R = Ray((0, 0), (2, -3))
+            sage: R._normalized_direction()
+            (2/3, -1)
+
+        """
+        from sage.all import vector, sgn
+        if not self._direction[1]:
+            return vector((sgn(self._direction[0]), 0), immutable=True)
+
+        return vector((sgn(self._direction[0]) * abs(self._direction[0] / self._direction[1]), sgn(self._direction[1])), immutable=True)
+
+    def __repr__(self):
+        return f"{self._point} + λ {self._normalized_direction()}"
+
+    def __hash__(self):
+        return hash((self._point, self._normalized_direction()))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this ray is indistinguishable from ``other``.
+        """
+        if not isinstance(other, Ray):
+            return False
+        return self._point == other._point and self._normalized_direction() == other._normalized_direction()
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def as_polyhedron(self):
+        r"""
+        Return a representation of this ray as a SageMath polyhedron.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import Ray
+            sage: R = Ray((0, 0), (-2, 0))
+            sage: R.as_polyhedron()
+            A 1-dimensional polyhedron in ZZ^2 defined as the convex hull of 1 vertex and 1 ray
+
+        """
+        from sage.all import Polyhedron
+        return Polyhedron(vertices=[self._point], rays=[self._direction])
+
+    def contains_point(self, point):
+        r"""
+        Return whether the Euclidean ``point`` is contained in this ray.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import Ray
+            sage: R = Ray((0, 0), (-2, 0))
+            sage: R.contains_point((0, 0))
+            True
+            sage: R.contains_point((-2, 0))
+            True
+            sage: R.contains_point((2, 0))
+            False
+
+        """
+        t = OrientedSegment(self._point, self._point + self._direction)._parametrize(point)
+        if t is None:
+            return False
+        return t >= 0
+
+    def intersection(self, other):
+        r"""
+        Return the intersection of this ray with the object ``other``.
+
+        Return ``None`` if the objects do not intersect.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import Ray, OrientedSegment
+            sage: R = Ray((0, 0), (-2, 0))
+            sage: R.intersection(OrientedSegment((1, 0), (-2, 0)))
+            OrientedSegment((0, 0), (-2, 0))
+            sage: R.intersection(OrientedSegment((-1, 0), (-2, 1)))
+            (-1, 0)
+            sage: R.intersection(OrientedSegment((-1, 1), (-2, -1)))
+            (-3/2, 0)
+
+        """
+        if isinstance(other, OrientedSegment):
+            line_intersection = self.line().intersection(other)
+            if line_intersection is None:
+                return None
+            if isinstance(line_intersection, OrientedSegment):
+                s = self._parametrize(line_intersection.start())
+                t = self._parametrize(line_intersection.end())
+                if s > t:
+                    s, t = t, s
+                if t < 0:
+                    return None
+                s = max(s, 0)
+                if s == t:
+                    from sage.all import vector
+                    return vector(self._point + s * self._direction)
+                return OrientedSegment(self._point + s * self._direction, self._point + t * self._direction)
+            if self.contains_point(line_intersection):
+                return line_intersection
+            return None
+
+        raise NotImplementedError("cannot intersect a ray with this object yet")
+
+    def _parametrize(self, point):
+        return OrientedSegment(self._point, self._point + self._direction)._parametrize(point)
+
+    def line(self):
+        r"""
+        Return the oriented line containing this ray.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import Ray, OrientedSegment
+            sage: R = Ray((0, 0), (-2, 0))
+            sage: R.line()
+            {(-2) * y = 0}
+
+        """
+        b = -self._direction[1]
+        c = self._direction[0]
+        a = - (b * self._point[0] + c * self._point[1])
+        return OrientedLine(a, b, c)
