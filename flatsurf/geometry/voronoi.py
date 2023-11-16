@@ -1220,15 +1220,11 @@ class VoronoiPolygonCell:
         # Choose a horizontal ray to the right, that defines where the
         # principal root is being used. We use the "smallest" vertex in the
         # "smallest" polygon containing such a ray.
-        primitive_label = min(label for (label, _) in center.representatives())
-
-        primitive_polygon = S.polygon(primitive_label)
-
         from flatsurf.geometry.euclidean import ccw
-        primitive_vertex = min(vertex for vertex in range(len(primitive_polygon.vertices()))
-            if S(primitive_label, vertex) == center and
-               ccw((1, 0), primitive_polygon.edge(vertex)) <= 0 and
-               ccw((1, 0), -primitive_polygon.edge(vertex - 1)) >= 0)
+        primitive_label, primitive_vertex = min((label, vertex) for (label, _) in center.representatives() for vertex in range(len(S.polygon(label).vertices()))
+            if S(label, vertex) == center and
+               ccw((1, 0), S.polygon(label).edge(vertex)) <= 0 and
+               ccw((1, 0), -S.polygon(label).edge(vertex - 1)) >= 0)
 
         # Walk around the vertex to determine the branch of the root for the
         # (midpoint of) the segment.
