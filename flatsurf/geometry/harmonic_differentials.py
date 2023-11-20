@@ -103,7 +103,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
     sage: Omega = HarmonicDifferentials(S)
-    sage: omega = Omega(HS(f), prec=3, check=False)
+    sage: omega = Omega(HS(f), prec=1, check=False)  # TODO: Increase precision once this is faster.
 
 """
 ######################################################################
@@ -845,26 +845,28 @@ class HarmonicDifferential(Element):
         coefficients = {}
 
         for variable in expression.variables():
-            kind, point, k = variable.describe()
+            center = self.parent()._gen_center(variable)
+            degree = self.parent()._gen_degree(variable)
 
             try:
-                coefficient = self._series[point][k]
+                coefficient = self._series[center][degree]
             except IndexError:
                 import warnings
-                warnings.warn(f"expected a {k}th coefficient of the power series around {point} but none found")
+                warnings.warn(f"expected a {degree}th coefficient of the power series around {center} but none found")
                 coefficients[variable] = 0
                 continue
 
-            if kind == "Re":
+            if self.parent()._gen_is_real(variable):
                 coefficients[variable] = coefficient.real()
-            else:
-                assert kind == "Im"
+            elif self.parent()._gen_is_imag(variable):
                 coefficients[variable] = coefficient.imag()
+            else:
+                raise NotImplementedError
 
         value = expression(coefficients)
 
-        from flatsurf.geometry.power_series import SymbolicPowerSeries
-        if isinstance(value, SymbolicPowerSeries):
+        from flatsurf.geometry.power_series import PowerSeriesCoefficientExpression
+        if isinstance(value, PowerSeriesCoefficientExpression):
             assert value.total_degree() <= 0
             value = value.constant_coefficient()
 
@@ -1292,6 +1294,42 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     def _repr_(self):
         return f"Ω({self._surface})"
 
+    # TODO: Move to some class that is shared between harmonic differentials
+    # and constraints that abstracts away details of the symbolic ring.
+    def _gen_center(self, gen):
+        assert self._gen_is_real(gen) or self._gen_is_imag(gen)
+
+        gen, degree = gen.describe()
+
+        return self._geometry._centers[int(gen.split(",")[0][4:])]
+
+    # TODO: Move to some class that is shared between harmonic differentials
+    # and constraints that abstracts away details of the symbolic ring.
+    def _gen_is_lagrange(self, gen):
+        gen, degree = gen.describe()
+
+        return gen == "λ?"
+
+    # TODO: Move to some class that is shared between harmonic differentials
+    # and constraints that abstracts away details of the symbolic ring.
+    def _gen_is_real(self, gen):
+        gen, degree = gen.describe()
+
+        return gen.startswith("Re(a")
+
+    # TODO: Move to some class that is shared between harmonic differentials
+    # and constraints that abstracts away details of the symbolic ring.
+    def _gen_is_imag(self, gen):
+        gen, degree = gen.describe()
+
+        return gen.startswith("Im(a")
+
+    # TODO: Move to some class that is shared between harmonic differentials
+    # and constraints that abstracts away details of the symbolic ring.
+    def _gen_degree(self, gen):
+        gen, degree = gen.describe()
+        return degree
+
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
             return self.element_class(self, None, *args, **kwargs)
@@ -1705,6 +1743,8 @@ class PowerSeriesConstraints:
         return RealField(54)
         return RealField(self._bitprec)
 
+    # TODO: Move to Harmonic Differentials; or maybe some other shared class
+    # that abstracts away details of the symbolic ring.
     @cached_method
     def lagrange(self, k):
         return self.symbolic_ring().gen(("λ?", k))
@@ -2377,6 +2417,7 @@ class PowerSeriesConstraints:
         from sage.all import exp, pi, I
         return self.complex_field()(exp(2*pi*I / d))
 
+    # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
         return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._geometry._centers.index(center)},?)", n))
 
@@ -3373,6 +3414,7 @@ q
 
             gen, degree = variable.describe()
 
+            # TODO: Use generic functionality to parse variable name.
             if gen.startswith("Re(a"):
                 part = 0
             elif gen.startswith("Im(a"):
