@@ -6,7 +6,7 @@ EXAMPLES:
 
 We compute harmonic differentials on the square torus::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology  # random output due to deprecation warnings from cppyy
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
@@ -19,7 +19,7 @@ vertical `b` to zero::
     sage: H = SimplicialCohomology(T)
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
-    sage: ω = Ω(f)  # random output due to deprecation warnings
+    sage: ω = Ω(f)
     sage: ω
     (1.0000 + O(z0^5), 1.0000 + O(z1^5))
 
@@ -130,7 +130,11 @@ from sage.misc.cachefunc import cached_method, cached_function
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 
-import cppyy
+import warnings
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    import cppyy
 
 complex = None
 
