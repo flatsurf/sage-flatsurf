@@ -1204,6 +1204,7 @@ class VoronoiPolygonCell:
             sage: a = S.base_ring().gen()
             sage: cell = V.polygon_cell(0, (1 + a/2, a/2))
             sage: cell.root_branch(OrientedSegment((1, 1/2 + a/2), (1 + a/2, 1/2 + a/2)))
+            2
 
         """
         if self.split_segment_uniform_root_branch(segment) != [segment]:
