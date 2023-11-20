@@ -46,8 +46,7 @@ A less trivial example, the regular octagon::
     sage: Omega = HarmonicDifferentials(S)
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
-    ((-0.000048417 + 0.000014772*I) + 0.00092363*I*z0 + (1.3146 - 0.000033146*I)*z0^2 + O(z0^3), (-2.0500 + 0.000051690*I) - 0.0014250*I*z1 + (-0.00014525 + 0.000044316*I)*z1^2 + 0.0049924*I*z1^3 - 0.0041365*I*z1^5 + 0.011334*z1^6 - 0.0018723*I*z1^7 + (-3.0794 + 0.000077645*I)*z1^8 + O(z1^9))
-
+    ((-2.0314 + 0.00016805*I) - 0.0013988*I*z0 + (0.015450 + 0.00014119*I)*z0^2 + 0.0020302*I*z0^3 - 0.0017163*z0^4 - 0.0040604*I*z0^5 + 0.014323*z0^6 + 0.0044380*I*z0^7 + (-3.0462 + 0.00025287*I)*z0^8 + O(z0^9), (0.0051501 + 0.000047063*I) + 0.00090665*I*z1 + (1.3030 - 0.00010772*I)*z1^2 + O(z1^3))
 
 The same computation on a triangulation of the octagon::
 
