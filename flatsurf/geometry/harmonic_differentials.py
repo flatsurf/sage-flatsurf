@@ -6,7 +6,7 @@ EXAMPLES:
 
 We compute harmonic differentials on the square torus::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology  # random output due to deprecation warnings from cppyy
     sage: T = translation_surfaces.torus((1, 0), (0, 1))
     sage: T.set_immutable()
 
@@ -92,18 +92,14 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
     sage: S = S.erase_marked_points().delaunay_decomposition()
-    doctest:warning
-    ...
-    UserWarning: to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate()).codomain() instead.
-    doctest:warning
-    ...
-    UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
 
     sage: H = SimplicialHomology(S)
     sage: HS = SimplicialCohomology(S, homology=H)
     sage: gens = H.gens()
 
-    sage: f = HS({ g: 0 for g in gens})
+    sage: f = { g: 0 for g in gens}
+    sage: f[gens[0]] = 1
+    sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
     sage: Omega = HarmonicDifferentials(S)
@@ -134,13 +130,12 @@ from sage.misc.cachefunc import cached_method, cached_function
 from sage.categories.all import SetsWithPartialMaps
 from sage.structure.unique_representation import UniqueRepresentation
 
+import cppyy
 
 complex = None
 
 
-def cppyy():
-    import cppyy
-
+def _cppyy():
     global complex
     if complex is None:
         cppyy.include('complex')
@@ -149,7 +144,7 @@ def cppyy():
 
 
 def Ccpp(x):
-    cppyy()
+    _cppyy()
     return complex(float(x.real()), float(x.imag()))
 
 
@@ -161,8 +156,8 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
 
     where γ(t) = (1-t)a + tb.
     """
-    if not hasattr(cppyy().gbl, "integral2arb"):
-        cppyy().cppdef(r"""
+    if not hasattr(_cppyy().gbl, "integral2arb"):
+        _cppyy().cppdef(r"""
         #include <acb_calc.h>
         #include <string>
 
@@ -341,9 +336,9 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
         }
         """)
 
-        cppyy().load_library("arb");
+        _cppyy().load_library("arb");
 
-    return R(cppyy().gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
+    return R(_cppyy().gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
 
 
 def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
@@ -369,8 +364,8 @@ def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     d = int(d)
     dd = int(dd)
 
-    if not hasattr(cppyy().gbl, "value"):
-        cppyy().cppdef(r"""
+    if not hasattr(_cppyy().gbl, "value"):
+        _cppyy().cppdef(r"""
         #include <complex>
 
         using complex = std::complex<double>;
@@ -401,10 +396,10 @@ def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
         if e == 1:
             return z
 
-        return cppyy().gbl.std.pow(z, e)
+        return _cppyy().gbl.std.pow(z, e)
 
     def value(t):
-        value = cppyy().gbl.value(t, constant, a, α, d, n, b, β, dd, m)
+        value = _cppyy().gbl.value(t, constant, a, α, d, n, b, β, dd, m)
 
         if part == "Re":
             return value.real
@@ -464,8 +459,8 @@ def Cab(C, a):
 
 
 def define_solve():
-    if not hasattr(cppyy().gbl, "solve"):
-        cppyy().cppdef(r'''
+    if not hasattr(_cppyy().gbl, "solve"):
+        _cppyy().cppdef(r'''
         #include <cassert>
         #include <vector>
         #include <iostream>
@@ -515,7 +510,11 @@ def define_solve():
         }
         ''')
 
-    return cppyy().gbl.solve
+    return _cppyy().gbl.solve
+
+
+# TODO: This works around a problem when pyflatsurf is loaded. If pyflatsurf is loaded first, there are C++ errors.
+define_solve()
 
 
 class HarmonicDifferential(Element):
@@ -549,6 +548,12 @@ class HarmonicDifferential(Element):
         """
         return self.parent()({
             triangle: self._series[triangle] + other._series[triangle]
+            for triangle in self._series
+        })
+
+    def _sub_(self, other):
+        return self.parent()({
+            triangle: self._series[triangle] - other._series[triangle]
             for triangle in self._series
         })
 
@@ -1677,10 +1682,12 @@ class PowerSeriesConstraints:
 
         """
         # TODO: What's the correct precision here?
-        # return SymbolicCoefficientRing(self._surface, base_ring=base_ring or self.complex_field())
+
+        gens = [f"Re(a{n},?)" for n in range(len(self._geometry._centers))] + [f"Im(a{n},?)" for n in range(len(self._geometry._centers))] + ["λ?"]
+
         from sage.all import ComplexField
-        from flatsurf.geometry.power_series import SymbolicCoefficientRing
-        return SymbolicCoefficientRing(self._surface, base_ring=base_ring or ComplexField(54), geometry=self._geometry)
+        from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing
+        return PowerSeriesCoefficientExpressionRing(base_ring or ComplexField(54), tuple(gens))
 
     @cached_method
     def complex_field(self):
@@ -1694,98 +1701,9 @@ class PowerSeriesConstraints:
         return RealField(54)
         return RealField(self._bitprec)
 
-    def gen(self, point, /, conjugate=False):
-        raise NotImplementedError
-
-    @cached_method
-    def _gen_nonsingular(self, label, edge, pos, k, /, conjugate=False):
-        # TODO: Remove this method
-        assert conjugate is True or conjugate is False
-        real = self._real_nonsingular(label, edge, pos, k)
-        imag = self._imag_nonsingular(label, edge, pos, k)
-
-        i = self.symbolic_ring().imaginary_unit()
-
-        if conjugate:
-            i = -i
-
-        return real + i*imag
-
-    @cached_method
-    def _real_nonsingular(self, label, edge, pos, k):
-        r"""
-        Return the real part of the kth coefficient of the power series
-        developed around ``center + pos * e`` where ``center`` is the center of
-        the circumscribing circle of the polygon ``label`` and ``e`` is the
-        straight segment connecting that center to the center of the polygon
-        across the ``edge``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: Ω = HarmonicDifferentials(T)
-
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C._real_nonsingular(0, 0, 0, 0)
-            Re(a2,0)
-            sage: C._real_nonsingular(0, 0, 0, 1)
-            Re(a2,1)
-            sage: C._real_nonsingular(0, 0, 1, 0)
-            Re(a2,0)
-            sage: C._real_nonsingular(0, 1, 0, 0)
-            Re(a2,0)
-            sage: C._real_nonsingular(0, 2, 137/482, 0)
-            Re(a0,0)
-            sage: C._real_nonsingular(0, 0,  537/964, 0)
-            Re(a3,0)
-            sage: C._real_nonsingular(0, 1, 345/482, 0)
-            Re(a1,0)
-            sage: C._real_nonsingular(0, 1, 537/964, 0)
-            Re(a4,0)
-
-        """
-        # TODO: Remove this method
-        if k >= self._prec:
-            raise ValueError(f"symbolic ring has no {k}-th generator at this point")
-
-        return self.symbolic_ring().gen(("Re", self._surface(*self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)), k))
-
-    @cached_method
-    def _imag_nonsingular(self, label, edge, pos, k):
-        r"""
-        Return the imaginary part of the kth generator of the :meth:`symbolic_ring`
-        for the polygon ``label``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C._imag_nonsingular(0, 0, 0, 0)
-            Im(a2,0)
-            sage: C._imag_nonsingular(0, 0, 0, 1)
-            Im(a2,1)
-            sage: C._imag_nonsingular(0, 0, 0, 2)
-            Im(a2,2)
-
-        """
-        # TODO: Remove this method
-        if k >= self._prec:
-            raise ValueError(f"symbolic ring has no {k}-th generator at this point")
-
-        return self.symbolic_ring().gen(("Im", self._surface(*self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)), k))
-
     @cached_method
     def lagrange(self, k):
-        return self.symbolic_ring().gen(("lagrange", k))
+        return self.symbolic_ring().gen(("λ?", k))
 
     def project(self, x, part):
         r"""
@@ -2456,7 +2374,7 @@ class PowerSeriesConstraints:
         return self.complex_field()(exp(2*pi*I / d))
 
     def _gen(self, kind, center, n):
-        return self.symbolic_ring(self.real_field()).gen((kind, center, n))
+        return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._geometry._centers.index(center)},?)", n))
 
     class CellIntegrator:
         def __init__(self, constraints, cell):
@@ -2821,10 +2739,10 @@ q
         def f_(part, n, m):
             return int.mixed_integral(part, α, κ, d, n, α, κ, d, m, boundary_segment)
 
-        return sum(
+        return self.symbolic_ring().sum([
             (int.Re_a(n) * int.Re_a(m) + int.Im_a(n) * int.Im_a(m)) * f_("Re", n, m) + (int.Re_a(n) * int.Im_a(m) - int.Im_a(n) * int.Re_a(m)) * f_("Im", n, m)
             for n in range(self._prec * center.angle())
-            for m in range(self._prec * center.angle()))
+            for m in range(self._prec * center.angle())])
 
     def _L2_consistency_voronoi_boundary_Re_f_overline_g(self, cell, boundary_segment, opposite_cell):
         r"""
@@ -2846,10 +2764,10 @@ q
         def fg_(part, n, m):
             return int.mixed_integral(part, α, κ, d, n, β, λ, dd, m, boundary_segment)
 
-        return sum(
+        return self.symbolic_ring().sum([
             (int.Re_a(n) * jnt.Re_a(m) + int.Im_a(n) * jnt.Im_a(m)) * fg_("Re", n, m) + (int.Re_a(n) * jnt.Im_a(m) - int.Im_a(n) * jnt.Re_a(m)) * fg_("Im", n, m)
             for n in range(self._prec * center.angle())
-            for m in range(self._prec * opposite_center.angle()))
+            for m in range(self._prec * opposite_center.angle())])
 
     def _L2_consistency_voronoi_boundary_g_overline_g(self, opposite_cell, boundary_segment):
         r"""
@@ -2866,10 +2784,10 @@ q
         def g_(part, n, m):
             return jnt.mixed_integral(part, β, λ, dd, n, β, λ, dd, m, boundary_segment)
 
-        return sum(
+        return self.symbolic_ring().sum([
             (jnt.Re_a(n) * jnt.Re_a(m) + jnt.Im_a(n) * jnt.Im_a(m)) * g_("Re", n, m) + (jnt.Re_a(n) * jnt.Im_a(m) - jnt.Im_a(n) * jnt.Re_a(m)) * g_("Im", n, m)
             for n in range(self._prec * opposite_center.angle())
-            for m in range(self._prec * opposite_center.angle()))
+            for m in range(self._prec * opposite_center.angle())])
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):
@@ -3121,6 +3039,13 @@ q
         if f:
             self._cost += f
 
+    def variables(self):
+        terms = list(self._constraints)
+        if self._cost is not None:
+            terms.append(self._cost)
+
+        return set(variable for constraint in terms for variable in constraint.variables())
+
     def _optimize_cost(self):
         # We use Lagrange multipliers to rewrite this expression.
         # If we let
@@ -3140,19 +3065,14 @@ q
 
         # We form the partial derivative with respect to the variables Re(a_k)
         # and Im(a_k).
-        for gen in self.symbolic_ring()._regular_gens(prec=self._prec):
-            gen = self.symbolic_ring().gen(gen)
-            if self._cost.degree(gen) <= 0:
-                # The cost function does not depend on this variable.
-                # That's fine, we still need it for the Lagrange multipliers machinery.
-                pass
+        for variable in self.variables():
+            if variable.describe()[0] == "λ?":
+                continue
 
-            gen = self._cost.parent()(gen)
-
-            L = self._cost.derivative(gen)
+            L = self._cost.derivative(variable)
 
             for i in range(lagranges):
-                L += g[i][gen] * self.lagrange(i)
+                L += g[i][variable] * self.lagrange(i)
 
             self.add_constraint(L, rank_check=False)
 
@@ -3204,7 +3124,7 @@ q
             self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)), rank_check=False)
 
     def lagrange_variables(self):
-        return set(variable for constraint in self._constraints for variable in constraint.variables("lagrange"))
+        return set(variable for variable in self.variables() if variable.describe()[0] == "λ?")
 
     def matrix(self, nowarn=False):
         r"""
@@ -3222,6 +3142,7 @@ q
             sage: C = PowerSeriesConstraints(T, 6, geometry=Ω._geometry)
             sage: C.require_cohomology(H({a: 1}))
             sage: C.optimize(C._L2_consistency())
+            sage: C._optimize_cost()
             sage: C.matrix()
             ...
             (2 x 54 dense matrix over Real Field with 54 bits of precision,
@@ -3295,42 +3216,36 @@ q
 
         non_lagranges = set()
         for row, constraint in enumerate(self._constraints):
-            for monomial, coefficient in constraint._coefficients.items():
-                if not monomial:
-                    continue
+            assert constraint.total_degree() <= 1
+            for variable in constraint.variables():
+                gen, degree = variable.describe()
+                if gen != "λ?":
+                    non_lagranges.add(variable)
 
-                gen = monomial[0]
-                if gen >= 0:
-                    non_lagranges.add(gen)
+        non_lagranges = {variable: i for (i, variable) in enumerate(non_lagranges)}
 
-        non_lagranges = {gen: i for (i, gen) in enumerate(non_lagranges)}
-
-        if len(set(self.symbolic_ring()._regular_gens(self._prec))) != len(non_lagranges):
-            if not nowarn:
-                from warnings import warn
-                warn(f"Some power series coefficients are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
+        # TODO: Can we make this warning work again?
+        # if len(set(self.symbolic_ring()._regular_gens(self._prec))) != len(non_lagranges):
+        #     if not nowarn:
+        #         from warnings import warn
+        #         warn(f"Some power series coefficients are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
 
         from sage.all import matrix, vector
         A = matrix(self.real_field(), len(self._constraints), len(non_lagranges) + len(self.lagrange_variables()))
         b = vector(self.real_field(), len(self._constraints))
 
         for row, constraint in enumerate(self._constraints):
-            for monomial, coefficient in constraint._coefficients.items():
-                if not monomial:
-                    b[row] -= coefficient
-                    continue
+            b[row] -= constraint.constant_coefficient()
 
-                assert len(monomial) == 1
-
-                gen = monomial[0]
-                if gen < 0:
-                    if gen not in lagranges:
-                        lagranges[gen] = len(non_lagranges) + len(lagranges)
-                    column = lagranges[gen]
+            for variable in constraint.variables():
+                if variable.describe()[0] == "λ?":
+                    if variable not in lagranges:
+                        lagranges[variable] = len(non_lagranges) + len(lagranges)
+                    column = lagranges[variable]
                 else:
-                    column = non_lagranges[gen]
+                    column = non_lagranges[variable]
 
-                A[row, column] += coefficient
+                A[row, column] += constraint[variable]
 
         return A, b, non_lagranges, set()
 
@@ -3431,7 +3346,7 @@ q
             Cb = b.change_ring(RDF)
             solution = CA.solve_right(Cb)
         elif algorithm == "eigen+mpfr":
-            cppyy().load_library("mpfr")
+            _cppyy().load_library("mpfr")
 
             solution = define_solve()(A, b)
 
@@ -3449,27 +3364,24 @@ q
 
         series = {point: {} for point in self._geometry._centers}
 
-        for gen in self.symbolic_ring()._regular_gens(self._prec):
-            i = next(iter(self.symbolic_ring().gen(gen)._coefficients))[0]
+        for variable, column in decode.items():
+            value = solution[column]
 
-            if i not in decode:
-                continue
+            gen, degree = variable.describe()
 
-            i = decode[i]
-            value = solution[i]
-
-            part, center, k = gen
-            if k not in series[center]:
-                series[center][k] = [None, None]
-
-            if part == "Re":
+            if gen.startswith("Re(a"):
                 part = 0
-            elif part == "Im":
+            elif gen.startswith("Im(a"):
                 part = 1
             else:
-                raise NotImplementedError
+                assert False
 
-            series[center][k][part] = value
+            center = self._geometry._centers[int(gen.split(",")[0][4:])]
+
+            if degree not in series[center]:
+                series[center][degree] = [None, None]
+
+            series[center][degree][part] = value
 
         series = {point:
                   sum((self.complex_field()(*entry) * self.laurent_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.laurent_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}

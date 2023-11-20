@@ -56,7 +56,7 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
 
     EXAMPLES::
 
-        sage: from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing
+        sage: from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing  # random output due to deprecation warnings from cppyy
         sage: R = PowerSeriesCoefficientExpressionRing(QQ, gens=("a_?", "b_?"))
         sage: a0 = R.gen(("a_?", 0))
         sage: b0 = R.gen(("b_?", 0))
@@ -328,24 +328,7 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             Re(a0,0)^2 + Im(a0,0)^2
 
         """
-        parent = self.parent()
-
-        if len(self._coefficients) < len(other._coefficients):
-            self, other = other, self
-
-        coefficients = dict(self._coefficients)
-
-        for monomial, coefficient in other._coefficients.items():
-            assert coefficient
-            if monomial not in coefficients:
-                coefficients[monomial] = coefficient
-            else:
-                coefficients[monomial] += coefficient
-
-                if not coefficients[monomial]:
-                    del coefficients[monomial]
-
-        return type(self)(parent, coefficients)
+        return self.parent().sum([self, other])
 
     def _sub_(self, other):
         r"""
@@ -809,6 +792,49 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
 
         """
         return PowerSeriesCoefficientExpressionRing(ring, self._gens, category=self.category())
+
+    def sum(self, summands):
+        r"""
+        Return the sum of ``summands``.
+
+        This is an optimized version of the builtin `sum` that creates fewer
+        temporary objects.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing
+            sage: R = PowerSeriesCoefficientExpressionRing(CC, gens=("Re(a0,?)", "Im(a0,?)"))
+
+            sage: R.sum([R.gen(0), R.gen(1)])
+            Re(a0,0) + Im(a0,0)
+
+        """
+        # TODO: Add a benchmark to show that this is actually way faster when
+        # there are lots of generators.
+
+        summands = list(summands)
+
+        if len(summands) == 0:
+            return self.zero()
+
+        if len(summands) == 1:
+            return summands.pop()
+
+        coefficients = dict(summands.pop()._coefficients)
+
+        while summands:
+            summand = summands.pop()
+            for monomial, coefficient in summand._coefficients.items():
+                assert coefficient
+                if monomial not in coefficients:
+                    coefficients[monomial] = coefficient
+                else:
+                    coefficients[monomial] += coefficient
+
+                if not coefficients[monomial]:
+                    del coefficients[monomial]
+
+        return self(coefficients)
 
     def real_field(self):
         r"""
