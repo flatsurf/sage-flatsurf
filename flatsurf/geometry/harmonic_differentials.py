@@ -1496,7 +1496,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
 
-            sage: V = C._voronoi_diagram()
+            sage: V = Ω._voronoi_diagram()
             sage: C._integrate_path_cell(V.polygon_cell(0, (0, 0)), OrientedSegment((0, 0), (1/2, 0)))
 
         """
@@ -1892,9 +1892,8 @@ q
             sage: Ω = HarmonicDifferentials(S)
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, prec=3, differentials=Ω)
-            sage: V = C._voronoi_diagram()
-            sage: centers = C._voronoi_diagram_centers()
-            sage: segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_root_branch()]
+            sage: V = Ω._voronoi_diagram()
+            sage: segments = [segment for center in V._centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_root_branch()]
 
             sage: segment = segments[0]
             sage: segment._center, segment._other
