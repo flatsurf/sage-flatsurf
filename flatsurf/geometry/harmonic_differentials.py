@@ -44,9 +44,9 @@ A less trivial example, the regular octagon::
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
     sage: Omega = HarmonicDifferentials(S)
-    sage: omega = Omega(HS(f), prec=3, check=False)
-    sage: omega  # TODO: Increase precision once this is faster.
-    ((-2.0314 + 0.00016805*I) - 0.0013988*I*z0 + (0.015450 + 0.00014119*I)*z0^2 + 0.0020302*I*z0^3 - 0.0017163*z0^4 - 0.0040604*I*z0^5 + 0.014323*z0^6 + 0.0044380*I*z0^7 + (-3.0462 + 0.00025287*I)*z0^8 + O(z0^9), (0.0051501 + 0.000047063*I) + 0.00090665*I*z1 + (1.3030 - 0.00010772*I)*z1^2 + O(z1^3))
+    sage: omega = Omega(HS(f), prec=11)
+    sage: omega
+    ((-2.0902 - 0.000046213*I) - 0.000038855*I*z0^2 + (-3.2254 - 0.000071313*I)*z0^8 + (-2.6153 - 0.000057824*I)*z0^16 + (2.7703e-6*I)*z0^23 + (-2.0043 - 0.000044315*I)*z0^24 + (-1.5912e-6*I)*z0^25 + (-1.3076e-6*I)*z0^29 + (9.6702e-6)*z0^30 + (-1.5340 - 0.000033916*I)*z0^32 + O(z0^33), -0.000012952*I + (1.3141 + 0.000029055*I)*z1^2 + (-0.10741 - 2.3748e-6*I)*z1^10 + O(z1^11))
 
 The same computation on a triangulation of the octagon::
 
@@ -63,7 +63,7 @@ The same computation on a triangulation of the octagon::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=False)
+    sage: Omega = HarmonicDifferentials(S, centers="vertices")
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
 
@@ -81,7 +81,7 @@ The same surface but built as the unfolding of a right triangle::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, safety=0, singularities=True, centers=False)
+    sage: Omega = HarmonicDifferentials(S, centers="vertices")
     sage: omega = Omega(HS(f), prec=3, check=False)
     sage: omega  # TODO: Increase precision once this is faster.
 
@@ -103,6 +103,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
 
     sage: Omega = HarmonicDifferentials(S)
     sage: omega = Omega(HS(f), prec=1, check=False)  # TODO: Increase precision once this is faster.
+    ((0.43474 + 0.32379*I) + O(z0), (0.014497 + 0.099627*I) + O(z1), (-0.050347 + 0.0029207*I) + O(z2), (-0.21127 - 0.090282*I) + O(z3), (0.47454 + 0.087358*I) + O(z4), (-0.19314 + 0.31055*I) + O(z5), (-0.23193 - 0.13398*I) + O(z6), (-0.45636 - 0.42553*I) + O(z7), (-0.21176 + 0.40428*I) + O(z8), (-0.15358 + 0.049085*I) + O(z9), (-0.40648 - 0.48943*I) + O(z10), (-0.0020610 - 0.48399*I) + O(z11), (0.24142 - 0.25153*I) + O(z12), (-0.032511 + 0.55139*I) + O(z13), (-0.32812 + 0.13133*I) + O(z14), (-0.33572 + 0.53022*I) + O(z15), (0.079225 + 0.028393*I) + O(z16), (0.033120 - 0.49532*I) + O(z17), (-0.27160 - 0.34612*I) + O(z18), (-0.21121 + 0.25608*I) + (-0.13894 - 0.56381*I)*z19 + (0.040253 + 0.39319*I)*z19^2 + (-0.088971 - 0.70043*I)*z19^3 + (0.075621 - 0.040790*I)*z19^4 + (-0.76242 - 0.39754*I)*z19^5 + (-0.066434 - 0.12278*I)*z19^6 + (0.0075069 + 0.22176*I)*z19^7 + (-0.40163 - 0.51249*I)*z19^8 + (0.55621 + 0.080413*I)*z19^9 + (-1.0088 - 1.9733*I)*z19^10 + (0.27571 - 0.061058*I)*z19^11 + (-2.4352 - 1.0704*I)*z19^12 + O(z19^13), (-0.14288 + 0.36838*I) + O(z20), (-0.012062 - 0.58947*I) + O(z21), (0.44529 + 0.29461*I) + (0.22745 - 0.67464*I)*z22 + (-0.95440 - 0.53814*I)*z22^2 + O(z22^3), (-2.4328 - 0.60098*I) + O(z23), (-0.71168 - 0.73386*I) + O(z24), (-1.6115 - 1.7234*I) + O(z25))
 
 """
 ######################################################################
@@ -546,7 +547,7 @@ class HarmonicDifferential(Element):
             sage: Ω = HarmonicDifferentials(T)
 
             sage: Ω(f) + Ω(f) + Ω(H({a: -2}))
-            (O(z0^5), O(z1^5), O(z2^5), O(z3^5), O(z4^5), O(z5^5), O(z6^5), O(z7^5), O(z8^5))
+            (O(z0^5), O(z1^5))
 
         """
         return self.parent()({
@@ -560,7 +561,8 @@ class HarmonicDifferential(Element):
             for triangle in self._series
         })
 
-    def error(self, kind=None, verbose=False, abs_tol=1e-6, rel_tol=1e-6):
+    # TODO: Can we increase the default precision? Somehow, we do not get much more precision easily in the octagon. Why?
+    def error(self, kind=None, verbose=False, abs_tol=1e-4, rel_tol=1e-4):
         r"""
         Return whether this differential is likely inaccurate.
 
@@ -620,35 +622,8 @@ class HarmonicDifferential(Element):
                         if not verbose:
                             return error
 
-        # if kind is None or "midpoint_derivatives" in kind:
-        #     C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-        #     for derivative in range(self.precision()//3):
-        #         for ((label, edge), a, b) in self.parent()._geometry._homology_generators:
-        #             opposite_label, opposite_edge = self.parent().surface().opposite_edge(label, edge)
-        #             expected = self.evaluate(label, edge, a, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b)), derivative)
-        #             other = self.evaluate(opposite_label, opposite_edge, 1 - b, C.complex_field()(*self.parent()._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1 - b, opposite_edge, 1 - a)), derivative)
-
-        #             abs_error, rel_error = errors(expected, other)
-
-        #             if abs_error > abs_tol or rel_error > rel_tol:
-        #                 report = f"Power series defining harmonic differential are not consistent where triangles meet. {derivative}th derivative does not match between {(label, edge, a)} where it is {expected} and {(label, edge, b)} where it is {other}, i.e., there is an absolute error of {abs_error} and a relative error of {rel_error}."
-        #                 if verbose:
-        #                     print(report)
-
-        #                 error = report
-        #                 if not verbose:
-        #                     return error
-
-        # if kind is None or "area" in kind:
-        #     if verbose:
-        #         C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-        #         area = self._evaluate(C._area_upper_bound())
-
-        #         report = f"Area (upper bound) is {area}."
-        #         print(report)
-
         if kind is None or "L2" in kind:
-            C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
+            C = PowerSeriesConstraints(self.parent().surface(), self.precision(), differentials=self.parent())
             consistency = C._L2_consistency()
             # print(consistency)
             abs_error = self._evaluate(consistency)
@@ -686,7 +661,7 @@ class HarmonicDifferential(Element):
             sage: η = Ω(f)
 
             sage: η.series(T(0, (1/2, 1/2)))  # abstol 1e-9
-            (1.00000000000000 - 6.13512000000000e-17*I) + (6.58662000000000e-33 + 2.58104000000000e-32*I)*z2 + (-2.76745000000000e-31 - 7.82106000000000e-16*I)*z2^2 + (-2.29148000000000e-31 + 1.90965000000000e-31*I)*z2^3 + (1.42943000000000e-15 - 6.22435000000000e-32*I)*z2^4 + O(z2^5)
+            (1.00000000000000 + 7.13774000000000e-77*I) + (2.49584000000000e-77 + 2.49083000000000e-77*I)*z0 + (-6.35979000000000e-76 + 7.26457000000000e-77*I)*z0^2 + (-9.75893000000000e-76 + 3.04191000000000e-75*I)*z0^3 + (-5.34885000000000e-75 - 1.21411000000000e-74*I)*z0^4 + O(z0^5)
 
         """
         return self._series[triangle]
@@ -694,122 +669,7 @@ class HarmonicDifferential(Element):
     @cached_method
     def _constraints(self):
         # TODO: This is a hack. Come up with a better class hierarchy!
-        return PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
-
-    def evaluate(self, label, edge, pos, Δ, derivative=0):
-        # TODO: This should probably be removed.
-        C = self._constraints()
-        return self._evaluate(C.evaluate(label, edge, pos, Δ, derivative=derivative))
-
-    def __call__(self, point):
-        # TODO: Don't call this __call__. Make it clear in the name that this does not mean anything.
-        r"""
-        Return the value of this differential at ``point`` on the chart that is
-        best suited for evaluating it.
-
-        .. NOTE::
-
-            This operation has no real mathematical meaning. A differential is
-            not a function on the surface so it cannot really be evaluated.
-            This method exists to compare two differentials, e.g., to plot the
-            error between an exact differentials and its numerical
-            approximation.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
-            sage: S = translation_surfaces.regular_octagon()
-
-            sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
-            sage: center = S(0, S.polygon(0).circumscribing_circle().center())
-            sage: singularity = next(iter(S.vertices()))
-
-            sage: R.<z> = CC[[]]
-            sage: ω = Ω({center: R(1, 1), singularity: R(2, 1)})
-
-            sage: ω(center)
-            1.00000000000000
-            sage: ω(singularity)  # TODO: Make this work at a singularity as well.
-            Traceback (most recent call last):
-            ...
-            ValueError: ...
-
-            sage: ω = Ω({center: R(0, 1), singularity: R(1, 3)})
-            sage: point = S(0, S.polygon(0).vertices()[0] + vector((1/1000000, 0)))
-            sage: ω(point)  # TODO: Does this make any sense?
-            3333.33333333333
-
-        """
-        C = self._constraints()
-        expression = C.value(point)
-        return self._evaluate(expression)
-
-    # TODO: Make this work again.
-    # def roots(self):
-    #     r"""
-    #     Return the roots of this harmonic differential.
-
-    #     EXAMPLES::
-
-    #         sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-
-    #         sage: H = SimplicialHomology(T)
-    #         sage: a, b = H.gens()
-    #         sage: H = SimplicialCohomology(T)
-    #         sage: f = H({a: 1})
-
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: η = Ω(f)
-    #         sage: η.roots()
-    #         []
-
-    #     ::
-
-    #         sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-    #         sage: T = translation_surfaces.regular_octagon()
-    #         sage: T.set_immutable()
-
-    #         sage: H = SimplicialHomology(T)
-    #         sage: a = H.gens()[0]
-    #         sage: H = SimplicialCohomology(T)
-    #         sage: f = H({a: 1})
-
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: η = Ω(f, prec=16, check=False)  # not tested TODO
-    #         sage: η.roots()  # not tested TODO
-
-    #     """
-    #     roots = []
-
-    #     surface = self.parent().surface()
-
-    #     for triangle in surface.labels():
-    #         series = self._series[triangle]
-    #         series = series.truncate(series.prec())
-    #         for (root, multiplicity) in series.roots():
-    #             if multiplicity != 1:
-    #                 raise NotImplementedError
-
-    #             root += root.parent()(*self.parent()._geometry.point_on_path_between_centers(triangle))
-
-    #             from sage.all import vector
-    #             root = vector(root)
-
-    #             # TODO: Keep roots that are within the circumcircle for sanity checking.
-    #             # TODO: Make sure that roots on the edges are picked up by exactly one triangle.
-
-    #             if not surface.polygon(triangle).contains_point(root):
-    #                 continue
-
-    #             roots.append((triangle, vector(root)))
-
-    #     # TODO: Deduplicate roots.
-    #     # TODO: Compute roots at the vertices.
-
-    #     return roots
+        return PowerSeriesConstraints(self.parent().surface(), self.precision(), differentials=self.parent())
 
     def _evaluate(self, expression):
         r"""
@@ -835,10 +695,11 @@ class HarmonicDifferential(Element):
         Compute the constant coefficients::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, 5, Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 5, Ω)
             sage: R = C.symbolic_ring()
-            sage: η._evaluate(R(C._gen_nonsingular(0, 0, 0, 0))) # abstol 1e-9
-            1.00000000000000 + 1.87854000000000e-72*I
+            sage: gen = C._gen("Re", T(0, (1/2, 1/2)), 0)
+            sage: η._evaluate(gen)
+            1.00000000000000
 
         """
         coefficients = {}
@@ -881,133 +742,6 @@ class HarmonicDifferential(Element):
         # assert len(precisions) == 1
         return min(precisions)
 
-    # def cauchy_residue(self, vertex, n, angle=None):
-    #     r"""
-    #     Return the n-th coefficient of the power series expansion around the
-    #     ``vertex`` in local coordinates of that vertex.
-
-    #     Let ``d`` be the degree of the vertex and pick a (d+1)-th root z' of z such
-    #     that this differential can be written as a power series Σb_n z'^n. This
-    #     method returns the `b_n` by evaluating the Cauchy residue formula,
-    #     i.e., 1/2πi ∫ f/z'^{n+1} integrating along a loop around the vertex.
-
-    #     EXAMPLES:
-
-    #     For the square torus, the vertices are no singularities, so harmonic
-    #     differentials have no pole at the vertex::
-
-    #         sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-
-    #         sage: H = SimplicialHomology(T)
-    #         sage: a, b = H.gens()
-    #         sage: H = SimplicialCohomology(T)
-    #         sage: f = H({a: 1})
-
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: η = Ω(f)
-
-    #         sage: vertex = [(0, 0), (0, 1), (0, 2), (0, 3)]
-    #         sage: angle = 1
-
-    #         sage: η.cauchy_residue(vertex, 0, 1)  # tol 1e-9
-    #         1.0 - 0.0*I
-    #         sage: abs(η.cauchy_residue(vertex, -1, 1)) < 1e-9
-    #         True
-    #         sage: abs(η.cauchy_residue(vertex, -2, 1)) < 1e-9
-    #         True
-    #         sage: abs(η.cauchy_residue(vertex, 1, 1)) < 1e-9
-    #         True
-    #         sage: abs(η.cauchy_residue(vertex, 2, 1)) < 1e-9
-    #         True
-
-    #     """
-    #     surface = self.parent().surface()
-
-    #     if angle is None:
-    #         vertex = set(vertex)
-    #         for angle, v in surface.angles(return_adjacent_edges=True):
-    #             if vertex & set(v):
-    #                 assert vertex == set(v)
-    #                 vertex = v
-    #                 break
-    #         else:
-    #             raise ValueError("not a vertex in this surface")
-
-    #     parts = []
-
-    #     complex_field = self._series[0].parent().base_ring()
-
-    #     # Integrate real & complex part independently.
-    #     for part in ["Re", "Im"]:
-    #         integral = 0
-
-    #         # TODO print(f"Building {part} part")
-
-    #         # We integrate along a path homotopic to a (counterclockwise) unit
-    #         # circle centered at the vertex.
-
-    #         # We keep track of our last choice of a (d+1)-st root and pick the next
-    #         # root that is closest while walking counterclockwise on that circle.
-    #         arg = 0
-
-    #         def root(z):
-    #             if angle == 1:
-    #                 return complex_field(z)
-
-    #             roots = complex_field(z).nth_root(angle, all=True)
-
-    #             positives = [root for root in roots if (root.arg() - arg) % (2*3.14159265358979) > -1e-6]
-
-    #             return min(positives)
-
-    #         for label, edge in vertex:
-    #             # We integrate on the line segment from the midpoint of edge to
-    #             # the midpoint of the previous edge in triangle, i.e., the next
-    #             # edge in counterclockwise order walking around the vertex.
-    #             edge_ = (edge - 1) % len(surface.polygon(label).vertices())
-
-    #             # TODO print(f"integrating across {triangle} from the midpoint of {edge} to {edge_}")
-
-    #             P = complex_field(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge))
-    #             Q = complex_field(*self.parent()._geometry.midpoint_on_path_between_centers(label, edge_))
-
-    #             # The vector from z=0, the center of the Voronoi cell, to the vertex.
-    #             δ = P - complex_field(*surface.polygon(label).edge(edge)) / 2
-
-    #             def at(t):
-    #                 z = (1 - t) * P + t * Q
-    #                 root_at_z = root(z - δ)
-    #                 return z, root_at_z
-
-    #             root_at_P = at(0)[1]
-    #             arg = root_at_P.arg()
-
-    #             # TODO print(f"in terms of the Voronoi cell midpoint, this is integrating from {P} to {Q} which lift to {at(0)[1]} and {at(1)[1]} relative to the vertex which is at {δ} from the center of the Voronoi cell")
-
-    #             def integrand(t):
-    #                 t = complex_field(t)
-    #                 z, root_at_z = at(t)
-    #                 denominator = root_at_z ** (n + 1)
-    #                 numerator = self.evaluate(label, z)
-    #                 integrand = numerator / denominator * (Q - P)
-    #                 # TODO print(f"evaluating at {z} resp its root {root_at_z} produced ({numerator}) / ({denominator}) * ({Q - P}) = {integrand}")
-    #                 integrand = getattr(integrand, part)()
-    #                 return integrand
-
-    #             from sage.all import numerical_integral
-    #             integral_on_segment, error = numerical_integral(integrand, 0, 1)
-    #             # TODO: What should be do about the error?
-    #             integral += integral_on_segment
-
-    #             root_at_Q = at(1)[1]
-    #             arg = root_at_Q.arg()
-
-    #         parts.append(integral)
-
-    #     return complex_field(*parts) / complex_field(0, 2*3.14159265358979)
-
     def integrate(self, cycle, numerical=False, part=None):  # TODO: Remove debugging hack "part"
         # TODO: Generalize to more than just cycles.
         r"""
@@ -1042,7 +776,7 @@ class HarmonicDifferential(Element):
         if numerical:
             raise NotImplementedError
 
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), geometry=self.parent()._geometry)
+        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), differentials=self.parent())
         return self._evaluate(C.integrate(cycle, part=part))
 
     def _repr_(self, prec=1e-6):
@@ -1126,7 +860,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         sage: H = SimplicialCohomology(T)
         sage: Ω(H())
-        (O(z0^5), O(z1^5), O(z2^5), O(z3^5), O(z4^5), O(z5^5), O(z6^5), O(z7^5), O(z8^5))
+        (O(z0^5), O(z1^5))
 
     ::
 
@@ -1156,7 +890,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
             True
 
         """
-        centers = HarmonicDifferentials._centers(surface, centers)
+        centers = tuple(HarmonicDifferentials._centers(surface, centers))
         homology_generators = HarmonicDifferentials._homology_generators(surface, centers, homology_generators)
         return super().__classcall__(cls, surface, centers, homology_generators, category or SetsWithPartialMaps())
 
@@ -1164,8 +898,8 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         Parent.__init__(self, category=category)
 
         self._surface = surface
-
-        self._geometry = GeometricPrimitives(surface, centers, homology_generators)
+        self._centers = centers
+        self._homology_generators = homology_generators
 
     @staticmethod
     def _centers(surface, algorithm):
@@ -1230,7 +964,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
             sage: gens = HarmonicDifferentials._homology_generators_centers(S)
             sage: len(gens)
-            8
+            4
 
         """
         generators = set()
@@ -1243,52 +977,13 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         return frozenset(generators)
 
-    def plot(self):
-        raise NotImplementedError
-        # from flatsurf import TranslationSurface
-        # S = self._surface
-        # G = S.plot()
-        # SR = PowerSeriesConstraints(S, prec=20, geometry=self._geometry).symbolic_ring()
-        # for (label, edge, pos) in SR._gens:
-        #     label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
-        #     radius = self._geometry._convergence(label, edge, pos)
-        #     P = TranslationSurface(S).surface_point(label, center)
-        #     G += P.plot(color="red")
-
-        #     from sage.all import circle
-        #     G += circle(P.graphical_surface_point().points()[0], radius, color="green", fill="green", alpha=.05)
-
-        # for (label, edge, pos) in SR._gens:
-        #     label, center = self._geometry.point_on_path_between_centers(label, edge, pos, wrap=True)
-
-        #     P = TranslationSurface(S).surface_point(label, center)
-        #     p = P.graphical_surface_point().points()[0]
-
-        #     for (lbl, a_edge, a, b_edge, b, Δ0, Δ1, radius) in self._debugs:
-        #         if lbl == label and a_edge == edge and a == pos:
-        #             Δ = Δ0
-        #         elif self._surface.opposite_edge(lbl, a_edge) == (label, edge) and a == 1 - pos:
-        #             Δ = Δ0
-        #         elif lbl == label and b_edge == edge and b == pos:
-        #             Δ = Δ1
-        #         elif self._surface.opposite_edge(lbl, b_edge) == (label, edge) and b == 1 - pos:
-        #             Δ = Δ1
-        #         else:
-        #             continue
-
-        #         from sage.all import vector
-        #         q = p + vector((Δ.real(), Δ.imag()))
-
-        #         from sage.all import line
-        #         G += line((p, q), color="black")
-
-        #         from sage.all import circle
-        #         G += circle(q, radius, color="brown", fill="brown", alpha=.1)
-
-        # return G
-
     def surface(self):
         return self._surface
+
+    @cached_method
+    def _voronoi_diagram(self):
+        from flatsurf.geometry.voronoi import VoronoiDiagram
+        return VoronoiDiagram(self._surface, self._centers, weight="radius_of_convergence")
 
     def _repr_(self):
         return f"Ω({self._surface})"
@@ -1300,7 +995,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         gen, degree = gen.describe()
 
-        return self._geometry._centers[int(gen.split(",")[0][4:])]
+        return self._centers[int(gen.split(",")[0][4:])]
 
     # TODO: Move to some class that is shared between harmonic differentials
     # and constraints that abstracts away details of the symbolic ring.
@@ -1357,8 +1052,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # At each vertex of the Voronoi diagram, write f=Σ a_k z^k + O(z^prec). Our task is now to determine
         # the a_k.
 
-        constraints = PowerSeriesConstraints(self.surface(), prec=prec, geometry=self._geometry)
-        self._constraints = constraints # TODO: Remove
+        constraints = PowerSeriesConstraints(self.surface(), prec=prec, differentials=self)
 
         # We use a variety of constraints. Which ones to use exactly is
         # determined by the "algorithm" parameter. If algorithm is a dict, it
@@ -1427,259 +1121,6 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         return η
 
 
-# TODO: This is overlapping too much with Voronoi cell constructions by now.
-class GeometricPrimitives(UniqueRepresentation):
-    def __init__(self, surface, centers, homology_generators):
-        if surface.is_mutable():
-            raise TypeError("surface must be immutable")
-
-        self._surface = surface
-        self._homology_generators = homology_generators
-        self._centers = list(centers)
-
-    def path_across_edge(self, label, edge):
-        r"""
-        Return the path from the centroid of the polygon ``label`` to the
-        centroid of the polygon on the other side of ``edge`` into a
-        :class:`Path` that we can integrate along.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
-            sage: S = translation_surfaces.regular_octagon()
-            sage: Ω = HarmonicDifferentials(S)
-            sage: Ω._geometry.path_across_edge(0, 0)
-            [(1, Path (0, -a - 1) from (1/2, 1/2*a + 1/2) in polygon 0 to (1/2, 1/2*a + 1/2) in polygon 0)]
-
-        """
-        path = GeodesicPath.across_edge(self._surface, label, edge)
-        if path in self._homology_generators:
-            return [(1, path)]
-        if -path in self._homology_generators:
-            return [(-1, -path)]
-
-        raise NotImplementedError("cannot rewrite this path as a sum of supported paths yet")
-
-    @cached_method
-    def midpoint_on_path_between_centers(self, label, a_edge, a, b_edge, b):
-        r"""
-        Return the weighed midpoint of ``center + a * e`` and ``center + b *
-        f`` where ``center`` is the center of the circumscribing circle of
-        polygon ``label`` and ``e``/``f`` is the straight segment that goes
-        from the ``center`` to the midpoint of the polygon across
-        ``a_edge``/``b_edge``.
-
-        The midpoint is determined by weighing the two points according to
-        their radius of convergence, see :meth:`_convergence`.
-
-        The midpoint is returned as the vector going from the first center,
-        i.e., relative to ``center + a * e``.
-
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
-            sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
-
-        Note that the midpoints in this example are not half way between the
-        centers because the radius of convergence is not the same (the vertex
-        of the square is understood to be a singularity)::
-
-            sage: G.midpoint_on_path_between_centers(0, 0, 0, 0, 1/3)
-            (0.000000000000000, -0.142350327708281)
-            sage: G.midpoint_on_path_between_centers(0, 2, 2/3, 2, 1)
-            (0.000000000000000, 0.190983005625053)
-            sage: G.midpoint_on_path_between_centers(0, 2, 2/3, 2, 1) - G.midpoint_on_path_between_centers(0, 0, 0, 0, 1/3)
-            (0.000000000000000, 0.333333333333333)
-
-        Here the midpoints are exactly on the edge of the square::
-
-            sage: G.midpoint_on_path_between_centers(0, 0, 1/3, 0, 2/3)
-            (0.000000000000000, -0.166666666666667)
-            sage: G.midpoint_on_path_between_centers(0, 2, 1/3, 2, 2/3)
-            (0.000000000000000, 0.166666666666667)
-
-        Again, the same as in the first example::
-
-            sage: G.midpoint_on_path_between_centers(0, 0, 2/3, 0, 1)
-            (0.000000000000000, -0.190983005625053)
-            sage: G.midpoint_on_path_between_centers(0, 2, 0, 2, 1/3)
-            (0.000000000000000, 0.142350327708281)
-
-        ::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.regular_octagon()
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
-            sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
-
-            sage: G.midpoint_on_path_between_centers(0, 0, 0, 0, 1/2)  # tol 1e-9
-            (0.000000000000000, -0.334089318959649)
-
-        A midpoint between two different Voronoi paths::
-
-            sage: G.midpoint_on_path_between_centers(0, 0, 1, 2, 1)
-            (1.20710678118655, 1.20710678118655)
-            sage: G.midpoint_on_path_between_centers(0, 0, 1, 4, 1)
-            (0.000000000000000, 2.41421356237309)
-
-        """
-        radii = (
-            self._convergence(label, a_edge, a),
-            self._convergence(label, b_edge, b),
-        )
-
-        centers = (
-            self.point_on_path_between_centers(label, a_edge, a)[1],
-            self.point_on_path_between_centers(label, b_edge, b)[1],
-        )
-
-        return (centers[1] - centers[0]) * radii[1] / (sum(radii))
-
-    @cached_method
-    def point_on_path_between_centers(self, label, edge, pos, wrap=False, ring=None):
-        r"""
-        Return the point at ``center + pos * e`` where ``center`` is the center
-        of the circumscribing circle of the polygon ``label`` and ``e`` is the
-        straight segment connecting that center to the center of the polygon
-        across the ``edge``.
-
-        The point returned might not be inside the polygon ``label`` anymore.
-
-        When ``wrap`` is not set, the point is returned in coordinates of the
-        polygon ``label`` even if it is outside of the that polygon.
-
-        Otherwise, the point is returned in coordinates of a polygon that
-        contains it.
-
-        OUTPUT:
-
-        A pair ``(label, coordinates)`` where ``coordinates`` are coordinates
-        of the point in the polygon ``label``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import GeometricPrimitives
-            sage: G = GeometricPrimitives(T, None)  # TODO: Should not be None
-
-            sage: G.point_on_path_between_centers(0, 0, 0)
-            (0, (1/2, 1/2))
-            sage: G.point_on_path_between_centers(0, 0, 1/2)
-            (0, (1/2, 0))
-            sage: G.point_on_path_between_centers(0, 0, 1)
-            (0, (1/2, -1/2))
-            sage: G.point_on_path_between_centers(0, 0, 1, wrap=True)
-            (0, (1/2, 1/2))
-
-        """
-        # TODO: This method feels a bit hacky. The name is misleading, the return tuple is weird, and the ring argument is a strange performance hack.
-        polygon = self._surface.polygon(label)
-        polygon_center = polygon.circumscribing_circle().center()
-
-        opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-        opposite_polygon = self._surface.polygon(opposite_label)
-        opposite_polygon = opposite_polygon.translate(-opposite_polygon.vertex((opposite_edge + 1) % len(opposite_polygon.vertices())) + polygon.vertex(edge))
-
-        assert polygon.vertex((edge + 1) % len(polygon.vertices())) == opposite_polygon.vertex(opposite_edge)
-
-        opposite_polygon_center = opposite_polygon.circumscribing_circle().center()
-
-        center = (1 - pos) * polygon_center + pos * opposite_polygon_center
-
-        if not wrap or self._surface.polygon(label).contains_point(center):
-            if ring is not None:
-                from sage.all import vector
-                center = vector((ring(center[0]), ring(center[1])))
-            return label, center
-
-        label, edge = self._surface.opposite_edge(label, edge)
-        return self.point_on_path_between_centers(label, edge, 1 - pos, wrap=True, ring=ring)
-
-    @cached_method
-    def midpoint_on_center_vertex_path(self, label, vertex):
-        return (vertex - self._surface.polygon(label).circumscribing_circle().center()) / 2
-
-    @cached_method
-    def _convergence(self, label, edge, pos):
-        r"""
-        Return the radius of convergence at the point at which we develop a
-        series around the point that is at ``center + pos * e`` where ``center``
-        is the center of the circumscribing circle of the polygon ``label`` and
-        ``e`` is the straight segment that goes from that point to the center
-        for the polygon across ``edge``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.regular_octagon()
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import HarmonicDifferentials
-            sage: Ω = HarmonicDifferentials(T)
-
-            sage: Ω._geometry._convergence(0, 0, 0)
-            1.30656296487638
-            sage: Ω._geometry._convergence(0, 0, 1/3)
-            0.641794946587438
-            sage: Ω._geometry._convergence(0, 0, 1/2)
-            0.500000000000000
-            sage: Ω._geometry._convergence(0, 0, 2/3)
-            0.641794946587438
-            sage: Ω._geometry._convergence(0, 0, 1)
-            1.30656296487638
-
-        """
-        label, center = self.point_on_path_between_centers(label, edge, pos)
-        polygon = self._surface.polygon(label)
-
-        # TODO: We are assuming that the only relevant singularities are the
-        # end points of ``edge``.
-        # TODO: Use a ring with more appropriate precision.
-        from sage.all import RR
-        return min(
-            (center - polygon.vertex(edge)).change_ring(RR).norm(),
-            (center - polygon.vertex((edge + 1) % len(polygon.vertices()))).change_ring(RR).norm())
-
-    def branch(self, center, Δ):
-        raise NotImplementedError  # use voronoi functionality instead
-        center_point = self._surface(*center)
-        if not center_point.is_vertex():
-            return 0, 0
-
-        low = Δ[1] < center[1][1]
-
-        for i, vertex in enumerate(self._surface.polygon(center[0]).vertices()):
-            if vertex == center[1]:
-                if i == 0:
-                    return 0, 2
-                if i == 1:
-                    return 1, 2
-                if i == 2:
-                    return (0 if low else 2), 2
-                if i == 3:
-                    return (1 if low else 0), 2
-                if i == 4:
-                    return 2, 2
-                if i == 5:
-                    return 0, 2
-                if i == 6:
-                    return 1, 2
-                if i == 7:
-                    return 2, 2
-
-        raise NotImplementedError
-
-
 class PowerSeriesConstraints:
     r"""
     A collection of (linear) constraints on the coefficients of power series
@@ -1688,14 +1129,14 @@ class PowerSeriesConstraints:
     This is used to create harmonic differentials from cohomology classes.
     """
 
-    def __init__(self, surface, prec, geometry, bitprec=None):
+    def __init__(self, surface, prec, differentials, bitprec=None):
         from sage.all import log, ceil, factorial
 
         self._surface = surface
         self._prec = prec
         # TODO: The default value tends to be gigantic!
         self._bitprec = bitprec or ceil(log(factorial(prec), 2) + 53)
-        self._geometry = geometry
+        self._differentials = differentials
         self._constraints = []
         self._cost = self.symbolic_ring().zero()
 
@@ -1717,14 +1158,14 @@ class PowerSeriesConstraints:
 
             sage: Ω = HarmonicDifferentials(T)
 
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
             sage: C.symbolic_ring()
             Ring of Power Series Coefficients over Complex Field with 54 bits of precision
 
         """
         # TODO: What's the correct precision here?
 
-        gens = [f"Re(a{n},?)" for n in range(len(self._geometry._centers))] + [f"Im(a{n},?)" for n in range(len(self._geometry._centers))] + ["λ?"]
+        gens = [f"Re(a{n},?)" for n in range(len(self._differentials._centers))] + [f"Im(a{n},?)" for n in range(len(self._differentials._centers))] + ["λ?"]
 
         from sage.all import ComplexField
         from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing
@@ -1781,7 +1222,7 @@ class PowerSeriesConstraints:
             sage: T.set_immutable()
 
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
 
             sage: C.real_part(1 + I)  # tol 1e-9
             1
@@ -1815,7 +1256,7 @@ class PowerSeriesConstraints:
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
 
             sage: C.imaginary_part(1 + I)  # tol 1e-9
             1
@@ -1891,7 +1332,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
             sage: C.develop_nonsingular(0, 0, 0)  # tol 1e-9
             Re(a2,0) + 1.000000000000000*I*Im(a2,0) + (Re(a2,1) + 1.000000000000000*I*Im(a2,1))*z + (Re(a2,2) + 1.000000000000000*I*Im(a2,2))*z^2
             sage: C.develop_nonsingular(0, 0, 0, 1)  # tol 1e-9
@@ -1921,7 +1362,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, prec=1, differentials=Ω)
 
             sage: C.integrate(H())
             0.000000000000000
@@ -1933,7 +1374,7 @@ class PowerSeriesConstraints:
             sage: C.integrate(b)  # tol 1e-9
             (-0.236797907979275*I)*Re(a0,0) + 0.236797907979275*Im(a0,0) + (-0.247323113451507*I)*Re(a2,0) + 0.247323113451507*Im(a2,0) + (-0.139540535294972*I)*Re(a3,0) + 0.139540535294972*Im(a3,0) + (-0.139540535294972*I)*Re(a5,0) + 0.139540535294972*Im(a5,0) + (-0.236797907979275*I)*Re(a8,0) + 0.236797907979275*Im(a8,0)
 
-            sage: C = PowerSeriesConstraints(T, prec=5, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, prec=5, differentials=Ω)
             sage: C.integrate(a) + C.integrate(-a)  # tol 1e-9
             0.00000000000000000
             sage: C.integrate(b) + C.integrate(-b)  # tol 1e-9
@@ -1948,7 +1389,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
 
             sage: C.integrate(H())
             0.000000000000000
@@ -1964,7 +1405,30 @@ class PowerSeriesConstraints:
             (1.13290899470104 - 1.13290899470104*I)*Re(a0,0) + (1.13290899470104 + 1.13290899470104*I)*Im(a0,0) + (0.275277280554704 + 0.275277280554704*I)*Re(a1,0) + (-0.275277280554704 + 0.275277280554704*I)*Im(a1,0) + (0.327551243899061 + 6.93889390390723e-18*I)*Re(a1,1) + (-6.93889390390723e-18 + 0.327551243899061*I)*Im(a1,1) + (0.191399262161835 - 0.191399262161835*I)*Re(a1,2) + (0.191399262161835 + 0.191399262161835*I)*Im(a1,2)
 
         """
-        return sum(multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._geometry.path_across_edge(label, edge))
+        return sum(multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._integrate_path_across_edge(label, edge))
+
+    def _integrate_path_across_edge(self, label, edge):
+        r"""
+        Return the path from the centroid of the polygon ``label`` to the
+        centroid of the polygon on the other side of ``edge`` into a
+        :class:`Path` that we can integrate along.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
+            sage: S = translation_surfaces.regular_octagon()
+            sage: Ω = HarmonicDifferentials(S)
+            sage: Ω._integrate_path_across_edge(0, 0)
+            [(1, Path (0, -a - 1) from (1/2, 1/2*a + 1/2) in polygon 0 to (1/2, 1/2*a + 1/2) in polygon 0)]
+
+        """
+        path = GeodesicPath.across_edge(self._surface, label, edge)
+        if path in self._differentials._homology_generators:
+            return [(1, path)]
+        if -path in self._differentials._homology_generators:
+            return [(-1, -path)]
+
+        raise NotImplementedError("cannot rewrite this path as a sum of supported paths yet")
 
     def _integrate_path(self, path):
         r"""
@@ -1981,7 +1445,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
 
             sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
             sage: path = GeodesicPath.across_edge(S, 0, 0)
@@ -2004,14 +1468,14 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
 
             sage: C._integrate_path_polygon(0, OrientedSegment((0, 0), (1, 0))
 
         """
-        V = self._voronoi_diagram()
+        V = self._differentials._voronoi_diagram()
 
         return sum(self._integrate_path_cell(cell, subsegment) for (cell, subsegment) in V.split_segment(label, segment).items())
 
@@ -2028,7 +1492,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
 
@@ -2067,7 +1531,7 @@ class PowerSeriesConstraints:
         """
         # Split the segment from the center to the edge into segments that are
         # in a single Voronoi cell.
-        V = self._voronoi_diagram()
+        V = self._differentials._voronoi_diagram()
 
         polygon = self._surface.polygon(label)
 
@@ -2081,292 +1545,10 @@ class PowerSeriesConstraints:
 
         return expression
 
-    def evaluate(self, label, edge, pos, Δ, derivative=0):
-        r"""
-        Return the value of the power series evaluated at Δ in terms of
-        symbolic variables.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, geometry=Ω._geometry)
-            sage: C.evaluate(0, 0, 0, 0)  # tol 1e-9
-            Re(a2,0) + 1.00000000000000*I*Im(a2,0)
-            sage: C.evaluate(0, 0, 0, 2)  # tol 1e-9
-            Re(a2,0) + 1.000000000000000*I*Im(a2,0) + 2.000000000000000*Re(a2,1) + 2.000000000000000*I*Im(a2,1) + 4.000000000000000*Re(a2,2) + 4.000000000000000*I*Im(a2,2)
-
-        """
-        # TODO: Check that Δ is within the radius of convergence.
-
-        if derivative >= self._prec:
-            raise ValueError
-
-        parent = self.symbolic_ring()
-
-        value = parent.zero()
-
-        z = self.complex_field().one()
-
-        from sage.all import factorial
-        # factor = self.complex_field()(factorial(derivative))
-        from sage.all import ComplexField
-        factor = ComplexField(54)(factorial(derivative))
-
-        if edge is None and pos is None:
-            raise NotImplementedError
-            # TODO: Δ has a different meaning now.
-            edge, pos, Δ = self.relativize(label, Δ)
-
-        for k in range(derivative, self._prec):
-            value += factor * self._gen_nonsingular(label, edge, pos, k) * z
-
-            factor *= k + 1
-            factor /= k - derivative + 1
-
-            z *= Δ
-
-        return value
-
-    def value(self, point):
-        # TODO: Make the chart a parameter.
-        r"""
-        Return f(point) for a differential f dz with z the flat coordinate of
-        the polygon containing ``point``.
-
-        This uses the power series that is best suited to describe the value of
-        f at the point, e.g., when close to a singularity, it uses the power
-        series there.
-
-        TODO: The above statement does not really make sense.
-
-        INPUT:
-
-        - ``point`` -- a non-singular point
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
-            sage: S = translation_surfaces.regular_octagon()
-
-            sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, 2, Ω._geometry)
-
-            sage: center = S(0, S.polygon(0).circumscribing_circle().center())
-            sage: C.value(center)
-            Re(a0,0) + 1.00000000000000*I*Im(a0,0)
-
-            sage: off_center = S(0, S.polygon(0).circumscribing_circle().center() + vector((1/2, 0)))
-            sage: C.value(off_center)
-            Re(a0,0) + 1.00000000000000*I*Im(a0,0) + 0.500000000000000*Re(a0,1) + 0.500000000000000*I*Im(a0,1)
-
-        """
-        (label, center), Δ = self.relativize(point)
-
-        Δ = self.complex_field()(*Δ)
-
-        # See, _L2_consistency_voronoi_boundary for the notation: we compute
-        # the value f(z) =
-        # Σ_{n ≥ -d} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
-        # at z = center + Δ, i.e., z-α=Δ.
-        κ, d = self._geometry.branch((label, center), Δ)
-
-        if Δ == 0 and d:
-            raise ValueError("point must be non-singular")
-
-        center_point = self._surface(label, center)
-
-        expression = self.symbolic_ring().zero()
-        for n in self._range(center_point, self._prec):
-            an = self._gen("Re", center_point, n) + self.complex_field().gen() * self.symbolic_ring(self.complex_field())(self._gen("Im", center_point, n))
-            expression += an * self.ζ(d + 1) ** (κ * (n + 1)) / (d + 1) * Δ.nth_root(d + 1)**(n - d)
-
-        return expression
-
     @cached_method
     def _circumscribing_circle_center(self, label):
         from sage.all import CC
         return CC(*self._surface.polygon(label).circumscribing_circle().center())
-
-    def relativize(self, point):
-        r"""
-        Determine the power series which is best suited to evaluate a function at ``point``.
-
-        Returns the point at which the power series is developed as a pair
-        (label, coordinates) and a vector Δ from that point to the ``point``.
-
-        .. NOTE::
-
-            We do not just return the point at which the power series is
-            developed as a surface point since when that center is a
-            singularity the information can be ambiguous.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
-            sage: S = translation_surfaces.regular_octagon()
-
-            sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, 1, Ω._geometry)
-
-            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center()))
-            ((0, (1/2, 1/2*a + 1/2)), (0, 0))
-
-
-            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center() + vector((1/2, 1/2))))
-            ((0, (1/2, 1/2*a + 1/2)), (1/2, 1/2))
-
-            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center() + vector((2/3, 2/3))))
-            ((0, (1, a + 1)), (1/6, -1/2*a + 1/6))
-
-            sage: C.relativize(S(0, S.polygon(0).circumscribing_circle().center() + vector((2/3, 2/3 - 1/1024))))
-            ((0, (1/2*a + 1, 1/2*a + 1)), (-1/2*a + 1/6, 509/3072))
-
-        """
-        return self._voronoi_diagram().relativize(point)
-
-    def require_midpoint_derivatives(self, derivatives):
-        r"""
-        Add constraints to verify that the value of the power series and its
-        first ``derivatives`` derivatives are compatible.
-
-        Namely, along a path that we use for integration, require that the
-        functions coincide at a halfway point.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-        We require the power series to be compatible with itself away from the
-        midpoint. At this low precision, this just means that the constant
-        coefficients need to match::
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=1, geometry=Ω._geometry)
-            sage: C.require_midpoint_derivatives(1)
-            sage: C
-            [Re(a2,0) - Re(a6,0), Im(a2,0) - Im(a6,0), Re(a6,0) - Re(a7,0), Im(a6,0) - Im(a7,0), -Re(a4,0) + Re(a7,0), -Im(a4,0) + Im(a7,0), -Re(a1,0) + Re(a4,0), -Im(a1,0) + Im(a4,0), Re(a2,0) - Re(a8,0), Im(a2,0) - Im(a8,0), -Re(a5,0) + Re(a8,0), -Im(a5,0) + Im(a8,0), -Re(a3,0) + Re(a5,0), -Im(a3,0) + Im(a5,0), -Re(a0,0) + Re(a3,0), -Im(a0,0) + Im(a3,0)]
-
-
-        If we add more coefficients, we get more complicated conditions::
-
-            sage: C = PowerSeriesConstraints(T, prec=2, geometry=Ω._geometry)
-            sage: C.require_midpoint_derivatives(1)
-            sage: C
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
-
-        ::
-
-            sage: C = PowerSeriesConstraints(T, prec=2, geometry=Ω._geometry)
-            sage: C.require_midpoint_derivatives(2)
-            sage: C  # tol 1e-9
-            [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a2,1) - Re(a6,1), Im(a2,1) - Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), Re(a6,1) - Re(a7,1), Im(a6,1) - Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a4,1) + Re(a7,1), -Im(a4,1) + Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), -Re(a1,1) + Re(a4,1), -Im(a1,1) + Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), Re(a2,1) - Re(a8,1), Im(a2,1) - Im(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a5,1) + Re(a8,1), -Im(a5,1) + Im(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a3,1) + Re(a5,1), -Im(a3,1) + Im(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), -Re(a0,1) + Re(a3,1), -Im(a0,1) + Im(a3,1)]
-
-        """
-        if derivatives > self._prec:
-            raise ValueError("derivatives must not exceed global precision")
-
-        for (label, edge), a, b in self._geometry._homology_generators:
-            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-
-            parent = self.symbolic_ring()
-
-            Δ0 = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, edge, a, edge, b))
-            Δ1 = self.complex_field()(*self._geometry.midpoint_on_path_between_centers(opposite_label, opposite_edge, 1-b, opposite_edge, 1-a))
-
-            # Require that the 0th, ..., derivatives-1th derivatives are the same at the midpoint of the edge.
-            for derivative in range(derivatives):
-                self.add_constraint(
-                    parent(self.evaluate(label, edge, a, Δ0, derivative)) - parent(self.evaluate(opposite_label, opposite_edge, 1-b, Δ1, derivative)))
-
-    def _L2_consistency_cost_ball(self, T0, T1, r, debug):
-        cost = self.symbolic_ring(self.real_field()).zero()
-
-        b = (T0 - T1).list()
-
-        debug.append(r)
-
-        assert r > 0
-        r2 = self.real_field()(r**2)
-
-        r2n = r2
-        for n, b_n in enumerate(b):
-            # TODO: In the article it says that it should be R^n as a
-            # factor but R^{2n+2} is actually more reasonable. See
-            # https://sagemath.zulipchat.com/#narrow/stream/271193-polygon/topic/Harmonic.20Differentials/near/308863913
-            real = b_n.real()
-            imag = b_n.imag()
-            cost += (real * real + imag * imag) * r2n
-
-            r2n *= r2
-
-        # TODO: This is not in the article. Does that make sense?
-        # Normalize the result with the area of the integral domain.
-        cost /= r2
-
-        return cost
-
-    def _L2_consistency_between_nonsingular_points(self, label, a_edge, a, b_edge, b):
-        debug = [label, a_edge, a, b_edge, b]
-
-        def Δ(x_edge, x, y_edge, y):
-            x_opposite_label, x_opposite_edge = self._surface.opposite_edge(label, x_edge)
-            if x_opposite_label != label:
-                raise NotImplementedError  # need to shift polygons
-
-            y_opposite_label, y_opposite_edge = self._surface.opposite_edge(label, y_edge)
-            if y_opposite_label != label:
-                raise NotImplementedError  # need to shift polygons
-
-            Δs = (
-                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_edge, x, y_edge, y)),
-                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_opposite_edge, 1 - x, y_edge, y)),
-                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_edge, x, y_opposite_edge, 1 - y)),
-                self.complex_field()(*self._geometry.midpoint_on_path_between_centers(label, x_opposite_edge, 1 - x, y_opposite_edge, 1 - y)),
-            )
-
-            return min(Δs, key=lambda v: v.norm())
-
-        # The weighed midpoint of the segment where the power series meet with
-        # respect to the centers of the power series.
-        # TODO: Assert that the min is attained for the same choice of representatives (or pick the representatives explicitly as the ones with minimal distance.)
-        Δ0 = Δ(a_edge, a, b_edge, b)
-        Δ1 = Δ(b_edge, b, a_edge, a)
-
-        debug += [Δ0, Δ1]
-
-        # Develop both power series around that midpoint, i.e., Taylor expand them.
-        T0 = self.develop_nonsingular(label, a_edge, a, Δ0)
-        T1 = self.develop_nonsingular(label, b_edge, b, Δ1)
-
-        # Write b_n for the difference of the n-th coefficient of both power series.
-        # We want to minimize the sum of |b_n|^2 r^2n where r is a somewhat
-        # randomly chosen small radius around the midpoint.
-
-        a_convergence = self._geometry._convergence(label, a_edge, a)
-        b_convergence = self._geometry._convergence(label, b_edge, b)
-
-        convergence = min(a_convergence - Δ0.norm(), b_convergence - Δ1.norm())
-
-        # TODO: What should the divisor be here?
-        r = convergence / 2
-
-        cost = self._L2_consistency_cost_ball(T0, T1, r, debug)
-
-        return cost
 
     @cached_method
     def _L2_consistency(self):
@@ -2395,7 +1577,7 @@ class PowerSeriesConstraints:
             sage: η = Ω(f)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: consistency = PowerSeriesConstraints(T, prec=η.precision(), geometry=Ω._geometry)._L2_consistency()
+            sage: consistency = PowerSeriesConstraints(T, prec=η.precision(), differentials=Ω)._L2_consistency()
             sage: η._evaluate(consistency)  # tol 1e-9
             0
 
@@ -2409,7 +1591,7 @@ class PowerSeriesConstraints:
             boundary = sum([opposite_cell.split_segment_uniform_root_branch(segment) for segment in boundary], [])
             return sum(self._L2_consistency_voronoi_boundary(cell, segment, opposite_cell) for segment in boundary)
 
-        return sum(cost for _, cost in L2_cost(list(self._voronoi_diagram().boundaries().items())))
+        return sum(cost for _, cost in L2_cost(list(self._differentials._voronoi_diagram().boundaries().items())))
 
     @cached_method
     def ζ(self, d):
@@ -2418,7 +1600,7 @@ class PowerSeriesConstraints:
 
     # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
-        return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._geometry._centers.index(center)},?)", n))
+        return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._differentials._centers.index(center)},?)", n))
 
     class CellIntegrator:
         def __init__(self, constraints, cell):
@@ -2580,32 +1762,6 @@ class PowerSeriesConstraints:
 
             return 2
 
-        def _κλ(self, center, segment):
-            raise NotImplementedError  # hardcoded OCTAGON
-            # TODO: Mostly duplicated as "branch" in GeometricPrimitives.
-            low = min([endpoint[1] for endpoint in segment.endpoints()]) < center[1]
-
-            for i, vertex in enumerate(self._surface.polygon(self._label).vertices()):
-                if vertex == center:
-                    if i == 0:
-                        return 0
-                    if i == 1:
-                        return 1
-                    if i == 2:
-                        return 0 if low else 2
-                    if i == 3:
-                        return 1 if low else 0
-                    if i == 4:
-                        return 2
-                    if i == 5:
-                        return 0
-                    if i == 6:
-                        return 1
-                    if i == 7:
-                        return 2
-
-            raise NotImplementedError
-
         def opposite_range(self, prec):
             return self._constraints._range(self._opposite_center, prec)
 
@@ -2626,11 +1782,6 @@ class PowerSeriesConstraints:
 
         def f(self, n):
             return self.integral(self.α(), self.κ(), self.d(), n)
-
-    @cached_method
-    def _voronoi_diagram(self):
-        from flatsurf.geometry.voronoi import VoronoiDiagram
-        return VoronoiDiagram(self._surface, self._geometry._centers, weight="radius_of_convergence")
 
     def _L2_consistency_voronoi_boundary(self, cell, boundary_segment, opposite_cell):
         r"""
@@ -2740,7 +1891,7 @@ q
             sage: H = SimplicialHomology(S)
             sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(S, prec=3, differentials=Ω)
             sage: V = C._voronoi_diagram()
             sage: centers = C._voronoi_diagram_centers()
             sage: segments = [segment for center in centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_root_branch()]
@@ -2847,7 +1998,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 3, differentials=Ω)
 
             sage: C._elementary_line_integrals(0, 0, 0)  # tol 1e-9
             (0.0000000000000000, 0.0000000000000000)
@@ -2907,7 +2058,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 3, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 3, Ω)
             sage: C._elementary_area_integral(0, 0, 0)  # tol 1e-9
             1.0 + 0.0*I
 
@@ -2928,103 +2079,6 @@ q
         from sage.all import I
         return -I/(C(2)*(m + 1)) * ix + C(1)/(2*(m + 1)) * iy
 
-    # def _area(self):
-    #     r"""
-    #     Return a formula for the area ∫ η \wedge \overline{η}.
-
-    #     EXAMPLES::
-
-    #         sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-
-    #         sage: H = SimplicialCohomology(T)
-    #         sage: a, b = H.homology().gens()
-    #         sage: f = H({a: 1})
-
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: η = Ω(f)
-
-    #         sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: area = PowerSeriesConstraints(T, η.precision(), geometry=Ω._geometry)._area()
-
-    #         sage: η._evaluate(area)  # tol 1e-9
-    #         1.0 + 0.0*I
-
-    #     """
-    #     R = self.symbolic_ring()
-
-    #     area = R.zero()
-
-    #     # We eveluate the integral of |f|^2 on each triangle where f is the
-    #     # power series on the Voronoy cell containing that triangle.
-    #     for triangle in self._surface.labels():
-    #         # We expand the integrand Σa_nz^n · \overline{Σa_mz^m} naively as
-    #         # the sum of a_n \overline{a_m} z^n \overline{z^m}.
-    #         for n in range(self._prec):
-    #             for m in range(self._prec):
-    #                 coefficient = self.gen(triangle, n) * self.gen(triangle, m, conjugate=True)
-    #                 # Now we have to integrate z^n \overline{z^m} on the triangle.
-    #                 area += coefficient * self._elementary_area_integral(triangle, n, m)
-
-    #     return area
-
-    def _squares(self):
-        raise NotImplementedError
-        # cost = self.symbolic_ring().zero()
-        # for (label, edge, pos) in self.symbolic_ring()._gens:
-        #     for k in range(1, self._prec):
-        #         cost += self.real(label, edge, pos, k)**2
-        #         cost += self.imag(label, edge, pos, k)**2
-        # return cost
-
-    # def _area_upper_bound(self):
-    #     r"""
-    #     Return an upper bound for the area 1/π ∫ η \wedge \overline{η}.
-
-    #     EXAMPLES::
-
-    #         sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-
-    #         sage: H = SimplicialCohomology(T)
-    #         sage: a, b = H.homology().gens()
-    #         sage: f = H({a: 1})
-
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: η = Ω(f)
-
-    #         sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-    #         sage: Ω = HarmonicDifferentials(T)
-    #         sage: area = PowerSeriesConstraints(T, η.precision(), geometry=Ω._geometry)._area_upper_bound()
-
-    #     The correct area would be 1/π here. However, we approximate the square
-    #     with a circle of radius 1/sqrt(2) for a factor π/2::
-
-    #         sage: η._evaluate(area)  # tol 1e-9
-    #         0.5
-
-    #     """
-    #     # Our upper bound is integrating the quantity over the circumcircles of
-    #     # the Delaunay triangles instead, i.e.,
-    #     # we integrate the sum of the a_n \overline{a_m} z^n \overline{z}^m.
-    #     # Integration in polar coordinates, namely
-    #     # ∫ z^n\overline{z}^m = ∫_0^R ∫_0^{2π} ir e^{it(n-m)}
-    #     # shows that only when n = m the value does not vanish and is
-    #     # π/(n+1) |a_n|^2 R^(2n+2).
-    #     area = self.symbolic_ring().zero()
-
-    #     # TODO: This does not match the above description at all anymore.
-    #     for (label, edge, pos) in self.symbolic_ring()._gens:
-    #         R2 = self.real_field()(self._surface.polygon(label).circumscribing_circle().radius_squared())
-
-    #         for k in range(self._prec):
-    #             area += (self.real(label, edge, pos, k)**2 + self.imag(label, edge, pos, k)**2) * R2**(k + 1)
-
-    #     return area
-
     def optimize(self, f):
         r"""
         Add constraints that optimize the symbolic expression ``f``.
@@ -3039,7 +2093,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 1, Ω)
             sage: R = C.symbolic_ring()
 
         We optimize a function in two variables. Since there are no
@@ -3055,7 +2109,7 @@ q
         In this example, the constraints and the optimized values do not
         overlap, so again we do not get Lagrange multipliers::
 
-            sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 2, Ω)
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
@@ -3068,7 +2122,7 @@ q
 
         ::
 
-            sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 2, Ω)
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
@@ -3149,7 +2203,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 1, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 1, Ω)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
             [0.236797907979275*Re(a1,0) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.236797907979275*Re(a6,0) + 0.139540535294972*Re(a7,0), 0.236797907979275*Im(a0,0) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) + 0.139540535294972*Im(a5,0) + 0.236797907979275*Im(a8,0) - 1.00000000000000]
@@ -3158,7 +2212,7 @@ q
         These depend on the choice of base point of the integration and will be
         found to be zero by other constraints, not true anymore TODO::
 
-            sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 2, Ω)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
             [0.236797907979275*Re(a1,0) + 0.00998620690459202*Re(a1,1) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.00177444290057350*Re(a4,1) + 0.236797907979275*Re(a6,0) - 0.00998620690459202*Re(a6,1) + 0.139540535294972*Re(a7,0) - 0.00177444290057350*Re(a7,1), 0.236797907979275*Im(a0,0) - 0.00998620690459202*Re(a0,1) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) - 0.00177444290057350*Re(a3,1) + 0.139540535294972*Im(a5,0) + 0.00177444290057350*Re(a5,1) + 0.236797907979275*Im(a8,0) + 0.00998620690459202*Re(a8,1) - 1.00000000000000]
@@ -3183,7 +2237,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 6, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 6, Ω)
             sage: C.require_cohomology(H({a: 1}))
             sage: C.optimize(C._L2_consistency())
             sage: C._optimize_cost()
@@ -3307,7 +2361,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: Ω = PowerSeriesConstraints(T, 8, geometry=Ω._geometry)
+            sage: Ω = PowerSeriesConstraints(T, 8, Ω)
             sage: Ω.power_series_ring(T(0, (1/2, 1/2)))
             Power Series Ring in z0 over Complex Field with 54 bits of precision
             sage: Ω.power_series_ring(T(0, 0))
@@ -3320,7 +2374,7 @@ q
             raise NotImplementedError
 
         point = args[0]
-        return PowerSeriesRing(self.complex_field(), f"z{self._geometry._centers.index(point)}")
+        return PowerSeriesRing(self.complex_field(), f"z{self._differentials._centers.index(point)}")
 
     def laurent_series_ring(self, *args):
         return self.power_series_ring(*args).fraction_field()
@@ -3337,7 +2391,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 2, geometry=Ω._geometry)
+            sage: C = PowerSeriesConstraints(T, 2, Ω)
             sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - C._real_nonsingular(0, 0, 0, 1))
             sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - 1)
             sage: C.solve()  # random output due to random ordering of the dict
@@ -3406,7 +2460,7 @@ q
         if lagranges:
             solution = solution[:-lagranges]
 
-        series = {point: {} for point in self._geometry._centers}
+        series = {point: {} for point in self._differentials._centers}
 
         for variable, column in decode.items():
             value = solution[column]
@@ -3421,7 +2475,7 @@ q
             else:
                 assert False
 
-            center = self._geometry._centers[int(gen.split(",")[0][4:])]
+            center = self._differentials._centers[int(gen.split(",")[0][4:])]
 
             if degree not in series[center]:
                 series[center][degree] = [None, None]
