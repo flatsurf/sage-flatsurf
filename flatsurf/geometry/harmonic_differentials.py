@@ -1386,7 +1386,7 @@ class PowerSeriesConstraints:
             sage: S = translation_surfaces.regular_octagon()
 
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
+            sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
@@ -1889,7 +1889,7 @@ q
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
             sage: S = translation_surfaces.regular_octagon()
             sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S, safety=0, singularities=True, centers=True)
+            sage: Ω = HarmonicDifferentials(S)
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
             sage: C = PowerSeriesConstraints(S, prec=3, differentials=Ω)
             sage: V = C._voronoi_diagram()
