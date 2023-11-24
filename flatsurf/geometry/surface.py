@@ -421,12 +421,14 @@ class MutablePolygonalSurface(Surface_base):
              'canonicalize_mapping',
              'erase_marked_points',
              'holonomy_field',
+             'is_veering_triangulated',
              'j_invariant',
              'l_infinity_delaunay_triangulation',
              'minimal_translation_cover',
              'normalized_coordinates',
              'rel_deformation',
-             'stratum'}
+             'stratum',
+             'veering_triangulation'}
 
         An immutable surface cannot be mutated anymore::
 
