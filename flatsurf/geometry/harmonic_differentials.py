@@ -20,14 +20,16 @@ vertical `b` to zero::
     sage: f = H({a: 1})
     sage: Ω = HarmonicDifferentials(T)
     sage: ω = Ω(f)
-    sage: ω
-    (1.0000 + O(z0^5), 1.0000 + O(z1^5))
+    sage: ω  # random output
+    ((1.00000000000000 + 1.48374000000000e-76*I) + (-1.35679000000000e-77 + 1.67690000000000e-77*I)*z0 + (5.60404000000000e-76 - 3.17779000000000e-76*I)*z0^2 + (-1.38688000000000e-76 + 2.40493000000000e-75*I)*z0^3 + (-1.72352000000000e-74 - 1.88541000000000e-74*I)*z0^4 + O(z0^5), (1.00000000000000 + 2.85447000000000e-77*I) + (4.33241000000000e-78 - 7.66907000000000e-78*I)*z1 + (-3.82322000000000e-77 + 8.71445000000000e-77*I)*z1^2 + (-7.69949000000000e-77 + 6.04329000000000e-76*I)*z1^3 + (4.42836000000000e-75 + 5.93165000000000e-76*I)*z1^4 + O(z1^5))
+    sage: ω.simplify()
+    (1.00000000000000 + O(z0^5), 1.00000000000000 + O(z1^5))
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 
     sage: g = H({b: 1})
-    sage: Ω(g)  # tol 1e-9
-    (1.0000*I + O(z0^5), 1.0000*I + O(z1^5))
+    sage: Ω(g).simplify()
+    (1.00000000000000*I + O(z0^5), 1.00000000000000*I + O(z1^5))
 
 A less trivial example, the regular octagon::
 
@@ -43,10 +45,10 @@ A less trivial example, the regular octagon::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S)
-    sage: omega = Omega(HS(f), prec=11)
-    sage: omega
-    ((-2.0902 - 0.000046213*I) - 0.000038855*I*z0^2 + (-3.2254 - 0.000071313*I)*z0^8 + (-2.6153 - 0.000057824*I)*z0^16 + (2.7703e-6*I)*z0^23 + (-2.0043 - 0.000044315*I)*z0^24 + (-1.5912e-6*I)*z0^25 + (-1.3076e-6*I)*z0^29 + (9.6702e-6)*z0^30 + (-1.5340 - 0.000033916*I)*z0^32 + O(z0^33), -0.000012952*I + (1.3141 + 0.000029055*I)*z1^2 + (-0.10741 - 2.3748e-6*I)*z1^10 + O(z1^11))
+    sage: Omega = HarmonicDifferentials(S, ncoefficients=11)
+    sage: omega = Omega(HS(f))
+    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4
+    (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
 
 The same computation on a triangulation of the octagon::
 
@@ -63,8 +65,8 @@ The same computation on a triangulation of the octagon::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, centers="vertices")
-    sage: omega = Omega(HS(f), prec=3, check=False)
+    sage: Omega = HarmonicDifferentials(S, centers="vertices", ncoefficients=3)
+    sage: omega = Omega(HS(f), check=False)
     sage: omega  # TODO: Increase precision once this is faster.
 
 The same surface but built as the unfolding of a right triangle::
@@ -81,8 +83,8 @@ The same surface but built as the unfolding of a right triangle::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, centers="vertices")
-    sage: omega = Omega(HS(f), prec=3, check=False)
+    sage: Omega = HarmonicDifferentials(S, centers="vertices", ncoefficients=3)
+    sage: omega = Omega(HS(f), check=False)
     sage: omega  # TODO: Increase precision once this is faster.
 
 Much more complicated, the unfolding of the (3, 4, 13) triangle::
@@ -101,8 +103,8 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S)
-    sage: omega = Omega(HS(f), prec=1, check=False)  # TODO: Increase precision once this is faster.
+    sage: Omega = HarmonicDifferentials(S, ncoefficients=1)
+    sage: omega = Omega(HS(f), check=False)  # TODO: Increase precision once this is faster.
     ((0.43474 + 0.32379*I) + O(z0), (0.014497 + 0.099627*I) + O(z1), (-0.050347 + 0.0029207*I) + O(z2), (-0.21127 - 0.090282*I) + O(z3), (0.47454 + 0.087358*I) + O(z4), (-0.19314 + 0.31055*I) + O(z5), (-0.23193 - 0.13398*I) + O(z6), (-0.45636 - 0.42553*I) + O(z7), (-0.21176 + 0.40428*I) + O(z8), (-0.15358 + 0.049085*I) + O(z9), (-0.40648 - 0.48943*I) + O(z10), (-0.0020610 - 0.48399*I) + O(z11), (0.24142 - 0.25153*I) + O(z12), (-0.032511 + 0.55139*I) + O(z13), (-0.32812 + 0.13133*I) + O(z14), (-0.33572 + 0.53022*I) + O(z15), (0.079225 + 0.028393*I) + O(z16), (0.033120 - 0.49532*I) + O(z17), (-0.27160 - 0.34612*I) + O(z18), (-0.21121 + 0.25608*I) + (-0.13894 - 0.56381*I)*z19 + (0.040253 + 0.39319*I)*z19^2 + (-0.088971 - 0.70043*I)*z19^3 + (0.075621 - 0.040790*I)*z19^4 + (-0.76242 - 0.39754*I)*z19^5 + (-0.066434 - 0.12278*I)*z19^6 + (0.0075069 + 0.22176*I)*z19^7 + (-0.40163 - 0.51249*I)*z19^8 + (0.55621 + 0.080413*I)*z19^9 + (-1.0088 - 1.9733*I)*z19^10 + (0.27571 - 0.061058*I)*z19^11 + (-2.4352 - 1.0704*I)*z19^12 + O(z19^13), (-0.14288 + 0.36838*I) + O(z20), (-0.012062 - 0.58947*I) + O(z21), (0.44529 + 0.29461*I) + (0.22745 - 0.67464*I)*z22 + (-0.95440 - 0.53814*I)*z22^2 + O(z22^3), (-2.4328 - 0.60098*I) + O(z23), (-0.71168 - 0.73386*I) + O(z24), (-1.6115 - 1.7234*I) + O(z25))
 
 """
@@ -546,7 +548,10 @@ class HarmonicDifferential(Element):
 
             sage: Ω = HarmonicDifferentials(T)
 
-            sage: Ω(f) + Ω(f) + Ω(H({a: -2}))
+            sage: ω = Ω(f) + Ω(f) + Ω(H({a: -2}))
+            sage: ω  # random output due to numerical noise
+            ((-2.00000000007046e-82*I) + (-9.99999999996877e-83*I)*z0 + (2.00000000003978e-81 + 3.99999999998751e-82*I)*z0^2 + (3.99999999995683e-81)*z0^3 + (-1.00000000001253e-79*I)*z0^4 + O(z0^5), (3.99999999996833e-83*I) + (-4.00000000006421e-83)*z1 + 0.000000000000000*z1^2 + (-1.99999999997841e-81*I)*z1^3 + (9.99999999983070e-81*I)*z1^4 + O(z1^5))
+            sage: ω.simplify()
             (O(z0^5), O(z1^5))
 
         """
@@ -623,7 +628,7 @@ class HarmonicDifferential(Element):
                             return error
 
         if kind is None or "L2" in kind:
-            C = PowerSeriesConstraints(self.parent().surface(), self.precision(), differentials=self.parent())
+            C = PowerSeriesConstraints(self.parent())
             consistency = C._L2_consistency()
             # print(consistency)
             abs_error = self._evaluate(consistency)
@@ -669,7 +674,7 @@ class HarmonicDifferential(Element):
     @cached_method
     def _constraints(self):
         # TODO: This is a hack. Come up with a better class hierarchy!
-        return PowerSeriesConstraints(self.parent().surface(), self.precision(), differentials=self.parent())
+        return PowerSeriesConstraints(differentials=self.parent())
 
     def _evaluate(self, expression):
         r"""
@@ -695,7 +700,7 @@ class HarmonicDifferential(Element):
         Compute the constant coefficients::
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(T, 5, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: R = C.symbolic_ring()
             sage: gen = C._gen("Re", T(0, (1/2, 1/2)), 0)
             sage: η._evaluate(gen)
@@ -776,32 +781,31 @@ class HarmonicDifferential(Element):
         if numerical:
             raise NotImplementedError
 
-        C = PowerSeriesConstraints(self.parent().surface(), self.precision(), differentials=self.parent())
+        C = PowerSeriesConstraints(self.parent())
         return self._evaluate(C.integrate(cycle, part=part))
 
-    def _repr_(self, prec=1e-6):
-        # TODO: Tune this so we do not loose important information.
-        # TODO: Do not print that many digits.
-        # TODO: Make it visually clear that we are not printing everything.
-        def compress(series):
-            def compress_coefficient(coefficient):
-                if coefficient.imag().abs() < prec:
+    def _repr_(self):
+        def sparse_parent(series):
+            return type(series.parent())(series.parent().base_ring(), series.parent().variable_name(), sparse=True)
+
+        return repr(tuple(sparse_parent(s)(s) for s in self._series.values()))
+
+    def simplify(self, zero_threshold=1e-6):
+        def simplify(series):
+            def simplify(coefficient):
+                if coefficient.real().abs() < zero_threshold:
+                    coefficient = coefficient.parent()(coefficient.imag() * coefficient.parent()('I'))
+                if coefficient.imag().abs() < zero_threshold:
                     coefficient = coefficient.parent()(coefficient.real())
-                if coefficient.real().abs() < prec:
-                    coefficient = coefficient.parent()(coefficient.parent().gen() * coefficient.imag())
 
                 return coefficient
 
-            from sage.all import ComplexField
-            return series.parent()({exponent: compress_coefficient(coefficient) for (coefficient, exponent) in zip(series.coefficients(), series.exponents())} or 0).change_ring(ComplexField(20)).add_bigoh(series.precision_absolute())
+            coefficients = {exponent: simplify(coefficient) for (exponent, coefficient) in zip(series.exponents(), series.coefficients())}
+            coefficients = {exponent: coefficient for (exponent, coefficient) in coefficients.items() if coefficient}
 
-        ret = repr(tuple(compress(series) for series in self._series.values()))
+            return series.parent()(coefficients, prec=series.prec())
 
-        # TODO: Why are zero coefficients not filtered automatically?
-        import re
-        ret = re.sub(r'[+-] 0\.0*\*z[01](\^\d*|) ', '', ret)
-
-        return ret
+        return type(self)(self.parent(), {center: simplify(series) for (center, series) in self._series.items()}, residue=self._residue, cocycle=self._cocycle)
 
     def plot(self, versus=None):
         from sage.all import RealField, I, vector, complex_plot, oo
@@ -838,11 +842,10 @@ class HarmonicDifferential(Element):
             bbox = PS.bounding_box()
             plot += complex_plot(f, (bbox[0], bbox[2]), (bbox[1], bbox[3]))
 
-        # plot += S.plot(fill=None)
-
         return plot
 
 
+# TODO: UniqueRepresentation does not really work here. Since surfaces can be equal but not identical.
 class HarmonicDifferentials(UniqueRepresentation, Parent):
     r"""
     The space of harmonic differentials on this surface.
@@ -875,8 +878,9 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
     """
     Element = HarmonicDifferential
 
+    # TODO: Determine prec automatically.
     @staticmethod
-    def __classcall__(cls, surface, centers=None, homology_generators=None, category=None):
+    def __classcall__(cls, surface, ncoefficients=5, centers=None, homology_generators=None, category=None):
         r"""
         Normalize parameters when creating the space of harmonic differentials.
 
@@ -892,12 +896,13 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         """
         centers = tuple(HarmonicDifferentials._centers(surface, centers))
         homology_generators = HarmonicDifferentials._homology_generators(surface, centers, homology_generators)
-        return super().__classcall__(cls, surface, centers, homology_generators, category or SetsWithPartialMaps())
+        return super().__classcall__(cls, surface, ncoefficients, centers, homology_generators, category or SetsWithPartialMaps())
 
-    def __init__(self, surface, centers, homology_generators, category):
+    def __init__(self, surface, ncoefficients, centers, homology_generators, category):
         Parent.__init__(self, category=category)
 
         self._surface = surface
+        self._ncoefficients = ncoefficients
         self._centers = centers
         self._homology_generators = homology_generators
 
@@ -977,6 +982,10 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         return frozenset(generators)
 
+    @cached_method
+    def ncoefficients(self, center):
+        return center.angle() * self._ncoefficients
+
     def surface(self):
         return self._surface
 
@@ -1033,7 +1042,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
 
         return self._element_from_cohomology(x, *args, **kwargs)
 
-    def _element_from_cohomology(self, cocycle, /, prec=5, algorithm=["L2"], check=True):
+    def _element_from_cohomology(self, cocycle, /, algorithm=["L2"], check=True):
         # TODO: In practice we could speed things up a lot with some smarter
         # caching. A lot of the quantities used in the computations only depend
         # on the surface & precision. When computing things for many cocycles
@@ -1052,7 +1061,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # At each vertex of the Voronoi diagram, write f=Σ a_k z^k + O(z^prec). Our task is now to determine
         # the a_k.
 
-        constraints = PowerSeriesConstraints(self.surface(), prec=prec, differentials=self)
+        constraints = PowerSeriesConstraints(self)
 
         # We use a variety of constraints. Which ones to use exactly is
         # determined by the "algorithm" parameter. If algorithm is a dict, it
@@ -1069,7 +1078,7 @@ class HarmonicDifferentials(UniqueRepresentation, Parent):
         # and the power series must coincide there. Note that this constraint is unrelated to the cohomology
         # class Φ.
         if "midpoint_derivatives" in algorithm:
-            derivatives = get_parameter("midpoint_derivatives", prec//3)
+            derivatives = get_parameter("midpoint_derivatives", self.prec//3)
             algorithm = [a for a in algorithm if a != "midpoint_derivatives"]
             constraints.require_midpoint_derivatives(derivatives)
 
@@ -1129,13 +1138,7 @@ class PowerSeriesConstraints:
     This is used to create harmonic differentials from cohomology classes.
     """
 
-    def __init__(self, surface, prec, differentials, bitprec=None):
-        from sage.all import log, ceil, factorial
-
-        self._surface = surface
-        self._prec = prec
-        # TODO: The default value tends to be gigantic!
-        self._bitprec = bitprec or ceil(log(factorial(prec), 2) + 53)
+    def __init__(self, differentials):
         self._differentials = differentials
         self._constraints = []
         self._cost = self.symbolic_ring().zero()
@@ -1158,9 +1161,9 @@ class PowerSeriesConstraints:
 
             sage: Ω = HarmonicDifferentials(T)
 
-            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.symbolic_ring()
-            Ring of Power Series Coefficients over Complex Field with 54 bits of precision
+            Ring of Power Series Coefficients in Re(a0,0),…,Re(a1,0),…,Im(a0,0),…,Im(a1,0),…,λ0,… over Complex Field with 54 bits of precision
 
         """
         # TODO: What's the correct precision here?
@@ -1174,110 +1177,20 @@ class PowerSeriesConstraints:
     @cached_method
     def complex_field(self):
         from sage.all import ComplexField
+        # TODO: Why 54?
         return ComplexField(54)
-        return ComplexField(self._bitprec)
 
     @cached_method
     def real_field(self):
         from sage.all import RealField
+        # TODO: Why 54?
         return RealField(54)
-        return RealField(self._bitprec)
 
     # TODO: Move to Harmonic Differentials; or maybe some other shared class
     # that abstracts away details of the symbolic ring.
     @cached_method
     def lagrange(self, k):
         return self.symbolic_ring().gen(("λ?", k))
-
-    def project(self, x, part):
-        r"""
-        Return the ``"Re"`` or ``"Im"```inary ``part`` of ``x``.
-        """
-        if part not in ["Re", "Im"]:
-            raise ValueError("part must be one of real or imag")
-
-        if part == "Re":
-            part = "real"
-        if part == "Im":
-            part = "imag"
-
-        # Return the real/imaginary part of a complex number.
-        if hasattr(x, part):
-            x = getattr(x, part)
-            if callable(x):
-                x = x()
-            return x
-
-        return x.map_coefficients(lambda c: self.project(c, part))
-
-    def real_part(self, x):
-        r"""
-        Return the real part of ``x``.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
-
-            sage: C.real_part(1 + I)  # tol 1e-9
-            1
-            sage: C.real_part(1.)  # tol 1e-9
-            1
-
-        ::
-
-            sage: C.real_part(C._gen_nonsingular(0, 0, 0, 0))
-            Re(a2,0)
-            sage: C.real_part(C._real_nonsingular(0, 0, 0, 0))
-            Re(a2,0)
-            sage: C.real_part(C._imag_nonsingular(0, 0, 0, 0))
-            Im(a2,0)
-            sage: C.real_part(2*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
-            2*Re(a2,0)
-            sage: C.real_part(2*I*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
-            -2.0000000000000*Im(a2,0)
-
-        """
-        return self.project(x, "Re")
-
-    def imaginary_part(self, x):
-        r"""
-        Return the imaginary part of ``x``.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-            sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
-
-            sage: C.imaginary_part(1 + I)  # tol 1e-9
-            1
-            sage: C.imaginary_part(1.)  # tol 1e-9
-            0
-
-        ::
-
-            sage: C.imaginary_part(C._gen_nonsingular(0, 0, 0, 0))
-            Im(a2,0)
-            sage: C.imaginary_part(C._real_nonsingular(0, 0, 0, 0))  # tol 1e-9
-            0
-            sage: C.imaginary_part(C._imag_nonsingular(0, 0, 0, 0))  # tol 1e-9
-            0
-            sage: C.imaginary_part(2*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
-            2*Im(a2,0)
-            sage: C.imaginary_part(2*I*C._gen_nonsingular(0, 0, 0, 0))  # tol 1e-9
-            2*Re(a2,0)
-
-        """
-        return self.project(x, "Im")
 
     def add_constraint(self, expression, rank_check=True):
         total_degree = expression.total_degree()
@@ -1307,45 +1220,6 @@ class PowerSeriesConstraints:
         else:
             raise NotImplementedError("cannot handle expressions over this base ring")
 
-    @cached_method
-    def _formal_power_series_nonsingular(self, label, edge, pos, base_ring=None):
-        if base_ring is None:
-            base_ring = self.symbolic_ring()
-
-        from sage.all import PowerSeriesRing
-        R = PowerSeriesRing(base_ring, 'z')
-
-        return R([self._gen_nonsingular(label, edge, pos, n) for n in range(self._prec)])
-
-    def develop_nonsingular(self, label, edge, pos, Δ=0, base_ring=None):
-        r"""
-        Return the power series obtained by developing at z + Δ where z is the
-        coordinate at ``center + pos * e`` where ``center`` is the center of
-        the circumscribing circle of ``label`` and ``e`` is the straight
-        segment connecting that center to the one across the ``edge``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
-            sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=3, differentials=Ω)
-            sage: C.develop_nonsingular(0, 0, 0)  # tol 1e-9
-            Re(a2,0) + 1.000000000000000*I*Im(a2,0) + (Re(a2,1) + 1.000000000000000*I*Im(a2,1))*z + (Re(a2,2) + 1.000000000000000*I*Im(a2,2))*z^2
-            sage: C.develop_nonsingular(0, 0, 0, 1)  # tol 1e-9
-            Re(a2,0) + 1.000000000000000*I*Im(a2,0) + Re(a2,1) + 1.000000000000000*I*Im(a2,1) + Re(a2,2) + 1.000000000000000*I*Im(a2,2) + (Re(a2,1) + 1.000000000000000*I*Im(a2,1) + 2.000000000000000*Re(a2,2) + 2.000000000000000*I*Im(a2,2))*z + (Re(a2,2) + 1.000000000000000*I*Im(a2,2))*z^2
-
-        """
-        # TODO: Check that Δ is within the radius of convergence.
-        f = self._formal_power_series_nonsingular(label, edge, pos, base_ring=base_ring)
-        return f(f.parent().gen() + Δ)
-
-    def develop_singular(self, label, vertex, Δ, radius):
-        raise NotImplementedError
-
     def integrate(self, cycle, part=None):  # TODO: Remove (or rework) debugging hack "part"
         r"""
         Return the linear combination of the power series coefficients that
@@ -1362,7 +1236,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, prec=1, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
 
             sage: C.integrate(H())
             0.000000000000000
@@ -1374,7 +1248,7 @@ class PowerSeriesConstraints:
             sage: C.integrate(b)  # tol 1e-9
             (-0.236797907979275*I)*Re(a0,0) + 0.236797907979275*Im(a0,0) + (-0.247323113451507*I)*Re(a2,0) + 0.247323113451507*Im(a2,0) + (-0.139540535294972*I)*Re(a3,0) + 0.139540535294972*Im(a3,0) + (-0.139540535294972*I)*Re(a5,0) + 0.139540535294972*Im(a5,0) + (-0.236797907979275*I)*Re(a8,0) + 0.236797907979275*Im(a8,0)
 
-            sage: C = PowerSeriesConstraints(T, prec=5, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.integrate(a) + C.integrate(-a)  # tol 1e-9
             0.00000000000000000
             sage: C.integrate(b) + C.integrate(-b)  # tol 1e-9
@@ -1389,7 +1263,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
 
             sage: C.integrate(H())
             0.000000000000000
@@ -1405,7 +1279,7 @@ class PowerSeriesConstraints:
             (1.13290899470104 - 1.13290899470104*I)*Re(a0,0) + (1.13290899470104 + 1.13290899470104*I)*Im(a0,0) + (0.275277280554704 + 0.275277280554704*I)*Re(a1,0) + (-0.275277280554704 + 0.275277280554704*I)*Im(a1,0) + (0.327551243899061 + 6.93889390390723e-18*I)*Re(a1,1) + (-6.93889390390723e-18 + 0.327551243899061*I)*Im(a1,1) + (0.191399262161835 - 0.191399262161835*I)*Re(a1,2) + (0.191399262161835 + 0.191399262161835*I)*Im(a1,2)
 
         """
-        return sum(multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._integrate_path_across_edge(label, edge))
+        return sum((multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._integrate_path_across_edge(label, edge)), start=self.symbolic_ring().zero())
 
     def _integrate_path_across_edge(self, label, edge):
         r"""
@@ -1422,7 +1296,7 @@ class PowerSeriesConstraints:
             [(1, Path (0, -a - 1) from (1/2, 1/2*a + 1/2) in polygon 0 to (1/2, 1/2*a + 1/2) in polygon 0)]
 
         """
-        path = GeodesicPath.across_edge(self._surface, label, edge)
+        path = GeodesicPath.across_edge(self._differentials.surface(), label, edge)
         if path in self._differentials._homology_generators:
             return [(1, path)]
         if -path in self._differentials._homology_generators:
@@ -1445,7 +1319,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
 
             sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
             sage: path = GeodesicPath.across_edge(S, 0, 0)
@@ -1468,11 +1342,11 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
 
-            sage: C._integrate_path_polygon(0, OrientedSegment((0, 0), (1, 0))
+            sage: C._integrate_path_polygon(0, OrientedSegment((0, 0), (1, 0)))
 
         """
         V = self._differentials._voronoi_diagram()
@@ -1492,7 +1366,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(S)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=1, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
 
@@ -1501,7 +1375,8 @@ class PowerSeriesConstraints:
 
         """
         integrator = self.CellIntegrator(self, polygon_cell)
-        return sum(integrator.a(n) * integrator.integral(n, segment) for n in range(self._surface(polygon_cell.label(), polygon_cell.center()).angle() * self._prec))
+        ncoefficients = self._differentials.ncoefficients(self._differentials.surface()(polygon_cell.label(), polygon_cell.center()))
+        return sum(integrator.a(n) * integrator.integral(n, segment) for n in range(ncoefficients))
 
     # TODO: Remove
     def _integrate_across_edge(self, label, edge):
@@ -1511,7 +1386,7 @@ class PowerSeriesConstraints:
         of the circumscribing circle of the polygon on the other side of
         ``edge``.
         """
-        opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+        opposite_label, opposite_edge = self._differentials.surface().opposite_edge(label, edge)
 
         # TODO: Currently, there is no concept of a segment in a surface in
         # sage-flatsurf other than a saddle connection or a flow starting at a
@@ -1533,14 +1408,15 @@ class PowerSeriesConstraints:
         # in a single Voronoi cell.
         V = self._differentials._voronoi_diagram()
 
-        polygon = self._surface.polygon(label)
+        polygon = self._differentials.surface().polygon(label)
 
         expression = self.symbolic_ring().zero()
 
         for cell, segment in V.split_segment(label, polygon.circumscribing_circle().center(), polygon.vertices()[edge] + polygon.edges()[edge]/2).items():
             integrator = self.CellIntegrator(self, cell)
 
-            for n in range(self._surface(label, edge).angle() * self._prec):
+            ncoefficients = self._differentials.ncoefficients(self._differentials.surface()(label, edge))
+            for n in range(ncoefficients):
                 expression += integrator.a(n) * integrator.f(n, segment)
 
         return expression
@@ -1548,7 +1424,7 @@ class PowerSeriesConstraints:
     @cached_method
     def _circumscribing_circle_center(self, label):
         from sage.all import CC
-        return CC(*self._surface.polygon(label).circumscribing_circle().center())
+        return CC(*self._differentials.surface().polygon(label).circumscribing_circle().center())
 
     @cached_method
     def _L2_consistency(self):
@@ -1577,7 +1453,7 @@ class PowerSeriesConstraints:
             sage: η = Ω(f)
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: consistency = PowerSeriesConstraints(T, prec=η.precision(), differentials=Ω)._L2_consistency()
+            sage: consistency = PowerSeriesConstraints(Ω)._L2_consistency()
             sage: η._evaluate(consistency)  # tol 1e-9
             0
 
@@ -1690,7 +1566,6 @@ class PowerSeriesConstraints:
             # TODO: Verify that roots are consistent along the segment! Always the case for the octagon.
             self._segment = segment
             self._constraints = constraints
-            self._surface = constraints._surface
             self.real_field = constraints.real_field()
             self._center, self._label, self._center_coordinates = segment.center()
             self._opposite_center, label, self._opposite_center_coordinates = segment.opposite_center()
@@ -1891,7 +1766,7 @@ q
             sage: H = SimplicialHomology(S)
             sage: Ω = HarmonicDifferentials(S)
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(S, prec=3, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: V = Ω._voronoi_diagram()
             sage: segments = [segment for center in V._centers for boundary in V.cell(center) for segment in boundary.segments_with_uniform_root_branch()]
 
@@ -1922,7 +1797,7 @@ q
         r"""
         Return the value of `\int_γ f\overline{f}.
         """
-        center = self._surface(cell.label(), cell.center())
+        center = self._differentials.surface()(cell.label(), cell.center())
 
         int = self.CellIntegrator(self, cell)
 
@@ -1933,17 +1808,18 @@ q
         def f_(part, n, m):
             return int.mixed_integral(part, α, κ, d, n, α, κ, d, m, boundary_segment)
 
+        ncoefficients = self._differentials.ncoefficients(center)
         return self.symbolic_ring().sum([
             (int.Re_a(n) * int.Re_a(m) + int.Im_a(n) * int.Im_a(m)) * f_("Re", n, m) + (int.Re_a(n) * int.Im_a(m) - int.Im_a(n) * int.Re_a(m)) * f_("Im", n, m)
-            for n in range(self._prec * center.angle())
-            for m in range(self._prec * center.angle())])
+            for n in range(self._differentials.ncoefficients(center))
+            for m in range(self._differentials.ncoefficients(center))])
 
     def _L2_consistency_voronoi_boundary_Re_f_overline_g(self, cell, boundary_segment, opposite_cell):
         r"""
         Return the real part of `\int_γ f\overline{g}.
         """
-        center = self._surface(cell.label(), cell.center())
-        opposite_center = self._surface(opposite_cell.label(), opposite_cell.center())
+        center = self._differentials.surface()(cell.label(), cell.center())
+        opposite_center = self._differentials.surface()(opposite_cell.label(), opposite_cell.center())
 
         int = self.CellIntegrator(self, cell)
         jnt = self.CellIntegrator(self, opposite_cell)
@@ -1960,14 +1836,14 @@ q
 
         return self.symbolic_ring().sum([
             (int.Re_a(n) * jnt.Re_a(m) + int.Im_a(n) * jnt.Im_a(m)) * fg_("Re", n, m) + (int.Re_a(n) * jnt.Im_a(m) - int.Im_a(n) * jnt.Re_a(m)) * fg_("Im", n, m)
-            for n in range(self._prec * center.angle())
-            for m in range(self._prec * opposite_center.angle())])
+            for n in range(self._differentials.ncoefficients(center))
+            for m in range(self._differentials.ncoefficients(opposite_center))])
 
     def _L2_consistency_voronoi_boundary_g_overline_g(self, opposite_cell, boundary_segment):
         r"""
         Return the value of `\int_γ g\overline{g}.
         """
-        opposite_center = self._surface(opposite_cell.label(), opposite_cell.center())
+        opposite_center = self._differentials.surface()(opposite_cell.label(), opposite_cell.center())
 
         jnt = self.CellIntegrator(self, opposite_cell)
 
@@ -1980,8 +1856,8 @@ q
 
         return self.symbolic_ring().sum([
             (jnt.Re_a(n) * jnt.Re_a(m) + jnt.Im_a(n) * jnt.Im_a(m)) * g_("Re", n, m) + (jnt.Re_a(n) * jnt.Im_a(m) - jnt.Im_a(n) * jnt.Re_a(m)) * g_("Im", n, m)
-            for n in range(self._prec * opposite_center.angle())
-            for m in range(self._prec * opposite_center.angle())])
+            for n in range(self._differentials.ncoefficients(opposite_center))
+            for m in range(self._differentials.ncoefficients(opposite_center))])
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):
@@ -1997,7 +1873,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 3, differentials=Ω)
+            sage: C = PowerSeriesConstraints(Ω)
 
             sage: C._elementary_line_integrals(0, 0, 0)  # tol 1e-9
             (0.0000000000000000, 0.0000000000000000)
@@ -2012,7 +1888,7 @@ q
         ix = self.complex_field().zero()
         iy = self.complex_field().zero()
 
-        polygon = self._surface.polygon(label)
+        polygon = self._differentials.surface().polygon(label)
         center = polygon.circumscribing_circle().center()
 
         for v, e in zip(polygon.vertices(), polygon.edges()):
@@ -2057,7 +1933,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 3, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C._elementary_area_integral(0, 0, 0)  # tol 1e-9
             1.0 + 0.0*I
 
@@ -2092,7 +1968,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 1, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: R = C.symbolic_ring()
 
         We optimize a function in two variables. Since there are no
@@ -2108,7 +1984,7 @@ q
         In this example, the constraints and the optimized values do not
         overlap, so again we do not get Lagrange multipliers::
 
-            sage: C = PowerSeriesConstraints(T, 2, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
@@ -2121,7 +1997,7 @@ q
 
         ::
 
-            sage: C = PowerSeriesConstraints(T, 2, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.require_midpoint_derivatives(1)
             sage: C
             [Re(a2,0) + 0.123661556725753*Re(a2,1) - Re(a6,0) + 0.160570808419475*Re(a6,1), Im(a2,0) + 0.123661556725753*Im(a2,1) - Im(a6,0) + 0.160570808419475*Im(a6,1), Re(a6,0) + 0.0762270995598000*Re(a6,1) - Re(a7,0) + 0.0824865933862581*Re(a7,1), Im(a6,0) + 0.0762270995598000*Im(a6,1) - Im(a7,0) + 0.0824865933862581*Im(a7,1), -Re(a4,0) + 0.0570539419087137*Re(a4,1) + Re(a7,0) + 0.0570539419087137*Re(a7,1), -Im(a4,0) + 0.0570539419087137*Im(a4,1) + Im(a7,0) + 0.0570539419087137*Im(a7,1), -Re(a1,0) + 0.0762270995598000*Re(a1,1) + Re(a4,0) + 0.0824865933862581*Re(a4,1), -Im(a1,0) + 0.0762270995598000*Im(a1,1) + Im(a4,0) + 0.0824865933862581*Im(a4,1), Re(a1,0) + 0.160570808419475*Re(a1,1) - Re(a2,0) + 0.123661556725753*Re(a2,1), Im(a1,0) + 0.160570808419475*Im(a1,1) - Im(a2,0) + 0.123661556725753*Im(a2,1), Re(a2,0) + 0.123661556725753*Im(a2,1) - Re(a8,0) + 0.160570808419475*Im(a8,1), Im(a2,0) - 0.123661556725753*Re(a2,1) - Im(a8,0) - 0.160570808419475*Re(a8,1), -Re(a5,0) + 0.0824865933862581*Im(a5,1) + Re(a8,0) + 0.0762270995598000*Im(a8,1), -Im(a5,0) - 0.0824865933862581*Re(a5,1) + Im(a8,0) - 0.0762270995598000*Re(a8,1), -Re(a3,0) + 0.0570539419087137*Im(a3,1) + Re(a5,0) + 0.0570539419087137*Im(a5,1), -Im(a3,0) - 0.0570539419087137*Re(a3,1) + Im(a5,0) - 0.0570539419087137*Re(a5,1), -Re(a0,0) + 0.0762270995598000*Im(a0,1) + Re(a3,0) + 0.0824865933862581*Im(a3,1), -Im(a0,0) - 0.0762270995598000*Re(a0,1) + Im(a3,0) - 0.0824865933862581*Re(a3,1), Re(a0,0) + 0.160570808419475*Im(a0,1) - Re(a2,0) + 0.123661556725753*Im(a2,1), Im(a0,0) - 0.160570808419475*Re(a0,1) - Im(a2,0) - 0.123661556725753*Re(a2,1)]
@@ -2202,7 +2078,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 1, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
             [0.236797907979275*Re(a1,0) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.236797907979275*Re(a6,0) + 0.139540535294972*Re(a7,0), 0.236797907979275*Im(a0,0) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) + 0.139540535294972*Im(a5,0) + 0.236797907979275*Im(a8,0) - 1.00000000000000]
@@ -2211,14 +2087,14 @@ q
         These depend on the choice of base point of the integration and will be
         found to be zero by other constraints, not true anymore TODO::
 
-            sage: C = PowerSeriesConstraints(T, 2, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.require_cohomology(H({b: 1}))
             sage: C  # tol 1e-9
             [0.236797907979275*Re(a1,0) + 0.00998620690459202*Re(a1,1) + 0.247323113451507*Re(a2,0) + 0.139540535294972*Re(a4,0) + 0.00177444290057350*Re(a4,1) + 0.236797907979275*Re(a6,0) - 0.00998620690459202*Re(a6,1) + 0.139540535294972*Re(a7,0) - 0.00177444290057350*Re(a7,1), 0.236797907979275*Im(a0,0) - 0.00998620690459202*Re(a0,1) + 0.247323113451507*Im(a2,0) + 0.139540535294972*Im(a3,0) - 0.00177444290057350*Re(a3,1) + 0.139540535294972*Im(a5,0) + 0.00177444290057350*Re(a5,1) + 0.236797907979275*Im(a8,0) + 0.00998620690459202*Re(a8,1) - 1.00000000000000]
 
         """
         for cycle in cocycle.parent().homology().gens():
-            self.add_constraint(self.real_part(self.integrate(cycle)) - self.real_part(cocycle(cycle)), rank_check=False)
+            self.add_constraint(self.integrate(cycle).real() - cocycle(cycle).real(), rank_check=False)
 
     def lagrange_variables(self):
         return set(variable for variable in self.variables() if variable.describe()[0] == "λ?")
@@ -2236,7 +2112,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 6, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.require_cohomology(H({a: 1}))
             sage: C.optimize(C._L2_consistency())
             sage: C._optimize_cost()
@@ -2360,7 +2236,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: Ω = PowerSeriesConstraints(T, 8, Ω)
+            sage: Ω = PowerSeriesConstraints(Ω)
             sage: Ω.power_series_ring(T(0, (1/2, 1/2)))
             Power Series Ring in z0 over Complex Field with 54 bits of precision
             sage: Ω.power_series_ring(T(0, 0))
@@ -2375,9 +2251,6 @@ q
         point = args[0]
         return PowerSeriesRing(self.complex_field(), f"z{self._differentials._centers.index(point)}")
 
-    def laurent_series_ring(self, *args):
-        return self.power_series_ring(*args).fraction_field()
-
     def solve(self, algorithm="eigen+mpfr"):
         r"""
         Return a solution for the system of constraints with minimal error.
@@ -2390,7 +2263,7 @@ q
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
-            sage: C = PowerSeriesConstraints(T, 2, Ω)
+            sage: C = PowerSeriesConstraints(Ω)
             sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - C._real_nonsingular(0, 0, 0, 1))
             sage: C.add_constraint(C._real_nonsingular(0, 0, 0, 0) - 1)
             sage: C.solve()  # random output due to random ordering of the dict
@@ -2482,7 +2355,7 @@ q
             series[center][degree][part] = value
 
         series = {point:
-                  sum((self.complex_field()(*entry) * self.laurent_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.laurent_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
+                  sum((self.complex_field()(*entry) * self.power_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.power_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
 
         return series, residue
 
