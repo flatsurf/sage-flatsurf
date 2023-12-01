@@ -4,6 +4,8 @@
 from sage.misc.cachefunc import cached_method
 
 
+# TODO: Make these unique for each surface (but they cannot be unique
+# representation because the same surface might have several representatiions)
 class VoronoiDiagram:
     r"""
     ALGORITHM:
@@ -65,7 +67,7 @@ class VoronoiDiagram:
             weight = "classical"
 
         self._surface = surface
-        self._centers = set(points)
+        self._centers = frozenset(points)
         self._weight = weight
 
         if not surface.vertices().issubset(self._centers):
@@ -356,6 +358,8 @@ m
 
         return boundaries
 
+    # TODO: Make comparable and hashable.
+
 
 class VoronoiCell:
     r"""
@@ -481,6 +485,8 @@ class VoronoiCell:
 
     def __repr__(self):
         return f"Voronoi cell at {self._center}"
+
+    # TODO: Make comparable and hashable.
 
 
 class VoronoiDiagram_Polygon:
@@ -881,7 +887,7 @@ class VoronoiDiagram_Polygon:
         return not (self == other)
 
     def __hash__(self):
-        return hash((self._parent, self._label, self._weight))
+        return hash((self._label, self._weight))
 
 
 class VoronoiPolygonCell:

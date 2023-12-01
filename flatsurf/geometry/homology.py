@@ -17,6 +17,9 @@ A basis of homology, with generators written as oriented edges::
 We can also write the generators as paths that cross over the edges and
 connect points on the interior of neighboring polygons::
 
+TODO: We actually don't do that currently anymore. We rather take the actual
+edges. But using that form might be useful sometimes.
+
     sage: H = SimplicialHomology(S, generators="voronoi")
     sage: H.gens()
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
