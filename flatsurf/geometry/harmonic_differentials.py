@@ -17,7 +17,7 @@ First, the harmonic differentials that sends the horizontal `a` to 1 and the
 vertical `b` to zero::
 
     sage: H = SimplicialCohomology(T)
-    sage: f = H({a: 1})
+    sage: f = H({b: 1})
     sage: Ω = HarmonicDifferentials(T)
     sage: ω = Ω(f)
     sage: ω  # random output
@@ -27,7 +27,7 @@ vertical `b` to zero::
 
 The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 
-    sage: g = H({b: 1})
+    sage: g = H({a: -1})
     sage: Ω(g).simplify()
     (1.00000000000000*I + O(z0^5), 1.00000000000000*I + O(z1^5))
 
@@ -40,14 +40,14 @@ A less trivial example, the regular octagon::
     sage: HS = SimplicialCohomology(S, homology=H)
     sage: a, b, c, d = HS.homology().gens()
 
-    sage: f = { a: -1, b: sqrt(2), c: -1, d: 0}
+    sage: f = { a: sqrt(2) + 1, b: 0, c: -sqrt(2) - 1, d: -sqrt(2) - 2}
 
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
     sage: Omega = HarmonicDifferentials(S, ncoefficients=11)
     sage: omega = Omega(HS(f))
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4
+    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # TODO: Why so much tolerance?
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
 
 The same computation on a triangulation of the octagon::
@@ -60,15 +60,15 @@ The same computation on a triangulation of the octagon::
     sage: HS = SimplicialCohomology(S, homology=H)
     sage: a, b, c, d = HS.homology().gens()
 
-    sage: f = { a: -sqrt(2), b: sqrt(2), c: -1, d: -1}
+    sage: f = {a: -sqrt(2), b: 0, c: -sqrt(2) - 1, d: sqrt(2) + 1}
 
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
     sage: Omega = HarmonicDifferentials(S, centers="vertices", ncoefficients=11)
     sage: omega = Omega(HS(f))  # long time
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: This is not the output we get. So something is wrong.
-    (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
+    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: Why so much tolerance?
+    (1.31414000000000*z0^2 + (-0.107413000000000)*z0^10 + O(z0^11), -2.09020000000000 + (-3.22547000000000)*z1^8 + (-2.61537000000000)*z1^16 + (-2.00436000000000)*z1^24 + (-1.53401000000000)*z1^32 + O(z1^33))
 
 The same surface but built as the unfolding of a right triangle::
 
@@ -79,14 +79,14 @@ The same surface but built as the unfolding of a right triangle::
     sage: HS = SimplicialCohomology(S, homology=H)
     sage: a, b, c, d = H.gens()
 
-    sage: f = { a: sqrt(2) - 2, b: 0, c: 1 - sqrt(2), d: -1}
+    sage: f = {a: 0, b: sqrt(2) + 2, c: -1, d: -sqrt(2) - 1}
 
     sage: f = HS(f)
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
-    sage: Omega = HarmonicDifferentials(S, centers="vertices", ncoefficients=11)
+    sage: Omega = HarmonicDifferentials(S, centers="vertices+centers", ncoefficients=11)  # TODO: With just "vertices" this does not terminate. Probably because there are areas in the Voronoi diagram not contained in any cell.
     sage: omega = Omega(HS(f))  # long time
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: This is not the output we get. So something is wrong.
+    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: We get this output but multiplied with a root of unity.
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
 
 Much more complicated, the unfolding of the (3, 4, 13) triangle::
@@ -106,7 +106,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: f._values = {key: RealField(54)(value) for (key, value) in f._values.items()}  # TODO: Why is this hack necessary?
 
     sage: Omega = HarmonicDifferentials(S, ncoefficients=1)
-    sage: omega = Omega(HS(f), check=False)  # TODO: Increase precision once this is faster.  # long time, see above
+    sage: omega = Omega(HS(f), check=False)  # TODO: Increase precision once this is faster.  # long time
     sage: omega.simplify()  # long time, see above
     ((0.43474 + 0.32379*I) + O(z0), (0.014497 + 0.099627*I) + O(z1), (-0.050347 + 0.0029207*I) + O(z2), (-0.21127 - 0.090282*I) + O(z3), (0.47454 + 0.087358*I) + O(z4), (-0.19314 + 0.31055*I) + O(z5), (-0.23193 - 0.13398*I) + O(z6), (-0.45636 - 0.42553*I) + O(z7), (-0.21176 + 0.40428*I) + O(z8), (-0.15358 + 0.049085*I) + O(z9), (-0.40648 - 0.48943*I) + O(z10), (-0.0020610 - 0.48399*I) + O(z11), (0.24142 - 0.25153*I) + O(z12), (-0.032511 + 0.55139*I) + O(z13), (-0.32812 + 0.13133*I) + O(z14), (-0.33572 + 0.53022*I) + O(z15), (0.079225 + 0.028393*I) + O(z16), (0.033120 - 0.49532*I) + O(z17), (-0.27160 - 0.34612*I) + O(z18), (-0.21121 + 0.25608*I) + (-0.13894 - 0.56381*I)*z19 + (0.040253 + 0.39319*I)*z19^2 + (-0.088971 - 0.70043*I)*z19^3 + (0.075621 - 0.040790*I)*z19^4 + (-0.76242 - 0.39754*I)*z19^5 + (-0.066434 - 0.12278*I)*z19^6 + (0.0075069 + 0.22176*I)*z19^7 + (-0.40163 - 0.51249*I)*z19^8 + (0.55621 + 0.080413*I)*z19^9 + (-1.0088 - 1.9733*I)*z19^10 + (0.27571 - 0.061058*I)*z19^11 + (-2.4352 - 1.0704*I)*z19^12 + O(z19^13), (-0.14288 + 0.36838*I) + O(z20), (-0.012062 - 0.58947*I) + O(z21), (0.44529 + 0.29461*I) + (0.22745 - 0.67464*I)*z22 + (-0.95440 - 0.53814*I)*z22^2 + O(z22^3), (-2.4328 - 0.60098*I) + O(z23), (-0.71168 - 0.73386*I) + O(z24), (-1.6115 - 1.7234*I) + O(z25))
 
@@ -662,7 +662,7 @@ class HarmonicDifferential(Element):
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
             sage: H = SimplicialCohomology(T)
-            sage: f = H({a: 1})
+            sage: f = H({b: 1})
 
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
@@ -694,7 +694,7 @@ class HarmonicDifferential(Element):
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
             sage: H = SimplicialCohomology(T)
-            sage: f = H({a: 1})
+            sage: f = H({b: 1})
 
             sage: Ω = HarmonicDifferentials(T)
             sage: η = Ω(f)
@@ -749,7 +749,7 @@ class HarmonicDifferential(Element):
         # assert len(precisions) == 1
         return min(precisions)
 
-    def integrate(self, cycle, numerical=False, part=None):  # TODO: Remove debugging hack "part"
+    def integrate(self, cycle, numerical=False):
         # TODO: Generalize to more than just cycles.
         r"""
         Return the integral of this differential along the homology class
@@ -784,7 +784,7 @@ class HarmonicDifferential(Element):
             raise NotImplementedError
 
         C = PowerSeriesConstraints(self.parent())
-        return self._evaluate(C.integrate(cycle, part=part))
+        return self._evaluate(C.integrate(cycle))
 
     def _repr_(self):
         def sparse_parent(series):
@@ -881,13 +881,12 @@ class HarmonicDifferentials(Parent):
     Element = HarmonicDifferential
 
     # TODO: Determine ncoefficients automatically
-    def __init__(self, surface, ncoefficients=5, centers=None, homology_generators=None, category=None):
+    def __init__(self, surface, ncoefficients=5, centers=None, category=None):
         Parent.__init__(self, category=category or SetsWithPartialMaps())
 
         self._surface = surface
         self._ncoefficients = ncoefficients
         self._centers = tuple(HarmonicDifferentials._centers(surface, centers))
-        self._homology_generators = HarmonicDifferentials._homology_generators(surface, self._centers, homology_generators)
 
     @staticmethod
     def _centers(surface, algorithm):
@@ -925,45 +924,6 @@ class HarmonicDifferentials(Parent):
     @staticmethod
     def _centers_vertices_and_centers(surface):
         return frozenset(list(surface.vertices()) + [surface(label, surface.polygon(label).centroid()) for label in surface.labels()])
-
-    @staticmethod
-    def _homology_generators(surface, centers, algorithm):
-        if algorithm is None:
-            algorithm = "centers"
-
-        if algorithm == "centers":
-            return HarmonicDifferentials._homology_generators_centers(surface)
-
-        if all(isinstance(generator, Path) for generator in algorithm):
-            return frozenset(algorithm)
-
-        raise NotImplementedError("unsupported algorithm for determining homology generators")
-
-    @staticmethod
-    def _homology_generators_centers(surface):
-        r"""
-        Return all possible paths (up to orientation) connecting the centroids
-        of neighboring polygons.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
-            sage: S = translation_surfaces.regular_octagon()
-
-            sage: gens = HarmonicDifferentials._homology_generators_centers(S)
-            sage: len(gens)
-            4
-
-        """
-        generators = set()
-        for label in surface.labels():
-            polygon = surface.polygon(label)
-            for edge in range(len(polygon.edges())):
-                path = GeodesicPath.across_edge(surface, label, edge)
-                if -path not in generators:
-                    generators.add(path)
-
-        return frozenset(generators)
 
     @cached_method
     def ncoefficients(self, center):
@@ -1203,7 +1163,7 @@ class PowerSeriesConstraints:
         else:
             raise NotImplementedError("cannot handle expressions over this base ring")
 
-    def integrate(self, cycle, part=None):  # TODO: Remove (or rework) debugging hack "part"
+    def integrate(self, cycle):
         r"""
         Return the linear combination of the power series coefficients that
         describe the integral of a differential along the homology class
@@ -1229,12 +1189,12 @@ class PowerSeriesConstraints:
         `a_0 - i/2 a_1 - a_2/6`::  # TODO: This is not true anymore.
 
             sage: a, b = H.gens()
-            sage: C.integrate(a)  # TODO: There are many correct answers here. Test for something meaningful.
+            sage: C.integrate(b)  # TODO: There are many correct answers here. Test for something meaningful.
             Re(a0,0) ...
 
         :: # TODO: Explain what's the expected output here
 
-            sage: C.integrate(b)  # TODO: There are many correct answers here. Test for something meaningful.
+            sage: C.integrate(-a)  # TODO: There are many correct answers here. Test for something meaningful.
             (-1.00000000000000*I)*Re(a0,0) ...
 
         The same integrals but developing the power series at the vertex and at the center of the square::
@@ -1276,13 +1236,12 @@ class PowerSeriesConstraints:
             (-1.60217526524068*I)*Re(a0,0) + 1.60217526524068*Im(a0,0) + (5.55111512312578e-17 - 0.389300863573646*I)*Re(a1,0) + (0.389300863573646 + 5.55111512312578e-17*I)*Im(a1,0) + (-2.77555756156289e-17 + 0.327551243899061*I)*Re(a1,1) + (-0.327551243899061 - 2.77555756156289e-17*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a1,2) + 0.270679432377470*Im(a1,2)
 
         """
-        return sum((multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._integrate_path_across_edge(label, edge)), start=self.symbolic_ring().zero())
+        return sum((multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._integrate_path_along_edge(label, edge)), start=self.symbolic_ring().zero())
 
-    def _integrate_path_across_edge(self, label, edge):
+    def _integrate_path_along_edge(self, label, edge):
         r"""
-        Return the path from the centroid of the polygon ``label`` to the
-        centroid of the polygon on the other side of ``edge`` into a
-        :class:`Path` that we can integrate along.
+        Return the path along the ``edge`` of the polygon with ``label`` as a
+        sequence of :class:`Path` that we can integrate along.
 
         EXAMPLES::
 
@@ -1295,25 +1254,19 @@ class PowerSeriesConstraints:
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
             sage: Ω = HarmonicDifferentials(T)
             sage: C = PowerSeriesConstraints(Ω)
-            sage: C._integrate_path_across_edge(0, 1)
-            [(1, Path (1, 0) from (1/2, 1/2) in polygon 0 to (1/2, 1/2) in polygon 0)]
+            sage: C._integrate_path_along_edge(0, 1)
+            [(1, Path (0, 1) from (1, 0) in polygon 0 to (0, 1) in polygon 0)]
 
         ::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials
             sage: S = translation_surfaces.regular_octagon()
             sage: Ω = HarmonicDifferentials(S)
-            sage: PowerSeriesConstraints(Ω)._integrate_path_across_edge(0, 0)
-            [(1, Path (0, -a - 1) from (1/2, 1/2*a + 1/2) in polygon 0 to (1/2, 1/2*a + 1/2) in polygon 0)]
+            sage: PowerSeriesConstraints(Ω)._integrate_path_along_edge(0, 0)
+            [(1, Path (1, 0) from (0, 0) in polygon 0 to (1, a + 1) in polygon 0)]
 
         """
-        path = GeodesicPath.across_edge(self._differentials.surface(), label, edge)
-        if path in self._differentials._homology_generators:
-            return [(1, path)]
-        if -path in self._differentials._homology_generators:
-            return [(-1, -path)]
-
-        raise NotImplementedError("cannot rewrite this path as a sum of supported paths yet")
+        return [(1, GeodesicPath.along_edge(self._differentials.surface(), label, edge))]
 
     def _integrate_path(self, path):
         r"""
@@ -1333,7 +1286,7 @@ class PowerSeriesConstraints:
             sage: C = PowerSeriesConstraints(Ω)
 
             sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
-            sage: path = GeodesicPath.across_edge(S, 0, 0)
+            sage: path = GeodesicPath.along_edge(S, 0, 0)
 
             sage: C._integrate_path(path)  # not tested # TODO: Check this value
             (-5.55111512312578e-17 - 0.389300863573646*I)*Re(a0,0) + (-1.60217526524068*I)*Re(a1,0) + (0.389300863573646 - 5.55111512312578e-17*I)*Im(a0,0) + 1.60217526524068*Im(a1,0) + (-2.08166817117217e-17 - 0.327551243899060*I)*Re(a0,1) + (1.66533453693773e-16 + 3.19522800018857e-17*I)*Re(a1,1) + (0.327551243899060 - 2.08166817117217e-17*I)*Im(a0,1) + (-3.19522800018857e-17 + 1.66533453693773e-16*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a0,2) + (-1.23259516440783e-32 + 0.342727396656658*I)*Re(a1,2) + 0.270679432377470*Im(a0,2) + (-0.342727396656658 - 1.23259516440783e-32*I)*Im(a1,2) + (1.38777878078145e-17 - 0.219471472765136*I)*Re(a0,3) + (-1.24900090270330e-16 - 3.07576511193400e-17*I)*Re(a1,3) + (0.219471472765136 + 1.38777878078145e-17*I)*Im(a0,3) + (3.07576511193400e-17 - 1.24900090270330e-16*I)*Im(a1,3) + (2.42861286636753e-17 - 0.174329399573979*I)*Re(a0,4) + (1.69481835106077e-32 - 0.131965414609324*I)*Re(a1,4) + (0.174329399573979 + 2.42861286636753e-17*I)*Im(a0,4) + (0.131965414609324 + 1.69481835106077e-32*I)*Im(a1,4) + (3.12250225675825e-17 - 0.135339716188735*I)*Re(a0,5) + (0.135339716188735 + 3.12250225675825e-17*I)*Im(a0,5) + (2.77555756156289e-17 - 0.102340546397005*I)*Re(a0,6) + (0.102340546397005 + 2.77555756156289e-17*I)*Im(a0,6) + (3.46944695195361e-17 - 0.0749845895064374*I)*Re(a0,7) + (0.0749845895064374 + 3.46944695195361e-17*I)*Im(a0,7) + (3.12250225675825e-17 - 0.0527958835241931*I)*Re(a0,8) + (0.0527958835241931 + 3.12250225675825e-17*I)*Im(a0,8) + (2.77555756156289e-17 - 0.0352191503025193*I)*Re(a0,9) + (0.0352191503025193 + 2.77555756156289e-17*I)*Im(a0,9) + (2.08166817117217e-17 - 0.0216611462547145*I)*Re(a0,10) + (0.0216611462547145 + 2.08166817117217e-17*I)*Im(a0,10) + (2.08166817117217e-17 - 0.0115239671919220*I)*Re(a0,11) + (0.0115239671919220 + 2.08166817117217e-17*I)*Im(a0,11) + (1.73472347597681e-17 - 0.00423065874117904*I)*Re(a0,12) + (0.00423065874117904 + 1.73472347597681e-17*I)*Im(a0,12) + (1.04083408558608e-17 + 0.000756226861613830*I)*Re(a0,13) + (-0.000756226861613830 + 1.04083408558608e-17*I)*Im(a0,13) + (8.67361737988404e-18 + 0.00392229868304028*I)*Re(a0,14) + (-0.00392229868304028 + 8.67361737988404e-18*I)*Im(a0,14)
@@ -1391,54 +1344,6 @@ class PowerSeriesConstraints:
         integrator = self.CellIntegrator(self, polygon_cell)
         ncoefficients = self._differentials.ncoefficients(self._differentials.surface()(polygon_cell.label(), polygon_cell.center()))
         return sum(integrator.a(n) * integrator.integral(n, segment) for n in range(ncoefficients))
-
-    # TODO: Remove
-    def _integrate_across_edge(self, label, edge):
-        r"""
-        Return a symbolic expression describing the integral from the center of
-        the circumscribing circle of the polygon with ``label`` to the center
-        of the circumscribing circle of the polygon on the other side of
-        ``edge``.
-        """
-        opposite_label, opposite_edge = self._differentials.surface().opposite_edge(label, edge)
-
-        # TODO: Currently, there is no concept of a segment in a surface in
-        # sage-flatsurf other than a saddle connection or a flow starting at a
-        # vertex. It would be nice to have a proper type for such objects.
-
-        # We integrate from the center of the circumscribing circle of one
-        # polygon to the edge and then from the edge to the center of the other
-        # circumscribing circle.
-        return self._integrate_center_to_edge(label, edge) - self._integrate_center_to_edge(opposite_label, opposite_edge)
-
-    # TODO: Remove
-    def _integrate_center_to_edge(self, label, edge):
-        r"""
-        Return a symbolic expression describing the integral from the center of
-        the circumscribing circle of the polygon with ``label`` to the midpoint
-        of the ``edge``.
-        """
-        # Split the segment from the center to the edge into segments that are
-        # in a single Voronoi cell.
-        V = self._differentials._voronoi_diagram()
-
-        polygon = self._differentials.surface().polygon(label)
-
-        expression = self.symbolic_ring().zero()
-
-        for cell, segment in V.split_segment(label, polygon.circumscribing_circle().center(), polygon.vertices()[edge] + polygon.edges()[edge]/2).items():
-            integrator = self.CellIntegrator(self, cell)
-
-            ncoefficients = self._differentials.ncoefficients(self._differentials.surface()(label, edge))
-            for n in range(ncoefficients):
-                expression += integrator.a(n) * integrator.f(n, segment)
-
-        return expression
-
-    @cached_method
-    def _circumscribing_circle_center(self, label):
-        from sage.all import CC
-        return CC(*self._differentials.surface().polygon(label).circumscribing_circle().center())
 
     @cached_method
     def _L2_consistency(self):
@@ -2093,30 +1998,30 @@ q
             sage: C.require_cohomology(H({a: 1}))
             sage: C.optimize(C._L2_consistency())
             sage: C._optimize_cost()
-            sage: C.matrix()  # TODO: Check this matrix.
+            sage: C.matrix()  # not tested # TODO: Check this matrix.
             (22 x 22 dense matrix over Real Field with 54 bits of precision,
              (1.00000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000, 0.000000000000000),
-             {Im(a0,0): 11,
-              Im(a0,1): 5,
-              Im(a0,2): 13,
-              Im(a0,3): 6,
-              Im(a0,4): 0,
-              Im(a1,0): 12,
-              Im(a1,1): 2,
-              Im(a1,2): 9,
-              Im(a1,3): 7,
-              Im(a1,4): 14,
-              Re(a0,0): 17,
-              Re(a0,1): 8,
+             {Im(a0,4): 0,
               Re(a0,2): 1,
-              Re(a0,3): 10,
-              Re(a0,4): 18,
-              Re(a1,0): 19,
-              Re(a1,1): 4,
-              Re(a1,2): 15,
+              Im(a1,1): 2,
               Re(a1,3): 3,
-              Re(a1,4): 16},
-             set())
+              Re(a1,1): 4,
+              Im(a0,1): 5,
+              Im(a0,3): 6,
+              Im(a1,3): 7,
+              Re(a0,1): 8,
+              Im(a1,2): 9,
+              Im(a0,0): 10,
+              Re(a0,3): 11,
+              Im(a1,0): 12,
+              Im(a0,2): 13,
+              Im(a1,4): 14,
+              Re(a1,2): 15,
+              Re(a1,4): 16,
+              Re(a0,0): 17,
+              Re(a0,4): 18,
+              Re(a1,0): 19},
+            set())
 
         """
         lagranges = {}
@@ -2339,9 +2244,33 @@ class GeodesicPath(Path):
         opposite_polygon = surface.polygon(opposite_label)
 
         holonomy = polygon.vertex(edge) - polygon.centroid() + opposite_polygon.centroid() - opposite_polygon.vertex(opposite_edge + 1)
+        # TODO: edge() should be immutable.
         holonomy.set_immutable()
 
         return GeodesicPath(surface, (label, polygon.centroid()), (opposite_label, opposite_polygon.centroid()), holonomy)
+
+    @staticmethod
+    def along_edge(surface, label, edge):
+        r"""
+        Return the :class:`GeodesicPath` along the ``edge`` of the polygon with
+        ``label``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
+            sage: GeodesicPath.along_edge(S, 0, 0)
+            Path (1, 0) from (0, 0) in polygon 0 to (1, a + 1) in polygon 0
+
+        """
+        polygon = surface.polygon(label)
+        holonomy = polygon.edge(edge)
+        # TODO: edge() should be immutable.
+        holonomy.set_immutable()
+
+        return GeodesicPath(surface, (label, polygon.vertex(edge)), (label, polygon.vertex(edge + 1)), holonomy)
 
     def split(self):
         r"""
@@ -2364,8 +2293,9 @@ class GeodesicPath(Path):
             raise NotImplementedError
 
         from flatsurf.geometry.euclidean import OrientedSegment
-        if self._end[0] == self._start[0] and self._start[1] + self._holonomy == self._end[1]:
-            return [(self._start[0], OrientedSegment(self._start[1], self._end[1]))]
+        # TODO: This only works for convex polygons.
+        if self._end[0] == self._start[0] and polygon.get_point_position(self._start[1] + self._holonomy).is_inside():
+            return [(self._start[0], OrientedSegment(self._start[1], self._start[1] + self._holonomy))]
 
         path = OrientedSegment(self._start[1], self._start[1] + self._holonomy)
         for v in range(len(polygon.vertices())):

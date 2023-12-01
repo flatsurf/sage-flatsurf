@@ -242,6 +242,30 @@ m
             {Voronoi cell in polygon 0 at (...): OrientedSegment((1/2, 0), (1/2, 1/2)),
              Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1/2, 1))}
 
+        TESTS::
+
+            sage: from flatsurf import similarity_surfaces, Polygon
+            sage: S = similarity_surfaces.billiard(Polygon(angles=[3/8, 1/2, 1/8], lengths=[1/2])).minimal_cover('translation')
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: centers = [S(label, S.polygon(label).centroid()) for label in S.labels()]
+            sage: V = VoronoiDiagram(S, S.vertices().union(centers), weight="radius_of_convergence")
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: c = S.base_ring().gen()
+            sage: segment = OrientedSegment((1/2, -c/2 - 1/2), (1/2, 0))
+
+            sage: V.split_segment((1, 1, 0), segment)
+            {Voronoi cell in polygon (1, 1, 0) at (1/2, -1/2*c0 - 1/2): OrientedSegment((1/2, -1/2*c0 - 1/2), (1/2, ...)),
+             Voronoi cell in polygon (1, 1, 0) at (1/2, 0): OrientedSegment((1/2, ...), (1/2, 0)),
+             Voronoi cell in polygon (1, 1, 0) at (1/3, -1/6*c0 - 1/6): OrientedSegment((1/2, ...), (1/2, ...))}
+
+            sage: segment = OrientedSegment((c/4, c/4), (-1/2, c/2 + 1/2))
+            sage: V.split_segment((0, c/2, c/2), segment)
+            {Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (-1/2, 1/2*c0 + 1/2): OrientedSegment((..., ...), (-1/2, 1/2*c0 + 1/2)),
+             Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (1/12*c0 - 1/6, 1/4*c0 + 1/6): OrientedSegment((1/4*c0 - ..., 1/4*c0 + ...), (..., ...)),
+             Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (1/4*c0, 1/4*c0): OrientedSegment((1/4*c0, 1/4*c0), (1/4*c0 - ..., 1/4*c0 + ...))}
+
         """
         segments = {}
 
@@ -358,6 +382,36 @@ m
 
         return boundaries
 
+    @cached_method
+    def radius_of_convergence2(self, center):
+        r"""
+        Return the radius of convergence squared when developing a power series
+        at ``center``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+
+            sage: V.radius_of_convergence2(S(0, S.polygon(0).centroid()))
+            1/2*a + 1
+            sage: V.radius_of_convergence2(next(iter(S.vertices())))
+            1
+            sage: V.radius_of_convergence2(S(0, (1/2, 0)))  # not tested
+            1/4
+            sage: V.radius_of_convergence2(S(0, (1/4, 0)))  # not tested
+            1/16
+
+        """
+        if all(vertex.angle() == 1 for vertex in self._surface.vertices()):
+            from sage.all import oo
+            return oo
+
+        # TODO: The 4 is a hack to make marked points work in many examples.
+        return min((4 if self._surface(label, v).angle() == 1 else 1) * ((v[0] - coordinates[0])**2 + (v[1] - coordinates[1])**2) for (label, coordinates) in center.representatives() for v in self._surface.polygon(label).vertices() if v != coordinates)
+
     # TODO: Make comparable and hashable.
 
 
@@ -366,7 +420,7 @@ class VoronoiCell:
     A cell of a :class:`VoronoiDiagram`.
 
     EXAMPLES::
-
+W
         sage: from flatsurf.geometry.voronoi import VoronoiDiagram
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.regular_octagon()
@@ -461,6 +515,8 @@ class VoronoiCell:
 
             for c in self._parent.polygon_cells(lbl, coordinates):
                 cells.append(c)
+
+        assert cells
 
         return cells
 
@@ -645,7 +701,9 @@ class VoronoiDiagram_Polygon:
             [Voronoi cell in polygon 0 at (1/2*a + 1, 1/2*a)]
 
         """
-        return [cell for cell in self._cells().values() if cell.contains_point(coordinates)]
+        cells = [cell for cell in self._cells().values() if cell.contains_point(coordinates)]
+        assert cells
+        return cells
 
     def _half_space(self, center, opposite_center):
         r"""
@@ -681,6 +739,8 @@ class VoronoiDiagram_Polygon:
         This produces a weighted version of that half space, i.e., the boundary
         point on the segment between the two centers is shifted according to
         the weight towards the ``opposite_center``.
+
+        TODO: Explain how just using half spaces might leave some empty space.
 
         Note that this is not a natural generalization of Voronoi cells.
         Normally, one would all points on the boundary to have a distance that
@@ -724,12 +784,6 @@ class VoronoiDiagram_Polygon:
         the two centers is shifted relative to the respective radius of
         convergence at these centers.
 
-        Note that we do not really compute the radius of convergence but just
-        pretend that it is the minimum distance to any other vertex in the
-        polygon (even if it is not a singularity of the surface.) Also, there
-        might be closer singularities in other nearby polygons that we ignore
-        for this computation.
-
         EXAMPLES::
 
             sage: from flatsurf.geometry.voronoi import VoronoiDiagram
@@ -752,8 +806,14 @@ class VoronoiDiagram_Polygon:
         Return the quotient of the radii of convergence at ``center`` and
         ``opposite_center`` (when restricted to thei polygon.)
         """
-        weight = min((v[0] - center[0])**2 + (v[1] - center[1])**2 for v in self.polygon().vertices() if v != center)
-        opposite_weight = min((v[0] - opposite_center[0])**2 + (v[1] - opposite_center[1])**2 for v in self.polygon().vertices() if v != opposite_center)
+        surface = self._parent.surface()
+        weight = self._parent.radius_of_convergence2(surface(self._label, center))
+        opposite_weight = self._parent.radius_of_convergence2(surface(self._label, opposite_center))
+
+        from sage.all import oo
+        if weight == oo:
+            assert opposite_weight == oo
+            return 1
 
         relative_weight = weight / opposite_weight
         try:
