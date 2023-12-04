@@ -747,6 +747,26 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         raise NotImplementedError
 
+    def gen(self, n, dimension=1):
+        r"""
+        Return the ``n``-th generator of homology in ``dimension``, i.e., the
+        ``n``-th element of :meth:`gens`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+
+        ::
+
+            sage: H.gen(0)
+            B[(0, 1)]
+
+        """
+        return self.gens()[n]
+
     @cached_method
     def gens(self, dimension=1):
         r"""
