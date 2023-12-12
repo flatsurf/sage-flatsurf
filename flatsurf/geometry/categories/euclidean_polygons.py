@@ -814,12 +814,12 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf.geometry.polygon import PolygonPosition
 
             # Determine whether the point is a vertex of the polygon.
-            for (i, v) in enumerate(self.vertices()):
+            for i, v in enumerate(self.vertices()):
                 if point == v:
                     return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
 
             # Determine whether the point is on an edge of the polygon.
-            for (i, (v, e)) in enumerate(zip(self.vertices(), self.edges())):
+            for i, (v, e) in enumerate(zip(self.vertices(), self.edges())):
                 if ccw(e, point - v) == 0:
                     # The point lies on the line through this edge.
                     if 0 < e.dot_product(point - v) < e.dot_product(e):
@@ -829,9 +829,7 @@ class EuclideanPolygons(Category_over_base_ring):
             # winding number of the polygon.
             winding_number = 0
 
-            for (v, w) in zip(
-                self.vertices(), self.vertices()[1:] + self.vertices()[:1]
-            ):
+            for v, w in zip(self.vertices(), self.vertices()[1:] + self.vertices()[:1]):
                 if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
                     winding_number += 1
                 if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
