@@ -105,7 +105,7 @@ class SimplicialHomologyClass(Element):
             sage: a = 2 * H((0, 0)) + H((0, 1)) + 3 * H((0, 2)) + H((0, 3)) + H((0, 4)) + H((0, 5)) + H((0, 7))
             sage: b = H((0, 0)) + 2 * H((0, 1)) + H((0, 2)) + H((0, 3)) + 2 * H((0, 4)) + 3 * H((0, 5)) + 4 * H((0, 6)) + 3 * H((0, 7))
             sage: a.algebraic_intersection(b)
-            1
+            -6
 
             sage: S = translation_surfaces.cathedral(1, 4)
             sage: H = SimplicialHomology(S)
