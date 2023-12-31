@@ -14,16 +14,22 @@ A basis of homology, with generators written as oriented edges::
     sage: H.gens()
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
 
-Relative homology on the unfolding of the (3, 4, 13) triangle; homology
-relative to the subset of vertices::
+The absolute homology of the unfolding of the (3, 4, 13) triangle::
 
     sage: from flatsurf import Polygon, similarity_surfaces
     sage: P = Polygon(angles=[3, 4, 13])
     sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
-    sage: H = SimplicialHomology(relative=S.singularities())  # TODO: not tested
-    sage: H.gens()  # TODO: not tested
+    sage: H = SimplicialHomology(S)
+    sage: len(H.gens())
+    16
 
-TODO: Add examples.
+Relative homology, relative to the singularities of the surface::
+
+    sage: S = S.erase_marked_points()  # random output due to deprecation warnings  # TODO: fix deprecations
+    sage: H = SimplicialHomology(S, relative=S.vertices())
+    sage: len(H.gens())  # TODO: Verify that this is correct!
+    17
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
@@ -50,8 +56,6 @@ from sage.structure.element import Element
 
 from sage.misc.cachefunc import cached_method
 
-
-# TODO: We should have absolute and relative (to a subset of vertices) homology.
 
 class SimplicialHomologyClass(Element):
     # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a
@@ -485,7 +489,7 @@ class SimplicialHomologyGroup(Parent):
     """
     Element = SimplicialHomologyClass
 
-    def __init__(self, surface, k, coefficients, generators, subset, implementation, category):
+    def __init__(self, surface, k, coefficients, generators, relative, implementation, category):
         Parent.__init__(self, base=coefficients, category=category)
 
         if surface.is_mutable():
@@ -502,8 +506,10 @@ class SimplicialHomologyGroup(Parent):
         if generators not in ["edge",]:
             raise NotImplementedError("cannot represented homology with these generators yet")
 
-        if subset:
-            raise NotImplementedError("cannot compute relative homology yet")
+        if relative:
+            for point in relative:
+                if point not in surface.vertices():
+                    raise NotImplementedError("can only compute homology relative to a subset of the vertices")
 
         if implementation not in ["generic"]:
             raise NotImplementedError("cannot compute homology with this implementation yet")
@@ -512,7 +518,7 @@ class SimplicialHomologyGroup(Parent):
         self._k = k
         self._coefficients = coefficients
         self._generators = generators
-        self._subset = subset
+        self._relative = relative
         self._implementation = implementation
 
     def surface(self):
@@ -618,12 +624,19 @@ class SimplicialHomologyGroup(Parent):
 
         """
         from sage.all import FreeModule
-        return FreeModule(self._coefficients, self.simplices(dimension))
+
+        chain_module = FreeModule(self._coefficients, self.simplices(dimension))
+
+        if self._relative and dimension == 0:
+            representative = next(iter(self._relative))
+            chain_module = chain_module.quotient_module([chain_module(representative) - chain_module(x) for x in self._relative if x != representative])
+
+        return chain_module
 
     @cached_method
     def simplices(self, dimension=1):
         r"""
-        Return the ``dimension``-simplices that form the basis of
+        Return the ``dimension``-simplices that form the generators of
         :meth:`chain_module`.
 
         INPUT:
@@ -692,10 +705,16 @@ class SimplicialHomologyGroup(Parent):
         """
         if chain.parent() == self.chain_module(dimension=1):
             C0 = self.chain_module(dimension=0)
+
+            def to_C0(point):
+                if self._relative:
+                    return C0.retract(C0.ambient()(point))
+                return C0(point)
+
             boundary = C0.zero()
             for edge, coefficient in chain:
-                boundary += coefficient * C0(self._surface.point(*self._surface.opposite_edge(*edge)))
-                boundary -= coefficient * C0(self._surface.point(*edge))
+                boundary += coefficient * to_C0(self._surface.point(*self._surface.opposite_edge(*edge)))
+                boundary -= coefficient * to_C0(self._surface.point(*edge))
             return boundary
 
         if chain.parent() == self.chain_module(dimension=2):
@@ -733,16 +752,15 @@ class SimplicialHomologyGroup(Parent):
             Chain complex with at most 3 nonzero terms over Integer Ring
 
         """
-        def boundary(dimension, simplex):
-            C = self.chain_module(dimension)
-            chain = C.basis()[simplex]
+        def boundary(dimension, chain):
             boundary = self.boundary(chain)
-            coefficients = boundary.dense_coefficient_list(self.chain_module(dimension-1).indices())
+            coefficients = boundary.dense_coefficient_list(self.chain_module(dimension - 1).indices())
             return coefficients
 
         from sage.all import ChainComplex, matrix
         return ChainComplex({
-            dimension: matrix([boundary(dimension, simplex) for simplex in self.simplices(dimension)]).transpose()
+            # TODO: This is wrong in the relative case?
+            dimension: matrix([boundary(dimension, simplex) for simplex in self.chain_module(dimension).basis()]).transpose()
             for dimension in range(3)
         }, base_ring=self._coefficients, degree=-1)
 
@@ -979,13 +997,13 @@ class SimplicialHomologyGroup(Parent):
         if not isinstance(other, SimplicialHomologyGroup):
             return False
 
-        return self._surface == other._surface and self._coefficients == other._coefficients and self._generators == other._generators and self._subset == other._subset and self._implementation == other._implementation and self.category() == other.category()
+        return self._surface == other._surface and self._coefficients == other._coefficients and self._generators == other._generators and self._relative == other._relative and self._implementation == other._implementation and self.category() == other.category()
 
     def __hash__(self):
-        return hash((self._surface, self._coefficients, self._generators, self._subset, self._implementation, self.category()))
+        return hash((self._surface, self._coefficients, self._generators, self._relative, self._implementation, self.category()))
 
 
-def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
+def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", relative=None, implementation="generic", category=None):
     r"""
     TESTS:
 
@@ -998,4 +1016,4 @@ def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", subse
         True
 
     """
-    return surface.homology(k, coefficients, generators, subset, implementation, category)
+    return surface.homology(k, coefficients, generators, relative, implementation, category)

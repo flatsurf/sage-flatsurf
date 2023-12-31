@@ -423,7 +423,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return self.apply_matrix(matrix, in_place=False).codomain()
 
-        def homology(self, k=1, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
+        def homology(self, k=1, coefficients=None, generators="edge", relative=None, implementation="generic", category=None):
             r"""
             Return the ``k``-th simplicial homology group of this surface.
 
@@ -439,7 +439,7 @@ class SimilaritySurfaces(SurfaceCategory):
               is implemented, i.e., the generators are written as formal sums
               of half edges.
 
-            - ``subset`` -- a set (default: the empty set); if non-empty, then
+            - ``relative`` -- a set (default: the empty set); if non-empty, then
               relative homology with respect to this set is constructed.
 
             - ``implementation`` -- a string (default: ``"generic"``); the
@@ -475,12 +475,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 from sage.categories.all import Modules
                 category = Modules(coefficients)
 
-            subset = frozenset(subset or {})
+            relative = frozenset(relative or {})
 
-            return self._homology(k=k, coefficients=coefficients, generators=generators, subset=subset, implementation=implementation, category=category)
+            return self._homology(k=k, coefficients=coefficients, generators=generators, relative=relative, implementation=implementation, category=category)
 
         @cached_method
-        def _homology(self, k, coefficients, generators, subset, implementation, category):
+        def _homology(self, k, coefficients, generators, relative, implementation, category):
             r"""
             Return the ``k``-th homology group of this surface.
 
@@ -512,7 +512,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 
             """
             from flatsurf.geometry.homology import SimplicialHomologyGroup
-            return SimplicialHomologyGroup(self, k, coefficients, generators, subset, implementation, category)
+            return SimplicialHomologyGroup(self, k, coefficients, generators, relative, implementation, category)
 
         def apply_matrix(self, m, in_place=None):
             r"""
