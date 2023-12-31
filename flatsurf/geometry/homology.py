@@ -11,21 +11,8 @@ The absolute homology of the regular octagon::
 
 A basis of homology, with generators written as oriented edges::
 
-    sage: H.gens()  # TODO: Fix deprecation
+    sage: H.gens()
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
-
-We can also write the generatorls as paths that cross over the edges and
-connect points on the interior of neighboring polygons::
-
-    sage: H = SimplicialHomology(S, generators="interior")  # TODO: not tested
-    sage: H.gens()  # TODO: not tested
-
-We can also use generators that connect points on the interior of edges of a
-polygon which can be advantageous when integrating along such paths while
-avoiding to integrate close to the vertices::
-
-    sage: H = SimplicialHomology(S, generators="midpoint")  # TODO: not tested
-    sage: H.gens()  # TODO: not tested
 
 Relative homology on the unfolding of the (3, 4, 13) triangle; homology
 relative to the subset of vertices::
@@ -65,10 +52,6 @@ from sage.misc.cachefunc import cached_method
 
 
 # TODO: We should have absolute and relative (to a subset of vertices) homology.
-# TODO: We implement everything in terms of generators given by the edges of
-# the polygons. However, we should have views that pretend that the generators
-# are paths between adjacent polygons, and a view with generators given by
-# paths between midpoints of edges of polygons.
 
 class SimplicialHomologyClass(Element):
     # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a
@@ -182,10 +165,8 @@ class SimplicialHomologyClass(Element):
         _, _, to_homology = self.parent()._homology()
         return tuple(to_homology(self._chain))
 
-    def __eq__(self, other):
+    def _richcmp_(self, other, op):
         r"""
-        Return whether this class is indistinguishable from ``other``.
-
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
@@ -198,16 +179,21 @@ class SimplicialHomologyClass(Element):
             False
 
         """
-        if self is other:
-            return True
+        from sage.structure.richcmp import op_EQ, op_NE
 
-        if not isinstance(other, SimplicialHomologyClass):
-            return False
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
 
-        if self.parent() != other.parent():
-            return False
+        if op == op_EQ:
+            if self is other:
+                return True
 
-        return self._homology() == other._homology()
+            if self.parent() != other.parent():
+                return False
+
+            return self._homology() == other._homology()
+
+        return super()._richcmp_(other, op)
 
     def __hash__(self):
         return hash(self._homology())
@@ -430,16 +416,27 @@ class SimplicialHomologyClass(Element):
     def surface(self):
         return self.parent().surface()
 
+    def __bool__(self):
+        return bool(self._chain)
 
-class SimplicialHomology_(Parent):
+
+class SimplicialHomologyGroup(Parent):
     r"""
-    Absolute and relative simplicial homology of the ``surface`` with
+    The ``k``-th simplicial homology group of the ``surface`` with
     ``coefficients``.
+
+    .. NOTE:
+
+        This method should not be called directly since it leads to problems
+        with pickling and uniqueness. Instead use :meth:`SimplicialHomology` or
+        :meth:`homology` on a surface.
 
     INPUT:
 
     - ``surface`` -- a finite :class:`flatsurf.geometry.surface.Surface`
       without boundary
+
+    - ``k`` -- an integer
 
     - ``coefficients`` -- a ring (default: the integers)
 
@@ -471,7 +468,7 @@ class SimplicialHomology_(Parent):
 
         sage: T.set_immutable()
         sage: SimplicialHomology(T)
-        H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from a square)
 
     TESTS::
 
@@ -488,8 +485,15 @@ class SimplicialHomology_(Parent):
     """
     Element = SimplicialHomologyClass
 
-    def __init__(self, surface, coefficients, generators, subset, implementation, category):
-        Parent.__init__(self, category=category)
+    def __init__(self, surface, k, coefficients, generators, subset, implementation, category):
+        Parent.__init__(self, base=coefficients, category=category)
+
+        if surface.is_mutable():
+            raise TypeError("surface must be immutable")
+
+        from sage.all import ZZ
+        if k not in ZZ:
+            raise TypeError("k must be an integer")
 
         from sage.categories.all import Rings
         if coefficients not in Rings():
@@ -501,10 +505,11 @@ class SimplicialHomology_(Parent):
         if subset:
             raise NotImplementedError("cannot compute relative homology yet")
 
-        if implementation not in ["generic", "spanning_tree"]:
+        if implementation not in ["generic"]:
             raise NotImplementedError("cannot compute homology with this implementation yet")
 
         self._surface = surface
+        self._k = k
         self._coefficients = coefficients
         self._generators = generators
         self._subset = subset
@@ -854,10 +859,24 @@ class SimplicialHomology_(Parent):
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
-            H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
+            H₁(Translation Surface in H_1(0) built from a square)
 
         """
-        return f"H₁({self._surface}; {self._coefficients})"
+        k = self._k
+        if k == 0:
+            k = "₀"
+        elif k == 1:
+            k = "₁"
+        elif k == 2:
+            k = "₂"
+        else:
+            k = f"_{k}"
+
+        from sage.all import ZZ
+        if self._coefficients is not ZZ:
+            return f"H{k}({self._surface}; {self._coefficients})"
+
+        return f"H{k}({self._surface})"
 
     def _element_constructor_(self, x):
         r"""
@@ -957,7 +976,7 @@ class SimplicialHomology_(Parent):
     #     return [gen._path(voronoi=voronoi) for gen in self.gens()]
 
     def __eq__(self, other):
-        if not isinstance(other, SimplicialHomology_):
+        if not isinstance(other, SimplicialHomologyGroup):
             return False
 
         return self._surface == other._surface and self._coefficients == other._coefficients and self._generators == other._generators and self._subset == other._subset and self._implementation == other._implementation and self.category() == other.category()
@@ -966,7 +985,7 @@ class SimplicialHomology_(Parent):
         return hash((self._surface, self._coefficients, self._generators, self._subset, self._implementation, self.category()))
 
 
-def SimplicialHomology(surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
+def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
     r"""
     TESTS:
 
@@ -979,4 +998,4 @@ def SimplicialHomology(surface, coefficients=None, generators="edge", subset=Non
         True
 
     """
-    return surface.homology(coefficients, generators, subset, implementation, category)
+    return surface.homology(k, coefficients, generators, subset, implementation, category)

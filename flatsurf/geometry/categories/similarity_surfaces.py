@@ -423,25 +423,96 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return self.apply_matrix(matrix, in_place=False).codomain()
 
-        def homology(self, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
-            # TODO: Change default implementation to spanning_tree
+        def homology(self, k=1, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
+            r"""
+            Return the ``k``-th simplicial homology group of this surface.
+
+            INPUT:
+
+            - ``k`` -- an integer (default: ``1``)
+
+            - ``coefficients`` -- a ring (default: the integer ring); consider
+              the homology with coefficients in this ring
+
+            - ``generators`` -- a string (default: ``"edge"``); how the
+              generators of homology are represented. currently only ``"edge"``
+              is implemented, i.e., the generators are written as formal sums
+              of half edges.
+
+            - ``subset`` -- a set (default: the empty set); if non-empty, then
+              relative homology with respect to this set is constructed.
+
+            - ``implementation`` -- a string (default: ``"generic"``); the
+              algorithm used to compute the homology groups. currently only
+              ``"generic"`` is supported, i.e., the groups are computed with
+              the generic homology machinery from SageMath.
+
+            - ``category`` -- a category; if not specified, a category for the
+              homology group is chosen automatically depending on
+              ``coefficients``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: S.homology()
+                H₁(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+                sage: S.homology(0)
+                H₀(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            """
             if self.is_mutable():
                 raise ValueError("surface must be immutable to compute homology")
 
             from sage.all import ZZ
+
+            k = ZZ(k)
+
             coefficients = coefficients or ZZ
 
-            # TODO: Use a better category.
-            from sage.all import Sets
-            category = category or Sets()
+            if category is None:
+                from sage.categories.all import Modules
+                category = Modules(coefficients)
+
             subset = frozenset(subset or {})
 
-            return self._homology(coefficients, generators, subset, implementation, category)
+            return self._homology(k=k, coefficients=coefficients, generators=generators, subset=subset, implementation=implementation, category=category)
 
         @cached_method
-        def _homology(self, coefficients, generators, subset, implementation, category):
-            from flatsurf.geometry.homology import SimplicialHomology_
-            return SimplicialHomology_(self, coefficients, generators, subset, implementation, category)
+        def _homology(self, k, coefficients, generators, subset, implementation, category):
+            r"""
+            Return the ``k``-th homology group of this surface.
+
+            This is a helper method for :meth:`homology`. We cannot make
+            :class:`SimplicialHomologyGroup` a unique representation because
+            equal surfaces can be non-identical so the homology of
+            non-identical surfaces could be identical. We work around this issue by attaching the homology to the actual surface so a surface has a unique homology, but it is different from another equal surface's.
+
+            TESTS:
+
+            Homology of a surface is unique::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: S.homology() is S.homology()
+                True
+
+            But non-identical surfaces have different homology::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+                sage: T.set_immutable()
+                sage: S == T
+                True
+                sage: S is T
+                False
+                sage: S.homology() is T.homology()
+                False
+                
+            """
+            from flatsurf.geometry.homology import SimplicialHomologyGroup
+            return SimplicialHomologyGroup(self, k, coefficients, generators, subset, implementation, category)
 
         def apply_matrix(self, m, in_place=None):
             r"""

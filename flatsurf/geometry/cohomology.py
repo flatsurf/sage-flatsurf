@@ -162,7 +162,7 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
         sage: T.set_immutable()
         sage: H = SimplicialCohomology(T)
         sage: H.homology()
-        H₁(Translation Surface in H_1(0) built from 2 isosceles triangles; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from 2 isosceles triangles)
 
         """
         from flatsurf.geometry.homology import SimplicialHomology
