@@ -1186,13 +1186,14 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
     def standardize_polygons(self, in_place=False):
         r"""
-        Replace each polygon with a new polygon which differs by
-        translation and reindexing. The new polygon will have the property
-        that vertex zero is the origin, and all vertices lie either in the
-        upper half plane, or on the x-axis with non-negative x-coordinate.
+        Return a morphism to a surface with each polygon replaced with a new
+        polygon which differs by translation and reindexing. The new polygon
+        will have the property that vertex zero is the origin, and each vertex
+        lies in the upper half plane or on the x-axis with non-negative
+        x-coordinate.
 
-        This is done to the current surface if in_place=True. A mutable
-        copy is created and returned if in_place=False (as default).
+        This is done to the current surface if in_place=True, otherwise an
+        immutable copy is created and returned.
 
         This overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons`
@@ -1210,32 +1211,24 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             sage: s.set_root(0)
             sage: s.set_immutable()
 
-            sage: s.standardize_polygons().polygon(0)
+            sage: s.standardize_polygons().codomain().polygon(0)
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if not in_place:
             S = MutableOrientedSimilaritySurface.from_surface(self)
-            S.standardize_polygons(in_place=True)
-            return S
+            morphism = S.standardize_polygons(in_place=True)
+            S.set_immutable()
+            return morphism.with_codomain(S)
 
-        cv = {}  # dictionary for non-zero canonical vertices
-        for label, polygon in zip(self.labels(), self.polygons()):
-            best = 0
-            best_pt = polygon.vertex(best)
-            for v in range(1, len(polygon.vertices())):
-                pt = polygon.vertex(v)
-                if (pt[1] < best_pt[1]) or (pt[1] == best_pt[1] and pt[0] < best_pt[0]):
-                    best = v
-                    best_pt = pt
-            # We replace the polygon if the best vertex is not the zero vertex, or
-            # if the coordinates of the best vertex differs from the origin.
-            if not (best == 0 and best_pt.is_zero()):
-                cv[label] = best
-        for label, v in cv.items():
-            self.set_vertex_zero(label, v, in_place=True)
+        vertex_zero = {}
+        for label in self.labels():
+            vertices = self.polygon(label).vertices()
+            vertex_zero[label] = min(range(len(vertices)), key=lambda v:(vertices[v][1], vertices[v][0]))
+            self.set_vertex_zero(label, vertex_zero[label], in_place=True) 
 
-        return self
+        from flatsurf.geometry.morphism import PolygonStandardizationMorphism
+        return PolygonStandardizationMorphism(None, self, vertex_zero)
 
 
 class MutableOrientedSimilaritySurface(

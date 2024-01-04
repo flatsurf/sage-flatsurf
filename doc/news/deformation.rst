@@ -10,6 +10,8 @@
 
 * Changed ``billiard()`` to not triangulate non-convex polygons before creating the billiard. To restore the old behavior call ``triangulate()`` explicitly on the returned surface. Since surfaces built from non-convex polygons are quite limited, this might be a breaking change for some.
 
+* Changed ``standardize_polygons(in_place=False)`` to return (a morphism to) an immutable surface. Before, the surface was mutable.
+
 **Deprecated:**
 
 * Deprecated ``polygon_double()`` since it is now identical with ``billiard()``.

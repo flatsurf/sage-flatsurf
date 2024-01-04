@@ -2721,11 +2721,12 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 def standardize_polygons(self, in_place=False):
                     r"""
-                    Return a surface with each polygon replaced with a new
-                    polygon which differs by translation and reindexing. The
-                    new polygon will have the property that vertex zero is the
-                    origin, and all vertices lie either in the upper half
-                    plane, or on the x-axis with non-negative x-coordinate.
+                    Return a morphism to a surface with each polygon replaced
+                    with a new polygon which differs by translation and
+                    reindexing. The new polygon will have the property that
+                    vertex zero is the origin, and each vertex lies in the
+                    upper half plane or on the x-axis with non-negative
+                    x-coordinate.
 
                     EXAMPLES::
 
@@ -2735,7 +2736,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                         sage: [s.opposite_edge(0,i) for i in range(4)]
                         [(1, 0), (1, 1), (1, 2), (1, 3)]
-                        sage: ss=s.standardize_polygons()
+                        sage: ss = s.standardize_polygons().codomain()
                         sage: ss.polygon(1)
                         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                         sage: [ss.opposite_edge(0,i) for i in range(4)]
@@ -2755,9 +2756,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     S = MutableOrientedSimilaritySurface.from_surface(
                         self, category=self.category()
                     )
-                    S.standardize_polygons(in_place=True)
+                    morphism = S.standardize_polygons(in_place=True)
                     S.set_immutable()
-                    return S
+                    return morphism.with_domain(self).with_codomain(S)
 
                 def fundamental_group(self, base_label=None):
                     r"""

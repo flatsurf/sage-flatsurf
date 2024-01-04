@@ -157,6 +157,8 @@ class UnknownSurface(OrientedSimilaritySurface):
         True
 
     """
+    def is_mutable(self):
+        return False
 
     def _repr_(self):
         return "Unknown Surface"
@@ -640,7 +642,7 @@ class SurfaceMorphism(Morphism):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
+            sage: S = translation_surfaces.square_tforus()
             sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
 
             sage: morphism._image_edge(0, 0)
@@ -692,8 +694,8 @@ class SurfaceMorphism(Morphism):
 
 class IdentityMorphism(SurfaceMorphism):
     # TODO: docstring
-    def __init__(self, domain):
-        super().__init__(domain, domain)
+    def __init__(self, domain, category=None):
+        super().__init__(domain, domain, category=category)
 
     def __call__(self, x):
         return x
@@ -706,9 +708,9 @@ class IdentityMorphism(SurfaceMorphism):
 
 
 class SectionMorphism(SurfaceMorphism):
-    def __init__(self, morphism):
+    def __init__(self, morphism, category=None):
         self._morphism = morphism
-        super().__init__(morphism.codomain(), morphism.domain())
+        super().__init__(morphism.codomain(), morphism.domain(), category=category)
 
     def _image_homology_matrix(self):
         M = self._morphism._image_homology_matrix()
@@ -724,9 +726,9 @@ class SectionMorphism(SurfaceMorphism):
 
 class CompositionMorphism(SurfaceMorphism):
     # TODO: docstring
-    def __init__(self, lhs, rhs):
+    def __init__(self, lhs, rhs, category=None):
         # TODO: docstring
-        super().__init__(rhs.domain(), lhs.codomain())
+        super().__init__(rhs.domain(), lhs.codomain(), category=category)
 
         self._lhs = lhs
         self._rhs = rhs
@@ -799,8 +801,8 @@ class SubdivideMorphism(SurfaceMorphism):
 class SubdivideEdgesMorphism(SurfaceMorphism):
     # TODO: docstring
 
-    def __init__(self, domain, codomain, parts):
-        super().__init__(domain, codomain)
+    def __init__(self, domain, codomain, parts, category=None):
+        super().__init__(domain, codomain, category=category)
         self._parts = parts
 
     def _image_point(self, p):
@@ -853,9 +855,9 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
 class TrianglesFlipMorphism(SurfaceMorphism):
     # TODO: docstring
-    def __init__(self, domain, codomain, flip_sequence):
+    def __init__(self, domain, codomain, flip_sequence, category=None):
         # TODO: docstring
-        super().__init__(domain, codomain)
+        super().__init__(domain, codomain, category=category)
         assert not self.domain().is_mutable()
         self._flip_sequence = flip_sequence
 
@@ -893,9 +895,9 @@ class TrianglesFlipMorphism(SurfaceMorphism):
 
 class TriangleFlipMorphism(SurfaceMorphism):
     # TODO: docstring
-    def __init__(self, domain, codomain, flip):
+    def __init__(self, domain, codomain, flip, category=None):
         # TODO: docstring
-        super().__init__(domain, codomain)
+        super().__init__(domain, codomain, category=category)
         self._flip = flip
 
     def _image_edge(self, label, edge):
@@ -977,8 +979,8 @@ class DelaunayDecompositionMorphism(SurfaceMorphism):
 
 
 class GL2RMorphism(SurfaceMorphism):
-    def __init__(self, domain, codomain, m):
-        super().__init__(domain, codomain)
+    def __init__(self, domain, codomain, m, category=None):
+        super().__init__(domain, codomain, category=category)
 
         from sage.all import matrix
         self._matrix = matrix(m, immutable=True)
@@ -1009,3 +1011,15 @@ class GL2RMorphism(SurfaceMorphism):
             t.polygon_label(),
             self._matrix * t.point(),
             self._matrix * t.vector())
+
+
+class PolygonStandardizationMorphism(SurfaceMorphism):
+    def __init__(self, domain, codomain, vertex_zero, category=None):
+        super().__init__(domain, codomain, category=category)
+        self._vertex_zero = vertex_zero
+
+    def with_domain(self, domain):
+        return type(self)(domain=domain, codomain=self.codomain(), vertex_zero=self._vertex_zero, category=self.category_for())
+
+    def with_codomain(self, codomain):
+        return type(self)(domain=self.domain(), codomain=codomain, vertex_zero=self._vertex_zero, category=self.category_for())

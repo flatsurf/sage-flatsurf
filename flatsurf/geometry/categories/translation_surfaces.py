@@ -734,19 +734,15 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             "the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf"
                         )
 
-                    s = self.delaunay_decomposition().codomain().standardize_polygons()
+                    standardization = self.delaunay_decomposition().codomain().standardize_polygons()
 
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
 
-                    s = MutableOrientedSimilaritySurface.from_surface(s)
+                    s = MutableOrientedSimilaritySurface.from_surface(standardization.codomain())
 
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
-
-                    ss = MutableOrientedSimilaritySurface.from_surface(s)
+                    ss = MutableOrientedSimilaritySurface.from_surface(standardization.codomain())
 
                     for label in ss.labels():
                         ss.set_roots([label])
