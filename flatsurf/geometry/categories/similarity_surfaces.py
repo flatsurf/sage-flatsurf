@@ -435,7 +435,7 @@ class SimilaritySurfaces(SurfaceCategory):
               the homology with coefficients in this ring
 
             - ``generators`` -- a string (default: ``"edge"``); how the
-              generators of homology are represented. currently only ``"edge"``
+              generators of homology are represented. Currently only ``"edge"``
               is implemented, i.e., the generators are written as formal sums
               of half edges.
 
@@ -443,7 +443,7 @@ class SimilaritySurfaces(SurfaceCategory):
               relative homology with respect to this set is constructed.
 
             - ``implementation`` -- a string (default: ``"generic"``); the
-              algorithm used to compute the homology groups. currently only
+              algorithm used to compute the homology groups. Currently only
               ``"generic"`` is supported, i.e., the groups are computed with
               the generic homology machinery from SageMath.
 
@@ -487,7 +487,10 @@ class SimilaritySurfaces(SurfaceCategory):
             This is a helper method for :meth:`homology`. We cannot make
             :class:`SimplicialHomologyGroup` a unique representation because
             equal surfaces can be non-identical so the homology of
-            non-identical surfaces could be identical. We work around this issue by attaching the homology to the actual surface so a surface has a unique homology, but it is different from another equal surface's.
+            non-identical surfaces could be identical. We work around this
+            issue by attaching the homology to the actual surface so a surface
+            has a unique homology, but it is different from another equal
+            surface's.
 
             TESTS:
 
@@ -513,6 +516,94 @@ class SimilaritySurfaces(SurfaceCategory):
             """
             from flatsurf.geometry.homology import SimplicialHomologyGroup
             return SimplicialHomologyGroup(self, k, coefficients, generators, relative, implementation, category)
+
+        def cohomology(self, k=1, coefficients=None, implementation="dual", category=None):
+            r"""
+            Return the ``k``-th simplicial cohomology group of this surface.
+
+            INPUT:
+
+            - ``k`` -- an integer (default: ``1``)
+
+            - ``coefficients`` -- a ring (default: the reals); consider
+              cohomology with coefficients in this ring
+
+            - ``implementation`` -- a string (default: ``"dual"``); the
+              algorithm used to compute the cohomology groups. Currently only
+              ``"dual"`` is supported, i.e., the groups are computed as duals
+              of the generic homology groups from SageMath.
+
+            - ``category`` -- a category; if not specified, a category for the
+              homology group is chosen automatically depending on
+              ``coefficients``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: S.cohomology()
+                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon; Real Field with 53 bits of precision)
+
+            ::
+
+                sage: S.cohomology(0)
+                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon; Real Field with 53 bits of precision)
+            
+            """
+            if self.is_mutable():
+                raise ValueError("surface must be immutable to compute cohomology")
+
+            from sage.all import ZZ
+
+            k = ZZ(k)
+
+            from sage.all import RR
+
+            coefficients = coefficients or RR
+
+            if category is None:
+                from sage.categories.all import Modules
+                category = Modules(coefficients)
+
+            return self._cohomology(k=k, coefficients=coefficients, implementation=implementation, category=category)
+
+        @cached_method
+        def _cohomology(self, k, coefficients, implementation, category):
+            r"""
+            Return the ``k``-th cohomology group of this surface.
+
+            This is a helper method for :meth:`cohomology`. We cannot make
+            :class:`SimplicialCohomologyGroup` a unique representation because
+            equal surfaces can be non-identical so the cohomology of
+            non-identical surfaces could be identical. We work around this
+            issue by attaching the cohomology to the actual surface so a
+            surface has a unique cohomology, but it is different from another
+            equal surface's.
+
+            TESTS:
+
+            Cohomology of a surface is unique::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: S.cohomology() is S.cohomology()
+                True
+
+            But non-identical surfaces have different cohomology::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+                sage: T.set_immutable()
+                sage: S == T
+                True
+                sage: S is T
+                False
+                sage: S.cohomology() is T.cohomology()
+                False
+                
+            """
+            from flatsurf.geometry.cohomology import SimplicialCohomologyGroup
+            return SimplicialCohomologyGroup(self, k, coefficients, implementation, category)
 
         def apply_matrix(self, m, in_place=None):
             r"""
