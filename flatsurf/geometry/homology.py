@@ -611,6 +611,8 @@ class SimplicialHomologyGroup(Parent):
 
         INPUT:
 
+        # TODO: Use k instead of an explicit dimension.
+
         - ``dimension`` -- an integer (default: ``1``)
 
         EXAMPLES::
@@ -640,6 +642,8 @@ class SimplicialHomologyGroup(Parent):
         :meth:`chain_module`.
 
         INPUT:
+
+        # TODO: Use k instead of an explicit dimension.
 
         - ``dimension`` -- an integer (default: ``1``)
 
@@ -768,6 +772,8 @@ class SimplicialHomologyGroup(Parent):
         r"""
         Return the zero element of homology in ``dimension``.
 
+        # TODO: Use k instead of an explicit dimension.
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
@@ -785,6 +791,8 @@ class SimplicialHomologyGroup(Parent):
         r"""
         Return the free module isomorphic to homology, a lift from that
         module to the chain module, and an inverse (modulo boundaries.)
+
+        # TODO: Use k instead of an explicit dimension.
 
         INPUT:
 
@@ -934,6 +942,7 @@ class SimplicialHomologyGroup(Parent):
             assert x in self.simplices()
             return sgn * self.element_class(self, self.chain_module(1)(x))
 
+        # TODO: Use k instead of testing dimensions.
         if x.parent() in (self.chain_module(0), self.chain_module(1), self.chain_module(2)):
             return self.element_class(self, x)
 
@@ -943,6 +952,8 @@ class SimplicialHomologyGroup(Parent):
     def gens(self, dimension=1):
         r"""
         Return generators of homology in ``dimension``.
+
+        # TODO: Use k instead of an explicit dimension.
 
         EXAMPLES::
 

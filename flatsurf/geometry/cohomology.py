@@ -166,6 +166,7 @@ class SimplicialCohomologyGroup(Parent):
         if not x:
             x = {}
 
+        # TODO: Check whether k matches
         if isinstance(x, dict):
             assert all(k in self.homology().gens() for k in x.keys())
             x = {gen: value for (gen, value) in x.items() if value}
@@ -190,6 +191,7 @@ class SimplicialCohomologyGroup(Parent):
 
         """
         from flatsurf.geometry.homology import SimplicialHomology
+        # TODO: Use k.
         return SimplicialHomology(self._surface)
 
     def gens(self):
