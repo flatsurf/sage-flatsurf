@@ -72,6 +72,9 @@ from sage.categories.morphism import Morphism
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 
 
+# TODO: Implement low-hanging features of concrete morphisms.
+
+
 class UnknownRing(UniqueRepresentation, Ring):
     r"""
     A placeholder for a SageMath ring that has been lost in the process of
@@ -642,7 +645,7 @@ class SurfaceMorphism(Morphism):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_tforus()
+            sage: S = translation_surfaces.square_torus()
             sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
 
             sage: morphism._image_edge(0, 0)
