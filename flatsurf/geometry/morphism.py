@@ -281,6 +281,71 @@ class SurfaceMorphism(Morphism):
         """
         return SectionMorphism(self)
 
+    def change(self, domain=None, codomain=None, check=True):
+        r"""
+        Return a copy of this morphism with the domain or codomain replaced
+        with ``domain`` and ``codomain``, respectively.
+
+        For this to work, the ``domain`` must be trivially a replacement for
+        the original domain and the ``codomain`` must be trivially a
+        replacement for the original codomain. This method is sometimes useful
+        to implement new morphisms. It should not be necessary to call this
+        method otherwise. This method is usually used when the domain or
+        codomain was originally mutable or to replace the domain or codomain
+        with another indistinguishable domain or codomain.
+
+        INPUT:
+
+        - ``domain`` -- a surface (default: ``None``); if set, the surfaces
+          replaces the domain of this morphism
+
+        - ``codomain`` -- a surface (default: ``None``); if set, the surfaces
+          replaces the codomain of this morphism
+
+        - ``check`` -- a boolean (default: ``True``); whether to check
+          compatibility of the ``domain`` and ``codomain`` with the data
+          defining the original morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: morphism.domain()
+            Unknown Surface
+
+            sage: S.set_immutable()
+            sage: morphism = morphism.change(domain=S)
+            sage: morphism.domain()
+            Translation Surface in H_1(0) built from a square
+
+        ::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=True)
+            sage: morphism.domain()
+            Unknown Surface
+            sage: morphism.codomain()
+            Unknown Surface
+
+            sage: S.set_immutable()
+            sage: morphism = morphism.change(codomain=S)
+            sage: morphism.domain()
+            Unknown Surface
+            sage: morphism.codomain()
+            Translation Surface in H_1(0) built from a rectangle
+
+        """
+        if domain is not None:
+            raise NotImplementedError(f"a {type(self).__name__} cannot swap out its domain yet")
+        if codomain is not None:
+            raise NotImplementedError(f"a {type(self).__name__} cannot swap out its codomain yet")
+
+        return self
+
     def __call__(self, x):
         r"""
         Return the image of ``x`` under this morphism.
@@ -988,6 +1053,9 @@ class GL2RMorphism(SurfaceMorphism):
         from sage.all import matrix
         self._matrix = matrix(m, immutable=True)
 
+    def change(self, domain=None, codomain=None, check=True):
+        return type(self)(domain=domain or self.domain(), codomain=codomain or self.codomain(), m=self._matrix, category=self.category_for())
+
     def _image_point(self, point):
         label, coordinates = point.representative()
         return self.codomain()(label, self._matrix * coordinates)
@@ -1021,8 +1089,17 @@ class PolygonStandardizationMorphism(SurfaceMorphism):
         super().__init__(domain, codomain, category=category)
         self._vertex_zero = vertex_zero
 
-    def with_domain(self, domain):
-        return type(self)(domain=domain, codomain=self.codomain(), vertex_zero=self._vertex_zero, category=self.category_for())
+    def change(self, domain=None, codomain=None, check=True):
+        # TODO: Check compatibility
+        return type(self)(domain=domain or self.domain(), codomain=codomain or self.codomain(), vertex_zero=self._vertex_zero, category=self.category_for())
 
-    def with_codomain(self, codomain):
-        return type(self)(domain=self.domain(), codomain=codomain, vertex_zero=self._vertex_zero, category=self.category_for())
+
+class RelabelingMorphism(SurfaceMorphism):
+    def __init__(self, domain, codomain, relabeling, category=None):
+        super().__init__(domain, codomain, category=category)
+        # TODO: Compactify relabeling and make it frozen and hashable.
+        self._relabeling = relabeling
+
+    def change(self, domain=None, codomain=None, check=True):
+        # TODO: Check compatibility
+        return type(self)(domain=domain or self.domain(), codomain=codomain or self.codomain(), relabeling=self._relabeling, category=self.category_for())

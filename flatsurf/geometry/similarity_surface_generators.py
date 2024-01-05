@@ -1818,7 +1818,7 @@ class TranslationSurfaceGenerators:
             sage: TestSuite(s).run()
             sage: s.is_delaunay_decomposed()
             True
-            sage: s = s.canonicalize()
+            sage: s = s.canonicalize().codomain()
             sage: s
             Translation Surface in H_4(3^2) built from 16 triangles
             sage: field=s.base_ring()
@@ -1826,7 +1826,7 @@ class TranslationSurfaceGenerators:
             sage: from sage.matrix.constructor import Matrix
             sage: m = Matrix([[a,0],[0,~a]])
             sage: ss = m*s
-            sage: ss = ss.canonicalize()
+            sage: ss = ss.canonicalize().codomain()
             sage: s.cmp(ss) == 0
             True
 

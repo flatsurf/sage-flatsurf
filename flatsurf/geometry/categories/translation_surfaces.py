@@ -686,7 +686,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         doctest:warning
                         ...
                         UserWarning: canonicalize_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use canonicalize() instead
-                        Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                        Generic morphism:
+                          From: Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                          To:   Translation Surface in H_3(4) built from 2 squares and a regular octagon
 
                     """
                     import warnings
@@ -711,9 +713,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         True
                         sage: a = s.base_ring().gen()
                         sage: mat = matrix([[1, 2 + a], [0, 1]])
-                        sage: s1 = s.canonicalize()
+                        sage: s1 = s.canonicalize().codomain()
                         sage: s1.set_immutable()
-                        sage: s2 = (mat * s).canonicalize()
+                        sage: s2 = (mat * s).canonicalize().codomain()
                         sage: s2.set_immutable()
                         sage: s1.cmp(s2) == 0
                         True
@@ -721,7 +723,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         True
 
                     """
-                    # TODO: Return a morphism.
                     if in_place is not None:
                         if in_place:
                             raise NotImplementedError(
@@ -734,7 +735,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             "the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf"
                         )
 
-                    standardization = self.delaunay_decomposition().codomain().standardize_polygons()
+                    delaunay_decomposition = self.delaunay_decomposition()
+
+                    standardization = delaunay_decomposition.codomain().standardize_polygons()
 
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
@@ -749,10 +752,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         if ss.cmp(s) > 0:
                             s.set_roots([label])
 
-                    # We have chosen the root label such that this surface is minimal.
-                    # Now we relabel all the polygons so that they are natural
-                    # numbers in the order of the walk on the surface.
-                    labels = {label: i for (i, label) in enumerate(s.labels())}
-                    s.relabel(labels, in_place=True)
+                    # We have determined the root label such that this surface
+                    # is minimal. Now we relabel all the polygons so that they
+                    # are natural numbers in the order of the walk on the
+                    # surface.
+                    relabeling = s.relabel({label: i for (i, label) in enumerate(s.labels())}, in_place=True)
                     s.set_immutable()
-                    return s
+
+                    return relabeling.change(domain=standardization.codomain(), codomain=s) * standardization * delaunay_decomposition

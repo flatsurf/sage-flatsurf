@@ -189,8 +189,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             relabeling = {triangulation.root(): reference_label}
         else:
             relabeling = {l: (reference_label, l) for l in triangulation.labels()}
-        triangulation, no_errors = triangulation.relabel(relabeling)
-        assert no_errors
+        triangulation = triangulation.relabel(relabeling).codomain()
 
         from bidict import bidict
         edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
@@ -496,7 +495,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         sage: r = matrix(ZZ,[[0, 1], [1, 0]])
         sage: SS = r * S
 
-        sage: S.canonicalize() == SS.canonicalize()
+        sage: S.canonicalize().codomain() == SS.canonicalize().codomain()
         True
 
     TESTS::

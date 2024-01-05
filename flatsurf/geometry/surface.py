@@ -1219,7 +1219,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             S = MutableOrientedSimilaritySurface.from_surface(self)
             morphism = S.standardize_polygons(in_place=True)
             S.set_immutable()
-            return morphism.with_codomain(S)
+            return morphism.change(codomain=S)
 
         vertex_zero = {}
         for label in self.labels():
@@ -1817,7 +1817,7 @@ class MutableOrientedSimilaritySurface(
             us.glue((label, e), cross)
         return self
 
-    def relabel(self, relabeling_map, in_place=False):
+    def relabel(self, relabeling, in_place=False):
         r"""
         Overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
@@ -1828,18 +1828,23 @@ class MutableOrientedSimilaritySurface(
         # TODO: Remove support for errors.
         """
         if not in_place:
-            return super().relabel(relabeling_map=relabeling_map, in_place=in_place)
+            return super().relabel(relabeling=relabeling, in_place=in_place)
 
-        polygons = {label: self.polygon(label) for label in relabeling_map}
-        old_gluings = {label: [self.opposite_edge(label, e) for e in range(len(self.polygon(label).vertices()))] for label in relabeling_map}
+        if callable(relabeling):
+            relabeling = {label: relabeling(label) for label in self.labels()}
+
+        polygons = {label: self.polygon(label) for label in self.labels()}
+        old_gluings = {label: [self.opposite_edge(label, e) for e in range(len(self.polygon(label).vertices()))] for label in self.labels()}
 
         roots = list(self.roots())
 
-        for label in relabeling_map:
+        labels = list(self.labels())
+
+        for label in labels:
             self.remove_polygon(label)
 
-        for label in relabeling_map:
-            self.add_polygon(polygons[label], label=relabeling_map[label])
+        for label in labels:
+            self.add_polygon(polygons[label], label=relabeling.get(label, label))
 
         for label, gluings in old_gluings.items():
             for e, gluing in enumerate(gluings):
@@ -1848,10 +1853,13 @@ class MutableOrientedSimilaritySurface(
 
                 opposite_label, opposite_edge = gluing
 
-                self.glue((relabeling_map.get(label, label), e), (relabeling_map.get(opposite_label, opposite_label), opposite_edge))
+                self.glue((relabeling.get(label, label), e), (relabeling.get(opposite_label, opposite_label), opposite_edge))
 
-        self.set_roots([relabeling_map.get(root, root) for root in roots])
-        return self, True
+        self.set_roots([relabeling.get(root, root) for root in roots])
+
+        # TODO: Use the homset to create the morphism so we get the category right. (Here and everywhere else we are constructing morphisms.)
+        from flatsurf.geometry.morphism import RelabelingMorphism
+        return RelabelingMorphism(self, self, relabeling)
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
@@ -2115,8 +2123,7 @@ class MutableOrientedSimilaritySurface(
                 relabeling = {triangulation.root(): label}
             else:
                 relabeling = {l: (label, l) for l in triangulation.labels()}
-            triangulation, no_errors = triangulation.relabel(relabeling)
-            assert no_errors
+            triangulation = triangulation.relabel(relabeling).codomain()
 
             from bidict import bidict
             edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})

@@ -12,6 +12,8 @@
 
 * Changed ``standardize_polygons(in_place=False)`` to return (a morphism to) an immutable surface. Before, the surface was mutable.
 
+* Changed ``relabel()`` to accept a dict or a callable as the parameter ``relabeling`` (before this parameter had to be a dict and was called ``relabeling_map``.) Also, this method now returns a morphism and not a tuple containing a success flag.
+
 **Deprecated:**
 
 * Deprecated ``polygon_double()`` since it is now identical with ``billiard()``.
