@@ -66,8 +66,7 @@ class SimplicialCohomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: H = SimplicialCohomology(T)
 
             sage: γ = H.homology().gens()[0]
@@ -88,8 +87,7 @@ class SimplicialCohomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: H = SimplicialCohomology(T)
 
             sage: γ = H.homology().gens()[0]
@@ -114,13 +112,10 @@ class SimplicialCohomologyGroup(Parent):
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces, SimplicialCohomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-        sage: T.set_immutable()
-
-    Currently, surfaces must be Delaunay triangulated to compute their homology::
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
 
         sage: SimplicialCohomology(T)
-        H¹(Translation Surface in H_1(0) built from 2 isosceles triangles; Real Field with 53 bits of precision)
+        H¹(Translation Surface in H_1(0) built from a square; Real Field with 53 bits of precision)
 
     """
     Element = SimplicialCohomologyClass
@@ -166,13 +161,12 @@ class SimplicialCohomologyGroup(Parent):
         if not x:
             x = {}
 
-        # TODO: Check whether k matches
         if isinstance(x, dict):
             assert all(k in self.homology().gens() for k in x.keys())
             x = {gen: value for (gen, value) in x.items() if value}
             return self.element_class(self, x)
 
-        raise NotImplementedError
+        raise ValueError("cannot create a cohomology class from this data")
 
     @cached_method
     def homology(self):
@@ -183,16 +177,14 @@ class SimplicialCohomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: H = SimplicialCohomology(T)
             sage: H.homology()
-            H₁(Translation Surface in H_1(0) built from 2 isosceles triangles)
+            H₁(Translation Surface in H_1(0) built from a square)
 
         """
         from flatsurf.geometry.homology import SimplicialHomology
-        # TODO: Use k.
-        return SimplicialHomology(self._surface)
+        return SimplicialHomology(self._surface, self._k)
 
     def gens(self):
         return [self({gen: 1}) for gen in self.homology().gens()]
@@ -206,7 +198,6 @@ def SimplicialCohomology(surface, k=1, coefficients=None, implementation="dual",
 
         sage: from flatsurf import translation_surfaces, SimplicialCohomology
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: T.set_immutable()
         sage: SimplicialCohomology(T) is SimplicialCohomology(T)
         True
 
