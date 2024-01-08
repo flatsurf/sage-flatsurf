@@ -159,7 +159,7 @@ def angle(u, v, numerical=False):
 
     INPUT:
 
-    - ``u``, ``v`` - vectors
+    - ``u``, ``v`` - vectors in the plane
 
     - ``numerical`` - boolean (default: ``False``), whether to return floating
       point numbers
@@ -233,22 +233,6 @@ def angle(u, v, numerical=False):
             "cannot recover a rational angle from these numerical results"
         )
     return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
-
-    # a neater way is provided below by working only with number fields
-    # but this method is slower...
-    # sqnorm_u = u[0]*u[0] + u[1]*u[1]
-    # sqnorm_v = v[0]*v[0] + v[1]*v[1]
-    #
-    # if sqnorm_u != sqnorm_v:
-    #    # we need to take a square root in order that u and v have the
-    #    # same norm
-    #    u = (1 / AA(sqnorm_u)).sqrt() * u.change_ring(AA)
-    #    v = (1 / AA(sqnorm_v)).sqrt() * v.change_ring(AA)
-    #    sqnorm_u = AA.one()
-    #    sqnorm_v = AA.one()
-    #
-    # cos_uv = (u[0]*v[0] + u[1]*v[1]) / sqnorm_u
-    # sin_uv = (u[0]*v[1] - u[1]*v[0]) / sqnorm_u
 
 
 def ccw(v, w):
