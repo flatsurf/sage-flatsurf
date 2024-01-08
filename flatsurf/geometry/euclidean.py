@@ -444,9 +444,15 @@ def ray_segment_intersection(p, direction, segment):
     return intersection
 
 
-def is_segment_intersecting(e1, e2):
+def is_segment_intersecting(s, t):
     r"""
-    Return whether the segments ``e1`` and ``e2`` intersect.
+    Return whether the segments ``s`` and ``t`` intersect.
+
+    INPUT:
+
+    - ``s`` -- a segment given as a pair of endpoints (given as vectors in the plane.)
+
+    - ``t`` -- a segment given as a pair of endpoints (given as vectors in the plane.)
 
     OUTPUT:
 
@@ -457,56 +463,57 @@ def is_segment_intersecting(e1, e2):
     EXAMPLES::
 
         sage: from flatsurf.geometry.euclidean import is_segment_intersecting
-        sage: is_segment_intersecting(((0,0),(1,0)),((0,1),(0,3)))
+        sage: is_segment_intersecting((vector((0, 0)), vector((1, 0))), (vector((0, 1)), vector((0, 3))))
         0
-        sage: is_segment_intersecting(((0,0),(1,0)),((0,0),(0,3)))
+        sage: is_segment_intersecting((vector((0, 0)), vector((1, 0))), (vector((0, 0)), vector((0, 3))))
         1
-        sage: is_segment_intersecting(((0,0),(1,0)),((0,-1),(0,3)))
+        sage: is_segment_intersecting((vector((0, 0)), vector((1, 0))), (vector((0, -1)), vector((0, 3))))
         2
-        sage: is_segment_intersecting(((-1,-1),(1,1)),((0,0),(2,2)))
+        sage: is_segment_intersecting((vector((-1, -1)), vector((1, 1))), (vector((0, 0)), vector((2, 2))))
         2
-        sage: is_segment_intersecting(((-1,-1),(1,1)),((1,1),(2,2)))
+        sage: is_segment_intersecting((vector((-1, -1)), vector((1, 1))), (vector((1, 1)), vector((2, 2))))
         1
 
     """
-    parallel = ccw(sub(e1[1], e1[0]), sub(e2[1], e2[0])) == 0
-
-    base = e1[0]
-    a = ccw(sub(e1[1], base), sub(e2[0], base)) * ccw(sub(e1[1], base), sub(e2[1], base))
-    if a > 0:
+    turn_from_s = ccw(s[1] - s[0], t[0] - s[0]) * ccw(s[1] - s[0], t[1] - s[0])
+    if turn_from_s > 0:
+        # Both endpoinst of t are on the same side of s
         return 0
 
-    base = e2[0]
-    b = ccw(sub(e2[1], base), sub(e1[0], base)) * ccw(sub(e2[1], base), sub(e1[1], base))
-    if b > 0:
+    turn_from_t = ccw(t[1] - t[0], s[0] - t[0]) * ccw(t[1] - t[0], s[1] - t[0])
+    if turn_from_t > 0:
+        # Both endpoinst of s are on the same side of t
         return 0
 
-    if parallel:
-        direction = sub(e1[1], e1[0])
-        e2time = time_on_ray(e1[0], direction, e2[0]), time_on_ray(e1[0], direction, e2[1])
-        length = e2time[0][1]
-        e2time = e2time[0][0], e2time[1][0]
+    if ccw(s[1] - s[0], t[1] - t[0]) == 0:
+        # Segments are parallel
+        Δs = s[1] - s[0]
+        time_to_t0, length = time_on_ray(s[0], Δs, t[0])
+        time_to_t1, _ = time_on_ray(s[0], Δs, t[1])
 
-        if e2time[0] < 0 and e2time[1] < 0:
-            return 0
-        if e2time[0] > length and e2time[1] > length:
+        if time_to_t0 < 0 and time_to_t1 < 0:
+            # Both endpoints of t are left of s
             return 0
 
-        if 0 < e2time[0] < length or 0 < e2time[1] < length:
+        if time_to_t0 > length and time_to_t1 > length:
+            # Both endpoints of t are right of s
+            return 0
+
+        if 0 < time_to_t0 < length or 0 < time_to_t1 < length:
             return 2
 
         return 1
 
-    if a == 0 and b == 0:
+    if turn_from_t == 0 and turn_from_s == 0:
         return 1
 
     return 2
 
 
-def is_between(e0, e1, f):
+def is_between(begin, end, v):
     r"""
-    Check whether the vector ``f`` is strictly in the sector formed by the vectors
-    ``e0`` and ``e1`` (in counter-clockwise order).
+    Check whether the vector ``v`` is strictly in the sector formed by the vectors
+    ``begin`` and ``end`` (in counter-clockwise order).
 
     EXAMPLES::
 
@@ -519,26 +526,26 @@ def is_between(e0, e1, f):
         sage: for (i, vi), (j, vj), (k, vk) in product(enumerate(vecs), repeat=3):
         ....:     assert is_between(vi, vj, vk) == ((i == j and i != k) or i < k < j or k < j < i or j < i < k), ((i, vi), (j, vj), (k, vk))
     """
-    if e0[0] * e1[1] > e1[0] * e0[1]:
+    if begin[0] * end[1] > end[0] * begin[1]:
         # positive determinant
-        # [ e0[0] e1[0] ]^-1 = [ e1[1] -e1[0] ]
-        # [ e0[1] e1[1] ]      [-e0[1]  e0[0] ]
-        # f[0] * e1[1] - e1[0] * f[1] > 0
-        # - f[0] * e0[1] + e0[0] * f[1] > 0
-        return e1[1] * f[0] > e1[0] * f[1] and e0[0] * f[1] > e0[1] * f[0]
-    elif e0[0] * e1[1] == e1[0] * e0[1]:
+        # [ begin[0] end[0] ]^-1 = [ end[1] -end[0] ]
+        # [ begin[1] end[1] ]      [-begin[1]  begin[0] ]
+        # v[0] * end[1] - end[0] * v[1] > 0
+        # - v[0] * begin[1] + begin[0] * v[1] > 0
+        return end[1] * v[0] > end[0] * v[1] and begin[0] * v[1] > begin[1] * v[0]
+    elif begin[0] * end[1] == end[0] * begin[1]:
         # aligned vector
-        if e0[0] * e1[0] >= 0 and e0[1] * e1[1] >= 0:
-            return f[0] * e0[1] != f[1] * e0[0] or f[0] * e0[0] < 0 or f[1] * e0[1] < 0
+        if begin[0] * end[0] >= 0 and begin[1] * end[1] >= 0:
+            return v[0] * begin[1] != v[1] * begin[0] or v[0] * begin[0] < 0 or v[1] * begin[1] < 0
         else:
-            return e0[0] * f[1] > e0[1] * f[0]
+            return begin[0] * v[1] > begin[1] * v[0]
     else:
         # negative determinant
-        # [ e1[0] e0[0] ]^-1 = [ e0[1] -e0[0] ]
-        # [ e1[1] e0[1] ]      [-e1[1]  e1[0] ]
-        # f[0] * e0[1] - e0[0] * f[1] > 0
-        # - f[0] * e1[1] + e1[0] * f[1] > 0
-        return e0[1] * f[0] < e0[0] * f[1] or e1[0] * f[1] < e1[1] * f[0]
+        # [ end[0] begin[0] ]^-1 = [ begin[1] -begin[0] ]
+        # [ end[1] begin[1] ]      [-end[1]  end[0] ]
+        # v[0] * begin[1] - begin[0] * v[1] > 0
+        # - v[0] * end[1] + end[0] * v[1] > 0
+        return begin[1] * v[0] < begin[0] * v[1] or end[0] * v[1] < end[1] * v[0]
 
 
 def solve(x, u, y, v):
@@ -695,7 +702,3 @@ def slope(a, rotate=1):
     if rotate == -1:
         return 1 if y else -1
     raise ValueError("invalid argument rotate={}".format(rotate))
-
-
-def sub(v, w):
-    return v[0] - w[0], v[1] - w[1]
