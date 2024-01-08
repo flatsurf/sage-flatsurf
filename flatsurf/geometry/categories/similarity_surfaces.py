@@ -635,7 +635,7 @@ class SimilaritySurfaces(SurfaceCategory):
             if in_place:
                 raise NotImplementedError("this surface does not support applying a GL(2,R) action in-place yet")
 
-            from flatsurf.geometry.delaunay import GL2RImageSurface
+            from flatsurf.geometry.lazy import GL2RImageSurface
             image = GL2RImageSurface(self, m)
 
             from flatsurf.geometry.morphism import GL2RMorphism
@@ -1016,7 +1016,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     message += " Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels."
 
                 if not self.is_finite_type():
-                    message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs."
+                    message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.lazy.LazyMutableSurface and adapt it to your needs."
 
                 if new_field is not None:
                     message += " Use change_ring() to change the field over which the surface is defined."
@@ -1780,7 +1780,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 labels = {label} if label is not None else self.labels()
 
                 from flatsurf.geometry.morphism import TriangulationMorphism
-                from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+                from flatsurf.geometry.lazy import LazyTriangulatedSurface
                 return TriangulationMorphism(self, LazyTriangulatedSurface(self, labels=labels))
 
             def _delaunay_edge_needs_flip(self, p1, e1):
@@ -1965,7 +1965,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     s.set_immutable()
                     return s
 
-                from flatsurf.geometry.delaunay import (
+                from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
@@ -2051,7 +2051,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
 
                 if not self.is_finite_type():
-                    from flatsurf.geometry.delaunay import LazyDelaunaySurface
+                    from flatsurf.geometry.lazy import LazyDelaunaySurface
 
                     s = LazyDelaunaySurface(
                         self, direction=direction, category=self.category()

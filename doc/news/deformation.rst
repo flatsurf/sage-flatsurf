@@ -14,6 +14,8 @@
 
 * Changed ``relabel()`` to accept a dict or a callable as the parameter ``relabeling`` (before this parameter had to be a dict and was called ``relabeling_map``.) Also, this method now returns a morphism and not a tuple containing a success flag.
 
+* Renamed module ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``.
+
 **Deprecated:**
 
 * Deprecated ``polygon_double()`` since it is now identical with ``billiard()``.

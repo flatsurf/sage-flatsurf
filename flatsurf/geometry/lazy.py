@@ -1,4 +1,3 @@
-# TODO: Rename to lazy.py
 r"""
 Triangulations, Delaunay triangulations, and Delaunay decompositions of
 infinite surfaces.
@@ -66,7 +65,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
     TESTS::
 
-        sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+        sage: from flatsurf.geometry.lazy import LazyTriangulatedSurface
         sage: isinstance(S, LazyTriangulatedSurface)
         True
         sage: TestSuite(S).run()  # long time (1s)
@@ -352,7 +351,7 @@ class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
         sage: S = translation_surfaces.infinite_staircase()
         sage: T = matrix([[2, 0], [0, 1]]) * S
 
-        sage: from flatsurf.geometry.delaunay import LazyOrientedSimilaritySurface
+        sage: from flatsurf.geometry.lazy import LazyOrientedSimilaritySurface
         sage: isinstance(T, LazyOrientedSimilaritySurface)
         True
 
@@ -416,7 +415,7 @@ class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.roots()
             (0,)
@@ -437,7 +436,7 @@ class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.labels()
             (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
@@ -502,7 +501,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
 
         sage: TestSuite(SS).run()
 
-        sage: from flatsurf.geometry.delaunay import GL2RImageSurface
+        sage: from flatsurf.geometry.lazy import GL2RImageSurface
         sage: isinstance(SS, GL2RImageSurface)
         True
 
@@ -701,7 +700,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
 
-        sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+        sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
         sage: T = LazyMutableOrientedSimilaritySurface(S)
         sage: p = T.polygon(0)
         sage: p
@@ -743,7 +742,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.is_mutable()
             True
@@ -762,7 +761,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.replace_polygon(0, T.polygon(0))
 
@@ -787,7 +786,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.gluings()
             (((0, 0), (1, 2)), ((0, 1), (-1, 3)), ((0, 2), (1, 0)), ((0, 3), (-1, 1)), ((1, 0), (0, 2)), ((1, 1), (2, 3)), ((1, 2), (0, 0)), ((1, 3), (2, 1)), ((-1, 0), (-2, 2)),
@@ -812,7 +811,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T._ensure_polygon(0)
             sage: T._ensure_gluings(0)
@@ -844,7 +843,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T._ensure_polygon(0)
 
@@ -864,7 +863,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.polygon(0)
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -886,7 +885,7 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.opposite_edge(0, 0)
             (1, 2)
@@ -914,7 +913,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: S.is_delaunay_triangulated(limit=10)
         True
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunayTriangulatedSurface
         sage: isinstance(S, LazyDelaunayTriangulatedSurface)
         True
 
@@ -929,7 +928,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         True
         sage: TestSuite(S).run()  # long time (.5s)
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunayTriangulatedSurface
         sage: isinstance(S, LazyDelaunayTriangulatedSurface)
         True
 
@@ -1292,7 +1291,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
         sage: TestSuite(S).run()  # long time (2s)
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
         sage: isinstance(S, LazyDelaunaySurface)
         True
 
@@ -1307,7 +1306,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
         sage: TestSuite(S).run()  # long time (1.5s)
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
         sage: isinstance(S, LazyDelaunaySurface)
         True
 
@@ -1579,7 +1578,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+            sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
             sage: S = translation_surfaces.infinite_staircase()
             sage: m = matrix([[2, 1], [1, 1]])
             sage: S = LazyDelaunaySurface(m*S)
