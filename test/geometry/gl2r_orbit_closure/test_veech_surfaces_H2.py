@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 r"""
 Calta-McMullen Veech surfaces in H(2)
 """
-######################################################################
+# ****************************************************************************
 # This file is part of sage-flatsurf.
 #
 #       Copyright (C) 2020 Vincent Delecroix
@@ -19,22 +18,33 @@ Calta-McMullen Veech surfaces in H(2)
 #
 # You should have received a copy of the GNU General Public License
 # along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
-import sys
 import pytest
 
-pytest.importorskip('pyflatsurf')
+pytest.importorskip("pyflatsurf")  # noqa
 
-from sage.all import polygen, NumberField, AA, QQ
 from flatsurf import translation_surfaces, GL2ROrbitClosure
 
-@pytest.mark.parametrize("w,h,t,e", [(2,1,0,0), (3,1,0,0), (3,1,0,1), (4,1,0,1),
-               (4,1,0,2), (3,2,0,0), (4,2,1,0), (4,2,0,1), (4,2,1,1)])
-def test_H2(w,h,t,e):
-    S = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
-    O = GL2ROrbitClosure(S)
-    for d in O.decompositions(5, 50):
+
+@pytest.mark.parametrize(
+    "w,h,t,e",
+    [
+        (2, 1, 0, 0),
+        (3, 1, 0, 0),
+        (3, 1, 0, 1),
+        (4, 1, 0, 1),
+        (4, 1, 0, 2),
+        (3, 2, 0, 0),
+        (4, 2, 1, 0),
+        (4, 2, 0, 1),
+        (4, 2, 1, 1),
+    ],
+)
+def test_H2(w, h, t, e):
+    S = translation_surfaces.mcmullen_genus2_prototype(w, h, t, e)
+    orbit_closure = GL2ROrbitClosure(S)
+    for d in orbit_closure.decompositions(5, 50):
         assert d.parabolic()
-        O.update_tangent_space_from_flow_decomposition(d)
-    assert O.dimension() == O.absolute_dimension() == 2
+        orbit_closure.update_tangent_space_from_flow_decomposition(d)
+    assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 2

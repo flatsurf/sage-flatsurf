@@ -22,5 +22,9 @@ Tests for optional packages used by sage-flatsurf.
 
 from sage.features import PythonModule
 
-cppyy_feature = PythonModule("cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html")
-pyflatsurf_feature = PythonModule("pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda")
+cppyy_feature = PythonModule(
+    "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
+)
+pyflatsurf_feature = PythonModule(
+    "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
+)

@@ -9,47 +9,51 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: "${{ matrix.on }}"
     strategy:
       matrix:
         include:
-          - optionals: "sage,flipper"
-            sagelib: "8.8"
-            environment: "environment.yml"
-            python: "3.7.12"
-          - optionals: "sage,flipper"
-            sagelib: "8.9"
-            environment: "environment.yml"
-            python: "3.7.12"
-          - optionals: "sage,flipper"
-            sagelib: "9.1"
-            environment: "environment.yml"
-            python: "3.7.12"
-          - optionals: "sage,flipper"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper"
             sagelib: "9.2"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,exactreal"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic"
             sagelib: "9.3"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,pyflatsurf"
             sagelib: "9.4"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,pyflatsurf"
             sagelib: "9.5"
             environment: "environment.yml"
             python: "3.9.15"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.6"
             environment: "environment.yml"
             python: "3.10.8"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             sagelib: "9.7"
             environment: "environment.yml"
             python: "3.10.8"
-          - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          # surface-dynamics is not available for SageMath 9.8 on conda-forge, see https://github.com/conda-forge/surface-dynamics-feedstock/pull/17
+          # - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          #   sagelib: "9.8"
+          #   environment: "environment.yml"
+          #   python: "3.10.8"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            environment: "flatsurf.yml"
+            python: "3.10.8"
+          - on: macos-11
+            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
     steps:
@@ -60,6 +64,7 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
+          mamba upgrade -n base --all --yes  # mamba 1.4.1 segfaults sometimes, make sure we use a later version
           mamba install -n test sagelib=${{ matrix.sagelib }}
           echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
           while read; do

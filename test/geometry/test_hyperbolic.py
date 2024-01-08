@@ -1,7 +1,7 @@
 r"""
 Test functionality of the HyperbolicPlane.
 """
-######################################################################
+# ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2022 Julian Rüth
@@ -18,7 +18,7 @@ Test functionality of the HyperbolicPlane.
 #
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
-######################################################################
+# ****************************************************************************
 
 import pytest
 
@@ -45,6 +45,7 @@ def test_intersection_point():
     contain some other point.
     """
     from flatsurf.geometry.hyperbolic import HyperbolicPlane
+
     H = HyperbolicPlane()
 
     inside = H.random_element("point")
@@ -55,20 +56,31 @@ def test_intersection_point():
             break
 
     from sage.all import randint
-    half_spaces = random_half_spaces(H, randint(1, 8), lambda half_space: inside in half_space and outside not in half_space)
+
+    half_spaces = random_half_spaces(
+        H,
+        randint(1, 8),
+        lambda half_space: inside in half_space and outside not in half_space,
+    )
 
     intersection = H.polygon(half_spaces)
 
     # By construction, inside must be in the polygon and outside must not be.
-    assert inside in intersection, f"{inside} not in {intersection} which was found to be the intersection of {half_spaces}"
-    assert outside not in intersection, f"{outside} in {intersection} which was found to be the intersection of {half_spaces}"
+    assert (
+        inside in intersection
+    ), f"{inside} not in {intersection} which was found to be the intersection of {half_spaces}"
+    assert (
+        outside not in intersection
+    ), f"{outside} in {intersection} which was found to be the intersection of {half_spaces}"
 
     # Check that polygon is idempotent.
     assert H.polygon(intersection.half_spaces()) == intersection
 
     # Check that the vertices of the intersection are correct.
     for i, e in enumerate(half_spaces):
-        for f in half_spaces[i + 1:]:
+        for f in half_spaces[i + 1 :]:
             p = e.boundary().intersection(f.boundary())
             if p.is_point():
-                assert all(p in half_space for half_space in half_spaces) == (p in intersection)
+                assert all(p in half_space for half_space in half_spaces) == (
+                    p in intersection
+                )

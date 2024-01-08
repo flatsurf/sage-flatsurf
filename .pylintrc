@@ -1,0 +1,9 @@
+[FORMAT]
+max-line-length=256
+max-module-lines=65536
+
+[TYPECHECK]
+mixin-class-rgx=ParentMethods|SubcategoryMethods|Parent|HyperbolicConvexSet
+
+[MESSAGES CONTROL]
+disable=import-outside-toplevel,no-name-in-module,invalid-name,invalid-unary-operand-type,no-value-for-parameter,abstract-method,arguments-differ,arguments-out-of-order,arguments-renamed,attribute-defined-outside-init,bad-classmethod-argument,bad-staticmethod-argument,broad-exception-caught,broad-exception-raised,chained-comparison,consider-merging-isinstance,consider-swap-variables,consider-using-enumerate,consider-using-f-string,consider-using-generator,consider-using-get,consider-using-in,consider-using-set-comprehension,consider-using-with,cyclic-import,dangerous-default-value,duplicate-code,import-self,inconsistent-return-statements,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-break,no-else-continue,no-else-raise,no-else-return,non-ascii-name,non-parent-init-called,pointless-exception-statement,protected-access,raise-missing-from,raising-format-tuple,redefined-argument-from-local,redefined-builtin,redefined-outer-name,self-assigning-variable,self-cls-assignment,singleton-comparison,superfluous-parens,super-init-not-called,too-few-public-methods,too-many-arguments,too-many-boolean-expressions,too-many-branches,too-many-instance-attributes,too-many-locals,too-many-nested-blocks,too-many-public-methods,too-many-return-statements,too-many-statements,undefined-loop-variable,unidiomatic-typecheck,unnecessary-comprehension,unnecessary-dunder-call,unnecessary-lambda,unnecessary-pass,unspecified-encoding,unused-argument,unused-import,unused-variable,unused-wildcard-import,use-a-generator,use-dict-literal,useless-object-inheritance,useless-parent-delegation,wildcard-import,wrong-import-order,fixme,unreachable,reimported,too-many-ancestors

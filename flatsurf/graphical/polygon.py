@@ -1,20 +1,26 @@
 # ****************************************************************************
-#       Copyright (C) 2013-2019 Vincent Delecroix <20100.delecroix@gmail.com>
-#                     2013-2019 W. Patrick Hooper <wphooper@gmail.com>
+#  This file is part of sage-flatsurf.
 #
-#  Distributed under the terms of the GNU General Public License (GPL)
-#  as published by the Free Software Foundation; either version 2 of
-#  the License, or (at your option) any later version.
-#                  https://www.gnu.org/licenses/
+#       Copyright (C) 2016-2019 Vincent Delecroix
+#                     2016-2018 W. Patrick Hooper
+#                     2022-2023 Julian Rüth
+#
+#  sage-flatsurf is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  sage-flatsurf is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License along
+#  with sage-flatsurf. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
-
-from __future__ import absolute_import, print_function, division
-from six.moves import range, map, filter, zip
-
 from sage.rings.real_double import RDF
 from sage.modules.free_module import VectorSpace
 from sage.plot.polygon import polygon2d
-from sage.plot.graphics import Graphics
 from sage.plot.text import text
 from sage.plot.line import line2d
 from sage.plot.point import point2d
@@ -22,6 +28,7 @@ from sage.plot.point import point2d
 from flatsurf.geometry.similarity import SimilarityGroup
 
 V = VectorSpace(RDF, 2)
+
 
 class GraphicalPolygon:
     r"""
@@ -64,7 +71,7 @@ class GraphicalPolygon:
 
         EXAMPLES::
 
-            sage: from flatsurf import *
+            sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
             sage: gs.graphical_polygon(0)
@@ -131,7 +138,7 @@ class GraphicalPolygon:
         """
         return self.xmin(), self.ymin(), self.xmax(), self.ymax()
 
-    def transform(self, point, double_precision = True):
+    def transform(self, point, double_precision=True):
         r"""
         Return the transformation of point into graphical coordinates.
 
@@ -173,7 +180,7 @@ class GraphicalPolygon:
         """
         return self._transformation
 
-    def set_transformation(self, transformation = None):
+    def set_transformation(self, transformation=None):
         r"""Set the transformation to be applied to the polygon."""
         if transformation is None:
             self._transformation = SimilarityGroup(self._p.base_ring()).one()
@@ -216,8 +223,10 @@ class GraphicalPolygon:
 
         Options are processed as in sage.plot.line.line2d.
         """
-        return line2d([self._v[e], self._v[(e+1)%self.base_polygon().num_edges()]], \
-            **options)
+        return line2d(
+            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
+            **options
+        )
 
     def plot_edge_label(self, i, label, **options):
         r"""
@@ -236,11 +245,13 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        e = self._v[(i+1)%self.base_polygon().num_edges()] - self._v[i]
+        e = self._v[(i + 1) % len(self.base_polygon().vertices())] - self._v[i]
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:
-                raise ValueError("The 'position' parameter must take the value 'inside', 'outside', or 'edge'.")
+                raise ValueError(
+                    "The 'position' parameter must take the value 'inside', 'outside', or 'edge'."
+                )
             pos = options.pop("position")
         else:
             pos = "inside"
@@ -250,51 +261,51 @@ class GraphicalPolygon:
             if "horizontal_alignment" in options:
                 pass
             elif e[1] > 0:
-                options["horizontal_alignment"]="left"
+                options["horizontal_alignment"] = "left"
             elif e[1] < 0:
-                options["horizontal_alignment"]="right"
+                options["horizontal_alignment"] = "right"
             else:
-                options["horizontal_alignment"]="center"
+                options["horizontal_alignment"] = "center"
 
             if "vertical_alignment" in options:
                 pass
             elif e[0] > 0:
-                options["vertical_alignment"]="top"
+                options["vertical_alignment"] = "top"
             elif e[0] < 0:
-                options["vertical_alignment"]="bottom"
+                options["vertical_alignment"] = "bottom"
             else:
-                options["vertical_alignment"]="center"
+                options["vertical_alignment"] = "center"
 
         elif pos == "inside":
             # position inside polygon.
             if "horizontal_alignment" in options:
                 pass
             elif e[1] < 0:
-                options["horizontal_alignment"]="left"
+                options["horizontal_alignment"] = "left"
             elif e[1] > 0:
-                options["horizontal_alignment"]="right"
+                options["horizontal_alignment"] = "right"
             else:
-                options["horizontal_alignment"]="center"
+                options["horizontal_alignment"] = "center"
 
             if "vertical_alignment" in options:
                 pass
             elif e[0] < 0:
-                options["vertical_alignment"]="top"
+                options["vertical_alignment"] = "top"
             elif e[0] > 0:
-                options["vertical_alignment"]="bottom"
+                options["vertical_alignment"] = "bottom"
             else:
-                options["vertical_alignment"]="center"
+                options["vertical_alignment"] = "center"
 
         else:
             # centered on edge.
             if "horizontal_alignment" in options:
                 pass
             else:
-                options["horizontal_alignment"]="center"
+                options["horizontal_alignment"] = "center"
             if "vertical_alignment" in options:
                 pass
             else:
-                options["vertical_alignment"]="center"
+                options["vertical_alignment"] = "center"
 
         if "t" in options:
             t = RDF(options.pop("t"))
@@ -327,8 +338,10 @@ class GraphicalPolygon:
         else:
             t = 0.5
 
-        return line2d([self._v[0], self._v[0] + t*(sum(self._v) / len(self._v) - self._v[0])],
-            **options)
+        return line2d(
+            [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
+            **options
+        )
 
     def plot_points(self, points, **options):
         r"""
