@@ -479,11 +479,12 @@ class AbstractStraightLineTrajectory:
                 seg_list_2 = lab_to_seg2[label]
                 for seg1 in seg_list_1:
                     for seg2 in seg_list_2:
+                        from flatsurf.geometry.euclidean import line_intersection
                         x = line_intersection(
-                            seg1.start().point(),
-                            seg1.start().point() + seg1.start().vector(),
-                            seg2.start().point(),
-                            seg2.start().point() + seg2.start().vector(),
+                            (seg1.start().point(),
+                            seg1.start().point() + seg1.start().vector()),
+                            (seg2.start().point(),
+                            seg2.start().point() + seg2.start().vector()),
                         )
                         if x is not None:
                             pos = (

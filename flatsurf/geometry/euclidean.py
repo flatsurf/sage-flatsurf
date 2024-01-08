@@ -1,5 +1,3 @@
-# TODO: Make all functions assume that the inputs are vectors.
-
 r"""
 A loose collection of tools for Euclidean geometry in the plane.
 
@@ -12,7 +10,7 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                      2020-2023 Julian Rüth
+#                      2020-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -352,44 +350,49 @@ def is_anti_parallel(v, w):
     return is_parallel(v, -w)
 
 
-def line_intersection(p1, p2, q1, q2):
+def line_intersection(l, m):
     r"""
-    Return the point of intersection between the line joining p1 to p2
-    and the line joining q1 to q2. If the lines do not have a single point of
-    intersection, returns None.
+    Return the point of intersection between the lines ``l`` and ``m``. If the
+    lines do not have a single point of intersection, returns None.
 
     INPUT:
 
-    - ``p1`` -- a vector in the plane
+    - ``l`` -- a line in the plane given by two points (as vectors) in the plane
 
-    - ``p2`` -- a vector in the plane
-
-    - ``q1`` -- a vector in the plane
-
-    - ``q2`` -- a vector in the plane
+    - ``m`` -- a line in the plane given by two points (as vectors) in the plane
 
     EXAMPLES::
 
         sage: from flatsurf.geometry.euclidean import line_intersection
-        sage: line_intersection(vector((-1, 0)), vector((1, 0)), vector((0, -1)), vector((0, 1)))
+        sage: line_intersection((vector((-1, 0)), vector((1, 0))), (vector((0, -1)), vector((0, 1))))
         (0, 0)
-        sage: line_intersection(vector((-1, 0)), vector((1, 0)), vector((-1, 1)), vector((1, 1)))
-        sage: line_intersection(vector((-1, 0)), vector((1, 0)), vector((-2, 0)), vector((2, 0)))
+
+    Parallel lines have no single point of intersection:: 
+
+        sage: line_intersection((vector((-1, 0)), vector((1, 0))), (vector((-1, 1)), vector((1, 1))))
+
+    Identical lines have no single point of intersection::
+
+        sage: line_intersection((vector((-1, 0)), vector((1, 0))), (vector((-2, 0)), vector((2, 0))))
 
     """
-    p21 = sub(p2, p1)
-    q21 = sub(q2, q1)
-    if ccw(p21, q21) == 0:
+    Δl = l[1] - l[0]
+    Δm = m[1] - m[0]
+
+    # We solve the linear system determining the time when l[0] + t * Δl hits
+    # m, i.e., l[0] + t Δl == m[0] + s Δm.
+    a, b, c, d = Δl[0], -Δm[0], Δl[1], -Δm[1]
+    rhs = m[0] - l[0]
+
+    det = a * d - b * c
+    if det == 0:
+        # The lines are parallel
         return None
 
-    # Since the wedge product is non-zero, this matrix is invertible:
-    a, b, c, d = p21[0], -q21[0], p21[1], -q21[1]
-    det = a * d - b * c
+    # Solve the linear system. We only need t (and not s.)
+    t = (d * rhs[0] - b * rhs[1]) / det
 
-    t = ~det * (d * (q1[0] - p1[0]) - b * (q1[1] - p1[1]))
-
-    from sage.all import vector
-    return vector((p1[0] + t * p21[0], p1[1] + t * p21[1]))
+    return l[0] + t * Δl
 
 
 def time_on_ray(p, direction, q):
@@ -408,7 +411,7 @@ def time_on_ray(p, direction, q):
 
 
 def ray_segment_intersection(p, direction, segment):
-    intersection = line_intersection(p, p + direction, *segment)
+    intersection = line_intersection((p, p + direction), segment)
 
     if intersection is None:
         # ray and segment are parallel.
