@@ -1,7 +1,7 @@
 # ********************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2023 Julian Rüth
+#        Copyright (C) 2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: deformation = S.pyflatsurf()
             sage: deformation._image_edge((0, 0), 0)
@@ -48,7 +47,9 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
 
 class Morphism_from_pyflatsurf(SurfaceMorphism):
-    pass
+    def __init__(self, domain, codomain, pyflatsurf_conversion):
+        self._pyflatsurf_conversion = pyflatsurf_conversion
+        super().__init__(domain, codomain)
 
 
 class Morphism_from_Deformation(SurfaceMorphism):

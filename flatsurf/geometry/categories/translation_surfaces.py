@@ -497,8 +497,14 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
         def erase_marked_points(self):
             r"""
-            Return an isometric or similar surface with a minimal number of regular
-            vertices of angle 2π.
+            Return an isomorphism to a surface with a minimal regular vertices
+            of angle 2π.
+
+            ALGORITHM:
+
+            We use the erasure of marked points implemented in pyflatsurf. For
+            this we triangulate, then we Delaunay triangulate, then erase
+            marked points with pyflatsurf, and then Delaunay triangulate again.
 
             EXAMPLES::
 
@@ -549,16 +555,52 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if all(a != 1 for a in self.angles()):
                 # no 2π angle
                 return self
-            from flatsurf.geometry.pyflatsurf_conversion import (
-                from_pyflatsurf,
-                to_pyflatsurf,
-            )
 
-            S = to_pyflatsurf(self)
-            S.delaunay()
-            S = S.eliminateMarkedPoints().surface()
-            S.delaunay()
-            return from_pyflatsurf(S)
+            # Triangulate the surface: to_pyflatsurf maps self to a
+            # triangulated libflatsurf surface (later called delaunay0_domain.)
+            to_pyflatsurf = self.pyflatsurf()
+            
+            # Delaunay triangulate: delaunay0 maps delaunay0_domain to delaunay0_codomain.
+            # Since the flips of delaunay() are performed in-place, we create
+            # the mapping using the Tracked[Deformation] feature of pyflatsurf.
+            delaunay0_domain = to_pyflatsurf.codomain()
+            delaunay0_codomain = delaunay0_domain._flat_triangulation.clone()
+
+            from pyflatsurf import flatsurf
+            delaunay0 = flatsurf.Deformation[type(delaunay0_codomain)](delaunay0_codomain)
+            track = flatsurf.Tracked(delaunay0_codomain.combinatorial(), delaunay0)
+
+            delaunay0_codomain.delaunay()
+
+            # Erase marked points: elimination maps delaunay0_codomain to a
+            # surface without marked points, later called delaunay1_domain.
+            elimination = delaunay0_codomain.eliminateMarkedPoints()
+
+            # Delaunay triangulate again: delaunay1 maps delaunay1_domain to delaunay1_codomain.
+            # Again, we use a Tracked[Deformation] to create this mapping.
+            delaunay1_domain = elimination.codomain()
+            delaunay1_codomain = delaunay1_domain.clone()
+
+            delaunay1 = flatsurf.Deformation[type(delaunay1_codomain)](delaunay1_codomain)
+            track = flatsurf.Tracked(delaunay1_codomain.combinatorial(), delaunay1)
+
+            delaunay1_codomain.delaunay()
+
+            # Bring the surface back into sage-flatsurf: from_pyflatsurf maps a
+            # sage-flatsurf surface to delaunay1_codomain.
+            from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+            codomain_pyflatsurf = Surface_pyflatsurf(delaunay1_codomain)
+
+            from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
+            pyflatsurf_morphism = Morphism_from_Deformation(to_pyflatsurf.codomain(), codomain_pyflatsurf, delaunay1 * elimination * delaunay0)
+
+            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            from_pyflatsurf = FlatTriangulationConversion.from_pyflatsurf(delaunay1_codomain)
+
+            from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_pyflatsurf
+            from_pyflatsurf = Morphism_from_pyflatsurf(codomain_pyflatsurf, from_pyflatsurf.domain(), from_pyflatsurf)
+
+            return from_pyflatsurf * pyflatsurf_morphism * to_pyflatsurf
 
         def _test_translation_surface(self, **options):
             r"""
