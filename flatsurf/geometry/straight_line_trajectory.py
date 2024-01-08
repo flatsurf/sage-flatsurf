@@ -18,21 +18,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
-from collections import deque
-
-from flatsurf.geometry.euclidean import line_intersection
-
-# Vincent question:
-# using deque has the disadvantage of losing the initial points
-# ideally doig
-#  my_line[i]
-# we should always access to the same element
-
-# I wanted to be able to flow backward thus inserting at the beginning of a list.
-# Perhaps it would be better to model this on a deque-like class that is indexed by
-# all integers rather than just the non-negative ones? Do you know of such
-# a class? Alternately, we could store an offset.
-
 
 def get_linearity_coeff(u, v):
     r"""
@@ -549,6 +534,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
     """
 
     def __init__(self, tangent_vector):
+        from collections import deque
         self._segments = deque()
         seg = SegmentInPolygon(tangent_vector)
         self._segments.append(seg)
@@ -744,6 +730,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         )
         x *= T.length_bot(i)
 
+        from collections import deque
         self._points = deque()  # we store triples (lab, edge, rel_pos)
         self._points.append((p, i, x))
 
