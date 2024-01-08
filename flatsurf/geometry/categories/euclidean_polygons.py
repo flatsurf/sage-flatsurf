@@ -1689,7 +1689,7 @@ class EuclideanPolygons(Category_over_base_ring):
                             continue
 
                         from flatsurf.geometry.euclidean import time_on_ray
-                        if first_intersection is None or time_on_ray(point, direction, first_intersection) > time_on_ray(point, direction, intersection):
+                        if first_intersection is None or time_on_ray(point, direction, first_intersection)[0] > time_on_ray(point, direction, intersection)[0]:
                             first_intersection = intersection
 
                     if first_intersection is not None:
