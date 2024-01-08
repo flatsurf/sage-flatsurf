@@ -1,3 +1,5 @@
+# TODO: Make all functions assume that the inputs are vectors.
+
 r"""
 A loose collection of tools for Euclidean geometry in the plane.
 
@@ -370,18 +372,45 @@ def line_intersection(p1, p2, q1, q2):
     r"""
     Return the point of intersection between the line joining p1 to p2
     and the line joining q1 to q2. If the lines do not have a single point of
-    intersection, we return None. Here p1, p2, q1 and q2 should be vectors in
-    the plane.
+    intersection, returns None.
+
+    INPUT:
+
+    - ``p1`` -- a vector in the plane
+
+    - ``p2`` -- a vector in the plane
+
+    - ``q1`` -- a vector in the plane
+
+    - ``q2`` -- a vector in the plane
+
+    .. TODO::
+
+        This is quite slow. Probably because it uses matrix inverse which is
+        not very fast in SageMath for 2×2 matrices.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import line_intersection
+        sage: line_intersection(vector((-1, 0)), vector((1, 0)), vector((0, -1)), vector((0, 1)))
+        (0, 0)
+        sage: line_intersection(vector((-1, 0)), vector((1, 0)), vector((-1, 1)), vector((1, 1)))
+        sage: line_intersection(vector((-1, 0)), vector((1, 0)), vector((-2, 0)), vector((2, 0)))
+
     """
-    # TODO: This is very slow. Probably the inverse is to blame.
-    if ccw(p2 - p1, q2 - q1) == 0:
+    p21 = sub(p2, p1)
+    q21 = sub(q2, q1)
+    if ccw(p21, q21) == 0:
         return None
 
-    # Since the wedge product is non-zero, the following is invertible:
-    from sage.all import matrix
+    # Since the wedge product is non-zero, this matrix is invertible:
+    a, b, c, d = p21[0], -q21[0], p21[1], -q21[1]
+    det = a * d - b * c
 
-    m = matrix([[p2[0] - p1[0], q1[0] - q2[0]], [p2[1] - p1[1], q1[1] - q2[1]]])
-    return p1 + (m.inverse() * (q1 - p1))[0] * (p2 - p1)
+    t = ~det * (d * (q1[0] - p1[0]) - b * (q1[1] - p1[1]))
+
+    from sage.all import vector
+    return vector((p1[0] + t * p21[0], p1[1] + t * p21[1]))
 
 
 def time_on_ray(p, direction, q):
@@ -422,7 +451,8 @@ def ray_segment_intersection(p, direction, segment):
     return intersection
 
 
-def is_segment_intersecting(e1, e2):
+# TODO: delete this function
+def is_segment_intersecting2(e1, e2):
     r"""
     Return whether the segments ``e1`` and ``e2`` intersect.
 
@@ -526,23 +556,26 @@ def is_segment_intersecting(e1, e2):
 
     return 2  # middle intersection
 
-    # TODO: This is much easier than the old code but also ×10 slower (for no good reason I guess.)
-    ## intersection = line_intersection(e1[0], e1[1], e2[0], e2[1])
+def is_segment_intersecting(e1, e2):
+    if ccw(sub(e1[1], e1[0]), sub(e2[1], e2[0])) == 0:
+        # The segments are parallel
+        return is_segment_intersecting2(e1, e2)
+        raise NotImplementedError
 
-    ## if intersection is None:
-    ##     # The segments are parallel
-    ##     raise NotImplementedError
+    base = e1[0]
+    a = ccw(sub(e1[1], base), sub(e2[0], base)) * ccw(sub(e1[1], base), sub(e2[1], base))
+    if a > 0:
+        return 0
 
-    ## a = ccw(e1[1] - e1[0], e2[0] - e1[0]) * ccw(e1[1] - e1[0], e2[1] - e1[0])
-    ## b = ccw(e2[1] - e2[0], e1[0] - e2[0]) * ccw(e2[1] - e2[0], e1[1] - e2[0])
+    base = e2[0]
+    b = ccw(sub(e2[1], base), sub(e1[0], base)) * ccw(sub(e2[1], base), sub(e1[1], base))
+    if b > 0:
+        return 0
 
-    ## if a == 1 or b == 1:
-    ##     return 0
+    if a == 0 and b == 0:
+        return 1
 
-    ## if a == 0 and b == 0:
-    ##     return 1
-
-    ## return 2
+    return 2
 
 
 def is_between(e0, e1, f):
@@ -737,3 +770,7 @@ def slope(a, rotate=1):
     if rotate == -1:
         return 1 if y else -1
     raise ValueError("invalid argument rotate={}".format(rotate))
+
+
+def sub(v, w):
+    return v[0] - w[0], v[1] - w[1]
