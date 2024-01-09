@@ -50,7 +50,6 @@ from flatsurf.geometry.surface import (
 
 
 class LazyTriangulatedSurface(OrientedSimilaritySurface):
-    # TODO: Add checks for label clashes.
     r"""
     A triangulated surface whose structure is computed on demand.
 
