@@ -514,14 +514,14 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
                 sage: S.stratum()
                 H_2(2, 0)
-                sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+                sage: S.erase_marked_points().codomain().stratum() # optional: pyflatsurf  # long time (1s)
                 H_2(2)
 
                 sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
                 ....:     T = flatsurf.polygons.triangle(a,b,c)
                 ....:     S = flatsurf.similarity_surfaces.billiard(T)
                 ....:     S = S.minimal_cover("translation")
-                ....:     print(S.erase_marked_points().stratum())
+                ....:     print(S.erase_marked_points().codomain().stratum())
                 H_6(10)
                 H_6(2^5)
                 H_8(12, 2)
@@ -530,8 +530,19 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             function::
 
                 sage: O = flatsurf.translation_surfaces.regular_octagon()
-                sage: O.erase_marked_points() is O
+                sage: O.erase_marked_points().codomain() is O
                 True
+
+            This method produces a morphism from the surface with marked points
+            to the surface without marked points::
+
+                sage: G = SymmetricGroup(4)
+                sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+                sage: erasure = S.erase_marked_points()  # optional: pyflatsurf  # long time (1s)
+                sage: marked_point = S(1, 1); marked_point
+                Vertex 0 of polygon 2
+                sage: erasure(marked_point)
+
 
             TESTS:
 
@@ -541,7 +552,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: P = Polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
                 sage: B = similarity_surfaces.billiard(P)
                 sage: S = B.minimal_cover(cover_type="translation")
-                sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
+                sage: S = S.erase_marked_points().codomain() # long time (3s), optional: pyflatsurf
 
             ::
 
@@ -549,12 +560,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: P = Polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
                 sage: B = similarity_surfaces.billiard(P)
                 sage: S_mp = B.minimal_cover(cover_type="translation")
-                sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
+                sage: S = S_mp.erase_marked_points().codomain() # long time (3s), optional: pyflatsurf
 
             """
             if all(a != 1 for a in self.angles()):
                 # no 2π angle
-                return self
+                from flatsurf.geometry.morphism import IdentityMorphism
+                return IdentityMorphism(self)
 
             # Triangulate the surface: to_pyflatsurf maps self to a
             # triangulated libflatsurf surface (later called delaunay0_domain.)
@@ -563,12 +575,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             # Delaunay triangulate: delaunay0 maps delaunay0_domain to delaunay0_codomain.
             # Since the flips of delaunay() are performed in-place, we create
             # the mapping using the Tracked[Deformation] feature of pyflatsurf.
-            delaunay0_domain = to_pyflatsurf.codomain()
-            delaunay0_codomain = delaunay0_domain._flat_triangulation.clone()
+            delaunay0_codomain = to_pyflatsurf.codomain()._flat_triangulation.clone()
 
             from pyflatsurf import flatsurf
-            delaunay0 = flatsurf.Deformation[type(delaunay0_codomain)](delaunay0_codomain)
-            track = flatsurf.Tracked(delaunay0_codomain.combinatorial(), delaunay0)
+            delaunay0 = flatsurf.Tracked(delaunay0_codomain.combinatorial(), flatsurf.Deformation[type(delaunay0_codomain)](delaunay0_codomain.clone()))
 
             delaunay0_codomain.delaunay()
 
@@ -578,11 +588,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             # Delaunay triangulate again: delaunay1 maps delaunay1_domain to delaunay1_codomain.
             # Again, we use a Tracked[Deformation] to create this mapping.
-            delaunay1_domain = elimination.codomain()
-            delaunay1_codomain = delaunay1_domain.clone()
+            delaunay1_codomain = elimination.codomain().clone()
 
-            delaunay1 = flatsurf.Deformation[type(delaunay1_codomain)](delaunay1_codomain)
-            track = flatsurf.Tracked(delaunay1_codomain.combinatorial(), delaunay1)
+            delaunay1 = flatsurf.Tracked(delaunay1_codomain.combinatorial(), flatsurf.Deformation[type(delaunay1_codomain)](delaunay1_codomain.clone()))
 
             delaunay1_codomain.delaunay()
 
@@ -592,7 +600,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             codomain_pyflatsurf = Surface_pyflatsurf(delaunay1_codomain)
 
             from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
-            pyflatsurf_morphism = Morphism_from_Deformation(to_pyflatsurf.codomain(), codomain_pyflatsurf, delaunay1 * elimination * delaunay0)
+            pyflatsurf_morphism = Morphism_from_Deformation(to_pyflatsurf.codomain(), codomain_pyflatsurf, delaunay1.value() * elimination * delaunay0.value())
 
             from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             from_pyflatsurf = FlatTriangulationConversion.from_pyflatsurf(delaunay1_codomain)
