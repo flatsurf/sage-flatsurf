@@ -1733,8 +1733,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def triangulate(self, in_place=False, label=None, relabel=None):
                 r"""
-                Return a triangulated version of this surface. (This may be mutable
-                or not depending on the input.)
+                Return a morphism to a triangulated version of this surface.
 
                 If label=None (as default) all polygons are triangulated. Otherwise,
                 label should be a polygon label. In this case, just this polygon
@@ -1774,8 +1773,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if self.is_mutable():
                     from flatsurf import MutableOrientedSimilaritySurface
-                    self = MutableOrientedSimilaritySurface.from_surface(self)
-                    return self.triangulate(in_place=True, label=label)
+                    return MutableOrientedSimilaritySurface.from_surface(self).triangulate(in_place=True, label=label)
 
                 labels = {label} if label is not None else self.labels()
 

@@ -2052,12 +2052,6 @@ class MutableOrientedSimilaritySurface(
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`
         to allow triangulating in-place.
 
-        .. TODO::
-
-            The code here is not using
-            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.
-            It should probably be rewritten to share the same logic.
-
         TESTS:
 
         Verify that the monotile can be triangulated::
@@ -2118,19 +2112,35 @@ class MutableOrientedSimilaritySurface(
         labels = [label] if label is not None else list(self.labels())
 
         for label in labels:
-            triangulation, edge_to_edge = self.polygon(label).triangulate()
-            if len(triangulation.labels()) == 1:
-                relabeling = {triangulation.root(): label}
-            else:
-                relabeling = {l: (label, l) for l in triangulation.labels()}
-            triangulation = triangulation.relabel(relabeling).codomain()
-
-            from bidict import bidict
-            edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
-            self.refine_polygon(label, triangulation, edge_to_edge)
+            self.refine_polygon(label, *MutableOrientedSimilaritySurface._triangulate(self, label))
 
         from flatsurf.geometry.morphism import TriangulationMorphism
         return TriangulationMorphism(None, self)
+
+    @staticmethod
+    def _triangulate(surface, label):
+        r"""
+        Helper method for :meth:`triangulate`.
+        
+        Returns a triangulation of the polygon with ``label`` of ``surface``
+        together with a bidict that can be fed to :meth:`refine_polygon`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        triangulation, edge_to_edge = surface.polygon(label).triangulate()
+        if len(triangulation.labels()) == 1:
+            relabeling = {triangulation.root(): label}
+        else:
+            relabeling = {l: (label, l) for l in triangulation.labels()}
+        triangulation = triangulation.relabel(relabeling).codomain()
+
+        from bidict import bidict
+        edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
+
+        return triangulation, edge_to_edge
 
     def delaunay_single_flip(self):
         r"""

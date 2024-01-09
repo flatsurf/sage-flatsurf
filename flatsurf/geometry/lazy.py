@@ -72,7 +72,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
     """
 
-    def __init__(self, similarity_surface, labels=None, relabel=None, category=None):
+    def __init__(self, surface, labels=None, relabel=None, category=None):
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
@@ -86,17 +86,17 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
                 )
 
         if labels is None:
-            labels = similarity_surface.labels()
+            labels = surface.labels()
 
-        if similarity_surface.is_mutable():
+        if surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
-        self._reference = similarity_surface
+        self._reference = surface
         self._labels = labels
 
         OrientedSimilaritySurface.__init__(
             self,
-            similarity_surface.base_ring(),
+            surface.base_ring(),
             category=category or self._reference.category(),
         )
 
@@ -182,17 +182,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             from bidict import bidict
             return triangulation, bidict({e: (reference_label, e) for e in range(len(reference_polygon.edges()))})
 
-        # TODO: The same code is in surface.py triangulate()
-        triangulation, edge_to_edge = reference_polygon.triangulate()
-        if len(triangulation.labels()) == 1:
-            relabeling = {triangulation.root(): reference_label}
-        else:
-            relabeling = {l: (reference_label, l) for l in triangulation.labels()}
-        triangulation = triangulation.relabel(relabeling).codomain()
-
-        from bidict import bidict
-        edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
-        return triangulation, edge_to_edge
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        return MutableOrientedSimilaritySurface._triangulate(self._reference, reference_label)
 
     def _reference_label(self, label):
         if label in self._reference.labels():
