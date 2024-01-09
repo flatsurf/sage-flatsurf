@@ -26,9 +26,15 @@ The absolute homology of the unfolding of the (3, 4, 13) triangle::
 Relative homology, relative to the singularities of the surface::
 
     sage: S = S.erase_marked_points().codomain()
-    sage: H = SimplicialHomology(S, relative=S.vertices())
-    sage: len(H.gens())  # TODO: Verify that this is correct!
+    sage: H1 = SimplicialHomology(S, relative=S.vertices())
+    sage: len(H1.gens())
     17
+    sage: H0 = SimplicialHomology(S, relative=S.vertices(), k=0)
+    sage: len(H0.gens())
+    0
+    sage: H2 = SimplicialHomology(S, relative=S.vertices(), k=2)
+    sage: len(H2.gens())
+    1
 
 """
 ######################################################################
@@ -409,13 +415,7 @@ class SimplicialHomologyGroup(Parent):
         """
         from sage.all import FreeModule
 
-        chain_module = FreeModule(self._coefficients, self.simplices())
-
-        if self._relative and self._k == 0:
-            representative = next(iter(self._relative))
-            chain_module = chain_module.quotient_module([chain_module(representative) - chain_module(x) for x in self._relative if x != representative])
-
-        return chain_module
+        return FreeModule(self._coefficients, self.simplices())
 
     @cached_method
     def simplices(self):
@@ -433,7 +433,7 @@ class SimplicialHomologyGroup(Parent):
 
         """
         if self._k == 0:
-            return tuple(self._surface.vertices())
+            return tuple(vertex for vertex in self._surface.vertices() if vertex not in self._relative)
         if self._k == 1:
             simplices = set()
             for edge in self._surface.edges():
@@ -494,8 +494,8 @@ class SimplicialHomologyGroup(Parent):
             C0 = self.change(k=0).chain_module()
 
             def to_C0(point):
-                if self._relative:
-                    return C0.retract(C0.ambient()(point))
+                if point in self._relative:
+                    return C0.zero()
                 return C0(point)
 
             boundary = C0.zero()
