@@ -516,9 +516,9 @@ class SaddleConnection(SageObject):
 
         connection = to_pyflatsurf(self)
 
-        # TODO: We should probably make chains and saddle connections proper objects
-        # in sage-flatsurf so that they can be mapped through
-        # to_pyflatsurf.section()
+        # TODO: We should probably make pyflatsurf chains and saddle
+        # connections proper objects in sage-flatsurf so that they can be
+        # mapped through to_pyflatsurf.section()
         chain = connection._connection.chain()
 
         chain = {e.positive().id(): chain[e] for e in to_pyflatsurf.codomain()._flat_triangulation.edges()}

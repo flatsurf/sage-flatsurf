@@ -947,12 +947,15 @@ dilation_surfaces = DilationSurfaceGenerators()
 
 
 class HalfTranslationSurfaceGenerators:
-    # TODO: ideally, we should be able to construct a non-convex polygon and make the construction
-    # below as a special case of billiard unfolding.
     @staticmethod
     def step_billiard(w, h):
         r"""
         Return a (finite) step billiard associated to the given widths ``w`` and heights ``h``.
+
+        .. TODO::
+
+            Ideally, we should be able to construct a non-convex polygon and
+            make this construction a special case of billiard unfolding.
 
         EXAMPLES::
 

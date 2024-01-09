@@ -34,8 +34,6 @@ from sage.all import AA, QQ
 from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
 
 
-# TODO: the test for field of definition with is_isomorphic() does not check
-# for embeddings... though for quadratic fields it does not matter much.
 @pytest.mark.parametrize(
     "a,b,c,d,l1,l2,veech,discriminant",
     [
@@ -51,6 +49,13 @@ from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbit
     ],
 )
 def test_rank2_quadrilateral(a, b, c, d, l1, l2, veech, discriminant):
+    """
+    .. TODO::
+
+        The test for field of definition with is_isomorphic() does not check
+        for embeddings. Though for quadratic fields it does not matter much.
+
+    """
     E = EuclideanPolygonsWithAngles(a, b, c, d)
     P = E([l1, l2], normalized=True)
     B = similarity_surfaces.billiard(P, rational=True)

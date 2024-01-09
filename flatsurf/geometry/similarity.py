@@ -475,6 +475,10 @@ class SimilarityGroup(UniqueRepresentation, Group):
 
     def _element_constructor_(self, *args, **kwds):
         r"""
+        .. TODO::
+
+            This should also support 2×2 and 3×3 matrix inputs.
+
         TESTS::
 
             sage: from flatsurf.geometry.similarity import SimilarityGroup
@@ -497,8 +501,6 @@ class SimilarityGroup(UniqueRepresentation, Group):
         a = self._ring.one()
         b = s = t = self._ring.zero()
         sign = ZZ_1
-
-        # TODO: 2x2 and 3x3 matrix input
 
         if isinstance(x, (tuple, list)):
             if len(x) == 2:
