@@ -41,7 +41,7 @@ from sage.misc.cachefunc import cached_method
 from flatsurf.features import pyflatsurf_feature
 
 
-# TODO: Move this fix to pyeantic
+# TODO: Remove this once e-antic 2.0.1 can be used. (We are waiting for a SageMath does works with FLINT 3.)
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
