@@ -64,13 +64,6 @@ from sage.misc.cachefunc import cached_method
 
 
 class SimplicialHomologyClass(Element):
-    # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a
-    # basis of homology and a projection map. Or better, have an algorithm
-    # keyword to use the generic implementation and the spanning tree
-    # implementation.
-    # TODO: Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to
-    # force the representatives to live in particular subgraph of the dual
-    # graph.
     def __init__(self, parent, chain):
         super().__init__(parent)
 
@@ -227,15 +220,23 @@ class SimplicialHomologyClass(Element):
             sage: a.coefficient(b)
             0
 
+        TESTS::
+
+            sage: a.coefficient(a + b)
+            Traceback (most recent call last):
+            ...
+            ValueError: gen must be a generator not B[(0, 0)] + B[(0, 1)]
+
         """
-        # TODO: Check that gen is a generator.
+        coefficients = gen._homology()
+        indexes = [i for (i, c) in enumerate(coefficients) if c]
 
-        for g, c in zip(gen._homology(), self._homology()):
-            if g:
-                assert g == 1
-                return c
+        if len(indexes) != 1 or coefficients[indexes[0]] != 1:
+            raise ValueError(f"gen must be a generator not {gen}")
 
-        raise ValueError("gen must be a generator of homology")
+        index = indexes[0]
+
+        return self._homology()[index]
 
     def _add_(self, other):
         r"""
@@ -309,10 +310,21 @@ class SimplicialHomologyGroup(Parent):
     - ``relative`` -- a subset of points of the ``surface`` (default: the empty
       set)
 
-    - ``implementation`` -- one of ``"spanning_tree"`` or ``"generic"`` (default:
-      ``"spanning_tree"``); whether the homology is computed with a (very
+    - ``implementation`` -- one of ``"spanning_tree"`` or ``"generic"``
+      (default: ``"generic"``); whether the homology is computed with a (very
       efficient) spanning tree algorithm or the generic homology machinery
       provided by SageMath.
+
+
+    .. TODO::
+
+        Implement the ``"spanning_tree"`` algorithm froom
+        ``GL2ROrbitClosure._spanning_tree``.
+
+    .. TODO::
+
+        Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to force
+        the representatives to live in particular subgraph of the dual graph.
 
     EXAMPLES::
 
@@ -336,8 +348,8 @@ class SimplicialHomologyGroup(Parent):
     TESTS::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # TODO: not tested
-        sage: TestSuite(H).run()  # TODO: not tested
+        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # not tested, spanning_tree not implemented yet
+        sage: TestSuite(H).run()  # not tested, spanning_tree not implemented yet
 
     ::
 
