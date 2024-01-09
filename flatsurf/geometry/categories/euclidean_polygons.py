@@ -1325,10 +1325,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 ALGORITHM:
 
-                We use simple quadratic time ear-clipping algorithm. There are
-                asymptotically faster algorithms out there. But we are usually
-                dealing with a very small number of vertices, so the asymptotic
-                behavior does not seem the limiting factor here.
+                We use a simple quadratic time ear-clipping algorithm. There
+                are asymptotically faster algorithms out there. But we are
+                usually dealing with a very small number of vertices, so the
+                asymptotic behavior does not seem to be the limiting factor
+                here.
 
                 EXAMPLES:
 
