@@ -607,7 +607,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
         def apply_matrix(self, m, in_place=None):
             r"""
-            Apply the 2×2 matrix ``m`` to the polygons of this surface.
+            Apply the 2×2 matrix ``m`` to the polygons of this surface and
+            return a morphism from this surface to the deformed surface.
 
             INPUT:
 
@@ -622,6 +623,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
                 sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+                sage: morphism.domain()
+                Translation Surface in H_1(0) built from a square
+                sage: morphism.codomain()
+                Translation Surface in H_1(0) built from a rectangle
+
                 sage: morphism.codomain().polygon(0)
                 Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
 
@@ -915,6 +922,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     (2, 0)
 
                     sage: TestSuite(SS).run()
+
+                The relabeling can also be a callable::
+
+                    sage: unrelabeling = SS.relabel(lambda label: label -1)
+                    sage: SSS = unrelabeling.codomain()
+                    sage: SSS == S
+                    True
 
                 """
                 if in_place:
@@ -1710,7 +1724,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def triangulation_mapping(self):
                 r"""
-                Return a ``SurfaceMapping`` triangulating the surface or
+                Return a morphism triangulating the surface or
                 ``None`` if the surface is already triangulated.
 
                 EXAMPLES::

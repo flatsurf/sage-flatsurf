@@ -4,17 +4,21 @@
 
 * Added ``apply_matrix`` to all oriented similarity surfaces. (We apply the matrix to all polygons and keep the gluings intact. Probably not the most meaningful operation for non-dilation surfaces but it can be useful while building surfaces.)
 
+* Added ``homology`` and ``cohomology`` methods to surfaces.
+
 **Changed:**
 
 * Changed return type of ``flow_to_exit()``. It now returns just the point where the flow exits a polygon and not a description of the point anymore. **This is a breaking change.**
 
 * Changed ``billiard()`` to not triangulate non-convex polygons before creating the billiard. To restore the old behavior call ``triangulate()`` explicitly on the returned surface. Since surfaces built from non-convex polygons are quite limited, this might be a breaking change for some.
 
-* Changed ``standardize_polygons(in_place=False)`` to return (a morphism to) an immutable surface. Before, the surface was mutable.
+* Changed ``standardize_polygons(in_place=False)`` to return (a morphism to) an immutable surface. Before, no morphism was returned and the surface was mutable.
 
 * Changed ``relabel()`` to accept a dict or a callable as the parameter ``relabeling`` (before this parameter had to be a dict and was called ``relabeling_map``.) Also, this method now returns a morphism and not a tuple containing a success flag.
 
 * Renamed module ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``.
+
+* Changed ``triangulate()`` to return a morphism to a triangulated surface (instead of just the triangulated surface.)
 
 **Deprecated:**
 
@@ -36,7 +40,9 @@
 
 **Fixed:**
 
-* Fixed ``flow_to_exit()`` to also work for polygons that are not strictly convex.
+* Fixed ``flow_to_exit()`` to also work for polygons that are not strictly convex. (#258)
+
+* Fixed ``saddle_connections()`` to not throw a name error anymore in some edge cases. (#255)
 
 **Performance:**
 
