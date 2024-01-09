@@ -552,7 +552,6 @@ class SimplicialHomologyGroup(Parent):
 
         from sage.all import ChainComplex, matrix
         return ChainComplex({
-            # TODO: This is wrong in the relative case?
             dimension: matrix([boundary(dimension, simplex) for simplex in self.change(k=dimension).chain_module().basis()]).transpose()
             for dimension in range(3)
         }, base_ring=self._coefficients, degree=-1)
