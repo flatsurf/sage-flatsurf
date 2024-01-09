@@ -19,7 +19,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         sage: S.set_immutable()
 
-        sage: T = S.pyflatsurf().codomain()  # random output due to deprecation warnings
+        sage: T = S.pyflatsurf().codomain()
 
     TESTS::
 
@@ -27,7 +27,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         sage: isinstance(T, Surface_pyflatsurf)
         True
-        sage: TestSuite(T).run()  # TODO: not tested
+        sage: TestSuite(T).run()
 
     """
 
@@ -40,7 +40,23 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
         from flatsurf.geometry.categories import TranslationSurfaces
-        super().__init__(base=base_ring, category=TranslationSurfaces().FiniteType().Connected())
+        # TODO: This is assuming that the surface is connected. Currently that's the case for all surfaces in libflatsurf?
+        category = TranslationSurfaces().FiniteType().Connected()
+        if flat_triangulation.hasBoundary():
+            category = category.WithBoundary()
+        else:
+            category = category.WithoutBoundary()
+        super().__init__(base=base_ring, category=category)
+
+    def __eq__(self, other):
+        if not isinstance(other, Surface_pyflatsurf):
+            return False
+
+        return self._flat_triangulation == other._flat_triangulation
+
+    def __hash__(self):
+        # TODO: This is not working. Flat triangulations that are equal do not produce the same hashes.
+        return hash(self._flat_triangulation)
 
     def is_mutable(self):
         return False
