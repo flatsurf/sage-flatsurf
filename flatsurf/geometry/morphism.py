@@ -763,18 +763,56 @@ class SurfaceMorphism(Morphism):
 
 
 class IdentityMorphism(SurfaceMorphism):
-    # TODO: docstring
+    r"""
+    The identity morphism from a surface to itself.
+
+    EXAMPLES::
+
+       sage: from flatsurf import translation_surfaces
+       sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+       sage: identity = S.erase_marked_points()
+       sage: identity
+       Identity on Translation Surface in H_2(2) built from 3 squares
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import IdentityMorphism
+        sage: isinstance(identity, IdentityMorphism)
+        True
+
+    """
     def __init__(self, domain, category=None):
         super().__init__(domain, domain, category=category)
 
     def __call__(self, x):
+        r"""
+        Return the image of ``x`` under this morphism, i.e., ``x`` itself.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: identity = S.erase_marked_points()
+            sage: identity(S(0, 0))
+            Vertex 0 of polygon 0
+
+        """
         return x
 
-    def _image_homology(self, γ):
-        return γ
+    def _repr_(self):
+        r"""
+        Return a printable representation of this morphism.
 
-    def _image_homology_edge(self, label, edge):
-        return [(1, label, edge)]
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: identity = S.erase_marked_points()
+            sage: identity
+           Identity on Translation Surface in H_2(2) built from 3 squares
+
+        """
+        return f"Identity on {self.domain()}"
 
 
 class SectionMorphism(SurfaceMorphism):
