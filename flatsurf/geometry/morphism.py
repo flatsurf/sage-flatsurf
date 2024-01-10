@@ -1042,6 +1042,9 @@ class TriangulationMorphism(SurfaceMorphism):
 
     """
 
+    def _image_edge(self, label, edge):
+        return self.codomain()._triangulation(label)[1][edge]
+
     def _image_homology_edge(self, label, edge):
         r"""
         Implements :class:`SurfaceMorphism._image_homology_edge`.
@@ -1057,12 +1060,12 @@ class TriangulationMorphism(SurfaceMorphism):
             [(1, (1, 0), 0)]
 
         """
-        return [(1, *self.codomain()._triangulation(label)[1][edge])]
+        return [(1, *self._image_edge(label, edge))]
 
     def _image_saddle_connection(self, connection):
         (label, edge) = connection.start_data()
 
-        _, label, edge = self._image_homology_edge(label, edge)[0]
+        label, edge = self._image_edge(label, edge)
 
         from flatsurf.geometry.euclidean import ccw
         while ccw(connection.direction(), -self.codomain().polygon(label).edges()[(edge - 1) % len(self.codomain().polygon(label).edges())]) <= 0:
@@ -1071,6 +1074,36 @@ class TriangulationMorphism(SurfaceMorphism):
         # TODO: This is extremely slow.
         from flatsurf.geometry.saddle_connection import SaddleConnection
         return SaddleConnection(self.codomain(), (label, edge), direction=connection.direction())
+
+    def _image_point(self, p):
+        r"""
+        Implements :class:`SurfaceMorphism._image_point`.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: triangulation = S.triangulate()
+            sage: triangulation._image_point(S(1, 0))
+            Vertex 0 of polygon (1, 0)
+            sage: triangulation._image_point(S(1, (1/2, 1/2)))
+            Point (1/2, 1/2) of polygon (1, 0)
+
+        """
+        preimage_label, preimage_coordinates = p.representative()
+        preimage_polygon = self.domain().polygon(preimage_label)
+
+        for preimage_edge in range(len(preimage_polygon.edges())):
+            relative_coordinates = preimage_coordinates - preimage_polygon.vertex(preimage_edge)
+            image_label, image_edge = self._image_edge(preimage_label, preimage_edge)
+            image_polygon = self.codomain().polygon(image_label)
+            image_coordinates = image_polygon.vertex(image_edge) + relative_coordinates
+            if image_polygon.contains_point((image_coordinates)):
+                return self.codomain()(image_label, image_coordinates)
+
+        assert False, "point must be in one of the polygons that split up the original polygon"
 
     def _repr_(self):
         return f"Triangulation of {self.domain()}"
