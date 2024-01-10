@@ -73,6 +73,16 @@ class SimilaritySurfaceTangentVector:
         sage: s.tangent_vector(0, (1, 1), (0, -1))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (0, -1)
 
+    TESTS:
+
+    We verify that the saddle connections in a cathedral can be computed. This
+    failed at some point::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.cathedral(1, 2)
+        sage: len(S.saddle_connections(2))
+        40
+
     """
 
     def __init__(self, tangent_bundle, polygon_label, point, vector):
@@ -123,8 +133,6 @@ class SimilaritySurfaceTangentVector:
                     "Singular point with vector pointing away from polygon"
                 )
 
-            # TODO: Make sure all code paths are tested. In particular, check
-            # that saddle connections of cathedral work.
             from flatsurf.geometry.euclidean import is_anti_parallel
             if is_anti_parallel(edge0, vector):
                 # vector points backward along edge 0
