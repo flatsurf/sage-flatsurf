@@ -539,9 +539,12 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: G = SymmetricGroup(4)
                 sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
                 sage: erasure = S.erase_marked_points()  # optional: pyflatsurf  # long time (1s)
-                sage: marked_point = S(1, 1); marked_point
+                sage: marked_point = S(1, 1); marked_point  # optional: pyflatsurf  # long time (from above)
                 Vertex 0 of polygon 2
-                sage: erasure(marked_point)
+                sage: erasure(marked_point)  # optional: pyflatsurf  # long time (from above)
+                sage: unmarked_point = S(1, 0); unmarked_point  # optional: pyflatsurf  # long time (from above)
+                Vertex 0 of polygon 1
+                sage: erasure(unmarked_point)  # optional: pyflatsurf  # long time (from above)
 
 
             TESTS:

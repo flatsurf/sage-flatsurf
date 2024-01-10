@@ -24,22 +24,22 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         self._pyflatsurf_conversion = pyflatsurf_conversion
         super().__init__(domain, codomain)
 
-    def _image_edge(self, label, edge):
+    def _image_homology_edge(self, label, edge):
         r"""
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: deformation = S.pyflatsurf()
-            sage: deformation._image_edge((0, 0), 0)
-            [((1, 2, 3), 0)]
+            sage: deformation._image_homology_edge((0, 0), 0)
+            [(1, (1, 2, 3), 0)]
 
         """
         half_edge = self._pyflatsurf_conversion((label, edge))
         face = tuple(self.codomain()._flat_triangulation.face(half_edge))
         label = type(self.codomain())._normalize_label(face)
         edge = label.index(half_edge)
-        return [(label, edge)]
+        return [(1, label, edge)]
 
     def _image_saddle_connection(self, connection):
         from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
@@ -57,7 +57,7 @@ class Morphism_from_Deformation(SurfaceMorphism):
         self._deformation = deformation
         super().__init__(domain, codomain)
 
-    def _image_edge(self, label, edge):
+    def _image_homology_edge(self, label, edge):
         # TODO: We should probably mark this method as only being correct in homology.
         half_edge = label[edge]
 
@@ -89,6 +89,6 @@ class Morphism_from_Deformation(SurfaceMorphism):
                 edge = label.index(half_edge)
 
                 for repetition in range(coefficient):
-                    image.append((label, edge))
+                    image.append((1, label, edge))
 
         return image
