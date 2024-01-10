@@ -1356,6 +1356,11 @@ class FlatTriangulationConversion(Conversion):
         - ``domain`` -- a :class:`Surface` or ``None`` (default: ``None``); if
           ``None``, the corresponding :class:`Surface` is constructed.
 
+        .. NOTE::
+
+            The ``domain``, if given, must be indistinguishable from the domain
+            that this method would construct automatically.
+
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
@@ -1368,13 +1373,21 @@ class FlatTriangulationConversion(Conversion):
         """
         pyflatsurf_feature.require()
 
+        from bidict import bidict
+        half_edge_to_polygon_edge = bidict()
+
+        for (a, b, c) in codomain.faces():
+            label = (a.id(), b.id(), c.id())
+
+            half_edge_to_polygon_edge[a] = (label, 0)
+            half_edge_to_polygon_edge[b] = (label, 1)
+            half_edge_to_polygon_edge[c] = (label, 2)
+
         if domain is None:
             ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(codomain)
 
             from flatsurf import MutableOrientedSimilaritySurface, Polygon
             domain = MutableOrientedSimilaritySurface(ring_conversion.domain())
-
-            half_edge_to_polygon_edge = {}
 
             from sage.all import VectorSpace
             vector_conversion = VectorSpaceConversion.to_pyflatsurf(VectorSpace(ring_conversion.domain(), 2))
@@ -1388,17 +1401,13 @@ class FlatTriangulationConversion(Conversion):
 
                 domain.add_polygon(triangle, label=label)
 
-                half_edge_to_polygon_edge[a] = (label, 0)
-                half_edge_to_polygon_edge[b] = (label, 1)
-                half_edge_to_polygon_edge[c] = (label, 2)
-
             for half_edge, (polygon, edge) in half_edge_to_polygon_edge.items():
                 opposite = half_edge_to_polygon_edge[-half_edge]
                 domain.glue((polygon, edge), opposite)
 
             domain.set_immutable()
 
-        return cls.to_pyflatsurf(domain=domain, codomain=codomain)
+        return FlatTriangulationConversion(domain, codomain, {(label, edge): half_edge.id() for ((label, edge), half_edge) in half_edge_to_polygon_edge.inverse.items()})
 
     @cached_method
     def ring_conversion(self):
@@ -1598,11 +1607,7 @@ class FlatTriangulationConversion(Conversion):
         face = q.face()
         label, edge = self.section(face)
         coordinates = self.vector_space_conversion().section(q.vector(face))
-        while edge != 0:
-            coordinates += self.domain().polygon(label).edge(edge - 1)
-            edge -= 1
-
-        coordinates += self.domain().polygon(label).vertex(0)
+        coordinates += self.domain().polygon(label).vertex(edge)
 
         from flatsurf.geometry.surface_objects import SurfacePoint
         return SurfacePoint(self.domain(), label, coordinates)

@@ -428,11 +428,11 @@ class SurfaceMorphism(Morphism):
             sage: morphism(42)
             Traceback (most recent call last):
             ...
-            NotImplementedError: cannot map Integer through this morphism yet
+            NotImplementedError: cannot map Integer through ...
 
         """
-        from flatsurf.geometry.surface_objects import SurfacePoint
-        if isinstance(x, SurfacePoint):
+        from flatsurf.geometry.surface_objects import SurfacePoint_base
+        if isinstance(x, SurfacePoint_base):
             if x.parent() is not self.domain():
                 raise ValueError("point must be in the domain of this morphism")
             image = self._image_point(x)
@@ -471,7 +471,7 @@ class SurfaceMorphism(Morphism):
             assert image.surface() is self.codomain()
             return image
 
-        raise NotImplementedError(f"cannot map {type(x).__name__} through this morphism yet")
+        raise NotImplementedError(f"cannot map {type(x).__name__} through {self} yet")
 
     def _image_point(self, p):
         r"""

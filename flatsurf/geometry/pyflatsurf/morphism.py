@@ -24,6 +24,13 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         self._pyflatsurf_conversion = pyflatsurf_conversion
         super().__init__(domain, codomain)
 
+    def _image_edge(self, label, edge):
+        half_edge = self._pyflatsurf_conversion((label, edge))
+        face = tuple(self.codomain()._flat_triangulation.face(half_edge))
+        label = type(self.codomain())._normalize_label(face)
+        edge = label.index(half_edge)
+        return (label, edge)
+
     def _image_homology_edge(self, label, edge):
         r"""
         EXAMPLES::
@@ -35,21 +42,35 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
             [(1, (1, 2, 3), 0)]
 
         """
-        half_edge = self._pyflatsurf_conversion((label, edge))
-        face = tuple(self.codomain()._flat_triangulation.face(half_edge))
-        label = type(self.codomain())._normalize_label(face)
-        edge = label.index(half_edge)
-        return [(1, label, edge)]
+        return [(1, *self._image_edge(label, edge))]
 
     def _image_saddle_connection(self, connection):
         from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
         return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection), self.codomain())
+
+    def _image_point(self, point):
+        from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
+        # TODO: Category is unset.
+        return SurfacePoint_pyflatsurf(self._pyflatsurf_conversion(point), self.codomain())
 
 
 class Morphism_from_pyflatsurf(SurfaceMorphism):
     def __init__(self, domain, codomain, pyflatsurf_conversion):
         self._pyflatsurf_conversion = pyflatsurf_conversion
         super().__init__(domain, codomain)
+
+    def _image_half_edge(self, half_edge):
+        half_edge = self._pyflatsurf_conversion((label, edge))
+        face = tuple(self.codomain()._flat_triangulation.face(half_edge))
+        label = type(self.codomain())._normalize_label(face)
+        edge = label.index(half_edge)
+        return (label, edge)
+
+    def _image_point(self, point):
+        from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
+        assert isinstance(point, SurfacePoint_pyflatsurf)
+
+        return self._pyflatsurf_conversion.section(point._point)
 
 
 class Morphism_from_Deformation(SurfaceMorphism):
@@ -92,3 +113,12 @@ class Morphism_from_Deformation(SurfaceMorphism):
                     image.append((1, label, edge))
 
         return image
+
+    def _image_point(self, point):
+        from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
+        assert isinstance(point, SurfacePoint_pyflatsurf)
+
+        image = self._deformation(point._point)
+
+        # TODO: Category is unset.
+        return SurfacePoint_pyflatsurf(image, self.codomain())

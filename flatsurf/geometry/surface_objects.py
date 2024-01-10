@@ -68,7 +68,11 @@ def Singularity(similarity_surface, label, v, limit=None):
     )
 
 
-class SurfacePoint(Element):
+class SurfacePoint_base(Element):
+    pass
+
+
+class SurfacePoint(SurfacePoint_base):
     r"""
     A point on ``surface``.
 

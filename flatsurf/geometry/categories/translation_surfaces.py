@@ -545,7 +545,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: unmarked_point = S(1, 0); unmarked_point  # optional: pyflatsurf  # long time (from above)
                 Vertex 0 of polygon 1
                 sage: erasure(unmarked_point)  # optional: pyflatsurf  # long time (from above)
-
+                Point (-1, 0) of polygon (-3, -7, -2)
 
             TESTS:
 
