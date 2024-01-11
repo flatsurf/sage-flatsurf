@@ -20,9 +20,9 @@ from flatsurf.geometry.morphism import SurfaceMorphism
 
 
 class Morphism_to_pyflatsurf(SurfaceMorphism):
-    def __init__(self, domain, codomain, pyflatsurf_conversion):
+    def __init__(self, parent, pyflatsurf_conversion):
+        super().__init__(parent)
         self._pyflatsurf_conversion = pyflatsurf_conversion
-        super().__init__(domain, codomain)
 
     def _image_edge(self, label, edge):
         half_edge = self._pyflatsurf_conversion((label, edge))
@@ -53,11 +53,13 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         # TODO: Category is unset.
         return SurfacePoint_pyflatsurf(self._pyflatsurf_conversion(point), self.codomain())
 
+    # TODO: Implement __eq__
+
 
 class Morphism_from_pyflatsurf(SurfaceMorphism):
-    def __init__(self, domain, codomain, pyflatsurf_conversion):
+    def __init__(self, parent, pyflatsurf_conversion):
+        super().__init__(parent)
         self._pyflatsurf_conversion = pyflatsurf_conversion
-        super().__init__(domain, codomain)
 
     def _image_half_edge(self, half_edge):
         half_edge = self._pyflatsurf_conversion((label, edge))
@@ -72,11 +74,13 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
         return self._pyflatsurf_conversion.section(point._point)
 
+    # TODO: Implement __eq__
+
 
 class Morphism_from_Deformation(SurfaceMorphism):
-    def __init__(self, domain, codomain, deformation):
+    def __init__(self, parent, deformation):
+        super().__init__(parent)
         self._deformation = deformation
-        super().__init__(domain, codomain)
 
     def _image_homology_edge(self, label, edge):
         # TODO: We should probably mark this method as only being correct in homology.
@@ -122,3 +126,5 @@ class Morphism_from_Deformation(SurfaceMorphism):
 
         # TODO: Category is unset.
         return SurfacePoint_pyflatsurf(image, self.codomain())
+
+    # TODO: Implement __eq__

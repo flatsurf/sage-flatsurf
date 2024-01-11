@@ -646,7 +646,7 @@ class SimilaritySurfaces(SurfaceCategory):
             image = GL2RImageSurface(self, m)
 
             from flatsurf.geometry.morphism import GL2RMorphism
-            return GL2RMorphism(self, image, m)
+            return GL2RMorphism._create_morphism(self, image, m)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
@@ -1791,7 +1791,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 from flatsurf.geometry.morphism import TriangulationMorphism
                 from flatsurf.geometry.lazy import LazyTriangulatedSurface
-                return TriangulationMorphism(self, LazyTriangulatedSurface(self, labels=labels))
+                return TriangulationMorphism._create_morphism(self, LazyTriangulatedSurface(self, labels=labels))
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -2067,7 +2067,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         self, direction=direction, category=self.category()
                     )
                     from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-                    return DelaunayDecompositionMorphism(self, s)
+                    return DelaunayDecompositionMorphism._create_morphism(self, s)
 
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
@@ -2084,7 +2084,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 s.set_immutable()
 
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-                return DelaunayDecompositionMorphism(self, s)
+                return DelaunayDecompositionMorphism._create_morphism(self, s)
 
             def saddle_connections(
                 self,
@@ -2423,7 +2423,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 surface.set_immutable()
 
                 from flatsurf.geometry.morphism import SubdivideMorphism
-                return SubdivideMorphism(self, surface)
+                return SubdivideMorphism._create_morphism(self, surface)
 
             def subdivide_edges(self, parts=2):
                 r"""
@@ -2503,7 +2503,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 surface.set_immutable()
 
                 from flatsurf.geometry.morphism import SubdivideEdgesMorphism
-                return SubdivideEdgesMorphism(self, surface, parts)
+                return SubdivideEdgesMorphism._create_morphism(self, surface, parts)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""

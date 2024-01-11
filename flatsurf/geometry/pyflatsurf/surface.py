@@ -104,7 +104,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         from flatsurf.geometry.pyflatsurf.morphism import Morphism_to_pyflatsurf
 
-        return Morphism_to_pyflatsurf(surface, surface_pyflatsurf, to_pyflatsurf)
+        return Morphism_to_pyflatsurf._create_morphism(surface, surface_pyflatsurf, to_pyflatsurf)
 
     def __repr__(self):
         r"""

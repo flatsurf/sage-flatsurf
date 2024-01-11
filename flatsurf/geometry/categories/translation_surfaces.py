@@ -569,7 +569,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if all(a != 1 for a in self.angles()):
                 # no 2π angle
                 from flatsurf.geometry.morphism import IdentityMorphism
-                return IdentityMorphism(self)
+                return IdentityMorphism._create_morphism(self)
 
             # Triangulate the surface: to_pyflatsurf maps self to a
             # triangulated libflatsurf surface (later called delaunay0_domain.)
@@ -603,13 +603,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             codomain_pyflatsurf = Surface_pyflatsurf(delaunay1_codomain)
 
             from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
-            pyflatsurf_morphism = Morphism_from_Deformation(to_pyflatsurf.codomain(), codomain_pyflatsurf, delaunay1.value() * elimination * delaunay0.value())
+            pyflatsurf_morphism = Morphism_from_Deformation._create_morphism(to_pyflatsurf.codomain(), codomain_pyflatsurf, delaunay1.value() * elimination * delaunay0.value())
 
             from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             from_pyflatsurf = FlatTriangulationConversion.from_pyflatsurf(delaunay1_codomain)
 
             from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_pyflatsurf
-            from_pyflatsurf = Morphism_from_pyflatsurf(codomain_pyflatsurf, from_pyflatsurf.domain(), from_pyflatsurf)
+            from_pyflatsurf = Morphism_from_pyflatsurf._create_morphism(codomain_pyflatsurf, from_pyflatsurf.domain(), from_pyflatsurf)
 
             return from_pyflatsurf * pyflatsurf_morphism * to_pyflatsurf
 

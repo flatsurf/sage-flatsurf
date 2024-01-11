@@ -1228,7 +1228,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             self.set_vertex_zero(label, vertex_zero[label], in_place=True) 
 
         from flatsurf.geometry.morphism import PolygonStandardizationMorphism
-        return PolygonStandardizationMorphism(None, self, vertex_zero)
+        return PolygonStandardizationMorphism._create_morphism(None, self, vertex_zero)
 
 
 class MutableOrientedSimilaritySurface(
@@ -1728,7 +1728,7 @@ class MutableOrientedSimilaritySurface(
             self.replace_polygon(label, m * self.polygon(label))
 
         from flatsurf.geometry.morphism import GL2RMorphism
-        return GL2RMorphism(None, self, m)
+        return GL2RMorphism._create_morphism(None, self, m)
 
     def opposite_edge(self, label, edge=None):
         r"""
@@ -1859,7 +1859,7 @@ class MutableOrientedSimilaritySurface(
 
         # TODO: Use the homset to create the morphism so we get the category right. (Here and everywhere else we are constructing morphisms.)
         from flatsurf.geometry.morphism import RelabelingMorphism
-        return RelabelingMorphism(self, self, relabeling)
+        return RelabelingMorphism._create_morphism(self, self, relabeling)
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
@@ -2115,7 +2115,7 @@ class MutableOrientedSimilaritySurface(
             self.refine_polygon(label, *MutableOrientedSimilaritySurface._triangulate(self, label))
 
         from flatsurf.geometry.morphism import TriangulationMorphism
-        return TriangulationMorphism(None, self)
+        return TriangulationMorphism._create_morphism(None, self)
 
     @staticmethod
     def _triangulate(surface, label):
@@ -2281,7 +2281,7 @@ class MutableOrientedSimilaritySurface(
                 break
 
         from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-        return DelaunayDecompositionMorphism(self, s)
+        return DelaunayDecompositionMorphism._create_morphism(self, s)
 
     def cmp(self, s2, limit=None):
         r"""
