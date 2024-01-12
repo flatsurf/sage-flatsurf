@@ -501,7 +501,7 @@ class SaddleConnection(SageObject):
             sage: S = translation_surfaces.square_torus()
             sage: connection = S.saddle_connections(13)[-1]
             sage: connection.homology()
-            3*B[(0, 0)] - B[(0, 1)]
+            3*B[(0, 0)] - 2*B[(0, 1)]
 
         ::
 

@@ -2088,40 +2088,93 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
                 return DelaunayDecompositionMorphism._create_morphism(self, s)
 
+            def _saddle_connections_unbounded(self, initial_label, initial_vertex):
+                def squared_length(v):
+                    return v[0]**2 + v[1]**2
+
+                # Enumerate all saddle connections by length
+                connections = set()
+                shortest_edge = min(squared_length(self.polygon(label).edge(edge)) for (label, edge) in self.edges())
+
+                length_bound = shortest_edge
+                while True:
+                    more_connections = [connection for connection in self.saddle_connections(squared_length_bound=length_bound, initial_label=initial_label, initial_vertex=initial_vertex) if connection not in connections]
+                    for connection in sorted(more_connections, key=lambda connection: squared_length(connection.holonomy())):
+                        connections.add(connection)
+                        yield connection
+
+                    length_bound *= 2
+
+
             def saddle_connections(
                 self,
-                squared_length_bound,
+                squared_length_bound=None,
                 initial_label=None,
                 initial_vertex=None,
-                sc_list=None,
-                check=False,
             ):
                 r"""
-                Returns a list of saddle connections on the surface whose length squared is less than or equal to squared_length_bound.
-                The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts.
+                Return the saddle connections on this surface whose length
+                squared is less than or equal to ``squared_length_bound``
+                (ordered by length.)
 
-                If initial_label and initial_vertex are not provided, we return all saddle connections satisfying the bound condition.
+                The length of a saddle connection is measured using holonomy
+                from polygon in which the trajectory starts.
 
-                If initial_label and initial_vertex are provided, it only provides saddle connections emanating from the corresponding
-                vertex of a polygon. If only initial_label is provided, the added saddle connections will only emanate from the
+                If no ``squared_length_bound`` is given, all saddle connections
+                are enumerated (sorted by length.)
+
+                If ``initial_label`` and ``initial_vertex`` are provided, only
+                saddle connections are returned which emanate from the
+                corresponding vertex of a polygon. If only ``initial_label`` is
+                provided, the saddle connections will only emanate from the
                 corresponding polygon.
 
-                If sc_list is provided the found saddle connections are appended to this list and the resulting list is returned.
+                EXAMPLES:
 
-                If check==True it uses the checks in the SaddleConnection class to sanity check our results.
+                Return the connections of length up to square root of 13::
 
-                EXAMPLES::
                     sage: from flatsurf import translation_surfaces
-                    sage: s = translation_surfaces.square_torus()
-                    sage: sc_list = s.saddle_connections(13, check=True)
-                    sage: len(sc_list)
-                    32
-                """
-                if squared_length_bound <= 0:
-                    raise ValueError
+                    sage: S = translation_surfaces.square_torus()
+                    sage: connections = S.saddle_connections(5)
+                    sage: connections
+                    [Saddle connection in direction (1, 0) with start data (0, 0) and end data (0, 2),
+                     Saddle connection in direction (0, 1) with start data (0, 1) and end data (0, 3),
+                     Saddle connection in direction (-1, 0) with start data (0, 2) and end data (0, 0),
+                     Saddle connection in direction (0, -1) with start data (0, 3) and end data (0, 1),
+                     Saddle connection in direction (1, 1) with start data (0, 0) and end data (0, 2),
+                     Saddle connection in direction (-1, 1) with start data (0, 1) and end data (0, 3),
+                     Saddle connection in direction (-1, -1) with start data (0, 2) and end data (0, 0),
+                     Saddle connection in direction (1, -1) with start data (0, 3) and end data (0, 1),
+                     Saddle connection in direction (1, 1/2) with start data (0, 0) and end data (0, 2),
+                     Saddle connection in direction (1/2, 1) with start data (0, 0) and end data (0, 2),
+                     Saddle connection in direction (-1/2, 1) with start data (0, 1) and end data (0, 3),
+                     Saddle connection in direction (-1, 1/2) with start data (0, 1) and end data (0, 3),
+                     Saddle connection in direction (-1, -1/2) with start data (0, 2) and end data (0, 0),
+                     Saddle connection in direction (-1/2, -1) with start data (0, 2) and end data (0, 0),
+                     Saddle connection in direction (1/2, -1) with start data (0, 3) and end data (0, 1),
+                     Saddle connection in direction (1, -1/2) with start data (0, 3) and end data (0, 1)]
 
-                if sc_list is None:
-                    sc_list = []
+                We get the same result if we take the first 16 saddle
+                connections without a length bound::
+
+                    sage: from itertools import islice
+                    sage: set(connections) == set(islice(S.saddle_connections(), 16))
+                    True
+
+                While enumerating saddle connections without a bound is not
+                asymptotically slower than enumerating with a bound, in the
+                current implementation it is quite a bit slower in practice in
+                particular if the bound is small.
+
+                """
+                if squared_length_bound is None:
+                    return self._saddle_connections_unbounded(initial_label=initial_label, initial_vertex=initial_vertex)
+
+                if squared_length_bound < 0:
+                    raise ValueError("length bound must be non-negative")
+
+                connections = []
+
                 if initial_label is None:
                     if not self.is_finite_type():
                         raise NotImplementedError
@@ -2130,133 +2183,136 @@ class SimilaritySurfaces(SurfaceCategory):
                             "when initial_label is not provided, then initial_vertex must not be provided either"
                         )
                     for label in self.labels():
-                        self.saddle_connections(
-                            squared_length_bound, initial_label=label, sc_list=sc_list
-                        )
-                    return sc_list
-                if initial_vertex is None:
+                        connections.extend(self.saddle_connections(
+                            squared_length_bound, initial_label=label
+                        ))
+                elif initial_vertex is None:
                     for vertex in range(len(self.polygon(initial_label).vertices())):
-                        self.saddle_connections(
+                        connections.extend(self.saddle_connections(
                             squared_length_bound,
                             initial_label=initial_label,
                             initial_vertex=vertex,
-                            sc_list=sc_list,
-                        )
-                    return sc_list
+                        ))
+                else:
+                    # Now we have a specified initial_label and initial_vertex
+                    from flatsurf.geometry.similarity import SimilarityGroup
 
-                # Now we have a specified initial_label and initial_vertex
-                from flatsurf.geometry.similarity import SimilarityGroup
+                    SG = SimilarityGroup(self.base_ring())
+                    start_data = (initial_label, initial_vertex)
+                    from flatsurf.geometry.circle import Circle
 
-                SG = SimilarityGroup(self.base_ring())
-                start_data = (initial_label, initial_vertex)
-                from flatsurf.geometry.circle import Circle
-
-                circle = Circle(
-                    (0, 0),
-                    squared_length_bound,
-                    base_ring=self.base_ring(),
-                )
-                p = self.polygon(initial_label)
-                v = p.vertex(initial_vertex)
-                last_sim = SG(-v[0], -v[1])
-
-                from flatsurf.geometry.saddle_connection import SaddleConnection
-
-                # First check the edge eminating rightward from the start_vertex.
-                e = p.edge(initial_vertex)
-                if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
-
-                    sc_list.append(SaddleConnection(self, start_data, e))
-
-                # Represents the bounds of the beam of trajectories we are sending out.
-                wedge = (
-                    last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
-                    last_sim(
-                        p.vertex(
-                            (initial_vertex + len(p.vertices()) - 1) % len(p.vertices())
-                        )
-                    ),
-                )
-
-                # This will collect the data we need for a depth first search.
-                chain = [
-                    (
-                        last_sim,
-                        initial_label,
-                        wedge,
-                        [
-                            (initial_vertex + len(p.vertices()) - i) % len(p.vertices())
-                            for i in range(2, len(p.vertices()))
-                        ],
+                    circle = Circle(
+                        (0, 0),
+                        squared_length_bound,
+                        base_ring=self.base_ring(),
                     )
-                ]
+                    p = self.polygon(initial_label)
+                    v = p.vertex(initial_vertex)
+                    last_sim = SG(-v[0], -v[1])
 
-                while len(chain) > 0:
-                    # Should verts really be edges?
-                    sim, label, wedge, verts = chain[-1]
-                    if len(verts) == 0:
-                        chain.pop()
-                        continue
-                    vert = verts.pop()
-                    p = self.polygon(label)
-                    # First check the vertex
-                    vert_position = sim(p.vertex(vert))
-                    from flatsurf.geometry.euclidean import ccw
+                    from flatsurf.geometry.saddle_connection import SaddleConnection
 
-                    if (
-                        ccw(wedge[0], vert_position) > 0
-                        and ccw(vert_position, wedge[1]) > 0
-                        and vert_position[0] ** 2 + vert_position[1] ** 2
-                        <= squared_length_bound
-                    ):
-                        sc_list.append(
-                            SaddleConnection(
-                                self,
-                                start_data,
-                                vert_position,
-                                end_data=(label, vert),
-                                end_direction=~sim.derivative() * -vert_position,
-                                holonomy=vert_position,
-                                end_holonomy=~sim.derivative() * -vert_position,
-                                check=check,
+                    # First check the edge eminating rightward from the start_vertex.
+                    e = p.edge(initial_vertex)
+                    if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
+
+                        connections.append(SaddleConnection(self, start_data, e))
+
+                    # Represents the bounds of the beam of trajectories we are sending out.
+                    wedge = (
+                        last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
+                        last_sim(
+                            p.vertex(
+                                (initial_vertex + len(p.vertices()) - 1) % len(p.vertices())
                             )
+                        ),
+                    )
+
+                    # This will collect the data we need for a depth first search.
+                    chain = [
+                        (
+                            last_sim,
+                            initial_label,
+                            wedge,
+                            [
+                                (initial_vertex + len(p.vertices()) - i) % len(p.vertices())
+                                for i in range(2, len(p.vertices()))
+                            ],
                         )
-                    # Now check if we should develop across the edge
-                    vert_position2 = sim(p.vertex((vert + 1) % len(p.vertices())))
-                    if (
-                        ccw(vert_position, vert_position2) > 0
-                        and ccw(wedge[0], vert_position2) > 0
-                        and ccw(vert_position, wedge[1]) > 0
-                        and circle.line_segment_position(vert_position, vert_position2)
-                        == 1
-                    ):
-                        if ccw(wedge[0], vert_position) > 0:
-                            # First in new_wedge should be vert_position
-                            if ccw(vert_position2, wedge[1]) > 0:
-                                new_wedge = (vert_position, vert_position2)
-                            else:
-                                new_wedge = (vert_position, wedge[1])
-                        else:
-                            if ccw(vert_position2, wedge[1]) > 0:
-                                new_wedge = (wedge[0], vert_position2)
-                            else:
-                                new_wedge = wedge
-                        new_label, new_edge = self.opposite_edge(label, vert)
-                        new_sim = sim * ~self.edge_transformation(label, vert)
-                        p = self.polygon(new_label)
-                        chain.append(
-                            (
-                                new_sim,
-                                new_label,
-                                new_wedge,
-                                [
-                                    (new_edge + len(p.vertices()) - i)
-                                    % len(p.vertices())
-                                    for i in range(1, len(p.vertices()))
-                                ],
+                    ]
+
+                    while len(chain) > 0:
+                        # Should verts really be edges?
+                        sim, label, wedge, verts = chain[-1]
+                        if len(verts) == 0:
+                            chain.pop()
+                            continue
+                        vert = verts.pop()
+                        p = self.polygon(label)
+                        # First check the vertex
+                        vert_position = sim(p.vertex(vert))
+                        from flatsurf.geometry.euclidean import ccw
+
+                        if (
+                            ccw(wedge[0], vert_position) > 0
+                            and ccw(vert_position, wedge[1]) > 0
+                            and vert_position[0] ** 2 + vert_position[1] ** 2
+                            <= squared_length_bound
+                        ):
+                            connections.append(
+                                SaddleConnection(
+                                    self,
+                                    start_data,
+                                    vert_position,
+                                    end_data=(label, vert),
+                                    end_direction=~sim.derivative() * -vert_position,
+                                    holonomy=vert_position,
+                                    end_holonomy=~sim.derivative() * -vert_position,
+                                )
                             )
-                        )
-                return sc_list
+                        # Now check if we should develop across the edge
+                        vert_position2 = sim(p.vertex((vert + 1) % len(p.vertices())))
+                        if (
+                            ccw(vert_position, vert_position2) > 0
+                            and ccw(wedge[0], vert_position2) > 0
+                            and ccw(vert_position, wedge[1]) > 0
+                            and circle.line_segment_position(vert_position, vert_position2)
+                            == 1
+                        ):
+                            if ccw(wedge[0], vert_position) > 0:
+                                # First in new_wedge should be vert_position
+                                if ccw(vert_position2, wedge[1]) > 0:
+                                    new_wedge = (vert_position, vert_position2)
+                                else:
+                                    new_wedge = (vert_position, wedge[1])
+                            else:
+                                if ccw(vert_position2, wedge[1]) > 0:
+                                    new_wedge = (wedge[0], vert_position2)
+                                else:
+                                    new_wedge = wedge
+                            new_label, new_edge = self.opposite_edge(label, vert)
+                            new_sim = sim * ~self.edge_transformation(label, vert)
+                            p = self.polygon(new_label)
+                            chain.append(
+                                (
+                                    new_sim,
+                                    new_label,
+                                    new_wedge,
+                                    [
+                                        (new_edge + len(p.vertices()) - i)
+                                        % len(p.vertices())
+                                        for i in range(1, len(p.vertices()))
+                                    ],
+                                )
+                            )
+
+                def squared_length(connection):
+                    holonomy = connection.holonomy()
+                    return holonomy[0]**2 + holonomy[1]**2
+
+                connections.sort(key=squared_length)
+
+                return connections
 
             def ramified_cover(self, d, data):
                 r"""

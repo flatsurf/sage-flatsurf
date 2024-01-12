@@ -16,6 +16,8 @@
 
 * Changed ``relabel()`` to accept a dict or a callable as the parameter ``relabeling`` (before this parameter had to be a dict and was called ``relabeling_map``.) Also, this method now returns a morphism and not a tuple containing a success flag.
 
+* Changed ``squared_length_bound`` parameter of ``saddle_connections``. The parameter is now optional. If no parameter is given, all saddle connections are enumerated (by length.)
+
 * Renamed module ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``.
 
 * Changed ``triangulate()`` to return a morphism to a triangulated surface (instead of just the triangulated surface.)
@@ -38,11 +40,15 @@
 
 * Removed ability to ``apply_matrix(in_place=True)`` with matrix with negative determinant. If you rely on this feature for some reason, you can use ``MutableOrientedSimilaritySurface.from_surface(apply_matrix(in_place=False))`` instead.
 
+* Removed the ``sc_list`` and ``check`` parameters of ``saddle_connections()``.
+
 **Fixed:**
 
 * Fixed ``flow_to_exit()`` to also work for polygons that are not strictly convex. (#258)
 
 * Fixed ``saddle_connections()`` to not throw a name error anymore in some edge cases. (#255)
+
+* Fixed creating surface points at vertices of disconnected surfaces.
 
 **Performance:**
 
