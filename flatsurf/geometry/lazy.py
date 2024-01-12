@@ -16,7 +16,9 @@ by invoking methods on the underlying surfaces::
     Delaunay triangulation of The infinite staircase
 
     sage: S.delaunay_decomposition()
-    Delaunay cell decomposition of The infinite staircase
+    Delaunay Decomposition morphism:
+      From: The infinite staircase
+      To:   Delaunay cell decomposition of The infinite staircase
 
 """
 # ********************************************************************

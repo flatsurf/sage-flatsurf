@@ -739,9 +739,20 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         doctest:warning
                         ...
                         UserWarning: canonicalize_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use canonicalize() instead
-                        Generic morphism:
+                        Composite morphism:
                           From: Translation Surface in H_3(4) built from 2 squares and a regular octagon
                           To:   Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                          Defn:   Delaunay Decomposition morphism:
+                                  From: Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                                  To:   Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                                then
+                                  Polygon Standardization morphism:
+                                  From: Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                                  To:   Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                                then
+                                  Relabeling morphism:
+                                  From: Translation Surface in H_3(4) built from 2 squares and a regular octagon
+                                  To:   Translation Surface in H_3(4) built from 2 squares and a regular octagon
 
                     """
                     import warnings

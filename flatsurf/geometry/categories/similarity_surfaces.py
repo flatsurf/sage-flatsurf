@@ -1735,7 +1735,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     doctest:warning
                     ...
                     UserWarning: triangulation_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use triangulate() instead
-                    Triangulation of Translation Surface in H_2(2) built from 3 squares
+                    Triangulation morphism:
+                      From: Translation Surface in H_2(2) built from 3 squares
+                      To:   Triangulation of Translation Surface in H_2(2) built from 3 squares
 
                 """
                 import warnings

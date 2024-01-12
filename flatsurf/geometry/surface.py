@@ -1219,7 +1219,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             S = MutableOrientedSimilaritySurface.from_surface(self)
             morphism = S.standardize_polygons(in_place=True)
             S.set_immutable()
-            return morphism.change(codomain=S)
+            return morphism.change(domain=self, codomain=S)
 
         vertex_zero = {}
         for label in self.labels():

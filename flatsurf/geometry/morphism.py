@@ -34,9 +34,16 @@ We can use morphisms to follow a surface through a retriangulation process::
     sage: T = morphism.codomain()
 
     sage: morphism
-    Generic morphism:
+    Composite morphism:
       From: Translation Surface in H_2(2) built from a regular octagon
       To:   Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
+      Defn:   Edge-Subdivision morphism:
+              From: Translation Surface in H_2(2) built from a regular octagon
+              To:   Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
+            then
+              Subdivision morphism:
+              From: Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
+              To:   Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
 
 We can then map points through the morphism::
 
@@ -283,7 +290,7 @@ class SurfaceMorphismSpace(Homset):
 
         sage: homset = identity.parent()
         sage: homset
-        Surface Morphisms from Translation Surface in H_2(2) built from 3 squares to Translation Surface in H_2(2) built from 3 squares
+        Surface Endomorphisms of Translation Surface in H_2(2) built from 3 squares
 
     TESTS::
 
@@ -310,6 +317,8 @@ class SurfaceMorphismSpace(Homset):
         return super().identity()
 
     def __repr__(self):
+        if self.domain() is self.codomain():
+            return f"Surface Endomorphisms of {self.domain()}"
         return f"Surface Morphisms from {self.domain()} to {self.codomain()}"
 
     # We fail tests for associativity because we do not actually decide whether
@@ -327,9 +336,6 @@ class SurfaceMorphismSpace(Homset):
         if not isinstance(other, SurfaceMorphismSpace):
             return False
         return self.domain() == other.domain() and self.codomain() == other.codomain() and self.category() == other.category()
-
-    def __ne__(self, other):
-        return not self == other
 
     def __hash__(self):
         return hash((self.domain(), self.codomain()))
@@ -377,6 +383,20 @@ class SurfaceMorphism(Morphism):
 
     @classmethod
     def _parent(cls, domain, codomain):
+        r"""
+        Return the homset containing the surface morphisms from ``domain`` to
+        ``codomain``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+
+            sage: from flatsurf.geometry.morphism import SurfaceMorphism
+            sage: SurfaceMorphism._parent(S, S)
+            Surface Endomorphisms of Translation Surface in H_1(0) built from a square
+
+        """
         if domain is None:
             domain = UnknownSurface(UnknownRing())
         elif domain.is_mutable():
@@ -391,6 +411,27 @@ class SurfaceMorphism(Morphism):
 
     @classmethod
     def _create_morphism(cls, domain, codomain, *args, **kwargs):
+        r"""
+        Return a morphism of this type from ``domain`` to ``codomain``.
+
+        Any additional parameters are passed on the to the constructor of this
+        type.
+
+        .. NOTE::
+
+            All morphisms must be created through this method so that they have
+            their parent and category set correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+
+            sage: from flatsurf.geometry.morphism import IdentityMorphism
+            sage: IdentityMorphism._create_morphism(S)
+            Identity on Translation Surface in H_1(0) built from a square
+
+        """
         parent = cls._parent(domain, codomain)
         return parent.__make_element_class__(cls)(parent, *args, **kwargs)
 
@@ -449,7 +490,7 @@ class SurfaceMorphism(Morphism):
             sage: S = translation_surfaces.square_torus()
             sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
             sage: morphism.section()
-            Generic morphism:
+            Section of a Linear morphism:
               From: Translation Surface in H_1(0) built from a rectangle
               To:   Translation Surface in H_1(0) built from a square
 
@@ -577,21 +618,6 @@ class SurfaceMorphism(Morphism):
             ...
             ValueError: homology class must be defined over the domain of this morphism
 
-        The image of a cohomology class::
-
-            sage: from flatsurf import SimplicialCohomology
-            sage: H = SimplicialCohomology(S)
-            sage: a, b = H.gens()
-            sage: a
-            {B[(0, 1)]: 1}
-            sage: morphism(a)
-            {B[(0, 1)]: 1}
-
-            sage: morphism(_)
-            Traceback (most recent call last):
-            ...
-            ValueError: cohomology class must be defined over the domain of this morphism
-
         The image of a tangent vector::
 
             sage: t = S.tangent_vector(0, (0, 0), (1, 1))
@@ -619,14 +645,6 @@ class SurfaceMorphism(Morphism):
             if x.parent().surface() is not self.domain():
                 raise ValueError("homology class must be defined over the domain of this morphism")
             image = self._image_homology(x)
-            assert image.parent().surface() is self.codomain()
-            return image
-
-        from flatsurf.geometry.cohomology import SimplicialCohomologyClass
-        if isinstance(x, SimplicialCohomologyClass):
-            if x.parent().surface() is not self.domain():
-                raise ValueError("cohomology class must be defined over the domain of this morphism")
-            image = self._image_cohomology(x)
             assert image.parent().surface() is self.codomain()
             return image
 
@@ -670,7 +688,7 @@ class SurfaceMorphism(Morphism):
 
         Not all morphisms are meaningful on the level of points::
 
-            TODO: Add an example of such a morphism.
+            # TODO: Add an example of such a morphism.
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a point yet")
@@ -734,7 +752,7 @@ class SurfaceMorphism(Morphism):
 
         Not all morphisms are meaningful on the level of tangent vectors::
 
-            TODO: Add an example of such a morphism
+            # TODO: Add an example of such a morphism
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a tangent vector yet")
@@ -769,7 +787,7 @@ class SurfaceMorphism(Morphism):
 
         Not all morphisms are meaningful on the level of homology::
 
-            TODO: Add an example of such a morphism
+            # TODO: Add an example of such a morphism
 
         """
         from flatsurf.geometry.homology import SimplicialHomology
@@ -898,30 +916,35 @@ class SurfaceMorphism(Morphism):
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of an edge yet")
 
-    def _image_cohomology(self, f):
-        # TODO: docstring
-        # TODO: Is this really a meaningful operation or should we restrict to computing sections of cohomology? Here and in __call__.
-        from sage.all import ZZ, matrix
-
-        from flatsurf.geometry.homology import SimplicialHomology
-
-        domain_homology = SimplicialHomology(self.domain())
-        codomain_homology = SimplicialHomology(self.codomain())
-
-        M = matrix(ZZ, [
-            [domain_homology_gen_image.coefficient(codomain_homology_gen) for codomain_homology_gen in codomain_homology.gens()]
-            for domain_homology_gen_image in [self(domain_homology_gen) for domain_homology_gen in domain_homology.gens()]
-        ])
-
-        from sage.all import vector
-        values = M.solve_right(vector([f(gen) for gen in domain_homology.gens()]))
-
-        from flatsurf.geometry.cohomology import SimplicialCohomology
-        codomain_cohomology = SimplicialCohomology(self.codomain())
-        return codomain_cohomology({gen: value for (gen, value) in zip(codomain_homology.gens(), values)})
-
     def __mul__(self, other):
-        # TODO: docstring
+        r"""
+        Return the composition of this morphism and ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+            sage: g = f.codomain().apply_matrix(matrix([[1/2, 0], [0, 1]]), in_place=False)
+            sage: g * f
+            Composite morphism:
+              From: Translation Surface in H_1(0) built from a square
+              To:   Translation Surface in H_1(0) built from a square
+              Defn:   Linear morphism:
+                      From: Translation Surface in H_1(0) built from a square
+                      To:   Translation Surface in H_1(0) built from a rectangle
+                      Defn: [2 0]
+                            [0 1]
+                    then
+                      Linear morphism:
+                      From: Translation Surface in H_1(0) built from a rectangle
+                      To:   Translation Surface in H_1(0) built from a square
+                      Defn: [1/2   0]
+                            [  0   1]
+
+        """
+        if other.codomain() is not self.domain():
+            raise ValueError(f"morphisms cannot be composed because domain of {self} is not compatible with codomain of {other}")
         return CompositionMorphism._create_morphism(self, other)
 
     def push_vector_forward(self, tangent_vector):
@@ -1037,6 +1060,9 @@ class SectionMorphism(SurfaceMorphism):
 
         return self._morphism == other._morphism
 
+    def _repr_type(self):
+        return f"Section of a {self._morphism._repr_type()}"
+
 
 class CompositionMorphism(SurfaceMorphism):
     # TODO: docstring
@@ -1044,31 +1070,50 @@ class CompositionMorphism(SurfaceMorphism):
         # TODO: docstring
         super().__init__(parent, category=category)
 
-        self._lhs = lhs
-        self._rhs = rhs
+        self._morphisms = []
+        for morphism in [rhs, lhs]:
+            if isinstance(morphism, CompositionMorphism):
+                self._morphisms.extend(morphism._morphisms)
+            else:
+                self._morphisms.append(morphism)
 
     @classmethod
     def _create_morphism(cls, lhs, rhs):
         return super()._create_morphism(rhs.domain(), lhs.codomain(), lhs, rhs)
 
     def __call__(self, x):
-        # TODO: docstring
-        return self._lhs(self._rhs(x))
+        for morphism in self._morphisms:
+            x = morphism(x)
+        return x
 
     def _image_homology_matrix(self):
-        return self._lhs._image_homology_matrix() * self._rhs._image_homology_matrix()
+        from sage.all import prod
+        return prod(morphism._image_homology_matrix() for morphism in self._morphisms[::-1])
 
     def _image_homology_edge(self, label, edge):
-        return [
-            (c * d, ll, ee)
-            for (d, ll, ee) in self._lhs._image_homology_edge(l, e)
-            for (c, l, e) in self._rhs._image_homology_edge(label, edge)]
+        image = [(1, label, edge)]
+        for morphism in self._morphisms:
+            image = [
+                (c * d, ll, ee)
+                for (d, ll, ee) in morphism._image_homology_edge(l, e)
+                for (c, l, e) in image]
+
+        return image
 
     def __eq__(self, other):
         if not isinstance(other, CompositionMorphism):
             return False
 
-        return self._lhs == other._lhs and self._rhs == other._rhs
+        return self._parent == other._parent and self._morphisms == other._morphisms
+
+    def __hash__(self):
+        return hash(tuple(self._morphisms))
+
+    def _repr_type(self):
+        return f"Composite"
+
+    def _repr_defn(self):
+        return "  " + "\nthen\n  ".join(str(morphism) for morphism in self._morphisms)
 
 
 class SubdivideMorphism(SurfaceMorphism):
@@ -1129,6 +1174,9 @@ class SubdivideMorphism(SurfaceMorphism):
             return False
 
         return self.domain() == other.domain() and self.codomain() == other.codomain()
+
+    def _repr_type(self):
+        return "Subdivision"
 
 
 class SubdivideEdgesMorphism(SurfaceMorphism):
@@ -1191,120 +1239,8 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
         return self.parent() == other.parent() and self._parts == other._parts
 
-
-# TODO: Unused?
-class TrianglesFlipMorphism(SurfaceMorphism):
-    # TODO: docstring
-    def __init__(self, parent, flip_sequence, category=None):
-        # TODO: docstring
-        super().__init__(parent, category=category)
-        assert not self.domain().is_mutable()
-        self._flip_sequence = flip_sequence
-
-    @cached_method
-    def _flip_morphism(self):
-        domains = [self.domain()]
-
-        for flip in self._flip_sequence:
-            from flatsurf.geometry.surface import Surface_dict
-            codomain = Surface_dict(surface=domains[-1], mutable=True)
-            codomain.flip(*flip)
-            codomain.set_immutable()
-            domains.append(codomain)
-
-        assert domains[-1] == self.codomain()
-        domains.pop()
-        domains.append(self.codomain())
-
-        # TODO: Get rid of this trivial step.
-        morphism = IdentityMorphism._create_morphism(self.domain())
-        for i, flip in enumerate(self._flip_sequence):
-            morphism = TriangleFlipMorphism._create_morphism(domains[i], domains[i + 1], flip) * morphism
-
-        return morphism
-
-    def _image_homology(self,  γ):
-        return self._flip_morphism()._image_homology(γ)
-
-    def _image_homology_matrix(self):
-        return self._flip_morphism()._image_homology_matrix()
-
-    def _image_point(self, p):
-        return self._flip_morphism()(p)
-
-    def __eq__(self, other):
-        if not isinstance(other, TrianglesFlipMorphism):
-            return False
-
-        return self.parent() == other.parent() and self._flip_sequence == other._flip_sequence
-
-
-# TODO: unused?
-class TriangleFlipMorphism(SurfaceMorphism):
-    # TODO: docstring
-    def __init__(self, parent, flip, category=None):
-        # TODO: docstring
-        super().__init__(parent, category=category)
-        self._flip = flip
-
-    def _image_homology_edge(self, label, edge):
-        opposite_flip = self.domain().opposite_edge(*self._flip)
-
-        def find_in_codomain(vector):
-            candidates = [(l, e) for l in [self._flip[0], opposite_flip[0]] for e in [0, 1, 2]]
-            candidates = [(l, e) for (l, e) in candidates if self.codomain().polygon(l).edge(e) == vector]
-            assert candidates
-            if len(candidates) > 1:
-                raise NotImplementedError("cannot break ties on such a non-translation surface yet")
-
-            return candidates[0]
-
-        if label == self._flip[0]:
-            if edge == self._flip[1]:
-                return self._image_homology_edge(*self.domain().opposite_edge(label, (edge + 1) % 3)) + self._image_homology_edge(*self.domain().opposite_edge(label, (edge + 2) % 3))
-
-            return [find_in_codomain(self.domain().polygon(label).edge(edge))]
-        if label == opposite_flip[0]:
-            if edge == opposite_flip[1]:
-                return self._image_homology_edge(*self.domain().opposite_edge(label, (edge + 1) % 3)) + self._image_homology_edge(*self.domain().opposite_edge(label, (edge + 2) % 3))
-
-            return [(1, *find_in_codomain(self.domain().polygon(label).edge(edge)))]
-
-        return [(1, label, edge)]
-
-    def _image_point(self, p):
-        # TODO: This is a dumb way to do this (and wrong for non-translation surfaces?)
-
-        from flatsurf.geometry.surface_objects import SurfacePoint
-        affected = {self._flip[0], self.domain().opposite_edge(*self._flip)[0]}
-
-        for label in p.labels():
-            if label not in affected:
-                return SurfacePoint(self.codomain(), label, next(iter(p.coordinates(label))))
-
-        for label in p.labels():
-            polygon = self.domain().polygon(label)
-            for edge in range(polygon.num_edges()):
-                cross_label, cross_edge = self.domain().opposite_edge(label, edge)
-                if cross_label in affected:
-                    continue
-
-                Δ = next(iter(p.coordinates(label))) - polygon.vertex(edge)
-                recross_label, recross_edge = self.codomain().opposite_edge(cross_label, cross_edge)
-                recross_polygon = self.codomain().polygon(recross_label)
-                recross_position = recross_polygon.vertex(recross_edge) + Δ
-                if not recross_polygon.get_point_position(recross_position).is_inside():
-                    continue
-
-                return SurfacePoint(self.codomain(), recross_label, recross_position)
-
-        raise NotImplementedError
-
-    def __eq__(self, other):
-        if not isinstance(other, TriangleFlipMorphism):
-            return False
-
-        return self.parent() == other.parent() and self._flip == other._flip
+    def _repr_type(self):
+        return "Edge-Subdivision"
 
 
 class TriangulationMorphism(SurfaceMorphism):
@@ -1318,7 +1254,9 @@ class TriangulationMorphism(SurfaceMorphism):
         sage: G = SymmetricGroup(4)
         sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
         sage: S.triangulate()
-        Triangulation of Origami defined by r=(1,2,3,4) and u=(1,4,2,3)
+        Triangulation morphism:
+          From: Origami defined by r=(1,2,3,4) and u=(1,4,2,3)
+          To:   Triangulation of Origami defined by r=(1,2,3,4) and u=(1,4,2,3)
 
     """
 
@@ -1385,8 +1323,8 @@ class TriangulationMorphism(SurfaceMorphism):
 
         assert False, "point must be in one of the polygons that split up the original polygon"
 
-    def _repr_(self):
-        return f"Triangulation of {self.domain()}"
+    def _repr_type(self):
+        return f"Triangulation"
 
     def __eq__(self, other):
         if not isinstance(other, TriangulationMorphism):
@@ -1396,15 +1334,14 @@ class TriangulationMorphism(SurfaceMorphism):
 
 
 class DelaunayDecompositionMorphism(SurfaceMorphism):
-    def _repr_(self):
-        # TODO: docstring
-        return f"Delaunay cell decomposition of {self.domain()}"
-
     def __eq__(self, other):
         if not isinstance(other, DelaunayDecompositionMorphism):
             return False
 
         return self.parent() == other.parent()
+
+    def _repr_type(self):
+        return f"Delaunay Decomposition"
 
 
 class GL2RMorphism(SurfaceMorphism):
@@ -1450,6 +1387,12 @@ class GL2RMorphism(SurfaceMorphism):
 
         return self.parent() == other.parent() and self._matrix == other._matrix
 
+    def _repr_type(self):
+        return f"Linear"
+
+    def _repr_defn(self):
+        return repr(self._matrix)
+
 
 class PolygonStandardizationMorphism(SurfaceMorphism):
     def __init__(self, parent, vertex_zero, category=None):
@@ -1465,6 +1408,9 @@ class PolygonStandardizationMorphism(SurfaceMorphism):
             return False
 
         return self.parent() == other.parent() and self._vertex_zero == other._vertex_zero
+
+    def _repr_type(self):
+        return "Polygon Standardization"
 
 
 class RelabelingMorphism(SurfaceMorphism):
@@ -1482,3 +1428,6 @@ class RelabelingMorphism(SurfaceMorphism):
             return False
 
         return self.parent() == other.parent() and self._relabeling == other._relabeling
+
+    def _repr_type(self):
+        return "Relabeling"
