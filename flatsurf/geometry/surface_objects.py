@@ -122,6 +122,17 @@ class SurfacePoint(SurfacePoint_base):
         sage: S.point(1, (0, 0))
         Vertex 0 of polygon 1
 
+    TESTS:
+
+    Test that points can be created on disconnected surfaces::
+
+        sage: from flatsurf import MutableOrientedSimilaritySurface, polygons
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(polygons.square())
+        0
+        sage: S(0, 0)
+        Vertex 0 of polygon 0
+
     """
 
     def __init__(self, surface, label, point, ring=None, limit=None):
@@ -159,26 +170,52 @@ class SurfacePoint(SurfacePoint_base):
         elif position.is_in_edge_interior():
             self._representatives = {(label, point)}
 
-            cross_label, cross_edge = surface.opposite_edge(label, position.get_edge())
-            cross_point = surface.edge_transformation(label, position.get_edge())(point)
-            cross_point.set_immutable()
+            opposite_edge = surface.opposite_edge(label, position.get_edge())
+            if opposite_edge is not None:
+                cross_label, cross_edge = opposite_edge
+                cross_point = surface.edge_transformation(label, position.get_edge())(point)
+                cross_point.set_immutable()
 
-            self._representatives.add((cross_label, cross_point))
+                self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():
             self._representatives = set()
 
             source_edge = position.get_vertex()
-            while (label, source_edge) not in self._representatives:
-                self._representatives.add((label, source_edge))
 
-                # Rotate to the next edge that is leaving at the vertex
-                label, source_edge = surface.opposite_edge(label, source_edge)
-                source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
+            def collect_representatives(label, source_edge, direction, limit):
+                def rotate(label, source_edge, direction):
+                    if direction == -1:
+                        source_edge = (source_edge - 1) % len(surface.polygon(label).vertices())
+                    opposite_edge = surface.opposite_edge(label, source_edge)
+                    if opposite_edge is None:
+                        return None
+                    label, source_edge = opposite_edge
+                    if direction == 1:
+                        source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
+                    return label, source_edge
 
-                if limit is not None:
-                    limit -= 1
-                    if limit < 0:
-                        raise ValueError("number of edges at singularity exceeds limit")
+                while True:
+                    self._representatives.add((label, source_edge))
+
+                    # Rotate to the next edge that is leaving at the vertex
+                    rotated = rotate(label, source_edge, direction)
+                    if rotated is None:
+                        # Surface is disconnected
+                        return
+
+                    label, source_edge = rotated
+
+                    if limit is not None:
+                        limit -= 1
+                        if limit < 0:
+                            raise ValueError("number of edges at singularity exceeds limit")
+
+                    if (label, source_edge) in self._representatives:
+                        break
+
+            # Collect respresentatives of edge walking clockwise and counterclockwise
+            collect_representatives(label, source_edge, 1, limit)
+            collect_representatives(label, source_edge, -1, limit)
 
             self._representatives = {
                 (label, surface.polygon(label).vertex(vertex))

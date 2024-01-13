@@ -392,6 +392,22 @@ class SimplicialHomologyGroup(Parent):
         self._relative = relative
         self._implementation = implementation
 
+    def some_elements(self):
+        r"""
+        Return some typical homology classes (for testing.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H.some_elements()
+            [0, B[(0, 1)], B[(0, 0)]]
+
+        """
+        return [self.zero()] + list(self.gens())
+
     def surface(self):
         r"""
         Return the surface of which this is the homology.

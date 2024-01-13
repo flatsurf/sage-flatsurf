@@ -581,6 +581,48 @@ class SimilaritySurfaceTangentBundle:
 
         self._V = VectorSpace(self._base_ring, 2)
 
+    def some_elements(self):
+        r"""
+        Return some typical tangent vectors (for testing).
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: T = S.tangent_bundle()
+            sage: list(T.some_elements())
+            [SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (1/2, -1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 1) with vector (-1/2, -1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (-1/2, 1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (1/2, 1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 1/2) with vector (1, 2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (2/3, 0) with vector (1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (2/3, 1) with vector (-1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 2/3) with vector (0, 1),
+             SimilaritySurfaceTangentVector in polygon 0 based at (0, 2/3) with vector (0, -1),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1/3, 0) with vector (1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1/3, 1) with vector (-1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 1/3) with vector (0, 1),
+             SimilaritySurfaceTangentVector in polygon 0 based at (0, 1/3) with vector (0, -1)]
+
+        """
+        S = self.surface()
+        for point in S.some_elements():
+            for label, coordinates in point.representatives():
+                polygon = S.polygon(label)
+                polygon_point = polygon(coordinates)
+                position = polygon_point.position()
+                if position.is_in_interior():
+                    yield self(label, coordinates, (1, 2))
+                elif position.is_in_edge_interior():
+                    edge = polygon.edge(position.get_edge())
+                    yield self(label, coordinates, edge)
+                else:
+                    assert position.is_vertex()
+                    vertex = position.get_vertex()
+                    bisector = (polygon.edge(vertex) - polygon.edge(vertex - 1)) / 2
+                    yield self(label, coordinates, bisector)
+
     def __call__(self, polygon_label, point, vector):
         r"""
         Construct a tangent vector from a polygon label, a point in the polygon and a vector. The point and the vector should have coordinates
