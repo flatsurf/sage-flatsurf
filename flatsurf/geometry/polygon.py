@@ -1518,6 +1518,10 @@ def EuclideanPolygonsWithAngles(*angles):
         sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
         sage: R = ExactReals(P.base_ring()) # optional: exactreal
         sage: P(R(1)) # optional: exactreal
+        doctest:warning
+        ...
+        UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
+        To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
         Polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
         sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
         Polygon(vertices=[(0, 0),])
