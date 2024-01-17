@@ -509,12 +509,12 @@ def is_segment_intersecting(s, t):
     """
     turn_from_s = ccw(s[1] - s[0], t[0] - s[0]) * ccw(s[1] - s[0], t[1] - s[0])
     if turn_from_s > 0:
-        # Both endpoinst of t are on the same side of s
+        # Both endpoints of t are on the same side of s
         return 0
 
     turn_from_t = ccw(t[1] - t[0], s[0] - t[0]) * ccw(t[1] - t[0], s[1] - t[0])
     if turn_from_t > 0:
-        # Both endpoinst of s are on the same side of t
+        # Both endpoints of s are on the same side of t
         return 0
 
     Δs = s[1] - s[0]
