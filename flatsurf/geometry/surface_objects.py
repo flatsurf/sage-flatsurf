@@ -751,9 +751,10 @@ class Cylinder(SageObject):
             li = (li[0], SG(-v) * li[1])
             lio = ss.opposite_edge(li, edges[i])
             lj = labels[j]
-            sc = SaddleConnection(
+            sc = SaddleConnection.from_vertex(
                 s,
-                (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
+                lio[0][0],
+                (lio[1] + 1) % len(ss.polygon(lio[0]).vertices()),
                 (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
             )
             sc_set_right.add(sc)
@@ -765,9 +766,10 @@ class Cylinder(SageObject):
                 li = (li[0], SG(-v) * li[1])
                 lio = ss.opposite_edge(li, edges[i])
                 lj = labels[j]
-                sc = SaddleConnection(
+                sc = SaddleConnection.from_vertex(
                     s,
-                    (lio[0][0], (lio[1] + 1) % len(ss.polygon(lio[0]).vertices())),
+                    lio[0][0],
+                    (lio[1] + 1) % len(ss.polygon(lio[0]).vertices()),
                     (~lio[0][1])(vert_j) - (~lio[0][1])(vert_i),
                     limit=j - i,
                 )
@@ -790,9 +792,10 @@ class Cylinder(SageObject):
             li = (li[0], SG(-v) * li[1])
             lio = ss.opposite_edge(li, edges[i])
             lj = labels[j]
-            sc = SaddleConnection(
+            sc = SaddleConnection.from_vertex(
                 s,
-                (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
+                lj[0],
+                (edges[j] + 1) % len(ss.polygon(lj).vertices()),
                 (~lj[1])(vert_i) - (~lj[1])(vert_j),
             )
             sc_set_left.add(sc)
@@ -803,9 +806,10 @@ class Cylinder(SageObject):
                 li = labels[i]
                 lio = ss.opposite_edge(li, edges[i])
                 lj = labels[j]
-                sc = SaddleConnection(
+                sc = SaddleConnection.from_vertex(
                     s,
-                    (lj[0], (edges[j] + 1) % len(ss.polygon(lj).vertices())),
+                    lj[0],
+                    (edges[j] + 1) % len(ss.polygon(lj).vertices()),
                     (~lj[1])(vert_i) - (~lj[1])(vert_j),
                 )
                 sc_set_left.add(sc)

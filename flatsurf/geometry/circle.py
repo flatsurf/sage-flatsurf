@@ -28,6 +28,7 @@ from sage.modules.free_module import VectorSpace
 from sage.modules.free_module_element import vector
 
 
+# TODO: This shoul be a static method of Circle.
 def circle_from_three_points(p, q, r, base_ring=None):
     r"""
     Construct a circle from three points on the circle.
@@ -51,6 +52,7 @@ def circle_from_three_points(p, q, r, base_ring=None):
 
 
 class Circle:
+    # TODO: Should this be a static method so it's clear that this uses radius squared?
     def __init__(self, center, radius_squared, base_ring=None):
         r"""
         Construct a circle from a Vector representing the center, and the
@@ -138,6 +140,7 @@ class Circle:
         """
         return self.point_position(self.closest_point_on_line(point, direction_vector))
 
+    # TODO: Create Segment class.
     def line_segment_position(self, p, q):
         r"""
         Consider the open line segment pq.We return 1 if the line segment

@@ -121,11 +121,10 @@ class SimilaritySurfaceTangentVector:
                 self._position = pos
         elif pos.is_vertex():
             v = pos.get_vertex()
-            p = self.surface().polygon(polygon_label)
             # subsequent edge:
             edge1 = p.edge(v)
             # prior edge:
-            edge0 = p.edge((v - 1) % len(p.vertices()))
+            edge0 = p.edge(v - 1)
             wp1 = ccw(edge1, vector)
             wp0 = ccw(edge0, vector)
             if wp1 < 0 or wp0 < 0:
@@ -133,8 +132,7 @@ class SimilaritySurfaceTangentVector:
                     "Singular point with vector pointing away from polygon"
                 )
 
-            from flatsurf.geometry.euclidean import is_anti_parallel
-            if is_anti_parallel(edge0, vector):
+            if is_anti_parallel(edge0, vector) and self.surface().opposite_edge(polygon_label, (v - 1) % len(p.vertices())) is not None:
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
                     polygon_label, (v - 1) % len(p.vertices())
@@ -343,10 +341,9 @@ class SimilaritySurfaceTangentVector:
         """
         p = self.polygon()
         point2 = p.flow_to_exit(self.point(), self.vector())
-        new_vector = SimilaritySurfaceTangentVector(
+        return SimilaritySurfaceTangentVector(
             self.bundle(), self.polygon_label(), point2, -self.vector()
         )
-        return new_vector
 
     def straight_line_trajectory(self):
         r"""

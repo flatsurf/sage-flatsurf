@@ -2089,6 +2089,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 return DelaunayDecompositionMorphism._create_morphism(self, s)
 
             def _saddle_connections_unbounded(self, initial_label, initial_vertex):
+                r"""
+                Enumerate all saddle connections in this surface ordered by length.
+
+                This is a helper method for :meth:`saddle_connections`.
+                """
                 def squared_length(v):
                     return v[0]**2 + v[1]**2
 
@@ -2105,54 +2110,234 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     length_bound *= 2
 
+            def _saddle_connections_cone_bounded(self, squared_length_bound, source, incoming_edge, similarity, cone):
+                r"""
+                Enumerate the saddle connections of length at most square root
+                of ``squared_length_bound`` and which are strictly inside the
+                ``cone``.
+
+                This is a helper method for :meth:`saddle_connections`.
+
+                ALGORITHM:
+
+                We check for each vertex of the polygon if it is contained in
+                the cone. If it is, it leads to a saddle connection (unless
+                it's hidden or too far away.)
+
+                Then we recursively propagate the cone across each edge it hits
+                into the neighboring polygons.
+
+                INPUT:
+
+                - ``squared_length_bound`` -- a number, the square of the
+                  length up to which saddle connections should be considered;
+                  the length of saddle connections is determined using their
+                  holonomy vector written in their source polygon.
+
+                - ``source`` -- a pair of a polygon label and a vertex
+                  index; the vertex where all saddle connections enumerated by
+                  this method start.
+
+                - ``incoming_edge`` -- a pair of a polygon label and an edge
+                  index; the ``cone`` is crossing over this ``incoming_edge``
+                  (after transforming that polygon with the inverse of the
+                   ``similarity``.)
+
+                - ``similarity`` -- a similarity of the plane; describes a
+                  translation, rotation, and dilation of the ``incoming_edge``
+                  polygon to position it relative to the ``cone``
+
+                - ``cone`` -- an open cone in the plane which bounds the
+                  holonomy of the saddle connections.
+
+                """
+                assert not cone.is_empty()
+
+                label = incoming_edge[0]
+                polygon = similarity(self.polygon(label))
+
+                from flatsurf.geometry.cone import Cones
+                if polygon.vertex(incoming_edge[1]):
+                    incoming_edge_cone = Cones(self.base_ring())(polygon.vertex(incoming_edge[1] + 1), polygon.vertex(incoming_edge[1]))
+                else:
+                    incoming_edge_cone = Cones(self.base_ring())(polygon.vertex(incoming_edge[1] + 1), polygon.vertex(incoming_edge[1] - 1))
+
+                if not cone.is_subset(incoming_edge_cone):
+                    raise ValueError("cone must be contained in the cone formed by the incoming edge")
+
+                if not incoming_edge_cone.is_convex():
+                    # TODO: Explain! Is this really correct?
+                    raise ValueError("cone must intersect incoming edge from the outside")
+
+                from flatsurf.geometry.circle import Circle
+                bounding_circle = Circle(
+                    (0, 0),
+                    squared_length_bound,
+                    base_ring=self.base_ring(),
+                )
+
+                # Each vertex that is contained in the cone's interior yields a
+                # saddle connection (if it is "behind" the incoming edge and
+                # not hidden by some other edge; these conditions are only
+                # possible for polygons that are not strictly convex.)
+                for v, vertex in enumerate(polygon.vertices()):
+                    if cone.contains_point(vertex):
+                        if v == incoming_edge[1]:
+                            continue
+
+                        exit = polygon.flow_to_exit(vertex, -vertex)
+
+                        # TODO: This is probably very inefficient. It would be enough to check if this point is on the incoming_edge.
+                        exit = polygon.get_point_position(exit)
+
+                        if exit.is_vertex() and exit.get_vertex() != incoming_edge[1]:
+                            # Another vertex hides this vertex.
+                            continue
+
+                        if exit.is_in_edge_interior() and exit.get_edge() != incoming_edge[1]:
+                            # Another edge hides this vertex.
+                            continue
+
+                        # The vertex is not hidden by some other vertex or
+                        # edge. This is a saddle connection.
+                        holonomy = vertex
+                        if bounding_circle.point_position(holonomy) >= 0:
+                            # The saddle connection is within the squared_length_bound.
+                            from flatsurf.geometry.saddle_connection import SaddleConnection
+                            yield SaddleConnection(
+                                surface=self,
+                                start=source,
+                                end=(label, v),
+                                holonomy=vertex,
+                                end_holonomy=~similarity.derivative() * vertex,
+                            )
+
+                # We need to propagate the cone across edges to neighboring
+                # polygons. For this, we split the cone into smaller subcones,
+                # such that each subcone contains no vertex in its interior.
+                cone_space = cone.parent()
+                ray_space = cone_space.rays()
+                vertex_directions = [cone.start()] + cone.sorted_rays(
+                    [ray_space(vertex) for v, vertex in enumerate(polygon.vertices()) if cone.contains_point(vertex) and v != incoming_edge[1]]) + [cone.end()]
+
+                subcones = [cone_space(v, w) for (v, w) in zip(vertex_directions, vertex_directions[1:])]
+                # Now we propagate each subcone across the first edge it hits
+                # after crossing over the incoming edge.
+                for subcone in subcones:
+                    ray = subcone.a_ray()
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+                    start = ray_segment_intersection(ray.vector().parent().zero(), ray.vector(), (polygon.vertex(incoming_edge[1]), polygon.vertex(incoming_edge[1] + 1)))
+                    exit = polygon.flow_to_exit(start, ray.vector())
+                    exit = polygon.get_point_position(exit)
+                    assert exit.is_in_edge_interior()
+                    outgoing_edge = exit.get_edge()
+                    if bounding_circle.line_segment_position(polygon.vertex(outgoing_edge), polygon.vertex(outgoing_edge + 1)) != 1:
+                        # No part of the edge is inside the
+                        # squared_length_bound, search ends here.
+                        break
+
+                    opposite_edge = self.opposite_edge(label, outgoing_edge)
+                    if opposite_edge is None:
+                        # Unglued edge. Search ends here.
+                        break
+
+                    # Recurse
+                    yield from self._saddle_connections_cone_bounded(squared_length_bound, source, opposite_edge, similarity * self.edge_transformation(*opposite_edge), subcone)
+
+            def _saddle_connections_from_vertex_bounded(self, squared_length_bound, source):
+                r"""
+                Enumerate all the saddle connections up to length
+                ``squared_length_bound`` which start at ``source``.
+
+                This is a helper method for :meth:`saddle_connections`.
+
+                ALGORITHM:
+
+                We consider saddle connections that come from the edges
+                adjacent to the vertex of ``source`` and then use
+                :meth:`_saddle_connections_cone_bounded` to enumerate the
+                saddle connections in the open cone formed by these edges.
+
+                INPUT:
+
+                - ``squared_length_bound`` -- a number, the square of the
+                  length up to which saddle connections should be considered;
+                  the length of saddle connections is determined using their
+                  holonomy vector written in their source polygon.
+
+                - ``source`` -- a pair consisting of a polygon label and a vertex
+                  index. The saddle connection starts at that vertex and is
+                  contained in the closed cone that is formed by the two edges
+                  adjacent to the vertex.
+
+                """
+                polygon = self.polygon(source[0])
+
+                from flatsurf.geometry.saddle_connection import SaddleConnection
+                for connection in [
+                  SaddleConnection.from_half_edge(self, source[0], source[1]),
+                  -SaddleConnection.from_half_edge(self, source[0], (source[1] - 1) % len(polygon.edges()))]:
+                    if connection.length_squared() <= squared_length_bound:
+                        yield connection
+
+                from flatsurf.geometry.similarity import SimilarityGroup
+                G = SimilarityGroup(self.base_ring())
+                similarity = G.translation(*-polygon.vertex(source[1]))
+
+                from flatsurf.geometry.cone import Cones
+                cone = Cones(polygon.base_ring())(polygon.edge(source[1]), -polygon.edge(source[1] - 1))
+
+                yield from self._saddle_connections_cone_bounded(squared_length_bound, source, source, similarity, cone)
 
             def saddle_connections(
                 self,
                 squared_length_bound=None,
                 initial_label=None,
                 initial_vertex=None,
+                algorithm="cone",
             ):
                 r"""
                 Return the saddle connections on this surface whose length
-                squared is less than or equal to ``squared_length_bound``
-                (ordered by length.)
+                squared is at most ``squared_length_bound`` (ordered by
+                length.)
 
                 The length of a saddle connection is measured using holonomy
-                from polygon in which the trajectory starts.
+                from the polygon in which the trajectory starts.
 
                 If no ``squared_length_bound`` is given, all saddle connections
-                are enumerated (sorted by length.)
+                are enumerated (ordered by length.)
 
                 If ``initial_label`` and ``initial_vertex`` are provided, only
                 saddle connections are returned which emanate from the
-                corresponding vertex of a polygon. If only ``initial_label`` is
-                provided, the saddle connections will only emanate from the
-                corresponding polygon.
+                corresponding vertex of a polygon (and only pointing into the
+                polygon or along the edges adjacent to that vertex.) If only
+                ``initial_label`` is provided, the saddle connections will only
+                emanate from vertices of the corresponding polygon.
 
                 EXAMPLES:
 
-                Return the connections of length up to square root of 13::
+                Return the connections of length up to square root of 5::
 
                     sage: from flatsurf import translation_surfaces
                     sage: S = translation_surfaces.square_torus()
                     sage: connections = S.saddle_connections(5)
                     sage: connections
-                    [Saddle connection in direction (1, 0) with start data (0, 0) and end data (0, 2),
-                     Saddle connection in direction (0, 1) with start data (0, 1) and end data (0, 3),
-                     Saddle connection in direction (-1, 0) with start data (0, 2) and end data (0, 0),
-                     Saddle connection in direction (0, -1) with start data (0, 3) and end data (0, 1),
-                     Saddle connection in direction (1, 1) with start data (0, 0) and end data (0, 2),
-                     Saddle connection in direction (-1, 1) with start data (0, 1) and end data (0, 3),
-                     Saddle connection in direction (-1, -1) with start data (0, 2) and end data (0, 0),
-                     Saddle connection in direction (1, -1) with start data (0, 3) and end data (0, 1),
-                     Saddle connection in direction (1, 1/2) with start data (0, 0) and end data (0, 2),
-                     Saddle connection in direction (1/2, 1) with start data (0, 0) and end data (0, 2),
-                     Saddle connection in direction (-1/2, 1) with start data (0, 1) and end data (0, 3),
-                     Saddle connection in direction (-1, 1/2) with start data (0, 1) and end data (0, 3),
-                     Saddle connection in direction (-1, -1/2) with start data (0, 2) and end data (0, 0),
-                     Saddle connection in direction (-1/2, -1) with start data (0, 2) and end data (0, 0),
-                     Saddle connection in direction (1/2, -1) with start data (0, 3) and end data (0, 1),
-                     Saddle connection in direction (1, -1/2) with start data (0, 3) and end data (0, 1)]
+                    [Saddle connection (0, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (1, 0) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (0, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (-1, 0) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (1, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (-1, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (-1, -1) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (-1, 2) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (1, -2) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (-2, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (-2, -1) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (-1, -2) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (2, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (1, 2) from vertex 0 of polygon 0 to vertex 2 of polygon 0]
 
                 We get the same result if we take the first 16 saddle
                 connections without a length bound::
@@ -2166,8 +2351,57 @@ class SimilaritySurfaces(SurfaceCategory):
                 current implementation it is quite a bit slower in practice in
                 particular if the bound is small.
 
+                TESTS:
+
+                Verify that saddle connections are enumerated correctly when
+                there are unglued edges::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                    0
+                    sage: S.set_immutable()
+                    sage: len(list(S.saddle_connections(10)))
+                    6
+
+                Verify that saddle connections are enumerated correctly when
+                there are self-glued edges::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                    0
+                    sage: S.glue((0, 0), (0, 0))
+                    sage: S.glue((0, 1), (0, 1))
+                    sage: S.glue((0, 2), (0, 2))
+                    sage: S.set_immutable()
+
+                    sage: from itertools import islice
+                    sage: list(islice(S.saddle_connections(), 8))
+                    [Saddle connection (0, -1) from vertex 2 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (1, 0) from vertex 0 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (-1, 1) from vertex 1 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (1, -2) from vertex 2 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (-2, 1) from vertex 1 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (1, 2) from vertex 0 of polygon 0 to vertex 0 of polygon 0]
+
+                    sage: len(list(S.saddle_connections(1)))
+                    2
+
+                    sage: len(list(S.saddle_connections(1, initial_label=0, initial_vertex=1)))
+                    1
+
                 """
+                # TODO: Add benchmarks of the generic "cone" algorithm against
+                # the pyflatsurf algorithm. Also benchmark how much slower this
+                # is now since we are supporting much more complicated
+                # geometries.
+
                 if squared_length_bound is None:
+                    # Enumerate all (usually infinitely many) saddle
+                    # connections.
                     return self._saddle_connections_unbounded(initial_label=initial_label, initial_vertex=initial_vertex)
 
                 if squared_length_bound < 0:
@@ -2177,142 +2411,32 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if initial_label is None:
                     if not self.is_finite_type():
-                        raise NotImplementedError
-                    if initial_vertex is not None:
-                        raise ValueError(
-                            "when initial_label is not provided, then initial_vertex must not be provided either"
-                        )
-                    for label in self.labels():
-                        connections.extend(self.saddle_connections(
-                            squared_length_bound, initial_label=label
-                        ))
-                elif initial_vertex is None:
-                    for vertex in range(len(self.polygon(initial_label).vertices())):
-                        connections.extend(self.saddle_connections(
-                            squared_length_bound,
-                            initial_label=initial_label,
-                            initial_vertex=vertex,
-                        ))
+                        raise NotImplementedError("cannot enumerate saddle connections on surfaces that are built from inifinitely many polygons yet")
+                    initial_labels = self.labels()
                 else:
-                    # Now we have a specified initial_label and initial_vertex
-                    from flatsurf.geometry.similarity import SimilarityGroup
+                    initial_labels = [initial_label]
 
-                    SG = SimilarityGroup(self.base_ring())
-                    start_data = (initial_label, initial_vertex)
-                    from flatsurf.geometry.circle import Circle
+                for label in initial_labels:
+                    if initial_vertex is None:
+                        initial_vertices = range(len(self.polygon(label).vertices()))
+                    else:
+                        initial_vertices = [initial_vertex]
 
-                    circle = Circle(
-                        (0, 0),
-                        squared_length_bound,
-                        base_ring=self.base_ring(),
-                    )
-                    p = self.polygon(initial_label)
-                    v = p.vertex(initial_vertex)
-                    last_sim = SG(-v[0], -v[1])
+                    for vertex in initial_vertices:
+                        connections.extend(self._saddle_connections_from_vertex_bounded(
+                            squared_length_bound=squared_length_bound,
+                            source=(label, vertex),
+                        ))
 
-                    from flatsurf.geometry.saddle_connection import SaddleConnection
+                # The connections might contain duplicates because each glued
+                # edge can show up in two different polygons. Note that we
+                # cannot just change _saddle_connections_from_vertex_bounded()
+                # to only consider the edge clockwise from the vertex since we
+                # would then miss saddle connections in surfaces with
+                # self-glued and unglued edges.
+                connections = set(connections)
 
-                    # First check the edge eminating rightward from the start_vertex.
-                    e = p.edge(initial_vertex)
-                    if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
-
-                        connections.append(SaddleConnection(self, start_data, e))
-
-                    # Represents the bounds of the beam of trajectories we are sending out.
-                    wedge = (
-                        last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
-                        last_sim(
-                            p.vertex(
-                                (initial_vertex + len(p.vertices()) - 1) % len(p.vertices())
-                            )
-                        ),
-                    )
-
-                    # This will collect the data we need for a depth first search.
-                    chain = [
-                        (
-                            last_sim,
-                            initial_label,
-                            wedge,
-                            [
-                                (initial_vertex + len(p.vertices()) - i) % len(p.vertices())
-                                for i in range(2, len(p.vertices()))
-                            ],
-                        )
-                    ]
-
-                    while len(chain) > 0:
-                        # Should verts really be edges?
-                        sim, label, wedge, verts = chain[-1]
-                        if len(verts) == 0:
-                            chain.pop()
-                            continue
-                        vert = verts.pop()
-                        p = self.polygon(label)
-                        # First check the vertex
-                        vert_position = sim(p.vertex(vert))
-                        from flatsurf.geometry.euclidean import ccw
-
-                        if (
-                            ccw(wedge[0], vert_position) > 0
-                            and ccw(vert_position, wedge[1]) > 0
-                            and vert_position[0] ** 2 + vert_position[1] ** 2
-                            <= squared_length_bound
-                        ):
-                            connections.append(
-                                SaddleConnection(
-                                    self,
-                                    start_data,
-                                    vert_position,
-                                    end_data=(label, vert),
-                                    end_direction=~sim.derivative() * -vert_position,
-                                    holonomy=vert_position,
-                                    end_holonomy=~sim.derivative() * -vert_position,
-                                )
-                            )
-                        # Now check if we should develop across the edge
-                        vert_position2 = sim(p.vertex((vert + 1) % len(p.vertices())))
-                        if (
-                            ccw(vert_position, vert_position2) > 0
-                            and ccw(wedge[0], vert_position2) > 0
-                            and ccw(vert_position, wedge[1]) > 0
-                            and circle.line_segment_position(vert_position, vert_position2)
-                            == 1
-                        ):
-                            if ccw(wedge[0], vert_position) > 0:
-                                # First in new_wedge should be vert_position
-                                if ccw(vert_position2, wedge[1]) > 0:
-                                    new_wedge = (vert_position, vert_position2)
-                                else:
-                                    new_wedge = (vert_position, wedge[1])
-                            else:
-                                if ccw(vert_position2, wedge[1]) > 0:
-                                    new_wedge = (wedge[0], vert_position2)
-                                else:
-                                    new_wedge = wedge
-                            new_label, new_edge = self.opposite_edge(label, vert)
-                            new_sim = sim * ~self.edge_transformation(label, vert)
-                            p = self.polygon(new_label)
-                            chain.append(
-                                (
-                                    new_sim,
-                                    new_label,
-                                    new_wedge,
-                                    [
-                                        (new_edge + len(p.vertices()) - i)
-                                        % len(p.vertices())
-                                        for i in range(1, len(p.vertices()))
-                                    ],
-                                )
-                            )
-
-                def squared_length(connection):
-                    holonomy = connection.holonomy()
-                    return holonomy[0]**2 + holonomy[1]**2
-
-                connections.sort(key=squared_length)
-
-                return connections
+                return sorted(connections, key=lambda connection: connection.length_squared())
 
             def ramified_cover(self, d, data):
                 r"""

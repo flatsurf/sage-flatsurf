@@ -14072,6 +14072,7 @@ class HyperbolicHalfSpaces(OrderedSet):
         vertices = [vertex.coordinates(model="klein") for vertex in vertices]
         reference = min(vertices)
 
+        # TODO: Move to euclidean.
         class Slope:
             def __init__(self, xy):
                 self.dx = xy[0] - reference[0]

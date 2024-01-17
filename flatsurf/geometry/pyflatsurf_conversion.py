@@ -1481,13 +1481,13 @@ class FlatTriangulationConversion(Conversion):
 
             sage: connection = S.saddle_connections(1)[0]
             sage: conversion(connection)
-            1
+            5
 
         We map a saddle connection that does not map to a half edge::
 
             sage: connection = S.saddle_connections(3)[-1]
             sage: conversion(connection)
-            ((-a^2 + 2 ~ -1.6180340), 0) from -9 to -5
+            ((-1/2 ~ -0.50000000), (1/2*a^3 - 1*a ~ 1.5388418)) from 7 to -2
 
         """
         from flatsurf.geometry.surface_objects import SurfacePoint
@@ -1680,11 +1680,11 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
 
             sage: conversion._image_saddle_connection(S.saddle_connections(1)[0])
-            1
+            5
 
         """
         import pyflatsurf
-        return pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())].inSector(self.codomain(), self._image_half_edge(*saddle_connection.start_data()), self.vector_space_conversion()(saddle_connection.holonomy()))
+        return pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())].inSector(self.codomain(), self._image_half_edge(*saddle_connection.start()), self.vector_space_conversion()(saddle_connection.holonomy()))
 
     def _preimage_saddle_connection(self, saddle_connection):
         r"""
@@ -1707,17 +1707,17 @@ class FlatTriangulationConversion(Conversion):
 
             sage: preimage = conversion._preimage_saddle_connection(connection)
             sage: preimage
-            Saddle connection in direction (1, 0) with start data ((0, 0), 0) and end data ((1, 0), 0)
+            Saddle connection (1, 0) from vertex 0 of polygon (0, 0) to vertex 0 of polygon (1, 0)
 
             sage: conversion(preimage)
             1
 
         """
         from flatsurf.geometry.saddle_connection import SaddleConnection
-        return SaddleConnection(
-                surface=self.domain(),
-                start_data=self._preimage_half_edge(saddle_connection.source()),
-                direction=self.vector_space_conversion().section(saddle_connection.vector()))
+        return SaddleConnection.from_vertex(
+                self.domain(),
+                *self._preimage_half_edge(saddle_connection.source()),
+                self.vector_space_conversion().section(saddle_connection.vector()))
 
 
 def to_pyflatsurf(S):

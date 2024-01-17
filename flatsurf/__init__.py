@@ -19,6 +19,8 @@ from flatsurf.geometry.similarity_surface_generators import (
     translation_surfaces,
 )
 
+from flatsurf.geometry.saddle_connection import SaddleConnection
+
 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
 from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure

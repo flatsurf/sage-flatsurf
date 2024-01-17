@@ -1637,6 +1637,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     r"""
                     Return whether the point is within the polygon (after the polygon is possibly translated)
                     """
+                    # TODO: Deprecate translation.
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
@@ -1659,6 +1660,8 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
                         sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
                         (2, 3)
+                        sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                        (1, 1)
 
                     """
                     if not direction:
@@ -1823,6 +1826,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: s.flow(p, w)
                         ((1, 1/2), (3/2, 0), point positioned on interior of edge 1 of polygon)
                     """
+                    # TODO: Deprecate translation.
                     from flatsurf.geometry.polygon import PolygonPosition
 
                     V = self.base_ring().fraction_field() ** 2

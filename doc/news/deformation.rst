@@ -48,6 +48,8 @@
 
 * Fixed ``saddle_connections()`` to not throw a name error anymore in some edge cases. (#255)
 
+* Fixed ``saddle_connections()`` for surfaces built from polygons that are not strictly convex, for surfaces that contain self-glued edges, and for surfaces that contain unglued edges.
+
 * Fixed creating surface points at vertices of disconnected surfaces.
 
 **Performance:**

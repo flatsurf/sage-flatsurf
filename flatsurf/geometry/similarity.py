@@ -372,7 +372,7 @@ class Similarity(MultiplicativeGroupElement):
         """
         if other is None:
             return False
-        if type(other) == int:
+        if type(other) is int:
             return False
         if self.parent() != other.parent():
             return False
@@ -472,6 +472,9 @@ class SimilarityGroup(UniqueRepresentation, Group):
         from sage.modules.free_module import VectorSpace
 
         return VectorSpace(self._ring, 2)
+
+    def translation(self, x, y):
+        return self(x, y)
 
     def _element_constructor_(self, *args, **kwds):
         r"""
@@ -619,6 +622,7 @@ class SimilarityGroup(UniqueRepresentation, Group):
         return self._ring
 
 
+# TODO: Make this a static method of SimilarityGroup
 def similarity_from_vectors(u, v, matrix_space=None):
     r"""
     Return the unique similarity matrix that maps ``u`` to ``v``.

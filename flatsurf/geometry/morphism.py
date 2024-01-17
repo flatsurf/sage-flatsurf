@@ -185,6 +185,7 @@ class UnknownSurface(OrientedSimilaritySurface):
         sage: TestSuite(triangulation.domain()).run()
 
     """
+
     def is_mutable(self):
         return False
 
@@ -301,6 +302,7 @@ class SurfaceMorphismSpace(Homset):
         sage: TestSuite(homset).run()
 
     """
+
     def __init__(self, domain, codomain, category=None):
         from sage.categories.all import Objects
         self.__category = category or Objects()
@@ -596,9 +598,9 @@ class SurfaceMorphism(Morphism):
 
             sage: saddle_connection = next(iter(S.saddle_connections(1)))
             sage: saddle_connection
-            Saddle connection in direction (1, 0) with start data (0, 0) and end data (0, 2)
+            Saddle connection (1, 0) from vertex 0 of polygon 0 to vertex 2 of polygon 0
             sage: morphism(saddle_connection)
-            Saddle connection in direction (1, 0) with start data (0, 0) and end data (0, 2)
+            Saddle connection (2, 0) from vertex 0 of polygon 0 to vertex 2 of polygon 0
 
             sage: morphism(_)
             Traceback (most recent call last):
@@ -754,12 +756,12 @@ class SurfaceMorphism(Morphism):
         The image of a saddle connection::
 
             sage: from flatsurf.geometry.saddle_connection import SaddleConnection
-            sage: c = SaddleConnection(S, (0, 0), (1, 1))
+            sage: c = SaddleConnection.from_vertex(S, 0, 0, (1, 1))
             sage: c
-            Saddle connection in direction (1, 1) with start data (0, 0) and end data (0, 2)
+            Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
 
             sage: morphism(c)
-            Saddle connection in direction (1, 1/2) with start data (0, 0) and end data (0, 2)
+            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
 
         Not all morphisms are meaningful on the level of saddle connections::
 
@@ -786,10 +788,10 @@ class SurfaceMorphism(Morphism):
             sage: T = morphism.codomain()
 
             sage: from flatsurf.geometry.saddle_connection import SaddleConnection
-            sage: t = SaddleConnection(T, (0, 0), (2, 1)); t
-            Saddle connection in direction (1, 1/2) with start data (0, 0) and end data (0, 2)
+            sage: t = SaddleConnection.from_vertex(T, 0, 0, (2, 1)); t
+            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
             sage: (morphism * morphism.section())(t)
-            Saddle connection in direction (1, 1/2) with start data (0, 0) and end data (0, 2)
+            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute a preimage of a saddle connection yet")
@@ -1132,7 +1134,7 @@ class SurfaceMorphism(Morphism):
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of an edge yet")
 
-    def _section_homology_gen(self, label, edge):
+    def _section_homology_edge(self, label, edge):
         r"""
         Return a preimage of an edge in homology.
 
@@ -1213,6 +1215,7 @@ class IdentityMorphism(SurfaceMorphism):
         sage: TestSuite(identity).run()
 
     """
+
     def __init__(self, parent, category=None):
         if parent.domain() is not parent.codomain():
             raise ValueError("domain and codomain of identity must be identical")
@@ -1266,7 +1269,7 @@ class IdentityMorphism(SurfaceMorphism):
             Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
 
         """
-        return f"Identity"
+        return "Identity"
 
     def __eq__(self, other):
         r"""
@@ -1321,6 +1324,7 @@ class SectionMorphism(SurfaceMorphism):
         sage: TestSuite(section).run()
 
     """
+
     def __init__(self, parent, morphism, category=None):
         self._morphism = morphism
         super().__init__(parent, category=category)
@@ -1368,8 +1372,6 @@ class SectionMorphism(SurfaceMorphism):
     def _image_point(self, x): return self._morphism._section_point(x)
     def _image_homology(self, x): return self._morphism._section_homology(x)
     def _image_homology_gen(self, x): return self._morphism._section_homology_gen(x)
-    def _image_homology_edge(self, label, edge): return self._morphism._section_homology_edge(label, edge)
-    def _image_homology_matrix(self): return self._morphism._section_homology_matrix()
     def _image_saddle_connection(self, x): return self._morphism._section_saddle_connection(x)
     def _image_tangent_vector(self, x): return self._morphism._section_tangent_vector(x)
 
@@ -1443,7 +1445,7 @@ class CompositionMorphism(SurfaceMorphism):
         return hash(tuple(self._morphisms))
 
     def _repr_type(self):
-        return f"Composite"
+        return "Composite"
 
     def _repr_defn(self):
         return "  " + "\nthen\n  ".join(str(morphism) for morphism in self._morphisms)
@@ -1545,29 +1547,27 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
         return self.domain()(*q.representative())
 
     def _image_saddle_connection(self, c):
-        start_data = c.start_data()
-        end_data = c.end_data()
+        start = c.start()
+        end = c.end()
 
         from flatsurf.geometry.saddle_connection import SaddleConnection
 
         return SaddleConnection(
             surface=self.codomain(),
-            start_data=(start_data[0], start_data[1] * self._parts),
-            direction=c.direction(),
-            end_data=(end_data[0], end_data[1] * self._parts),
-            end_direction=c.end_direction(),
+            start=(start[0], start[1] * self._parts),
+            end=(end[0], end[1] * self._parts),
             holonomy=c.holonomy(),
             end_holonomy=c.end_holonomy(),
             check=False)
 
     def _section_saddle_connection(self, c):
-        start_data = c.start_data()
-        if start_data[1] % self._parts != 0:
+        start = c.start()
+        if start[1] % self._parts != 0:
             # TODO: This is not true. Straight line trajectories are built of such segments.
             raise NotImplementedError("cannot represent segments not starting at a vertex yet")
 
-        end_data = c.end_data()
-        if end_data[1] % self._parts != 0:
+        end = c.end()
+        if end[1] % self._parts != 0:
             # TODO: This is not true. Straight line trajectories are built of such segments.
             raise NotImplementedError("cannot represent segments not terminating at a vertex yet")
 
@@ -1575,10 +1575,8 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
         return SaddleConnection(
             surface=self.domain(),
-            start_data=(start_data[0], start_data[1] // self._parts),
-            direction=c.direction(),
-            end_data=(end_data[0], end_data[1] // self._parts),
-            end_direction=c.end_direction(),
+            start=(start[0], start[1] // self._parts),
+            end=(end[0], end[1] // self._parts),
             holonomy=c.holonomy(),
             end_holonomy=c.end_holonomy(),
             check=False)
@@ -1637,17 +1635,17 @@ class TriangulationMorphism(SurfaceMorphism):
         return [(1, *self._image_edge(label, edge))]
 
     def _image_saddle_connection(self, connection):
-        (label, edge) = connection.start_data()
+        (label, edge) = connection.start()
 
         label, edge = self._image_edge(label, edge)
 
         from flatsurf.geometry.euclidean import ccw
-        while ccw(connection.direction(), -self.codomain().polygon(label).edges()[(edge - 1) % len(self.codomain().polygon(label).edges())]) <= 0:
+        while ccw(connection.direction().vector(), -self.codomain().polygon(label).edges()[(edge - 1) % len(self.codomain().polygon(label).edges())]) <= 0:
             (label, edge) = self.codomain().opposite_edge(label, (edge - 1) % len(self.codomain().polygon(label).edges()))
 
         # TODO: This is extremely slow.
         from flatsurf.geometry.saddle_connection import SaddleConnection
-        return SaddleConnection(self.codomain(), (label, edge), direction=connection.direction())
+        return SaddleConnection.from_vertex(self.codomain(), label, edge, connection.direction().vector())
 
     def _image_point(self, p):
         r"""
@@ -1680,7 +1678,7 @@ class TriangulationMorphism(SurfaceMorphism):
         assert False, "point must be in one of the polygons that split up the original polygon"
 
     def _repr_type(self):
-        return f"Triangulation"
+        return "Triangulation"
 
     def __eq__(self, other):
         if not isinstance(other, TriangulationMorphism):
@@ -1697,7 +1695,7 @@ class DelaunayDecompositionMorphism(SurfaceMorphism):
         return self.parent() == other.parent()
 
     def _repr_type(self):
-        return f"Delaunay Decomposition"
+        return "Delaunay Decomposition"
 
 
 class GL2RMorphism(SurfaceMorphism):
@@ -1724,9 +1722,8 @@ class GL2RMorphism(SurfaceMorphism):
         from flatsurf.geometry.saddle_connection import SaddleConnection
         return SaddleConnection(
             surface=self.codomain(),
-            start_data=connection.start_data(),
-            direction=self._matrix * connection.direction(),
-            end_data=connection.end_data(),
+            start=connection.start(),
+            end=connection.end(),
             holonomy=self._matrix * connection.holonomy(),
             end_holonomy=self._matrix * connection.end_holonomy(),
             check=False)
@@ -1747,7 +1744,7 @@ class GL2RMorphism(SurfaceMorphism):
         return self.parent() == other.parent() and self._matrix == other._matrix
 
     def _repr_type(self):
-        return f"Linear"
+        return "Linear"
 
     def _repr_defn(self):
         return repr(self._matrix)
