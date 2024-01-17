@@ -489,7 +489,7 @@ def is_segment_intersecting(s, t):
     OUTPUT:
 
     - ``0`` - do not intersect
-    - ``1`` - one endpoint in common
+    - ``1`` - exactly one endpoint in common
     - ``2`` - non-trivial intersection
 
     EXAMPLES::
@@ -517,21 +517,27 @@ def is_segment_intersecting(s, t):
         # Both endpoinst of s are on the same side of t
         return 0
 
-    if ccw(s[1] - s[0], t[1] - t[0]) == 0:
+    Δs = s[1] - s[0]
+    Δt = t[1] - t[0]
+    if ccw(Δs, Δt) == 0:
         # Segments are parallel
-        Δs = s[1] - s[0]
+        if is_anti_parallel(Δs, Δt):
+            # Ensure segments are oriented the same way.
+            t = (t[1], t[0])
+            Δt = -Δt
+
         time_to_t0, length = time_on_ray(s[0], Δs, t[0])
         time_to_t1, _ = time_on_ray(s[0], Δs, t[1])
 
         if time_to_t0 < 0 and time_to_t1 < 0:
-            # Both endpoints of t are left of s
+            # Both endpoints of t are earlier than s
             return 0
 
         if time_to_t0 > length and time_to_t1 > length:
-            # Both endpoints of t are right of s
+            # Both endpoints of t are later than s
             return 0
 
-        if 0 < time_to_t0 < length or 0 < time_to_t1 < length:
+        if time_to_t0 < length or 0 < time_to_t1:
             return 2
 
         return 1
