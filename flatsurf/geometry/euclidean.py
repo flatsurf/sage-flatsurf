@@ -537,10 +537,13 @@ def is_segment_intersecting(s, t):
             # Both endpoints of t are later than s
             return 0
 
-        if time_to_t0 < length or 0 < time_to_t1:
-            return 2
+        if time_to_t0 == length:
+            return 1
 
-        return 1
+        if time_to_t1 == 0:
+            return 1
+
+        return 2
 
     if turn_from_t == 0 and turn_from_s == 0:
         return 1
