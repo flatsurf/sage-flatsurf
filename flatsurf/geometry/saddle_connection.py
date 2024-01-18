@@ -650,7 +650,7 @@ class SaddleConnection(SageObject):
             sage: S = translation_surfaces.cathedral(1, 2)
             sage: connections = [connection for connection in S.saddle_connections(13) if connection.is_closed()]
             sage: connections[-1].homology()
-            -B[(1, 1)] + B[(1, 6)] - B[(3, 1)] - B[(3, 7)]
+            -B[(1, 1)] - 2*B[(1, 2)] - B[(1, 6)] - B[(3, 1)] + B[(3, 7)]
 
         """
         to_pyflatsurf = self._surface.pyflatsurf()

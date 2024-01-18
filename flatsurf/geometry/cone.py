@@ -10,6 +10,7 @@ class Cone(Element):
         self._start = parent.rays()(start)
         self._end = parent.rays()(end)
 
+    @cached_method
     def is_empty(self):
         return self._start == self._end
 
@@ -39,21 +40,35 @@ class Cone(Element):
         end_ccw = ccw(self._end.vector(), other._end.vector())
 
         # Check whether the interior of this cone is contained in other.
-        if self.is_convex():
-            if other.is_convex():
-                if start_ccw > 0:
-                    return False
-                if end_ccw < 0:
-                    return False
-            else:
-                raise NotImplementedError
-        else:
+        if not self.is_convex():
             if other.is_convex():
                 return False
 
+            # This non-convex cone C is contained in the other non-convex cone D,
+            # iff for the complements we have D^c ⊆ C^c.
+            return other.complement().is_subset(self.complement())
+
+        if other.is_convex():
+            if start_ccw > 0:
+                return False
+            if end_ccw < 0:
+                return False
+
+            return True
+
+        raise NotImplementedError
+
+    def complement(self):
+        r"""
+        Return the maximal cone contained in the complement of this cone, i.e.,
+        the complement of this cone with the boundaries (except for the origin)
+        missing.
+
+        """
+        if self.is_empty():
             raise NotImplementedError
 
-        return True
+        return self.parent()(self._end, self._start)
 
     def contains_ray(self, ray):
         if ray.parent() is not self.parent().rays():
@@ -74,8 +89,8 @@ class Cone(Element):
                 return False
 
             return True
-        else:
-            raise NotImplementedError
+
+        return not self.complement().contains_ray(ray) and ray != self._start and ray != self._end
 
     def sorted_rays(self, rays):
         class Key:
@@ -84,9 +99,25 @@ class Cone(Element):
                 self._ray = ray
 
             def __lt__(self, rhs):
-                if not self._cone.is_convex():
-                    raise NotImplementedError
+                # TODO: Make sure all code paths are tested.
                 from flatsurf.geometry.euclidean import ccw
+                if not self._cone.is_convex():
+                    start_to_self = ccw(self._cone._start.vector(), self._ray.vector())
+                    start_to_rhs = ccw(self._cone._start.vector(), rhs._ray.vector())
+                    if start_to_self > 0 and start_to_rhs > 0:
+                        return ccw(self._ray.vector(), rhs._ray.vector()) > 0
+
+                    end_to_self = ccw(self._cone._end.vector(), self._ray.vector())
+                    end_to_rhs = ccw(self._cone._end.vector(), rhs._ray.vector())
+                    if end_to_self < 0 and end_to_rhs < 0:
+                        return ccw(self._ray.vector(), rhs._ray.vector()) > 0
+
+                    if start_to_self > 0 and end_to_rhs < 0:
+                        return True
+                    if end_to_self < 0 and start_to_rhs > 0:
+                        return False
+
+                    raise NotImplementedError
                 return ccw(self._ray.vector(), rhs._ray.vector()) > 0
 
         rays = sorted(rays, key=lambda ray: Key(self, ray))

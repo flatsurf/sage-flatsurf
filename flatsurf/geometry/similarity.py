@@ -250,7 +250,7 @@ class Similarity(MultiplicativeGroupElement):
             + 67 * hash(self._sign)
         )
 
-    def __call__(self, w, ring=None):
+    def __call__(self, w, ring=None, V=None):
         r"""
         Return the image of ``w`` under the similarity. Here ``w`` may be a
         convex polygon or a vector (or something that can be indexed in the
@@ -280,58 +280,36 @@ class Similarity(MultiplicativeGroupElement):
             Category of convex simple euclidean polygons over Algebraic Real Field
 
         """
-        if ring is not None and ring not in Rings():
-            raise TypeError("ring must be a ring")
+        if ring is not None:
+            if ring not in Rings():
+                raise TypeError("ring must be a ring")
+            if V is not None:
+                if V.base_ring() is not ring:
+                    raise ValueError("ring and base ring of V must be identical")
+            else:
+                V = ring**2
 
         from flatsurf.geometry.polygon import EuclideanPolygon
 
-        if isinstance(w, EuclideanPolygon) and w.is_convex():
-            if ring is None:
+        if isinstance(w, EuclideanPolygon):
+            if V is None:
                 ring = self.parent().base_ring()
+                V = ring**2
+
+            if not self._sign.is_one():
+                raise TypeError("similarity must be orientation preserving.")
 
             from flatsurf import Polygon
+            return Polygon(vertices=[self(v, V=V) for v in w.vertices()], base_ring=ring, check=False)
 
-            try:
-                return Polygon(vertices=[self(v) for v in w.vertices()], base_ring=ring)
-            except ValueError:
-                if not self._sign.is_one():
-                    raise ValueError("Similarity must be orientation preserving.")
+        v = (
+            self._a * w[0] - self._sign * self._b * w[1] + self._s,
+            self._b * w[0] + self._sign * self._a * w[1] + self._t)
 
-                # Not sure why this would happen:
-                raise
+        if V is None:
+            return vector(v)
 
-        if ring is None:
-            if self._sign.is_one():
-                return vector(
-                    [
-                        self._a * w[0] - self._b * w[1] + self._s,
-                        self._b * w[0] + self._a * w[1] + self._t,
-                    ]
-                )
-            else:
-                return vector(
-                    [
-                        self._a * w[0] + self._b * w[1] + self._s,
-                        self._b * w[0] - self._a * w[1] + self._t,
-                    ]
-                )
-        else:
-            if self._sign.is_one():
-                return vector(
-                    ring,
-                    [
-                        self._a * w[0] - self._b * w[1] + self._s,
-                        self._b * w[0] + self._a * w[1] + self._t,
-                    ],
-                )
-            else:
-                return vector(
-                    ring,
-                    [
-                        self._a * w[0] + self._b * w[1] + self._s,
-                        self._b * w[0] - self._a * w[1] + self._t,
-                    ],
-                )
+        return V(v)
 
     def _repr_(self):
         r"""

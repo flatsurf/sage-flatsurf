@@ -2156,6 +2156,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 label = incoming_edge[0]
                 polygon = similarity(self.polygon(label))
 
+                incoming_edge_segment = (polygon.vertex(incoming_edge[1]), polygon.vertex(incoming_edge[1] + 1))
+                origin = (polygon.base_ring()**2).zero()
+
                 from flatsurf.geometry.cone import Cones
                 if polygon.vertex(incoming_edge[1]):
                     incoming_edge_cone = Cones(self.base_ring())(polygon.vertex(incoming_edge[1] + 1), polygon.vertex(incoming_edge[1]))
@@ -2164,10 +2167,6 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if not cone.is_subset(incoming_edge_cone):
                     raise ValueError("cone must be contained in the cone formed by the incoming edge")
-
-                if not incoming_edge_cone.is_convex():
-                    # TODO: Explain! Is this really correct?
-                    raise ValueError("cone must intersect incoming edge from the outside")
 
                 from flatsurf.geometry.circle import Circle
                 bounding_circle = Circle(
@@ -2183,6 +2182,13 @@ class SimilaritySurfaces(SurfaceCategory):
                 for v, vertex in enumerate(polygon.vertices()):
                     if cone.contains_point(vertex):
                         if v == incoming_edge[1]:
+                            continue
+
+                        from flatsurf.geometry.euclidean import time_on_ray, ray_segment_intersection
+                        vertex_time_on_ray = time_on_ray(origin, vertex, ray_segment_intersection(origin, vertex, incoming_edge_segment))
+                        if vertex_time_on_ray[0] > vertex_time_on_ray[1]:
+                            assert not polygon.is_convex()
+                            # The cone hits the vertex before entering the polygon.
                             continue
 
                         exit = polygon.flow_to_exit(vertex, -vertex)
@@ -2218,7 +2224,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 cone_space = cone.parent()
                 ray_space = cone_space.rays()
                 vertex_directions = [cone.start()] + cone.sorted_rays(
-                    [ray_space(vertex) for v, vertex in enumerate(polygon.vertices()) if cone.contains_point(vertex) and v != incoming_edge[1]]) + [cone.end()]
+                    [ray_space(vertex) for v, vertex in enumerate(polygon.vertices()) if v != incoming_edge[1] and cone.contains_point(vertex) and ray_space(vertex) not in [cone.start(), cone.end()]]) + [cone.end()]
 
                 subcones = [cone_space(v, w) for (v, w) in zip(vertex_directions, vertex_directions[1:])]
                 # Now we propagate each subcone across the first edge it hits
@@ -2226,7 +2232,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 for subcone in subcones:
                     ray = subcone.a_ray()
                     from flatsurf.geometry.euclidean import ray_segment_intersection
-                    start = ray_segment_intersection(ray.vector().parent().zero(), ray.vector(), (polygon.vertex(incoming_edge[1]), polygon.vertex(incoming_edge[1] + 1)))
+                    start = ray_segment_intersection(origin, ray.vector(), incoming_edge_segment)
                     exit = polygon.flow_to_exit(start, ray.vector())
                     exit = polygon.get_point_position(exit)
                     assert exit.is_in_edge_interior()
@@ -2234,12 +2240,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     if bounding_circle.line_segment_position(polygon.vertex(outgoing_edge), polygon.vertex(outgoing_edge + 1)) != 1:
                         # No part of the edge is inside the
                         # squared_length_bound, search ends here.
-                        break
+                        continue
 
                     opposite_edge = self.opposite_edge(label, outgoing_edge)
                     if opposite_edge is None:
                         # Unglued edge. Search ends here.
-                        break
+                        continue
 
                     # Recurse
                     yield from self._saddle_connections_cone_bounded(squared_length_bound, source, opposite_edge, similarity * self.edge_transformation(*opposite_edge), subcone)

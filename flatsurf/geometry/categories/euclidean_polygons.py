@@ -1477,6 +1477,68 @@ class EuclideanPolygons(Category_over_base_ring):
                 from bidict import bidict
                 return triangulation, bidict(outer_edges)
 
+            def flow_to_exit(self, point, direction):
+                r"""
+                Flow a point in the direction of holonomy until the point
+                hits the boundary of the polygon and return the point on
+                the boundary where the trajectory exits.
+
+                INPUT:
+
+                - ``point`` -- a point in the closure of the polygon (as a vector)
+
+                - ``holonomy`` -- direction of motion (a vector of non-zero length)
+
+                TESTS::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                    sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                    (2, 3)
+                    sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                    (1, 1)
+
+                """
+                if not direction:
+                    raise ValueError("direction must be non-zero")
+
+                vertices = self.vertices()
+
+                first_intersection = None
+
+                for v in range(len(vertices)):
+                    segment = vertices[v], vertices[(v + 1) % len(vertices)]
+
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+                    intersection = ray_segment_intersection(point, direction, segment)
+
+                    if intersection is None:
+                        continue
+
+                    if isinstance(intersection, tuple):
+                        if intersection[0] != point:
+                            # The flow overlaps with this edge but it hits
+                            # a vertex before it gets here.
+                            continue
+
+                        intersection = intersection[1]
+                        assert intersection != point
+
+                    if intersection == point:
+                        continue
+
+                    from flatsurf.geometry.euclidean import time_on_ray
+                    if first_intersection is None or time_on_ray(point, direction, first_intersection)[0] > time_on_ray(point, direction, intersection)[0]:
+                        first_intersection = intersection
+
+                if first_intersection is not None:
+                    return first_intersection
+
+                if self.get_point_position(point).is_outside():
+                    raise ValueError("Cannot flow from point outside of polygon")
+
+                raise ValueError("Cannot flow from point on boundary if direction points out of the polygon")
+
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
             The subcategory of the simple convex Euclidean polygons.
@@ -1641,68 +1703,6 @@ class EuclideanPolygons(Category_over_base_ring):
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
-
-                def flow_to_exit(self, point, direction):
-                    r"""
-                    Flow a point in the direction of holonomy until the point
-                    leaves the polygon and return the point on the boundary
-                    where the trajectory exits.
-
-                    INPUT:
-
-                    - ``point`` -- a point in the closure of the polygon (as a vector)
-
-                    - ``holonomy`` -- direction of motion (a vector of non-zero length)
-
-                    TESTS::
-
-                        sage: from flatsurf import Polygon
-                        sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
-                        sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
-                        (2, 3)
-                        sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
-                        (1, 1)
-
-                    """
-                    if not direction:
-                        raise ValueError("direction must be non-zero")
-
-                    vertices = self.vertices()
-
-                    first_intersection = None
-
-                    for v in range(len(vertices)):
-                        segment = vertices[v], vertices[(v + 1) % len(vertices)]
-
-                        from flatsurf.geometry.euclidean import ray_segment_intersection
-                        intersection = ray_segment_intersection(point, direction, segment)
-
-                        if intersection is None:
-                            continue
-
-                        if isinstance(intersection, tuple):
-                            if intersection[0] != point:
-                                # The flow overlaps with this edge but it hits
-                                # a vertex before it gets here.
-                                continue
-
-                            intersection = intersection[1]
-                            assert intersection != point
-
-                        if intersection == point:
-                            continue
-
-                        from flatsurf.geometry.euclidean import time_on_ray
-                        if first_intersection is None or time_on_ray(point, direction, first_intersection)[0] > time_on_ray(point, direction, intersection)[0]:
-                            first_intersection = intersection
-
-                    if first_intersection is not None:
-                        return first_intersection
-
-                    if self.get_point_position(point).is_outside():
-                        raise ValueError("Cannot flow from point outside of polygon")
-
-                    raise ValueError("Cannot flow from point on boundary if direction points out of the polygon")
 
                 def flow_map(self, direction):
                     r"""

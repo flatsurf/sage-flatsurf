@@ -438,6 +438,10 @@ def ray_segment_intersection(p, direction, segment):
         ((0, 0), (1, 0))
         sage: ray_segment_intersection(V((0, 0)), V((1, 0)), (V((-1, -1)), V((-1, 1))))
 
+    TESTS::
+
+        sage: ray_segment_intersection(V((0, 0)), V((5, 1)), (V((3, 2)), V((3, 3))))
+
     """
     intersection = line_intersection((p, p + direction), segment)
 
@@ -470,7 +474,7 @@ def ray_segment_intersection(p, direction, segment):
     if time_on_ray(p, direction, intersection)[0] < 0:
         return None
 
-    if ccw(segment[0] - p, direction) * ccw(segment[1] - p, direction) == 1:
+    if ccw(segment[0] - p, direction) * ccw(segment[1] - p, direction) > 0:
         return None
 
     return intersection
