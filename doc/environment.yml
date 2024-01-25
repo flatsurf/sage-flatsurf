@@ -6,7 +6,6 @@
 name: sage-flatsurf-docbuild
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - sphinx
   - myst-nb
