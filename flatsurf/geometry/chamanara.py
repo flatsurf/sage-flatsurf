@@ -38,6 +38,7 @@ EXAMPLES::
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.minimal_cover import MinimalTranslationCover
 from sage.rings.integer_ring import ZZ
+from flatsurf.geometry.surface import Labels
 
 
 def ChamanaraPolygon(alpha):
@@ -321,28 +322,27 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
             ((0, 1, 0), (1, -1, 0), (-1, 1/2, 0), (2, -1/2, 0), (-2, 1/4, 0), (3, -1/4, 0), (-3, 1/8, 0), (4, -1/8, 0), (-4, 1/16, 0), (5, -1/16, 0), (-5, 1/32, 0), (6, -1/32, 0), (-6, 1/64, 0), (7, -1/64, 0), (-7, 1/128, 0), (8, -1/128, 0), …)
 
         """
-        from flatsurf.geometry.surface import Labels
-
-        class LazyLabels(Labels):
-            def __contains__(self, label):
-                if not isinstance(label, tuple):
-                    return False
-                if len(label) != 3:
-                    return False
-
-                from sage.all import ZZ
-                if label[0] not in ZZ:
-                    return False
-
-                if label[2] != 0:
-                    return False
-
-                if label[0] >= 1:
-                    return label[1] == -self._surface._alpha**(label[0] - 1)
-
-                return label[1] == self._surface._alpha**(-label[0])
-
         return LazyLabels(self, finite=False)
+
+
+class LazyLabels(Labels):
+    def __contains__(self, label):
+        if not isinstance(label, tuple):
+            return False
+        if len(label) != 3:
+            return False
+
+        from sage.all import ZZ
+        if label[0] not in ZZ:
+            return False
+
+        if label[2] != 0:
+            return False
+
+        if label[0] >= 1:
+            return label[1] == -self._surface._alpha**(label[0] - 1)
+
+        return label[1] == self._surface._alpha**(-label[0])
 
 
 def chamanara_surface(alpha, n=None):

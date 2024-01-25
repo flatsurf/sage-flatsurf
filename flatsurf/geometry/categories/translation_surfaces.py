@@ -293,11 +293,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 doctest:warning
                 ...
                 UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
-                sage: s1 = s.rel_deformation(deformation1).canonicalize()  # long time (.8s)
+                sage: s1 = s.rel_deformation(deformation1).canonicalize().codomain()  # long time (.8s)
                 sage: deformation2 = {s.singularity(0,0):V((a,0))}  # long time (see above)
-                sage: s2 = s.rel_deformation(deformation2).canonicalize()  # long time (.6s)
+                sage: s2 = s.rel_deformation(deformation2).canonicalize().codomain()  # long time (.6s)
                 sage: m = Matrix([[a,0],[0,~a]])
-                sage: s2.cmp((m*s1).canonicalize())  # long time (see above)
+                sage: s2.cmp((m*s1).canonicalize().codomain())  # long time (see above)
                 0
 
             """
@@ -419,8 +419,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
                     else:
                         # In place matrix deformation
-                        ss.apply_matrix(prod)
-                    ss.delaunay_triangulation(direction=nonzero, in_place=True)
+                        ss = ss.apply_matrix(prod, in_place=True).codomain()
+                    ss = ss.delaunay_triangulation(direction=nonzero, in_place=False)
                     deformation2 = {}
                     for singularity, vect in deformation.items():
                         found_start = None
@@ -465,7 +465,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             raise Exception("exceeded limit iterations")
                         continue
 
-                    sss = sss.apply_matrix(mi * g ** (-k) * m, in_place=False)
+                    sss = sss.apply_matrix(mi * g ** (-k) * m, in_place=False).codomain()
                     return sss.delaunay_triangulation(direction=nonzero)
 
         def j_invariant(self):

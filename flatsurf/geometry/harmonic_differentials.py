@@ -72,7 +72,7 @@ The same surface but built as the unfolding of a right triangle::
     sage: f = H({a: 0, b: sqrt(2) + 2, c: -1, d: -sqrt(2) - 1})
 
     sage: Omega = HarmonicDifferentials(S, centers="vertices+centers", ncoefficients=11)  # TODO: With just "vertices" this does not terminate. Probably because there are areas in the Voronoi diagram not contained in any cell.
-    sage: omega = Omega(f)  # long time
+    sage: omega = Omega(f)  # long time  # random output due to precision warnings TODO
     sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: We get this output but multiplied with a root of unity.
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
 
