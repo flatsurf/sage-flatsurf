@@ -374,13 +374,6 @@ class SimplicialHomologyGroup(Parent):
         if coefficients not in Rings():
             raise TypeError("coefficients must be a ring")
 
-        if generators == "edge":
-            self.Element = SimplicialHomologyClass_edge
-        elif generators == "voronoi":
-            self.Element = SimplicialHomologyClass_voronoi
-        else:
-            raise NotImplementedError("cannot represent homology with these generators yet")
-
         if relative:
             for point in relative:
                 if point not in surface.vertices():
@@ -475,7 +468,7 @@ class SimplicialHomologyGroup(Parent):
         if self._k == 2:
             return tuple(self._surface.labels())
 
-        raise NotImplementedError
+        return ()
 
     def _simplices_polygons(self):
         if self._generators == "edge":

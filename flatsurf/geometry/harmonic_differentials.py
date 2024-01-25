@@ -449,11 +449,12 @@ def Cab(C, a):
 
 def define_solve():
     if not hasattr(_cppyy().gbl, "solve"):
+        import os.path
+        _cppyy().include(os.path.join(os.path.dirname(__file__), "..", "..", "mpreal-support.h"))
         _cppyy().cppdef(r'''
         #include <cassert>
         #include <vector>
         #include <iostream>
-        #include "mpreal-support.h"
         #include <eigen3/Eigen/LU>
         #include <eigen3/Eigen/Sparse>
         #include <eigen3/Eigen/OrderingMethods>
