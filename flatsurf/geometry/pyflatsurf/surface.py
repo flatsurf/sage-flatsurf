@@ -32,6 +32,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     """
 
     def __init__(self, flat_triangulation):
+        # TODO: Check that _flat_triangulation is never used by _flat_triangulation instead.
         self._flat_triangulation = flat_triangulation
 
         # TODO: We have to be smarter about the ring bridge here.
@@ -57,6 +58,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     def __hash__(self):
         # TODO: This is not working. Flat triangulations that are equal do not produce the same hashes.
         return hash(self._flat_triangulation)
+
+    def flat_triangulation(self):
+        return self._flat_triangulation
 
     def is_mutable(self):
         return False

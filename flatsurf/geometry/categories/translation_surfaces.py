@@ -685,6 +685,46 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
                 return Surface_pyflatsurf._from_flatsurf(self)
 
+            def saddle_connections(self, squared_length_bound=None, initial_label=None, initial_vertex=None, algorithm=None):
+                if squared_length_bound is not None and squared_length_bound < 0:
+                    raise ValueError("length bound must be non-negative")
+
+                if algorithm is None:
+                    from flatsurf.features import pyflatsurf_feature
+                    if pyflatsurf_feature.is_present():
+                        algorithm = "pyflatsurf"
+                    else:
+                        algorithm = "generic"
+
+                if algorithm == "pyflatsurf":
+                    return self._saddle_connections_pyflatsurf(squared_length_bound, initial_label, initial_vertex)
+
+                from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+                return SimilaritySurfaces.Oriented.ParentMethods.saddle_connections(self, squared_length_bound, initial_label, initial_vertex)
+
+            def _saddle_connections_pyflatsurf(self, squared_length_bound, initial_label, initial_vertex):
+                pyflatsurf_conversion = self.pyflatsurf()
+
+                connections = pyflatsurf_conversion.codomain()._flat_triangulation.connections()
+                connections = connections.byLength()
+
+                if initial_label is not None:
+                    raise NotImplementedError
+                    if initial_vertex is not None:
+                        raise NotImplementedError
+
+                for connection in connections:
+                    from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
+                    connection = SaddleConnection_pyflatsurf(connection, pyflatsurf_conversion.codomain())
+                    connection = pyflatsurf_conversion.section()(connection)
+                    if squared_length_bound is not None:
+                        holonomy = connection.holonomy()
+                        # TODO: Use dot_product everywhere.
+                        if holonomy.dot_product(holonomy) > 2*squared_length_bound:
+                            break
+                    yield connection
+
+
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
             The category of translation surfaces without boundary built from
