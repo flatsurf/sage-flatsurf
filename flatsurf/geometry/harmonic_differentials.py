@@ -957,6 +957,12 @@ class HarmonicDifferentials(Parent):
         gen, degree = gen.describe()
         return degree
 
+    @cached_method
+    def basis(self):
+        from flatsurf.geometry.homology import SimplicialHomology
+        H = SimplicialHomology(self._surface)
+        return [self({gen: 1}) for gen in H.gens()]
+
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
             return self.element_class(self, None, *args, **kwargs)
