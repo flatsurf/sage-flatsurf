@@ -1770,10 +1770,7 @@ def from_pyflatsurf(T):
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
         sage: T0 = D0.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
-        doctest:warning
-        ...
-        UserWarning: from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.
-        TranslationSurface built from 8 polygons
+        Translation Surface in H_2(1^2) built from 2 isosceles triangles and 6 triangles
 
     """
     import warnings

@@ -6,6 +6,7 @@
     Contact e-mail:      pavel@holoborodko.com
 
     Copyright (c) 2008-2022 Pavel Holoborodko
+                       2024 Julian Rüth
 
     Contributors:
     Dmitriy Gubanov, Konstantin Holoborodko, Brian Gladman,
@@ -74,13 +75,13 @@
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
-    #define IsInf(x) isinf(x)                   // Intel ICC compiler on Linux
+    #define MPREAL_ISINF(x) isinf(x)                   // Intel ICC compiler on Linux
 
 #elif defined(_MSC_VER)                         // Microsoft Visual C++
-    #define IsInf(x) (!_finite(x))
+    #define MPREAL_ISINF(x) (!_finite(x))
 
 #else
-    #define IsInf(x) std::isinf(x)              // GNU C/C++ (and/or other compilers), just hope for C99 conformance
+    #define MPREAL_ISINF(x) std::isinf(x)              // GNU C/C++ (and/or other compilers), just hope for C99 conformance
 #endif
 
 // A Clang feature extension to determine compiler features.
@@ -2898,7 +2899,7 @@ inline bool mpreal::fits_in_bits(double x, int n)
 {
     int i;
     double t;
-    return IsInf(x) || (std::modf ( std::ldexp ( std::frexp ( x, &i ), n ), &t ) == 0.0);
+    return MPREAL_ISINF(x) || (std::modf ( std::ldexp ( std::frexp ( x, &i ), n ), &t ) == 0.0);
 }
 
 inline const mpreal pow(const mpreal& a, const mpreal& b, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
