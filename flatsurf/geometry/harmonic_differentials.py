@@ -81,10 +81,10 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: from flatsurf import similarity_surfaces, SimplicialCohomology, HarmonicDifferentials, Polygon
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
-    sage: S = S.erase_marked_points().delaunay_decomposition()  # random output, deprecation warning  # TODO: Fix deprecation.
+    sage: S = S.erase_marked_points().codomain().delaunay_decomposition().codomain()  # random output, deprecation warning  # TODO: Fix deprecation.
 
     sage: H = SimplicialCohomology(S)
-    sage: f = H({H.homology().gen(0): 1})
+    sage: f = H({H.homology().gens()[0]: 1})
 
     sage: Omega = HarmonicDifferentials(S, ncoefficients=1)
     sage: omega = Omega(f, check=False)  # TODO: Increase precision once this is faster.  # long time
@@ -1243,7 +1243,7 @@ class PowerSeriesConstraints:
             sage: Ω = HarmonicDifferentials(T)
             sage: C = PowerSeriesConstraints(Ω)
             sage: C._integrate_path_along_edge(0, 1)
-            [(1, Path (0, 1) from (1, 0) in polygon 0 to (0, 1) in polygon 0)]
+            [(1, Path (0, 1) from (1, 0) in polygon 0 to (1, 1) in polygon 0)]
 
         ::
 
@@ -1251,7 +1251,7 @@ class PowerSeriesConstraints:
             sage: S = translation_surfaces.regular_octagon()
             sage: Ω = HarmonicDifferentials(S)
             sage: PowerSeriesConstraints(Ω)._integrate_path_along_edge(0, 0)
-            [(1, Path (1, 0) from (0, 0) in polygon 0 to (1, a + 1) in polygon 0)]
+            [(1, Path (1, 0) from (0, 0) in polygon 0 to (1, 0) in polygon 0)]
 
         """
         return [(1, GeodesicPath.along_edge(self._differentials.surface(), label, edge))]
@@ -2250,7 +2250,7 @@ class GeodesicPath(Path):
 
             sage: from flatsurf.geometry.harmonic_differentials import GeodesicPath
             sage: GeodesicPath.along_edge(S, 0, 0)
-            Path (1, 0) from (0, 0) in polygon 0 to (1, a + 1) in polygon 0
+            Path (1, 0) from (0, 0) in polygon 0 to (1, 0) in polygon 0
 
         """
         polygon = surface.polygon(label)
