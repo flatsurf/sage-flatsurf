@@ -453,7 +453,7 @@ def define_solve():
         #include <cassert>
         #include <vector>
         #include <iostream>
-        #include "/home/jule/proj/eskin/sage-flatsurf/mpreal-support.h"
+        #include "mpreal-support.h"
         #include <eigen3/Eigen/LU>
         #include <eigen3/Eigen/Sparse>
         #include <eigen3/Eigen/OrderingMethods>
