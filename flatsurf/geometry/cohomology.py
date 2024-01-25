@@ -1,10 +1,33 @@
 r"""
-TODO: Document this module.
+Absolute (simplicial) cohomology of surfaces.
+
+EXAMPLES:
+
+The absolute cohomology of the regular octagon::
+
+    sage: from flatsurf import translation_surfaces, SimplicialCohomology
+    sage: S = translation_surfaces.regular_octagon()
+    sage: H = SimplicialCohomology(S)
+
+A basis of cohomology::
+
+    sage: H.gens()
+    [{B[(0, 1)]: 1}, {B[(0, 2)]: 1}, {B[(0, 3)]: 1}, {B[(0, 0)]: 1}]
+
+The absolute cohomology of the unfolding of the (3, 4, 13) triangle::
+
+    sage: from flatsurf import Polygon, similarity_surfaces
+    sage: P = Polygon(angles=[3, 4, 13])
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
+    sage: H = SimplicialCohomology(S)
+    sage: len(H.gens())
+    16
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2022 Julian Rüth
+#        Copyright (C) 2022-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -43,8 +66,7 @@ class SimplicialCohomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: H = SimplicialCohomology(T)
 
             sage: γ = H.homology().gens()[0]
@@ -65,8 +87,7 @@ class SimplicialCohomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: H = SimplicialCohomology(T)
 
             sage: γ = H.homology().gens()[0]
@@ -84,58 +105,57 @@ class SimplicialCohomologyClass(Element):
         return self.parent()(values)
 
 
-class SimplicialCohomology(UniqueRepresentation, Parent):
+class SimplicialCohomologyGroup(Parent):
     r"""
     Absolute simplicial cohomology of the ``surface`` with ``coefficients``.
 
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces, SimplicialCohomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-        sage: T.set_immutable()
-
-    Currently, surfaces must be Delaunay triangulated to compute their homology::
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
 
         sage: SimplicialCohomology(T)
-        H¹(Translation Surface in H_1(0) built from 2 isosceles triangles; Real Field with 53 bits of precision)
+        H¹(Translation Surface in H_1(0) built from a square; Real Field with 53 bits of precision)
 
     """
     Element = SimplicialCohomologyClass
 
-    @staticmethod
-    def __classcall__(cls, surface, coefficients=None, homology=None, category=None):
-        r"""
-        Normalize parameters used to construct cohomology.
-
-        TESTS:
-
-        Cohomology is unique and cached::
-
-            sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-            sage: T.set_immutable()
-            sage: SimplicialCohomology(T) is SimplicialCohomology(T)
-            True
-
-        """
-        from sage.all import RR
-        from flatsurf.geometry.homology import SimplicialHomology
-        return super().__classcall__(cls, surface, coefficients or RR, homology or SimplicialHomology(surface), category or SetsWithPartialMaps())
-
-    def __init__(self, surface, coefficients, homology, category):
-        # TODO: Not checking this anymore. Do we need it?
-        # if surface != surface.delaunay_triangulation():
-        #     # TODO: This is a silly limitation in here.
-        #     raise NotImplementedError("Surface must be Delaunay triangulated")
-
+    def __init__(self, surface, k, coefficients, implementation, category):
         Parent.__init__(self, category=category)
+        
+        if surface.is_mutable():
+            raise TypeError("surface most be immutable")
+
+        from sage.all import ZZ
+        if k not in ZZ:
+            raise TypeError("k must be an integer")
+
+        from sage.categories.all import Rings
+        if coefficients not in Rings():
+            raise TypeError("coefficients must be a ring")
+
+        if implementation != "dual":
+            raise NotImplementedError("unknown implementation for cohomology group")
 
         self._surface = surface
-        self._homology = homology
+        self._k = k
         self._coefficients = coefficients
 
     def _repr_(self):
-        return f"H¹({self._surface}; {self._coefficients})"
+        k = self._k
+        if k == 0:
+            k = "⁰"
+        elif k == 1:
+            k = "¹"
+        elif k == 2:
+            k = "²"
+        else:
+            k = f"^{k}"
+
+        return f"H{k}({self._surface}; {self._coefficients})"
+
+    def surface(self):
+        return self._surface
 
     def _element_constructor_(self, x):
         if not x:
@@ -143,9 +163,10 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
 
         if isinstance(x, dict):
             assert all(k in self.homology().gens() for k in x.keys())
+            x = {gen: value for (gen, value) in x.items() if value}
             return self.element_class(self, x)
 
-        raise NotImplementedError
+        raise ValueError("cannot create a cohomology class from this data")
 
     @cached_method
     def homology(self):
@@ -155,12 +176,30 @@ class SimplicialCohomology(UniqueRepresentation, Parent):
 
         EXAMPLES::
 
-        sage: from flatsurf import translation_surfaces, SimplicialCohomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
-        sage: T.set_immutable()
-        sage: H = SimplicialCohomology(T)
-        sage: H.homology()
-        H₁(Translation Surface in H_1(0) built from 2 isosceles triangles; Integer Ring)
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: H = SimplicialCohomology(T)
+            sage: H.homology()
+            H₁(Translation Surface in H_1(0) built from a square)
 
         """
-        return self._homology
+        from flatsurf.geometry.homology import SimplicialHomology
+        return SimplicialHomology(self._surface, self._k)
+
+    def gens(self):
+        return [self({gen: 1}) for gen in self.homology().gens()]
+
+
+def SimplicialCohomology(surface, k=1, coefficients=None, implementation="dual", category=None):
+    r"""
+    TESTS:
+
+    Cohomology is unique and cached::
+
+        sage: from flatsurf import translation_surfaces, SimplicialCohomology
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: SimplicialCohomology(T) is SimplicialCohomology(T)
+        True
+
+    """
+    return surface.cohomology(k, coefficients, implementation, category)

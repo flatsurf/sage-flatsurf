@@ -8,6 +8,7 @@ channels:
   - defaults
 dependencies:
   - black >=22,<23
+  - bidict
   - codespell >=2.2.2,<3
   - gap-defaults
   - ipywidgets
@@ -20,7 +21,10 @@ dependencies:
   - pytest-repeat
   - sagelib>=8.8
   # sagelib<9.2 does not explicitly install libiconv which is needed in lots of places.
+  # doctests call functionality in SageMath that relies on sympy being present
+  - sympy
   - libiconv
+  - ruff=0.0.292
   - scipy
   - surface-dynamics>=0.4.7,<0.5
   - pycodestyle >=2.9.1,<3

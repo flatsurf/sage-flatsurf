@@ -14,38 +14,34 @@ A basis of homology, with generators written as oriented edges::
     sage: H.gens()
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
 
-We can also write the generators as paths that cross over the edges and
-connect points on the interior of neighboring polygons::
+The absolute homology of the unfolding of the (3, 4, 13) triangle::
 
-TODO: We actually don't do that currently anymore. We rather take the actual
-edges. But using that form might be useful sometimes.
-
-    sage: H = SimplicialHomology(S, generators="voronoi")
-    sage: H.gens()
-    (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
-
-We can also use generators that connect points on the interior of edges of a
-polygon which can be advantageous when integrating along such paths while
-avoiding to integrate close to the vertices::
-
-    sage: H = SimplicialHomology(S, generators="midpoint")  # not tested; TODO
-    sage: H.gens()  # not tested; TODO
-
-Relative homology on the unfolding of the (3, 4, 13) triangle; homology
-relative to the subset of vertices::
-
-    sage: from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces
-    sage: P = EuclideanPolygonsWithAngles(3, 4, 13).an_element()
+    sage: from flatsurf import Polygon, similarity_surfaces
+    sage: P = Polygon(angles=[3, 4, 13])
     sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
-    sage: H = SimplicialHomology(relative=S.singularities())  # not tested; TODO
-    sage: H.gens()  # not tested; TODO
+    sage: H = SimplicialHomology(S)
+    sage: len(H.gens())
+    16
 
-TODO: Add examples.
+Relative homology, relative to the singularities of the surface::
+
+    sage: S = S.erase_marked_points().codomain()
+    sage: H1 = SimplicialHomology(S, relative=S.vertices())
+    sage: len(H1.gens())
+    17
+    sage: H0 = SimplicialHomology(S, relative=S.vertices(), k=0)
+    sage: len(H0.gens())
+    0
+    sage: H2 = SimplicialHomology(S, relative=S.vertices(), k=2)
+    sage: len(H2.gens())
+    1
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2022-2023 Julian Rüth
+#        Copyright (C) 2022-2024 Julian Rüth
+#                           2023 Julien Boulanger
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -63,29 +59,94 @@ TODO: Add examples.
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
-from sage.structure.unique_representation import UniqueRepresentation
 
 from sage.misc.cachefunc import cached_method
 
 
-# TODO: We should have absolute and relative (to a subset of vertices) homology.
-# TODO: We implement everything in terms of generators given by the edges of
-# the polygons. However, we should have views that pretend that the generators
-# are paths between adjacent polygons, and a view with generators given by
-# paths between midpoints of edges of polygons.
-
 class SimplicialHomologyClass(Element):
-    # TODO: Use the algorithm from GL2ROrbitClosure._spanning_tree to compute a
-    # basis of homology and a projection map. Or better, have an algorithm
-    # keyword to use the generic implementation and the spanning tree
-    # implementation.
-    # TODO: Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to
-    # force the representatives to live in particular subgraph of the dual
-    # graph.
     def __init__(self, parent, chain):
         super().__init__(parent)
 
         self._chain = chain
+
+    def algebraic_intersection(self, other):
+        r"""
+        Return the algebraic intersection of this class of a closed curve with
+        ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: S = translation_surfaces.regular_octagon()
+            sage: H = SimplicialHomology(S)
+
+            sage: H((0, 0)).algebraic_intersection(H((0, 1)))
+            1
+
+            sage: a = H((0, 1))
+            sage: b = 3 * H((0, 0)) + 5 * H((0, 2)) - 2 * H((0, 4))
+            sage: a.algebraic_intersection(b)
+            0
+
+            sage: a = 2 * H((0, 0)) + H((0, 1)) + 3 * H((0, 2)) + H((0, 3)) + H((0, 4)) + H((0, 5)) + H((0, 7))
+            sage: b = H((0, 0)) + 2 * H((0, 1)) + H((0, 2)) + H((0, 3)) + 2 * H((0, 4)) + 3 * H((0, 5)) + 4 * H((0, 6)) + 3 * H((0, 7))
+            sage: a.algebraic_intersection(b)
+            -6
+
+            sage: S = translation_surfaces.cathedral(1, 4)
+            sage: H = SimplicialHomology(S)
+            sage: a = H((0, 3))
+            sage: b = H((2, 1))
+            sage: a.algebraic_intersection(b)
+            0
+
+            sage: a = H((0, 3))
+            sage: b = H((3, 4)) + 3 * H((0, 3)) + 2 * H((0, 0)) - H((1, 7)) + 7 * H((2, 1)) - 2 * H((2, 2))
+            sage: a.algebraic_intersection(b)
+            2
+
+        """
+        intersection = 0
+
+        multiplicities = dict(self._chain)
+        other_multiplicities = dict(other._chain)
+
+        for _, adjacent_edges in self.parent().surface().angles(return_adjacent_edges=True):
+            counter = 0
+            other_counter = 0
+            for edge in adjacent_edges:
+                opposite_edge = self.parent().surface().opposite_edge(*edge)
+
+                counter += multiplicities.get(edge, 0)
+                intersection += counter * other_multiplicities.get(edge, 0)
+                intersection -= counter * other_multiplicities.get(opposite_edge, 0)
+
+                counter -= multiplicities.get(opposite_edge, 0)
+                other_counter += other_multiplicities.get(edge, 0)
+                other_counter -= other_multiplicities.get(opposite_edge, 0)
+
+            if counter:
+                raise TypeError("homology class does not correspond to a closed curve")
+            if other_counter:
+                raise ValueError("homology class does not correspond to a closed curve")
+
+        return intersection
+
+    def _acted_upon_(self, c, self_on_left=None):
+        r"""
+        Return the coefficients of this element in terms of the generators of homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: 3 * H.gens()[0]
+            3*B[(0, 1)]
+
+        """
+        return self.parent()(c * self._chain)
 
     @cached_method
     def _homology(self):
@@ -109,8 +170,6 @@ class SimplicialHomologyClass(Element):
 
     def _richcmp_(self, other, op):
         r"""
-        Compare homology classes with respect to ``op``.
-
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
@@ -126,12 +185,18 @@ class SimplicialHomologyClass(Element):
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op == op_NE:
-            return not (self == other)
+            return not self._richcmp_(other, op_EQ)
 
         if op == op_EQ:
+            if self is other:
+                return True
+
+            if self.parent() != other.parent():
+                return False
+
             return self._homology() == other._homology()
 
-        raise NotImplementedError
+        return super()._richcmp_(other, op)
 
     def __hash__(self):
         return hash(self._homology())
@@ -155,15 +220,23 @@ class SimplicialHomologyClass(Element):
             sage: a.coefficient(b)
             0
 
+        TESTS::
+
+            sage: a.coefficient(a + b)
+            Traceback (most recent call last):
+            ...
+            ValueError: gen must be a generator not B[(0, 0)] + B[(0, 1)]
+
         """
-        # TODO: Check that gen is a generator.
+        coefficients = gen._homology()
+        indexes = [i for (i, c) in enumerate(coefficients) if c]
 
-        for g, c in zip(gen._homology(), self._homology()):
-            if g:
-                assert g == 1
-                return c
+        if len(indexes) != 1 or coefficients[indexes[0]] != 1:
+            raise ValueError(f"gen must be a generator not {gen}")
 
-        raise ValueError("gen must be a generator of homology")
+        index = indexes[0]
+
+        return self._homology()[index]
 
     def _add_(self, other):
         r"""
@@ -181,6 +254,9 @@ class SimplicialHomologyClass(Element):
 
         """
         return self.parent()(self._chain + other._chain)
+
+    def _sub_(self, other):
+        return self.parent()(self._chain - other._chain)
 
     def _neg_(self):
         r"""
@@ -204,104 +280,27 @@ class SimplicialHomologyClass(Element):
     def surface(self):
         return self.parent().surface()
 
+    def __bool__(self):
+        return bool(self._chain)
 
-class SimplicialHomologyClass_edge(SimplicialHomologyClass):
-    pass
 
-
-class SimplicialHomologyClass_voronoi(SimplicialHomologyClass):
+class SimplicialHomologyGroup(Parent):
     r"""
-    EXAMPLES::
-
-        sage: from flatsurf import translation_surfaces, SimplicialHomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: T.set_immutable()
-        sage: H = SimplicialHomology(T, generators="voronoi")
-        sage: a, b = H.gens()
-
-    The cycle ``a`` is horizontal in the square torus since it
-    crosses the vertical edge 1::
-
-        sage: a
-        B[(0, 1)]
-        sage: b
-        B[(0, 0)]
-
-    """
-    # def safety(self):
-    #     return min(self._safety(label0, edge0) for (label0, edge0) in self._surface.underlying_surface().edges())
-
-    # def _safety(self, label, edge):
-    #     polygon = self._surface.polygon(label)
-    #     cross_label, cross_edge = self._surface.opposite_edge(label, edge)
-    #     cross_polygon = self._surface.polygon(cross_label)
-    #     cross_polygon = cross_polygon.translate(polygon.vertex(edge) - cross_polygon.vertex((cross_edge + 1) % cross_polygon.num_edges()))
-    #     distance = (polygon.circumscribing_circle().center() - cross_polygon.circumscribing_circle().center()).change_ring(RR).norm()
-    #     if distance == 0:
-    #         from sage.all import infinity
-    #         return infinity
-    #     return self._convergence(label) / distance
-
-    # def _convergence(self, label):
-    #     r"""
-    #     Return the radius of convergence at the point at which we develop the
-    #     series for the polygon ``label``.
-    #     """
-    #     polygon = self._surface.polygon(label)
-    #     center = polygon.circumscribing_circle().center()
-    #     singularities = self._surface.singularities()
-
-    #     from sage.all import infinity
-    #     radius = infinity
-
-    #     if not singularities:
-    #         return radius
-
-    #     closest_edges = []
-    #     polygons = set([polygon])
-
-    #     def distance(polygon, edge):
-    #         # TODO: This is wrong. This is the distance to the endpoints.
-    #         return min((center - polygon.vertex(edge)).change_ring(RR).norm(), (center - polygon.vertex((edge + 1) % polygon.num_edges())).change_ring(RR).norm())
-
-    #     from heapq import heappush, heappop
-    #     for e in range(polygon.num_edges()):
-    #         heappush(closest_edges, (distance(polygon, e), label, str(polygon), polygon, e))
-
-    #     while True:
-    #         d, label, _, polygon, edge = heappop(closest_edges)
-    #         if d >= radius:
-    #             return radius
-
-    #         vertex = self._surface.point(label, self._surface.polygon(label).vertex(edge))
-    #         if vertex in singularities:
-    #             radius = min(radius, (polygon.vertex(edge) - center).change_ring(RR).norm())
-
-    #         cross_label, cross_edge = self._surface.opposite_edge(label, edge)
-    #         cross_polygon = self._surface.polygon(cross_label)
-    #         cross_polygon = cross_polygon.translate(polygon.vertex(edge) - cross_polygon.vertex((cross_edge + 1) % cross_polygon.num_edges()))
-
-    #         if cross_polygon in polygons:
-    #             continue
-
-    #         polygons.add(cross_polygon)
-
-    #         for e in range(cross_polygon.num_edges()):
-    #             if e == cross_label:
-    #                 continue
-
-    #             heappush(closest_edges, (distance(cross_polygon, e), cross_label, str(cross_polygon), cross_polygon, e))
-
-
-class SimplicialHomology(UniqueRepresentation, Parent):
-    r"""
-    Absolute and relative simplicial homology of the ``surface`` with
+    The ``k``-th simplicial homology group of the ``surface`` with
     ``coefficients``.
+
+    .. NOTE:
+
+        This method should not be called directly since it leads to problems
+        with pickling and uniqueness. Instead use :meth:`SimplicialHomology` or
+        :meth:`homology` on a surface.
 
     INPUT:
 
     - ``surface`` -- a finite :class:`flatsurf.geometry.surface.Surface`
       without boundary
+
+    - ``k`` -- an integer
 
     - ``coefficients`` -- a ring (default: the integers)
 
@@ -311,10 +310,21 @@ class SimplicialHomology(UniqueRepresentation, Parent):
     - ``relative`` -- a subset of points of the ``surface`` (default: the empty
       set)
 
-    - ``implementation`` -- one of ``"spanning_tree"`` or ``"generic"`` (default:
-      ``"spanning_tree"``); whether the homology is computed with a (very
+    - ``implementation`` -- one of ``"spanning_tree"`` or ``"generic"``
+      (default: ``"generic"``); whether the homology is computed with a (very
       efficient) spanning tree algorithm or the generic homology machinery
       provided by SageMath.
+
+
+    .. TODO::
+
+        Implement the ``"spanning_tree"`` algorithm froom
+        ``GL2ROrbitClosure._spanning_tree``.
+
+    .. TODO::
+
+        Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to force
+        the representatives to live in particular subgraph of the dual graph.
 
     EXAMPLES::
 
@@ -333,13 +343,13 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         sage: T.set_immutable()
         sage: SimplicialHomology(T)
-        H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
+        H₁(Translation Surface in H_1(0) built from a square)
 
     TESTS::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # not tested; TODO
-        sage: TestSuite(H).run()  # not tested; TODO
+        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # not tested, spanning_tree not implemented yet
+        sage: TestSuite(H).run()  # not tested, spanning_tree not implemented yet
 
     ::
 
@@ -348,37 +358,17 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         sage: TestSuite(H).run()
 
     """
-    @staticmethod
-    # TODO: implementation should default to spanning_tree
-    def __classcall__(cls, surface, coefficients=None, generators="edge", subset=None, implementation="generic", category=None):
-        r"""
-        Normalize parameters used to construct homology.
+    Element = SimplicialHomologyClass
 
-        TESTS:
+    def __init__(self, surface, k, coefficients, generators, relative, implementation, category):
+        Parent.__init__(self, base=coefficients, category=category)
 
-        Homology is unique and cached::
-
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-            sage: SimplicialHomology(T) is SimplicialHomology(T)
-            True
-
-        """
         if surface.is_mutable():
-            raise ValueError("surface must be immutable to compute homology")
+            raise TypeError("surface must be immutable")
 
         from sage.all import ZZ
-        coefficients = coefficients or ZZ
-
-        from sage.all import Sets
-        category = category or Sets()
-        subset = frozenset(subset or {})
-
-        return super().__classcall__(cls, surface, coefficients, generators, subset, implementation, category)
-
-    def __init__(self, surface, coefficients, generators, subset, implementation, category):
-        Parent.__init__(self, category=category)
+        if k not in ZZ:
+            raise TypeError("k must be an integer")
 
         from sage.categories.all import Rings
         if coefficients not in Rings():
@@ -391,17 +381,36 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         else:
             raise NotImplementedError("cannot represent homology with these generators yet")
 
-        if subset:
-            raise NotImplementedError("cannot compute relative homology yet")
+        if relative:
+            for point in relative:
+                if point not in surface.vertices():
+                    raise NotImplementedError("can only compute homology relative to a subset of the vertices")
 
-        if implementation not in ["generic", "spanning_tree"]:
+        if implementation not in ["generic"]:
             raise NotImplementedError("cannot compute homology with this implementation yet")
 
         self._surface = surface
+        self._k = k
         self._coefficients = coefficients
         self._generators = generators
-        self._subset = subset
+        self._relative = relative
         self._implementation = implementation
+
+    def some_elements(self):
+        r"""
+        Return some typical homology classes (for testing.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H.some_elements()
+            [0, B[(0, 1)], B[(0, 0)]]
+
+        """
+        return [self.zero()] + list(self.gens())
 
     def surface(self):
         r"""
@@ -420,15 +429,11 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         return self._surface
 
     @cached_method
-    def chain_module(self, dimension=1):
+    def chain_module(self):
         r"""
-        Return the free module of simplicial ``dimension``-chains of the
-        triangulation, i.e., formal sums of ``dimension``-simplicies, e.g., formal
-        sums of edges of the triangulation.
-
-        INPUT:
-
-        - ``dimension`` -- an integer (default: ``1``)
+        Return the free module of simplicial chains of the
+        triangulation, i.e., formal sums of simplicies, e.g., formal sums of
+        edges of the triangulation.
 
         EXAMPLES::
 
@@ -441,17 +446,13 @@ class SimplicialHomology(UniqueRepresentation, Parent):
 
         """
         from sage.all import FreeModule
-        return FreeModule(self._coefficients, self.simplices(dimension))
+
+        return FreeModule(self._coefficients, self.simplices())
 
     @cached_method
-    def simplices(self, dimension=1):
+    def simplices(self):
         r"""
-        Return the ``dimension``-simplices that form the basis of
-        :meth:`chain_module`.
-
-        INPUT:
-
-        - ``dimension`` -- an integer (default: ``1``)
+        Return the simplices that form the generators of :meth:`chain_module`.
 
         EXAMPLES::
 
@@ -463,42 +464,16 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             ((0, 1), (0, 0))
 
         """
-        if dimension == 0:
-            return self._simplices_points()
-
-        if dimension == 1:
-            return self._simplices_segments()
-
-        if dimension == 2:
-            return self._simplices_polygons()
-
-        return tuple()
-
-    def _simplices_points(self):
-        if self._generators == "edge":
-            return tuple(set(self._surface.point(label, self._surface.polygon(label).vertex(edge)) for (label, edge) in self._surface.edges()))
-
-        if self._generators == "voronoi":
-            for label in self._surface.labels():
-                polygon = self._surface.polygon(label)
-                # TODO: This fails if the center of the circumscribing circle
-                # is not in the polygon; we should be more explicit here and
-                # check this condition properly earlier.
-                # self._surface.surface_point(label, polygon.circumscribing_circle().center())
-
-            return tuple(self._surface.labels())
-
-        raise NotImplementedError
-
-    def _simplices_segments(self):
-        if self._generators in ["edge", "voronoi"]:
-            # When "edge", then the edges are the generators.
-            # When "voronoi", then the paths crossing the edges are the generators.
+        if self._k == 0:
+            return tuple(vertex for vertex in self._surface.vertices() if vertex not in self._relative)
+        if self._k == 1:
             simplices = set()
             for edge in self._surface.edges():
                 if self._surface.opposite_edge(*edge) not in simplices:
                     simplices.add(edge)
             return tuple(simplices)
+        if self._k == 2:
+            return tuple(self._surface.labels())
 
         raise NotImplementedError
 
@@ -510,6 +485,10 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             return tuple(self._surface.edges())
 
         raise NotImplementedError
+
+    @cached_method
+    def change(self, k=None):
+        return SimplicialHomology(surface=self._surface, k=k if k is not None else self._k, coefficients=self._coefficients, generators=self._generators, relative=self._relative, implementation=self._implementation, category=self.category())
 
     def boundary(self, chain):
         r"""
@@ -524,53 +503,60 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
-            sage: H = SimplicialHomology(T)
 
         ::
 
-            sage: c = H.chain_module(dimension=0).an_element(); c
+            sage: H = SimplicialHomology(T, k=0)
+            sage: c = H.chain_module().an_element(); c
             2*B[Vertex 0 of polygon 0]
             sage: H.boundary(c)
             0
 
         ::
 
-            sage: c = H.chain_module(dimension=1).an_element(); c
+            sage: H = SimplicialHomology(T, k=1)
+            sage: c = H.chain_module().an_element(); c
             2*B[(0, 0)] + 2*B[(0, 1)]
             sage: H.boundary(c)
             0
 
         ::
 
-            sage: c = H.chain_module(dimension=2).an_element(); c
+            sage: H = SimplicialHomology(T, k=2)
+            sage: c = H.chain_module().an_element(); c
             2*B[0]
             sage: H.boundary(c)
             0
 
         """
-        if chain.parent() == self.chain_module(dimension=1):
-            C0 = self.chain_module(dimension=0)
+        chain = self.chain_module()(chain)
+
+        if self._k == 1:
+            C0 = self.change(k=0).chain_module()
+
+            def to_C0(point):
+                if point in self._relative:
+                    return C0.zero()
+                return C0(point)
+
             boundary = C0.zero()
-            for gen, coefficient in chain:
-                boundary += coefficient * self._boundary_segment(gen)
-
+            for edge, coefficient in chain:
+                boundary += coefficient * to_C0(self._surface.point(*self._surface.opposite_edge(*edge)))
+                boundary -= coefficient * to_C0(self._surface.point(*edge))
             return boundary
 
-        if chain.parent() == self.chain_module(dimension=2):
-            C1 = self.chain_module(dimension=1)
+        if self._k == 2:
+            C1 = self.change(k=1).chain_module()
             boundary = C1.zero()
-            for gen, coefficient in chain:
-                boundary += coefficient * self._boundary_polygon(gen)
-
+            for face, coefficient in chain:
+                for edge in range(len(self._surface.polygon(face).edges())):
+                    if (face, edge) in C1.indices():
+                        boundary += coefficient * C1((face, edge))
+                    else:
+                        boundary -= coefficient * C1(self._surface.opposite_edge(face, edge))
             return boundary
 
-        if chain.parent() == self.chain_module(dimension=0):
-            return self.chain_module(dimension=-1).zero()
-
-        # The boundary for all other chains is trivial but we have no way to
-        # tell whether the boundary is a 2-dimensional chain (which lives in a
-        # non-trivial module) or a chain living in a trivial module.
-        raise NotImplementedError("cannot compute boundary of this chain yet")
+        return self.change(k=self._k - 1).chain_module().zero()
 
     def _boundary_segment(self, gen):
         if self._generators == "edge":
@@ -636,28 +622,38 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             Chain complex with at most 3 nonzero terms over Integer Ring
 
         """
-        def boundary(dimension, simplex):
-            C = self.chain_module(dimension)
-            chain = C.basis()[simplex]
-            boundary = self.boundary(chain)
-            coefficients = boundary.dense_coefficient_list(self.chain_module(dimension-1).indices())
+        def boundary(dimension, chain):
+            boundary = self.change(k=dimension).boundary(chain)
+            coefficients = boundary.dense_coefficient_list(self.change(k=dimension - 1).chain_module().indices())
             return coefficients
 
         from sage.all import ChainComplex, matrix
         return ChainComplex({
-            dimension: matrix([boundary(dimension, simplex) for simplex in self.simplices(dimension)]).transpose()
+            dimension: matrix([boundary(dimension, simplex) for simplex in self.change(k=dimension).chain_module().basis()]).transpose()
             for dimension in range(3)
         }, base_ring=self._coefficients, degree=-1)
 
-    @cached_method
-    def _homology(self, dimension=1):
+    def zero(self):
         r"""
-        Return the a free module isomorphic to homology, a lift from that
+        Return the zero element of homology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H.zero()
+            0
+
+        """
+        return self(self.chain_module().zero())
+
+    @cached_method
+    def _homology(self):
+        r"""
+        Return the free module isomorphic to homology, a lift from that
         module to the chain module, and an inverse (modulo boundaries.)
-
-        INPUT:
-
-        - ``dimension`` -- an integer (default: ``1``)
 
         EXAMPLES::
 
@@ -678,15 +674,28 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         if self._implementation == "generic":
             C = self._chain_complex()
 
-            cycles = C.differential(dimension).transpose().kernel()
-            boundaries = C.differential(dimension + 1).transpose().image()
+            cycles = C.differential(self._k).transpose().kernel()
+            boundaries = C.differential(self._k + 1).transpose().image()
             homology = cycles.quotient(boundaries)
 
-            F = self.chain_module(dimension)
+            F = self.chain_module()
 
             from sage.all import vector
             from_homology = homology.module_morphism(function=lambda x: F.from_vector(vector(list(x.lift().lift()))), codomain=F)
-            to_homology = F.module_morphism(function=lambda x: homology(cycles(x.dense_coefficient_list(order=F.get_order()))), codomain=homology)
+
+            def _to_homology(x):
+                multiplicities = x.dense_coefficient_list(order=F.get_order())
+                try:
+                    cycle = cycles(multiplicities)
+                except TypeError:
+                    if multiplicities not in cycles:
+                        raise ValueError("chain is not a cycle so it has no representation in homology")
+                    raise
+
+                return homology(cycle)
+
+
+            to_homology = F.module_morphism(function=_to_homology, codomain=homology)
 
             for gen in homology.gens():
                 assert to_homology(from_homology(gen)) == gen
@@ -710,17 +719,16 @@ class SimplicialHomology(UniqueRepresentation, Parent):
         """
         tester = self._tester(**options)
 
-        for dimension in [0, 1, 2]:
-            homology, from_homology, to_homology = self._homology(dimension=dimension)
-            chains = self.chain_module(dimension)
+        homology, from_homology, to_homology = self._homology()
+        chains = self.chain_module()
 
-            tester.assertEqual(homology, to_homology.codomain())
-            tester.assertEqual(homology, from_homology.domain())
-            tester.assertEqual(chains, to_homology.domain())
-            tester.assertEqual(chains, from_homology.codomain())
+        tester.assertEqual(homology, to_homology.codomain())
+        tester.assertEqual(homology, from_homology.domain())
+        tester.assertEqual(chains, to_homology.domain())
+        tester.assertEqual(chains, from_homology.codomain())
 
-            for gen in homology.gens():
-                tester.assertEqual(to_homology(from_homology(gen)), gen)
+        for gen in homology.gens():
+            tester.assertEqual(to_homology(from_homology(gen)), gen)
 
     def _repr_(self):
         r"""
@@ -733,90 +741,130 @@ class SimplicialHomology(UniqueRepresentation, Parent):
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
-            H₁(Translation Surface in H_1(0) built from a square; Integer Ring)
+            H₁(Translation Surface in H_1(0) built from a square)
 
         """
-        return f"H₁({self._surface}; {self._coefficients})"
+        k = self._k
+        if k == 0:
+            k = "₀"
+        elif k == 1:
+            k = "₁"
+        elif k == 2:
+            k = "₂"
+        else:
+            k = f"_{k}"
+
+        from sage.all import ZZ
+        if self._coefficients is not ZZ:
+            return f"H{k}({self._surface}; {self._coefficients})"
+
+        return f"H{k}({self._surface})"
 
     def _element_constructor_(self, x):
-        if x == 0 or x is None:
-            return self.element_class(self, self.chain_module(1).zero())
+        r"""
+        TESTS::
 
-        if x.parent() in (self.chain_module(0), self.chain_module(1), self.chain_module(2)):
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+
+            sage: H(0)
+            0
+            sage: H(None)
+            0
+
+            sage: H((0, 0))
+            B[(0, 0)]
+            sage: H((0, 2))
+            -B[(0, 0)]
+
+            sage: H = SimplicialHomology(T, 0)
+            sage: H(H.chain_module().gens()[0])
+            B[Vertex 0 of polygon 0]
+
+            sage: H = SimplicialHomology(T, 1)
+            sage: H(H.chain_module().gens()[0])
+            B[(0, 1)]
+
+            sage: H = SimplicialHomology(T, 2)
+            sage: H(H.chain_module().gens()[0])
+            B[0]
+
+        """
+        if x == 0 or x is None:
+            return self.element_class(self, self.chain_module().zero())
+
+        if self._k == 1 and isinstance(x, tuple) and len(x) == 2:
+            sgn = 1
+            if x not in self.simplices():
+                x = self.surface().opposite_edge(*x)
+                sgn = -1
+            assert x in self.simplices()
+            return sgn * self.element_class(self, self.chain_module()(x))
+
+        if x.parent() is self.chain_module():
             return self.element_class(self, x)
 
         raise NotImplementedError
 
-    def gen(self, n, dimension=1):
-        r"""
-        Return the ``n``-th generator of homology in ``dimension``, i.e., the
-        ``n``-th element of :meth:`gens`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-            sage: H = SimplicialHomology(T)
-
-        ::
-
-            sage: H.gen(0)
-            B[(0, 1)]
-
-        """
-        return self.gens()[n]
-
     @cached_method
-    def gens(self, dimension=1):
+    def gens(self):
         r"""
-        Return generators of homology in ``dimension``.
+        Return generators of homology.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
+
+        ::
+
             sage: H = SimplicialHomology(T)
-
-        ::
-
-            sage: H.gens(dimension=0)
-            (B[Vertex 0 of polygon 0],)
-
-        ::
-
-            sage: H.gens(dimension=1)
+            sage: H.gens()
             (B[(0, 1)], B[(0, 0)])
 
         ::
 
-            sage: H.gens(dimension=2)
+            sage: H = SimplicialHomology(T, 0)
+            sage: H.gens()
+            (B[Vertex 0 of polygon 0],)
+
+        ::
+
+            sage: H = SimplicialHomology(T, 2)
+            sage: H.gens()
             (B[0],)
 
         """
-        if dimension < 0 or dimension > 2:
+        if self._k < 0 or self._k > 2:
             return ()
 
-        homology, from_homology, to_homology = self._homology(dimension)
+        homology, from_homology, to_homology = self._homology()
         return tuple(self(from_homology(g)) for g in homology.gens())
 
-    # @cached_method
-    # def _paths(self, voronoi=False):
-    #     r"""
-    #     Return the generators of homology in dimension 1 as paths.
+    def __eq__(self, other):
+        if not isinstance(other, SimplicialHomologyGroup):
+            return False
 
-    #     If ``voronoi``, the paths are inside Voronoi cells without touching the vertices of the triangulation.
+        return self._surface == other._surface and self._coefficients == other._coefficients and self._generators == other._generators and self._relative == other._relative and self._implementation == other._implementation and self.category() == other.category()
 
-    #     EXAMPLES::
+    def __hash__(self):
+        return hash((self._surface, self._coefficients, self._generators, self._relative, self._implementation, self.category()))
 
-    #         sage: from flatsurf import translation_surfaces, SimplicialHomology
-    #         sage: T = translation_surfaces.torus((1, 0), (0, 1))
-    #         sage: T.set_immutable()
-    #         sage: H = SimplicialHomology(T)
-    #         sage: H._paths()
-    #         [((0, 0),), ((0, 1),)]
 
-    #     """
-    #     TODO: This does not really make sense probably.
-    #     return [gen._path(voronoi=voronoi) for gen in self.gens()]
+def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", relative=None, implementation="generic", category=None):
+    r"""
+    TESTS:
+
+    Homology is unique and cached::
+
+        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T.set_immutable()
+        sage: SimplicialHomology(T) is SimplicialHomology(T)
+        True
+
+    """
+    return surface.homology(k, coefficients, generators, relative, implementation, category)

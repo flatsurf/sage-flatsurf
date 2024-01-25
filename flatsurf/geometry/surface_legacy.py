@@ -219,7 +219,7 @@ class Surface(OrientedSimilaritySurface):
             sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: S.is_triangulated()
             False
-            sage: S.triangulate().is_triangulated()
+            sage: S.triangulate().codomain().is_triangulated()
             True
         """
         it = self.label_iterator()
@@ -914,7 +914,7 @@ class Surface_list(Surface):
         ...
         UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
         Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels. However, there is no immediate replacement for lazy copying of infinite surfaces.
-        Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs.
+        Have a look at the implementation of flatsurf.geometry.lazy.LazyMutableSurface and adapt it to your needs.
         sage: # Explore the surface a bit
         sage: ts.polygon(0)
         Polygon(vertices=[(0, 0), (4, 0), (0, 3)])
@@ -2215,7 +2215,9 @@ class LabelsView(collections.abc.Set):
 def SurfaceClass(surface, name, category, *args, **kwargs):
     category = category.Oriented().Connected().WithoutBoundary()
 
-    message = f"{name} has been deprecated and will be removed in a future version of sage-flatsurf; there is no distinction between an (underlying) Surface and the SimilaritySurface types anymore."
+    message = f"{name} has been deprecated and will be removed in a future "
+    message += "version of sage-flatsurf; there is no distinction between "
+    message += "an (underlying) Surface and the SimilaritySurface types anymore."
 
     if surface.is_finite_type():
         message += f" Calling set_immutable() on this surface should determine the category of this surface automatically so calling {name} should not be necessary in this case."

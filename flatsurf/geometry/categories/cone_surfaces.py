@@ -341,7 +341,7 @@ class ConeSurfaces(SurfaceCategory):
                                 "cannot compute exact angles in this surface built from non-rational polygons yet"
                             )
 
-                        edges = [pair for pair in self.edges()]
+                        edges = list(self.edges())
                         edges = set(edges)
                         angles = []
 
@@ -443,6 +443,5 @@ class ConeSurfaces(SurfaceCategory):
 
                             tester.assertAlmostEqual(
                                 self.genus(),
-                                sum(a - 1 for a in self.angles(numerical=True)) / 2.0
-                                + 1,
+                                float(sum(a - 1 for a in self.angles(numerical=True)) / 2.0 + 1),
                             )

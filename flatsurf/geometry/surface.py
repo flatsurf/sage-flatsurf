@@ -415,19 +415,20 @@ class MutablePolygonalSurface(Surface_base):
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
             {'angles',
-             'apply_matrix',
              'area',
              'canonicalize',
              'canonicalize_mapping',
              'erase_marked_points',
              'holonomy_field',
+             'is_veering_triangulated',
              'j_invariant',
              'l_infinity_delaunay_triangulation',
              'minimal_translation_cover',
              'normalized_coordinates',
+             'pyflatsurf',
              'rel_deformation',
-             'singularities',
-             'stratum'}
+             'stratum',
+             'veering_triangulation'}
 
         An immutable surface cannot be mutated anymore::
 
@@ -1185,13 +1186,14 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
     def standardize_polygons(self, in_place=False):
         r"""
-        Replace each polygon with a new polygon which differs by
-        translation and reindexing. The new polygon will have the property
-        that vertex zero is the origin, and all vertices lie either in the
-        upper half plane, or on the x-axis with non-negative x-coordinate.
+        Return a morphism to a surface with each polygon replaced with a new
+        polygon which differs by translation and reindexing. The new polygon
+        will have the property that vertex zero is the origin, and each vertex
+        lies in the upper half plane or on the x-axis with non-negative
+        x-coordinate.
 
-        This is done to the current surface if in_place=True. A mutable
-        copy is created and returned if in_place=False (as default).
+        This is done to the current surface if in_place=True, otherwise an
+        immutable copy is created and returned.
 
         This overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons`
@@ -1209,32 +1211,24 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             sage: s.set_root(0)
             sage: s.set_immutable()
 
-            sage: s.standardize_polygons().polygon(0)
+            sage: s.standardize_polygons().codomain().polygon(0)
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
         if not in_place:
             S = MutableOrientedSimilaritySurface.from_surface(self)
-            S.standardize_polygons(in_place=True)
-            return S
+            morphism = S.standardize_polygons(in_place=True)
+            S.set_immutable()
+            return morphism.change(domain=self, codomain=S)
 
-        cv = {}  # dictionary for non-zero canonical vertices
-        for label, polygon in zip(self.labels(), self.polygons()):
-            best = 0
-            best_pt = polygon.vertex(best)
-            for v in range(1, len(polygon.vertices())):
-                pt = polygon.vertex(v)
-                if (pt[1] < best_pt[1]) or (pt[1] == best_pt[1] and pt[0] < best_pt[0]):
-                    best = v
-                    best_pt = pt
-            # We replace the polygon if the best vertex is not the zero vertex, or
-            # if the coordinates of the best vertex differs from the origin.
-            if not (best == 0 and best_pt.is_zero()):
-                cv[label] = best
-        for label, v in cv.items():
-            self.set_vertex_zero(label, v, in_place=True)
+        vertex_zero = {}
+        for label in self.labels():
+            vertices = self.polygon(label).vertices()
+            vertex_zero[label] = min(range(len(vertices)), key=lambda v:(vertices[v][1], vertices[v][0]))
+            self.set_vertex_zero(label, vertex_zero[label], in_place=True) 
 
-        return self
+        from flatsurf.geometry.morphism import PolygonStandardizationMorphism
+        return PolygonStandardizationMorphism._create_morphism(None, self, vertex_zero)
 
 
 class MutableOrientedSimilaritySurface(
@@ -1616,6 +1610,24 @@ class MutableOrientedSimilaritySurface(
             for i, cross in enumerate(gluing_list):
                 self.glue((label, i), cross)
 
+    def refine_polygon(self, label, surface, gluings):
+        old = self.polygon(label)
+        old_gluings = [self.opposite_edge(label, e) for e in range(len(old.vertices()))]
+
+        self.remove_polygon(label)
+
+        for surface_label in surface.labels():
+            self.add_polygon(surface.polygon(surface_label), label=surface_label)
+
+        for a, b in surface.gluings():
+            self.glue(a, b)
+
+        for (edge, opposite) in gluings.items():
+            if old_gluings[edge][0] == label:
+                self.glue(gluings[old_gluings[edge][1]], opposite)
+            else:
+                self.glue(old_gluings[edge], opposite)
+
     def replace_polygon(self, label, polygon):
         r"""
         Replace the polygon ``label`` with ``polygon`` while keeping its
@@ -1662,6 +1674,61 @@ class MutableOrientedSimilaritySurface(
             raise ValueError(f"polygon must be {article} {singular}")
 
         self._polygons[label] = polygon
+
+    def apply_matrix(self, m, in_place=None):
+        r"""
+        Apply the 2×2 matrix ``m`` to the polygons of this surface.
+
+        INPUT:
+
+        - ``m`` -- a 2×2 matrix
+
+        - ``in_place`` -- a boolean (default: ``True``); whether to modify
+          this surface itself or return a modified copy of this surface
+          instead.
+
+        EXAMPLES::
+
+            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+            sage: S = MutableOrientedSimilaritySurface(QQ)
+            sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
+            0
+            sage: S.glue((0, 0), (0, 2))
+            sage: S.glue((0, 1), (0, 3))
+
+            sage: deformation = S.apply_matrix(matrix([[1, 2], [3, 4]]), in_place=True)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: apply_matrix(in_place=True) not supported with negative determinant yet
+
+            sage: deformation = S.apply_matrix(matrix([[1, 2], [3, 4]]), in_place=False)
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+            sage: deformation.codomain().polygon(0)
+            Polygon(vertices=[(0, 0), (2, 4), (3, 7), (1, 3)])
+
+        """
+        if in_place is None:
+            import warnings
+            warnings.warn("The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly.")
+
+            in_place = True
+
+        if not in_place:
+            return super().apply_matrix(m, in_place=in_place)
+
+        if not m.det():
+            raise ValueError("matrix must not be degenerate")
+
+        if m.det() < 0:
+            raise NotImplementedError("apply_matrix(in_place=True) not supported with negative determinant yet")
+
+        for label in self.labels():
+            self.replace_polygon(label, m * self.polygon(label))
+
+        from flatsurf.geometry.morphism import GL2RMorphism
+        return GL2RMorphism._create_morphism(None, self, m)
 
     def opposite_edge(self, label, edge=None):
         r"""
@@ -1750,86 +1817,49 @@ class MutableOrientedSimilaritySurface(
             us.glue((label, e), cross)
         return self
 
-    def relabel(self, relabeling_map, in_place=False):
+    def relabel(self, relabeling, in_place=False):
         r"""
         Overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
         to allow relabeling in-place.
+
+        # TODO: Test that this works for surfaces with boundary.
+
+        # TODO: Remove support for errors.
         """
         if not in_place:
-            return super().relabel(relabeling_map=relabeling_map, in_place=in_place)
+            return super().relabel(relabeling=relabeling, in_place=in_place)
 
-        us = self
-        if not isinstance(relabeling_map, dict):
-            raise NotImplementedError(
-                "Currently relabeling is only implemented via a dictionary."
-            )
-        domain = set()
-        codomain = set()
-        data = {}
-        for l1, l2 in relabeling_map.items():
-            p = us.polygon(l1)
-            glue = []
-            for e in range(len(p.vertices())):
-                ll, ee = us.opposite_edge(l1, e)
-                try:
-                    lll = relabeling_map[ll]
-                except KeyError:
-                    lll = ll
-                glue.append((lll, ee))
-            data[l2] = (p, glue)
-            domain.add(l1)
-            codomain.add(l2)
-        if len(domain) != len(codomain):
-            raise ValueError(
-                "The relabeling_map must be injective. Received " + str(relabeling_map)
-            )
-        changed_labels = domain.intersection(codomain)
-        added_labels = codomain.difference(domain)
-        removed_labels = domain.difference(codomain)
-        # Pass to add_polygons
-        roots = list(us.roots())
-        relabel_errors = {}
-        for l2 in added_labels:
-            p, glue = data[l2]
-            l3 = us.add_polygon(p, label=l2)
-            if not l2 == l3:
-                # This means the label l2 could not be added for some reason.
-                # Perhaps the implementation does not support this type of label.
-                # Or perhaps there is already a polygon with this label.
-                relabel_errors[l2] = l3
-        # Pass to change polygons
-        for l2 in changed_labels:
-            p, glue = data[l2]
-            us.remove_polygon(l2)
-            us.add_polygon(p, label=l2)
-            us.replace_polygon(l2, p)
-        # Deal with the component roots
-        roots = [relabeling_map.get(label, label) for label in roots]
-        roots = [relabel_errors.get(label, label) for label in roots]
-        # Pass to remove polygons:
-        for l1 in removed_labels:
-            us.remove_polygon(l1)
-        # Pass to update the edge gluings
-        if len(relabel_errors) == 0:
-            # No problems. Update the gluings.
-            for l2 in codomain:
-                p, glue = data[l2]
-                for e, cross in enumerate(glue):
-                    us.glue((l2, e), cross)
-        else:
-            # Use the gluings provided by relabel_errors when necessary
-            for l2 in codomain:
-                p, glue = data[l2]
-                for e in range(len(p.vertices())):
-                    ll, ee = glue[e]
-                    try:
-                        # First try the error dictionary
-                        us.glue((l2, e), (relabel_errors[ll], ee))
-                    except KeyError:
-                        us.glue((l2, e), (ll, ee))
-        us.set_roots(roots)
-        return self, len(relabel_errors) == 0
+        if callable(relabeling):
+            relabeling = {label: relabeling(label) for label in self.labels()}
+
+        polygons = {label: self.polygon(label) for label in self.labels()}
+        old_gluings = {label: [self.opposite_edge(label, e) for e in range(len(self.polygon(label).vertices()))] for label in self.labels()}
+
+        roots = list(self.roots())
+
+        labels = list(self.labels())
+
+        for label in labels:
+            self.remove_polygon(label)
+
+        for label in labels:
+            self.add_polygon(polygons[label], label=relabeling.get(label, label))
+
+        for label, gluings in old_gluings.items():
+            for e, gluing in enumerate(gluings):
+                if gluing is None:
+                    continue
+
+                opposite_label, opposite_edge = gluing
+
+                self.glue((relabeling.get(label, label), e), (relabeling.get(opposite_label, opposite_label), opposite_edge))
+
+        self.set_roots([relabeling.get(root, root) for root in roots])
+
+        # TODO: Use the homset to create the morphism so we get the category right. (Here and everywhere else we are constructing morphisms.)
+        from flatsurf.geometry.morphism import RelabelingMorphism
+        return RelabelingMorphism._create_morphism(self, self, relabeling)
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
@@ -1886,7 +1916,7 @@ class MutableOrientedSimilaritySurface(
                 glue_list.append((p4, e4))
 
         if p2 in s.roots():
-            s.set_roots((p1 if label == p2 else label for label in s.roots()))
+            s.set_roots(p1 if label == p2 else label for label in s.roots())
 
         s.remove_polygon(p2)
 
@@ -2022,12 +2052,6 @@ class MutableOrientedSimilaritySurface(
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`
         to allow triangulating in-place.
 
-        .. TODO::
-
-            The code here is not using
-            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.
-            It should probably be rewritten to share the same logic.
-
         TESTS:
 
         Verify that the monotile can be triangulated::
@@ -2071,8 +2095,8 @@ class MutableOrientedSimilaritySurface(
             sage: S1.glue((0, j0), (0, j1))
             sage: S1.set_immutable()
 
-            sage: S1.triangulate()
-            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, 6 triangles and a right triangle
+            sage: S1.triangulate().codomain()
+            Triangulation of Translation Surface in H_3(4, 0) built from a non-convex tridecagon with a marked vertex
 
         """
         if relabel is not None:
@@ -2083,40 +2107,40 @@ class MutableOrientedSimilaritySurface(
             )
 
         if not in_place:
-            return super().triangulate(in_place=in_place, label=label)
+            return super().triangulate(in_place=False, label=label)
 
-        if label is None:
-            # We triangulate the whole surface
-            # Store the current labels.
-            labels = [label for label in self.labels()]
-            s = self
-            # Subdivide each polygon in turn.
-            for label in labels:
-                s = s.triangulate(in_place=True, label=label)
-            return s
+        labels = [label] if label is not None else list(self.labels())
 
-        poly = self.polygon(label)
-        n = len(poly.vertices())
-        if n > 3:
-            s = self
+        for label in labels:
+            self.refine_polygon(label, *MutableOrientedSimilaritySurface._triangulate(self, label))
+
+        from flatsurf.geometry.morphism import TriangulationMorphism
+        return TriangulationMorphism._create_morphism(None, self)
+
+    @staticmethod
+    def _triangulate(surface, label):
+        r"""
+        Helper method for :meth:`triangulate`.
+        
+        Returns a triangulation of the polygon with ``label`` of ``surface``
+        together with a bidict that can be fed to :meth:`refine_polygon`.
+
+        EXAMPLES::
+
+            TODO
+
+        """
+        triangulation, edge_to_edge = surface.polygon(label).triangulate()
+        if len(triangulation.labels()) == 1:
+            relabeling = {triangulation.root(): label}
         else:
-            # This polygon is already a triangle.
-            return self
-        from flatsurf.geometry.euclidean import ccw
+            relabeling = {l: (label, l) for l in triangulation.labels()}
+        triangulation = triangulation.relabel(relabeling).codomain()
 
-        for i in range(n - 3):
-            poly = s.polygon(label)
-            n = len(poly.vertices())
-            for i in range(n):
-                e1 = poly.edge(i)
-                e2 = poly.edge((i + 1) % n)
-                if ccw(e1, e2) > 0:
-                    # This is in case the polygon is a triangle with subdivided edge.
-                    e3 = poly.edge((i + 2) % n)
-                    if ccw(e1 + e2, e3) != 0:
-                        s.subdivide_polygon(label, i, (i + 2) % n)
-                        break
-        return s
+        from bidict import bidict
+        edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
+
+        return triangulation, edge_to_edge
 
     def delaunay_single_flip(self):
         r"""
@@ -2254,7 +2278,10 @@ class MutableOrientedSimilaritySurface(
                     s.join_polygons(l1, e1, in_place=True)
                     break
             else:
-                return s
+                break
+
+        from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+        return DelaunayDecompositionMorphism._create_morphism(self, s)
 
     def cmp(self, s2, limit=None):
         r"""
@@ -3038,6 +3065,13 @@ class LabelsFromView(Labels, LabeledView):
         True
 
     """
+
+    def __eq__(self, other):
+        if isinstance(other, LabelsFromView):
+            if self._view == other._view:
+                return True
+
+        return super().__eq__(other)
 
 
 class Polygons(LabeledCollection, collections.abc.Collection):

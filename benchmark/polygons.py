@@ -32,9 +32,9 @@ def time_triangle(angles):
 time_triangle.params = [
     # We pass the parameters as sets since otherwise asv tries to be smart and
     # runs with the columns of the following matrix instead of the rows.
-    set([3, 4, 5]),
-    set([22, 23, 24]),
-    set([23, 24, 25]),
-    set([24, 25, 26]),
-    set([26, 48, 75]),
+    {3, 4, 5},
+    {22, 23, 24},
+    {23, 24, 25},
+    {24, 25, 26},
+    {26, 48, 75},
 ]

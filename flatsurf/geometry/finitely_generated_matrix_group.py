@@ -369,7 +369,7 @@ class FinitelyGenerated2x2MatrixGroup(Group):
 
     def __iter__(self):
         yield self.one()
-        s = set([self.one()])
+        s = {self.one()}
         wait = self._generators[:]
         while wait:
             p = wait.pop(0)

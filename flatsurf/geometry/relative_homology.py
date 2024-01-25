@@ -68,14 +68,14 @@ class RelativeHomologyClass(ModuleElement):
     def _rmul_(self, c):
         if c == self.parent().base_ring().zero():
             return self.parent().zero()
-        d = dict()
+        d = {}
         r = self.parent().base_ring()
         for k, v in self._d.items():
             d[k] = r(c * v)
         return self.parent()._element_from_dict(d)
 
     def _add_(self, other):
-        d = dict()
+        d = {}
         r = self.parent().base_ring()
         for k, v in self._d.items():
             if k in other._d:
@@ -139,7 +139,7 @@ class RelativeHomology(Module):
                 "RelativeHomology only defined for SimilaritySurfaces (and better)."
             )
         self._s = surface
-        self._cached_edges = dict()
+        self._cached_edges = {}
         Module.__init__(self, base_ring)
 
     def base_ring(self):
@@ -150,7 +150,7 @@ class RelativeHomology(Module):
 
     def _element_constructor_(self, x):
         if isinstance(x, RelativeHomologyClass):
-            d = dict()
+            d = {}
             for k, v in x._d.items():
                 v2 = self._base_ring(v)
                 if v2 != self._base_ring.zero():
@@ -158,7 +158,7 @@ class RelativeHomology(Module):
             return self.element_class(self, d)
 
     def zero(self):
-        return self.element_class(self, dict())
+        return self.element_class(self, {})
 
     def __cmp__(self, other):
         if not isinstance(other, RelativeHomology):
@@ -200,7 +200,7 @@ class RelativeHomology(Module):
             else:
                 # At least one other edge is not cached, so we can think of
                 # the current edge as a generator.
-                d = dict()
+                d = {}
                 d[(label, e)] = self._base_ring.one()
                 v = self._element_from_dict(d)
                 # Cache this edge's value and the opposite edge's value.

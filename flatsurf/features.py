@@ -25,10 +25,15 @@ from sage.features import PythonModule
 cppyy_feature = PythonModule(
     "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
 )
+
 pyflatsurf_feature = PythonModule(
     "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
 )
 
 pyeantic_feature = PythonModule(
     "pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda"
+)
+
+pyexactreal_feature = PythonModule(
+    "pyexactreal", url="https://github.com/flatsurf/exact-real/#install-with-conda"
 )

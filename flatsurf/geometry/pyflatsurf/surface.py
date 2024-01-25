@@ -5,8 +5,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     r"""
     EXAMPLES::
 
-        sage: from flatsurf import Polygon
-        sage: from flatsurf import MutableOrientedSimilaritySurface
+        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
 
         sage: S = MutableOrientedSimilaritySurface(QQ)
         sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
@@ -19,7 +18,8 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         sage: S.glue((0, 2), (1, 0))
 
         sage: S.set_immutable()
-        sage: T, _ = S._pyflatsurf()  # random output due to deprecation warnings
+
+        sage: T = S.pyflatsurf().codomain()
 
     TESTS::
 
@@ -34,132 +34,173 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     def __init__(self, flat_triangulation):
         self._flat_triangulation = flat_triangulation
 
+        # TODO: We have to be smarter about the ring bridge here.
         from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
         base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
 
         from flatsurf.geometry.categories import TranslationSurfaces
+        # TODO: This is assuming that the surface is connected. Currently that's the case for all surfaces in libflatsurf?
+        category = TranslationSurfaces().FiniteType().Connected()
+        if flat_triangulation.hasBoundary():
+            category = category.WithBoundary()
+        else:
+            category = category.WithoutBoundary()
+        super().__init__(base=base_ring, category=category)
 
-        super().__init__(
-            base=base_ring, category=TranslationSurfaces().FiniteType().WithoutBoundary()  # TODO: Surface could have boundary
-        )
+    def __eq__(self, other):
+        if not isinstance(other, Surface_pyflatsurf):
+            return False
+
+        return self._flat_triangulation == other._flat_triangulation
+
+    def __hash__(self):
+        # TODO: This is not working. Flat triangulations that are equal do not produce the same hashes.
+        return hash(self._flat_triangulation)
+
+    def is_mutable(self):
+        return False
+
+    def roots(self):
+        # TODO: This is assuming that the surface is connected. Currently that's the case for all surfaces in libflatsurf?
+        return [self._normalize_label(self._flat_triangulation.face(1))]
 
     def pyflatsurf(self):
-        return self, Deformation_pyflatsurf(self, self)
+        from flatsurf.geometry.deformation import IdentityDeformation
+        return IdentityDeformation(self)
 
     @classmethod
     def _from_flatsurf(cls, surface):
-        if not surface.is_finite_type():
-            raise ValueError("surface must be finite to convert to pyflatsurf")
+        r"""
+        Return an isomorphism to a :class:`Surface_pyflatsurf` built from
+        ``surface``, i.e., represent ``surface`` in pyflatsurf wrapped as a
+        :class:`Surface` for sage-flatsurf.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
+
+            sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+            sage: Surface_pyflatsurf._from_flatsurf(S)
+            Generic morphism:
+              From: Triangulation of Translation Surface in H_1(0) built from a square
+              To:   FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+
+        """
+        if isinstance(surface, Surface_pyflatsurf):
+            return surface
 
         if not surface.is_triangulated():
-            raise ValueError("surface must be triangulated to convert to pyflatsurf")
+            triangulation = surface.triangulate()
+            to_pyflatsurf = cls._from_flatsurf(triangulation.codomain())
+            return to_pyflatsurf * triangulation
 
-        # populate half edges and vectors
-        n = sum(len(surface.polygon(lab).vertices()) for lab in surface.labels())
-        half_edge_labels = {}  # map: (face lab, edge num) in flatsurf -> integer
-        vec = []  # vectors
-        k = 1  # half edge label in {1, ..., n}
-        for t0, t1 in surface.gluings():
-            if t0 in half_edge_labels:
-                continue
+        from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
 
-            half_edge_labels[t0] = k
-            half_edge_labels[t1] = -k
+        to_pyflatsurf = FlatTriangulationConversion.to_pyflatsurf(surface)
 
-            f0, e0 = t0
-            p = surface.polygon(f0)
-            vec.append(p.edge(e0))
+        surface_pyflatsurf = Surface_pyflatsurf(to_pyflatsurf.codomain())
 
-            k += 1
+        from flatsurf.geometry.pyflatsurf.morphism import Morphism_to_pyflatsurf
 
-        # compute vertex and face permutations
-        vp = [None] * (n + 1)  # vertex permutation
-        fp = [None] * (n + 1)  # face permutation
-        for t in surface.edges():
-            e = half_edge_labels[t]
-            j = (t[1] + 1) % len(surface.polygon(t[0]).vertices())
-            fp[e] = half_edge_labels[(t[0], j)]
-            vp[fp[e]] = -e
+        return Morphism_to_pyflatsurf._create_morphism(surface, surface_pyflatsurf, to_pyflatsurf)
 
-        def _cycle_decomposition(p):
-            n = len(p) - 1
-            assert n % 2 == 0
-            cycles = []
-            unseen = [True] * (n + 1)
-            for i in list(range(-n // 2 + 1, 0)) + list(range(1, n // 2)):
-                if unseen[i]:
-                    j = i
-                    cycle = []
-                    while unseen[j]:
-                        unseen[j] = False
-                        cycle.append(j)
-                        j = p[j]
-                    cycles.append(cycle)
-            return cycles
+    def __repr__(self):
+        r"""
+        Return a printable representation of this surface, namely, print this
+        surface as pyflatsurf would.
 
-        # convert the vp permutation into cycles
-        verts = _cycle_decomposition(vp)
+        EXAMPLES::
 
-        # find a finite SageMath base ring that contains all the coordinates
-        base_ring = surface.base_ring()
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
 
-        from sage.all import AA
+            sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+            sage: S.pyflatsurf().codomain()
+            FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
-        if base_ring is AA:
-            from sage.rings.qqbar import number_field_elements_from_algebraics
-            from itertools import chain
+        """
+        return repr(self._flat_triangulation)
 
-            base_ring = number_field_elements_from_algebraics(
-                list(chain(*[list(v) for v in vec])), embedded=True
-            )[0]
+    def apply_matrix(self, m):
+        from sage.all import matrix
+        m = matrix(m, ring=self.base_ring())
 
-        from flatsurf.features import pyflatsurf_feature
+        from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
-        pyflatsurf_feature.require()
-        from pyflatsurf.vector import Vectors
+        to_pyflatsurf = RingConversion.from_pyflatsurf_from_flat_triangulation(self._flat_triangulation)
 
-        V = Vectors(base_ring)
-        vec = [V(v).vector for v in vec]
+        m = [to_pyflatsurf(x) for x in m.list()]
 
-        def _check_data(vp, fp, vec):
-            r"""
-            Check consistency of data
+        deformation = self._flat_triangulation.applyMatrix(*m)
+        codomain = Surface_pyflatsurf(deformation.codomain())
 
-            vp - vector permutation
-            fp - face permutation
-            vec - vectors of the flat structure
-            """
-            assert isinstance(vp, list)
-            assert isinstance(fp, list)
-            assert isinstance(vec, list)
+        from flatsurf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
+        return Deformation_pyflatsurf(self, codomain, deformation)
 
-            n = len(vp) - 1
+    @classmethod
+    def _normalize_label(cls, label):
+        label = tuple(edge.id() if hasattr(edge, "id") else int(edge) for edge in label)
 
-            assert n % 2 == 0, n
-            assert len(fp) == n + 1
-            assert len(vec) == n // 2
+        shift = label.index(min(*label))
 
-            assert vp[0] is None
-            assert fp[0] is None
+        label = label[shift:] + label[:shift]
+        return label
 
-            for i in range(1, n // 2 + 1):
-                # check fp/vp consistency
-                assert fp[-vp[i]] == i, i
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label`` in this surface.
 
-                # check that each face is a triangle and that vectors sum up to zero
-                j = fp[i]
-                k = fp[j]
-                assert i != j and i != k and fp[k] == i, (i, j, k)
-                vi = vec[i - 1] if i >= 1 else -vec[-i - 1]
-                vj = vec[j - 1] if j >= 1 else -vec[-j - 1]
-                vk = vec[k - 1] if k >= 1 else -vec[-k - 1]
-                v = vi + vj + vk
-                assert v.x() == 0, v.x()
-                assert v.y() == 0, v.y()
+        EXAMPLES::
 
-        _check_data(vp, fp, vec)
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
+            sage: S = S.pyflatsurf().codomain()
 
-        from pyflatsurf.factory import make_surface
+            sage: S.polygon((1, 2, 3))
+            Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
-        return Surface_pyflatsurf(make_surface(verts, vec)), None
+        """
+        label = Surface_pyflatsurf._normalize_label(label)
+
+        from pyflatsurf import flatsurf
+        half_edges = (flatsurf.HalfEdge(half_edge) for half_edge in label)
+        vectors = [self._flat_triangulation.fromHalfEdge(half_edge) for half_edge in half_edges]
+
+        from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+        vector_space_conversion = VectorSpaceConversion.from_pyflatsurf_from_elements(vectors)
+        vectors = [vector_space_conversion.section(vector) for vector in vectors]
+
+        from flatsurf.geometry.polygon import Polygon
+        return Polygon(edges=vectors)
+
+    def opposite_edge(self, label, edge):
+        r"""
+        Return the polygon and edge that is across from ``edge`` of ``label``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
+            sage: S = S.pyflatsurf().codomain()
+
+            sage: S.opposite_edge((1, 2, 3), 0)
+            ((-3, -1, -2), 1)
+            sage: S.opposite_edge((1, 2, 3), 1)
+            ((-3, -1, -2), 2)
+            sage: S.opposite_edge((1, 2, 3), 2)
+            ((-3, -1, -2), 0)
+
+        """
+        label = Surface_pyflatsurf._normalize_label(label)
+
+        from pyflatsurf import flatsurf
+        half_edge = flatsurf.HalfEdge(label[edge])
+
+        opposite_half_edge = -half_edge
+
+        opposite_label = self._flat_triangulation.face(opposite_half_edge)
+        opposite_label = Surface_pyflatsurf._normalize_label(opposite_label)
+
+        return opposite_label, opposite_label.index(opposite_half_edge.id())

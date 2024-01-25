@@ -376,7 +376,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         category = category or Sets()
 
-        return super(HyperbolicPlane, cls).__classcall__(
+        return super().__classcall__(
             cls, base_ring=base_ring, geometry=geometry, category=category
         )
 
@@ -2832,10 +2832,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     continue
 
                 if any(
-                    [
-                        preimage.apply_isometry(isometry, on_right=True) != image
-                        for (preimage, image) in pairs
-                    ]
+                    preimage.apply_isometry(isometry, on_right=True) != image
+                    for (preimage, image) in pairs
                 ):
                     continue
 
@@ -2990,7 +2988,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 # Actually, an ideal point is not trivial if the existing
                 # geodesic is unoriented. But it does not take a full
                 # degree of freedom away, so we ignore it here.
-                if any([preimage in existing for existing in existings]):
+                if any(preimage in existing for existing in existings):
                     return None
             return (preimage, image)
 
@@ -3310,7 +3308,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                 equations = conditions(isometry, (λ0, λ1, λ2))
 
                 for λ in [λ1, λ2]:
-                    if all([equation.degree(λ) <= 0 for equation in equations]):
+                    if all(equation.degree(λ) <= 0 for equation in equations):
                         # Force the unused variable λ to be =0
                         equations.append(λ)
 
@@ -3376,7 +3374,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
                     equations = conditions(isometry, (λ0, λ1, λ2))
 
                     for λ in [λ1, λ2]:
-                        if all([equation.degree(λ) <= 0 for equation in equations]):
+                        if all(equation.degree(λ) <= 0 for equation in equations):
                             # Force the unused variable λ to be =0
                             equations.append(λ)
 
@@ -9971,15 +9969,13 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         """
         for vertex in self._marked_vertices:
-            if not any([vertex in edge for edge in self.edges(marked_vertices=False)]):
+            if not any(vertex in edge for edge in self.edges(marked_vertices=False)):
                 raise ValueError("marked vertex must be on an edge of the polygon")
 
         if require_normalized:
             if any(
-                [
-                    vertex in self.vertices(marked_vertices=False)
-                    for vertex in self._marked_vertices
-                ]
+                vertex in self.vertices(marked_vertices=False)
+                for vertex in self._marked_vertices
             ):
                 raise ValueError(
                     "marked vertex must not be a non-marked vertex of the polygon"
@@ -14076,6 +14072,7 @@ class HyperbolicHalfSpaces(OrderedSet):
         vertices = [vertex.coordinates(model="klein") for vertex in vertices]
         reference = min(vertices)
 
+        # TODO: Move to euclidean.
         class Slope:
             def __init__(self, xy):
                 self.dx = xy[0] - reference[0]

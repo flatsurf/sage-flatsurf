@@ -519,7 +519,7 @@ class EuclideanPolygons(Category_over_base_ring):
                 True
 
             """
-            return len(set(edge[0] ** 2 + edge[1] ** 2 for edge in self.edges())) == 1
+            return len({edge[0] ** 2 + edge[1] ** 2 for edge in self.edges()}) == 1
 
         def is_equiangular(self):
             r"""
@@ -815,12 +815,12 @@ class EuclideanPolygons(Category_over_base_ring):
             from flatsurf.geometry.polygon import PolygonPosition
 
             # Determine whether the point is a vertex of the polygon.
-            for (i, v) in enumerate(self.vertices()):
+            for i, v in enumerate(self.vertices()):
                 if point == v:
                     return PolygonPosition(PolygonPosition.VERTEX, vertex=i)
 
             # Determine whether the point is on an edge of the polygon.
-            for (i, (v, e)) in enumerate(zip(self.vertices(), self.edges())):
+            for i, (v, e) in enumerate(zip(self.vertices(), self.edges())):
                 if ccw(e, point - v) == 0:
                     # The point lies on the line through this edge.
                     if 0 < e.dot_product(point - v) < e.dot_product(e):
@@ -830,9 +830,7 @@ class EuclideanPolygons(Category_over_base_ring):
             # winding number of the polygon.
             winding_number = 0
 
-            for (v, w) in zip(
-                self.vertices(), self.vertices()[1:] + self.vertices()[:1]
-            ):
+            for v, w in zip(self.vertices(), self.vertices()[1:] + self.vertices()[:1]):
                 if v[1] < point[1] and w[1] >= point[1] and ccw(w - v, point - v) > 0:
                     winding_number += 1
                 if v[1] >= point[1] and w[1] < point[1] and ccw(w - v, point - v) < 0:
@@ -1138,6 +1136,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
                     ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)])
                     sage: P.triangulation()
+                    doctest:warning
+                    ...
+                    UserWarning: triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead.
                     [(0, 2), (2, 8), (3, 5), (6, 8), (8, 3), (3, 6), (9, 11), (0, 9), (2, 9)]
 
                 TESTS::
@@ -1232,6 +1233,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     [(0, 4), (1, 3), (4, 1)]
 
                 """
+                import warnings
+                warnings.warn("triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead.")
+
                 vertices = self.vertices()
 
                 n = len(vertices)
@@ -1309,6 +1313,232 @@ class EuclideanPolygons(Category_over_base_ring):
                             return [(i, j)] + part0 + part1
 
                 assert False
+
+            def triangulate(self):
+                r"""
+                Return a triangulation of this polygon.
+
+                Returns a pair consisting of a surface and a bidict. The
+                surfaces consists of the triangles that form the triangulation,
+                glued to the original polygon. The bidict provides the mapping
+                from the edge index of the polygon to the (label, edge) of the
+                corresponding unglued edge in the surface.
+
+                ALGORITHM:
+
+                We use a simple quadratic time ear-clipping algorithm. There
+                are asymptotically faster algorithms out there. But we are
+                usually dealing with a very small number of vertices, so the
+                asymptotic behavior does not seem to be the limiting factor
+                here.
+
+                EXAMPLES:
+
+                We triangulate a non-convex polygon::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
+                    ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)])
+                    sage: P.triangulate()
+                    (Translation Surface with boundary built from 6 isosceles triangles and 4 triangles,
+                     bidict({0: (0, 0), 3: (2, 0), 7: (6, 0), 1: (0, 1), 2: (1, 1), 4: (2, 1), 5: (4, 1), 6: (5, 1), 8: (6, 1), 9: (8, 1), 10: (9, 1), 11: (9, 2)}))
+
+                TESTS::
+
+                    sage: _ = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)]).triangulate()
+
+                    sage: quad = [(0,0), (1,-1), (0,1), (-1,-1)]
+                    sage: for i in range(4):
+                    ....:     _ = Polygon(vertices=quad[i:] + quad[:i]).triangulate()
+
+                    sage: poly = [(0,0),(1,1),(2,0),(3,1),(4,0),(4,2),
+                    ....:     (-4,2),(-4,0),(-3,1),(-2,0),(-1,1)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+                    sage: for i in range(len(poly)):
+                    ....:     _ = Polygon(vertices=poly[i:] + poly[:i]).triangulate()
+
+                    sage: poly = [(0,0), (1,0), (2,0), (2,1), (2,2), (1,2), (0,2), (0,1)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+                    sage: for i in range(len(poly)):
+                    ....:     _ = Polygon(vertices=poly[i:] + poly[:i]).triangulate()
+
+                    sage: poly = [(0,0), (1,2), (3,3), (1,4), (0,6), (-1,4), (-3,-3), (-1,2)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+                    sage: for i in range(len(poly)):
+                    ....:     _ = Polygon(vertices=poly[i:] + poly[:i]).triangulate()
+
+                    sage: x = polygen(QQ)
+                    sage: p = x^4 - 5*x^2 + 5
+                    sage: r = AA.polynomial_root(p, RIF(1.17,1.18))
+                    sage: K.<a> = NumberField(p, embedding=r)
+
+                    sage: poly = [(1/2*a^2 - 3/2, 1/2*a),
+                    ....:  (-a^3 + 2*a^2 + 2*a - 4, 0),
+                    ....:  (1/2*a^2 - 3/2, -1/2*a),
+                    ....:   (1/2*a^3 - a^2 - 1/2*a + 1, 1/2*a^2 - a),
+                    ....:   (-1/2*a^2 + 1, 1/2*a^3 - 3/2*a),
+                    ....:   (-1/2*a + 1, a^3 - 3/2*a^2 - 2*a + 5/2),
+                    ....:   (1, 0),
+                    ....:   (-1/2*a + 1, -a^3 + 3/2*a^2 + 2*a - 5/2),
+                    ....:   (-1/2*a^2 + 1, -1/2*a^3 + 3/2*a),
+                    ....:   (1/2*a^3 - a^2 - 1/2*a + 1, -1/2*a^2 + a)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+
+                    sage: z = QQbar.zeta(24)
+                    sage: pts = [(1+i%2) * z**i for i in range(24)]
+                    sage: pts = [vector(AA, (x.real(), x.imag())) for x in pts]
+                    sage: _ = Polygon(vertices=pts).triangulate()
+
+                This is https://github.com/flatsurf/sage-flatsurf/issues/87 ::
+
+                    sage: x = polygen(QQ)
+                    sage: K.<c> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+
+                    sage: _ = Polygon(vertices=[(0, 0), (1, 0), (1/2*c + 1, -1/2), (c + 1, 0), (-3/2*c + 1, 5/2), (0, c - 2)]).triangulate()
+
+                """
+                from flatsurf import MutableOrientedSimilaritySurface
+                triangulation = MutableOrientedSimilaritySurface(self.base_ring())
+
+                vertices = list(self.vertices())
+                nvertices = len(vertices)
+                untriangulated = list(range(len(vertices)))
+
+                triangles = {}
+
+                def next_label():
+                    return len(triangles)
+
+                if len(untriangulated) < 3:
+                    raise ValueError("cannot triangulate such a degenerate polygon")
+
+                if len(untriangulated) == 3:
+                    # No need to triangulate. We special-case so we get nicer labels.
+                    label = triangulation.add_polygon(self)
+
+                    from bidict import bidict
+                    return triangulation, bidict({0: (label, 0), 1: (label, 1), 2: (label, 2)})
+
+                while len(untriangulated) > 3:
+                    for i in range(len(untriangulated)):
+                        j = (i + 1) % len(untriangulated)
+                        k = (j + 1) % len(untriangulated)
+
+                        a = untriangulated[i]
+                        b = untriangulated[j]
+                        c = untriangulated[k]
+
+                        if ccw(vertices[b] - vertices[a], vertices[c] - vertices[a]) <= 0:
+                            # The triangle (a, b, c) has non-positive area.
+                            continue
+
+                        # Check that (a, b, c) form an ear, i.e., that there
+                        # are no other vertices contained in the triangle.
+                        if any(
+                            ccw(vertices[b] - vertices[a], vertices[m] - vertices[a]) >= 0 and
+                            ccw(vertices[c] - vertices[b], vertices[m] - vertices[b]) >= 0 and
+                            ccw(vertices[a] - vertices[c], vertices[m] - vertices[c]) >= 0
+                                for m in untriangulated if m not in [a, b, c]):
+                            continue
+
+                        triangles[(a, b, c)] = next_label()
+                        untriangulated = untriangulated[:j] + untriangulated[j + 1:]
+                        break
+                    else:
+                        assert False, "cannot triangulate this polygon"
+
+                triangles[tuple(untriangulated)] = next_label()
+
+                # Add triangles to triangulated surface.
+                for triangle, label in triangles.items():
+                    from flatsurf import Polygon
+                    triangulation.add_polygon(Polygon(vertices=[
+                        vertices[triangle[0]],
+                        vertices[triangle[1]],
+                        vertices[triangle[2]]]),
+                        label=label)
+
+                # Establish gluings between triangles
+                edges = {
+                    **{triangle[:2]: (triangles[triangle], 0) for triangle in triangles},
+                    **{triangle[1:]: (triangles[triangle], 1) for triangle in triangles},
+                    **{(triangle[2], triangle[0]): (triangles[triangle], 2) for triangle in triangles}
+                }
+
+                outer_edges = {}
+
+                for (a, b) in edges:
+                    glued = (b, a) in edges
+                    assert not glued == (b == (a + 1) % nvertices or a == (b + 1) % nvertices)
+                    if glued:
+                        triangulation.glue(edges[(a, b)], edges[(b, a)])
+                    else:
+                        outer_edges[a] = edges[(a, b)]
+
+                from bidict import bidict
+                return triangulation, bidict(outer_edges)
+
+            def flow_to_exit(self, point, direction):
+                r"""
+                Flow a point in the direction of holonomy until the point
+                hits the boundary of the polygon and return the point on
+                the boundary where the trajectory exits.
+
+                INPUT:
+
+                - ``point`` -- a point in the closure of the polygon (as a vector)
+
+                - ``holonomy`` -- direction of motion (a vector of non-zero length)
+
+                TESTS::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                    sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                    (2, 3)
+                    sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                    (1, 1)
+
+                """
+                if not direction:
+                    raise ValueError("direction must be non-zero")
+
+                vertices = self.vertices()
+
+                first_intersection = None
+
+                for v in range(len(vertices)):
+                    segment = vertices[v], vertices[(v + 1) % len(vertices)]
+
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+                    intersection = ray_segment_intersection(point, direction, segment)
+
+                    if intersection is None:
+                        continue
+
+                    if isinstance(intersection, tuple):
+                        if intersection[0] != point:
+                            # The flow overlaps with this edge but it hits
+                            # a vertex before it gets here.
+                            continue
+
+                        intersection = intersection[1]
+                        assert intersection != point
+
+                    if intersection == point:
+                        continue
+
+                    from flatsurf.geometry.euclidean import time_on_ray
+                    if first_intersection is None or time_on_ray(point, direction, first_intersection)[0] > time_on_ray(point, direction, intersection)[0]:
+                        first_intersection = intersection
+
+                if first_intersection is not None:
+                    return first_intersection
+
+                if self.get_point_position(point).is_outside():
+                    raise ValueError("Cannot flow from point outside of polygon")
+
+                raise ValueError("Cannot flow from point on boundary if direction points out of the polygon")
 
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
@@ -1470,97 +1700,10 @@ class EuclideanPolygons(Category_over_base_ring):
                     r"""
                     Return whether the point is within the polygon (after the polygon is possibly translated)
                     """
+                    # TODO: Deprecate translation.
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
-
-                def flow_to_exit(self, point, direction):
-                    r"""
-                    Flow a point in the direction of holonomy until the point leaves the
-                    polygon.  Note that ValueErrors may be thrown if the point is not in the
-                    polygon, or if it is on the boundary and the holonomy does not point
-                    into the polygon.
-
-                    INPUT:
-
-                    - ``point`` -- a point in the closure of the polygon (as a vector)
-
-                    - ``holonomy`` -- direction of motion (a vector of non-zero length)
-
-                    OUTPUT:
-
-                    - The point in the boundary of the polygon where the trajectory exits
-
-                    - a PolygonPosition object representing the combinatorial position of the stopping point
-                    """
-                    from flatsurf.geometry.polygon import PolygonPosition
-
-                    V = self.base_ring().fraction_field() ** 2
-                    if direction == V.zero():
-                        raise ValueError("Zero vector provided as direction.")
-                    v0 = self.vertex(0)
-                    for i in range(len(self.vertices())):
-                        e = self.edge(i)
-                        from sage.all import matrix
-
-                        m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
-                        try:
-                            ret = m.inverse() * (point - v0)
-                            s = ret[0]
-                            t = ret[1]
-                            # What if the matrix is non-invertible?
-
-                            # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
-                            # to the direction.
-
-                            # s is location it intersects on edge, t is the portion of the direction to reach this intersection
-                            if t > 0 and 0 <= s and s <= 1:
-                                # The ray passes through edge i.
-                                if s == 1:
-                                    # exits through vertex i+1
-                                    v0 = v0 + e
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                if s == 0:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                                    # exits through vertex i
-                                # exits through interior of edge i
-                                prod = t * direction
-                                return point + prod, PolygonPosition(
-                                    PolygonPosition.EDGE_INTERIOR, edge=i
-                                )
-                        except ZeroDivisionError:
-                            # Here we know the edge and the direction are parallel
-                            if ccw(e, point - v0) == 0:
-                                # In this case point lies on the edge.
-                                # We need to work out which direction to move in.
-                                from flatsurf.geometry.euclidean import is_parallel
-
-                                if (point - v0).is_zero() or is_parallel(e, point - v0):
-                                    # exits through vertex i+1
-                                    return self.vertex(i + 1), PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                else:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                            pass
-                        v0 = v0 + e
-                    # Our loop has terminated. This can mean one of several errors...
-                    pos = self.get_point_position(point)
-                    if pos.is_outside():
-                        raise ValueError("Started with point outside polygon")
-                    raise ValueError(
-                        "Point on boundary of polygon and direction not pointed into the polygon."
-                    )
 
                 def flow_map(self, direction):
                     r"""
@@ -1684,6 +1827,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: s.flow(p, w)
                         ((1, 1/2), (3/2, 0), point positioned on interior of edge 1 of polygon)
                     """
+                    # TODO: Deprecate translation.
                     from flatsurf.geometry.polygon import PolygonPosition
 
                     V = self.base_ring().fraction_field() ** 2
