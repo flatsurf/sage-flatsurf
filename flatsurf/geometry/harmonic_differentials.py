@@ -81,7 +81,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: from flatsurf import similarity_surfaces, SimplicialCohomology, HarmonicDifferentials, Polygon
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
-    sage: S = S.erase_marked_points().codomain().delaunay_decomposition().codomain()  # random output, deprecation warning  # TODO: Fix deprecation.
+    sage: S = S.erase_marked_points().codomain().delaunay_decomposition().codomain()
 
     sage: H = SimplicialCohomology(S)
     sage: f = H({H.homology().gens()[0]: 1})
@@ -95,7 +95,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2022-2023 Julian Rüth
+#        Copyright (C) 2022-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -699,7 +699,7 @@ class HarmonicDifferential(Element):
 
             try:
                 coefficient = self._series[center][degree]
-            except IndexError:
+            except (IndexError, KeyError):
                 import warnings
                 warnings.warn(f"expected a {degree}th coefficient of the power series around {center} but none found")
                 coefficients[variable] = 0
@@ -962,7 +962,19 @@ class HarmonicDifferentials(Parent):
     def basis(self):
         from flatsurf.geometry.homology import SimplicialHomology
         H = SimplicialHomology(self._surface)
-        return [self({gen: 1}) for gen in H.gens()]
+        from flatsurf.geometry.cohomology import SimplicialCohomology
+        HH = SimplicialCohomology(self._surface)
+        from sage.all import ZZ
+        return [self(HH({gen: ZZ.one()})) for gen in H.gens()]
+
+    @cached_method
+    def period_matrix(self):
+        from flatsurf.geometry.homology import SimplicialHomology
+        symplectic_basis = SimplicialHomology(self._surface).symplectic_basis()
+        symplectic_basis = symplectic_basis[:len(symplectic_basis)//2]
+
+        from sage.all import matrix
+        return matrix([[differential.integrate(path) for path in symplectic_basis] for differential in self.basis()])
 
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
