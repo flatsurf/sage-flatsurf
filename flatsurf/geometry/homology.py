@@ -837,6 +837,64 @@ class SimplicialHomologyGroup(Parent):
         homology, from_homology, to_homology = self._homology()
         return tuple(self(from_homology(g)) for g in homology.gens())
 
+    def symplectic_basis(self):
+        r"""
+        Return a symplectic basis of generators of this homology group.
+
+        TODO: Add a reference and a definition.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+
+        ::
+
+            sage: H = SimplicialHomology(T)
+            sage: H.symplectic_basis()
+
+        """
+        from sage.all import matrix
+        E = matrix(self.base_ring(), [[g.algebraic_intersection(h) for h in self.gens()] for g in self.gens()])
+
+        from sage.categories.all import Fields
+        if self.base_ring() in Fields:
+            from sage.matrix.symplectic_basis import symplectic_basis_over_field
+            F, C = symplectic_basis_over_field(E)
+        else:
+            from sage.matrix.symplectic_basis import symplectic_basis_over_ZZ
+            F, C = symplectic_basis_over_ZZ(E)
+
+        if any([entry not in [-1, 0, 1] for row in F for entry in row]):
+            raise NotImplementedError("cannot determine symplectic basis for this homology group over this ring yet")
+
+        return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
+
+    def _test_symplectic_basis(self, **options):
+        tester = self._tester(**options)
+
+        basis = self.symplectic_basis()
+        n = len(basis)
+
+        tester.assertEqual(len(self.gens()), n)
+        tester.assertEqual(n % 2, 0)
+
+        A = basis[:n // 2]
+        B = basis[n // 2:]
+
+        for i, a in enumerate(A):
+            for j, b in enumerate(B):
+                tester.assertEqual(a.algebraic_intersection(b), i == j)
+
+        for a in A:
+            for aa in A:
+                tester.assertEqual(a.algebraic_intersection(aa), 0)
+
+        for b in B:
+            for bb in B:
+                tester.assertEqual(b.algebraic_intersection(bb), 0)
+
     def __eq__(self, other):
         if not isinstance(other, SimplicialHomologyGroup):
             return False
