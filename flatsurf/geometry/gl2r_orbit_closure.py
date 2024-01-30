@@ -221,6 +221,69 @@ class GL2ROrbitClosure:
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
 
+    def deform(self):
+        tangents = self.tangent_space_basis()
+
+        if len(tangents) > 2:
+            # Ignore trivial deformations if we already discovered something in
+            # the tangent space.
+            tangents = tangents[2:]
+
+        # TODO: Currently, there's only a single tangent used here.
+        tangents = [sum(self.lift(v) for v in tangents)]
+
+        def upper_bound(v):
+            try:
+                length = sum(abs(x.parent().number_field(x)) for x in v) / len(v)
+            except TypeError:
+                length = sum(abs(x.parent().number_field()(x)) for x in v) / len(v)
+
+            n = 1
+            while n < length:
+                n *= 2
+            return n
+
+        tangents.sort(key=upper_bound)
+
+        scale = 2
+        while True:
+            eligibles = False
+
+            for tangent in tangents:
+                import cppyy
+
+                # What is a good vector to use to deform? See flatsurvey #3.
+                n = upper_bound(tangent) * scale
+                # n = upper_bound(tangent) // 4
+
+                # What is a good bound here? See flatsurvey #3.
+                # if n > 1e20:
+                #     print("Cannot deform. Deformation would lead to too much coefficient blowup.")
+                #     continue
+
+                eligibles = True
+
+                deformation = [
+                    self.V2(x / n, x / (2 * n)).vector for x in tangent
+                ]
+                try:
+                    # Valid deformations that require lots of flips take forever. It's crucial to pick n such that no/very few flips are sufficient. See #3.
+                    deformed = self._surface + deformation
+
+                    surface = deformed.surface()
+                    from flatsurf.geometry.pyflatsurf_conversion import (
+                        from_pyflatsurf,
+                    )
+
+                    return from_pyflatsurf(surface)
+                except cppyy.gbl.std.invalid_argument:
+                    continue
+
+            scale *= 2
+
+            if not eligibles:
+                raise Exception("Cannot deform. No tangent vector can be used to deform.")
+
     def dimension(self):
         r"""
         Return the current complex dimension of the GL(2,R)-orbit closure.
