@@ -958,23 +958,23 @@ class HarmonicDifferentials(Parent):
         gen, degree = gen.describe()
         return degree
 
-    @cached_method
-    def basis(self):
+    @cached_method(key=lambda self, check: None, do_pickle=True)
+    def basis(self, check=True):
         from flatsurf.geometry.homology import SimplicialHomology
         H = SimplicialHomology(self._surface)
         from flatsurf.geometry.cohomology import SimplicialCohomology
         HH = SimplicialCohomology(self._surface)
         from sage.all import ZZ
-        return [self(HH({gen: ZZ.one()})) for gen in H.gens()]
+        return [self(HH({gen: ZZ.one()}), check=check) for gen in H.gens()]
 
-    @cached_method
-    def period_matrix(self):
+    @cached_method(key=lambda self, check: None, do_pickle=True)
+    def period_matrix(self, check=True):
         from flatsurf.geometry.homology import SimplicialHomology
         symplectic_basis = SimplicialHomology(self._surface).symplectic_basis()
         symplectic_basis = symplectic_basis[:len(symplectic_basis)//2]
 
         from sage.all import matrix
-        return matrix([[differential.integrate(path) for path in symplectic_basis] for differential in self.basis()])
+        return matrix([[differential.integrate(path) for path in symplectic_basis] for differential in self.basis(check=check)])
 
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
