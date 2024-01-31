@@ -82,6 +82,14 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba install -y conda-pack makeself
+      - name: Install sage-flatsurf
+        shell: bash -l {0}
+        run: |
+          pip install --verbose --no-index .
+      - name: Freeze environment
+        shell: bash -l {0}
+        run: |
+          mamba env export -n flatsurf -f conda-pack.yml --override-channels -c conda-forge
       - name: Maximize build space
         shell: bash -l {0}
         run: |
@@ -89,11 +97,15 @@ jobs:
           sudo gem uninstall -aIx
           sudo rm -rf /usr/local/miniconda
           sudo rm -rf /usr/local/lib/node_modules
+          mamba env remove -n flatsurf --yes
         if: ${{ matrix.on == 'macos-11' }}
       - name: Create installer
         shell: bash -l {0}
         run: |
+          mamba create -n flatsurf mamba pip --yes
+          pip install --no-deps .
           conda pack -n flatsurf --n-threads 2
+          mv conda-pack.yml pack/
           tar -zxf flatsurf.tar.gz -C pack
           find pack/lib -name '*.dylib' -type f -exec strip -S \{\} \; # macOS
           find pack/lib -name '*.so' -type f -exec strip --strip-unneeded \{\} \; # Linux

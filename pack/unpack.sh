@@ -8,3 +8,4 @@ esac
 
 source bin/activate
 conda-unpack
+mamba env update -n flatsurf -f conda-pack.yml
