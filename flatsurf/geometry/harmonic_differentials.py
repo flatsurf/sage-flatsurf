@@ -974,7 +974,7 @@ class HarmonicDifferentials(Parent):
         symplectic_basis = symplectic_basis[:len(symplectic_basis)//2]
 
         from sage.all import matrix
-        return matrix([[differential.integrate(path) for path in symplectic_basis] for differential in self.basis(check=check)])
+        return matrix([[differential.integrate(path) for differential in self.basis(check=check)] for path in symplectic_basis])
 
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
