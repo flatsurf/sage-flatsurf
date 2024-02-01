@@ -25,6 +25,8 @@ from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
+from .geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+
 from flatsurf.geometry.surface_legacy import (
     Surface_list,
     Surface_dict,
