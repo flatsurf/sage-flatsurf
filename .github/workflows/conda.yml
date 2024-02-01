@@ -106,6 +106,7 @@ jobs:
           mamba create -n flatsurf mamba pip --yes
           conda activate flatsurf
           pip install --no-deps .
+          conda deactivate
           conda pack -n flatsurf --n-threads 2
           mv conda-pack.yml pack/
           tar -zxf flatsurf.tar.gz -C pack
