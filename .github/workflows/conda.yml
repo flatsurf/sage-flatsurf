@@ -85,7 +85,7 @@ jobs:
       - name: Install sage-flatsurf
         shell: bash -l {0}
         run: |
-          mamba activate flatsurf
+          conda activate flatsurf
           pip install --verbose --no-index .
       - name: Freeze environment
         shell: bash -l {0}
@@ -104,7 +104,7 @@ jobs:
         shell: bash -l {0}
         run: |
           mamba create -n flatsurf mamba pip --yes
-          mamba activate flatsurf
+          conda activate flatsurf
           pip install --no-deps .
           conda pack -n flatsurf --n-threads 2
           mv conda-pack.yml pack/
