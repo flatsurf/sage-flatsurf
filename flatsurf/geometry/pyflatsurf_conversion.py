@@ -316,9 +316,9 @@ class RingConversion(Conversion):
         raise NotImplementedError(f"{cls.__name__} does not implement _create_conversion() yet")
 
     @classmethod
-    def _deduce_codomain(cls, elements):
+    def _deduce_codomain_from_codomain_elements(cls, elements):
         r"""
-        Given elements from pyflatsurf, deduce which pyflatsurf ring it lives
+        Given elements from pyflatsurf, deduce which pyflatsurf ring they live
         in.
 
         Return ``None`` if no (single) conversion can handle these elements.
@@ -333,11 +333,37 @@ class RingConversion(Conversion):
             sage: conversion = RingConversion.to_pyflatsurf(QuadraticField(2))
             sage: element = conversion.codomain().gen()
 
-            sage: RingConversion_eantic._deduce_codomain([element])
+            sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element])
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
 
         """
-        raise NotImplementedError(f"{cls.__name__} does not implement _deduce_codomain() yet")
+        raise NotImplementedError(f"{cls.__name__} does not implement _deduce_codomain_from_codomain_elements() yet")
+
+    @classmethod
+    def _deduce_codomain_from_domain_elements(cls, elements):
+        r"""
+        Given elements from sage-flatsurf, deduce which pyflatsurf ring they
+        live in.
+
+        Return ``None`` if no (single) conversion can handle these elements.
+
+        INPUT:
+
+        - ``elements`` -- any sequence of objects that sage-flatsurf understands
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion, RingConversion_eantic
+            sage: K.<a> = QuadraticField(2)
+            sage: RingConversion_eantic._deduce_codomain_from_domain_elements([a])
+            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+
+        """
+        from sage.all import Sequence
+        conversion = cls._create_conversion(domain=Sequence(elements).universe())
+        if conversion is None:
+            return None
+        return conversion.codomain()
 
     @classmethod
     def to_pyflatsurf(cls, domain, codomain=None):
@@ -432,7 +458,7 @@ class RingConversion(Conversion):
 
         """
         for conversion_type in RingConversion._ring_conversions():
-            codomain = conversion_type._deduce_codomain(elements)
+            codomain = conversion_type._deduce_codomain_from_codomain_elements(elements)
             if codomain is None:
                 continue
             conversion = conversion_type._create_conversion(domain=domain, codomain=codomain)
@@ -440,6 +466,21 @@ class RingConversion(Conversion):
                 return conversion
 
         raise NotImplementedError(f"cannot determine a SageMath ring for {elements} yet")
+
+    @classmethod
+    def to_pyflatsurf_from_elements(cls, elements, codomain=None):
+        from sage.all import Sequence
+
+        for conversion_type in RingConversion._ring_conversions():
+            if codomain is None:
+                codomain = conversion_type._deduce_codomain_from_domain_elements(elements)
+            if codomain is None:
+                continue
+            conversion = conversion_type._create_conversion(domain=Sequence(elements).universe(), codomain=codomain)
+            if conversion is not None:
+                return conversion
+
+        raise NotImplementedError(f"cannot determine a pyflatsurf ring for {elements} yet")
 
     @classmethod
     def from_pyflatsurf(cls, codomain, domain=None):
@@ -591,11 +632,11 @@ class RingConversion_eantic(RingConversion):
         return self.domain()(self._pyrenf()(y))
 
     @classmethod
-    def _deduce_codomain(cls, elements):
+    def _deduce_codomain_from_codomain_elements(cls, elements):
         r"""
         Given elements from e-antic, deduce the e-antic ring they live in.
 
-        This implements :meth:`RingConversion._deduce_codomain`.
+        This implements :meth:`RingConversion._deduce_codomain_from_codomain_elements`.
 
         Return ``None`` if this is not an e-antic element or if no single
         e-antic ring can handle them.
@@ -610,13 +651,13 @@ class RingConversion_eantic(RingConversion):
             sage: conversion = RingConversion.to_pyflatsurf(QuadraticField(2))
             sage: element = conversion.codomain().gen()
 
-            sage: RingConversion_eantic._deduce_codomain([element])
+            sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element])
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
-            sage: RingConversion_eantic._deduce_codomain([element, 2*element])
+            sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element, 2*element])
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
 
             sage: import cppyy
-            sage: RingConversion_eantic._deduce_codomain([element, cppyy.gbl.eantic.renf_elem_class()])
+            sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element, cppyy.gbl.eantic.renf_elem_class()])
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
 
         """
@@ -648,7 +689,7 @@ class RingConversion_exactreal(RingConversion):
         sage: conversion = RingConversion.to_pyflatsurf(domain=ExactReals(QQ))
         Traceback (most recent call last):
         ...
-        NotImplementedError: there is no generic exact-real ring without a fixed set of generators in libexactreal yet
+        NotImplementedError: cannot deduce the exact real module that corresponds to this generic ring of exact reals since there is no generic exact-real ring without a fixed set of generators in libexactreal yet
 
         sage: from pyexactreal import QQModule, RealNumber
         sage: M = QQModule(RealNumber.rational(1))
@@ -687,7 +728,7 @@ class RingConversion_exactreal(RingConversion):
                 import pyexactreal
                 codomain = pyexactreal.exactreal.Module[pyexactreal.exactreal.NumberField]
             else:
-                raise NotImplementedError("there is no generic exact-real ring without a fixed set of generators in libexactreal yet")
+                raise NotImplementedError("cannot deduce the exact real module that corresponds to this generic ring of exact reals since there is no generic exact-real ring without a fixed set of generators in libexactreal yet")
 
         return RingConversion_exactreal(domain, codomain)
 
@@ -715,13 +756,34 @@ class RingConversion_exactreal(RingConversion):
 
         return x._backend
 
+    @classmethod
+    def _deduce_codomain_from_domain_elements(cls, elements):
+        codomain = None
+
+        for element in elements:
+            if not hasattr(element, "_backend"):
+                return None
+
+            module = element._backend.module()
+
+            if codomain is None or codomain.submodule(module):
+                codomain = module
+            elif module.submodule(codomain):
+                pass
+            else:
+                return None
+
+        return codomain
+
     def _vectors(self):
         from pyflatsurf.vector import Vectors
 
+        from pyexactreal.exact_reals import ExactReals
         from pyeantic.real_embedded_number_field import RealEmbeddedNumberField
+        if isinstance(self.domain(), ExactReals):
+            return Vectors(self.domain())
         # TODO: Add the other base rings.
         if isinstance(self.domain().base_ring(), RealEmbeddedNumberField):
-            from pyexactreal import ExactReals
             return Vectors(ExactReals(self.domain().base_ring().number_field))
 
         raise NotImplementedError
@@ -768,11 +830,11 @@ class RingConversion_int(RingConversion):
         return None
 
     @classmethod
-    def _deduce_codomain(cls, elements):
+    def _deduce_codomain_from_codomain_elements(cls, elements):
         r"""
         Given long longs, return the long long type.
 
-        This implements :meth:`RingConversion._deduce_codomain`.
+        This implements :meth:`RingConversion._deduce_codomain_from_codomain_elements`.
 
         Return ``None`` if these are not long long element.
 
@@ -786,14 +848,11 @@ class RingConversion_int(RingConversion):
             sage: conversion = RingConversion.to_pyflatsurf(int)
             sage: element = conversion.codomain()(1R)
 
-            sage: RingConversion_int._deduce_codomain([element])
+            sage: RingConversion_int._deduce_codomain_from_codomain_elements([element])
             <class 'cppyy.gbl.long long'>
 
         """
         import cppyy
-
-        if not elements:
-            return None
 
         longlong = getattr(cppyy.gbl, 'long long')
 
@@ -897,13 +956,13 @@ class RingConversion_gmp(RingConversion):
         return None
 
     @classmethod
-    def _deduce_codomain(cls, elements):
+    def _deduce_codomain_from_codomain_elements(cls, elements):
         r"""
         Given elements from GMP, return the GMP ring they live in.
 
-        This implements :meth:`RingConversion._deduce_codomain`.
+        This implements :meth:`RingConversion._deduce_codomain_from_codomain_elements`.
 
-        Return ``None`` if there not (compatible) GMP elements.
+        Return ``None`` if they're not (compatible) GMP elements.
 
         INPUT:
 
@@ -915,7 +974,7 @@ class RingConversion_gmp(RingConversion):
             sage: conversion = RingConversion.to_pyflatsurf(ZZ)
             sage: element = conversion.codomain()(1)
 
-            sage: RingConversion_gmp._deduce_codomain([element])
+            sage: RingConversion_gmp._deduce_codomain_from_codomain_elements([element])
             <class cppyy.gbl.__gmp_expr<__mpz_struct[1],__mpz_struct[1]> at 0x...>
 
         """
@@ -987,8 +1046,16 @@ class VectorSpaceConversion(Conversion):
         sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
 
     """
+    def __init__(self, domain, codomain, ring_conversion=None):
+        if ring_conversion is None:
+            ring_conversion = RingConversion.to_pyflatsurf(domain.base_ring())
+
+        self._ring_conversion = ring_conversion
+
+        super().__init__(domain, codomain)
+
     @classmethod
-    def to_pyflatsurf(cls, domain, codomain=None):
+    def to_pyflatsurf(cls, domain, codomain=None, ring_conversion=None):
         r"""
         Return a :class:`Conversion` from ``domain`` to ``codomain``.
 
@@ -1009,7 +1076,8 @@ class VectorSpaceConversion(Conversion):
         pyflatsurf_feature.require()
 
         if codomain is None:
-            ring_conversion = RingConversion.to_pyflatsurf(domain.base_ring())
+            if ring_conversion is None:
+                ring_conversion = RingConversion.to_pyflatsurf(domain.base_ring())
 
             import pyflatsurf
 
@@ -1019,10 +1087,10 @@ class VectorSpaceConversion(Conversion):
 
             codomain = pyflatsurf.flatsurf.Vector[T]
 
-        return VectorSpaceConversion(domain, codomain)
+        return VectorSpaceConversion(domain, codomain, ring_conversion=ring_conversion)
 
     @classmethod
-    def from_pyflatsurf_from_elements(cls, elements, domain=None):
+    def from_pyflatsurf_from_elements(cls, elements, domain=None, ring_conversion=None):
         r"""
         Return a :class:`Conversion` that converts the pyflatsurf ``elements``
         into vectors in ``domain``.
@@ -1047,7 +1115,14 @@ class VectorSpaceConversion(Conversion):
             from sage.all import VectorSpace
             domain = VectorSpace(ring_conversion.domain(), 2)
 
-        return VectorSpaceConversion.to_pyflatsurf(domain=domain)
+        return VectorSpaceConversion.to_pyflatsurf(domain=domain, ring_conversion=ring_conversion)
+
+    @classmethod
+    def to_pyflatsurf_from_elements(cls, elements, codomain=None):
+        ring_conversion = RingConversion.to_pyflatsurf_from_elements([v[0] for v in elements] + [v[1] for v in elements])
+
+        from sage.all import Sequence
+        return cls.to_pyflatsurf(domain=Sequence(elements).universe(), codomain=codomain, ring_conversion=ring_conversion)
 
     @cached_method
     def _vectors(self):
@@ -1062,20 +1137,7 @@ class VectorSpaceConversion(Conversion):
             Flatsurf Vectors over Rational Field
 
         """
-        return self._ring_conversion()._vectors()
-
-    @cached_method
-    def _ring_conversion(self):
-        r"""
-        Return the :class:`RingConversion` that maps the coordinates of the domain to the coordinates of the codomain.
-
-            sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)
-            sage: conversion._ring_conversion()
-            Conversion from Rational Field to __gmp_expr<__mpq_struct[1],__mpq_struct[1]>
-
-        """
-        return RingConversion.to_pyflatsurf(self.domain().base_ring())
+        return self._ring_conversion._vectors()
 
     def __call__(self, vector):
         r"""
@@ -1089,8 +1151,7 @@ class VectorSpaceConversion(Conversion):
             (1, 2)
 
         """
-        ring_conversion = self._ring_conversion()
-        return self._vectors()([ring_conversion(coordinate) for coordinate in vector]).vector
+        return self._vectors()([self._ring_conversion(coordinate) for coordinate in vector]).vector
 
     def section(self, vector):
         r"""
@@ -1105,8 +1166,7 @@ class VectorSpaceConversion(Conversion):
             True
 
         """
-        ring_conversion = self._ring_conversion()
-        return self.domain()([ring_conversion.section(vector.x()), ring_conversion.section(vector.y())])
+        return self.domain()([self._ring_conversion.section(vector.x()), self._ring_conversion.section(vector.y())])
 
 
 class FlatTriangulationConversion(Conversion):
@@ -1263,15 +1323,7 @@ class FlatTriangulationConversion(Conversion):
 
             vectors[half_edge - 1] = domain.polygon(polygon).edge(edge)
 
-        # TODO: This is a hack to figure out the parent module in exact-real
-        # TODO: Maybe this is actually not needed anymore?
-        codomain = None
-        if all(hasattr(vector[0], "_backend") for vector in vectors) and all(hasattr(vector[1], "_backend") for vector in vectors):
-            module = vectors[0][0]._backend.module()
-            import pyflatsurf
-            codomain = pyflatsurf.flatsurf.Vector[type(module)]
-
-        vector_conversion = VectorSpaceConversion.to_pyflatsurf_from_elements(vectors, codomain=codomain)
+        vector_conversion = VectorSpaceConversion.to_pyflatsurf_from_elements(vectors)
         return [vector_conversion(vector) for vector in vectors]
 
     @classmethod
