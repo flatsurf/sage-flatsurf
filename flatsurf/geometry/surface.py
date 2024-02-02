@@ -427,6 +427,7 @@ class MutablePolygonalSurface(Surface_base):
              'normalized_coordinates',
              'pyflatsurf',
              'rel_deformation',
+             'singularities',
              'stratum',
              'veering_triangulation'}
 
