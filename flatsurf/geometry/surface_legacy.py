@@ -1076,7 +1076,7 @@ class Surface_list(Surface):
 
         if surface is None:
             if copy is not None:
-                raise ValueError("Cannot copy when surface was provided.")
+                raise ValueError("Cannot copy when no surface was provided.")
 
             if mutable is None:
                 mutable = True
