@@ -2014,7 +2014,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     steps = [e / parts for e in self.edges()]
                     from flatsurf import Polygon
 
-                    return Polygon(edges=[e for e in steps for p in range(parts)])
+                    return Polygon(edges=[e for e in steps for p in range(parts)]).translate(self.vertex(0))
 
                 def j_invariant(self):
                     r"""
