@@ -469,6 +469,9 @@ class MutablePolygonalSurface(Surface_base):
         """
         return self._mutable
 
+    def __hash__(self):
+        return super().__hash__()
+
     def __eq__(self, other):
         r"""
         Return whether this surface is indistinguishable from ``other``.
