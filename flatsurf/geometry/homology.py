@@ -304,8 +304,8 @@ class SimplicialHomologyGroup(Parent):
 
     - ``coefficients`` -- a ring (default: the integers)
 
-    - ``generators`` -- one of ``edge``, ``interior``, ``midpoint`` (default:
-      ``edge``) how generators are represented
+    - ``generators`` -- one of ``edge``, ``voronoi`` (default: ``edge``) how
+      generators are represented
 
     - ``relative`` -- a subset of points of the ``surface`` (default: the empty
       set)
@@ -373,9 +373,6 @@ class SimplicialHomologyGroup(Parent):
         from sage.categories.all import Rings
         if coefficients not in Rings():
             raise TypeError("coefficients must be a ring")
-
-        if generators not in ["edge",]:
-            raise NotImplementedError("cannot represented homology with these generators yet")
 
         if relative:
             for point in relative:
@@ -471,7 +468,16 @@ class SimplicialHomologyGroup(Parent):
         if self._k == 2:
             return tuple(self._surface.labels())
 
-        return tuple()
+        return ()
+
+    def _simplices_polygons(self):
+        if self._generators == "edge":
+            return tuple(self._surface.labels())
+
+        if self._generators == "voronoi":
+            return tuple(self._surface.edges())
+
+        raise NotImplementedError
 
     @cached_method
     def change(self, k=None):
@@ -544,6 +550,54 @@ class SimplicialHomologyGroup(Parent):
             return boundary
 
         return self.change(k=self._k - 1).chain_module().zero()
+
+    def _boundary_segment(self, gen):
+        if self._generators == "edge":
+            C0 = self.chain_module(dimension=0)
+            label, edge = gen
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+            return C0(self._surface.point(opposite_label, self._surface.polygon(opposite_label).vertex(opposite_edge))) - C0(self._surface.point(label, self._surface.polygon(label).vertex(edge)))
+
+        if self._generators == "voronoi":
+            C0 = self.chain_module(dimension=0)
+            label, edge = gen
+            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+
+            return C0(opposite_label) - C0(label)
+
+        raise NotImplementedError
+
+    def _boundary_polygon(self, gen):
+        if self._generators == "edge":
+            C1 = self.chain_module(dimension=1)
+            boundary = C1.zero()
+            face = gen
+            for edge in range(len(self._surface.polygon(face).vertices())):
+                if (face, edge) in C1.indices():
+                    boundary += C1((face, edge))
+                else:
+                    boundary -= C1(self._surface.opposite_edge(face, edge))
+            return boundary
+
+        if self._generators == "voronoi":
+            C1 = self.chain_module(dimension=1)
+            boundary = C1.zero()
+            label, vertex = gen
+            # The counterclockwise walk around "vertex" is a boundary.
+            while True:
+                edge = (vertex - 1) % len(self._surface.polygon(label).vertices())
+                opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+                if (label, edge) in C1.indices():
+                    boundary += C1((label, edge))
+                else:
+                    boundary -= C1((opposite_label, opposite_edge))
+
+                if (opposite_label, opposite_edge) == gen:
+                    return boundary
+
+                label, vertex = opposite_label, opposite_edge
+
+        raise NotImplementedError
 
     @cached_method
     def _chain_complex(self):
@@ -782,6 +836,64 @@ class SimplicialHomologyGroup(Parent):
 
         homology, from_homology, to_homology = self._homology()
         return tuple(self(from_homology(g)) for g in homology.gens())
+
+    def symplectic_basis(self):
+        r"""
+        Return a symplectic basis of generators of this homology group.
+
+        TODO: Add a reference and a definition.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+
+        ::
+
+            sage: H = SimplicialHomology(T)
+            sage: H.symplectic_basis()
+
+        """
+        from sage.all import matrix
+        E = matrix(self.base_ring(), [[g.algebraic_intersection(h) for h in self.gens()] for g in self.gens()])
+
+        from sage.categories.all import Fields
+        if self.base_ring() in Fields:
+            from sage.matrix.symplectic_basis import symplectic_basis_over_field
+            F, C = symplectic_basis_over_field(E)
+        else:
+            from sage.matrix.symplectic_basis import symplectic_basis_over_ZZ
+            F, C = symplectic_basis_over_ZZ(E)
+
+        if any([entry not in [-1, 0, 1] for row in F for entry in row]):
+            raise NotImplementedError("cannot determine symplectic basis for this homology group over this ring yet")
+
+        return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
+
+    def _test_symplectic_basis(self, **options):
+        tester = self._tester(**options)
+
+        basis = self.symplectic_basis()
+        n = len(basis)
+
+        tester.assertEqual(len(self.gens()), n)
+        tester.assertEqual(n % 2, 0)
+
+        A = basis[:n // 2]
+        B = basis[n // 2:]
+
+        for i, a in enumerate(A):
+            for j, b in enumerate(B):
+                tester.assertEqual(a.algebraic_intersection(b), i == j)
+
+        for a in A:
+            for aa in A:
+                tester.assertEqual(a.algebraic_intersection(aa), 0)
+
+        for b in B:
+            for bb in B:
+                tester.assertEqual(b.algebraic_intersection(bb), 0)
 
     def __eq__(self, other):
         if not isinstance(other, SimplicialHomologyGroup):
