@@ -2088,7 +2088,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
                 return DelaunayDecompositionMorphism._create_morphism(self, s)
 
-            def _saddle_connections_unbounded(self, initial_label, initial_vertex):
+            def _saddle_connections_unbounded(self, initial_label, initial_vertex, algorithm):
                 r"""
                 Enumerate all saddle connections in this surface ordered by length.
 
@@ -2103,14 +2103,14 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 length_bound = shortest_edge
                 while True:
-                    more_connections = [connection for connection in self.saddle_connections(squared_length_bound=length_bound, initial_label=initial_label, initial_vertex=initial_vertex) if connection not in connections]
+                    more_connections = [connection for connection in self.saddle_connections(squared_length_bound=length_bound, initial_label=initial_label, initial_vertex=initial_vertex, algorithm=algorithm) if connection not in connections]
                     for connection in sorted(more_connections, key=lambda connection: squared_length(connection.holonomy())):
                         connections.add(connection)
                         yield connection
 
                     length_bound *= 2
 
-            def _saddle_connections_cone_bounded(self, squared_length_bound, source, incoming_edge, similarity, cone):
+            def _saddle_connections_generic_cone_bounded(self, squared_length_bound, source, incoming_edge, similarity, cone):
                 r"""
                 Enumerate the saddle connections of length at most square root
                 of ``squared_length_bound`` and which are strictly inside the
@@ -2248,9 +2248,9 @@ class SimilaritySurfaces(SurfaceCategory):
                         continue
 
                     # Recurse
-                    yield from self._saddle_connections_cone_bounded(squared_length_bound, source, opposite_edge, similarity * self.edge_transformation(*opposite_edge), subcone)
+                    yield from self._saddle_connections_generic_cone_bounded(squared_length_bound, source, opposite_edge, similarity * self.edge_transformation(*opposite_edge), subcone)
 
-            def _saddle_connections_from_vertex_bounded(self, squared_length_bound, source):
+            def _saddle_connections_generic_from_vertex_bounded(self, squared_length_bound, source):
                 r"""
                 Enumerate all the saddle connections up to length
                 ``squared_length_bound`` which start at ``source``.
@@ -2261,7 +2261,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 We consider saddle connections that come from the edges
                 adjacent to the vertex of ``source`` and then use
-                :meth:`_saddle_connections_cone_bounded` to enumerate the
+                :meth:`_saddle_connections_generic_cone_bounded` to enumerate the
                 saddle connections in the open cone formed by these edges.
 
                 INPUT:
@@ -2293,14 +2293,14 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.cone import Cones
                 cone = Cones(polygon.base_ring())(polygon.edge(source[1]), -polygon.edge(source[1] - 1))
 
-                yield from self._saddle_connections_cone_bounded(squared_length_bound, source, source, similarity, cone)
+                yield from self._saddle_connections_generic_cone_bounded(squared_length_bound, source, source, similarity, cone)
 
             def saddle_connections(
                 self,
                 squared_length_bound=None,
                 initial_label=None,
                 initial_vertex=None,
-                algorithm="cone",
+                algorithm=None,
             ):
                 r"""
                 Return the saddle connections on this surface whose length
@@ -2327,7 +2327,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import translation_surfaces
                     sage: S = translation_surfaces.square_torus()
                     sage: connections = S.saddle_connections(5)
-                    sage: connections
+                    sage: list(connections)
                     [Saddle connection (0, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
                      Saddle connection (1, 0) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
                      Saddle connection (0, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
@@ -2399,19 +2399,55 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: len(list(S.saddle_connections(1, initial_label=0, initial_vertex=1)))
                     1
 
+                We can also enumerate saddle connections on surfaces that are
+                built from non-convex polygons such as this L shaped polygon::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+                    sage: L = MutableOrientedSimilaritySurface(QQ)
+                    sage: L.add_polygon(Polygon(vertices=[(0, 0), (3, 0), (7, 0), (7, 2), (3, 2), (3, 3), (0, 3), (0, 2)]))
+                    sage: L.glue((0, 0), (0, 5))
+                    sage: L.glue((0, 1), (0, 3))
+                    sage: L.glue((0, 2), (0, 7))
+                    sage: L.glue((0, 4), (0, 6))
+                    sage: L.set_immutable()
+
+                    sage: connections = L.saddle_conections(128)
+                    sage: len(connections)
+                    164
+
+                Note that on translation surfaces, enumerating saddle
+                connections with the (default) ``"pyflatsurf"`` algorithm is
+                usually much faster::
+
+                    sage: connections = L.saddle_connections(128)
+                    sage: len(connections)
+
+                    sage: connections = L.saddle_connections(128, algorithm="generic")
+                    sage: len(connections)
+
                 """
                 # TODO: Add benchmarks of the generic "cone" algorithm against
                 # the pyflatsurf algorithm. Also benchmark how much slower this
                 # is now since we are supporting much more complicated
                 # geometries.
 
-                if squared_length_bound is None:
-                    # Enumerate all (usually infinitely many) saddle
-                    # connections.
-                    return self._saddle_connections_unbounded(initial_label=initial_label, initial_vertex=initial_vertex)
+                # TODO: Fail if initial_vertex is set but not initial_label.
 
-                if squared_length_bound < 0:
+                if squared_length_bound is not None and squared_length_bound < 0:
                     raise ValueError("length bound must be non-negative")
+
+                if algorithm is None:
+                    algorithm = "generic"
+
+                if algorithm == "generic":
+                    return self._saddle_connections_generic(squared_length_bound, initial_label, initial_vertex)
+
+                raise NotImplementedError("cannot enumerate saddle connections with this algorithm yet")
+
+            def _saddle_connections_generic(self, squared_length_bound, initial_label, initial_vertex):
+                if squared_length_bound is None:
+                    # Enumerate all (usually infinitely many) saddle connections.
+                    return self._saddle_connections_unbounded(initial_label=initial_label, initial_vertex=initial_vertex)
 
                 connections = []
 
@@ -2429,7 +2465,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         initial_vertices = [initial_vertex]
 
                     for vertex in initial_vertices:
-                        connections.extend(self._saddle_connections_from_vertex_bounded(
+                        connections.extend(self._saddle_connections_generic_from_vertex_bounded(
                             squared_length_bound=squared_length_bound,
                             source=(label, vertex),
                         ))
