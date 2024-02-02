@@ -382,6 +382,9 @@ class ConeSurfaces(SurfaceCategory):
 
                         return angles
 
+                    def singularities(self):
+                        return [self.point(edges[0][0], self.polygon(edges[0][0]).vertex(edges[0][1])) for (angle, edges) in self.angles(return_adjacent_edges=True) if angle > 1]                   
+
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""
                     The category of oriented connected cone surfaces without boundary.
