@@ -4,8 +4,12 @@ from sage.misc.cachefunc import cached_method
 
 # TODO: SaddleConnection should be an element in the space of SaddleConnections or the space of Paths rather?
 
+class SaddleConnection_base(SageObject):
+    def __init__(self, surface):
+        self._surface = surface
 
-class SaddleConnection(SageObject):
+
+class SaddleConnection(SaddleConnection_base):
     r"""
     Represents a saddle connection on a SimilaritySurface.
 
@@ -157,7 +161,7 @@ class SaddleConnection(SageObject):
             warnings.warn("limit has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use SaddleConnection.from_vertex() to search with a limit instead")
             del limit
 
-        self._surface = surface
+        super().__init__(surface)
 
         V = self._surface.base_ring() ** 2
 
@@ -640,8 +644,8 @@ class SaddleConnection(SageObject):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: connection = S.saddle_connections(13)[-1]
-            sage: connection.homology()
+            sage: connections = list(S.saddle_connections(13))
+            sage: connections[-1].homology()
             -2*B[(0, 0)] - 3*B[(0, 1)]
 
         ::

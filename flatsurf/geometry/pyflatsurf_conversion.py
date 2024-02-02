@@ -1479,15 +1479,15 @@ class FlatTriangulationConversion(Conversion):
 
         We map a saddle connection that maps to a half edge::
 
-            sage: connection = S.saddle_connections(1)[0]
+            sage: connection = next(iter(S.saddle_connections(1)))
             sage: conversion(connection)
-            5
+            -9
 
         We map a saddle connection that does not map to a half edge::
 
-            sage: connection = S.saddle_connections(3)[-1]
-            sage: conversion(connection)
-            ((-1/2 ~ -0.50000000), (1/2*a^3 - 1*a ~ 1.5388418)) from 7 to -2
+            sage: connections = list(S.saddle_connections(10))
+            sage: conversion(connections[-1])
+            ((-1/2*a^2 - 1/2 ~ -2.3090170), (-1/2*a ~ -0.95105652)) from -1 to 1
 
         """
         from flatsurf.geometry.surface_objects import SurfacePoint
@@ -1534,14 +1534,14 @@ class FlatTriangulationConversion(Conversion):
 
         We roundtrip a saddle connection that maps to a half edge::
 
-            sage: connection = S.saddle_connections(1)[0]
+            sage: connection = next(iter(S.saddle_connections(1)))
             sage: conversion.section(conversion(connection)) == connection
             True
 
         We roundtrip a more general saddle connection::
 
-            sage: connection = S.saddle_connections(3)[-1]
-            sage: conversion.section(conversion(connection)) == connection
+            sage: connections = list(S.saddle_connections(3))
+            sage: conversion.section(conversion(connections[-1])) == connections[-1]
             True
 
         """
@@ -1679,8 +1679,8 @@ class FlatTriangulationConversion(Conversion):
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
 
-            sage: conversion._image_saddle_connection(S.saddle_connections(1)[0])
-            5
+            sage: conversion._image_saddle_connection(next(iter(S.saddle_connections(1))))
+            -9
 
         """
         import pyflatsurf
