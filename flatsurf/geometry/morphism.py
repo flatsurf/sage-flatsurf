@@ -652,8 +652,8 @@ class SurfaceMorphism(Morphism):
             assert image.parent().surface() is self.codomain()
             return image
 
-        from flatsurf.geometry.saddle_connection import SaddleConnection
-        if isinstance(x, SaddleConnection):
+        from flatsurf.geometry.saddle_connection import SaddleConnection_base
+        if isinstance(x, SaddleConnection_base):
             if x.surface() is not self.domain():
                 raise ValueError("saddle connection must be in the domain of this morphism")
             image = self._image_saddle_connection(x)
@@ -1450,6 +1450,11 @@ class CompositionMorphism(SurfaceMorphism):
     def _repr_defn(self):
         return "  " + "\nthen\n  ".join(str(morphism) for morphism in self._morphisms)
 
+    @cached_method
+    def section(self):
+        from sage.all import prod
+        return prod(morphism.section() for morphism in self._morphisms)
+
 
 class SubdivideMorphism(SurfaceMorphism):
     # TODO: docstring
@@ -1646,6 +1651,20 @@ class TriangulationMorphism(SurfaceMorphism):
         # TODO: This is extremely slow.
         from flatsurf.geometry.saddle_connection import SaddleConnection
         return SaddleConnection.from_vertex(self.codomain(), label, edge, connection.direction().vector())
+
+    def _section_saddle_connection(self, connection):
+        (label, edge) = connection.start()
+
+        domain_label = self.codomain()._reference_label(label)
+        triangulation = self.codomain()._triangulation(domain_label)[1].inverse
+
+        while (label, edge) not in triangulation:
+            label, edge = self.codomain().opposite_edge(label, edge)
+            edge = (edge + 1) % len(self.codomain().polygon(label).edges())
+
+        # TODO: This is extremely slow.
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        return SaddleConnection.from_vertex(self.domain(), domain_label, triangulation[(label, edge)], connection.direction())
 
     def _image_point(self, p):
         r"""

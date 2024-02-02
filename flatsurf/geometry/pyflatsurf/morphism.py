@@ -48,6 +48,9 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
         return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection), self.codomain())
 
+    def section(self):
+        return Morphism_from_pyflatsurf._create_morphism(self.codomain(), self.domain(), self._pyflatsurf_conversion)
+
     def _image_point(self, point):
         from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
         # TODO: Category is unset.
@@ -73,6 +76,9 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
         assert isinstance(point, SurfacePoint_pyflatsurf)
 
         return self._pyflatsurf_conversion.section(point._point)
+
+    def _image_saddle_connection(self, connection):
+        return self._pyflatsurf_conversion._preimage_saddle_connection(connection._connection)
 
     # TODO: Implement __eq__
 
