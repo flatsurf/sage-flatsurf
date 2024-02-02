@@ -1075,6 +1075,10 @@ class PolygonalSurfaces(SurfaceCategory):
                     False
 
                 """
+                if "WithoutBoundary" in self.category().axioms():
+                    return False
+                if "WithBoundary" in self.category().axioms():
+                    return True
                 for label in self.labels():
                     for edge in range(len(self.polygon(label).vertices())):
                         cross = self.opposite_edge(label, edge)
