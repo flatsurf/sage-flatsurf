@@ -1714,6 +1714,7 @@ class FlatTriangulationConversion(Conversion):
 
         """
         from flatsurf.geometry.saddle_connection import SaddleConnection
+        # TODO: Speed this up!
         return SaddleConnection.from_vertex(
                 self.domain(),
                 *self._preimage_half_edge(saddle_connection.source()),
