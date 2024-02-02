@@ -304,15 +304,6 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         """
 
-        class LazyLabels(Labels):
-            def __contains__(self, label):
-                try:
-                    self._surface._reference_label(label)
-                except KeyError:
-                    return False
-
-                return True
-
         return LazyLabels(self, finite=self._reference.is_finite_type())
 
     def _repr_(self):
@@ -331,6 +322,16 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             return f"Partial Triangulation of {self._reference!r}"
 
         return f"Triangulation of {self._reference!r}"
+
+
+class LazyLabels(Labels):
+    def __contains__(self, label):
+        try:
+            self._surface._reference_label(label)
+        except KeyError:
+            return False
+
+        return True
 
 
 class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):

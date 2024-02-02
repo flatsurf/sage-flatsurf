@@ -323,26 +323,27 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
         """
         from flatsurf.geometry.surface import Labels
 
-        class LazyLabels(Labels):
-            def __contains__(self, label):
-                if not isinstance(label, tuple):
-                    return False
-                if len(label) != 3:
-                    return False
-
-                from sage.all import ZZ
-                if label[0] not in ZZ:
-                    return False
-
-                if label[2] != 0:
-                    return False
-
-                if label[0] >= 1:
-                    return label[1] == -self._surface._alpha**(label[0] - 1)
-
-                return label[1] == self._surface._alpha**(-label[0])
-
         return LazyLabels(self, finite=False)
+
+
+class LazyLabels(Labels):
+    def __contains__(self, label):
+        if not isinstance(label, tuple):
+            return False
+        if len(label) != 3:
+            return False
+
+        from sage.all import ZZ
+        if label[0] not in ZZ:
+            return False
+
+        if label[2] != 0:
+            return False
+
+        if label[0] >= 1:
+            return label[1] == -self._surface._alpha**(label[0] - 1)
+
+        return label[1] == self._surface._alpha**(-label[0])
 
 
 def chamanara_surface(alpha, n=None):
