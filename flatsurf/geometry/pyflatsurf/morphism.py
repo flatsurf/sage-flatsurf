@@ -65,9 +65,8 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
         self._pyflatsurf_conversion = pyflatsurf_conversion
 
     def _image_half_edge(self, half_edge):
-        half_edge = self._pyflatsurf_conversion((label, edge))
-        face = tuple(self.codomain()._flat_triangulation.face(half_edge))
-        label = type(self.codomain())._normalize_label(face)
+        face = tuple(self.domain()._flat_triangulation.face(half_edge))
+        label = type(self.domain())._normalize_label(face)
         edge = label.index(half_edge)
         return (label, edge)
 
@@ -79,6 +78,14 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
     def _image_saddle_connection(self, connection):
         return self._pyflatsurf_conversion._preimage_saddle_connection(connection._connection)
+
+    def _image_homology_edge(self, label, edge):
+        half_edge = label[edge]
+
+        import pyflatsurf
+        half_edge = pyflatsurf.flatsurf.HalfEdge(int(half_edge))
+
+        return [(1, *self._pyflatsurf_conversion._preimage_half_edge(half_edge))]
 
     # TODO: Implement __eq__
 

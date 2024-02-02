@@ -293,11 +293,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 doctest:warning
                 ...
                 UserWarning: Singularity() is deprecated and will be removed in a future version of sage-flatsurf. Use surface.point() instead.
-                sage: s1 = s.rel_deformation(deformation1).canonicalize()  # long time (.8s)
+                sage: s1 = s.rel_deformation(deformation1).canonicalize().codomain()  # long time (.8s)
                 sage: deformation2 = {s.singularity(0,0):V((a,0))}  # long time (see above)
-                sage: s2 = s.rel_deformation(deformation2).canonicalize()  # long time (.6s)
+                sage: s2 = s.rel_deformation(deformation2).canonicalize().codomain()  # long time (.6s)
                 sage: m = Matrix([[a,0],[0,~a]])
-                sage: s2.cmp((m*s1).canonicalize())  # long time (see above)
+                sage: s2.cmp((m*s1).canonicalize().codomain())  # long time (see above)
                 0
 
             """
@@ -419,7 +419,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
                     else:
                         # In place matrix deformation
-                        ss.apply_matrix(prod)
+                        ss.apply_matrix(prod, in_place=True)
                     ss.delaunay_triangulation(direction=nonzero, in_place=True)
                     deformation2 = {}
                     for singularity, vect in deformation.items():
@@ -465,7 +465,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             raise Exception("exceeded limit iterations")
                         continue
 
-                    sss = sss.apply_matrix(mi * g ** (-k) * m, in_place=False)
+                    sss = sss.apply_matrix(mi * g ** (-k) * m, in_place=False).codomain()
                     return sss.delaunay_triangulation(direction=nonzero)
 
         def j_invariant(self):
@@ -542,10 +542,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: marked_point = S(1, 1); marked_point  # optional: pyflatsurf  # long time (from above)
                 Vertex 0 of polygon 2
                 sage: erasure(marked_point)  # optional: pyflatsurf  # long time (from above)
+                Point (-1, 0) of polygon (-3, -7, -2)
                 sage: unmarked_point = S(1, 0); unmarked_point  # optional: pyflatsurf  # long time (from above)
                 Vertex 0 of polygon 1
                 sage: erasure(unmarked_point)  # optional: pyflatsurf  # long time (from above)
-                Point (-1, 0) of polygon (-3, -7, -2)
+                Vertex 0 of polygon (-3, -7, -2)
 
             TESTS:
 
@@ -691,12 +692,16 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 if algorithm is None:
                     from flatsurf.features import pyflatsurf_feature
-                    if pyflatsurf_feature.is_present():
+                    if pyflatsurf_feature.is_present() and pyflatsurf_feature.is_saddle_connection_enumeration_functional():
                         algorithm = "pyflatsurf"
                     else:
                         algorithm = "generic"
 
                 if algorithm == "pyflatsurf":
+                    from flatsurf.features import pyflatsurf_feature
+                    if not flatsurf_feature.is_saddle_connection_enumeration_functional():
+                        import warnings
+                        warnings.warn("enumerating saddle connections is broken in your version of pyflatsurf, namely saddle connections are enumerated in the wrong order and consequently some might be missing when enumerating with a length bound; upgrade to pyflatsurf >=3.14.1 to resolve this warning.")
                     return self._saddle_connections_pyflatsurf(squared_length_bound, initial_label, initial_vertex)
 
                 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
@@ -720,7 +725,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if squared_length_bound is not None:
                         holonomy = connection.holonomy()
                         # TODO: Use dot_product everywhere.
-                        if holonomy.dot_product(holonomy) > 2*squared_length_bound:
+                        if holonomy.dot_product(holonomy) > squared_length_bound:
                             break
                     yield connection
 

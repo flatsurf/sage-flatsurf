@@ -35,7 +35,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.surface import OrientedSimilaritySurface, Labels
 from flatsurf.geometry.minimal_cover import MinimalTranslationCover
 from sage.rings.integer_ring import ZZ
 
@@ -321,8 +321,6 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
             ((0, 1, 0), (1, -1, 0), (-1, 1/2, 0), (2, -1/2, 0), (-2, 1/4, 0), (3, -1/4, 0), (-3, 1/8, 0), (4, -1/8, 0), (-4, 1/16, 0), (5, -1/16, 0), (-5, 1/32, 0), (6, -1/32, 0), (-6, 1/64, 0), (7, -1/64, 0), (-7, 1/128, 0), (8, -1/128, 0), …)
 
         """
-        from flatsurf.geometry.surface import Labels
-
         return LazyLabels(self, finite=False)
 
 

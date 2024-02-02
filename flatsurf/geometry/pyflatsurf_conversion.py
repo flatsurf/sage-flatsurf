@@ -1481,13 +1481,13 @@ class FlatTriangulationConversion(Conversion):
 
             sage: connection = next(iter(S.saddle_connections(1)))
             sage: conversion(connection)
-            -9
+            5
 
         We map a saddle connection that does not map to a half edge::
 
             sage: connections = list(S.saddle_connections(10))
             sage: conversion(connections[-1])
-            ((-1/2*a^2 - 1/2 ~ -2.3090170), (-1/2*a ~ -0.95105652)) from -1 to 1
+            ((-3/2*a^2 + 5/2 ~ -2.9270510), (1/2*a ~ 0.95105652)) from -9 to 9
 
         """
         from flatsurf.geometry.surface_objects import SurfacePoint
@@ -1680,7 +1680,7 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
 
             sage: conversion._image_saddle_connection(next(iter(S.saddle_connections(1))))
-            -9
+            5
 
         """
         import pyflatsurf

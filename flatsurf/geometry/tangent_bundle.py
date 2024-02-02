@@ -80,7 +80,8 @@ class SimilaritySurfaceTangentVector:
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.cathedral(1, 2)
-        sage: len(S.saddle_connections(2))
+        sage: connections = S.saddle_connections(2)  # random output due to cppyy deprecation warnings
+        sage: len(connections)
         40
 
     """
