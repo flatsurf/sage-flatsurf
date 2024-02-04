@@ -286,6 +286,7 @@ class RingConversion(Conversion):
 
         if pyeantic_feature.is_present():
             yield RingConversion_eantic
+            yield RingConversion_algebraic
 
         if pyexactreal_feature.is_present():
             yield RingConversion_exactreal
@@ -472,11 +473,12 @@ class RingConversion(Conversion):
         from sage.all import Sequence
 
         for conversion_type in RingConversion._ring_conversions():
-            if codomain is None:
-                codomain = conversion_type._deduce_codomain_from_domain_elements(elements)
-            if codomain is None:
+            deduced_codomain = codomain
+            if deduced_codomain is None:
+                deduced_codomain = conversion_type._deduce_codomain_from_domain_elements(elements)
+            if deduced_codomain is None:
                 continue
-            conversion = conversion_type._create_conversion(domain=Sequence(elements).universe(), codomain=codomain)
+            conversion = conversion_type._create_conversion(domain=Sequence(elements).universe(), codomain=deduced_codomain)
             if conversion is not None:
                 return conversion
 
@@ -676,6 +678,37 @@ class RingConversion_eantic(RingConversion):
                 return None
 
         return ring
+
+
+class RingConversion_algebraic(RingConversion):
+    def __init__(self, domain, codomain):
+        super().__init__(domain=domain, codomain=codomain)
+
+        self._eantic_conversion = RingConversion_eantic._create_conversion(codomain=self.codomain())
+
+    @classmethod
+    def _create_conversion(cls, domain=None, codomain=None):
+        if codomain is None:
+            return None
+
+        from sage.all import AA
+        if domain is not AA:
+            return None
+
+        return RingConversion_algebraic(domain, codomain)
+
+    def __call__(self, x):
+        return self._eantic_conversion(self._eantic_conversion.domain()(x))
+
+    @classmethod
+    def _deduce_codomain_from_domain_elements(cls, elements):
+        from sage.all import AA
+        if not all(element.parent() is AA for element in elements):
+            return None
+
+        from sage.all import number_field_elements_from_algebraics, NumberField
+        number_field, elements, embedding = number_field_elements_from_algebraics(elements, embedded=True)
+        return RingConversion_eantic._create_conversion(number_field).codomain()
 
 
 class RingConversion_exactreal(RingConversion):
