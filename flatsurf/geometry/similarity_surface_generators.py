@@ -36,6 +36,7 @@ from flatsurf.geometry.surface import (
     MutableOrientedSimilaritySurface,
 )
 from flatsurf.geometry.origami import Origami
+from flatsurf.graphical.surface import GraphicalSimilaritySurface
 
 
 ZZ_1 = ZZ(1)
@@ -1084,8 +1085,8 @@ dilation_surfaces = DilationSurfaceGenerators()
 
 
 class HalfTranslationSurfaceGenerators:
-    # TODO: ideally, we should be able to construct a non-convex polygon and make the construction
-    # below as a special case of billiard unfolding.
+    # Note: ideally, we should be able to construct a non-convex polygon and
+    # make the construction below as a special case of billiard unfolding.
     @staticmethod
     def step_billiard(w, h):
         r"""
@@ -2209,15 +2210,6 @@ class TranslationSurfaceGenerators:
                 return x - 1
             return x + 1
 
-        def _position_function(self, n):
-            from flatsurf.geometry.similarity import SimilarityGroup
-
-            SG = SimilarityGroup(QQ)
-            if n % 2 == 0:
-                return SG((n // 2, n // 2))
-            else:
-                return SG((n // 2, n // 2 + 1))
-
         def __repr__(self):
             return "The infinite staircase"
 
@@ -2242,14 +2234,21 @@ class TranslationSurfaceGenerators:
             return isinstance(other, TranslationSurfaceGenerators._InfiniteStaircase)
 
         def graphical_surface(self, *args, **kwargs):
-            default_position_function = kwargs.pop(
-                "default_position_function", self._position_function
-            )
-            graphical_surface = super().graphical_surface(
-                *args, default_position_function=default_position_function, **kwargs
-            )
-            graphical_surface.make_all_visible(limit=10)
+            graphical_surface = TranslationSurfaceGenerators._InfiniteStaircase.GraphicalInfiniteStaircase(self, *args, **kwargs)
+            graphical_surface.layout(limit=10)
             return graphical_surface
+
+        class GraphicalInfiniteStaircase(GraphicalSimilaritySurface):
+            def _layout_one(self, label, algorithm=None, **kwargs):
+                if algorithm is None:
+                    algorithm = "predefined"
+                if algorithm != "predefined":
+                    return super()._layout_one(label=label, algorithm=algorithm, **kwargs)
+
+                from flatsurf.geometry.similarity import SimilarityGroup
+
+                SG = SimilarityGroup(QQ)
+                self._transformation[label] = SG((label // 2, label // 2)) if label % 2 == 0 else SG((label // 2, label // 2 + 1))
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):

@@ -28,17 +28,11 @@ class GraphicalSegmentInPolygon:
         self._gs = graphical_surface
         self._seg = segment
         label = self.polygon_label()
-        self._start = self._gs.graphical_polygon(label).transform(
-            segment.start().point()
-        )
+        self._start = self._gs.graphical_point(label, segment.start().point())
         if self._seg.is_edge():
-            self._end = self._gs.graphical_polygon(label).transform(
-                self._seg.start().polygon().vertex(self._seg.edge() + 1)
-            )
+            self._end = self._gs.graphical_point(label, self._seg.start().polygon().vertex(self._seg.edge() + 1))
         else:
-            self._end = self._gs.graphical_polygon(label).transform(
-                segment.end().point()
-            )
+            self._end = self._gs.graphical_point(label, segment.end().point())
 
     def polygon_label(self):
         return self._seg.polygon_label()

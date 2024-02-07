@@ -49,17 +49,17 @@ TB = s.tangent_bundle()
 jupyter:
   outputs_hidden: false
 ---
-baricenter = sum(s.polygon(0).vertices()) / 5
+barycenter = sum(s.polygon(0).vertices()) / 5
 ```
 
-Define the tangent vector based at the baricenter of polygon 0 aimed downward.
+Define the tangent vector based at the barycenter of polygon 0 aimed downward.
 
 ```{code-cell}
 ---
 jupyter:
   outputs_hidden: true
 ---
-v = TB(0, baricenter, (0, -1))
+v = TB(0, barycenter, (0, -1))
 ```
 
 Convert to a straight-line trajectory. Trajectories are unions of segments in polygons.
@@ -117,7 +117,7 @@ Lets do it again but in the slope one direction.
 jupyter:
   outputs_hidden: false
 ---
-v = TB(0, baricenter, (1, 1))
+v = TB(0, barycenter, (1, 1))
 ```
 
 ```{code-cell}

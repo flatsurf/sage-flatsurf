@@ -34,7 +34,7 @@ from sage.all import AA, QQ
 from flatsurf import EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
 
 
-# TODO: the test for field of definition with is_isomorphic() does not check
+# Note: the test for field of definition with is_isomorphic() does not check
 # for embeddings... though for quadratic fields it does not matter much.
 @pytest.mark.parametrize(
     "a,b,c,d,l1,l2,veech,discriminant",

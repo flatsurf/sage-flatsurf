@@ -87,6 +87,22 @@ class TopologicalSurfaces(SurfaceCategory):
         to put it here.
         """
 
+        def _describe_surface(self):
+            r"""
+            Return a string describing this kind of surface.
+
+            This is a helper method for :meth:`_repr_`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S._describe_surface()
+                'Translation Surface'
+
+            """
+            return "Surface"
+
         def refined_category(self):
             r"""
             Return the smallest subcategory that this surface is in.
@@ -292,6 +308,38 @@ class TopologicalSurfaces(SurfaceCategory):
                 3
 
             """
+
+        def plot(self, **kwargs):
+            r"""
+            Return a plot of this surface.
+
+            The documentation of sage-flatsurf contains a section of example
+            plots. Consult the :mod:`flatsurf.graphical.surface` reference for all the
+            details.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S.plot()
+                Graphics object consisting of 10 graphics primitives
+
+            ::
+
+                sage: from flatsurf import MutableOrientedHyperbolicSurface, HyperbolicPlane
+                sage: H = HyperbolicPlane(QQ)
+                sage: S = MutableOrientedHyperbolicSurface(H)
+                sage: S.add_polygon(H.convex_hull(0, I + 2, I - 2))
+                0
+
+                sage: S.glue((0, 1), (0, 1))
+                sage: S.glue((0, 0), (0, 2))
+
+                sage: S.plot()
+                Graphics object consisting of 5 graphics primitives
+
+            """
+            return self.graphical_surface(**kwargs).plot()
 
     class Orientable(SurfaceCategoryWithAxiom):
         r"""

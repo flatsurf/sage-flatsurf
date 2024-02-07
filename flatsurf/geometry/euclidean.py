@@ -219,7 +219,8 @@ def angle(u, v, numerical=False):
     angle = math.acos(cos_uv) / (2 * math.pi)  # rat number between 0 and 1/2
 
     if numerical:
-        return 1.0 - angle if u0 * v1 - u1 * v0 < 0 else angle
+        from sage.all import RR
+        return RR(1.0 - angle if u0 * v1 - u1 * v0 < 0 else angle)
 
     # fast and dirty way using floating point approximation
     # (see below for a slow but exact method)

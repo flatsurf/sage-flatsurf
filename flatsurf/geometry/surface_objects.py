@@ -110,13 +110,39 @@ class SurfacePoint(Element):
         sage: q = S.point(2, (1/2, 1))
         sage: p == q
         True
-        sage: p.coordinates(2)
-        ((1/2, 1),)
+        sage: p.representative(2)
+        (2, (1/2, 1))
 
     A point can have even more representations when it is a vertex::
 
         sage: S.point(1, (0, 0))
         Vertex 0 of polygon 1
+
+    A point can be on a boundary edge::
+
+        ...
+
+    A point can be on a boundary vertex::
+
+        ...
+
+    A point can be on a vertex of an infinite area polygon::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: H = HyperbolicPlane()
+        sage: P = H.intersection(
+        ....:     H.vertical(-1).right_half_space(),
+        ....:     H.half_circle(0, 4).right_half_space(),
+        ....:     H.vertical(1).left_half_space())
+
+        sage: from flatsurf import MutableOrientedHyperbolicSurface
+        sage: S = MutableOrientedHyperbolicSurface(H)
+        sage: S.add_polygon(P)
+        0
+        sage: S.glue((0, 0), (0, 2))
+
+        sage: S(0, 0)
+        Vertex 0 of polygon 0
 
     """
 
@@ -140,9 +166,6 @@ class SurfacePoint(Element):
         if point in ZZ:
             point = surface.polygon(label).vertex(point)
 
-        point = (ring**2)(point)
-        point.set_immutable()
-
         position = polygon.get_point_position(point)
 
         if not position.is_inside():
@@ -155,31 +178,49 @@ class SurfacePoint(Element):
         elif position.is_in_edge_interior():
             self._representatives = {(label, point)}
 
-            cross_label, cross_edge = surface.opposite_edge(label, position.get_edge())
-            cross_point = surface.edge_transformation(label, position.get_edge())(point)
-            cross_point.set_immutable()
+            opposite = surface.opposite_edge(label, position.get_edge())
+            if opposite is not None:
+                cross_label, cross_edge = opposite
+                cross_point = surface.edge_transformation(label, position.get_edge()) * point
 
-            self._representatives.add((cross_label, cross_point))
+                self._representatives.add((cross_label, cross_point))
         elif position.is_vertex():
             self._representatives = set()
 
-            source_edge = position.get_vertex()
-            while (label, source_edge) not in self._representatives:
-                self._representatives.add((label, source_edge))
+            def step(label, vertex, ccw=True):
+                edge = surface.polygon(label).adjacencies()[vertex][0 if ccw else 1]
+                if edge is None:
+                    return None
+                cross = surface.opposite_edge(label, edge)
+                if not cross:
+                    return None
+                cross_label, cross_edge = cross
+                for cross_vertex, edges in enumerate(surface.polygon(cross_label).adjacencies()):
+                    if cross_edge == edges[1 if ccw else 0]:
+                        return cross_label, cross_vertex
 
-                # Rotate to the next edge that is leaving at the vertex
-                label, source_edge = surface.opposite_edge(label, source_edge)
-                source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
+                assert False, "no vertex attached to this edge"
 
-                if limit is not None:
-                    limit -= 1
-                    if limit < 0:
-                        raise ValueError("number of edges at singularity exceeds limit")
+            def walk(label, vertex, ccw=True, limit=None):
+                representatives = set()
+                current = label, vertex
+                while current not in representatives:
+                    representatives.add(current)
 
-            self._representatives = {
-                (label, surface.polygon(label).vertex(vertex))
-                for (label, vertex) in self._representatives
-            }
+                    current = step(*current, ccw=ccw)
+                    if current is None:
+                        break
+
+                    if limit is not None:
+                        limit -= 1
+                        if limit < 0:
+                            raise ValueError("number of edges at singularity exceeds limit")
+
+                return representatives
+
+            self._representatives = walk(label, position.get_vertex(), ccw=True, limit=limit).union(
+                walk(label, position.get_vertex(), ccw=False, limit=limit))
+            self._representatives = set([(label, surface.polygon(label).vertices()[v]) for (label, v) in self._representatives])
         else:
             raise NotImplementedError
 
@@ -256,7 +297,7 @@ class SurfacePoint(Element):
     def representatives(self):
         r"""
         Return the representatives of this point as pairs of polygon labels and
-        coordinates.
+        polygon points.
 
         EXAMPLES::
 
@@ -271,10 +312,14 @@ class SurfacePoint(Element):
         """
         return self._representatives
 
-    def representative(self):
+    def representative(self, label=None):
         r"""
-        Return a representative of this point, i.e., the first of
-        :meth:`representatives`.
+        Return a representative of this point.
+
+        INPUT:
+
+        - ``label`` -- the label of a polygon or ``None`` (default: ``None``);
+          if given, a representative in that polygon is returned.
 
         EXAMPLES::
 
@@ -287,7 +332,52 @@ class SurfacePoint(Element):
             (2, (1, 0))
 
         """
-        return next(iter(self.representatives()))
+        for representative in self.representatives():
+            if representative[0] == label or label is None:
+                return representative
+
+        raise ValueError("no representative in this polygon")
+
+    def edges(self):
+        r"""
+        Return the list of edges that contain this point.
+
+        Glued pairs of edges in the surface are only reported once. In
+        particular, if the point is both the starting point of e and the end
+        point of -e, then only e is reported.
+
+        """
+        if not self.is_vertex():
+            # This is a point in the interior of a polygon or on an edge
+            label, coordinates = self.representative()
+            position = self.surface().polygon(label).get_point_position(coordinates)
+
+            if position.is_in_edge_interior():
+                return {position.get_edge()}
+
+            return set()
+
+        edges = set()
+
+        for label, coordinates in self.representatives():
+            polygon = self.surface().polygon(label)
+            position = polygon.get_point_position(coordinates)
+            edges.add((label, polygon.adjacencies()[position.get_vertex()][1]))
+
+        return edges
+
+    def vertices(self):
+        if not self.is_vertex():
+            return set()
+
+        vertices = set()
+
+        for label, coordinates in self.representatives():
+            polygon = self.surface().polygon(label)
+            vertex = polygon.get_point_position(coordinates).get_vertex()
+            vertices.add((label, vertex))
+
+        return vertices
 
     def vertex_set(self):
         r"""
@@ -419,7 +509,7 @@ class SurfacePoint(Element):
 
     def coordinates(self, label):
         r"""
-        Return coordinates for the point in the in the polygon ``label``.
+        Return coordinates for the point in the polygon ``label``.
 
         EXAMPLES::
 
@@ -431,27 +521,12 @@ class SurfacePoint(Element):
             ((0, 0), (1, 0), (0, 1), (1, 1))
 
         """
+        import warnings
+        warnings.warn("coordinates() has been deprecated and will be removed in a future version of sage-flatsurf; use representative() or representatives() instead")
+
         return tuple(
             coordinates for (l, coordinates) in self._representatives if l == label
         )
-
-    def graphical_surface_point(self, graphical_surface=None):
-        r"""
-        Return a
-        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to
-        represent this point graphically.
-
-        EXAMPLES::
-
-            sage: from flatsurf import half_translation_surfaces
-            sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
-            sage: p = S.point(0, (1/2, 1/2))
-            sage: G = p.graphical_surface_point()
-
-        """
-        from flatsurf.graphical.surface_point import GraphicalSurfacePoint
-
-        return GraphicalSurfacePoint(self, graphical_surface=graphical_surface)
 
     def plot(self, *args, **kwargs):
         r"""
@@ -462,22 +537,21 @@ class SurfacePoint(Element):
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
             sage: p = S.point(0, (0, 0))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
+            sage: S.plot() + p.plot(color="red")
+            ...Graphics object consisting of 73 graphics primitives
 
             sage: p = S.point(0, (0, 25/12))
-            sage: p.plot()
-            ...Graphics object consisting of 1 graphics primitive
+            sage: S.plot() + p.plot(color="red")
+            ...Graphics object consisting of 73 graphics primitives
 
         """
         graphical_surface = None
         if args:
             graphical_surface = args[0]
             args = args[1:]
-
-        return self.graphical_surface_point(graphical_surface=graphical_surface).plot(
-            *args, **kwargs
-        )
+        if graphical_surface is None:
+            graphical_surface = self._surface.graphical_surface()
+        return graphical_surface.plot_point(self, *args, **kwargs)
 
     def __repr__(self):
         r"""

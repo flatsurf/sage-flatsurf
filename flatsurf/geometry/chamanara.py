@@ -11,7 +11,7 @@ EXAMPLES::
     sage: from flatsurf import translation_surfaces
     sage: s = translation_surfaces.chamanara(1/2)
     sage: s.plot()
-    ...Graphics object consisting of 129 graphics primitives
+    ...Graphics object consisting of 73 graphics primitives
 
 """
 # ********************************************************************
@@ -240,11 +240,13 @@ class ChamanaraSurface(OrientedSimilaritySurface):
         return hash((self._p, self.base_ring()))
 
     def graphical_surface(self, **kwds):
-        adjacencies = [(0, 1)]
-        for i in range(8):
-            adjacencies.append((-i, 3))
-            adjacencies.append((i + 1, 3))
-        return super().graphical_surface(adjacencies=adjacencies, **kwds)
+        surface = super().graphical_surface(**kwds)
+
+        for label in self.labels()[:9]:
+            if label != 0:
+                surface.layout(label=label, edge=3)
+
+        return surface
 
     def __eq__(self, other):
         r"""
@@ -296,17 +298,24 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
         self._refine_category_(self.category().Compact())
 
     def graphical_surface(self, **kwds):
+        surface = super().graphical_surface(**kwds)
+
         label = self.root()
-        adjacencies = [(label, 1)]
-        for i in range(8):
-            adjacencies.append((label, 3))
+
+        surface.layout(label=label)
+        surface.make_adjacent(*self.opposite_edge(label, 1))
+
+        for i in range(4):
+            surface.make_adjacent(*self.opposite_edge(label, 3))
             label = self.opposite_edge(label, 3)[0]
+
         label = self.root()
         label = self.opposite_edge(label, 1)[0]
-        for i in range(8):
-            adjacencies.append((label, 3))
+        for i in range(4):
+            surface.make_adjacent(*self.opposite_edge(label, 3))
             label = self.opposite_edge(label, 3)[0]
-        return super().graphical_surface(adjacencies=adjacencies, **kwds)
+
+        return surface
 
 
 def chamanara_surface(alpha, n=None):

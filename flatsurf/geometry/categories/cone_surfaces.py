@@ -202,6 +202,72 @@ class ConeSurfaces(SurfaceCategory):
 
             return True
 
+    class ElementMethods:
+        r"""
+        Provides methods available to all points on cone surfaces.
+
+        If you want to add methods to such points, you most likely want to put
+        them here.
+        """
+
+        def angle(self, numerical=False):
+            r"""
+            Return the total angle at this ``point`` in multiples of 2π.
+
+            INPUT:
+
+            - ``numerical`` -- a boolean (default: ``False``); whether to
+              return a numerical approximation or the exact angle.
+
+            EXAMPLES::
+
+                sage: from flatsurf import polygons, similarity_surfaces
+                sage: T = polygons.triangle(3, 4, 5)
+                sage: S = similarity_surfaces.billiard(T)
+                sage: [v.angle() for v in S.vertices()]
+                [1/4, 5/12, 1/3]
+
+                sage: [v.angle(numerical=True) for v in S.vertices()]
+                [0.250000000000000, 0.416666666666667, 0.333333333333333]
+
+            At an interior point of a polygon the total angle is 2π::
+
+                sage: p = S(0, S.polygon(0).centroid())
+                sage: p.angle()
+                1
+
+            """
+            surface = self.parent()
+
+            if numerical:
+                from sage.all import RR
+                angle = RR(0)
+            else:
+                from sage.all import ZZ
+                angle = ZZ(0)
+
+            if not self.is_vertex():
+                label, coordinates = self.representative()
+                position = surface.polygon(label).get_point_position(coordinates)
+                if position.is_in_interior():
+                    angle += 1
+                elif surface.opposite_edge(label, position.get_edge()) == (label, position.get_edge()):
+                    # point on self-glued edge
+                    from sage.all import ZZ
+                    angle += ZZ(1) / 2
+                else:
+                    # point on non-self-glued edge
+                    angle += 1
+
+                return angle
+
+            for label, edge in self.edges():
+                angle += surface.polygon(label).angle(edge, numerical=numerical)
+                if surface.opposite_edge(label, edge) is None:
+                    raise ValueError("vertex at boundary does not have a total angle")
+
+            return angle
+
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
         The category of cone surfaces built from finitely many polygons.
@@ -326,6 +392,9 @@ class ConeSurfaces(SurfaceCategory):
                             sage: T = polygons.triangle(3, 4, 5)
                             sage: S = similarity_surfaces.billiard(T)
                             sage: S.angles()
+                            doctest:warning
+                            ...
+                            UserWarning: angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().
                             [1/3, 1/4, 5/12]
                             sage: S.angles(numerical=True)   # abs tol 1e-14
                             [0.333333333333333, 0.250000000000000, 0.416666666666667]
@@ -334,6 +403,9 @@ class ConeSurfaces(SurfaceCategory):
                             [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
 
                         """
+                        import warnings
+                        warnings.warn("angles() has been deprecated and will be removed in a future version of sage-flatsurf; use [vertex.angle() for vertex in self.vertices()] instead; if you need the adjacent edges use vertex.edges().")
+
                         if not numerical and any(
                             not p.is_rational() for p in self.polygons()
                         ):
@@ -440,6 +512,6 @@ class ConeSurfaces(SurfaceCategory):
 
                             tester.assertAlmostEqual(
                                 self.genus(),
-                                sum(a - 1 for a in self.angles(numerical=True)) / 2.0
+                                float(sum(v.angle(numerical=True) - 1 for v in self.vertices()) / 2.0)
                                 + 1,
                             )

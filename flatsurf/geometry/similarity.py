@@ -306,14 +306,16 @@ class Similarity(MultiplicativeGroupElement):
                     [
                         self._a * w[0] - self._b * w[1] + self._s,
                         self._b * w[0] + self._a * w[1] + self._t,
-                    ]
+                    ],
+                    immutable=True,
                 )
             else:
                 return vector(
                     [
                         self._a * w[0] + self._b * w[1] + self._s,
                         self._b * w[0] - self._a * w[1] + self._t,
-                    ]
+                    ],
+                    immutable=True,
                 )
         else:
             if self._sign.is_one():
@@ -323,6 +325,7 @@ class Similarity(MultiplicativeGroupElement):
                         self._a * w[0] - self._b * w[1] + self._s,
                         self._b * w[0] + self._a * w[1] + self._t,
                     ],
+                    immutable=True,
                 )
             else:
                 return vector(
@@ -331,6 +334,7 @@ class Similarity(MultiplicativeGroupElement):
                         self._a * w[0] + self._b * w[1] + self._s,
                         self._b * w[0] - self._a * w[1] + self._t,
                     ],
+                    immutable=True,
                 )
 
     def _repr_(self):
@@ -436,6 +440,16 @@ class Similarity(MultiplicativeGroupElement):
         return M([self._a, -self._sign * self._b, self._b, self._sign * self._a])
 
 
+import sage.categories.action
+import operator
+class SimilarityAction(sage.categories.action.Action):
+    def __init__(self, G, M, is_left=True):
+        sage.categories.action.Action.__init__(self, G, M, is_left, operator.mul)
+
+    def _act_(self, g, a):
+        return g(a)
+
+
 class SimilarityGroup(UniqueRepresentation, Group):
     r"""
     The group of possibly orientation reversing similarities in the plane.
@@ -454,6 +468,10 @@ class SimilarityGroup(UniqueRepresentation, Group):
         """
         self._ring = base_ring
         Group.__init__(self, category=Groups().Infinite())
+
+    def _get_action_(self, S, op, self_on_left):
+        if self_on_left and S == self._vector_space() and op == operator.mul:
+            return SimilarityAction(self, S)
 
     @cached_method
     def _matrix_space_2x2(self):
@@ -497,8 +515,6 @@ class SimilarityGroup(UniqueRepresentation, Group):
         a = self._ring.one()
         b = s = t = self._ring.zero()
         sign = ZZ_1
-
-        # TODO: 2x2 and 3x3 matrix input
 
         if isinstance(x, (tuple, list)):
             if len(x) == 2:
