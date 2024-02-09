@@ -481,12 +481,6 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
                 False
             ), "EuclideanPolygonsWithAngles should be a supercategory of this category"
 
-        # TODO: rather than lengths, it would be more convenient to have access
-        # to the tangent space (that is the space of possible holonomies). However,
-        # since it is not defined over the real numbers, there are several possible ways
-        # to handle the data.
-        # TODO: here we ignored the direction SO(2) which provides additional symmetry
-        # in the tangent space
         @cached_method
         def lengths_polytope(self):
             r"""
@@ -495,6 +489,18 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
             This polytope parametrizes the tangent space to the set of these
             equiangular polygons. Be careful that even though the lengths are
             admissible, they may not define a polygon without intersection.
+
+            .. TODO::
+
+                Rather than lengths, it would be more convenient to have access
+                to the tangent space (that is the space of possible
+                holonomies). However, since it is not defined over the real
+                numbers, there are several possible ways to handle the data.
+
+            .. TODO::
+
+                Here we ignored the direction SO(2) which provides additional
+                symmetry in the tangent space
 
             EXAMPLES::
 

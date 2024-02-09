@@ -449,6 +449,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         S.glue((relabelling[p1], e1), (relabelling[p2], e2))
 
                     S._refine_category_(self.category())
+                    S.set_immutable()
                     return S, M
 
             class WithoutBoundary(SurfaceCategoryWithAxiom):
@@ -467,6 +468,16 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     True
 
                 """
+
+                class ElementMethods:
+                    def angle(self, numerical=False):
+                        if not self.is_vertex():
+                            # TODO: This is not true for points on a self-glued vertex.
+                            return 1
+
+                        angle = [angle for (angle, edges) in self._surface.angles(return_adjacent_edges=True) if self._surface(*edges[0]) == self]
+                        assert len(angle) == 1
+                        return angle[0]
 
                 class ParentMethods:
                     r"""

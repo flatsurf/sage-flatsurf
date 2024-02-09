@@ -10,7 +10,7 @@ The flatsurf.geometry Package
    geometry/chamanara
    geometry/circle
    geometry/cone_surfaces
-   geometry/delaunay
+   geometry/lazy
    geometry/dilation_surfaces
    geometry/euclidean
    geometry/finitely_generated_matrix_group
