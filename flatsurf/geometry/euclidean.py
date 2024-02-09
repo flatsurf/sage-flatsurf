@@ -36,7 +36,8 @@ EXAMPLES::
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2016-2020 Vincent Delecroix
+#        Copyright (C) 2013-2020 Vincent Delecroix
+#                      2013-2019 W. Patrick Hooper
 #                      2020-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
