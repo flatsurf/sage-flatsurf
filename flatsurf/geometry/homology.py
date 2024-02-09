@@ -853,6 +853,7 @@ class SimplicialHomologyGroup(Parent):
 
             sage: H = SimplicialHomology(T)
             sage: H.symplectic_basis()
+            [B[(0, 0)], B[(0, 1)]]
 
         """
         from sage.all import matrix

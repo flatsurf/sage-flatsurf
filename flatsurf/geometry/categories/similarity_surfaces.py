@@ -2168,11 +2168,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not cone.is_subset(incoming_edge_cone):
                     raise ValueError("cone must be contained in the cone formed by the incoming edge")
 
-                from flatsurf.geometry.circle import Circle
-                bounding_circle = Circle(
+                from flatsurf import EuclideanPlane
+                bounding_circle = EuclideanPlane(self.base_ring()).circle(
                     (0, 0),
-                    squared_length_bound,
-                    base_ring=self.base_ring(),
+                    radius_squared=squared_length_bound,
                 )
 
                 # Each vertex that is contained in the cone's interior yields a
@@ -2405,25 +2404,28 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
                     sage: L = MutableOrientedSimilaritySurface(QQ)
                     sage: L.add_polygon(Polygon(vertices=[(0, 0), (3, 0), (7, 0), (7, 2), (3, 2), (3, 3), (0, 3), (0, 2)]))
+                    0
                     sage: L.glue((0, 0), (0, 5))
                     sage: L.glue((0, 1), (0, 3))
                     sage: L.glue((0, 2), (0, 7))
                     sage: L.glue((0, 4), (0, 6))
                     sage: L.set_immutable()
 
-                    sage: connections = L.saddle_conections(128)
+                    sage: connections = L.saddle_connections(128)
                     sage: len(connections)
                     164
 
                 Note that on translation surfaces, enumerating saddle
                 connections with the (default) ``"pyflatsurf"`` algorithm is
-                usually much faster::
+                usually much faster than the ``"generic"`` algorithm::
 
                     sage: connections = L.saddle_connections(128)
                     sage: len(connections)
+                    164
 
                     sage: connections = L.saddle_connections(128, algorithm="generic")
                     sage: len(connections)
+                    164
 
                 """
                 # TODO: Add benchmarks of the generic "cone" algorithm against
@@ -2447,7 +2449,7 @@ class SimilaritySurfaces(SurfaceCategory):
             def _saddle_connections_generic(self, squared_length_bound, initial_label, initial_vertex):
                 if squared_length_bound is None:
                     # Enumerate all (usually infinitely many) saddle connections.
-                    return self._saddle_connections_unbounded(initial_label=initial_label, initial_vertex=initial_vertex)
+                    return self._saddle_connections_unbounded(initial_label=initial_label, initial_vertex=initial_vertex, algorithm="generic")
 
                 connections = []
 

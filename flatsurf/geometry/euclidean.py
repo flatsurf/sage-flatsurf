@@ -1,15 +1,43 @@
+# TODO: Benchmark how constructions here compare to constructions before we introduced the EuclideanPlane.
+
+
 r"""
-A loose collection of tools for Euclidean geometry in the plane.
+Two dimensional Euclidean geometry.
 
-.. SEEALSO::
+EXAMPLES::
 
-    :mod:`flatsurf.geometry.circle` for everything specific to circles in the plane
+    sage: from flatsurf import EuclideanPlane
+    sage: E = EuclideanPlane(QQ)
+    sage: E.circle((0, 0), radius=1)
+    { x² + y² = 1 }
+
+.. NOTE::
+
+    Most functionality in this module is also implemented in
+    SageMath in the context of linear programming/polyhedra/convex
+    geometry. However, that implementation is much more general
+    (higher dimensions) and therefore quite inefficient in two
+    dimensions.
+
+.. NOTE::
+
+    Explicitly creating Python objects for everything in the Euclidean plane
+    comes with a certain overhead. In practice, this overhead is negligible in
+    comparison to the cost of performing computations with these objects.
+    However, most classes here expose their core algorithms as static methods
+    so they can be called with the bare coordinates instead of on explicit
+    objects to gain a tiny bit of a speedup where this makes a difference.
+
+.. SEEALSO
+
+    :mod:`flatsurf.geometry.hyperbolic` for the geometry in the hyperbolic plane.
 
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2016-2020 Vincent Delecroix
+#        Copyright (C) 2013-2020 Vincent Delecroix
+#                      2013-2019 W. Patrick Hooper
 #                      2020-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -25,7 +53,2263 @@ A loose collection of tools for Euclidean geometry in the plane.
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 ######################################################################
+from sage.structure.sage_object import SageObject
+from sage.structure.parent import Parent
+from sage.structure.element import Element
+from sage.structure.unique_representation import UniqueRepresentation
+from sage.misc.cachefunc import cached_method
 
+from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry
+
+
+class EuclideanPlane(Parent, UniqueRepresentation):
+    r"""
+    The Euclidean plane.
+
+    All objects in the plane must be specified over the given base ring.
+
+    The implemented objects of the plane are mostly convex (points, circles,
+    segments, rays, convex polygons.) But some are also non-convex such as
+    non-convex polygons.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane(QQ)
+
+    TESTS::
+
+        sage: isinstance(E, EuclideanPlane)
+        True
+
+        sage: TestSuite(E).run()
+
+    """
+
+    @staticmethod
+    def __classcall__(cls, base_ring=None, geometry=None, category=None):
+        r"""
+        Create the Euclidean plane with normalized arguments to make it a
+        unique SageMath parent.
+
+        TESTS::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: from flatsurf.geometry.euclidean import EuclideanExactGeometry
+
+            sage: EuclideanPlane() is EuclideanPlane(QQ)
+            True
+
+            sage: EuclideanPlane() is EuclideanPlane(QQ, EuclideanExactGeometry(QQ))
+            True
+
+        """
+        from sage.all import QQ
+
+        base_ring = base_ring or QQ
+
+        if geometry is None:
+            if not base_ring.is_exact():
+                raise ValueError("geometry must be specified over inexact rings")
+
+            geometry = EuclideanExactGeometry(base_ring)
+
+        from sage.categories.all import Sets
+
+        category = category or Sets()
+
+        return super().__classcall__(cls, base_ring=base_ring, geometry=geometry, category=category)
+
+    def __init__(self, base_ring, geometry, category):
+        r"""
+        Create the Euclidean plane over ``base_ring``.
+
+        TESTS::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: TestSuite(EuclideanPlane(QQ)).run()
+            sage: TestSuite(EuclideanPlane(AA)).run()
+
+        """
+        from sage.all import RR
+
+        if geometry.base_ring() is not base_ring:
+            raise ValueError(
+                f"geometry base ring must be base ring of Euclidean plane but {geometry.base_ring()} is not {base_ring}"
+            )
+
+        if not RR.has_coerce_map_from(geometry.base_ring()):
+            # We should check that the coercion is an embedding but this is not possible currently.
+            raise ValueError("base ring must embed into the reals")
+
+        super().__init__(category=category)
+        self._base_ring = geometry.base_ring()
+        self.geometry = geometry
+
+    def change_ring(self, ring, geometry=None):
+        r"""
+        Return the Euclidean plane over a different base ``ring``.
+
+        INPUT:
+
+        - ``ring`` -- a ring or ``None``; if ``None``, uses the current
+          :meth:`~EuclideanPlane.base_ring`.
+
+        - ``geometry`` -- a geometry or ``None``; if ``None``; trues to convert
+          the existing geometry to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: EuclideanPlane(QQ).change_ring(AA) is EuclideanPlane(AA)
+            True
+
+        """
+        if ring is None and geometry is None:
+            return self
+
+        if ring is None:
+            ring = self.base_ring()
+
+        if geometry is None:
+            geometry = self.geometry.change_ring(ring)
+
+        return EuclideanPlane(ring, geometry)
+
+    def _an_element_(self):
+        r"""
+        Return a typical point of the Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: E = EuclideanPlane()
+            sage: E.an_element()
+            (0, 0)
+
+        """
+        return self.point(0, 0)
+
+    def some_subsets(self):
+        # TODO
+        raise NotImplementedError
+
+    def some_elements(self):
+        r"""
+        Return some representative elements, i.e., points in the plane for
+        testing.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: EuclideanPlane().some_elements()
+            [(0, 0), (1, 0), (0, 1), ...]
+
+        """
+        from sage.all import QQ
+        return [
+            self((0, 0)),
+            self((1, 0)),
+            self((0, 1)),
+            self((-QQ(1)/2, QQ(1)/2)),
+        ]
+
+    def _test_some_subsets(self, tester=None, **options):
+        r"""
+        Run test suite on some representative subsets of the Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: EuclideanPlane()._test_some_subsets()
+
+        """
+        is_sub_testsuite = tester is not None
+        tester = self._tester(tester=tester, **options)
+
+        for x in self.some_elements():
+            tester.info(f"\n  Running the test suite of {x}")
+
+            from sage.all import TestSuite
+
+            TestSuite(x).run(
+                verbose=tester._verbose,
+                prefix=tester._prefix + "  ",
+                raise_on_failure=is_sub_testsuite,
+            )
+            tester.info(tester._prefix + " ", newline=False)
+
+    def random_element(self, kind=None):
+        # TODO
+        raise NotImplementedError
+
+    def __call__(self, x):
+        r"""
+        Return ``x`` as an element of the Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: E = EuclideanPlane()
+
+            sage: E((1, 0))
+            (1, 0)
+
+        We need to override this method. The normal code path in SageMath
+        requires the argument to be an Element but facade sets are not
+        elements::
+
+            sage: c = E.circle((0, 0), radius=1)
+            sage: Parent.__call__(E, c)
+            Traceback (most recent call last):
+            ...
+            TypeError: Cannot convert EuclideanCircle_with_category_with_category to sage.structure.element.Element
+
+            sage: E(c)
+            { x² + y² = 1 }
+
+        """
+        if isinstance(x, EuclideanFacade):
+            return self._element_constructor_(x)
+
+        return super().__call__(x)
+
+    def _element_constructor_(self, x):
+        r"""
+        Return ``x`` as an element of the plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: E = EuclideanPlane()
+
+            sage: E(E.an_element()) in E
+            True
+
+        Coordinates can be converted to points::
+
+            sage: E((1, 2))
+            (1, 2)
+            
+        Elements can be converted between planes with compatible base rings::
+
+            sage: EuclideanPlane(AA)(E((0, 0)))
+            (0, 0)
+
+        TESTS::
+
+            sage: E(0)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot convert this element in Integer Ring to Euclidean Plane over Rational Field
+
+        """
+        from sage.all import parent
+
+        parent = parent(x)
+
+        if parent is self:
+            return x
+
+        if parent is self.vector_space():
+            x = tuple(x)
+
+        if isinstance(x, EuclideanSet):
+            return x.change(ring=self.base_ring(), geometry=self.geometry)
+
+        if isinstance(x, tuple):
+            if len(x) == 2:
+                return self.point(*x)
+
+            raise ValueError("coordinate tuple must have length 2")
+
+        raise NotImplementedError(f"cannot convert this element in {parent} to {self}")
+
+    def base_ring(self):
+        r"""
+        Return the base ring over which objects in the plane are defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+
+            sage: EuclideanPlane().base_ring()
+            Rational Field
+
+        """
+        return self._base_ring
+
+    def is_exact(self):
+        r"""
+        Return whether subsets have exact coordinates.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: E.is_exact()
+            True
+
+            sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+            sage: E = EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-6))
+            sage: E.is_exact()
+            False
+
+        """
+        return self.base_ring().is_exact()
+
+    @cached_method
+    def vector_space(self):
+        r"""
+        Return the two dimensional standard vector space describing vectors in
+        this Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: E.vector_space()
+            Vector space of dimension 2 over Rational Field
+
+        """
+        return self.base_ring() ** 2
+
+    def point(self, x, y):
+        r"""
+        Return the point in the Euclidean plane with coordinates ``x`` and
+        ``y``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: E.point(1, 2)
+            (1, 2)
+
+        ::
+
+            sage: E.point(sqrt(2), sqrt(3))
+            Traceback (most recent call last):
+            ...
+            TypeError: unable to convert sqrt(2) to a rational
+
+        """
+        x = self._base_ring(x)
+        y = self._base_ring(y)
+
+        point = self.__make_element_class__(EuclideanPoint)(self, x, y)
+
+        return point
+
+    def circle(self, center, *, radius=None, radius_squared=None, check=True):
+        r"""
+        Return the circle around ``center`` with ``radius`` or
+        ``radius_squared``.
+
+        INPUT:
+
+        - ``center`` -- a point in the Euclidean plane
+
+        - ``radius`` or ``radius_squared`` -- exactly one of the parameters
+          must be specified.
+
+        - ``check`` -- whether to verify that the arguments define a circrle in the Euclidean plane (default: ``True``)
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: E.circle((0, 0), radius=2)
+            { x² + y² = 4 }
+            sage: E.circle((0, 0), radius_squared=4)
+            { x² + y² = 4 }
+
+        A circle with radius zero is a point::
+
+            sage: E.circle((0, 0), radius=0)
+            (0, 0)
+
+        We can explicity create a circle with radius zero by setting ``check``
+        to ``False``::
+
+            sage: E.circle((0, 0), radius=0, check=False)
+            { x² + y² = 0 }
+
+        """
+        if (radius is None) == (radius_squared is None):
+            raise ValueError("exactly one of radius or radius_squared must be specified")
+
+        if radius is not None:
+            radius_squared = radius ** 2
+
+        center = self(center)
+        radius_squared = self.base_ring()(radius_squared)
+
+        circle = self.__make_element_class__(EuclideanCircle)(self, center, radius_squared)
+        if check:
+            circle = circle._normalize()
+            circle._check()
+
+        return circle
+
+    def segment(self, line, start=None, end=None, oriented=None, check=True, assume_normalized=False):
+        r"""
+        Return the segment on the `line`` bounded by ``start`` and ``end``.
+
+        INPUT:
+
+        - ``line`` -- a line in the plane
+
+        - ``start`` -- ``None`` or a :meth:`point` on the line, e.g., obtained
+          as the :meth:`EuclideanLine.intersection` of ``line`` with another
+          line. If ``None``, a ray is returned, unbounded on one side.
+
+        - ``end`` -- ``None`` or a :meth:`point` on the line, e.g., obtained
+          as the :meth:`EuclideanLine.intersection` of ``line`` with another
+          line. If ``None``, a ray is returned, unbounded on one side. If
+          ``start`` is also ``None``, the ``line`` is returned.
+
+        - ``oriented`` -- whether to produce an oriented segment or an
+          unoriented segment. The default (``None``) is to produce an oriented
+          segment iff ``line`` is oriented or both ``start`` and ``end``
+          are provided so the orientation can be deduced from their order.
+
+        - ``check`` -- boolean (default: ``True``), whether validation is
+          performed on the arguments.
+
+        - ``assume_normalized`` -- boolean (default: ``False``), if not set,
+          the returned segment is normalized, i.e., if it is actually a point,
+          a :class:`EuclideanPoint` is returned.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: line = E.line((0, 0), (1, 1))
+            sage: E.segment(line, (0, 0), (1, 1))
+            (0, 0) → (1, 1)
+
+            sage: E.segment(line, (0, 0), (1, 1), oriented=False)
+            (0, 0) — (1, 1)
+
+        A segment that consists only of a single point gets returned as a
+        point::
+
+            sage: E.segment(line, (0, 0), (0, 0))
+            (0, 0)
+
+        To explicitly obtain a non-normalized segment in such cases, we can set
+        ``assume_normalized=True``::
+
+            sage: E.segment(line, (0, 0), (0, 0), assume_normalized=True)
+            (0, 0) → (0, 0)
+
+        A segment with a single endpoint is a ray::
+
+            sage: E.segment(line, start=(0, 0))
+            Ray from (0, 0) in direction (1, 1)
+            sage: E.segment(line, end=(0, 0))
+            Ray from (0, 0) in direction (-1, -1)
+
+        A segment without endpoints is a line::
+
+            sage: E.segment(line)
+            {-x + y = 0}
+
+        .. SEEALSO::
+
+            :meth:`EuclideanPoint.segment` to create a segment from its two
+            endpoints (without specifying a line.)
+
+        """
+        line = self(line)
+
+        if not isinstance(line, EuclideanLine):
+            raise TypeError("line must be a line")
+
+        if start is not None:
+            start = self(start)
+            if not isinstance(start, EuclideanPoint):
+                raise TypeError("start must be a point")
+
+        if end is not None:
+            end = self(end)
+            if not isinstance(end, EuclideanPoint):
+                raise TypeError("end must be a point")
+
+        if oriented is None:
+            oriented = line.is_oriented() or (start is not None and end is not None)
+
+        if not line.is_oriented():
+            line = line.change(oriented=True)
+
+            if start is None and end is None:
+                # any orientation of the line will do
+                pass
+            elif start is None or end is None or start == end:
+                raise ValueError(
+                    "cannot deduce segment from single endpoint on an unoriented line"
+                )
+            elif line.parametrize(
+                start, check=False
+            ) > line.parametrize(end, check=False):
+                line = -line
+
+        segment = self.__make_element_class__(
+            EuclideanOrientedSegment if oriented else EuclideanUnorientedSegment
+        )(self, line, start, end)
+
+        if check:
+            segment._check(require_normalized=False)
+
+        if not assume_normalized:
+            segment = segment._normalize()
+
+        if check:
+            segment._check(require_normalized=True)
+
+        return segment
+
+    def line(self, a, b, c=None, oriented=True, check=True):
+        r"""
+        Return a line in the Euclidean plane.
+
+        If only ``a`` and ``b`` are given, return the line going through the
+        points ``a`` and then ``b``.
+
+        If ``c`` is specified, return the line given by the equation
+
+        .. MATH::
+
+            a + bx + cy = 0
+
+        oriented such that the half plane
+
+        .. MATH::
+
+            a + bx + cy \ge 0
+
+        is to its left.
+
+        INPUT:
+
+        - ``a`` -- a point or an element of the :meth:`base_ring`
+
+        - ``b`` -- a point or an element of the :meth:`base_ring`
+
+        - ``c`` -- ``None`` or an element of the :meth:`base_ring` (default: ``None``)
+
+        - ``oriented`` -- whether the returned line is oriented (default: ``True``)
+
+        - ``check`` -- whether to verify that the arguments actually define a
+          line (default: ``True``)
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: E.line((0, 0), (1, 1))
+            {-x + y = 0}
+
+            sage: E.line(0, -1, 1)
+            {-x + y = 0}
+
+        """
+        if c is None:
+            a = self(a)
+            b = self(b)
+
+            if a == b:
+                raise ValueError("points specifying a line must be distinct")
+
+            ax, ay = a
+            bx, by = b
+
+            C = bx - ax
+            B = ay - by
+            A = -(B * ax + C * ay)
+
+            return self.line(A, B, C, oriented=oriented, check=check)
+
+        a = self.base_ring()(a)
+        b = self.base_ring()(b)
+        c = self.base_ring()(c)
+
+        line = self.__make_element_class__(
+            EuclideanOrientedLine if oriented else EuclideanUnorientedLine
+        )(self, a, b, c)
+
+        if check:
+            line = line._normalize()
+            line._check()
+
+        return line
+
+    geodesic = line
+
+    def ray(self, base, direction, check=True):
+        r"""
+        Return a ray from ``base`` in ``direction``.
+
+        INPUT:
+
+        - ``base`` -- a point in the Euclidean plane
+
+        - ``direction`` -- a vector in the two dimensional space over the
+          :meth:`base_ring`, see :meth:`vector_space`
+
+        - ``check`` -- a boolean (default: ``True``); whether to validate the
+          parameters
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: ray = E.ray((0, 0), (1, 1))
+
+        The base point is contained in the ray::
+
+            sage: E.point(0, 0) in ray
+            True
+
+        The direction must be non-zero::
+
+            sage: E.ray((0, 0), (0, 0))
+
+        """
+        base = self(base)
+        direction = self.vector_space()(direction)
+
+        if not isinstance(base, EuclideanPoint):
+            raise TypeError("base must be a point")
+
+        ray = self.__make_element_class__(EuclideanRay)(self, base, direction)
+
+        if check:
+            ray = ray._normalize()
+            ray._check()
+
+        return ray
+
+    def polygon(self):
+        # TODO
+        raise NotImplementedError
+
+    def empty_set(self):
+        # TODO
+        raise NotImplementedError
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this Euclidean plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: EuclideanPlane(AA)
+            Euclidean Plane over Algebraic Real Field
+
+        """
+        return f"Euclidean Plane over {repr(self.base_ring())}"
+
+
+class EuclideanGeometry(Geometry):
+    r"""
+    Predicates and primitive geometric constructions over a base ``ring``.
+
+    This class and its subclasses implement the core underlying Euclidean
+    geometry that depends on the base ring. For example, when deciding whether
+    two points in the plane are equal, we cannot just compare their coordinates
+    if the base ring is inexact. Therefore, that predicate is implemented in
+    this "geometry" class and is implemented differently by
+    :class:`EuclideanExactGeometry` for exact and
+    :class:`EuclideanEpsilonGeometry` for inexact rings.
+
+    INPUT:
+
+    - ``ring`` -- a ring, the ring in which coordinates in the Euclidean plane
+      will be represented
+
+    .. NOTE::
+
+        Abstract methods are not marked with `@abstractmethod` since we cannot
+        use the ABCMeta metaclass to enforce their implementation; otherwise,
+        our subclasses could not use the unique representation metaclasses.
+
+    EXAMPLES:
+
+    The specific Euclidean geometry implementation is picked automatically,
+    depending on whether the base ring is exact or not::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: E.geometry
+        Exact geometry over Rational Field
+        sage: E((0, 0)) == E((1/1024, 0))
+        False
+
+    However, we can explicitly use a different or custom geometry::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+        sage: E = EuclideanPlane(QQ, EuclideanEpsilonGeometry(QQ, 1/1024))
+        sage: E.geometry
+        Epsilon geometry with ϵ=1/1024 over Rational Field
+        sage: E((0, 0)) == E((1/2048, 0))
+        True
+
+    .. SEEALSO::
+
+        :class:`EuclideanExactGeometry`, :class:`EuclideanEpsilonGeometry`
+    """
+
+    def _equal_vector(self, v, w):
+        r"""
+        Return whether the vectors ``v`` and ``w`` should be considered equal.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``v`` -- a vector over the :meth:`base_ring`
+
+        - ``w`` -- a vector over the :meth:`base_ring`
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanExactGeometry
+            sage: G = EuclideanExactGeometry(QQ)
+            sage: G._equal_vector((0, 0), (0, 0))
+            True
+            sage: G._equal_vector((0, 0), (0, 1/1024))
+            False
+
+        """
+        if len(v) != len(w):
+            raise TypeError("v and w must be vectors in the same vector space")
+
+        return all(self._equal(vv, ww) for (vv, ww) in zip(v, w))
+
+    def _equal_point(self, p, q):
+        r"""
+        Return whether the points ``p`` and ``q`` should be considered equal.
+
+        .. NOTE::
+
+            This predicate should not be used directly in geometric
+            constructions since it does not specify the context in which this
+            question is asked. This makes it very difficult to override a
+            specific aspect in a custom geometry.
+
+        INPUT:
+
+        - ``p`` -- a point in the Euclidean plane
+
+        - ``q`` -- a point in the Euclidean plane
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanExactGeometry
+            sage: G = EuclideanExactGeometry(QQ)
+            sage: G._equal_point((0, 0), (0, 0))
+            True
+            sage: G._equal_point((0, 0), (0, 1/1024))
+            False
+
+        """
+        return self._equal_vector(tuple(p), tuple(q))
+
+
+class EuclideanExactGeometry(UniqueRepresentation, EuclideanGeometry, ExactGeometry):
+    r"""
+    Predicates and primitive geometric constructions over an exact base ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: E.geometry
+        Exact geometry over Rational Field
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanExactGeometry
+        sage: isinstance(E.geometry, EuclideanExactGeometry)
+        True
+
+    .. SEEALSO::
+
+        :class:`EuclideanEpsilonGeometry` for an implementation over inexact rings
+
+    """
+
+    def change_ring(self, ring):
+        r"""
+        Return this geometry with the :meth:`~EuclideanGeometry.base_ring`
+        changed to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: E.geometry.change_ring(QQ) == E.geometry
+            True
+            sage: E.geometry.change_ring(AA)
+            Exact geometry over Algebraic Real Field
+
+        """
+        if not ring.is_exact():
+            raise ValueError("cannot change_ring() to an inexact ring")
+
+        return EuclideanExactGeometry(ring)
+
+
+class EuclideanEpsilonGeometry(UniqueRepresentation, EuclideanGeometry, EpsilonGeometry):
+    r"""
+    Predicates and primitive geometric constructions over an inexact base ring.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+        sage: E = EuclideanPlane(RR, geometry=EuclideanEpsilonGeometry(RR, 1e-6))
+        sage: E.geometry
+        Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+        sage: isinstance(E.geometry, EuclideanEpsilonGeometry)
+        True
+
+    .. SEEALSO::
+
+        :class:`EuclideanExactGeometry` for an implementation over exact rings
+
+    """
+
+    def _equal_vector(self, v, w):
+        r"""
+        Return whether the vectors ``v`` and ``w`` should be considered equal.
+
+        Implements :meth:`EuclideanGeometry._equal_vector` by comparing the
+        Euclidean distance of the points to this geometry's epsilon.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+            sage: G = EuclideanEpsilonGeometry(RR, 1e-3)
+
+            sage: G._equal_point((0, 0), (0, 0))
+            True
+            sage: G._equal_point((0, 0), (0, 1/1024))
+            True
+
+            sage: G._equal_vector((0, 0), (0, 0))
+            True
+            sage: G._equal_vector((0, 0), (0, 1/1024))
+            True
+
+        """
+        if len(v) != len(w):
+            raise TypeError("vectors must have same length")
+
+        return sum((vv - ww) ** 2 for (vv, ww) in zip(v, w)) < self._epsilon ** 2
+
+    def change_ring(self, ring):
+        r"""
+        Return this geometry with the :meth:`~EuclideanGeometry.base_ring`
+        changed to ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
+            sage: G = EuclideanEpsilonGeometry(RR, 1e-3)
+            sage: G.change_ring(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: cannot change_ring() to an exact ring
+            sage: G.change_ring(RDF)
+            Epsilon geometry with ϵ=0.001 over Real Double Field
+
+        """
+        if ring.is_exact():
+            raise ValueError("cannot change_ring() to an exact ring")
+
+        return EuclideanEpsilonGeometry(ring, self._epsilon)
+
+
+class EuclideanSet(SageObject):
+    r"""
+    Base class for subsets of :class:`EuclideanPlane`.
+
+    .. NOTE::
+
+        Concrete subclasses should apply the following rules.
+
+        There should only be a single type to describe a certain subset:
+        normally, a certain subset, say a point, should only be described by a
+        single class, namely :class:`Point`. Of course, one could
+        describe a point as a polygon delimited by some edges that all
+        intersect in that single point, such objects should be avoided. Namely,
+        the methods that create a subset, say :meth:`EuclideanPlane.polygon`
+        take care of this by calling a sets
+        :meth:`EuclideanSet._normalize` to rewrite a set in its most natural
+        representation. To get the denormalized representation, we can always
+        set `check=False` when creating the object. For this to work, the
+        `__init__` should not take care of any such normalization and accept
+        any input that can possibly be made sense of.
+
+        Comparison with ``==`` should mean "is essentially indistinguishable
+        from": Implementing == to mean anything else would get us into trouble
+        in the long run. In particular we cannot implement <= to mean "is
+        subset of" since then an oriented and an unoriented geodesic would be
+        `==`. So, objects of a different type should almost never be equal. A
+        notable exception are objects that are indistinguishable to the end
+        user but use different implementations.
+
+    TESTS::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: from flatsurf.geometry.euclidean import EuclideanSet
+        sage: E = EuclideanPlane()
+
+        sage: isinstance(E((0, 0)), EuclideanSet)
+        True
+
+    """
+
+    def _check(self, require_normalized=True):
+        r"""
+        Validate this convex set.
+
+        Subclasses run specific checks here that can be disabled when creating
+        objects with ``check=False``.
+
+        INPUT:
+
+        - ``require_normalized`` -- a boolean (default: ``True``); whether to
+          include checks that assume that normalization has already happened
+
+        EXAMPLES:
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: P = E.point(0, 0)
+            sage: P._check()
+
+        """
+        pass
+
+    def _normalize(self):
+        r"""
+        Return this set possibly rewritten in a simpler form.
+
+        This method is only relevant for sets created with ``check=False``.
+        Such sets might have been created in a non-canonical way, e.g., when
+        creating a :class:`OrientedSegment` whose start and end point is
+        identical.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: segment = E.segment((0, 0), (0, 0), check=False, assume_normalized=True)
+            sage: segment
+            {-x - 1 = 0} ∩ {x - 1 ≥ 0} ∩ {x - 1 ≤ 0}
+            sage: segment._normalize()
+            (0, 0)
+
+        """
+        return self
+
+    def _test_normalize(self, **options):
+        r"""
+        Verify that normalization is idempotent.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: segment = E.segment((0, 0), (1, 0))
+            sage: segment._test_normalize()
+
+        """
+        tester = self._tester(**options)
+
+        normalization = self._normalize()
+
+        tester.assertEqual(normalization, normalization._normalize())
+
+    def __contains__(self, point):
+        r"""
+        Return whether this set contains the point ``point``.
+
+        INPUT:
+
+        - ``point`` -- a point in the Euclidean plane
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: c = E.circle((0, 0), radius=1)
+            sage: E((0, 0)) in c
+            True
+
+        """
+        raise NotImplementedError("this subset of the Euclidean plane cannot decide whether it contains a given point yet")
+
+    # TODO: Add a _test_contains test.
+
+    # TODO: Add is_bounded() and a test method.
+
+    def change(self, *, ring=None, geometry=None, oriented=None):
+        r"""
+        Return a modified copy of this set.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`~EuclideanPlane.base_ring`); the ring over which the new set
+          will be defined.
+
+        - ``geometry`` -- a :class:`EuclideanGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new set.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness) whether the new set will be explicitly oriented.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: segment = E.segment((0, 0), (1, 1))
+
+        We can change the base ring over which this set is defined::
+
+            sage: segment.change(ring=AA)
+            {(x^2 + y^2) - x = 0}
+
+        We can drop the explicit orientation of a set::
+
+            sage: unoriented = segment.change(oriented=False)
+            sage: unoriented.is_oriented()
+            False
+
+        We can also take an unoriented set and pick an orientation::
+
+            sage: oriented = unoriented.change(oriented=True)
+            sage: oriented.is_oriented()
+            True
+
+        .. SEEALSO::
+
+            :meth:`is_oriented` to determine whether a set is oriented.
+
+        """
+        raise NotImplementedError(f"this {type(self)} does not implement change()")
+
+    def change_ring(self, ring):
+        r"""
+        Return this set as an element of the Euclidean plane over ``ring``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: p = E((0, 0))
+            sage: p.change_ring(AA)
+
+        """
+        return self.change(ring=ring)
+
+    # TODO: Add change_ring, change and test methods.
+
+    # TODO: Add plot and test_plot()
+
+    # TODO: Add apply_similarity() and a test method.
+
+    # TODO: Add _acted_upon and a test method
+
+    # TODO: Add is_subset() and a test method.
+
+    # TODO: Add _an_element_ and some_elements()
+
+    # TODO: Add is_empty() and __bool__
+
+    # TODO: Add is_point()
+
+    def is_oriented(self):
+        r"""
+        Return whether this is a set with an explicit orientation.
+
+        Some sets come in two flavors. There are oriented segments and
+        unoriented segments.
+
+        This method answers whether a set is in the oriented kind if there is a
+        choice.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+        Segments are normally oriented::
+
+            sage: s = E.segment((0, 0), (1, 0))
+            sage: s.is_oriented()
+
+        We can explicitly ask for an unoriented segment::
+
+            sage: u = s.unoriented()
+            sage: u.is_oriented()
+            False
+
+        Points are not oriented, there is no choice of orientation::
+
+            sage: p = E((0, 0))
+            sage: p.is_oriented()
+            False
+
+        """
+        return isinstance(self, EuclideanOrientedSet)
+
+    # TODO: Add __hash__ and test method
+
+    # TODO: Add random_set for testing.
+
+
+class EuclideanOrientedSet(EuclideanSet):
+    r"""
+    Base class for sets that have an explicit orientation.
+
+    .. SEEALSO::
+
+        :meth:`EuclideanSet.is_oriented`
+
+    """
+
+
+class EuclideanFacade(EuclideanSet, Parent):
+    r"""
+    A subset of the Euclidean plane that is itself a parent.
+
+    This is the base class for all Euclidean sets that are not points.
+    This class solves the problem that we want sets to be "elements" of the
+    Euclidean plane but at the same time, we want these sets to live as parents
+    in the category framework of SageMath; so they have a Parent with Euclidean
+    points as their Element class.
+
+    SageMath provides the (not very frequently used and somewhat flaky) facade
+    mechanism for such parents. Such sets being a facade, their points can be
+    both their elements and the elements of the Euclidean plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: c = E.circle((0, 0), radius=1)
+        sage: p = C.center()
+        sage: p in c
+        True
+        sage: p.parent() is E
+        True
+        sage: q = c.an_element()
+        sage: q
+        I
+        sage: q.parent() is E
+        True
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanFacade
+        sage: isinstance(v, EuclideanFacade)
+        True
+
+    """
+
+    def __init__(self, parent, category=None):
+        Parent.__init__(self, facade=parent, category=category)
+
+    def parent(self):
+        r"""
+        Return the Euclidean plane this is a subset of.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: c = E.circle((0, 0), radius=1)
+            sage: c.parent()
+            Euclidean Plane over Rational Field
+
+        """
+        return self.facade_for()[0]
+
+    def _element_constructor_(self, x):
+        r"""
+        Return ``x`` as a point of this set.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: c = E.circle((0, 0), radius=1)
+            sage: c((1, 0))
+            (1, 0)
+            sage: v((0, 0))
+            Traceback (most recent call last):
+            ...
+            ValueError: point not contained in this set
+
+        """
+        x = self.parent()(x)
+
+        if isinstance(x, EuclideanPoint):
+            if not self.__contains__(x):
+                raise ValueError("point not contained in this set")
+
+        return x
+
+    def base_ring(self):
+        r"""
+        Return the ring over which points of this set are defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: c = E.circle((0, 0), radius=1)
+            sage: c.base_ring()
+            Rational Field
+
+        """
+        return self.parent().base_ring()
+
+
+class EuclideanCircle(EuclideanFacade):
+    r"""
+    A circle in the Euclidean plane.
+
+    INPUT:
+
+    - ``parent`` -- the :class:`EuclideanPlane` containing this circle
+
+    - ``center`` -- the :class:`EuclideanPoint`` at the center of this circle
+
+    - ``radius_squared`` -- the square of the radius of this circle
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: c = EuclideanPlane().circle((0, 0), radius=1)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanCircle
+        sage: isinstance(c, EuclideanCircle)
+        True
+        sage: TestSuite(c).run()
+
+    .. SEEALSO::
+
+        :meth:`EuclideanPlane.circle` for a method to create circles
+
+    """
+
+    def __init__(self, parent, center, radius_squared):
+        super().__init__(parent)
+
+        self._center = center
+        self._radius_squared = radius_squared
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this circle.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: c = EuclideanPlane().circle((0, 0), radius=1)
+            sage: c
+
+        """
+        x, y = self._center
+
+        x = f"(x - {x})" if x else "x"
+        y = f"(y - {y})" if y else "y"
+
+        return f"{{ {x}² + {y}² = {self._radius_squared} }}"
+
+    def change(self, *, ring=None, geometry=None, oriented=None):
+        r"""
+        Return a modified copy of this circle.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`~EuclideanPlane.base_ring`); the ring over which the new
+          circle will be defined.
+
+        - ``geometry`` -- a :class:`EuclideanGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new circle.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since circles cannot
+          have an explicit orientation. See :meth:`~EuclideanSet.is_oriented`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: c = E.circle((0, 0), radius=1)
+
+        We change the base ring over which this circle is defined::
+
+            sage: c.change(ring=AA)
+
+        We cannot change the orientation of a circle::
+
+            sage: c.change(oriented=True)
+
+            sage: c.change(oriented=False)
+
+        """
+        if ring is not None or geometry is not None:
+            self = self.parent().change_ring(ring, geometry=geometry).circle(self._center, radius_squared=self._radius_squared, check=False)
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("circles cannot have an explicit orientation")
+
+        return self
+
+    def _normalize(self):
+        r"""
+        Return this set possibly rewritten in a simpler form.
+
+        This implements :meth:`EuclideanSet._normalize`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: circle = E.circle((0, 0), radius=0, check=False)
+            sage: circle
+            sage: circle._normalize()
+            (0, 0)
+
+        """
+        if self.parent().geometry._zero(self._radius_squared):
+            return self._center
+
+        return self
+
+    # TODO: Not used anywhere.
+    ## def center(self):
+    ##     r"""
+    ##     Return the center of the circle as a vector.
+    ##     """
+    ##     return self._center
+
+    # TODO: Not used anywhere.
+    ## def radius_squared(self):
+    ##     r"""
+    ##     Return the square of the radius of the circle.
+    ##     """
+    ##     return self._radius_squared
+
+    def point_position(self, point):
+        r"""
+        Return 1 if point lies in the circle, 0 if the point lies on the circle,
+        and -1 if the point lies outide the circle.
+        """
+        # TODO: Deprecate?
+        value = (
+            (point[0] - self._center[0]) ** 2
+            + (point[1] - self._center[1]) ** 2
+            - self._radius_squared
+        )
+
+        if value > 0:
+            return -1
+        if value < 0:
+            return 1
+        return 0
+
+    def closest_point_on_line(self, point, direction_vector):
+        r"""
+        Consider the line through the provided point in the given direction.
+        Return the closest point on this line to the center of the circle.
+        """
+        # TODO: Rewrite or deprecate and generalize
+        V3 = self.parent().base_ring()**3
+        V2 = self.parent().base_ring()**2
+
+        cc = V3((self._center[0], self._center[1], 1))
+        # point at infinite orthogonal to direction_vector:
+        dd = V3((direction_vector[1], -direction_vector[0], 0))
+        l1 = cc.cross_product(dd)
+
+        pp = V3((point[0], point[1], 1))
+        # direction_vector pushed to infinity
+        ee = V3((direction_vector[0], direction_vector[1], 0))
+        l2 = pp.cross_product(ee)
+
+        # This is the point we want to return
+        rr = l1.cross_product(l2)
+        try:
+            return V2((rr[0] / rr[2], rr[1] / rr[2]))
+        except ZeroDivisionError:
+            raise ValueError(
+                "Division by zero error. Perhaps direction is zero. "
+                + "point="
+                + str(point)
+                + " direction="
+                + str(direction_vector)
+                + " circle="
+                + str(self)
+            )
+
+    # TODO: Not used anywhere.
+    ## def line_position(self, point, direction_vector):
+    ##     r"""
+    ##     Consider the line through the provided point in the given direction.
+    ##     We return 1 if the line passes through the circle, 0 if it is tangent
+    ##     to the circle and -1 if the line does not intersect the circle.
+    ##     """
+    ##     return self.point_position(self.closest_point_on_line(point, direction_vector))
+
+    # TODO: Create Segment class.
+    def line_segment_position(self, p, q):
+        r"""
+        Consider the open line segment pq.We return 1 if the line segment
+        enters the interior of the circle, zero if it touches the circle
+        tangentially (at a point in the interior of the segment) and
+        and -1 if it does not touch the circle or its interior.
+        """
+        if self.point_position(p) == 1:
+            return 1
+        if self.point_position(q) == 1:
+            return 1
+        r = self.closest_point_on_line(p, q - p)
+        pos = self.point_position(r)
+        if pos == -1:
+            return -1
+        # This checks if r lies in the interior of pq
+        if p[0] == q[0]:
+            if (p[1] < r[1] and r[1] < q[1]) or (p[1] > r[1] and r[1] > q[1]):
+                return pos
+        elif (p[0] < r[0] and r[0] < q[0]) or (p[0] > r[0] and r[0] > q[0]):
+            return pos
+        # It does not lie in the interior.
+        return -1
+
+    # TODO: Not used anywhere.
+    ## def tangent_vector(self, point):
+    ##     r"""
+    ##     Return a vector based at the provided point (which must lie on the circle)
+    ##     which is tangent to the circle and points in the counter-clockwise
+    ##     direction.
+
+    ##     EXAMPLES::
+
+    ##         sage: from flatsurf.geometry.circle import Circle
+    ##         sage: c=Circle(vector((0,0)), 2, base_ring=QQ)
+    ##         sage: c.tangent_vector(vector((1,1)))
+    ##         (-1, 1)
+    ##     """
+    ##     if not self.point_position(point) == 0:
+    ##         raise ValueError("point not on circle.")
+    ##     return vector((self._center[1] - point[1], point[0] - self._center[0]))
+
+    # TODO: Not used anywhere.
+    ## def other_intersection(self, p, v):
+    ##     r"""
+    ##     Consider a point p on the circle and a vector v. Let L be the line
+    ##     through p in direction v. Then L intersects the circle at another
+    ##     point q. This method returns q.
+
+    ##     Note that if p and v are both in the field of the circle,
+    ##     then so is q.
+
+    ##     EXAMPLES::
+
+    ##         sage: from flatsurf.geometry.circle import Circle
+    ##         sage: c=Circle(vector((0,0)), 25, base_ring=QQ)
+    ##         sage: c.other_intersection(vector((3,4)),vector((1,2)))
+    ##         (-7/5, -24/5)
+    ##     """
+    ##     pp = self._V3((p[0], p[1], self._base_ring.one()))
+    ##     vv = self._V3((v[0], v[1], self._base_ring.zero()))
+    ##     L = pp.cross_product(vv)
+    ##     cc = self._V3((self._center[0], self._center[1], self._base_ring.one()))
+    ##     vvperp = self._V3((-v[1], v[0], self._base_ring.zero()))
+    ##     # line perpendicular to L through center:
+    ##     Lperp = cc.cross_product(vvperp)
+    ##     # intersection of L and Lperp:
+    ##     rr = L.cross_product(Lperp)
+    ##     r = self._V2((rr[0] / rr[2], rr[1] / rr[2]))
+    ##     return self._V2((2 * r[0] - p[0], 2 * r[1] - p[1]))
+
+    def __rmul__(self, similarity):
+        r"""
+        Apply a similarity to the circle.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
+            sage: c = s.polygon(0).circumscribing_circle()
+            sage: c
+            Circle((1/2, 1/2), 1/2)
+            sage: s.edge_transformation(0,2)
+            (x, y) |-> (x, y - 1)
+            sage: s.edge_transformation(0,2) * c
+            Circle((1/2, -1/2), 1/2)
+        """
+        # TODO: Implement this properly for this parent
+        from .similarity import SimilarityGroup
+
+        SG = SimilarityGroup(self.parent().base_ring())
+        s = SG(similarity)
+        return self.parent().circle(s(self._center), radius_squared=s.det() * self._radius_squared)
+
+    ## def __str__(self):
+    ##     return (
+    ##         "circle with center "
+    ##         + str(self._center)
+    ##         + " and radius squared "
+    ##         + str(self._radius_squared)
+    ##     )
+
+
+class EuclideanPoint(EuclideanSet, Element):
+    r"""
+    A point in the :class:`EuclideanPlane`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        
+        sage: p = E.point(0, 0)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanPoint
+        sage: isinstance(p, EuclideanPoint)
+        True
+
+        sage: TestSuite(p).run()
+
+    .. SEEALSO::
+
+        :meth:`EuclideanPlane.point` for ways to create points
+
+    """
+    def __init__(self, parent, x, y):
+        super().__init__(parent)
+
+        self._x = x
+        self._y = y
+
+    def __iter__(self):
+        r"""
+        Return an iterator over the coordinates of this point.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            
+            sage: p = E.point(1, 2)
+            sage: list(p)
+            [1, 2]
+
+        """
+        yield self._x
+        yield self._y
+
+    def _richcmp_(self, other, op):
+        r"""
+        Return how this point compares to ``other`` with respect to the ``op``
+        operator.
+
+        This is only implemented for the operators ``==`` and ``!=``. It
+        returns whether two points are the same.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: E((0, 0)) = E((0, 0))
+            True
+
+        .. SEEALSO::
+
+            :meth:`EuclideanSet.__contains__` to check for containment of a
+            point in a set
+
+        """
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if not isinstance(other, EuclideanPoint):
+                return False
+
+            return self.parent().geometry._equal_point(self, other)
+
+        return super()._richcmp_(other, op)
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this point.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: p = E.point(0, 0)
+            sage: p
+            (0, 0)
+
+        """
+        return repr(tuple(self))
+
+    def __getitem__(self, i):
+        r"""
+        Return the ``i``-th coordinate of this point.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: p = E.point(1, 2)
+            sage: p[0]
+            1
+            sage: p[1]
+            2
+            sage: p[2]
+
+        """
+        if i == 0:
+            return self._x
+        if i == 1:
+            return self._y
+
+        raise NotImplementedError
+
+    def change(self, *, ring=None, geometry=None, oriented=None):
+        r"""
+        Return a modified copy of this point.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`~EuclideanPlane.base_ring`); the ring over which the new
+          point will be defined.
+
+        - ``geometry`` -- a :class:`EuclideanGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new point.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); must be ``None`` or ``False`` since points cannot
+          have an explicit orientation. See :meth:`~EuclideanSet.is_oriented`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: p = E((0, 0))
+
+        We change the base ring over which this point is defined::
+
+            sage: p.change_ring(ring=AA)
+
+        We cannot change the orientation of a point:
+
+            sage: p.change(oriented=True)
+
+            sage: p.change(oriented=False)
+
+        """
+        if ring is not None or geometry is not None:
+            self = self.parent().change_ring(ring, geometry=geometry).point(self._x, self._y)
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            raise NotImplementedError("points cannot have an explicit orientation")
+
+        return self
+
+
+class EuclideanLine(EuclideanFacade):
+    r"""
+    A line in the Euclidean plane.
+
+    This is a common base class for oriented and unoriented lines, see
+    :class:`EuclideanOrientedLine` and :class:`EuclideanUnorientedLine`.
+
+    Internally, we represent a line by its equation, i.e., the ``a``,
+    ``b``, ``c`` such that points on the line satisfy
+
+    .. MATH::
+
+        a + bx + cy = 0
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: line = E.line((0, 0), (1, 1))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanLine
+        sage: isinstance(line, EuclideanLine)
+        True
+        sage: TestSuite(line).run()
+
+    .. SEEALSO::
+
+        :meth:`EuclideanPlane.line`
+
+    """
+
+    def __init__(self, parent, a, b, c):
+        super().__init__(parent)
+
+        if not isinstance(a, Element) or a.parent() is not parent.base_ring():
+            raise TypeError("a must be an element of the base ring")
+        if not isinstance(b, Element) or b.parent() is not parent.base_ring():
+            raise TypeError("b must be an element of the base ring")
+        if not isinstance(c, Element) or c.parent() is not parent.base_ring():
+            raise TypeError("c must be an element of the base ring")
+
+        self._a = a
+        self._b = b
+        self._c = c
+
+    def change(self, *, ring=None, geometry=None, oriented=None):
+        r"""
+        Return a modified copy of this line.
+
+        INPUT:
+
+        - ``ring`` -- a ring (default: ``None`` to keep the current
+          :meth:`~EuclideanPlane.base_ring`); the ring over which the new line
+          will be defined.
+
+        - ``geometry`` -- a :class:`EuclideanGeometry` (default: ``None`` to
+          keep the current geometry); the geometry that will be used for the
+          new line.
+
+        - ``oriented`` -- a boolean (default: ``None`` to keep the current
+          orientedness); whether the new line should be oriented.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane(AA)
+
+        The base ring over which this line is defined can be changed::
+
+            sage: E.line((0, 0), (1, 1)).change_ring(QQ)
+
+        But we cannot change the base ring if the line's equation cannot be
+        expressed in the smaller ring::
+
+            sage: E.line((0, 0), (1, AA(2).sqrt())).change_ring(QQ)
+            Traceback (most recent call last):
+            ...
+            ValueError: Cannot coerce irrational Algebraic Real ... to Rational
+
+        We can forget the orientation of a line::
+
+            sage: line = E.line((0, 0), (1, 1))
+            sage: line.is_oriented()
+            True
+            sage: line = line.change(oriented=False)
+            sage: line.is_oriented()
+            False
+
+        We can (somewhat randomly) pick the orientation of a line::
+
+            sage: line = line.change(oriented=True)
+            sage: line.is_oriented()
+            True
+
+        """
+        if ring is not None or geometry is not None:
+            self = (
+                self.parent()
+                .change_ring(ring, geometry=geometry)
+                .line(
+                    self._a,
+                    self._b,
+                    self._c,
+                    check=False,
+                    oriented=self.is_oriented(),
+                )
+            )
+
+        if oriented is None:
+            oriented = self.is_oriented()
+
+        if oriented != self.is_oriented():
+            self = self.parent().line(
+                self._a, self._b, self._c, check=False, oriented=oriented
+            )
+
+        return self
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this line.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane(AA)
+            sage: E.line((0, 0), (1, 1))
+            sage: E.line((0, 1), (1, 1))
+            sage: E.line((1, 0), (1, 1))
+
+        """
+        a, b, c = self.equation(normalization=["gcd", None])
+
+        from sage.all import PolynomialRing
+
+        R = PolynomialRing(self.parent().base_ring(), names=["x", "y"])
+        polynomial_part = R({(1, 0): b, (0, 1): c})
+        if self.parent().geometry._sgn(a) != 0:
+            return f"{{{repr(a)} + {repr(polynomial_part)} = 0}}"
+        else:
+            return f"{{{repr(polynomial_part)} = 0}}"
+
+    def equation(self, normalization=None):
+        r"""
+        Return an equation for this line as a triple ``a``, ``b``, ``c`` such
+        that the line is given by the points satisfying
+
+        .. MATH::
+
+            a + bx + cy = 0
+
+        INPUT:
+
+        - ``normalization`` -- how to normalize the coefficients; the default
+          ``None`` is not to normalize at all. Other options are ``gcd``, to
+          divide the coefficients by their greatest common divisor, ``one``, to
+          normalize the first non-zero coefficient to ±1. This can also be a
+          list of such values which are then tried in order and exceptions are
+          silently ignored unless they happen at the last option.
+
+        If this line :meth;`is_oriented`, then the sign of the coefficients
+        is chosen to encode the orientation of this line. The sign is such
+        that the half plane obtained by replacing ``=`` with ``≥`` in the
+        equation is on the left of the line.
+
+        Note that the output might not uniquely describe the line. The
+        coefficients are only unique up to scaling.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane(AA)
+            sage: E.line((0, 0), (1, 1)).equation()
+            (0, -1, 1)
+            sage: E.line((0, 1), (1, 1)).equation()
+            (-1, 0, 1)
+            sage: E.line((1, 0), (1, 1)).equation()
+            (1, -1, 0)
+
+        Some normalizations might not be possible over some base rings::
+
+            sage; E = EuclideanPlane(ZZ)
+            sage: line = E.line((1, 3), (6, 8))
+            sage: line
+            {-2 + -x + y = 0}
+            sage: line.equation()
+            (-10, -5, 5)
+            sage: line.equation(normalization="one")
+            Traceback (most recent call last):
+            ...
+            TypeError: no conversion of this rational to integer
+            sage: line.equation(normalization="gcd")
+            (-2, -1, 1)
+
+        In such cases, we can also use a list of normalizations to select the
+        best one possible::
+
+            sage: line.equation(normalization=["one", "gcd", None])
+            (-2, -1, 1)
+
+        .. SEEALSO::
+
+            :meth:`HyperbolicGeodesic.equation` which does essentially the same
+            for geodesics in the hyperbolic plane
+
+        """
+        normalization = normalization or [None]
+
+        if isinstance(normalization, str):
+            normalization = [normalization]
+
+        from collections.abc import Sequence
+
+        if not isinstance(normalization, Sequence):
+            normalization = [normalization]
+
+        normalization = list(normalization)
+        normalization.reverse()
+
+        a, b, c = self._a, self._b, self._c
+
+        sgn = self.parent().geometry._sgn
+        sgn = (
+            -1
+            if (
+                sgn(a) < 0
+                or (sgn(a) == 0 and b < 0)
+                or (sgn(a) == 0 and sgn(b) == 0 and sgn(c) < 0)
+            )
+            else 1
+        )
+
+        while normalization:
+            strategy = normalization.pop()
+
+            from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
+            try:
+                a, b, c = HyperbolicGeodesic._normalize_coefficients(
+                    a, b, c, strategy=strategy
+                )
+                break
+            except Exception:
+                if not normalization:
+                    raise
+
+        if not self.is_oriented():
+            a *= sgn
+            b *= sgn
+            c *= sgn
+
+        return a, b, c
+
+
+class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
+    r"""
+    A line in the Euclidean plane with an explicit orientation.
+
+    Internally, we represent a line by its equation, i.e., the ``a``,
+    ``b``, ``c`` such that points on the line satisfy
+
+    .. MATH::
+
+        a + bx + cy = 0
+
+    The orientation of that line is such that
+
+    .. MATH::
+
+        a + bx + cy \ge 0
+
+    is to its left.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: line = E.line((0, 0), (1, 1))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanOrientedLine
+        sage: isinstance(line, EuclideanOrientedLine)
+        True
+        sage: TestSuite(line).run()
+
+    """
+
+    def direction(self):
+        r"""
+        Return a vector pointing in the direction of this oriented line.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: line = E.line((0, 0), (1, 1))
+            sage: line.direction()
+            (1, 1)
+
+        """
+        return self.parent().vector_space()((self._c, -self._b))
+
+    def __neg__(self):
+        r"""
+        Return this line with reversed orientation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: line = E.line((0, 0), (1, 1))
+            sage: -line
+
+        """
+        return self.parent().line(-self._a, -self._b, -self._c, check=False)
+
+
+class EuclideanUnorientedLine(EuclideanLine):
+    pass
+
+
+class EuclideanSegment(EuclideanFacade):
+    r"""
+    A line segment in the Euclidean plane.
+
+    This is a common base class for oriented and unoriented segments, see
+    :class:`EuclideanOrientedSegment` and :class:`EuclideanUnorientedSegment`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: start = E((0, 0))
+        sage: end = E((1, 1))
+        sage: segment = start.segment(end)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanSegment
+        sage: isinstance(segment, EuclideanSegment)
+        True
+        sage: TestSuite(segment).run()
+
+    .. SEEALSO::
+
+        :meth:`EuclideanPlane.segment`
+        :meth:`EuclideanPoint.segment`
+
+    """
+
+    def __init__(self, parent, line, start, end):
+        super().__init__(parent)
+
+        if not isinstance(line, EuclideanLine):
+            raise TypeError("line must be a Euclidean line")
+        if start is not None and not isinstance(start, EuclideanPoint):
+            raise TypeError("start must be a Euclidean point")
+        if end is not None and not isinstance(end, EuclideanPoint):
+            raise TypeError("end must be a Euclidean point")
+
+        self._line = line
+        self._start = start
+        self._end = end
+
+    def _normalize(self):
+        r"""
+        Return a normalized version of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: line = E.line((0, 0), (1, 1))
+
+        A segment with two identical endpoints, is a point::
+
+            sage: segment = E.segment(line, start=(0, 0), end=(0, 0), assume_normalized=True, check=False)
+            sage: segment
+            sage: segment._normalize()
+
+        A segment with a single endpoint is a ray::
+
+            sage: segment = E.segment(line, start=(0, 0), end=None, assume_normalized=True, check=False)
+            sage: segment
+            sage: segment._normalize()
+
+        A segment without endpoints is a line::
+
+            sage: segment = E.segment(line, start=None, end=None, assume_normalized=True, check=False)
+            sage: segment
+            sage: segment._normalize()
+
+        """
+        line = self._line
+        start = self._start
+        end = self._end
+
+        if start is None and end is None:
+            return self._line.change(oriented=self.is_oriented())
+
+        if start == end:
+            return start
+
+        if start is None:
+            start, end = end, start
+            line = -line
+
+        if end is None:
+            return self.parent().ray(start, line.direction())
+
+        return self
+
+
+class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
+    r"""
+    An oriented line segment in the Euclidean plane going from a ``start``
+    point to an ``end`` point.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: start = E((0, 0))
+        sage: end = E((1, 0))
+        sage: segment = start.segment(end)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanOrientedSegment
+        sage: isinstance(segment, EuclideanOrientedSegment)
+        True
+        sage: TestSuite(segment).run()
+
+    """
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: start = E((0, 0))
+            sage: end = E((1, 0))
+            sage: segment = start.segment(end)
+            sage: segment
+            (0, 0) → (1, 0)
+
+        """
+        return f"{self._start!r} → {self._end!r}"
+
+
+class EuclideanUnorientedSegment(EuclideanSegment):
+    r"""
+    An unoriented line segment in the Euclidean plane connecting ``start`` and
+    ``end``.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: start = E((0, 0))
+        sage: end = E((1, 0))
+        sage: segment = start.segment(end)
+        sage: segment = segment.unoriented()
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanUnorientedSegment
+        sage: isinstance(segment, EuclideanUnorientedSegment)
+        True
+        sage: TestSuite(segment).run()
+
+    """
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this segment.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: start = E((0, 0))
+            sage: end = E((1, 0))
+            sage: segment = start.segment(end).unoriented()
+            sage: segment
+            (0, 0) — (1, 0)
+
+        """
+        return f"{self._start!r} — {self._end!r}"
+
+
+class EuclideanRay(EuclideanFacade):
+    r"""
+    A ray emanating from a base point in the Euclidean plane.
+
+    EXAMPLES::
+
+        sage: from flatsurf import EuclideanPlane
+        sage: E = EuclideanPlane()
+        sage: ray = E.ray((0, 0), (1, 1))
+
+    TESTS::
+
+        sage: from flatsurf.geometry.euclidean import EuclideanRay
+        sage: isinstance(ray, EuclideanRay)
+        True
+        sage: TestSuite(ray).run()
+
+    """
+
+    def __init__(self, parent, base, direction):
+        super().__init__(parent)
+
+        self._base = base
+        self._direction = direction
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this ray.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+            sage: E.ray((0, 0), (1, 1))
+
+        """
+        return f"Ray from {self._base!r} in direction {self._direction!r}"
+
+
+### TODO: PRE-EUCLIDEAN-PLANE CODE HERE
 
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""

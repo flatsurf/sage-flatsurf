@@ -746,7 +746,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         ]
                     ),
                 ),
-                immutable=True
+                immutable=True,
             )
 
         def get_point_position(self, point, translation=None):
@@ -1915,7 +1915,8 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: from flatsurf import Polygon
                         sage: P = Polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
                         sage: P.circumscribing_circle()
-                        Circle((1/2, 3/2), 5/2)
+                        { (x - 1/2)² + (y - 3/2)² = 5/2 }
+
                     """
                     from flatsurf.geometry.circle import circle_from_three_points
 

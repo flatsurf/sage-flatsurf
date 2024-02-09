@@ -52,6 +52,8 @@
 
 * Fixed creating surface points at vertices of disconnected surfaces.
 
+* Fixed absolute position of polygon after ``subdivide_edges()``.
+
 **Performance:**
 
 * <news item>

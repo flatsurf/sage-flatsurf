@@ -35,7 +35,7 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.surface import OrientedSimilaritySurface, Labels
 from flatsurf.geometry.minimal_cover import MinimalTranslationCover
 from sage.rings.integer_ring import ZZ
 from flatsurf.geometry.surface import Labels

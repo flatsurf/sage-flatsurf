@@ -218,6 +218,9 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_method
 
 
+from flatsurf.geometry.geometry import Geometry, ExactGeometry, EpsilonGeometry
+
+
 class HyperbolicPlane(Parent, UniqueRepresentation):
     r"""
     The hyperbolic plane.
@@ -1661,7 +1664,8 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
 
         .. SEEALSO::
 
-            :meth:`HyperbolicPoint.segment`
+            :meth:`HyperbolicPoint.segment` to create a segment from its two
+            endpoints (without specifying a geodesic.)
 
         """
         geodesic = self(geodesic)
@@ -3426,7 +3430,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         return f"Hyperbolic Plane over {repr(self.base_ring())}"
 
 
-class HyperbolicGeometry:
+class HyperbolicGeometry(Geometry):
     r"""
     Predicates and primitive geometric constructions over a base ``ring``.
 
@@ -3470,235 +3474,19 @@ class HyperbolicGeometry:
         sage: H(0) == H(1/2048)
         True
 
+    TESTS::
+
+        sage: from flatsurf import HyperbolicPlane
+        sage: from flatsurf.geometry.hyperbolic import HyperbolicGeometry
+        sage: H = HyperbolicPlane()
+        sage: isinstance(H.geometry, HyperbolicGeometry)
+        True
+
     .. SEEALSO::
 
         :class:`HyperbolicExactGeometry`, :class:`HyperbolicEpsilonGeometry`
 
     """
-
-    def __init__(self, ring):
-        r"""
-        TESTS::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicGeometry
-            sage: H = HyperbolicPlane()
-            sage: isinstance(H.geometry, HyperbolicGeometry)
-            True
-
-        """
-        self._ring = ring
-
-    def base_ring(self):
-        r"""
-        Return the ring over which this geometry is implemented.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: H.geometry.base_ring()
-            Rational Field
-
-        """
-        return self._ring
-
-    def _zero(self, x):
-        r"""
-        Return whether ``x`` should be considered zero in the
-        :meth:`base_ring`.
-
-        .. NOTE::
-
-            This predicate should not be used directly in geometric
-            constructions since it does not specify the context in which this
-            question is asked. This makes it very difficult to override a
-            specific aspect in a custom geometry. Also, this predicate lacks
-            the context of other elements; a proper predicate should also take
-            other elements into account to decide this question relative to the
-            other values.
-
-        INPUT:
-
-        - ``x`` -- an element of the :meth:`base_ring`
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(RR)
-            sage: H.geometry._zero(1)
-            False
-            sage: H.geometry._zero(1e-9)
-            True
-
-        """
-        return self._cmp(x, 0) == 0
-
-    def _cmp(self, x, y):
-        r"""
-        Return how ``x`` compares to ``y``.
-
-        .. NOTE::
-
-            This predicate should not be used directly in geometric
-            constructions since it does not specify the context in which this
-            question is asked. This makes it very difficult to override a
-            specific aspect in a custom geometry.
-
-        INPUT:
-
-        - ``x`` -- an element of the :meth:`base_ring`
-
-        - ``y`` -- an element of the :meth:`base_ring`
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: H.geometry._cmp(0, 0)
-            0
-            sage: H.geometry._cmp(0, 1)
-            -1
-            sage: H.geometry._cmp(1, 0)
-            1
-
-        ::
-
-            sage: H = HyperbolicPlane(RR)
-            sage: H.geometry._cmp(0, 0)
-            0
-            sage: H.geometry._cmp(0, 1)
-            -1
-            sage: H.geometry._cmp(1, 0)
-            1
-            sage: H.geometry._cmp(1e-10, 0)
-            0
-
-        """
-        if self._equal(x, y):
-            return 0
-        if x < y:
-            return -1
-
-        assert (
-            x > y
-        ), "Geometry over this ring must override _cmp since not (x == y) and not (x < y) does not imply x > y"
-        return 1
-
-    def _sgn(self, x):
-        r"""
-        Return the sign of ``x``.
-
-        .. NOTE::
-
-            This predicate should not be used directly in geometric
-            constructions since it does not specify the context in which this
-            question is asked. This makes it very difficult to override a
-            specific aspect in a custom geometry. Also, this predicate lacks
-            the context of other elements; a proper predicate should also take
-            other elements into account to decide this question relative to the
-            other values.
-
-        INPUT:
-
-        - ``x`` -- an element of the :meth:`base_ring`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(RR)
-            sage: H.geometry._sgn(1)
-            1
-            sage: H.geometry._sgn(-1)
-            -1
-            sage: H.geometry._sgn(1e-10)
-            0
-
-        """
-        return self._cmp(x, 0)
-
-    def _equal(self, x, y):
-        r"""
-        Return whether ``x`` and ``y`` should be considered equal in the :meth:`base_ring`.
-
-        .. NOTE::
-
-            This predicate should not be used directly in geometric
-            constructions since it does not specify the context in which this
-            question is asked. This makes it very difficult to override a
-            specific aspect in a custom geometry.
-
-        INPUT:
-
-        - ``x`` -- an element of the :meth:`base_ring`
-
-        - ``y`` -- an element of the :meth:`base_ring`
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(RR)
-            sage: H.geometry._equal(0, 1)
-            False
-            sage: H.geometry._equal(0, 1e-10)
-            True
-
-        """
-        raise NotImplementedError("this geometry does not implement _equal()")
-
-    def _determinant(self, a, b, c, d):
-        r"""
-        Return the determinant of the 2×2 matrix ``[[a, b], [c, d]]`` or
-        ``None`` if the matrix is singular.
-
-        .. NOTE::
-
-            This predicate should not be used directly in geometric
-            constructions since it does not specify the context in which this
-            question is asked. This makes it very difficult to override a
-            specific aspect in a custom geometry.
-
-        INPUT:
-
-        - ``a`` -- an element of the :meth:`base_ring`
-
-        - ``b`` -- an element of the :meth:`base_ring`
-
-        - ``c`` -- an element of the :meth:`base_ring`
-
-        - ``d`` -- an element of the :meth:`base_ring`
-
-        EXAMPLES:
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-
-            sage: H.geometry._determinant(1, 2, 3, 4)
-            -2
-            sage: H.geometry._determinant(0, 10^-10, 1, 1)
-            -1/10000000000
-
-        """
-        det = a * d - b * c
-        if self._zero(det):
-            return None
-        return det
-
-    def change_ring(self, ring):
-        r"""
-        Return this geometry with the :meth:`base_ring` changed to ``ring``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: H.geometry
-            Exact geometry over Rational Field
-            sage: H.geometry.change_ring(AA)
-            Exact geometry over Algebraic Real Field
-
-        """
-        raise NotImplementedError("this geometry does not implement change_ring()")
 
     def projective(self, p, q, point):
         r"""
@@ -3874,6 +3662,7 @@ class HyperbolicGeometry:
             (0, 0)
 
         """
+        # TODO: Use Euclidean geometry?
         (fa, fb, fc) = f
         (ga, gb, gc) = g
         det = self._determinant(fb, fc, gb, gc)
@@ -3887,7 +3676,7 @@ class HyperbolicGeometry:
         return (x, y)
 
 
-class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
+class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry, ExactGeometry):
     r"""
     Predicates and primitive geometric constructions over an exact base ring.
 
@@ -3909,32 +3698,6 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
         :class:`HyperbolicEpsilonGeometry` for an implementation over inexact rings
 
     """
-
-    def _equal(self, x, y):
-        r"""
-        Return whether the numbers ``x`` and ``y`` should be considered equal
-        in exact geometry.
-
-        .. NOTE::
-
-            This predicate should not be used directly in geometric
-            constructions since it does not specify the context in which this
-            question is asked. This makes it very difficult to override a
-            specific aspect in a custom geometry.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: H.geometry._equal(0, 1)
-            False
-            sage: H.geometry._equal(0, 1/2**64)
-            False
-            sage: H.geometry._equal(0, 0)
-            True
-
-        """
-        return x == y
 
     def change_ring(self, ring):
         r"""
@@ -3969,22 +3732,8 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry):
 
         return HyperbolicExactGeometry(ring)
 
-    def __repr__(self):
-        r"""
-        Return a printable representation of this geometry.
 
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane()
-            sage: H.geometry
-            Exact geometry over Rational Field
-
-        """
-        return f"Exact geometry over {self._ring}"
-
-
-class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
+class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry, EpsilonGeometry):
     r"""
     Predicates and primitive geometric constructions over a base ``ring`` with
     "precision" ``epsilon``.
@@ -4026,90 +3775,6 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
         :class:`HyperbolicExactGeometry`
 
     """
-
-    def __init__(self, ring, epsilon):
-        r"""
-        TESTS::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: from flatsurf.geometry.hyperbolic import HyperbolicEpsilonGeometry
-            sage: H = HyperbolicPlane(RR)
-            sage: isinstance(H.geometry, HyperbolicEpsilonGeometry)
-            True
-
-        """
-        super().__init__(ring)
-        self._epsilon = ring(epsilon)
-
-    def _equal(self, x, y):
-        r"""
-        Return whether ``x`` and ``y`` should be considered equal numbers with
-        respect to an ε error.
-
-        .. NOTE::
-
-            This method has not been tested much. Since this underlies much of
-            the inexact geometry, we should probably do something better here,
-            see e.g., https://floating-point-gui.de/errors/comparison/
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(RR)
-
-            sage: H.geometry._equal(1, 2)
-            False
-            sage: H.geometry._equal(1, 1 + 1e-32)
-            True
-            sage: H.geometry._equal(1e-32, 1e-32 + 1e-33)
-            False
-            sage: H.geometry._equal(1e-32, 1e-32 + 1e-64)
-            True
-
-        """
-        if x == 0 or y == 0:
-            return abs(x - y) < self._epsilon
-
-        return abs(x - y) <= (abs(x) + abs(y)) * self._epsilon
-
-    def _determinant(self, a, b, c, d):
-        r"""
-        Return the determinant of the 2×2 matrix ``[[a, b], [c, d]]`` or
-        ``None`` if the matrix is singular.
-
-        INPUT:
-
-        - ``a`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
-
-        - ``b`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
-
-        - ``c`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
-
-        - ``d`` -- an element of the :meth:`~HyperbolicGeometry.base_ring`
-
-        EXAMPLES:
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(RR)
-
-            sage: H.geometry._determinant(1, 2, 3, 4)
-            -2
-            sage: H.geometry._determinant(1e-10, 0, 0, 1e-10)
-            1.00000000000000e-20
-
-        Unfortunately, we are not implementing any actual rank detecting
-        algorithm (QR decomposition or such) here. So, we do not detect that
-        this matrik is singular::
-
-            sage: H.geometry._determinant(1e-127, 1e-128, 1, 1)
-            9.00000000000000e-128
-
-        """
-        det = a * d - b * c
-        if det == 0:
-            # Note that we should instead numerically detect the rank here.
-            return None
-        return det
 
     def projective(self, p, q, point):
         r"""
@@ -4189,20 +3854,6 @@ class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry):
             raise ValueError("cannot change_ring() to an exact ring")
 
         return HyperbolicEpsilonGeometry(ring, self._epsilon)
-
-    def __repr__(self):
-        r"""
-        Return a printable representation of this geometry.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(RR)
-            sage: H.geometry
-            Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
-
-        """
-        return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"
 
 
 class HyperbolicConvexSet(SageObject):
@@ -4790,7 +4441,7 @@ class HyperbolicConvexSet(SageObject):
         tester = self._tester(**options)
         tester.assertEqual(self, self.change_ring(self.parent().base_ring()))
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a modified copy of this set.
 
@@ -4827,13 +4478,13 @@ class HyperbolicConvexSet(SageObject):
 
         We can also take an unoriented set and pick an orientation::
 
-            sage: oriented = geodesic.change(oriented=True)
+            sage: oriented = unoriented.change(oriented=True)
             sage: oriented.is_oriented()
             True
 
         .. SEEALSO::
 
-            :meth:`is_oriented` for oriented an unoriented sets.
+            :meth:`is_oriented` to determine whether a set is oriented.
 
         """
         raise NotImplementedError(f"this {type(self)} does not implement change()")
@@ -5817,7 +5468,7 @@ class HyperbolicConvexFacade(HyperbolicConvexSet, Parent):
     This is the base class for all hyperbolic convex sets that are not points.
     This class solves the problem that we want convex sets to be "elements" of
     the hyperbolic plane but at the same time, we want these sets to live as
-    parents in the category framework of SageMath; so they have be a Parent
+    parents in the category framework of SageMath; so they have a Parent
     with hyperbolic points as their Element class.
 
     SageMath provides the (not very frequently used and somewhat flaky) facade
@@ -6235,7 +5886,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             .plot(model=model, **kwds)
         )
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a modified copy of this half space.
 
@@ -6774,7 +6425,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         If this geodesic :meth;`is_oriented`, then the sign of the coefficients
         is chosen to encode the orientation of this geodesic. The sign is such
         that the half plane obtained by replacing ``=`` with ``≥`` in above
-        equationsis on the left of the geodesic.
+        equations is on the left of the geodesic.
 
         Note that the output might not uniquely describe the geodesic since the
         coefficients are only unique up to scaling.
@@ -9253,7 +8904,7 @@ class HyperbolicPointFromCoordinates(HyperbolicPoint):
             PowerSeriesRing(self.parent().base_ring(), names="I")(list(coordinates))
         )
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a modified copy of this point.
 
@@ -9709,7 +9360,7 @@ class HyperbolicPointFromGeodesic(HyperbolicPoint):
 
         return repr(self.change_ring(RR))
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a modified copy of this point.
 
@@ -11484,7 +11135,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
 
         return self._enhance_plot(plot, model=model)
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a modified copy of this polygon.
 
@@ -12324,7 +11975,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
             self.geodesic() == other.geodesic() and self.vertices() == other.vertices()
         )
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a modified copy of this segment.
 
@@ -13117,7 +12768,7 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
             ]
         )
 
-    def change(self, ring=None, geometry=None, oriented=None):
+    def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
         Return a copy of the empty set.
 

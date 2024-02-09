@@ -163,11 +163,15 @@ class GL2ROrbitClosure:
             from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
 
             self._surface = FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().codomain()).codomain()
+        elif surface.__class__.__name__.startswith('FlatTriangulation<'):
+            # TODO: Deprecate this branch. We do not want FlatTriangulations to
+            # leak into sage-flatsurf anymore.
+            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            conversion = FlatTriangulationConversion.from_pyflatsurf(surface)
+            self._surface = conversion.codomain()
+            base_ring = conversion.domain().base_ring()
         else:
-            from flatsurf.geometry.pyflatsurf_conversion import sage_ring
-
-            base_ring = sage_ring(surface)
-            self._surface = surface
+            raise NotImplementedError("cannot compute orbit closure for this kind of surface yet")
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
@@ -464,17 +468,20 @@ class GL2ROrbitClosure:
 
         This can be used to deform the surface::
 
+            sage: from flatsurf import polygons, translation_surfaces, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
             sage: T = polygons.triangle(3,4,13)
             sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation").erase_marked_points() # long time (3s, #122), optional: pyflatsurf
+            sage: S = S.minimal_cover("translation").erase_marked_points().codomain() # long time (3s, #122), optional: pyflatsurf
             sage: O = GL2ROrbitClosure(S)  # long time (above), optional: pyflatsurf
             sage: for d in O.decompositions(4, 20):  # long time (2s, #124), optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 4:
             ....:         break
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # long time (above), optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # long time (above), optional: pyflatsurf
+            sage: dreal = d1/1325 + d2/2278 + d3/2809 - d4/2013  # long time (above), optional: pyflatsurf
+            sage: dimag = d1/1414 - d2/2334 + d4/2301 + d4/2506  # long time (above), optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
             sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
 

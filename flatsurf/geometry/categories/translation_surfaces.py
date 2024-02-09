@@ -419,8 +419,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         )
                     else:
                         # In place matrix deformation
-                        ss = ss.apply_matrix(prod, in_place=True).codomain()
-                    ss = ss.delaunay_triangulation(direction=nonzero, in_place=False)
+                        ss.apply_matrix(prod, in_place=True)
+                    ss.delaunay_triangulation(direction=nonzero, in_place=True)
                     deformation2 = {}
                     for singularity, vect in deformation.items():
                         found_start = None
@@ -546,7 +546,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: unmarked_point = S(1, 0); unmarked_point  # optional: pyflatsurf  # long time (from above)
                 Vertex 0 of polygon 1
                 sage: erasure(unmarked_point)  # optional: pyflatsurf  # long time (from above)
-                Point (-1, 0) of polygon (-3, -7, -2)
+                Vertex 0 of polygon (-3, -7, -2)
 
             TESTS:
 
@@ -692,12 +692,16 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 if algorithm is None:
                     from flatsurf.features import pyflatsurf_feature
-                    if pyflatsurf_feature.is_present():
+                    if pyflatsurf_feature.is_present() and pyflatsurf_feature.is_saddle_connection_enumeration_functional():
                         algorithm = "pyflatsurf"
                     else:
                         algorithm = "generic"
 
                 if algorithm == "pyflatsurf":
+                    from flatsurf.features import pyflatsurf_feature
+                    if not flatsurf_feature.is_saddle_connection_enumeration_functional():
+                        import warnings
+                        warnings.warn("enumerating saddle connections is broken in your version of pyflatsurf, namely saddle connections are enumerated in the wrong order and consequently some might be missing when enumerating with a length bound; upgrade to pyflatsurf >=3.14.1 to resolve this warning.")
                     return self._saddle_connections_pyflatsurf(squared_length_bound, initial_label, initial_vertex)
 
                 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
@@ -721,7 +725,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if squared_length_bound is not None:
                         holonomy = connection.holonomy()
                         # TODO: Use dot_product everywhere.
-                        if holonomy.dot_product(holonomy) > 2*squared_length_bound:
+                        if holonomy.dot_product(holonomy) > squared_length_bound:
                             break
                     yield connection
 

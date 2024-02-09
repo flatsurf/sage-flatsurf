@@ -560,7 +560,7 @@ class SaddleConnection(SaddleConnection_base):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: connections = S.saddle_connections(13)
+            sage: connections = S.saddle_connections(13)  # random output due to deprecation warning from cppyy
 
             sage: connections[0] == connections[0]
             True

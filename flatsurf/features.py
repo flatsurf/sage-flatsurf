@@ -26,10 +26,6 @@ cppyy_feature = PythonModule(
     "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
 )
 
-pyflatsurf_feature = PythonModule(
-    "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
-)
-
 pyeantic_feature = PythonModule(
     "pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda"
 )
@@ -37,3 +33,15 @@ pyeantic_feature = PythonModule(
 pyexactreal_feature = PythonModule(
     "pyexactreal", url="https://github.com/flatsurf/exact-real/#install-with-conda"
 )
+
+
+class PyflatsurfModule(PythonModule):
+    def __init__(self):
+        super().__init__("pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda")
+
+    def is_saddle_connection_enumeration_functional(self):
+        # TODO: Check whether version is >=3.14.1
+        return False
+
+
+pyflatsurf_feature = PyflatsurfModule()
