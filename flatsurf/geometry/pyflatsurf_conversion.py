@@ -1566,7 +1566,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: connection = next(iter(S.saddle_connections(1)))
             sage: conversion(connection)
-            -9
+            5
 
         We map a saddle connection that does not map to a half edge::
 
