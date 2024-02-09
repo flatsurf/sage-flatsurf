@@ -26,7 +26,6 @@ Delaunay decomposition for infinite surfaces.
 # ****************************************************************************
 
 from sage.modules.free_module import VectorSpace
-from sage.modules.free_module_element import vector
 
 
 # TODO: This shoul be a method of EuclideanPlane.
@@ -49,6 +48,6 @@ def circle_from_three_points(p, q, r, base_ring=None):
     if center_3[2].is_zero():
         raise ValueError("The three points lie on a line.")
     center = V2((center_3[0] / center_3[2], center_3[1] / center_3[2]))
-    return Circle(center, (p[0] - center[0]) ** 2 + (p[1] - center[1]) ** 2)
 
-
+    from flatsurf import EuclideanPlane
+    return EuclideanPlane(base_ring).circle(center, (p[0] - center[0]) ** 2 + (p[1] - center[1]) ** 2)
