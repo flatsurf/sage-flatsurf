@@ -629,9 +629,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             .intersection(self.geodesic(0, 1).left_half_space())
             .intersection(self.geodesic(0, -1).right_half_space()),
             # A bounded polygon
-            self.geodesic(-ZZ(1) / 3, 2)
+            self.geodesic(-ZZ.one() / 3, 2)
             .left_half_space()
-            .intersection(self.geodesic(ZZ(1) / 3, -2).right_half_space())
+            .intersection(self.geodesic(ZZ.one() / 3, -2).right_half_space())
             .intersection(self.geodesic(-ZZ(2) / 3, 3).right_half_space())
             .intersection(self.geodesic(ZZ(2) / 3, -3).left_half_space()),
             # An unbounded oriented segment
@@ -639,7 +639,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             # A bounded oriented segment
             self.vertical(0)
             .intersection(self.geodesic(-2, 2).right_half_space())
-            .intersection(self.geodesic(-ZZ(1) / 2, ZZ(1) / 2).left_half_space()),
+            .intersection(self.geodesic(-ZZ.one() / 2, ZZ.one() / 2).left_half_space()),
             # An unbounded unoriented segment
             self.vertical(0)
             .intersection(self.geodesic(-1, 1).left_half_space())
@@ -647,7 +647,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             # A bounded unoriented segment
             self.vertical(0)
             .intersection(self.geodesic(-2, 2).right_half_space())
-            .intersection(self.geodesic(-ZZ(1) / 2, ZZ(1) / 2).left_half_space())
+            .intersection(self.geodesic(-ZZ.one() / 2, ZZ.one() / 2).left_half_space())
             .unoriented(),
         ]
 
@@ -7431,7 +7431,7 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
         """
         from sage.all import ZZ
 
-        return ZZ(1)
+        return ZZ.one()
 
     def change(self, *, ring=None, geometry=None, oriented=None):
         r"""
@@ -12507,7 +12507,7 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         """
         from sage.all import ZZ
 
-        return ZZ(1)
+        return ZZ.one()
 
     def midpoint(self):
         r"""

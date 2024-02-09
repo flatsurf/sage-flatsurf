@@ -38,7 +38,7 @@ from flatsurf.geometry.surface import (
 from flatsurf.geometry.origami import Origami
 
 
-ZZ_1 = ZZ(1)
+ZZ_1 = ZZ.one()
 ZZ_2 = ZZ(2)
 
 
@@ -117,7 +117,7 @@ class EInfinitySurface(OrientedSimilaritySurface):
             R = PolynomialRing(ZZ, "x")
             x = R.gen()
             field = NumberField(
-                x**3 - ZZ(5) * x**2 + ZZ(4) * x - ZZ(1), "r", embedding=AA(ZZ(4))
+                x**3 - ZZ(5) * x**2 + ZZ(4) * x - ZZ.one(), "r", embedding=AA(ZZ(4))
             )
             self._lambda_squared = field.gen()
         else:
@@ -911,7 +911,7 @@ class SimilaritySurfaceGenerators:
             i1 = p.index(v)
             if i0 > i1:
                 i0, i1 = i1, i0
-            polygons[j] = p[i0 : i1 + 1]
+            polygons[j] = p[i0: i1 + 1]
             polygons.append(p[i1:] + p[: i0 + 1])
         return polygons
 

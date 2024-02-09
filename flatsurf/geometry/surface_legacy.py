@@ -2157,7 +2157,7 @@ class ExtraLabel:
     r"""
     Used to spit out new labels.
     """
-    _next = int(0)
+    _next = 0
 
     def __init__(self, value=None):
         r"""

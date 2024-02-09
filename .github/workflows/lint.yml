@@ -72,7 +72,7 @@ jobs:
       - name: Run ruff
         shell: bash -l {0}
         run: |
-          ruff check --select C4,UP008,UP031,UP034 .
+          ruff check --select C4,UP008,UP018,UP031,UP034 .
   black:
     runs-on: ubuntu-20.04
     steps:
