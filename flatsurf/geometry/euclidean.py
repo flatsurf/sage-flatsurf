@@ -1425,19 +1425,17 @@ class EuclideanCircle(EuclideanFacade):
 
         return self
 
-    # TODO: Not used anywhere.
-    ## def center(self):
-    ##     r"""
-    ##     Return the center of the circle as a vector.
-    ##     """
-    ##     return self._center
+    def center(self):
+        r"""
+        Return the point at the center of the circle.
+        """
+        return self._center
 
-    # TODO: Not used anywhere.
-    ## def radius_squared(self):
-    ##     r"""
-    ##     Return the square of the radius of the circle.
-    ##     """
-    ##     return self._radius_squared
+    def radius_squared(self):
+        r"""
+        Return the square of the radius of the circle.
+        """
+        return self._radius_squared
 
     def point_position(self, point):
         r"""
