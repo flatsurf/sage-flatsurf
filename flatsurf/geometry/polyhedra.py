@@ -131,7 +131,7 @@ class ConeSurfaceToPolyhedronMap(SageObject):
         return not (self == other)
 
 
-def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=None):
+def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=1):
     r"""
     Construct the Euclidean Cone Surface associated to the surface of a polyhedron and a map
     from the cone surface to the polyhedron.
@@ -189,8 +189,7 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=None):
     if polyhedron.dim() != 3:
         raise ValueError
 
-    if scaling_factor is None:
-        scaling_factor = ZZ.one()
+    scaling_factor = ZZ(scaling_factor)
 
     c = polyhedron.center()
     vertices = polyhedron.vertices()
