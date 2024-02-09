@@ -16,8 +16,8 @@ class Geometry:
     TESTS::
 
         sage: from flatsurf.geometry.euclidean import EuclideanExactGeometry, Geometry
-        sage: geometry = EuclideanExactGeometry()
-        sage: isinstance(geometry. Geometry)
+        sage: geometry = EuclideanExactGeometry(QQ)
+        sage: isinstance(geometry, Geometry)
         True
 
     """
@@ -329,7 +329,7 @@ class EpsilonGeometry(Geometry):
     EXAMPLES::
 
         sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
-        sage: geometry = EuclideanEpsilonGeometry(RR, 1e-6))
+        sage: geometry = EuclideanEpsilonGeometry(RR, 1e-6)
 
     TESTS::
 
@@ -431,6 +431,7 @@ class EpsilonGeometry(Geometry):
 
             sage: from flatsurf.geometry.euclidean import EuclideanEpsilonGeometry
             sage: EuclideanEpsilonGeometry(RR, 1e-6)
+            Epsilon geometry with ϵ=1.00000000000000e-6 over Real Field with 53 bits of precision
 
         """
         return f"Epsilon geometry with ϵ={self._epsilon} over {self._ring}"

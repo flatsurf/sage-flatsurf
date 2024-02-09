@@ -2168,11 +2168,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not cone.is_subset(incoming_edge_cone):
                     raise ValueError("cone must be contained in the cone formed by the incoming edge")
 
-                from flatsurf.geometry.circle import Circle
-                bounding_circle = Circle(
+                from flatsurf import EuclideanPlane
+                bounding_circle = EuclideanPlane(self.base_ring()).circle(
                     (0, 0),
-                    squared_length_bound,
-                    base_ring=self.base_ring(),
+                    radius_squared=squared_length_bound,
                 )
 
                 # Each vertex that is contained in the cone's interior yields a

@@ -50,4 +50,4 @@ def circle_from_three_points(p, q, r, base_ring=None):
     center = V2((center_3[0] / center_3[2], center_3[1] / center_3[2]))
 
     from flatsurf import EuclideanPlane
-    return EuclideanPlane(base_ring).circle(center, (p[0] - center[0]) ** 2 + (p[1] - center[1]) ** 2)
+    return EuclideanPlane(base_ring).circle(center, radius_squared=(p[0] - center[0]) ** 2 + (p[1] - center[1]) ** 2)

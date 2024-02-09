@@ -317,6 +317,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         if parent is self:
             return x
 
+        if parent is self.vector_space():
+            x = tuple(x)
+
         if isinstance(x, EuclideanSet):
             return x.change(ring=self.base_ring(), geometry=self.geometry)
 
@@ -1345,7 +1348,7 @@ class EuclideanCircle(EuclideanFacade):
             sage: from flatsurf import EuclideanPlane
             sage: c = EuclideanPlane().circle((0, 0), radius=1)
             sage: c
-            
+
         """
         x, y = self._center
 
@@ -1422,68 +1425,73 @@ class EuclideanCircle(EuclideanFacade):
 
         return self
 
+    # TODO: Not used anywhere.
     ## def center(self):
     ##     r"""
     ##     Return the center of the circle as a vector.
     ##     """
     ##     return self._center
 
+    # TODO: Not used anywhere.
     ## def radius_squared(self):
     ##     r"""
     ##     Return the square of the radius of the circle.
     ##     """
     ##     return self._radius_squared
 
-    ## def point_position(self, point):
-    ##     r"""
-    ##     Return 1 if point lies in the circle, 0 if the point lies on the circle,
-    ##     and -1 if the point lies outide the circle.
-    ##     """
-    ##     value = (
-    ##         (point[0] - self._center[0]) ** 2
-    ##         + (point[1] - self._center[1]) ** 2
-    ##         - self._radius_squared
-    ##     )
-    ##     if value > self._base_ring.zero():
-    ##         return -1
-    ##     if value < self._base_ring.zero():
-    ##         return 1
-    ##     return 0
+    def point_position(self, point):
+        r"""
+        Return 1 if point lies in the circle, 0 if the point lies on the circle,
+        and -1 if the point lies outide the circle.
+        """
+        # TODO: Deprecate?
+        value = (
+            (point[0] - self._center[0]) ** 2
+            + (point[1] - self._center[1]) ** 2
+            - self._radius_squared
+        )
 
-    ## def closest_point_on_line(self, point, direction_vector):
-    ##     r"""
-    ##     Consider the line through the provided point in the given direction.
-    ##     Return the closest point on this line to the center of the circle.
-    ##     """
-    ##     cc = self._V3((self._center[0], self._center[1], self._base_ring.one()))
-    ##     # point at infinite orthogonal to direction_vector:
-    ##     dd = self._V3(
-    ##         (direction_vector[1], -direction_vector[0], self._base_ring.zero())
-    ##     )
-    ##     l1 = cc.cross_product(dd)
+        if value > 0:
+            return -1
+        if value < 0:
+            return 1
+        return 0
 
-    ##     pp = self._V3((point[0], point[1], self._base_ring.one()))
-    ##     # direction_vector pushed to infinity
-    ##     ee = self._V3(
-    ##         (direction_vector[0], direction_vector[1], self._base_ring.zero())
-    ##     )
-    ##     l2 = pp.cross_product(ee)
+    def closest_point_on_line(self, point, direction_vector):
+        r"""
+        Consider the line through the provided point in the given direction.
+        Return the closest point on this line to the center of the circle.
+        """
+        # TODO: Rewrite or deprecate and generalize
+        V3 = self.parent().base_ring()**3
+        V2 = self.parent().base_ring()**2
 
-    ##     # This is the point we want to return
-    ##     rr = l1.cross_product(l2)
-    ##     try:
-    ##         return self._V2((rr[0] / rr[2], rr[1] / rr[2]))
-    ##     except ZeroDivisionError:
-    ##         raise ValueError(
-    ##             "Division by zero error. Perhaps direction is zero. "
-    ##             + "point="
-    ##             + str(point)
-    ##             + " direction="
-    ##             + str(direction_vector)
-    ##             + " circle="
-    ##             + str(self)
-    ##         )
+        cc = V3((self._center[0], self._center[1], 1))
+        # point at infinite orthogonal to direction_vector:
+        dd = V3((direction_vector[1], -direction_vector[0], 0))
+        l1 = cc.cross_product(dd)
 
+        pp = V3((point[0], point[1], 1))
+        # direction_vector pushed to infinity
+        ee = V3((direction_vector[0], direction_vector[1], 0))
+        l2 = pp.cross_product(ee)
+
+        # This is the point we want to return
+        rr = l1.cross_product(l2)
+        try:
+            return V2((rr[0] / rr[2], rr[1] / rr[2]))
+        except ZeroDivisionError:
+            raise ValueError(
+                "Division by zero error. Perhaps direction is zero. "
+                + "point="
+                + str(point)
+                + " direction="
+                + str(direction_vector)
+                + " circle="
+                + str(self)
+            )
+
+    # TODO: Not used anywhere.
     ## def line_position(self, point, direction_vector):
     ##     r"""
     ##     Consider the line through the provided point in the given direction.
@@ -1492,31 +1500,32 @@ class EuclideanCircle(EuclideanFacade):
     ##     """
     ##     return self.point_position(self.closest_point_on_line(point, direction_vector))
 
-    ## # TODO: Create Segment class.
-    ## def line_segment_position(self, p, q):
-    ##     r"""
-    ##     Consider the open line segment pq.We return 1 if the line segment
-    ##     enters the interior of the circle, zero if it touches the circle
-    ##     tangentially (at a point in the interior of the segment) and
-    ##     and -1 if it does not touch the circle or its interior.
-    ##     """
-    ##     if self.point_position(p) == 1:
-    ##         return 1
-    ##     if self.point_position(q) == 1:
-    ##         return 1
-    ##     r = self.closest_point_on_line(p, q - p)
-    ##     pos = self.point_position(r)
-    ##     if pos == -1:
-    ##         return -1
-    ##     # This checks if r lies in the interior of pq
-    ##     if p[0] == q[0]:
-    ##         if (p[1] < r[1] and r[1] < q[1]) or (p[1] > r[1] and r[1] > q[1]):
-    ##             return pos
-    ##     elif (p[0] < r[0] and r[0] < q[0]) or (p[0] > r[0] and r[0] > q[0]):
-    ##         return pos
-    ##     # It does not lie in the interior.
-    ##     return -1
+    # TODO: Create Segment class.
+    def line_segment_position(self, p, q):
+        r"""
+        Consider the open line segment pq.We return 1 if the line segment
+        enters the interior of the circle, zero if it touches the circle
+        tangentially (at a point in the interior of the segment) and
+        and -1 if it does not touch the circle or its interior.
+        """
+        if self.point_position(p) == 1:
+            return 1
+        if self.point_position(q) == 1:
+            return 1
+        r = self.closest_point_on_line(p, q - p)
+        pos = self.point_position(r)
+        if pos == -1:
+            return -1
+        # This checks if r lies in the interior of pq
+        if p[0] == q[0]:
+            if (p[1] < r[1] and r[1] < q[1]) or (p[1] > r[1] and r[1] > q[1]):
+                return pos
+        elif (p[0] < r[0] and r[0] < q[0]) or (p[0] > r[0] and r[0] > q[0]):
+            return pos
+        # It does not lie in the interior.
+        return -1
 
+    # TODO: Not used anywhere.
     ## def tangent_vector(self, point):
     ##     r"""
     ##     Return a vector based at the provided point (which must lie on the circle)
@@ -1534,6 +1543,7 @@ class EuclideanCircle(EuclideanFacade):
     ##         raise ValueError("point not on circle.")
     ##     return vector((self._center[1] - point[1], point[0] - self._center[0]))
 
+    # TODO: Not used anywhere.
     ## def other_intersection(self, p, v):
     ##     r"""
     ##     Consider a point p on the circle and a vector v. Let L be the line
@@ -1562,29 +1572,28 @@ class EuclideanCircle(EuclideanFacade):
     ##     r = self._V2((rr[0] / rr[2], rr[1] / rr[2]))
     ##     return self._V2((2 * r[0] - p[0], 2 * r[1] - p[1]))
 
-    ## def __rmul__(self, similarity):
-    ##     r"""
-    ##     Apply a similarity to the circle.
+    def __rmul__(self, similarity):
+        r"""
+        Apply a similarity to the circle.
 
-    ##     EXAMPLES::
+        EXAMPLES::
 
-    ##         sage: from flatsurf import translation_surfaces
-    ##         sage: s = translation_surfaces.square_torus()
-    ##         sage: c = s.polygon(0).circumscribing_circle()
-    ##         sage: c
-    ##         Circle((1/2, 1/2), 1/2)
-    ##         sage: s.edge_transformation(0,2)
-    ##         (x, y) |-> (x, y - 1)
-    ##         sage: s.edge_transformation(0,2) * c
-    ##         Circle((1/2, -1/2), 1/2)
-    ##     """
-    ##     from .similarity import SimilarityGroup
+            sage: from flatsurf import translation_surfaces
+            sage: s = translation_surfaces.square_torus()
+            sage: c = s.polygon(0).circumscribing_circle()
+            sage: c
+            Circle((1/2, 1/2), 1/2)
+            sage: s.edge_transformation(0,2)
+            (x, y) |-> (x, y - 1)
+            sage: s.edge_transformation(0,2) * c
+            Circle((1/2, -1/2), 1/2)
+        """
+        # TODO: Implement this properly for this parent
+        from .similarity import SimilarityGroup
 
-    ##     SG = SimilarityGroup(self._base_ring)
-    ##     s = SG(similarity)
-    ##     return Circle(
-    ##         s(self._center), s.det() * self._radius_squared, base_ring=self._base_ring
-    ##     )
+        SG = SimilarityGroup(self.parent().base_ring())
+        s = SG(similarity)
+        return self.parent().circle(s(self._center), radius_squared=s.det() * self._radius_squared)
 
     ## def __str__(self):
     ##     return (
