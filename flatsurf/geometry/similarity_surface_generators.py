@@ -911,7 +911,7 @@ class SimilaritySurfaceGenerators:
             i1 = p.index(v)
             if i0 > i1:
                 i0, i1 = i1, i0
-            polygons[j] = p[i0: i1 + 1]
+            polygons[j] = p[i0 : i1 + 1]
             polygons.append(p[i1:] + p[: i0 + 1])
         return polygons
 
