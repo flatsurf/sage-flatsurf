@@ -27,10 +27,10 @@ The following is also a Veech surface. However the flow decomposition
 in directions with long cylinders might not discover them if a limit
 is set::
 
-    sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
+    sage: S = translation_surfaces.mcmullen_genus2_prototype(4, 2, 1, 1, 1/4)
     sage: l = S.base_ring().gen()
     sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-    sage: dec = O.decomposition((8*l - 25, 16), 10) # optional: pyflatsurf
+    sage: dec = O.decomposition((8*l - 25, 16), 1) # optional: pyflatsurf
     sage: dec.undeterminedComponents() # optional: pyflatsurf
     [Component with perimeter [...]]
 
@@ -101,7 +101,7 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
-        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
+        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
         sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 
         sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
@@ -110,7 +110,7 @@ class GL2ROrbitClosure:
         sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: exactreal
         sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
         sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-        sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: exactreal
+        sage: O = GL2ROrbitClosure(S); O  # optional: exactreal  # optional: pyflatsurf
         GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
         sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
         sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: exactreal
@@ -160,14 +160,18 @@ class GL2ROrbitClosure:
                 )
 
             base_ring = surface.base_ring()
-            from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
 
-            self._surface = to_pyflatsurf(surface)
+            self._surface = FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().codomain()).codomain()
+        elif surface.__class__.__name__.startswith('FlatTriangulation<'):
+            # TODO: Deprecate this branch. We do not want FlatTriangulations to
+            # leak into sage-flatsurf anymore.
+            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            conversion = FlatTriangulationConversion.from_pyflatsurf(surface)
+            self._surface = conversion.codomain()
+            base_ring = conversion.domain().base_ring()
         else:
-            from flatsurf.geometry.pyflatsurf_conversion import sage_ring
-
-            base_ring = sage_ring(surface)
-            self._surface = surface
+            raise NotImplementedError("cannot compute orbit closure for this kind of surface yet")
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
@@ -302,9 +306,9 @@ class GL2ROrbitClosure:
             sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: exactreal
             sage: S = similarity_surfaces.billiard(T)  # optional: exactreal
             sage: S = S.minimal_cover(cover_type="translation")  # optional: exactreal
-            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: exactreal
+            sage: O = GL2ROrbitClosure(S); O  # optional: exactreal  # optional: pyflatsurf
             GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
-            sage: O.field_of_definition() # optional: pyflatsurf, optional: exactreal
+            sage: O.field_of_definition() # optional: exactreal  # optional: pyflatsurf
             Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
             sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: exactreal
@@ -396,22 +400,25 @@ class GL2ROrbitClosure:
             sage: span([v0, v1])  # optional: pyflatsurf
             Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
-            [                         1                          0                         -1                          0   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0]
-            [                         0                          1                         -1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)   (1/8*l-1/8 ~ 0.29653517) (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066)]
+            [                          1                           0                          -1     (1/8*l+7/8 ~ 1.2965352)  (-1/8*l+1/8 ~ -0.29653517)                          -1     (5/8*l-5/8 ~ 1.4826758)  (-1/2*l+3/2 ~ -0.18614066) (-5/8*l+13/8 ~ -0.48267583)]
+            [                          0                           1                          -1    (1/4*l-1/4 ~ 0.59307033)  (-1/4*l+1/4 ~ -0.59307033)                           0    (1/4*l-1/4 ~ 0.59307033)                           0  (-1/4*l+1/4 ~ -0.59307033)]
 
         This can be used to deform the surface::
 
+            sage: from flatsurf import polygons, translation_surfaces, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
             sage: T = polygons.triangle(3,4,13)
             sage: S = similarity_surfaces.billiard(T)
-            sage: S = S.minimal_cover("translation").erase_marked_points() # long time (3s, #122), optional: pyflatsurf
+            sage: S = S.minimal_cover("translation").erase_marked_points().codomain() # long time (3s, #122), optional: pyflatsurf
             sage: O = GL2ROrbitClosure(S)  # long time (above), optional: pyflatsurf
             sage: for d in O.decompositions(4, 20):  # long time (2s, #124), optional: pyflatsurf
             ....:     O.update_tangent_space_from_flow_decomposition(d)
             ....:     if O.dimension() == 4:
             ....:         break
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # long time (above), optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # long time (above), optional: pyflatsurf
+            sage: dreal = d1/1325 + d2/2278 + d3/2809 - d4/2013  # long time (above), optional: pyflatsurf
+            sage: dimag = d1/1414 - d2/2334 + d4/2301 + d4/2506  # long time (above), optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
             sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
 
@@ -831,9 +838,10 @@ class GL2ROrbitClosure:
             sage: c0, c1 = dec.components() # optional: pyflatsurf
             sage: kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
             sage: O.cylinder_circumference(c0, *kz) # optional: pyflatsurf
-            (1, 0, -1, 0)
+            (1, 1, 1, -1)
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
-            (0, 0, 0, -1)
+            (0, 0, 1, 0)
+
         """
         if (
             component.cylinder() != True
@@ -1096,14 +1104,15 @@ class GL2ROrbitClosure:
             [ 1  0]
             [-1 -1]
             [ 2  1]
+            [-2 -1]
+            [ 3  1]
+            [-1 -1]
+            [ 3  2]
             [1 0]
             [0 1]
             [ 1  0]
             [-1  1]
-            [ 1 -1]
-            [-1  2]
-            [ 1  0]
-            [-2  1]
+
         """
         sc_pos = (
             []

@@ -275,93 +275,6 @@ class DilationSurfaces(SurfaceCategory):
 
             return True
 
-        def apply_matrix(self, m, in_place=True, mapping=False):
-            r"""
-            Carry out the GL(2,R) action of m on this surface and return the result.
-
-            If in_place=True, then this is done in place and changes the surface.
-            This can only be carried out if the surface is finite and mutable.
-
-            If mapping=True, then we return a GL2RMapping between this surface and its image.
-            In this case in_place must be False.
-
-            If in_place=False, then a copy is made before the deformation.
-
-            TESTS::
-
-                sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.square_torus()
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False)
-
-                sage: T = S.apply_matrix(matrix([[1, 0], [0, 1]]), in_place=False, mapping=True)
-
-            """
-            if mapping is True:
-                if in_place:
-                    raise NotImplementedError(
-                        "can not modify in place and return a mapping"
-                    )
-                from flatsurf.geometry.half_dilation_surface import GL2RMapping
-
-                return GL2RMapping(self, m)
-            if not in_place:
-                if self.is_finite_type():
-                    from sage.structure.element import get_coercion_model
-
-                    cm = get_coercion_model()
-                    field = cm.common_parent(self.base_ring(), m.base_ring())
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
-
-                    s = MutableOrientedSimilaritySurface.from_surface(
-                        self.change_ring(field),
-                        category=DilationSurfaces(),
-                    )
-                    s.apply_matrix(m, in_place=True)
-                    s.set_immutable()
-                    return s
-                else:
-                    return m * self
-            else:
-                # Make sure m is in the right state
-                from sage.matrix.constructor import Matrix
-
-                m = Matrix(self.base_ring(), 2, 2, m)
-                if m.det() == self.base_ring().zero():
-                    raise ValueError("can not deform by degenerate matrix")
-                if not self.is_finite_type():
-                    raise NotImplementedError(
-                        "in-place GL(2,R) action only works for finite surfaces"
-                    )
-                us = self
-                if not us.is_mutable():
-                    raise ValueError("in-place changes only work for mutable surfaces")
-                for label in self.labels():
-                    us.replace_polygon(label, m * self.polygon(label))
-                if m.det() < self.base_ring().zero():
-                    # Polygons were all reversed orientation. Need to redo gluings.
-
-                    # First pass record new gluings in a dictionary.
-                    new_glue = {}
-                    seen_labels = set()
-                    for p1 in self.labels():
-                        n1 = len(self.polygon(p1).vertices())
-                        for e1 in range(n1):
-                            p2, e2 = self.opposite_edge(p1, e1)
-                            n2 = len(self.polygon(p2).vertices())
-                            if p2 in seen_labels:
-                                pass
-                            elif p1 == p2 and e1 > e2:
-                                pass
-                            else:
-                                new_glue[(p1, n1 - 1 - e1)] = (p2, n2 - 1 - e2)
-                        seen_labels.add(p1)
-                    # Second pass: reassign gluings
-                    for (p1, e1), (p2, e2) in new_glue.items():
-                        us.glue((p1, e1), (p2, e2))
-                return self
-
         def is_veering_triangulated(self, certificate=False):
             r"""
             Return whether this dilation surface is given by a veering triangulation.
@@ -600,7 +513,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: field = s0.base_ring()
                     sage: a = field.gen()
                     sage: m = matrix(field, 2, [2,a,1,1])
-                    sage: for _ in range(5): assert s0.triangulate().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
+                    sage: for _ in range(5): assert s0.triangulate().codomain().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
 
                     sage: s = m*s0
                     sage: s = s.l_infinity_delaunay_triangulation()
@@ -620,7 +533,7 @@ class DilationSurfaces(SurfaceCategory):
                 The octagon which has horizontal and vertical edges::
 
                     sage: t0 = translation_surfaces.regular_octagon()
-                    sage: for _ in range(5): assert t0.triangulate().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
+                    sage: for _ in range(5): assert t0.triangulate().codomain().random_flip(5).l_infinity_delaunay_triangulation().is_veering_triangulated()
                     sage: r = matrix(t0.base_ring(), [
                     ....:    [ sqrt(2)/2, -sqrt(2)/2 ],
                     ....:    [ sqrt(2)/2, sqrt(2)/2 ]])
@@ -710,7 +623,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: field = s0.base_ring()
                     sage: a = field.gen()
                     sage: m = matrix(field, 2, [2,a,1,1])
-                    sage: for _ in range(5): assert s0.triangulate().random_flip(5).veering_triangulation().is_veering_triangulated()
+                    sage: for _ in range(5): assert s0.triangulate().codomain().random_flip(5).veering_triangulation().is_veering_triangulated()
 
                     sage: s = m*s0
                     sage: s = s.veering_triangulation()
@@ -729,7 +642,7 @@ class DilationSurfaces(SurfaceCategory):
 
                 The octagon which has horizontal and vertical edges::
 
-                    sage: t0 = translation_surfaces.regular_octagon().triangulate()
+                    sage: t0 = translation_surfaces.regular_octagon().triangulate().codomain()
                     sage: t0.is_veering_triangulated()
                     False
                     sage: t0.veering_triangulation().is_veering_triangulated()
@@ -747,7 +660,7 @@ class DilationSurfaces(SurfaceCategory):
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).veering_triangulation()
                     sage: assert t.is_veering_triangulated()
                 """
-                self = self.triangulate()
+                self = self.triangulate().codomain()
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
