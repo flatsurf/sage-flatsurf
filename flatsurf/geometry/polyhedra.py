@@ -189,7 +189,8 @@ def polyhedron_to_cone_surface(polyhedron, use_AA=False, scaling_factor=1):
     if polyhedron.dim() != 3:
         raise ValueError
 
-    scaling_factor = ZZ(scaling_factor)
+    if scaling_factor == 1:
+        scaling_factor = ZZ.one()
 
     c = polyhedron.center()
     vertices = polyhedron.vertices()
