@@ -63,7 +63,7 @@ they are generally not parabolic::
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2019-2022 Julian Rüth
+#        Copyright (C) 2019-2024 Julian Rüth
 #                      2020      Vincent Delecroix
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
@@ -81,6 +81,8 @@ they are generally not parabolic::
 # ****************************************************************************
 
 from sage.all import FreeModule, matrix, identity_matrix, ZZ, QQ, Unknown, vector, prod
+
+from sage.misc.cachefunc import cached_method
 
 
 class GL2ROrbitClosure:
@@ -150,28 +152,23 @@ class GL2ROrbitClosure:
     """
 
     def __init__(self, surface):
+        if surface.__class__.__name__.startswith('FlatTriangulation<'):
+            import warnings
+            warnings.warn("Creating a GL2ROrbitClosure from a FlatTriangulation has been deprecated and will be removed from a future version of sage-flatsurf; create GL2ROrbitClosure from a sage-flatsurf surface directly instead")
+
+            from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+            surface = Surface_pyflatsurf(surface)
+
         from flatsurf.geometry.categories import TranslationSurfaces
-        from flatsurf.geometry.surface import Surface_base
+        if surface not in TranslationSurfaces():
+            raise NotImplementedError("surface must be a translation surface")
 
-        if isinstance(surface, Surface_base):
-            if surface not in TranslationSurfaces():
-                raise NotImplementedError(
-                    "cannot compute orbit closure of a non-translation surface"
-                )
+        if surface.is_mutable():
+            raise TypeError("surface must be immutable")
 
-            base_ring = surface.base_ring()
-            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+        base_ring = surface.base_ring()
 
-            self._surface = FlatTriangulationConversion.to_pyflatsurf(surface.triangulate().codomain()).codomain()
-        elif surface.__class__.__name__.startswith('FlatTriangulation<'):
-            # TODO: Deprecate this branch. We do not want FlatTriangulations to
-            # leak into sage-flatsurf anymore.
-            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            conversion = FlatTriangulationConversion.from_pyflatsurf(surface)
-            self._surface = conversion.codomain()
-            base_ring = conversion.domain().base_ring()
-        else:
-            raise NotImplementedError("cannot compute orbit closure for this kind of surface yet")
+        self._surface = surface
 
         # A model of the vector space R² in libflatsurf, e.g., to represent the
         # vector associated to a saddle connection.
@@ -186,14 +183,14 @@ class GL2ROrbitClosure:
         # edges that form a basis of H_1(S, Sigma; Z)
         # It comes together with a projection matrix
         t, m = self._spanning_tree()
-        assert set(t.keys()) == {f[2] for f in self._surface.faces()}
+        assert set(t.keys()) == {f[2] for f in self._flat_triangulation().faces()}
         self.spanning_set = []
         v = set(t.values())
-        for e in self._surface.edges():
+        for e in self._flat_triangulation().edges():
             if e.positive() not in v and e.negative() not in v:
                 self.spanning_set.append(e)
         self.d = len(self.spanning_set)
-        assert 3 * self.d - 3 == self._surface.size()
+        assert 3 * self.d - 3 == self._flat_triangulation().size()
         assert m.rank() == self.d
         m = m.transpose()
         # projection matrix from Z^E to H_1(S, Sigma; Z) in the basis
@@ -205,7 +202,7 @@ class GL2ROrbitClosure:
         self.V = FreeModule(self.V2.base_ring(), self.d)
         self.H = matrix(self.V2.base_ring(), self.d, 2)
         for i in range(self.d):
-            s = self._surface.fromHalfEdge(self.spanning_set[i].positive())
+            s = self._flat_triangulation().fromHalfEdge(self.spanning_set[i].positive())
             self.H[i] = self.V2._isomorphic_vector_space(self.V2(s))
         self.Hdual = self.Omega * self.H
 
@@ -224,6 +221,10 @@ class GL2ROrbitClosure:
 
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
+
+    @cached_method
+    def _flat_triangulation(self):
+        return self._surface.pyflatsurf().codomain().flat_triangulation()
 
     def dimension(self):
         r"""
@@ -275,7 +276,7 @@ class GL2ROrbitClosure:
         """
         from surface_dynamics import AbelianStratum
 
-        surface = self._surface
+        surface = self._flat_triangulation()
         angles = [surface.angle(v) for v in surface.vertices()]
         return AbelianStratum([a - 1 for a in angles])
 
@@ -342,10 +343,9 @@ class GL2ROrbitClosure:
         r"""
         Return a canonical half-edge encoding the face bounded by ``h``.
         """
-        surface = self._surface
         h1 = h
-        h2 = surface.nextInFace(h1)
-        h3 = surface.nextInFace(h2)
+        h2 = self._flat_triangulation().nextInFace(h1)
+        h3 = self._flat_triangulation().nextInFace(h2)
         return min([h1, h2, h3], key=lambda x: x.index())
 
     def __repr__(self):
@@ -366,9 +366,9 @@ class GL2ROrbitClosure:
             sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
             sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
             sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: edges = O._surface.edges() # optional: pyflatsurf
+            sage: edges = O._flat_triangulation().edges() # optional: pyflatsurf
             sage: F = FreeModule(ZZ, len(edges)) # optional: pyflatsurf
-            sage: all(O.V2(O.holonomy(O.proj * F.gen(i))).vector == O.V2(O._surface.fromHalfEdge(e.positive())).vector for i, e in enumerate(edges)) # optional: pyflatsurf
+            sage: all(O.V2(O.holonomy(O.proj * F.gen(i))).vector == O.V2(O._flat_triangulation().fromHalfEdge(e.positive())).vector for i, e in enumerate(edges)) # optional: pyflatsurf
             True
         """
         return self.V(v) * self.H
@@ -420,9 +420,12 @@ class GL2ROrbitClosure:
             sage: dreal = d1/1325 + d2/2278 + d3/2809 - d4/2013  # long time (above), optional: pyflatsurf
             sage: dimag = d1/1414 - d2/2334 + d4/2301 + d4/2506  # long time (above), optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
-            sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
+            sage: S2 = O._flat_triangulation() + d  # long time (6s), optional: pyflatsurf  # TODO: Support this directly on a surface, i.e., fix the deprecation warning.
 
             sage: O2 = GL2ROrbitClosure(S2.surface())  # long time (above), optional: pyflatsurf
+            doctest:warning
+            ...
+            UserWarning: Creating a GL2ROrbitClosure from a FlatTriangulation has been deprecated and will be removed from a future version of sage-flatsurf; create GL2ROrbitClosure from a sage-flatsurf surface directly instead
             sage: for d in O2.decompositions(1, 20):  # long time (25s, #124), optional: pyflatsurf
             ....:     O2.update_tangent_space_from_flow_decomposition(d)
 
@@ -430,7 +433,7 @@ class GL2ROrbitClosure:
         # given the values on the spanning edges we reconstruct the unique vector that
         # vanishes on the boundary
         bdry = self.boundaries()
-        n = self._surface.edges().size()
+        n = self._flat_triangulation().edges().size()
         k = len(self.spanning_set)
         assert k + len(bdry) == n + 1
         A = matrix(QQ, n + 1, n)
@@ -450,7 +453,7 @@ class GL2ROrbitClosure:
         return A.solve_right(u)
 
     def absolute_homology(self):
-        vert_index = {v: i for i, v in enumerate(self._surface.vertices())}
+        vert_index = {v: i for i, v in enumerate(self._flat_triangulation().vertices())}
         m = len(vert_index)
         if m == 1:
             return self.V
@@ -465,12 +468,12 @@ class GL2ROrbitClosure:
             r = [0] * m
             i = vert_index[
                 pyflatsurf.flatsurf.Vertex.target(
-                    e.positive(), self._surface.combinatorial()
+                    e.positive(), self._flat_triangulation().combinatorial()
                 )
             ]
             j = vert_index[
                 pyflatsurf.flatsurf.Vertex.source(
-                    e.positive(), self._surface.combinatorial()
+                    e.positive(), self._flat_triangulation().combinatorial()
                 )
             ]
             if i != j:
@@ -533,7 +536,7 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover("translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: num_edges = O._surface.edges().size()  # optional: pyflatsurf
+            sage: num_edges = O._flat_triangulation().edges().size()  # optional: pyflatsurf
             sage: V = VectorSpace(QQ, num_edges)  # optional: pyflatsurf
             sage: tree, proj = O._spanning_tree()  # optional: pyflatsurf
 
@@ -546,7 +549,7 @@ class GL2ROrbitClosure:
         takes values only on the chosen spanning set of edges::
 
             sage: values = tree.values()  # optional: pyflatsurf
-            sage: indices = set(e.index() for e in O._surface.edges() if e.positive() not in values and e.negative() not in values)  # optional: pyflatsurf
+            sage: indices = set(e.index() for e in O._flat_triangulation().edges() if e.positive() not in values and e.negative() not in values)  # optional: pyflatsurf
             sage: B = V.subspace(O.boundaries())  # optional: pyflatsurf
             sage: for e in range(num_edges):  # optional: pyflatsurf
             ....:     v = V.gen(e)
@@ -557,7 +560,7 @@ class GL2ROrbitClosure:
             ....:         assert (proj * v).is_zero()
         """
         if root is None:
-            root = next(iter(self._surface.edges())).positive()
+            root = next(iter(self._flat_triangulation().edges())).positive()
 
         root = self._half_edge_to_face(root)
         t = {root: None}  # face -> half edge to take to go to the root
@@ -573,16 +576,16 @@ class GL2ROrbitClosure:
                     todo.append(g)
                     edges.append(f1)
 
-                f = self._surface.nextInFace(f)
+                f = self._flat_triangulation().nextInFace(f)
 
         # gauss reduction
-        n = self._surface.size()
+        n = self._flat_triangulation().size()
         proj = identity_matrix(ZZ, n)
         edges.reverse()
         for f1 in edges:
-            f2 = self._surface.nextInFace(f1)
-            f3 = self._surface.nextInFace(f2)
-            assert self._surface.nextInFace(f3) == f1
+            f2 = self._flat_triangulation().nextInFace(f1)
+            f3 = self._flat_triangulation().nextInFace(f2)
+            assert self._flat_triangulation().nextInFace(f3) == f1
 
             i1 = f1.index()
             s1 = -1 if i1 % 2 else 1
@@ -614,9 +617,9 @@ class GL2ROrbitClosure:
         while h not in contour_inv:
             contour_inv[h] = len(contour)
             contour.append(h)
-            h = self._surface.nextAtVertex(-h)
+            h = self._flat_triangulation().nextAtVertex(-h)
             while h not in all_edges:
-                h = self._surface.nextAtVertex(h)
+                h = self._flat_triangulation().nextAtVertex(h)
 
         assert len(contour) == len(all_edges)
 
@@ -689,10 +692,10 @@ class GL2ROrbitClosure:
             ....:             for b in O.boundaries():
             ....:                 assert (O.proj * b).is_zero()
         """
-        n = self._surface.size()
+        n = self._flat_triangulation().size()
         V = FreeModule(ZZ, n)
         B = []
-        for f1, f2, f3 in self._surface.faces():
+        for f1, f2, f3 in self._flat_triangulation().faces():
             i1 = f1.index()
             s1 = -1 if i1 % 2 else 1
             i2 = f2.index()
@@ -720,7 +723,7 @@ class GL2ROrbitClosure:
         import pyflatsurf
 
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
-            self._surface, v.vector
+            self._flat_triangulation(), v.vector
         )
 
         if limit != 0:
@@ -730,7 +733,7 @@ class GL2ROrbitClosure:
     def decompositions(self, bound, limit=-1, bfs=False):
         limit = int(limit)
 
-        connections = self._surface.connections().bound(int(bound))
+        connections = self._flat_triangulation().connections().bound(int(bound))
         if bfs:
             connections = connections.byLength()
 
@@ -799,9 +802,9 @@ class GL2ROrbitClosure:
             # square tiled
             return True
 
-        nv = len(self._surface.vertices())
-        ne = len(self._surface.edges())
-        nf = len(self._surface.faces())
+        nv = len(self._flat_triangulation().vertices())
+        ne = len(self._flat_triangulation().edges())
+        nf = len(self._flat_triangulation().faces())
         genus = (ne - nv - nf) // 2 + 1
         if k.degree() > genus or not k.is_totally_real():
             return False
@@ -1147,7 +1150,7 @@ class GL2ROrbitClosure:
         for i, sc in enumerate(spanning_set):
             sc = sc_pos[sc]
             c = sc.chain()
-            for edge in self._surface.edges():
+            for edge in self._flat_triangulation().edges():
                 A[i] += ZZ(str(c[edge])) * self.proj.column(edge.index())
         assert A.det().is_unit()
         return A, sc_index, proj

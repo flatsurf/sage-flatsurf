@@ -659,6 +659,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             want to put it here.
             """
 
+            # TODO: Make sure this is cached for immutable surfaces.
             def pyflatsurf(self):
                 r"""
                 Return an isomorphism to a surface backed by libflatsurf.

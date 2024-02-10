@@ -70,8 +70,8 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         return [self._normalize_label(self._flat_triangulation.face(1))]
 
     def pyflatsurf(self):
-        from flatsurf.geometry.deformation import IdentityDeformation
-        return IdentityDeformation(self)
+        from flatsurf.geometry.morphism import IdentityMorphism
+        return IdentityMorphism._create_morphism(self)
 
     @classmethod
     def _from_flatsurf(cls, surface):

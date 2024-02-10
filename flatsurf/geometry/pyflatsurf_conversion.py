@@ -710,6 +710,10 @@ class RingConversion_algebraic(RingConversion):
         number_field, elements, embedding = number_field_elements_from_algebraics(elements, embedded=True)
         return RingConversion_eantic._create_conversion(number_field).codomain()
 
+    @classmethod
+    def _deduce_codomain_from_codomain_elements(cls, elements):
+        return RingConversion_eantic._deduce_codomain_from_codomain_elements(elements)
+
 
 class RingConversion_exactreal(RingConversion):
     r"""
@@ -752,7 +756,11 @@ class RingConversion_exactreal(RingConversion):
             raise ValueError("at least one of domain and codomain must be set")
 
         if domain is None:
-            raise NotImplementedError
+            # TODO: Does this work when the codomain.ring() is ZZ or QQ?
+            domain_base_conversion = RingConversion.from_pyflatsurf(codomain=codomain.ring().parameters)
+
+            from pyexactreal import ExactReals
+            domain = ExactReals(domain_base_conversion.domain())
 
         if codomain is None:
             from pyeantic.real_embedded_number_field import RealEmbeddedNumberField
@@ -820,6 +828,21 @@ class RingConversion_exactreal(RingConversion):
             return Vectors(ExactReals(self.domain().base_ring().number_field))
 
         raise NotImplementedError
+
+    @classmethod
+    def _deduce_codomain_from_codomain_elements(cls, elements):
+        module = None
+
+        for element in elements:
+            if not element.__class__.__name__.startswith("Element<"):
+                return None
+
+            element_module = unwrap_intrusive_ptr(element.module())
+            if module is None:
+                module = element_module
+            module = module.span(module, element_module)
+
+        return module
 
 
 class RingConversion_int(RingConversion):
