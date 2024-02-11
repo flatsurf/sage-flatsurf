@@ -35,10 +35,13 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         # TODO: Check that _flat_triangulation is never used by _flat_triangulation instead.
         self._flat_triangulation = flat_triangulation
 
-        # TODO: We have to be smarter about the ring bridge here.
         from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+        self._ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation)
 
-        base_ring = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation).domain()
+        from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+        self._vector_space_conversion = VectorSpaceConversion.to_pyflatsurf(
+            self._ring_conversion.domain() ** 2,
+            ring_conversion=self._ring_conversion)
 
         from flatsurf.geometry.categories import TranslationSurfaces
         # TODO: This is assuming that the surface is connected. Currently that's the case for all surfaces in libflatsurf?
@@ -47,7 +50,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             category = category.WithBoundary()
         else:
             category = category.WithoutBoundary()
-        super().__init__(base=base_ring, category=category)
+        super().__init__(base=self._ring_conversion.domain(), category=category)
 
     def __eq__(self, other):
         if not isinstance(other, Surface_pyflatsurf):
@@ -131,11 +134,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         from sage.all import matrix
         m = matrix(m, ring=self.base_ring())
 
-        from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-
-        to_pyflatsurf = RingConversion.from_pyflatsurf_from_flat_triangulation(self._flat_triangulation)
-
-        m = [to_pyflatsurf(x) for x in m.list()]
+        m = [self._ring_conversion(x) for x in m.list()]
 
         deformation = self._flat_triangulation.applyMatrix(*m)
         codomain = Surface_pyflatsurf(deformation.codomain())
@@ -171,10 +170,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         from pyflatsurf import flatsurf
         half_edges = (flatsurf.HalfEdge(half_edge) for half_edge in label)
         vectors = [self._flat_triangulation.fromHalfEdge(half_edge) for half_edge in half_edges]
-
-        from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-        vector_space_conversion = VectorSpaceConversion.from_pyflatsurf_from_elements(vectors)
-        vectors = [vector_space_conversion.section(vector) for vector in vectors]
+        vectors = [self._vector_space_conversion.section(vector) for vector in vectors]
 
         from flatsurf.geometry.polygon import Polygon
         return Polygon(edges=vectors)

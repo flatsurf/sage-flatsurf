@@ -13,8 +13,7 @@ EXAMPLES:
 
 Let us first construct a Veech surface in the stratum H(2)::
 
-    sage: from flatsurf import translation_surfaces
-    sage: from flatsurf import GL2ROrbitClosure
+    sage: from flatsurf import translation_surfaces, GL2ROrbitClosure
 
     sage: x = polygen(QQ)
     sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
