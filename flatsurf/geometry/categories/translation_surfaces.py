@@ -27,7 +27,7 @@ EXAMPLES::
 #
 #        Copyright (C) 2013-2019 Vincent Delecroix
 #                      2013-2019 W. Patrick Hooper
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -870,3 +870,18 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     s.set_immutable()
 
                     return relabeling.change(domain=standardization.codomain(), codomain=s) * standardization * delaunay_decomposition
+
+                def flow_decomposition(self, direction):
+                    raise NotImplementedError  # TODO: Essentially invoke on pyflatsurf().
+
+                def flow_decompositions(self, algorithm="bfs", **kwargs):
+                    for slope in self._flow_decompositions_slopes(algorithm=algorithm, **kwargs):
+                        yield self.flow_decomposition(slope)
+
+                def _flow_decompositions_slopes(self, algorithm, **kwargs):
+                    if algorithm == "bfs":
+                        return self.pyflatsurf().codomain()._flow_decompositions_slopes_bfs(**kwargs)
+                    if algorithm == "dfs":
+                        return self.pyflatsurf().codomain()._flow_decompositions_slopes_dfs(**kwargs)
+
+                    raise NotImplementedError("unsupported algorithm to produce slopes for flow decompositions")

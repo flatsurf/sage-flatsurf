@@ -844,6 +844,9 @@ class RingConversion_exactreal(RingConversion):
 
         return module
 
+    def section(self, y):
+        return self.domain()(y)
+
 
 class RingConversion_int(RingConversion):
     r"""
@@ -1135,13 +1138,9 @@ class VectorSpaceConversion(Conversion):
             if ring_conversion is None:
                 ring_conversion = RingConversion.to_pyflatsurf(domain.base_ring())
 
-            import pyflatsurf
+            from pyflatsurf.vector import Vectors
 
-            T = ring_conversion.codomain()
-            if not isinstance(T, type):
-                T = type(T)
-
-            codomain = pyflatsurf.flatsurf.Vector[T]
+            codomain = Vectors(ring_conversion.domain()).Vector
 
         return VectorSpaceConversion(domain, codomain, ring_conversion=ring_conversion)
 
@@ -1162,7 +1161,7 @@ class VectorSpaceConversion(Conversion):
             sage: codomain = VectorSpaceConversion.to_pyflatsurf(QQ^2).codomain()
 
             sage: VectorSpaceConversion.from_pyflatsurf_from_elements([codomain()])
-            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::cppyy::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]> >
+            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]> >
 
         """
         if domain is None:
@@ -1550,7 +1549,7 @@ class FlatTriangulationConversion(Conversion):
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
             sage: conversion.vector_space_conversion()
-            Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::cppyy::Vector<eantic::renf_class>
+            Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::Vector<eantic::renf_elem_class>
 
         """
         from sage.all import VectorSpace
@@ -1877,7 +1876,10 @@ def from_pyflatsurf(T):
         sage: M = S
         sage: X = GL2ROrbitClosure(M)  # optional: pyflatsurf
         sage: D0 = list(X.decompositions(2))[2]  # optional: pyflatsurf
-        sage: T0 = D0.triangulation()  # optional: pyflatsurf
+        doctest:warning
+        ...
+        UserWarning: orbit_closure.decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decompositions() instead.
+        sage: T0 = D0._flow_decomposition.triangulation()  # optional: pyflatsurf
         sage: from_pyflatsurf(T0)  # optional: pyflatsurf
         Translation Surface in H_2(1^2) built from 2 isosceles triangles and 6 triangles
 

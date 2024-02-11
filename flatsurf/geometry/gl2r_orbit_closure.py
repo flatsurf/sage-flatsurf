@@ -19,7 +19,10 @@ Let us first construct a Veech surface in the stratum H(2)::
     sage: K.<a> = NumberField(x^3 - 2, embedding=AA(2)**(1/3))
     sage: S = translation_surfaces.mcmullen_L(1,1,1,a)
     sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-    sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf
+    sage: O.decomposition((1,2)).cylinders() # optional: pyflatsurf  # TODO: Make this code not produce a warning.
+    doctest:warning
+    ...
+    UserWarning: orbit_closure.decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decomposition(direction).decompose(limit) instead.
     [Cylinder with perimeter [...]]
 
 The following is also a Veech surface. However the flow decomposition
@@ -46,7 +49,10 @@ parabolic::
 
     sage: S = translation_surfaces.veech_double_n_gon(5)
     sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-    sage: all(d.parabolic() for d in O.decompositions_depth_first(3))  # optional: pyflatsurf
+    sage: all(d.is_parabolic() for d in O.decompositions_depth_first(3))  # optional: pyflatsurf
+    doctest:warning
+    ...
+    UserWarning: orbit_closure.decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decompositions() instead.
     True
 
 For surfaces in rank one loci, even though they are completely periodic,
@@ -54,9 +60,9 @@ they are generally not parabolic::
 
     sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
     sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-    sage: all((d.hasCylinder() == False) or d.parabolic() for d in O.decompositions(6))  # optional: pyflatsurf
+    sage: all((d.has_cylinder() is False) or (d.is_parabolic() is True) for d in O.decompositions(6))  # optional: pyflatsurf
     False
-    sage: all((d.completelyPeriodic() == True) or (d.hasCylinder() == False) for d in O.decompositions(6))  # optional: pyflatsurf
+    sage: all((d.is_completely_periodic() is True) or (d.has_cylinder() is False) for d in O.decompositions(6))  # optional: pyflatsurf
     True
 """
 # ****************************************************************************
@@ -117,6 +123,9 @@ class GL2ROrbitClosure:
         sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: exactreal
         ....:     O.update_tangent_space_from_flow_decomposition(decomposition)
         ....:     if O.dimension() == bound: break
+        doctest:warning
+        ...
+        UserWarning: orbit_closure.decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decompositions() instead.
         sage: O  # long time, optional: pyflatsurf, optional: exactreal
         GL(2,R)-orbit closure of dimension at least 8 in H_7(4^3, 0) (ambient dimension 17)
 
@@ -714,45 +723,31 @@ class GL2ROrbitClosure:
         return B
 
     def decomposition(self, v, limit=-1):
-        v = self.V2(v)
+        import warnings
+        warnings.warn("orbit_closure.decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decomposition(direction).decompose(limit) instead.")
 
-        from flatsurf.features import pyflatsurf_feature
+        decomposition = self._surface.pyflatsurf().codomain().flow_decomposition(direction=v)
+        decomposition.decompose(limit=limit)
 
-        pyflatsurf_feature.require()
-        import pyflatsurf
-
-        decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
-            self._flat_triangulation(), v.vector
-        )
-
-        if limit != 0:
-            decomposition.decompose(int(limit))
-        return decomposition
+        return decomposition._flow_decomposition
 
     def decompositions(self, bound, limit=-1, bfs=False):
-        limit = int(limit)
+        import warnings
+        warnings.warn("orbit_closure.decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decompositions() instead.")
 
-        connections = self._flat_triangulation().connections().bound(int(bound))
         if bfs:
-            connections = connections.byLength()
+            algorithm = "bfs"
+        else:
+            algorithm = "dfs"
 
-        slopes = None
+        decompositions = self._surface.pyflatsurf().codomain().flow_decompositions(
+            algorithm=algorithm,
+            bound=bound,
+        )
 
-        from flatsurf.features import cppyy_feature
-
-        cppyy_feature.require()
-        import cppyy
-
-        for connection in connections:
-            direction = connection.vector()
-            if slopes is None:
-                slopes = cppyy.gbl.std.set[
-                    type(direction), type(direction).CompareSlope
-                ]()
-            if slopes.find(direction) != slopes.end():
-                continue
-            slopes.insert(direction)
-            yield self.decomposition(direction, limit)
+        for decomposition in decompositions:
+            decomposition.decompose(limit=limit)
+            yield decomposition
 
     def decompositions_depth_first(self, bound, limit=-1):
         return self.decompositions(bound, bfs=False, limit=limit)
@@ -810,8 +805,8 @@ class GL2ROrbitClosure:
 
         for decomposition in self.decompositions_depth_first(bound, limit):
             if (
-                decomposition.parabolic() == False
-            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
+                decomposition.is_parabolic() is False
+            ):
                 return False
 
         return Unknown
@@ -845,12 +840,10 @@ class GL2ROrbitClosure:
             (0, 0, 1, 0)
 
         """
-        if (
-            component.cylinder() != True
-        ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is not True"
+        if component.is_cylinder() is not True:
             raise ValueError
 
-        perimeters = list(component.perimeter())
+        perimeters = list(component._flow_component().perimeter())
         per = perimeters[0]
         assert not per.vertical()
         sc = per.saddleConnection()
@@ -865,7 +858,7 @@ class GL2ROrbitClosure:
 
         # check
         hol = self.holonomy_dual(circumference)
-        holbis = component.circumferenceHolonomy()
+        holbis = component._flow_component().circumferenceHolonomy()
         holbis = self.V2._isomorphic_vector_space(self.V2(holbis))
         assert hol == holbis, (hol, holbis)
 
@@ -900,21 +893,17 @@ class GL2ROrbitClosure:
         vcyls = []
         kz = self.flow_decomposition_kontsevich_zorich_cocycle(decomposition)
         for component in decomposition.components():
-            if (
-                component.cylinder() == False
-            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced by "is False"
+            if component.is_cylinder() is False:
                 continue
-            elif (
-                component.cylinder() == True
-            ):  # noqa, we are comparing to a boost tribool so this cannot be replaced with "is True"
+            elif component.is_cylinder() is True:
                 vcyls.append(self.cylinder_circumference(component, *kz))
 
                 width = self.V2._isomorphic_vector_space.base_ring()(
-                    self.V2.base_ring()(component.width())
+                    self.V2.base_ring()(component._flow_component().width())
                 )
                 height = self.V2._isomorphic_vector_space.base_ring()(
                     self.V2.base_ring()(
-                        component.vertical().project(component.circumferenceHolonomy())
+                        component._flow_component().vertical().project(component._flow_component().circumferenceHolonomy())
                     )
                 )
                 module_fractions.append((width, height))
@@ -1024,7 +1013,7 @@ class GL2ROrbitClosure:
         assert n % 2 == 0
         n //= 2
 
-        for p in components[0].perimeter():
+        for p in components[0]._flow_component().perimeter():
             break
         t = {0: None}  # face -> half edge to take to go to the root
         todo = [0]
@@ -1032,7 +1021,7 @@ class GL2ROrbitClosure:
         while todo:
             i = todo.pop()
             c = components[i]
-            for sc in c.perimeter():
+            for sc in c._flow_component().perimeter():
                 sc1 = -sc.saddleConnection()
                 j = sc_comp[sc1]
                 if j not in t:
@@ -1053,7 +1042,7 @@ class GL2ROrbitClosure:
                 s1 = 1
             comp = components[sc_comp[sc1]]
             proj[i1] = 0
-            for p in comp.perimeter():
+            for p in comp._flow_component().perimeter():
                 sc = p.saddleConnection()
                 if sc == sc1:
                     continue
@@ -1127,7 +1116,7 @@ class GL2ROrbitClosure:
         components = list(decomposition.components())
         n_components = len(components)
         for i, comp in enumerate(components):
-            for p in comp.perimeter():
+            for p in comp._flow_component().perimeter():
                 sc = p.saddleConnection()
                 sc_comp[sc] = i
                 if sc not in sc_index:
