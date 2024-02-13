@@ -2551,6 +2551,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def subdivide(self):
                 r"""
+                # TODO: Returns a morphism actually.
                 Return a copy of this surface whose polygons have been partitioned into
                 smaller triangles with
                 :meth:`~.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide`.
@@ -2616,43 +2617,71 @@ class SimilaritySurfaces(SurfaceCategory):
                      ((('□', 3), 2), (('□', 2), 1))]
 
                 """
-                labels = list(self.labels())
-                polygons = [self.polygon(label) for label in labels]
+                return self.insert_marked_points(*[self(label, self.polygon(label).centroid()) for label in self.labels()])
 
-                subdivisions = [p.subdivide() for p in polygons]
+            def insert_marked_points(self, *points):
+                labels = list(self.labels())
+
+                for p in points:
+                    if p.is_vertex():
+                        raise ValueError("cannot insert marked points at vertices")
+                    if len(p.representatives()) > 1:
+                        raise NotImplementedError("cannot insert points on edges")
+
+                points = {
+                    label: [p.coordinates(label)[0] for p in points if any(lbl == label for (lbl, _) in p.representatives())]
+                    for label in self.labels()
+                }
+
+                def is_subdivided(label):
+                    return bool(points[label])
+
+                subdivisions = {
+                    label: self.polygon(label).subdivide(*points[label]) if is_subdivided(label) else [self.polygon(label)]
+                    for label in self.labels()
+                }
+
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
                 surface = MutableOrientedSimilaritySurface(self.base())
 
                 # Add subdivided polygons
-                for s, subdivision in enumerate(subdivisions):
-                    label = labels[s]
-                    for p, polygon in enumerate(subdivision):
-                        surface.add_polygon(polygon, label=(label, p))
+                for label in self.labels():
+                    if is_subdivided(label):
+                        for p, polygon in enumerate(subdivisions[label]):
+                            surface.add_polygon(polygon, label=(label, p))
+                    else:
+                        surface.add_polygon(self.polygon(label), label=label)
 
-                surface.set_roots((label, 0) for label in self.roots())
+                surface.set_roots((label, 0) if is_subdivided(label) else label for label in self.roots())
 
-                # Add gluings between subdivided polygons
-                for s, subdivision in enumerate(subdivisions):
-                    label = labels[s]
-                    for p in range(len(subdivision)):
-                        surface.glue(
-                            ((label, p), 1), ((label, (p + 1) % len(subdivision)), 2)
-                        )
+                # Establish gluings
+                for label in self.labels():
+                    for e in range(len(self.polygon(label).vertices())):
+                        # Reestablish the original gluings
+                        opposite = self.opposite_edge(label, e)
 
-                        # Add gluing from original surface
-                        opposite = self.opposite_edge(label, p)
                         if opposite is not None:
-                            surface.glue(((label, p), 0), (opposite, 0))
+                            opposite_label, opposite_edge = opposite
+                            surface.glue(
+                                ((label, e) if is_subdivided(label) else label, 0 if is_subdivided(label) else e),
+                                ((opposite_label, opposite_edge) if is_subdivided(opposite_label) else opposite_label, 0 if is_subdivided(opposite_label) else opposite_edge)
+                            )
+
+                        # Glue subdivided polygons internally
+                        if is_subdivided(label):
+                            surface.glue(((label, e), 1), ((label, (e + 1) % len(self.polygon(label).vertices())), 2))
 
                 surface.set_immutable()
 
+                # TODO: Wrong morphism.
                 from flatsurf.geometry.morphism import SubdivideMorphism
                 return SubdivideMorphism._create_morphism(self, surface)
 
             def subdivide_edges(self, parts=2):
                 r"""
+                # TODO: Returns a morphism actually.
                 Return a copy of this surface whose edges have been split into
                 ``parts`` equal pieces each.
 

@@ -442,10 +442,13 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             { x² + y² = 0 }
 
         """
+        # TODO: Allow radius to be an EuclideanDistance (and convert to one.)
         if (radius is None) == (radius_squared is None):
             raise ValueError("exactly one of radius or radius_squared must be specified")
 
         if radius is not None:
+            if radius < 0:
+                raise ValueError("radius must not be negative")
             radius_squared = radius ** 2
 
         center = self(center)
@@ -698,6 +701,27 @@ class EuclideanPlane(Parent, UniqueRepresentation):
             ray._check()
 
         return ray
+
+    @cached_method
+    def norm(self):
+        r"""
+        Return the Euclidean norm on this plane.
+
+        EXAMPLES::
+
+            sage: from flatsurf import EuclideanPlane
+            sage: E = EuclideanPlane()
+
+            sage: norm = E.norm()
+            sage: norm(2)
+            2
+            sage: norm.from_square(2)
+            sqrt(2)
+            sage: norm.from_vector((1, 1))
+            sqrt(2)
+
+        """
+        return EuclideanDistances(self)
 
     def polygon(self):
         # TODO
@@ -3815,3 +3839,18 @@ class Ray:
         c = self._direction[0]
         a = - (b * self._point[0] + c * self._point[1])
         return OrientedLine(a, b, c)
+
+
+class EuclideanDistance(Element):
+    def __init__(self, parent, norm_squared):
+        super().__init__(parent)
+
+        self._norm_squared = parent.base_ring()(norm_squared)
+
+
+class EuclideanDistances(Parent):
+    # TODO: We should probably also abstract away the concept of angles.
+
+    # TODO: The values of the Euclidean norm.
+
+    Element = EuclideanDistance
