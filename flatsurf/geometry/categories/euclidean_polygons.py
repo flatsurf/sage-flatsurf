@@ -1930,8 +1930,10 @@ class EuclideanPolygons(Category_over_base_ring):
                             )
                     return circle
 
-                def subdivide(self):
+                def subdivide(self, center=None):
                     r"""
+                    # TODO: If no point given, takes the centroid.
+
                     Return a list of triangles that partition this polygon.
 
                     For each edge of the polygon one triangle is created that joins this
@@ -1974,7 +1976,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     """
                     vertices = self.vertices()
-                    center = self.centroid()
+                    center = center or self.centroid()
                     from flatsurf import Polygon
 
                     return [
