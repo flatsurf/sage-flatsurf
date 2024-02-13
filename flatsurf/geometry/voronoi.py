@@ -399,6 +399,8 @@ m
             1/2*a + 1
             sage: V.radius_of_convergence2(next(iter(S.vertices())))
             1
+            sage: V.radius_of_convergence2(S(0, (1/2, 1/2)))
+            1/2
             sage: V.radius_of_convergence2(S(0, (1/2, 0)))  # not tested
             1/4
             sage: V.radius_of_convergence2(S(0, (1/4, 0)))  # not tested
@@ -406,12 +408,28 @@ m
 
         """
         # TODO: Return an Euclidean distance.
+
         if all(vertex.angle() == 1 for vertex in self._surface.vertices()):
             from sage.all import oo
             return oo
 
-        # TODO: The 4 is a hack to make marked points work in many examples.
-        return min((4 if self._surface(label, v).angle() == 1 else 1) * ((v[0] - coordinates[0])**2 + (v[1] - coordinates[1])**2) for (label, coordinates) in center.representatives() for v in self._surface.polygon(label).vertices() if v != coordinates)
+        erase_marked_points = self._surface.erase_marked_points()
+        center = erase_marked_points(center)
+
+        if not center.is_vertex():
+            insert_marked_points = center.surface().insert_marked_points(center)
+            center = insert_marked_points(center)
+
+        surface = center.surface()
+
+        for connection in surface.saddle_connections():
+            start = surface(*connection.start())
+            end = surface(*connection.end())
+            if start == center and end.angle() != 1:
+                x, y = connection.holonomy()
+                return x**2 + y**2
+
+        assert False
 
     # TODO: Make comparable and hashable.
 
