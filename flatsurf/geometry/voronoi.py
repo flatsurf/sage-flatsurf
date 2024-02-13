@@ -405,6 +405,7 @@ m
             1/16
 
         """
+        # TODO: Return an Euclidean distance.
         if all(vertex.angle() == 1 for vertex in self._surface.vertices()):
             from sage.all import oo
             return oo
