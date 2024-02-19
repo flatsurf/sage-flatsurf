@@ -401,12 +401,13 @@ m
             1
             sage: V.radius_of_convergence2(S(0, (1/2, 1/2)))
             1/2
-            sage: V.radius_of_convergence2(S(0, (1/2, 0)))  # not tested
+            sage: V.radius_of_convergence2(S(0, (1/2, 0)))
             1/4
-            sage: V.radius_of_convergence2(S(0, (1/4, 0)))  # not tested
+            sage: V.radius_of_convergence2(S(0, (1/4, 0)))
             1/16
 
         """
+        # TODO: This is useful more generally and should not be limited to Voronoi cells.
         # TODO: Return an Euclidean distance.
 
         if all(vertex.angle() == 1 for vertex in self._surface.vertices()):
@@ -557,6 +558,19 @@ W
         """
         label, coordinates = point.representative()
         return any(cell.contains_point(coordinates) for cell in self.polygon_cells(label=label))
+
+    def radius_of_convergence(self):
+        return self._parent.radius_of_convergence2(self._center)
+
+    @cached_method
+    def radius(self):
+        # Returns the distance the point furthest from the center.
+        return max(cell.radius() for cell in self.polygon_cells())
+
+    @cached_method
+    def furthest_point(self):
+        cell = max(self.polygon_cells(), key=lambda cell: cell.radius())
+        return self.surface()(cell.label(), cell.furthest_point())
 
     def __repr__(self):
         return f"Voronoi cell at {self._center}"
@@ -838,6 +852,7 @@ class VoronoiDiagram_Polygon:
         try:
             return relative_weight.parent()(relative_weight.sqrt())
         except Exception:
+            # TODO: This blows up coefficients too much.
             # When the weight does not exist in the base ring we take an
             # approximation (with possibly huge coefficients.)
             if relative_weight > 1:
@@ -1172,6 +1187,23 @@ class VoronoiPolygonCell:
             plot = graphical_polygon.plot_polygon() + plot
 
         return plot
+
+    @cached_method
+    def radius(self):
+        Δ = self._center - self.furthest_point()
+        return Δ.dot_product(Δ)
+
+    @cached_method
+    def furthest_point(self):
+        vertices = []
+        for segment in self.boundary().values():
+            vertices.append(segment.start())
+            vertices.append(segment.end())
+
+        def norm2(x):
+            return x.dot_product(x)
+
+        return max(vertices, key=lambda v: norm2(v - self._center))
 
     def __repr__(self):
         r"""

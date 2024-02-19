@@ -919,6 +919,34 @@ class HarmonicDifferentials(Parent):
         from flatsurf.geometry.voronoi import VoronoiDiagram
         return VoronoiDiagram(self._surface, self._centers, weight="radius_of_convergence")
 
+    @cached_method
+    def error(self, cell=None):
+        # Returns the a-priori (is it?) error for the value of the differential
+        # anywhere in cell (or anywhere in all cells); relative to the maximum
+        # of the differential. TODO: Explain algorithm from my notes.
+        if cell is None:
+            return max(self.error(cell=cell) for cell in self._voronoi_diagram().cells())
+
+        from math import sqrt
+        R = sqrt(float(cell.radius_of_convergence()))
+        r = sqrt(float(cell.radius()))
+
+        β = r / R
+        if β >= 1:
+            from sage.all import oo
+            return oo
+
+        return abs((β**(self.ncoefficients(cell._center) + 1)) / (1 - β))
+
+    def error_location(self, cell=None):
+        if cell is None:
+            cell = self.error_cell()
+
+        return cell.furthest_point()
+
+    def error_cell(self):
+        return max(self._voronoi_diagram().cells(), key=lambda cell: self.error(cell=cell))
+
     def _repr_(self):
         return f"Ω({self._surface})"
 
