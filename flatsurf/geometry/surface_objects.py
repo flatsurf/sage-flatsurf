@@ -265,6 +265,11 @@ class SurfacePoint(SurfacePoint_base):
         position = self.surface().polygon(label).get_point_position(coordinates)
         return position.is_vertex()
 
+    def is_in_edge_interior(self):
+        label, coordinates = self.representative()
+        position = self.surface().polygon(label).get_point_position(coordinates)
+        return position.is_in_edge_interior()
+
     def one_vertex(self):
         r"""
         Return a pair (l, v) from the equivalence class of this singularity.
@@ -532,6 +537,7 @@ class SurfacePoint(SurfacePoint_base):
             Point (1/2, 1/2) of polygon 0
 
         """
+        # TODO: Why is this a dunder method?
 
         def render(label, coordinates):
             if self.is_vertex():

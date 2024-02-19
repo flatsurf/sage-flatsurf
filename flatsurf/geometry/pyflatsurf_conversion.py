@@ -1689,7 +1689,8 @@ class FlatTriangulationConversion(Conversion):
         coordinates = next(iter(p.coordinates(label)))
 
         import pyflatsurf
-        return pyflatsurf.flatsurf.Point[type(self.codomain())](self.codomain(), self((label, 0)), self.vector_space_conversion()(coordinates))
+        return pyflatsurf.flatsurf.Point[type(self.codomain())](self.codomain(), self((label, 0)), self.vector_space_conversion()(coordinates - p.parent().polygon(label).vertex(0)))
+
 
     def _preimage_point(self, q):
         r"""

@@ -2620,30 +2620,103 @@ class SimilaritySurfaces(SurfaceCategory):
                 return self.insert_marked_points(*[self(label, self.polygon(label).centroid()) for label in self.labels()])
 
             def insert_marked_points(self, *points):
-                labels = list(self.labels())
+                from flatsurf.geometry.morphism import IdentityMorphism
+                morphism = IdentityMorphism._create_morphism(self)
 
                 for p in points:
                     if p.is_vertex():
                         raise ValueError("cannot insert marked points at vertices")
-                    if len(p.representatives()) > 1:
-                        raise NotImplementedError("cannot insert points on edges")
 
+                edge_points = [p for p in points if p.is_in_edge_interior()]
+                face_points = [p for p in points if p not in edge_points]
+
+                assert len(edge_points) + len(face_points) == len(points)
+
+                if edge_points:
+                    insert_morphism = morphism.codomain()._insert_marked_points_edges(*edge_points)
+                    morphism =  insert_morphism * morphism
+                    face_points = [insert_morphism(point) for point in face_points]
+                if face_points:
+                    insert_morphism = morphism.codomain()._insert_marked_points_faces(*face_points)
+                    morphism = insert_morphism * morphism
+
+                return morphism
+
+            def _insert_marked_points_edges(self, *points):
+                assert points, "_insert_marked_points_edges must be called with some points to insert"
+
+                from flatsurf.geometry.euclidean import time_on_ray
                 points = {
-                    label: [p.coordinates(label)[0] for p in points if any(lbl == label for (lbl, _) in p.representatives())]
-                    for label in self.labels()
+                    label: {
+                        # TODO: Sort vertices along edge
+                        edge: sorted([coordinates for point in points for (lbl, coordinates) in point.representatives() if lbl == label and self.polygon(label).get_point_position(coordinates).get_edge() == edge], key=lambda coordinates: time_on_ray(self.polygon(label).vertex(edge), self.polygon(label).edge(edge), coordinates))
+                        for edge in range(len(self.polygon(label).edges()))
+                    } for label in self.labels()
                 }
+
+                from flatsurf import MutableOrientedSimilaritySurface
+                surface = MutableOrientedSimilaritySurface(self.base_ring())
+
+                # Add polygons to surface with marked point
+                for label in self.labels():
+                    vertices = []
+                    for v, vertex in enumerate(self.polygon(label).vertices()):
+                        vertices.append(vertex)
+                        vertices.extend(points[label][v])
+
+                    from flatsurf import Polygon
+                    surface.add_polygon(Polygon(vertices=vertices), label=label)
+
+                # TODO: Make static on InsertMarkedPointsOnEdgeMorphism
+                def edgenum(label, edge, section):
+                    edgenum = 0
+                    for e in range(edge):
+                        edgenum += len(points[label][e]) + 1
+
+                    edgenum += section
+
+                    return edgenum
+
+                # Glue polygons in surface.
+                for label in self.labels():
+                    for edge in range(len(self.polygon(label).edges())):
+                        opposite = self.opposite_edge(label, edge)
+                        if opposite is None:
+                            continue
+
+                        opposite_label, opposite_edge = opposite
+                        for e in range(len(points[label][edge]) + 1):
+                            surface.glue((label, edgenum(label, edge, e)), (opposite_label, edgenum(opposite_label, opposite_edge + 1, -1-e)))
+
+                surface.set_immutable()
+
+                from flatsurf.geometry.morphism import InsertMarkedPointsOnEdgeMorphism
+                return InsertMarkedPointsOnEdgeMorphism._create_morphism(self, surface, points)
+
+            def _insert_marked_points_faces(self, *points):
+                # Recursively insert points by only inserting at most one point
+                # in each face at a time.
+                first_point = {}
+                more_points = {}
+
+                for point in points:
+                    label, coordinates = point.representative()
+                    if label not in first_point:
+                        first_point[label] = point.coordinates(label)[0]
+                    else:
+                        more_points[label] = more_points.get(label, []) + [point]
+
+                assert first_point, "_insert_marked_points_faces must be called with some points to insert"
 
                 def is_subdivided(label):
-                    return bool(points[label])
+                    return label in first_point
 
                 subdivisions = {
-                    label: self.polygon(label).subdivide(*points[label]) if is_subdivided(label) else [self.polygon(label)]
+                    label: self.polygon(label).subdivide(first_point[label]) if is_subdivided(label) else [self.polygon(label)]
                     for label in self.labels()
                 }
 
-
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-
                 surface = MutableOrientedSimilaritySurface(self.base())
 
                 # Add subdivided polygons
@@ -2675,9 +2748,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 surface.set_immutable()
 
-                # TODO: Wrong morphism.
-                from flatsurf.geometry.morphism import SubdivideMorphism
-                return SubdivideMorphism._create_morphism(self, surface)
+                from flatsurf.geometry.morphism import InsertMarkedPointsInFaceMorphism
+                insert_first_point = InsertMarkedPointsInFaceMorphism._create_morphism(self, surface, subdivisions)
+
+                if more_points:
+                    from itertools import chain
+                    more_points = list(chain.from_iterable(more_points.values()))
+                    more_points = [insert_first_point(p) for p in more_points]
+                    return insert_first_point.codomain().insert_marked_points(more_points) * insert_first_point
+
+                return insert_first_point
+
 
             def subdivide_edges(self, parts=2):
                 r"""

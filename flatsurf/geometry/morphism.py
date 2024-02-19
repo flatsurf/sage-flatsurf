@@ -1296,6 +1296,8 @@ class IdentityMorphism(SurfaceMorphism):
             return False
         return self.domain() == other.domain()
 
+    # TODO: Implement __mul__ to drop this morphism.
+
 
 class SectionMorphism(SurfaceMorphism):
     r"""
@@ -1430,8 +1432,8 @@ class CompositionMorphism(SurfaceMorphism):
         for morphism in self._morphisms:
             image = [
                 (c * d, ll, ee)
-                for (d, ll, ee) in morphism._image_homology_edge(l, e)
-                for (c, l, e) in image]
+                for (c, l, e) in image
+                for (d, ll, ee) in morphism._image_homology_edge(l, e)]
 
         return image
 
@@ -1456,7 +1458,12 @@ class CompositionMorphism(SurfaceMorphism):
         return prod(morphism.section() for morphism in self._morphisms)
 
 
-class SubdivideMorphism(SurfaceMorphism):
+class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
+    def __init__(self, parent, subdivisions, category=None):
+        self._subdivisions = subdivisions
+
+        super().__init__(parent, category=category)
+
     # TODO: docstring
     def _image_point(self, p):
         # TODO: docstring
@@ -1510,13 +1517,25 @@ class SubdivideMorphism(SurfaceMorphism):
         return image
 
     def __eq__(self, other):
-        if not isinstance(other, SubdivideMorphism):
+        if not isinstance(other, InsertMarkedPointsInFaceMorphism):
             return False
 
-        return self.domain() == other.domain() and self.codomain() == other.codomain()
+        return self.domain() == other.domain() and self.codomain() == other.codomain() and self._subdivisions == other._subdivisions
 
     def _repr_type(self):
-        return "Subdivision"
+        return "InsertMarkedPoint"
+
+
+class InsertMarkedPointsOnEdgeMorphism(SurfaceMorphism):
+    def __init__(self, parent, points, category=None):
+        super().__init__(parent, category=category)
+        self._points = points
+
+    def _image_point(self, p):
+        return self.codomain()(*p.representative())
+
+    def _repr_type(self):
+        return "InsertMarkedPoint"
 
 
 class SubdivideEdgesMorphism(SurfaceMorphism):
