@@ -2121,7 +2121,7 @@ class MutableOrientedSimilaritySurface(
             self.refine_polygon(label, *MutableOrientedSimilaritySurface._triangulate(self, label))
 
         from flatsurf.geometry.morphism import TriangulationMorphism
-        return TriangulationMorphism._create_morphism(None, self)
+        return TriangulationMorphism._create_morphism(self, self)
 
     @staticmethod
     def _triangulate(surface, label):

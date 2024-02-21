@@ -146,7 +146,7 @@ class UnknownRing(UniqueRepresentation, Ring):
         return "The Unknown Ring"
 
 
-class UnknownSurface(OrientedSimilaritySurface):
+class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
     r"""
     A placeholder surface for a morphism's domain or codomain when that
     codomain is unknown or mutable.
@@ -183,6 +183,13 @@ class UnknownSurface(OrientedSimilaritySurface):
         True
 
         sage: TestSuite(triangulation.domain()).run()
+
+    For pragmatic reasons, all unknown surfaces are equal. Mathematically, this
+    is not correct but otherwise pickling breaks and we need a lot of special
+    casing for the unknown surfaces everywhere::
+
+        sage: triangulation.domain() is triangulation.codomain()
+        True
 
     """
 
@@ -223,51 +230,6 @@ class UnknownSurface(OrientedSimilaritySurface):
     def _test_labels_polygons(self, **options): pass
     def _test_refined_category(self, **options): pass
     def _test_some_elements(self, **options): pass
-
-    def __eq__(self, other):
-        r"""
-        Return whether ``other`` is also the unknown surface (over the same
-        base ring.)
-
-        We could instead have implemented this to always return ``False``.
-        However, this breaks pickling so it seems better to be a bit lenient
-        here.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
-            sage: S = translation_surfaces.square_torus()
-            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
-            sage: triangulation = S.triangulate(in_place=True)
-
-            sage: triangulation.domain() == triangulation.codomain()
-            True
-
-        """
-        if not isinstance(other, UnknownSurface):
-            return False
-
-        return self.parent() == other.parent()
-
-    def __hash__(self):
-        r"""
-        Return a hash value compatible with ``__eq__``.
-
-        Since there is essentially only a single unknown surface, we return a
-        random fixed number.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
-            sage: S = translation_surfaces.square_torus()
-            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
-            sage: triangulation = S.triangulate(in_place=True)
-
-            sage: hash(triangulation.domain()) == hash(triangulation.codomain())
-            True
-
-        """
-        return 408791048
 
     def _repr_(self):
         return "Unknown Surface"

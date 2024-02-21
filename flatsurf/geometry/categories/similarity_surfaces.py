@@ -2633,11 +2633,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 assert len(edge_points) + len(face_points) == len(points)
 
                 if edge_points:
-                    insert_morphism = morphism.codomain()._insert_marked_points_edges(*edge_points)
+                    insert_morphism = self._insert_marked_points_edges(*edge_points)
                     morphism =  insert_morphism * morphism
                     face_points = [insert_morphism(point) for point in face_points]
+                    self = insert_morphism.codomain()
                 if face_points:
-                    insert_morphism = morphism.codomain()._insert_marked_points_faces(*face_points)
+                    insert_morphism = self._insert_marked_points_faces(*face_points)
                     morphism = insert_morphism * morphism
 
                 return morphism
