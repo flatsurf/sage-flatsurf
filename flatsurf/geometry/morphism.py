@@ -41,7 +41,7 @@ We can use morphisms to follow a surface through a retriangulation process::
               From: Translation Surface in H_2(2) built from a regular octagon
               To:   Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
             then
-              Subdivision morphism:
+              Marked-Point-Insertion morphism:
               From: Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
               To:   Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
 
@@ -769,7 +769,7 @@ class SurfaceMorphism(Morphism):
             sage: morphism(c)
             Traceback (most recent call last):
             ...
-            NotImplementedError: a SubdivideMorphism_with_category cannot compute the image of a saddle connection yet
+            NotImplementedError: a InsertMarkedPointsInFaceMorphism_with_category cannot compute the image of a saddle connection yet
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a saddle connection yet")
@@ -1173,6 +1173,13 @@ class SurfaceMorphism(Morphism):
         """
         if other.codomain() is not self.domain():
             raise ValueError(f"morphisms cannot be composed because domain of {self} is not compatible with codomain of {other}")
+
+        if isinstance(other, IdentityMorphism):
+            return self
+
+        if isinstance(self, IdentityMorphism):
+            return other
+
         return CompositionMorphism._create_morphism(self, other)
 
     def push_vector_forward(self, tangent_vector):
@@ -1296,7 +1303,21 @@ class IdentityMorphism(SurfaceMorphism):
             return False
         return self.domain() == other.domain()
 
-    # TODO: Implement __mul__ to drop this morphism.
+    def __rmul__(self, other):
+        r"""
+        Concatenate ``other`` and this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: identity = S.erase_marked_points()
+            sage: identity * identity
+            Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
+
+        """
+        super().__rmul__(other)
+        return other
 
 
 class SectionMorphism(SurfaceMorphism):
@@ -1523,7 +1544,7 @@ class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
         return self.domain() == other.domain() and self.codomain() == other.codomain() and self._subdivisions == other._subdivisions
 
     def _repr_type(self):
-        return "InsertMarkedPoint"
+        return "Marked-Point-Insertion"
 
 
 class InsertMarkedPointsOnEdgeMorphism(SurfaceMorphism):
