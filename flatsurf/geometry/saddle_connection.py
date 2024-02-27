@@ -678,3 +678,23 @@ class SaddleConnection(SaddleConnection_base):
         chain = sum(multiplicity * homology(e) for (e, multiplicity) in chain.items())
 
         return to_pyflatsurf.section()(chain)
+
+    def bisect(self, a, b):
+        flow = self.holonomy() * a.norm() / (a.norm() + b.norm())
+
+        label, vertex = self.start()
+        polygon = self.surface().polygon(label)
+        point = polygon.vertex(vertex)
+
+        while flow:
+            if not polygon.is_convex():
+                raise NotImplementedError
+
+            qoint = point + flow
+
+            qoint_position = polygon.get_point_position(qoint)
+
+            if qoint_position.is_inside():
+                return self.surface()(label, qoint)
+
+            raise NotImplementedError

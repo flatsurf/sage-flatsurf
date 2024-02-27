@@ -2300,6 +2300,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 initial_label=None,
                 initial_vertex=None,
                 algorithm=None,
+                length_bound=None,
             ):
                 r"""
                 Return the saddle connections on this surface whose length
@@ -2428,6 +2429,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     164
 
                 """
+                # TODO: Cleanup the arguments.
+                if length_bound is not None:
+                    if length_bound.is_finite():
+                        squared_length_bound = length_bound.norm_squared()
+                    else:
+                        squared_length_bound = None
+
                 # TODO: Add benchmarks of the generic "cone" algorithm against
                 # the pyflatsurf algorithm. Also benchmark how much slower this
                 # is now since we are supporting much more complicated
@@ -2453,24 +2461,27 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 connections = []
 
-                if initial_label is None:
+                if initial_label is None and initial_vertex is None:
                     if not self.is_finite_type():
                         raise NotImplementedError("cannot enumerate saddle connections on surfaces that are built from inifinitely many polygons yet")
-                    initial_labels = self.labels()
+
+                    sources = [(label, vertex) for label in self.labels() for vertex in range(len(self.polygon(label).vertices()))]
+                elif initial_label is None:
+                    assert initial_vertex is not None
+                    vertices = initial_vertex.representatives()
+                    labels = set(label for (label, _) in vertices)
+                    sources = [(label, vertex) for label in labels for vertex in range(len(self.polygon(label).vertices())) if (label, self.polygon(label).vertex(vertex)) in vertices]
+                elif initial_vertex is None:
+                    assert initial_label is not None
+                    sources = [(label, vertex) for vertex in range(len(self.polygon(label).vertices()))]
                 else:
-                    initial_labels = [initial_label]
+                    sources = [(initial_label, initial_vertex)]
 
-                for label in initial_labels:
-                    if initial_vertex is None:
-                        initial_vertices = range(len(self.polygon(label).vertices()))
-                    else:
-                        initial_vertices = [initial_vertex]
-
-                    for vertex in initial_vertices:
-                        connections.extend(self._saddle_connections_generic_from_vertex_bounded(
-                            squared_length_bound=squared_length_bound,
-                            source=(label, vertex),
-                        ))
+                for source in sources:
+                    connections.extend(self._saddle_connections_generic_from_vertex_bounded(
+                        squared_length_bound=squared_length_bound,
+                        source=source,
+                    ))
 
                 # The connections might contain duplicates because each glued
                 # edge can show up in two different polygons. Note that we
@@ -2481,6 +2492,48 @@ class SimilaritySurfaces(SurfaceCategory):
                 connections = set(connections)
 
                 return sorted(connections, key=lambda connection: connection.length_squared())
+
+            def cone(self, label, base, start, end):
+                from flatsurf.geometry.surface_objects import SurfaceCone
+                return SurfaceCone(self, label, base, start, end)
+
+            def distance(self, p, q):
+                # TODO: Probably only on cone surfaces meaningful?
+                if not p.is_vertex():
+                    insertion = self.insert_marked_points(p)
+                    return insertion.codomain().distance(insertion(p), insertion(q))
+
+                if not q.is_vertex():
+                    insertion = self.insert_marked_points(q)
+                    return insertion.codomain().distance(insertion(p), insertion(q))
+
+                norm = self.euclidean_plane().norm()
+                return self._distances()[(p, q)]
+
+            @cached_method
+            def _distances(self):
+                norm = self.euclidean_plane().norm()
+
+                # TODO: On which type of surface is this correct?
+                max_distance = sum((polygon.diameter() for polygon in self.polygons()), start=norm.zero())
+
+                distances = {(v, w): norm.infinite() for v in self.vertices() for w in self.vertices()}
+
+                for connection in self.saddle_connections():
+                    length = norm.from_vector(connection.holonomy())
+                    if length > max_distance:
+                        break
+
+                    key = (self(*connection.start()), self(*connection.end()))
+                    distances[key] = min(distances[key], length)
+
+                # Floyd-Warshall
+                for k in self.vertices():
+                    for i in self.vertices():
+                        for j in self.vertices():
+                            distances[(i, j)] = min(distances[(i, j)], distances[(i, k)] + distances[(k, j)])
+
+                return distances
 
             def ramified_cover(self, d, data):
                 r"""
