@@ -79,21 +79,6 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
         want to put it here.
         """
 
-        def euclidean_plane(self):
-            r"""
-            Return the Euclidean plane on which the polygons that make up this
-            surface are defined.
-
-            EXAMPLES::
-
-                sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.square_torus()
-                sage: S.euclidean_plane()
-
-            """
-            from flatsurf.geometry.euclidean import EuclideanPlane
-            return EuclideanPlane(self.base_ring())
-
         def graphical_surface(self, *args, **kwargs):
             r"""
             Return a graphical representation of this surface.

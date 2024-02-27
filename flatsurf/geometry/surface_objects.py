@@ -481,11 +481,6 @@ class SurfacePoint(SurfacePoint_base):
             coordinates for (l, coordinates) in self._representatives if l == label
         )
 
-    def distances(self):
-        insertion = self.surface().insert_marked_points(self)
-
-        return {vertex: insertion.codomain().distance(insertion(self), insertion(vertex)) for vertex in self.surface().vertices()}
-
     def graphical_surface_point(self, graphical_surface=None):
         r"""
         Return a
@@ -1060,38 +1055,3 @@ class Cylinder(SageObject):
         for sc in self._boundary1:
             total += sc.length()
         return total
-
-
-# TODO: This is just a cone in a tangent space. We should somehow make these concepts cooperate a bit more. (Currently, there is only the tangent bundle and a tangent vector, but not the tangent space at a point.)
-class SurfaceCone:
-    def __init__(self, surface, label, base, start, end):
-        self._surface = surface
-        self._label = label
-        self._base = base
-        self._start = start
-        self._end = end
-
-    def contains_tangent_vector(self, tangent_vector):
-        if tangent_vector.polygon_label() != self._label and tangent_vector.point() != self._base:
-            raise NotImplementedError()
-
-        # TODO: Use primitives from euclidean instead (Ray and Cone)
-        from flatsurf.geometry.euclidean import ccw
-        return ccw(self._start, tangent_vector.vector()) >= 0 and ccw(self._end, tangent_vector.vector()) < 0
-
-    def tangent_vector_sort_key(self, tangent_vector):
-        assert self.contains_tangent_vector(tangent_vector)
-
-        # TODO: Use Ray and Cone from euclidean instead.
-        class SortKey:
-            def __init__(self, cone, tangent_vector):
-                self._cone = cone
-                self._tangent_vector = tangent_vector
-
-            def __lt__(self, other):
-                from flatsurf.geometry.euclidean import ccw
-                return ccw(self._tangent_vector.vector(), other._tangent_vector.vector()) < 0
-
-        return SortKey(self, tangent_vector)
-
-# TODO: Why does SaddleConnection have its own file but SurfacePoint lives here?

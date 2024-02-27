@@ -151,10 +151,6 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return self.base_ring().fraction_field()
 
-        def euclidean_plane(self):
-            from flatsurf.geometry.euclidean import EuclideanPlane
-            return EuclideanPlane(self.base_ring())
-
         def _mul_(self, g, switch_sides=None):
             r"""
             Apply the 2x2 matrix `g` to this polygon.
@@ -2364,7 +2360,3 @@ class EuclideanPolygons(Category_over_base_ring):
                         oedges.append(oedges.pop(0))
 
                     return (False, None) if certificate else False
-
-                def diameter(self):
-                    norm = self.euclidean_plane().norm()
-                    return max(norm.from_vector(v - w) for v in self.vertices() for w in self.vertices())

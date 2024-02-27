@@ -17,14 +17,14 @@ end at the same vertex. For example on the square torus, i.e., the surface
 built from a square with opposite sides glued, the boundary of the single
 Voronoi cell is given by a + shaped set centered in the square.
 
-Here, we implement a more generalized notion of distance which assigns to each
-vertex a weight. The distance of a point to a vertex is then given by the usual
-distance divided by that weight. The Voronoi cells in this setup are delimited
-by line segments and segments of circular arcs.
+We also support a more generalized notion of distance which allows a positive
+weight to be assigned to each vertex. The distance of a point to a vertex is
+then given by the usual distance divided by that weight. The Voronoi cells in
+this setup are delimited by line segments and segments of circular arcs.
 
 EXAMPLES::
 
-    sage: from flatsurf import translation_surfaces, VoronoiTessellation
+    sage: from flatsurf import translation_surfaces, VoronoiTessellation  # random output due to deprecation warnings
     sage: S = translation_surfaces.square_torus()
     sage: V = VoronoiTessellation(S)
     sage: V
@@ -32,12 +32,6 @@ EXAMPLES::
     sage: cell = next(iter(V.cells()))
     sage: cell.boundary()
     `+`
-
-Using a weight at the sole vertex does not change the picture here::
-
-    sage: V = VoronoiTessellation(S, weights="radius_of_convergence")
-    sage: cell = next(iter(V.cells()))
-    sage: cell.boundary()
 
 """
 # ####################################################################
@@ -61,7 +55,6 @@ Using a weight at the sole vertex does not change the picture here::
 
 
 from flatsurf.geometry.surface_objects import SurfacePoint
-from sage.misc.cachefunc import cached_method
 
 
 class VoronoiTessellation:
@@ -93,18 +86,19 @@ class VoronoiTessellation:
 
     - ``surface`` -- an immutable cone surface
 
-    - ``weights`` -- ``"radius_of_convergence"`` or ``None`` (default:
-      ``None``); the weights to use at each vertex if any.
+    - ``weights`` -- a dict mapping vertices of the ``surface`` to their
+      weights or ``None`` (default: ``None``); if ``None``, all vertices have
+      the same weight. Weights can be elements of the base ring, floating
+      point numbers, or Euclidean distances.
 
     EXAMPLES::
 
         sage: from flatsurf import VoronoiTessellation, translation_surfaces
         sage: S = translation_surfaces.regular_octagon()
         sage: center = S(0, S.polygon(0).centroid())
-        sage: S = S.insert_marked_points(center).codomain()
         sage: V = VoronoiTessellation(S)
         sage: V.plot()
-        sage: V = VoronoiTessellation(S, weights="radius_of_convergence")
+        sage: V = VoronoiTessellation(S, {vertex: VoronoiTessellation.radius_of_convergence(vertex) for vertex in S.vertices})
         sage: V.plot()
 
     The same Voronoi diagram but starting from a more complicated description
@@ -116,23 +110,21 @@ class VoronoiTessellation:
         sage: V = VoronoiTessellation(S)
         sage: V.plot()
 
-        sage: V = VoronoiTessellation(S, weights="radius_of_convergence")
+        sage: V = VoronoiTessellation(S, {v: VoronoiTessellation.radius_of_convergence(v) for v in S.vertices()})
         sage: V.plot()
+
+    .. SEEALSO::
+
+        :meth:`radius_of_convergence` to create ``weights``
 
     """
 
     def __init__(self, surface, weights=None):
         if surface.is_mutable():
             raise ValueError("surface must be immutable")
-        # TODO: Surface must also be a Cone Surface and connected
 
         if weights is None:
-            pass
-        elif weights == "radius_of_convergence":
-            pass
-        else:
-            raise ValueError("unsupported weights for Voronoi tessellation")
-
+            weights = {vertex: 1 for vertex in surface.vertices()}
 
         self._surface = surface
         self._weights = weights
@@ -211,24 +203,6 @@ class VoronoiTessellation:
             if point is None or cell.contains_point(point):
                 yield cell
 
-    def cell(self, point):
-        r"""
-        Return a Voronoi cell that contains ``point``.
-m
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.regular_octagon()
-            sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: cell = V.cell(center)
-            sage: cell.contains_point(center)
-            True
-
-        """
-        return next(iter(self.cells(point)))
-
     def polygon_cells(self, label, coordinates):
         r"""
         Return the Voronoi cells that contain the point ``coordinates`` of the
@@ -249,54 +223,6 @@ m
 
         """
         raise NotImplementedError
-
-    @cached_method
-    def radius_of_convergence(self, center):
-        r"""
-        Return the radius of convergence when developing a power series
-        at ``center``.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.regular_octagon()
-            sage: V = VoronoiDiagram(S)
-
-            sage: V.radius_of_convergence2(S(0, S.polygon(0).centroid()))
-            1/2*a + 1
-            sage: V.radius_of_convergence2(next(iter(S.vertices())))
-            1
-            sage: V.radius_of_convergence2(S(0, (1/2, 1/2)))
-            1/2
-            sage: V.radius_of_convergence2(S(0, (1/2, 0)))
-            1/4
-            sage: V.radius_of_convergence2(S(0, (1/4, 0)))
-            1/16
-
-        """
-        norm = self.surface().euclidean_plane().norm()
-
-        if all(vertex.angle() == 1 for vertex in self._surface.vertices()):
-            return norm.infinite()
-
-        erase_marked_points = self._surface.erase_marked_points()
-        center = erase_marked_points(center)
-
-        if not center.is_vertex():
-            insert_marked_points = center.surface().insert_marked_points(center)
-            center = insert_marked_points(center)
-
-        surface = center.surface()
-
-        for connection in surface.saddle_connections():
-            start = surface(*connection.start())
-            end = surface(*connection.end())
-            if start == center and end.angle() != 1:
-                x, y = connection.holonomy()
-                return norm.from_norm_squared(x**2 + y**2)
-
-        assert False, "unreachable on a surface without boundary"
 
 
 class VoronoiCell:
@@ -335,6 +261,7 @@ class VoronoiCell:
         r"""
         Return the surface which this cell is a subset of.
 
+    Voronoi Tessellation of Translation Surface in H_1(0) built from a square
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, VoronoiTessellation
@@ -348,72 +275,7 @@ class VoronoiCell:
         return self._tessellation.surface()
 
     def boundary(self):
-        r"""
-        Return the line segments and circular arc segments bounding this
-        Voronoi cell.
-
-        The segments are returned in order of a counterclockwise walk (as seen
-        from the center of the cell) along the boundary.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, VoronoiTessellation
-            sage: S = translation_surfaces.regular_octagon()
-            sage: V = VoronoiTessellation(S)
-            sage: cell = V.cell(S(0, 0))
-            sage: cell.boundary()
-
-        """
-        return [self.surface()(polygon_cell.label(), boundary) for polygon_cell in self.polygon_cells() for boundary in polygon_cell.boundary()]
-
-    @cached_method
-    def _boundary_saddle_connections(self):
-        r"""
-        Return saddle connections to the vertices that have an influence on the
-        shape of this cell.
-
-        ALGORITHM:
-
-        For good choices of weights, such as equal weights or weights
-        corresponding to radii of convergence, only vertices that are connected
-        to the center by a saddle connection (possibly crossing over a marked
-        point) influence the Voronoi cell.
-
-        Again, for good choices of weights, we only have to consider saddle
-        connections up to a certain length if we assume that all cells are
-        contained in the their disk of convergence. In that case we can stop at
-        twice the maximum radius of convergence.
-
-        TODO: Put more of a proof for all this here. See my handwritten notes.
-
-        TODO: Currently, we do not include vertices hidden by a marked point here.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, VoronoiTessellation
-            sage: S = translation_surfaces.regular_octagon()
-            sage: V = VoronoiTessellation(S)
-            sage: cell = V.cell(S(0, 0))
-            sage: cell._boundary_saddle_connections()
-
-        """
-        R = max(self._tessellation.radius_of_convergence(v) for v in self.surface().vertices())
-
-        if not R.is_finite():
-            # When there are no singularities, we don't know a priori where to
-            # stop the saddle connection search here. So we cheat a bit and ask
-            # the Delaunay triangulation (which is dual to the Voronoi diagram
-            # in this case) for the maximum edge length which bounds the
-            # diameter of any cell.
-            T = self.surface().delaunay_triangulation()
-
-            norm = R.parent()
-            R = max(norm(edge) for label in T.labels() for edge in T.polygon(label).edges())
-
-        boundary_saddle_connections = list(self.surface().saddle_connections(length_bound=2*R, initial_vertex=self._center))
-        assert all(self.surface()(*c.start()) == self._center for c in boundary_saddle_connections)
-
-        return boundary_saddle_connections
+        raise NotImplementedError
 
     def contains_point(self, point):
         r"""
@@ -442,9 +304,6 @@ class VoronoiCell:
         If ``label`` is specified, only the bits that are inside the polygon
         with ``label`` are returned.
 
-        Otherwise, all parts of the cell are returned in a counterclockwise
-        order around the center of the cell.
-
         EXAMPLES::
 
             sage: from flatsurf.geometry.voronoi import VoronoiDiagram
@@ -465,91 +324,15 @@ class VoronoiCell:
         """
         cells = []
 
-        initial_label, initial_vertex = self._center.representative()
-        initial_vertex = self.surface().polygon(label).get_point_position(initial_vertex).get_vertex()
-        label, vertex = initial_label, initial_vertex
+        for (lbl, coordinates) in self._center.representatives():
+            if label is not None and label != lbl:
+                continue
 
-        # Walk counterclockwise around the center vertex.
-        while True:
-            yield self.polygon_cell(label, vertex)
+            for c in self._tessellation.polygon_cells(lbl, coordinates):
+                cells.append(c)
 
-            polygon = self.surface().polygon(label)
+        assert cells
 
-            previous_edge = (vertex - 1) % len(polygon.vertices())
-            label, vertex = self.surface().opposite_edge(label, previous_edge)
-
-            if label == initial_label and vertex == initial_vertex:
-                break
-
-    @cached_method
-    def polygon_cell(self, label, vertex):
-        r"""
-        Return the :class:`VoronoiPolygonCell` centered at the ``vertex`` of
-        the polygon with ``label``.
-
-        ALGORITHM:
-
-        # TODO
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, VoronoiTessellation
-            sage: S = translation_surfaces.regular_octagon()
-            sage: center = S(0, S.polygon(0).centroid())
-            sage: S = S.insert_marked_points(center).codomain()
-            sage: V = VoronoiTessellation(S)
-            sage: V.cell(S((0, 0), 0)).polygon_cell(0, 0)
-
-        """
-        polygon = self.surface().polygon(label)
-        start_edge = polygon.edge(vertex)
-        end_edge = polygon.edge(vertex + 1)
-
-        precone = self.surface().cone(label, polygon.vertex(vertex), (start_edge[1], -start_edge[0]), start_edge)
-        cone = self.surface().cone(label, polygon.vertex(vertex), start_edge, end_edge)
-        postcone = self.surface().cone(label, polygon.vertex(vertex), end_edge, (-end_edge[1], end_edge[0]))
-
-        preconnections = [c for c in self._boundary_saddle_connections() if precone.contains_tangent_vector(c.start_tangent_vector())]
-        connections = [c for c in self._boundary_saddle_connections() if cone.contains_tangent_vector(c.start_tangent_vector())]
-        postconnections = [c for c in self._boundary_saddle_connections() if postcone.contains_tangent_vector(c.start_tangent_vector())]
-
-        preconnections = sorted(preconnections, key=lambda connection: precone.tangent_vector_sort_key(connection.start_tangent_vector()))
-        connections = sorted(connections, key=lambda connection: cone.tangent_vector_sort_key(connection.start_tangent_vector()))
-        postconnections = sorted(postconnections, key=lambda connection: postcone.tangent_vector_sort_key(connection.start_tangent_vector()))
-
-        # TODO: Map holonomies into polygon if not a translation surface.
-        return VoronoiPolygonCell(self, label, [self._polygon_cell_boundary(connection) for connection in preconnections + connections + postconnections if self._is_saddle_connection_defining_cell(connection)])
-
-    def _polygon_cell_boundary(self, connection):
-        # TODO: If the visibility from the connection.end to the center is
-        # limited by singularities, we would have to crop the half space
-        # accordingly. (In practice it probably makes no difference.)
-        raise NotImplementedError
-
-    def _is_saddle_connection_defining_cell(self, connection):
-        source = self.surface()(*connection.start())
-        target = self.surface()(*connection.end())
-
-        R = lambda vertex: self._tessellation.radius_of_convergence(vertex)
-
-        # TODO: Add a proof that this is the case iff the half way point is in
-        # both cells (under which conditions?)
-        midpoint = connection.bisect(R(self._center), R(self.surface()(*connection.end())))
-
-        distances = midpoint.distances()
-        distances = {vertex: distance / R(vertex) for (vertex, distance) in distances.items()}
-
-        min_distance = min(distances.values())
-
-        if distances[source] != min_distance:
-            return False
-
-        if distances[target] != min_distance:
-            return False
-
-        return min_distance * (R(source) + R(target)) == connection.length()
+        return cells
 
 
-class VoronoiPolygonCell:
-    def __init__(self, cell, boundary):
-        pass

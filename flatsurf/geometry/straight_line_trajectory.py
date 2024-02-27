@@ -60,7 +60,6 @@ def get_linearity_coeff(u, v):
         raise ValueError("zero vector")
 
 
-# TODO: Use new Segment class in surface_objects instead.
 class SegmentInPolygon:
     r"""
     Maximal segment in a polygon of a similarity surface

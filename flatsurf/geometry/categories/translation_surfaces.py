@@ -687,14 +687,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
                 return Surface_pyflatsurf._from_flatsurf(self)
 
-            def saddle_connections(self, squared_length_bound=None, initial_label=None, initial_vertex=None, algorithm=None, length_bound=None):
-                # TODO: Cleanup arguments, see SimilaritySurfaces.
-                if length_bound is not None:
-                    if length_bound.is_finite():
-                        squared_length_bound = length_bound.norm_squared()
-                    else:
-                        squared_length_bound = None
-
+            def saddle_connections(self, squared_length_bound=None, initial_label=None, initial_vertex=None, algorithm=None):
                 if squared_length_bound is not None and squared_length_bound < 0:
                     raise ValueError("length bound must be non-negative")
 
