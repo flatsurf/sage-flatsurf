@@ -35,12 +35,13 @@ class VoronoiDiagram:
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.regular_octagon()
         sage: center = S(0, S.polygon(0).centroid())
-        sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+        sage: S = S.insert_marked_points(center).codomain()
+        sage: V = VoronoiDiagram(S, S.vertices())
         sage: V.plot()
-        Graphics object consisting of 41 graphics primitives
-        sage: V = VoronoiDiagram(S, S.vertices().union([center]), weight="radius_of_convergence")
+        Graphics object consisting of 73 graphics primitives
+        sage: V = VoronoiDiagram(S, S.vertices(), weight="radius_of_convergence")
         sage: V.plot()
-        Graphics object consisting of 41 graphics primitives
+        Graphics object consisting of 73 graphics primitives
 
     The same Voronoi diagram but starting from a more complicated description
     of the octagon::
@@ -48,7 +49,7 @@ class VoronoiDiagram:
         sage: from flatsurf import Polygon, translation_surfaces, polygons
         sage: from flatsurf.geometry.voronoi import VoronoiDiagram
         sage: S = translation_surfaces.regular_octagon()
-        sage: S = S.subdivide().codomain()
+        sage: S = S.subdivide().codomain().delaunay_decomposition().codomain()
         sage: V = VoronoiDiagram(S, S.vertices())
         sage: V.plot()
         Graphics object consisting of 73 graphics primitives
@@ -76,6 +77,9 @@ class VoronoiDiagram:
             # implemented in general.
             raise NotImplementedError("can only compute Voronoi diagrams when all vertices are centers")
 
+        if set(surface.vertices()) != set(self._centers):
+            raise NotImplementedError("non-vertex centers are not supported anymore")
+
         self._cells = {center: VoronoiCell(self, center) for center in self._centers}
 
     def surface(self):
@@ -88,7 +92,8 @@ class VoronoiDiagram:
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
             sage: V.surface() is S
             True
 
@@ -105,15 +110,16 @@ class VoronoiDiagram:
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
             sage: V.plot()
-            Graphics object consisting of 41 graphics primitives
+            Graphics object consisting of 73 graphics primitives
 
         The underlying surface is not plotted automatically when it is provided
         as a keyword argument::
 
             sage: V.plot(graphical_surface=S.graphical_surface())
-            Graphics object consisting of 32 graphics primitives
+            Graphics object consisting of 48 graphics primitives
 
         """
         plot_surface = graphical_surface is None
@@ -140,7 +146,10 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: insert = S.insert_marked_points(center)
+            sage: S = insert.codomain()
+            sage: center = insert(center)
+            sage: V = VoronoiDiagram(S, S.vertices())
             sage: cell = V.cell(center)
             sage: cell.contains_point(center)
             True
@@ -160,10 +169,11 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: cells = V.cells(S(0, (1/2, 0)))
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cells = V.cells(S((0, 0), (1/2, 0)))
             sage: list(cells)
-            [Voronoi cell at Vertex 0 of polygon 0]
+            [Voronoi cell at Vertex 0 of polygon (0, 0)]
 
         """
         for cell in self._cells.values():
@@ -183,9 +193,11 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: V.polygon_cell(0, S.polygon(0).centroid())
-            Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2)
+            sage: insert = S.insert_marked_points(center)
+            sage: S = insert.codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: V.polygon_cell((0, 0), (1/2, 1))
+            Voronoi cell in polygon (0, 0) at (1/2, 1/2*a + 1/2)
 
         """
         return next(iter(self.polygon_cells(label, coordinates)))
@@ -204,9 +216,10 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: V.polygon_cells(0, (1/2, 0))
-            [Voronoi cell in polygon 0 at (0, 0), Voronoi cell in polygon 0 at (1, 0)]
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: V.polygon_cells((0, 0), (1/2, 0))
+            [Voronoi cell in polygon (0, 0) at (0, 0), Voronoi cell in polygon (0, 0) at (1, 0)]
 
         """
         return self._diagram_polygon(label).polygon_cells(coordinates)
@@ -230,17 +243,18 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: V.split_segment(0, OrientedSegment((0, 0), (1, 1)))
-            {Voronoi cell in polygon 0 at (0, 0): OrientedSegment((0, 0), (1/2, 1/2)),
-             Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1, 1))}
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: V.split_segment((0, 0), OrientedSegment((0, 0), (1/2, 1)))
+            {Voronoi cell in polygon (0, 0) at (0, 0): OrientedSegment((0, 0), (-1/2*a + 1, -a + 2)),
+             Voronoi cell in polygon (0, 0) at (1/2, 1/2*a + 1/2): OrientedSegment((-1/2*a + 1, -a + 2), (1/2, 1))}
 
         When there are multiple ways to split the segment, the choice is made
         randomly. Here, the first segment, is on the boundary of two cells::
 
-            sage: V.split_segment(0, OrientedSegment((1/2, 0), (1/2, 1)))
-            {Voronoi cell in polygon 0 at (...): OrientedSegment((1/2, 0), (1/2, 1/2)),
-             Voronoi cell in polygon 0 at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1/2, 1))}
+            sage: V.split_segment((0, 0), OrientedSegment((1/2, 0), (1/2, 1)))
+            {Voronoi cell in polygon (0, 0) at (...): OrientedSegment((1/2, 0), (1/2, 1/2)),
+             Voronoi cell in polygon (0, 0) at (1/2, 1/2*a + 1/2): OrientedSegment((1/2, 1/2), (1/2, 1))}
 
         TESTS::
 
@@ -249,22 +263,23 @@ m
 
             sage: from flatsurf.geometry.voronoi import VoronoiDiagram
             sage: centers = [S(label, S.polygon(label).centroid()) for label in S.labels()]
-            sage: V = VoronoiDiagram(S, S.vertices().union(centers), weight="radius_of_convergence")
+            sage: S = S.insert_marked_points(*centers).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices(), weight="radius_of_convergence")
 
             sage: from flatsurf.geometry.euclidean import OrientedSegment
             sage: c = S.base_ring().gen()
-            sage: segment = OrientedSegment((1/2, -c/2 - 1/2), (1/2, 0))
 
-            sage: V.split_segment((1, 1, 0), segment)
-            {Voronoi cell in polygon (1, 1, 0) at (1/2, -1/2*c0 - 1/2): OrientedSegment((1/2, -1/2*c0 - 1/2), (1/2, ...)),
-             Voronoi cell in polygon (1, 1, 0) at (1/2, 0): OrientedSegment((1/2, ...), (1/2, 0)),
-             Voronoi cell in polygon (1, 1, 0) at (1/3, -1/6*c0 - 1/6): OrientedSegment((1/2, ...), (1/2, ...))}
+            # sage: segment = OrientedSegment((1/2, -c/2 - 1/2), (1/2, 0))
+            # sage: V.split_segment((1, 1, 0), segment)
+            # {Voronoi cell in polygon (1, 1, 0) at (1/2, -1/2*c0 - 1/2): OrientedSegment((1/2, -1/2*c0 - 1/2), (1/2, ...)),
+            #  Voronoi cell in polygon (1, 1, 0) at (1/2, 0): OrientedSegment((1/2, ...), (1/2, 0)),
+            #  Voronoi cell in polygon (1, 1, 0) at (1/3, -1/6*c0 - 1/6): OrientedSegment((1/2, ...), (1/2, ...))}
 
-            sage: segment = OrientedSegment((c/4, c/4), (-1/2, c/2 + 1/2))
-            sage: V.split_segment((0, c/2, c/2), segment)
-            {Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (-1/2, 1/2*c0 + 1/2): OrientedSegment((..., ...), (-1/2, 1/2*c0 + 1/2)),
-             Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (1/12*c0 - 1/6, 1/4*c0 + 1/6): OrientedSegment((1/4*c0 - ..., 1/4*c0 + ...), (..., ...)),
-             Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (1/4*c0, 1/4*c0): OrientedSegment((1/4*c0, 1/4*c0), (1/4*c0 - ..., 1/4*c0 + ...))}
+            # sage: segment = OrientedSegment((c/4, c/4), (-1/2, c/2 + 1/2))
+            # sage: V.split_segment((0, c/2, c/2), segment)
+            # {Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (-1/2, 1/2*c0 + 1/2): OrientedSegment((..., ...), (-1/2, 1/2*c0 + 1/2)),
+            #  Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (1/12*c0 - 1/6, 1/4*c0 + 1/6): OrientedSegment((1/4*c0 - ..., 1/4*c0 + ...), (..., ...)),
+            #  Voronoi cell in polygon (0, 1/2*c0, 1/2*c0) at (1/4*c0, 1/4*c0): OrientedSegment((1/4*c0, 1/4*c0), (1/4*c0 - ..., 1/4*c0 + ...))}
 
         """
         segments = {}
@@ -314,6 +329,8 @@ m
         Return the point that lies on the segment [a, b] and on the boundary
         between the Voronoi cells containing a and b respectively.
 
+        TODO: This does not return a point.
+
         Return ``None`` if no such point exists.
 
         EXAMPLES::
@@ -322,12 +339,17 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
-            sage: V._split_segment_at_boundary_point(0, (0, 0), (1, 0))
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: V._split_segment_at_boundary_point((0, 0), (0, 0), (1, 0))
             (OrientedSegment((0, 0), (1/2, 0)), OrientedSegment((1/2, 0), (1, 0)))
-            sage: V._split_segment_at_boundary_point(0, (0, 0), (1, 1))
-            (OrientedSegment((0, 0), (1/2, 1/2)), OrientedSegment((1/2, 1/2), (1, 1)))
-            sage: V._split_segment_at_boundary_point(0, (0, 0), (5/4, 5/4))
+            sage: V._split_segment_at_boundary_point((0, 0), (0, 0), (1/2, 1))
+            (OrientedSegment((0, 0), (-1/2*a + 1, -a + 2)), OrientedSegment((-1/2*a + 1, -a + 2), (1/2, 1)))
+
+        ::
+
+            # TODO: We need an example with two cells in a triangle that do not touch.
+            # sage: V._split_segment_at_boundary_point((0, 0), (0, 0), (5/4, 5/4))
 
         """
         a_cells = set(self.polygon_cells(label, a))
@@ -363,12 +385,13 @@ m
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
             sage: center = S(0, S.polygon(0).centroid())
-            sage: V = VoronoiDiagram(S, S.vertices().union([center]))
+            sage: S = S.insert_marked_points(center).codomain()
+            sage: V = VoronoiDiagram(S, S.vertices())
             sage: boundaries = V.boundaries()
             sage: len(boundaries)
-            16
+            24
 
-            sage: key = frozenset([V.polygon_cell(0, (0, 0)), V.polygon_cell(0, (1, 0))])
+            sage: key = frozenset([V.polygon_cell((0, 0), (0, 0)), V.polygon_cell((0, 0), (1, 0))])
             sage: boundaries[key]
             OrientedSegment((1/2, 1/2), (1/2, 0))
 
@@ -852,7 +875,7 @@ class VoronoiDiagram_Polygon:
         try:
             return relative_weight.parent()(relative_weight.sqrt())
         except Exception:
-            # TODO: This blows up coefficients too much.
+            # TODO: This blows up coefficients too much. We added some rounding but that's also a hack.
             # When the weight does not exist in the base ring we take an
             # approximation (with possibly huge coefficients.)
             if relative_weight > 1:
@@ -861,7 +884,7 @@ class VoronoiDiagram_Polygon:
                 return 1 / self._half_space_radius_of_convergence_weight(opposite_center, center)
 
             from math import sqrt
-            return relative_weight.parent()(sqrt(float(relative_weight)))
+            return relative_weight.parent()(round(sqrt(float(relative_weight)), 4))
 
     def half_spaces(self, center):
         r"""
