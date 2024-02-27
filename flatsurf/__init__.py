@@ -47,8 +47,3 @@ from flatsurf.geometry.surface_legacy import (
     HalfTranslationSurface,
     TranslationSurface
 )
-
-from flatsurf.geometry.voronoi import VoronoiTessellation
-
-# TODO: Setup __all__ to fix complaints about unused variables.
-# TODO: Drop __version__ and use package version instead.
