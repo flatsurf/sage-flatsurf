@@ -787,22 +787,12 @@ class VoronoiDiagram_Polygon:
         else:
             raise NotImplementedError("unsupported weight for Voronoi cells")
 
-    def _half_space_weighted(self, center, opposite_center, weight=1):
+    def _half_space_weighted(self, center, opposite_center, weight_squared=1, opposite_weight_squared=1):
         r"""
         Return the half space containing ``center`` but not containing
         ``opposite_center``.
 
-        This produces a weighted version of that half space, i.e., the boundary
-        point on the segment between the two centers is shifted according to
-        the weight towards the ``opposite_center``.
-
-        TODO: Explain how just using half spaces might leave some empty space.
-
-        Note that this is not a natural generalization of Voronoi cells.
-        Normally, one would all points on the boundary to have a distance that
-        is weighted in that way. However, this is a bit more complicated to
-        implement as you get a more complicated curve and then also harder to
-        integrate along later. So we opted for not implementing that.
+        TODO: Explain in more detail what the weights do.
 
         EXAMPLES::
 
@@ -815,21 +805,26 @@ class VoronoiDiagram_Polygon:
             sage: VP = VoronoiDiagram_Polygon(V, 0)
             sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 1)
             {-x ≥ -1/2}
-            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 2)
+            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 4)
             {-x ≥ -2/3}
-            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 1/2)
+            sage: VP._half_space_weighted(vector((0, 0)), vector((1, 0)), 1, 4)
             {-x ≥ -1/3}
 
         """
-        if weight <= 0:
+        if weight_squared <= 0:
+            raise ValueError("weight must be positive")
+        if opposite_weight_squared <= 0:
             raise ValueError("weight must be positive")
 
-        a, b = center - opposite_center
-        midpoint = (weight * opposite_center + center) / (weight + 1)
-        c = a * midpoint[0] + b * midpoint[1]
+        if weight_squared == opposite_weight_squared:
+            a, b = center - opposite_center
+            midpoint = (center + opposite_center) / 2
+            c = a * midpoint[0] + b * midpoint[1]
 
-        from flatsurf.geometry.euclidean import HalfSpace
-        return HalfSpace(-c, a, b)
+            from flatsurf.geometry.euclidean import HalfSpace
+            return HalfSpace(-c, a, b)
+
+        return DiskOfAppolonius(center, opposite_center, weight_squared, opposite_weight_squared)
 
     def _half_space_radius_of_convergence(self, center, opposite_center):
         r"""
@@ -855,37 +850,16 @@ class VoronoiDiagram_Polygon:
             {-x - (-a - 1) * y ≥ -a - 2}
 
         """
-        return self._half_space_weighted(center, opposite_center, self._half_space_radius_of_convergence_weight(center, opposite_center))
+        return self._half_space_weighted(center, opposite_center, *self._half_space_radius_of_convergence_weights_squared(center, opposite_center))
 
-    def _half_space_radius_of_convergence_weight(self, center, opposite_center):
-        r"""
-        Return the quotient of the radii of convergence at ``center`` and
-        ``opposite_center`` (when restricted to thei polygon.)
-        """
+    def _half_space_radius_of_convergence_weights_squared(self, center, opposite_center):
         surface = self._parent.surface()
         weight = self._parent.radius_of_convergence2(surface(self._label, center))
         opposite_weight = self._parent.radius_of_convergence2(surface(self._label, opposite_center))
 
-        from sage.all import oo
-        if weight == oo:
-            assert opposite_weight == oo
-            return 1
+        return weight, opposite_weight
 
-        relative_weight = weight / opposite_weight
-        try:
-            return relative_weight.parent()(relative_weight.sqrt())
-        except Exception:
-            # TODO: This blows up coefficients too much. We added some rounding but that's also a hack.
-            # When the weight does not exist in the base ring we take an
-            # approximation (with possibly huge coefficients.)
-            if relative_weight > 1:
-                # Make rounding errors symmetric so that two neighboring half
-                # space are actually the negative of each other.
-                return 1 / self._half_space_radius_of_convergence_weight(opposite_center, center)
-
-            from math import sqrt
-            return relative_weight.parent()(round(sqrt(float(relative_weight)), 4))
-
+    @cached_method
     def half_spaces(self, center):
         r"""
         Return the half spaces that define the Voronoi cell centered at
@@ -906,75 +880,109 @@ class VoronoiDiagram_Polygon:
              (1, 0): {(-1/2*a - 1/2) * x ≥ -1/4*a - 1/4}}
 
         """
-        return {opposite_center: segment.left_half_space() for (opposite_center, segment) in self.boundary(center).items()}
+        from sage.all import vector
+        center = vector(center)
+
+        if center not in self.centers():
+            raise ValueError("center must be a center of a Voronoi cell")
+                
+        return {opposite_center: self._half_space(center, opposite_center) for opposite_center in self.centers() if opposite_center != center}
 
     @cached_method
     def boundary(self, center):
         r"""
-        Return the boundary segment that define the Voronoi cell centered at
-        ``center`` in this polygon, indexed by the other center that is
-        defining the segment.
+        Return the boundary (line or circular arc) segments that define the
+        Voronoi cell centered at ``centered`` in this polygon; indexed by the
+        other center that is defining the segment.
 
         EXAMPLES::
 
             sage: from flatsurf.geometry.voronoi import VoronoiDiagram
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.regular_octagon()
+            sage: center = S(0, S.polygon(0).centroid())
+            sage: S = S.insert_marked_points(center).codomain()
             sage: V = VoronoiDiagram(S, S.vertices())
 
-            sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
-            sage: VP = VoronoiDiagram_Polygon(V, 0)
-            sage: VP.boundary((0, 0))
-            {(-1/2*a, 1/2*a): OrientedSegment((1/2, 1/2*a + 1/2), (-1/4*a, 1/4*a)),
-             (1, 0): OrientedSegment((1/2, 0), (1/2, 1/2*a + 1/2))}
-
+            sage: VP = V.polygon_cell((0, 0), (0, 0))
+            sage: VP.boundary()
+            
         """
-        from sage.all import vector
-        center = vector(center)
+        half_spaces = self.half_spaces(center)
 
-        if center not in self.centers():
-            raise ValueError("center must be a center of a Voronoi cell")
+        if len(half_spaces) != 2:
+            raise NotImplementedError("cannot compute boundary on non-triangles yet")
 
-        voronoi_half_spaces = {opposite_center: self._half_space(center, opposite_center) for opposite_center in self.centers() if opposite_center != center}
+        raise NotImplementedError
 
-        # The half spaces whose intersection is the entire polygon.
-        from flatsurf.geometry.euclidean import HalfSpace
-        polygon = self.polygon()
-        polygon_half_spaces = [HalfSpace(vertex[0] * edge[1] - vertex[1] * edge[0], -edge[1], edge[0]) for (vertex, edge) in zip(polygon.vertices(), polygon.edges())]
 
-        # Each segment defining this Voronoi cell is on the boundary of one of
-        # the half spaces defining this Voronoi cell. Namely, if the half space
-        # is not trivial in the intersection, then it contributes a segment to
-        # the boundary of the cell.
+    ## @cached_method
+    ## def boundary(self, center):
+    ##     r"""
+    ##     Return the boundary segment that define the Voronoi cell centered at
+    ##     ``center`` in this polygon, indexed by the other center that is
+    ##     defining the segment.
 
-        segments = HalfSpace.compact_intersection(*voronoi_half_spaces.values(), *polygon_half_spaces)
+    ##     EXAMPLES::
 
-        assert segments, "Voronoi cell is empty"
+    ##         sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+    ##         sage: from flatsurf import translation_surfaces
+    ##         sage: S = translation_surfaces.regular_octagon()
+    ##         sage: V = VoronoiDiagram(S, S.vertices())
 
-        # Filter out segments that are mearly edges of the polygon; they
-        # are an artifact of how we computed the segments here.
-        # TODO: This is very expensive in comparison to a simple:
-        #   segments = [segment for segment in segments if center not in segment]
-        # But that misses some degenerate cases. But do these cases actually
-        # make any sense?
+    ##         sage: from flatsurf.geometry.voronoi import VoronoiDiagram_Polygon
+    ##         sage: VP = VoronoiDiagram_Polygon(V, 0)
+    ##         sage: VP.boundary((0, 0))
+    ##         {(-1/2*a, 1/2*a): OrientedSegment((1/2, 1/2*a + 1/2), (-1/4*a, 1/4*a)),
+    ##          (1, 0): OrientedSegment((1/2, 0), (1/2, 1/2*a + 1/2))}
 
-        from flatsurf.geometry.euclidean import OrientedSegment
-        polygon_edges = [OrientedSegment(polygon.vertex(i), polygon.vertex(i + 1)) for i in range(len(polygon.vertices()))]
-        voronoi_segments = [segment for segment in segments if not any(segment.is_subset(edge) for edge in polygon_edges)]
+    ##     """
+    ##     from sage.all import vector
+    ##     center = vector(center)
 
-        assert voronoi_segments
+    ##     if center not in self.centers():
+    ##         raise ValueError("center must be a center of a Voronoi cell")
 
-        # Associate with each segment which other center produced it.
-        boundary = {}
-        for segment in voronoi_segments:
-            opposite_center = [c for (c, half_space) in voronoi_half_spaces.items() if half_space == segment.left_half_space()]
-            assert len(opposite_center) == 1, "segment must be induced by exactly one other center of a Voronoi cell"
-            opposite_center = next(iter(opposite_center))
-            assert opposite_center not in boundary
+    ##     voronoi_half_spaces = {opposite_center: self._half_space(center, opposite_center) for opposite_center in self.centers() if opposite_center != center}
 
-            boundary[opposite_center] = segment
+    ##     # The half spaces whose intersection is the entire polygon.
+    ##     from flatsurf.geometry.euclidean import HalfSpace
+    ##     polygon = self.polygon()
+    ##     polygon_half_spaces = [HalfSpace(vertex[0] * edge[1] - vertex[1] * edge[0], -edge[1], edge[0]) for (vertex, edge) in zip(polygon.vertices(), polygon.edges())]
 
-        return boundary
+    ##     # Each segment defining this Voronoi cell is on the boundary of one of
+    ##     # the half spaces defining this Voronoi cell. Namely, if the half space
+    ##     # is not trivial in the intersection, then it contributes a segment to
+    ##     # the boundary of the cell.
+
+    ##     segments = HalfSpace.compact_intersection(*voronoi_half_spaces.values(), *polygon_half_spaces)
+
+    ##     assert segments, "Voronoi cell is empty"
+
+    ##     # Filter out segments that are mearly edges of the polygon; they
+    ##     # are an artifact of how we computed the segments here.
+    ##     # TODO: This is very expensive in comparison to a simple:
+    ##     #   segments = [segment for segment in segments if center not in segment]
+    ##     # But that misses some degenerate cases. But do these cases actually
+    ##     # make any sense?
+
+    ##     from flatsurf.geometry.euclidean import OrientedSegment
+    ##     polygon_edges = [OrientedSegment(polygon.vertex(i), polygon.vertex(i + 1)) for i in range(len(polygon.vertices()))]
+    ##     voronoi_segments = [segment for segment in segments if not any(segment.is_subset(edge) for edge in polygon_edges)]
+
+    ##     assert voronoi_segments
+
+    ##     # Associate with each segment which other center produced it.
+    ##     boundary = {}
+    ##     for segment in voronoi_segments:
+    ##         opposite_center = [c for (c, half_space) in voronoi_half_spaces.items() if half_space == segment.left_half_space()]
+    ##         assert len(opposite_center) == 1, "segment must be induced by exactly one other center of a Voronoi cell"
+    ##         opposite_center = next(iter(opposite_center))
+    ##         assert opposite_center not in boundary
+
+    ##         boundary[opposite_center] = segment
+
+    ##     return boundary
 
     def __repr__(self):
         return f"Voronoi diagram in polygon {self.label()}"
@@ -1027,25 +1035,25 @@ class VoronoiPolygonCell:
         self._parent = parent
         self._center = center
 
-    @cached_method
-    def half_spaces(self):
-        r"""
-        Return the half spaces that delimit this cell inside its polygon,
-        indexed by the two centers defining the half space.
+    # @cached_method
+    # def half_spaces(self):
+    #     r"""
+    #     Return the half spaces that delimit this cell inside its polygon,
+    #     indexed by the two centers defining the half space.
 
-        EXAMPLES::
+    #     EXAMPLES::
 
-            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.regular_octagon()
-            sage: V = VoronoiDiagram(S, S.vertices())
-            sage: cell = V.polygon_cell(0, (0, 0))
-            sage: cell.half_spaces()
-            {(-1/2*a, 1/2*a): {(1/4*a + 1/2) * x - (-1/4*a - 1/2) * y ≥ -1/4*a - 1/4},
-             (1, 0): {(-1/2*a - 1/2) * x ≥ -1/4*a - 1/4}}
+    #         sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+    #         sage: from flatsurf import translation_surfaces
+    #         sage: S = translation_surfaces.regular_octagon()
+    #         sage: V = VoronoiDiagram(S, S.vertices())
+    #         sage: cell = V.polygon_cell(0, (0, 0))
+    #         sage: cell.half_spaces()
+    #         {(-1/2*a, 1/2*a): {(1/4*a + 1/2) * x - (-1/4*a - 1/2) * y ≥ -1/4*a - 1/4},
+    #          (1, 0): {(-1/2*a - 1/2) * x ≥ -1/4*a - 1/4}}
 
-        """
-        return self._parent.half_spaces(self._center)
+    #     """
+    #     return self._parent.half_spaces(self._center)
 
     def boundary(self):
         r"""
@@ -1065,6 +1073,9 @@ class VoronoiPolygonCell:
 
         """
         return self._parent.boundary(self._center)
+
+    def half_spaces(self):
+        return self._parent.half_spaces(self._center)
 
     def polygon(self):
         r"""
@@ -1157,7 +1168,12 @@ class VoronoiPolygonCell:
         if self.polygon().get_point_position(point).is_outside():
             return False
 
-        return all(half_space.contains_point(point) for half_space in self.half_spaces().values())
+        def distance(center, p):
+            from sage.all import vector
+            Δ = vector(p) - center
+            return Δ.dot_product(Δ) / self._parent._parent.radius_of_convergence2(self.surface()(self.label(), center))
+
+        return min(distance(c, point) for c in self._parent.centers()) == distance(self._center, point)
 
     def contains_segment(self, segment):
         r"""
@@ -1390,3 +1406,14 @@ class VoronoiPolygonCell:
                 branch %= angle
 
             label, vertex = S.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
+
+
+class DiskOfAppolonius:
+    def __init__(self, center, opposite_center, weight_squared, opposite_weight_squared):
+        self._center = center
+        self._opposite_center = opposite_center
+        self._weight_squared = weight_squared
+        self._opposite_weight_squared = opposite_weight_squared
+
+    def __repr__(self):
+        return f"Disk of Appolonius with foci {self._center} and {self._opposite_center} at ratio² ({self._weight_squared})/({self._opposite_weight_squared})"
