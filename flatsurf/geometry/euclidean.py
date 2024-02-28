@@ -3453,7 +3453,7 @@ class HalfSpace:
         if not isinstance(other, HalfSpace):
             return False
 
-        return self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
+        return self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c and self._a.sign() == other._a.sign() and self._b.sign() == other._b.sign() and self._c.sign() == other._c.sign()
 
     def __ne__(self, other):
         return not (self == other)
