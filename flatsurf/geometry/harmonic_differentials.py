@@ -868,12 +868,20 @@ class HarmonicDifferentials(Parent):
     Element = HarmonicDifferential
 
     # TODO: Determine ncoefficients automatically
-    def __init__(self, surface, ncoefficients=5, centers=None, category=None):
+    def __init__(self, surface, error=1e-3, centers=None, category=None):
         Parent.__init__(self, category=category or SetsWithPartialMaps())
 
+        try:
+            sorted(surface.labels())
+        except Exception:
+            raise NotImplementedError("labels on the surface must be sortable so we use label order to make a choice of n-th roots")
+
         self._surface = surface
-        self._ncoefficients = ncoefficients
+        self._error = error
         self._centers = tuple(HarmonicDifferentials._centers(surface, centers))
+
+        # TODO: Why does calling this here fix caching issues in ncoefficients()??
+        self.error()
 
     @staticmethod
     def _centers(surface, algorithm):
@@ -914,7 +922,26 @@ class HarmonicDifferentials(Parent):
 
     @cached_method
     def ncoefficients(self, center):
-        return center.angle() * self._ncoefficients
+        beta = self.beta(self._voronoi_diagram().cell(center))
+        if beta >= 1:
+            raise ValueError(f"cell at {center} extends beyond radius of convergence")
+
+        from math import log, ceil
+        ncoefficients = log(self._error, beta)
+
+        ncoefficients /= center.angle()
+
+        ncoefficients = int(ceil(ncoefficients))
+
+        if ncoefficients <= 0:
+            ncoefficients = 1
+
+        # TODO: Should we still multiply here?
+        ncoefficients *= center.angle()
+
+        print(f"{ncoefficients} coefficients at {center} with β={beta}")
+
+        return ncoefficients
 
     def surface(self):
         return self._surface
@@ -932,16 +959,19 @@ class HarmonicDifferentials(Parent):
         if cell is None:
             return max(self.error(cell=cell) for cell in self._voronoi_diagram().cells())
 
-        from math import sqrt
-        R = sqrt(float(cell.radius_of_convergence()))
-        r = sqrt(float(cell.radius()))
-
-        β = r / R
+        β = self.beta(cell=cell)
         if β >= 1:
             from sage.all import oo
             return oo
 
         return abs((β**(self.ncoefficients(cell._center) + 1)) / (1 - β))
+
+    def beta(self, cell):
+        from math import sqrt
+        R = sqrt(float(cell.radius_of_convergence()))
+        r = sqrt(float(cell.radius()))
+
+        return r / R
 
     def error_location(self, cell=None):
         if cell is None:
@@ -1749,7 +1779,6 @@ q
         def f_(part, n, m):
             return int.mixed_integral(part, α, κ, d, n, α, κ, d, m, boundary_segment)
 
-        ncoefficients = self._differentials.ncoefficients(center)
         return self.symbolic_ring().sum([
             (int.Re_a(n) * int.Re_a(m) + int.Im_a(n) * int.Im_a(m)) * f_("Re", n, m) + (int.Re_a(n) * int.Im_a(m) - int.Im_a(n) * int.Re_a(m)) * f_("Im", n, m)
             for n in range(self._differentials.ncoefficients(center))
