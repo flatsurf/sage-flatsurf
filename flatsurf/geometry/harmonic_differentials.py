@@ -81,13 +81,18 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: from flatsurf import similarity_surfaces, SimplicialCohomology, HarmonicDifferentials, Polygon
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
-    sage: S = S.erase_marked_points().codomain().delaunay_decomposition().codomain()
+    sage: S = S.erase_marked_points().codomain().delaunay_triangulation()
 
     sage: H = SimplicialCohomology(S)
     sage: f = H({H.homology().gens()[0]: 1})
+    sage: g = H({H.homology().gens()[1]: 1})
+    sage: fg = H({H.homology().gens()[1]: 1, H.homology().gens()[0]: 1})
 
-    sage: Omega = HarmonicDifferentials(S, ncoefficients=1)
-    sage: omega = Omega(f, check=False)  # TODO: Increase precision once this is faster.  # long time
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, centers="vertices")
+    sage: omegaf = Omega(f, check=False)  # TODO: Increase precision once this is faster.  # long time
+    sage: omegag = Omega(g, check=False)
+    sage: omegafg = Omega(fg, check=False)
+    sage: omegaf + omegag - omegafg
     sage: omega.simplify()  # long time, see above
     ((0.43474 + 0.32379*I) + O(z0), (0.014497 + 0.099627*I) + O(z1), (-0.050347 + 0.0029207*I) + O(z2), (-0.21127 - 0.090282*I) + O(z3), (0.47454 + 0.087358*I) + O(z4), (-0.19314 + 0.31055*I) + O(z5), (-0.23193 - 0.13398*I) + O(z6), (-0.45636 - 0.42553*I) + O(z7), (-0.21176 + 0.40428*I) + O(z8), (-0.15358 + 0.049085*I) + O(z9), (-0.40648 - 0.48943*I) + O(z10), (-0.0020610 - 0.48399*I) + O(z11), (0.24142 - 0.25153*I) + O(z12), (-0.032511 + 0.55139*I) + O(z13), (-0.32812 + 0.13133*I) + O(z14), (-0.33572 + 0.53022*I) + O(z15), (0.079225 + 0.028393*I) + O(z16), (0.033120 - 0.49532*I) + O(z17), (-0.27160 - 0.34612*I) + O(z18), (-0.21121 + 0.25608*I) + (-0.13894 - 0.56381*I)*z19 + (0.040253 + 0.39319*I)*z19^2 + (-0.088971 - 0.70043*I)*z19^3 + (0.075621 - 0.040790*I)*z19^4 + (-0.76242 - 0.39754*I)*z19^5 + (-0.066434 - 0.12278*I)*z19^6 + (0.0075069 + 0.22176*I)*z19^7 + (-0.40163 - 0.51249*I)*z19^8 + (0.55621 + 0.080413*I)*z19^9 + (-1.0088 - 1.9733*I)*z19^10 + (0.27571 - 0.061058*I)*z19^11 + (-2.4352 - 1.0704*I)*z19^12 + O(z19^13), (-0.14288 + 0.36838*I) + O(z20), (-0.012062 - 0.58947*I) + O(z21), (0.44529 + 0.29461*I) + (0.22745 - 0.67464*I)*z22 + (-0.95440 - 0.53814*I)*z22^2 + O(z22^3), (-2.4328 - 0.60098*I) + O(z23), (-0.71168 - 0.73386*I) + O(z24), (-1.6115 - 1.7234*I) + O(z25))
 
