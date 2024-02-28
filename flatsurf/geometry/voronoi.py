@@ -1,5 +1,6 @@
 # TODO: Drop all use of coordinates. Use EuclideanPolygonPoint instead of (label, coordinates)
 # TODO: SageMath already has a VoronoiDiagram so maybe not use that name. Explain that we cannot use the builtin version since it has no weights.
+# TODO: The classical Voronoi cells are not correct currently.
 
 from sage.misc.cachefunc import cached_method
 
@@ -139,7 +140,7 @@ class VoronoiDiagram:
     def cell(self, point):
         r"""
         Return a Voronoi cell that contains ``point``.
-m
+
         EXAMPLES::
 
             sage: from flatsurf.geometry.voronoi import VoronoiDiagram
@@ -179,6 +180,12 @@ m
         for cell in self._cells.values():
             if point is None or cell.contains_point(point):
                 yield cell
+
+    def corners(self):
+        corners = []
+        for cell in self.cells():
+            corners.extend(cell.corners())
+        return set(corners)
 
     def polygon_cell(self, label, coordinates):
         r"""
@@ -222,6 +229,8 @@ m
             [Voronoi cell in polygon (0, 0) at (0, 0), Voronoi cell in polygon (0, 0) at (1, 0)]
 
         """
+        if self.surface().polygon(label).get_point_position(coordinates).is_outside():
+            raise ValueError(f"coordinates must be inside polygon but {coordinates} are not in polygon with label {label}")
         return self._diagram_polygon(label).polygon_cells(coordinates)
 
     @cached_method
@@ -401,6 +410,9 @@ m
         for cell in self.cells():
             for polygon_cell in cell.polygon_cells():
                 for opposite_center, boundary_segment in polygon_cell.boundary().items():
+                    if self.surface().polygon(polygon_cell.label()).get_point_position(opposite_center).is_outside():
+                        print("missing a segment of the boundary")
+                        continue
                     boundaries[frozenset([polygon_cell, self.polygon_cell(polygon_cell.label(), opposite_center)])] = boundary_segment
 
         return boundaries
@@ -559,7 +571,8 @@ W
             for c in self._parent.polygon_cells(lbl, coordinates):
                 cells.append(c)
 
-        assert cells
+        # TODO: Why should we assert this here?
+        # assert cells
 
         return cells
 
@@ -597,6 +610,20 @@ W
 
     def __repr__(self):
         return f"Voronoi cell at {self._center}"
+
+    def corners(self):
+        corners = set()
+        for cell in self.polygon_cells():
+            polygon_corners = {}
+            for segment in cell.boundary().values():
+                for p in [segment.start(), segment.end()]:
+                    p = self.surface()(cell.label(), p)
+                    if p not in polygon_corners:
+                        polygon_corners[p] = 1
+                    else:
+                        corners.add(p)
+
+        return corners
 
     # TODO: Make comparable and hashable.
 
@@ -860,7 +887,7 @@ class VoronoiDiagram_Polygon:
     def _half_space_radius_of_convergence_weight(self, center, opposite_center):
         r"""
         Return the quotient of the radii of convergence at ``center`` and
-        ``opposite_center`` (when restricted to thei polygon.)
+        ``opposite_center`` (when restricted to their polygon.)
         """
         surface = self._parent.surface()
         weight = self._parent.radius_of_convergence2(surface(self._label, center))
@@ -936,6 +963,20 @@ class VoronoiDiagram_Polygon:
             raise ValueError("center must be a center of a Voronoi cell")
 
         voronoi_half_spaces = {opposite_center: self._half_space(center, opposite_center) for opposite_center in self.centers() if opposite_center != center}
+
+        if self._weight == "classical":
+            # TODO: Hack in the next polygon if it affects this cell.
+            vertex = self.polygon().get_point_position(center).get_vertex()
+            opposite_label, opposite_edge = self.surface().opposite_edge(self.label(), vertex)
+            opposite_center = center + self.surface().polygon(opposite_label).edge(opposite_edge + 1)
+            opposite_center.set_immutable()
+            voronoi_half_spaces[opposite_center] = self._half_space(center, opposite_center)
+
+            # TODO: Hack in the previous polygon if it affects this cell.
+            opposite_label, opposite_edge = self.surface().opposite_edge(self.label(), vertex - 1)
+            opposite_center = center - self.surface().polygon(opposite_label).edge(opposite_edge - 1)
+            opposite_center.set_immutable()
+            voronoi_half_spaces[opposite_center] = self._half_space(center, opposite_center)
 
         # The half spaces whose intersection is the entire polygon.
         from flatsurf.geometry.euclidean import HalfSpace

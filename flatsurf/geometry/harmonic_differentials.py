@@ -1449,7 +1449,9 @@ class PowerSeriesConstraints:
             boundary = sum([opposite_cell.split_segment_uniform_root_branch(segment) for segment in boundary], [])
             return sum(self._L2_consistency_voronoi_boundary(cell, segment, opposite_cell) for segment in boundary)
 
-        return sum(cost for _, cost in L2_cost(list(self._differentials._voronoi_diagram().boundaries().items())))
+        costs = list(cost for _, cost in L2_cost(list(self._differentials._voronoi_diagram().boundaries().items())))
+
+        return sum(costs)
 
     @cached_method
     def ζ(self, d):
