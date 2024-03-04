@@ -1,3 +1,8 @@
+# TODO: It is annoying that the zero flag is not normally shown when plotting.
+# Whenever polygon labels are shown, the default should be to show the zero
+# flag. Also, there should be an option to enable it with a zero_flags=True or
+# something like that. Finally, it would be nice to not show edge gluings if
+# there is only one possible translation gluing.
 r"""
 EXAMPLES::
 
