@@ -32,8 +32,7 @@ We can use morphisms to follow a surface through a retriangulation process::
     sage: morphism = S.subdivide_edges(3)
     sage: morphism = morphism.codomain().subdivide() * morphism
     sage: T = morphism.codomain()
-
-    sage: morphism
+    sage: morphism  # TODO: Get rid of the identity in the sequence below.
     Composite morphism:
       From: Translation Surface in H_2(2) built from a regular octagon
       To:   Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
@@ -41,7 +40,9 @@ We can use morphisms to follow a surface through a retriangulation process::
               From: Translation Surface in H_2(2) built from a regular octagon
               To:   Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
             then
-              Subdivision morphism:
+              Identity endomorphism of Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
+            then
+              InsertMarkedPoint morphism:
               From: Translation Surface in H_2(2, 0^8) built from a regular octagon with 16 marked vertices
               To:   Translation Surface in H_2(2, 0^9) built from 8 isosceles triangles and 16 triangles
 
@@ -769,7 +770,7 @@ class SurfaceMorphism(Morphism):
             sage: morphism(c)
             Traceback (most recent call last):
             ...
-            NotImplementedError: a SubdivideMorphism_with_category cannot compute the image of a saddle connection yet
+            NotImplementedError: a ... cannot compute the image of a saddle connection yet
 
         """
         raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a saddle connection yet")
