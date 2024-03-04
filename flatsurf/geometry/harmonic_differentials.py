@@ -33,14 +33,15 @@ The harmonic differential that integrates as 0 along `a` but 1 along `b`::
 A less trivial example, the regular octagon::
 
     sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
-    sage: S = translation_surfaces.regular_octagon()
+    sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulation()
 
     sage: H = SimplicialCohomology(S)
     sage: a, b, c, d = H.homology().gens()
 
     sage: f = H({ a: sqrt(2) + 1, b: 0, c: -sqrt(2) - 1, d: -sqrt(2) - 2})
 
-    sage: Omega = HarmonicDifferentials(S, ncoefficients=11)
+    sage: from flatsurf.geometry.voronoi import VoronoiCellDecomposition
+    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=VoronoiCellDecomposition(S))
     sage: omega = Omega(f)
     sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # TODO: Why so much tolerance?
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
@@ -580,10 +581,10 @@ class HarmonicDifferential(Element):
         error = False
 
         def errors(expected, actual):
-            abs_error = abs(expected - actual)
+            abs_error = float(abs(expected - actual))
             rel_error = 0
             if abs(expected) > 1e-12:
-                rel_error = abs_error / abs(expected)
+                rel_error = abs_error / float(abs(expected))
 
             return abs_error, rel_error
 
@@ -868,66 +869,35 @@ class HarmonicDifferentials(Parent):
     Element = HarmonicDifferential
 
     # TODO: Determine ncoefficients automatically
-    def __init__(self, surface, error=1e-3, centers=None, category=None):
-        Parent.__init__(self, category=category or SetsWithPartialMaps())
-
+    def __init__(self, surface, error, cell_decomposition, category=None):
+        # TODO: Just order labels by their order in surface.labels() instead.
         try:
             sorted(surface.labels())
         except Exception:
             raise NotImplementedError("labels on the surface must be sortable so we use label order to make a choice of n-th roots")
 
+        # TODO: Add defaults for error and cell_decomposition.
+
+        Parent.__init__(self, category=category or SetsWithPartialMaps())
+
         self._surface = surface
         self._error = error
-        self._centers = tuple(HarmonicDifferentials._centers(surface, centers))
+        self._cells = cell_decomposition
+        self._centers = list(self._cells.centers())
 
         # TODO: Why does calling this here fix caching issues in ncoefficients()??
-        self.error()
-
-    @staticmethod
-    def _centers(surface, algorithm):
-        if algorithm is None:
-            algorithm = "vertices+centers"
-
-        if algorithm == "vertices":
-            return HarmonicDifferentials._centers_vertices(surface)
-
-        if algorithm == "vertices+centers":
-            return HarmonicDifferentials._centers_vertices_and_centers(surface)
-
-        from flatsurf.geometry.surface_objects import SurfacePoint
-        if all(isinstance(center, SurfacePoint) for center in algorithm):
-            return frozenset(algorithm)
-
-        raise NotImplementedError("unsupported algorithm for determining centers of power series")
-
-    @staticmethod
-    def _centers_vertices(surface):
-        r"""
-        Return the vertices of ``surface`` to develop power series around them.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials
-            sage: S = translation_surfaces.regular_octagon()
-
-            sage: HarmonicDifferentials._centers_vertices(S)
-            frozenset({Vertex 0 of polygon 0})
-
-        """
-        return frozenset(surface.vertices())
-
-    @staticmethod
-    def _centers_vertices_and_centers(surface):
-        return frozenset(list(surface.vertices()) + [surface(label, surface.polygon(label).centroid()) for label in surface.labels()])
+        from sage.all import oo
+        if self.error() == oo:
+            raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
 
     @cached_method
     def ncoefficients(self, center):
-        beta = self.beta(self._voronoi_diagram().cell(center))
-        if beta >= 1:
+        relative_radius = self._relative_radius_of_convergence(self._cells.cell_at_center(center))
+        if relative_radius >= 1:
             raise ValueError(f"cell at {center} extends beyond radius of convergence")
 
         from math import log, ceil
-        ncoefficients = log(self._error, beta)
+        ncoefficients = log(self._error, relative_radius)
 
         ncoefficients /= center.angle()
 
@@ -939,7 +909,7 @@ class HarmonicDifferentials(Parent):
         # TODO: Should we still multiply here?
         ncoefficients *= center.angle()
 
-        print(f"{ncoefficients} coefficients at {center} with β={beta}")
+        print(f"{ncoefficients} coefficients at {center} with β={relative_radius}")
 
         return ncoefficients
 
@@ -947,40 +917,38 @@ class HarmonicDifferentials(Parent):
         return self._surface
 
     @cached_method
-    def _voronoi_diagram(self):
-        from flatsurf.geometry.voronoi import VoronoiDiagram
-        return VoronoiDiagram(self._surface, self._centers, weight="radius_of_convergence")
-
-    @cached_method
     def error(self, cell=None):
         # Returns the a-priori (is it?) error for the value of the differential
         # anywhere in cell (or anywhere in all cells); relative to the maximum
         # of the differential. TODO: Explain algorithm from my notes.
         if cell is None:
-            return max(self.error(cell=cell) for cell in self._voronoi_diagram().cells())
+            return max(self.error(cell=cell) for cell in self._cells)
 
-        β = self.beta(cell=cell)
-        if β >= 1:
+        relative_radius = self._relative_radius_of_convergence(cell=cell)
+        if relative_radius >= 1:
             from sage.all import oo
             return oo
 
-        return abs((β**(self.ncoefficients(cell._center) + 1)) / (1 - β))
+        return abs((relative_radius**(self.ncoefficients(cell._center) + 1)) / (1 - relative_radius))
 
-    def beta(self, cell):
-        from math import sqrt
-        R = sqrt(float(cell.radius_of_convergence()))
-        r = sqrt(float(cell.radius()))
+    def _relative_radius_of_convergence(self, cell):
+        r"""
+        Return the :meth:`Cell.radius` of the ``cell`` divided by the radius of
+        convergence at the center point of that cell as a floating point number.
+        """
+        R = float(cell.center().radius_of_convergence())
+        r = float(cell.radius())
 
         return r / R
 
-    def error_location(self, cell=None):
-        if cell is None:
-            cell = self.error_cell()
+    # def error_location(self, cell=None):
+    #     if cell is None:
+    #         cell = self.error_cell()
 
-        return cell.furthest_point()
+    #     return cell.furthest_point()
 
-    def error_cell(self):
-        return max(self._voronoi_diagram().cells(), key=lambda cell: self.error(cell=cell))
+    # def error_cell(self):
+    #     return max(self._voronoi_diagram().cells(), key=lambda cell: self.error(cell=cell))
 
     def _repr_(self):
         return f"Ω({self._surface})"
@@ -1329,12 +1297,16 @@ class PowerSeriesConstraints:
             [(1, Path (1, 0) from (0, 0) in polygon 0 to (1, 0) in polygon 0)]
 
         """
-        return [(1, GeodesicPath.along_edge(self._differentials.surface(), label, edge))]
+        surface = self._differentials.surface()
+        polygon = surface.polygon(label)
 
-    def _integrate_path(self, path):
+        from flatsurf.geometry.voronoi import SurfaceLineSegment
+        return [(1, SurfaceLineSegment(self._differentials.surface(), label, polygon.vertex(edge), polygon.edge(edge)))]
+
+    def _integrate_path(self, segment):
         r"""
         Return the linear combination of the power series coefficients that
-        describe the integral along the ``path``.
+        describe the integral along the ``segment``.
 
         This is a helper method for :meth:`integrate`.
 
@@ -1355,34 +1327,9 @@ class PowerSeriesConstraints:
             (-5.55111512312578e-17 - 0.389300863573646*I)*Re(a0,0) + (-1.60217526524068*I)*Re(a1,0) + (0.389300863573646 - 5.55111512312578e-17*I)*Im(a0,0) + 1.60217526524068*Im(a1,0) + (-2.08166817117217e-17 - 0.327551243899060*I)*Re(a0,1) + (1.66533453693773e-16 + 3.19522800018857e-17*I)*Re(a1,1) + (0.327551243899060 - 2.08166817117217e-17*I)*Im(a0,1) + (-3.19522800018857e-17 + 1.66533453693773e-16*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a0,2) + (-1.23259516440783e-32 + 0.342727396656658*I)*Re(a1,2) + 0.270679432377470*Im(a0,2) + (-0.342727396656658 - 1.23259516440783e-32*I)*Im(a1,2) + (1.38777878078145e-17 - 0.219471472765136*I)*Re(a0,3) + (-1.24900090270330e-16 - 3.07576511193400e-17*I)*Re(a1,3) + (0.219471472765136 + 1.38777878078145e-17*I)*Im(a0,3) + (3.07576511193400e-17 - 1.24900090270330e-16*I)*Im(a1,3) + (2.42861286636753e-17 - 0.174329399573979*I)*Re(a0,4) + (1.69481835106077e-32 - 0.131965414609324*I)*Re(a1,4) + (0.174329399573979 + 2.42861286636753e-17*I)*Im(a0,4) + (0.131965414609324 + 1.69481835106077e-32*I)*Im(a1,4) + (3.12250225675825e-17 - 0.135339716188735*I)*Re(a0,5) + (0.135339716188735 + 3.12250225675825e-17*I)*Im(a0,5) + (2.77555756156289e-17 - 0.102340546397005*I)*Re(a0,6) + (0.102340546397005 + 2.77555756156289e-17*I)*Im(a0,6) + (3.46944695195361e-17 - 0.0749845895064374*I)*Re(a0,7) + (0.0749845895064374 + 3.46944695195361e-17*I)*Im(a0,7) + (3.12250225675825e-17 - 0.0527958835241931*I)*Re(a0,8) + (0.0527958835241931 + 3.12250225675825e-17*I)*Im(a0,8) + (2.77555756156289e-17 - 0.0352191503025193*I)*Re(a0,9) + (0.0352191503025193 + 2.77555756156289e-17*I)*Im(a0,9) + (2.08166817117217e-17 - 0.0216611462547145*I)*Re(a0,10) + (0.0216611462547145 + 2.08166817117217e-17*I)*Im(a0,10) + (2.08166817117217e-17 - 0.0115239671919220*I)*Re(a0,11) + (0.0115239671919220 + 2.08166817117217e-17*I)*Im(a0,11) + (1.73472347597681e-17 - 0.00423065874117904*I)*Re(a0,12) + (0.00423065874117904 + 1.73472347597681e-17*I)*Im(a0,12) + (1.04083408558608e-17 + 0.000756226861613830*I)*Re(a0,13) + (-0.000756226861613830 + 1.04083408558608e-17*I)*Im(a0,13) + (8.67361737988404e-18 + 0.00392229868304028*I)*Re(a0,14) + (-0.00392229868304028 + 8.67361737988404e-18*I)*Im(a0,14)
 
         """
-        return sum(self._integrate_path_polygon(label, segment) for (label, segment) in path.split())
+        return sum(self._integrate_path_polygon_cell(polygon_cell, segment) for (segment, polygon_cell) in self._differentials._cells.split_segment_at_polygon_cells(segment))
 
-    def _integrate_path_polygon(self, label, segment):
-        r"""
-        Return a symbolic expression describing the integral along the
-        ``segment`` in the polygon with ``label``.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
-            sage: S = translation_surfaces.regular_octagon()
-
-            sage: Ω = HarmonicDifferentials(S)
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(Ω)
-
-            sage: from flatsurf.geometry.euclidean import OrientedSegment
-
-            sage: C._integrate_path_polygon(0, OrientedSegment((0, 0), (1, 0)))  # TODO: Check this value
-            (1.58740105196839 - 2.64762039020726e-18*I)*Re(a0,0) + (2.64762039020726e-18 + 1.58740105196839*I)*Im(a0,0) + (-1.44328993201270e-15 - 1.11813213514231e-18*I)*Re(a0,1) + (1.11813213514231e-18 - 1.44328993201270e-15*I)*Im(a0,1) + 0.333333333333333*Re(a0,2) + 0.333333333333333*I*Im(a0,2) + (-1.09614712307247e-19*I)*Re(a0,3) + (1.09614712307247e-19)*Im(a0,3) + (0.125992104989487 + 1.78541206316279e-19*I)*Re(a0,4) + (-1.78541206316279e-19 + 0.125992104989487*I)*Im(a0,4) + (5.10269499644730e-18*I)*Re(a0,5) + (-5.10269499644730e-18)*Im(a0,5) + (0.0566928947041920 + 7.90191292835058e-20*I)*Re(a0,6) + (-7.90191292835058e-20 + 0.0566928947041920*I)*Im(a0,6) + (-1.44886888580502e-18*I)*Re(a0,7) + (1.44886888580502e-18)*Im(a0,7) + (0.0277777777777778 - 3.40179666429820e-18*I)*Re(a0,8) + (3.40179666429820e-18 + 0.0277777777777778*I)*Im(a0,8) + (1.73472347597681e-18 + 1.25548457904919e-18*I)*Re(a0,9) + (-1.25548457904919e-18 + 1.73472347597681e-18*I)*Im(a0,9) + (0.0143172846575932 - 2.51141927450074e-19*I)*Re(a0,10) + (2.51141927450074e-19 + 0.0143172846575932*I)*Im(a0,10) + (8.67361737988404e-19 + 1.91351062366774e-18*I)*Re(a0,11) + (-1.91351062366774e-18 + 8.67361737988404e-19*I)*Im(a0,11) + (0.00763173582678622 + 7.56708582916301e-19*I)*Re(a0,12) + (-7.56708582916301e-19 + 0.00763173582678622*I)*Im(a0,12) + (8.67361737988404e-19 + 4.33707190579305e-19*I)*Re(a0,13) + (-4.33707190579305e-19 + 8.67361737988404e-19*I)*Im(a0,13) + (0.00416666666666667 - 1.02053899928946e-18*I)*Re(a0,14) + (1.02053899928946e-18 + 0.00416666666666667*I)*Im(a0,14)
-
-        """
-        V = self._differentials._voronoi_diagram()
-
-        return sum(self._integrate_path_cell(cell, subsegment) for (cell, subsegment) in V.split_segment(label, segment).items())
-
-    def _integrate_path_cell(self, polygon_cell, segment):
+    def _integrate_path_polygon_cell(self, polygon_cell, segment):
         r"""
         Return a symbolic expression describing the integral along the
         ``segment`` in the Voronoi cell ``polygon_cell``.
@@ -1405,7 +1352,7 @@ class PowerSeriesConstraints:
 
         """
         integrator = self.CellIntegrator(self, polygon_cell)
-        ncoefficients = self._differentials.ncoefficients(self._differentials.surface()(polygon_cell.label(), polygon_cell.center()))
+        ncoefficients = self._differentials.ncoefficients(polygon_cell.cell().center())
         return sum(integrator.a(n) * integrator.integral(n, segment) for n in range(ncoefficients))
 
     @cached_method
@@ -1440,18 +1387,30 @@ class PowerSeriesConstraints:
             0
 
         """
+        cells = self._differentials._cells
+
         from sage.all import parallel
 
         @parallel
-        def L2_cost(cells, boundary):
-            cell, opposite_cell = list(cells)
-            boundary = cell.split_segment_uniform_root_branch(boundary)
-            boundary = sum([opposite_cell.split_segment_uniform_root_branch(segment) for segment in boundary], [])
-            return sum(self._L2_consistency_voronoi_boundary(cell, segment, opposite_cell) for segment in boundary)
+        def L2_cost(polygon_cell, boundary_segment, opposite_polygon_cell):
+            from flatsurf.geometry.euclidean import OrientedSegment
+            boundary_segment = OrientedSegment(*boundary_segment)
 
-        costs = list(cost for _, cost in L2_cost(list(self._differentials._voronoi_diagram().boundaries().items())))
+            boundary_segments = polygon_cell.split_segment_with_constant_root_branches(boundary_segment)
+            boundary_segments = sum((opposite_polygon_cell.split_segment_with_constant_root_branches(segment) for segment in boundary_segments), start=[])
 
-        return sum(costs)
+            return sum(self._L2_consistency_voronoi_boundary(polygon_cell, segment, opposite_polygon_cell) for segment in boundary_segments)
+
+        # Get one copy of each cell boundary (with a random orientation.)
+        cell_boundaries = {
+            frozenset([boundary, -boundary]): boundary
+            for cell in cells
+            for boundary in cell.boundary()
+        }.values()
+
+        polygon_cell_boundaries = sum((boundary.polygon_cell_boundaries() for boundary in cell_boundaries), start=[])
+
+        return sum(cost for _, cost in L2_cost(polygon_cell_boundaries))
 
     @cached_method
     def ζ(self, d):
@@ -1463,9 +1422,9 @@ class PowerSeriesConstraints:
         return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._differentials._centers.index(center)},?)", n))
 
     class CellIntegrator:
-        def __init__(self, constraints, cell):
+        def __init__(self, constraints, polygon_cell):
             self._constraints = constraints
-            self._cell = cell
+            self._polygon_cell = polygon_cell
 
         @cached_method
         def a(self, n):
@@ -1473,11 +1432,11 @@ class PowerSeriesConstraints:
 
         @cached_method
         def Re_a(self, n):
-            return self._constraints._gen("Re", self._cell.surface()(self._cell.label(), self._cell.center()), n)
+            return self._constraints._gen("Re", self._polygon_cell.cell().center(), n)
 
         @cached_method
         def Im_a(self, n):
-            return self._constraints._gen("Im", self._cell.surface()(self._cell.label(), self._cell.center()), n)
+            return self._constraints._gen("Im", self._polygon_cell.cell().center(), n)
 
         def integral(self, n, segment):
             r"""
@@ -1497,14 +1456,14 @@ class PowerSeriesConstraints:
 
             C = self._constraints.complex_field()
 
-            d = self._cell.surface()(self._cell.label(), self._cell.center()).angle() - 1
-            α = C(*self._cell.center())
+            d = self._polygon_cell.cell().center().angle() - 1
+            α = C(*self._polygon_cell.center())
 
-            for γ in self._cell.split_segment_uniform_root_branch(segment):
+            for γ in self._polygon_cell.split_segment_with_constant_root_branches(segment):
                 a = C(*γ.start())
                 b = C(*γ.end())
 
-                constant = self._constraints.ζ(d + 1) ** (self._cell.root_branch(γ) * (n + 1)) / (d + 1) * (C(b) - C(a))
+                constant = self._constraints.ζ(d + 1) ** (self._polygon_cell.root_branch(γ) * (n + 1)) / (d + 1) * (C(b) - C(a))
 
                 def value(part, t):
                     z = self._constraints.complex_field()(*((1 - t) * a + t * b))
@@ -1642,7 +1601,7 @@ class PowerSeriesConstraints:
         def f(self, n):
             return self.integral(self.α(), self.κ(), self.d(), n)
 
-    def _L2_consistency_voronoi_boundary(self, cell, boundary_segment, opposite_cell):
+    def _L2_consistency_voronoi_boundary(self, polygon_cell, boundary_segment, opposite_polygon_cell):
         r"""
         ALGORITHM:
 
@@ -1762,9 +1721,13 @@ q
             0
 
         """
-        return (self._L2_consistency_voronoi_boundary_f_overline_f(cell, boundary_segment)
-                - 2 * self._L2_consistency_voronoi_boundary_Re_f_overline_g(cell, boundary_segment, opposite_cell)
-                + self._L2_consistency_voronoi_boundary_g_overline_g(opposite_cell, boundary_segment))
+        assert polygon_cell.label() == opposite_polygon_cell.label()
+        assert polygon_cell.contains_segment(boundary_segment)
+        assert opposite_polygon_cell.contains_segment(boundary_segment)
+
+        return (self._L2_consistency_voronoi_boundary_f_overline_f(polygon_cell, boundary_segment)
+                - 2 * self._L2_consistency_voronoi_boundary_Re_f_overline_g(polygon_cell, boundary_segment, opposite_polygon_cell)
+                + self._L2_consistency_voronoi_boundary_g_overline_g(opposite_polygon_cell, boundary_segment))
 
     def _L2_consistency_voronoi_boundary_f_overline_f(self, cell, boundary_segment):
         r"""
