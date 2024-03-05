@@ -626,7 +626,13 @@ class SurfaceMorphism(Morphism):
         The image of a cohomology class (mapping from the cohomology of the
         codomain to the cohomology of the domain)::
 
-            
+            sage: # TODO        
+
+        The image of a harmonic differential (mapping from the space of
+        harmonic differentials on the codomain to the space of harmonic
+        differentials on the domain)::
+
+            sage: # TODO
 
         The image of a tangent vector::
 
@@ -642,6 +648,7 @@ class SurfaceMorphism(Morphism):
             NotImplementedError: cannot map Integer yet through ...
 
         """
+        # TODO: Is it a good idea that contravariant induced maps are in here?
         from flatsurf.geometry.surface_objects import SurfacePoint_base
         if isinstance(x, SurfacePoint_base):
             if x.parent() is not self.domain():
@@ -663,6 +670,14 @@ class SurfaceMorphism(Morphism):
             if x.parent().surface() is not self.codomain():
                 raise ValueError("cohomology class must be defined over the codomain of this morphism")
             image = self._image_cohomology(x)
+            assert image.parent().surface() is self.domain()
+            return image
+
+        from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
+        if isinstance(x, HarmonicDifferential):
+            if x.parent().surface() is not self.codomain():
+                raise ValueError("harmonic differential must be defined over the codomain of this morphism")
+            image = self._image_harmonic_differential(x)
             assert image.parent().surface() is self.domain()
             return image
 
@@ -1192,6 +1207,43 @@ class SurfaceMorphism(Morphism):
 
         return domain_cohomology({gen: f(self(gen)) for gen in domain_cohomology.homology().gens()})
 
+    def _image_harmonic_differential(self, f):
+        r"""
+        Return the image of the harmonic differential ``f`` in the space of
+        harmonic differentials on the morphism's domain.
+
+        This is a helper method for :meth:`call`.
+
+        Subclasses can override this method if the morphism is meaningful on
+        the level of harmonic differentials.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: from flatsurf.geometry.morphism import PolygonIsometryMorphism
+            sage: r = PolygonIsometryMorphism._create_morphism(S, S, {0: (0, 1)})
+
+            sage: prepare = S.subdivide()
+            sage: S = prepare.codomain()
+            sage: r = prepare * r * prepare.section()
+
+            sage: from flatsurf.geometry.voronoi import VoronoiCellDecomposition
+            sage: Omega = HarmonicDifferentials(S, error=1e-2, cell_decomposition=VoronoiCellDecomposition(S))
+            sage: H = SimplicialCohomology(S)
+            sage: a, b, c, d = H.homology().gens()
+            sage: f = H({a: 1})
+            sage: omega = Omega(f, check=False)
+            sage: omega.cohomology()
+            sage: r(omega).cohomology()
+            sage: r(f)
+            sage: r.section()(r(omega)).cohomology()
+            sage: (r.section() * r)(omega).cohomology()
+
+        """
+        return f.parent().change(surface=self.domain())(self(f.cohomology()), check=False)
+
     def __mul__(self, other):
         r"""
         Return the composition of this morphism and ``other``.
@@ -1449,6 +1501,8 @@ class SectionMorphism(SurfaceMorphism):
         return f"Section of {self._morphism}"
 
 
+# TODO: The whole composite setup is not great yet. The special handling of
+# contravariant induced maps in call is a hack.
 class CompositionMorphism(SurfaceMorphism):
     # TODO: docstring
     def __init__(self, parent, lhs, rhs, category=None):
@@ -1467,6 +1521,11 @@ class CompositionMorphism(SurfaceMorphism):
         return super()._create_morphism(rhs.domain(), lhs.codomain(), lhs, rhs)
 
     def __call__(self, x):
+        from flatsurf.geometry.cohomology import SimplicialCohomologyClass
+        from flatsurf.geometry.harmonic_differentials import HarmonicDifferential
+        if isinstance(x, (SimplicialCohomologyClass, HarmonicDifferential)):
+            return SurfaceMorphism.__call__(self, x)
+
         for morphism in self._morphisms:
             x = morphism(x)
         return x
@@ -1543,26 +1602,8 @@ class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
 
         return to_pyflatsurf.section(p)
 
-    def _image_homology(self, γ):
-        # TODO: homology should allow to write this code more naturally somehow
-        # TODO: docstring
-        from flatsurf.geometry.homology import SimplicialHomology
-
-        H = SimplicialHomology(self.codomain())
-        C = H.chain_module(dimension=1)
-
-        image = H()
-
-        for gen in γ.parent().gens():
-            for step in gen._path():
-                codomain_gen = (step, 0)
-                sgn = 1
-                if codomain_gen not in H.simplices():
-                    sgn = -1
-                    codomain_gen = self.codomain().opposite_edge(*codomain_gen)
-                image += sgn * γ.coefficient(gen) * H(C(codomain_gen))
-
-        return image
+    def _image_homology_edge(self, label, edge):
+        return [(1, (label, edge), 0)]
 
     def __eq__(self, other):
         if not isinstance(other, InsertMarkedPointsInFaceMorphism):

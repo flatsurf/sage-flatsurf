@@ -777,6 +777,12 @@ class VoronoiCellDecomposition(CellDecomposition):
     def __repr__(self):
         return f"Voronoi cell decomposition of {self.surface()}"
 
+    def change(self, surface=None):
+        if surface is not None:
+            self = VoronoiCellDecomposition(surface)
+
+        return self
+
 
 # TODO: Move to surface objects.
 class SurfaceLineSegment:

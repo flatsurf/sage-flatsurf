@@ -661,6 +661,10 @@ class HarmonicDifferential(Element):
         """
         return self._series[triangle]
 
+    def cohomology(self):
+        H = self.parent().cohomology()
+        return H({ gen: self.integrate(gen).real() for gen in H.homology().gens()})
+
     @cached_method
     def _constraints(self):
         # TODO: This is a hack. Come up with a better class hierarchy!
@@ -836,7 +840,7 @@ class HarmonicDifferential(Element):
 
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
-class HarmonicDifferentials(Parent):
+class HarmonicDifferentialSpace(Parent):
     r"""
     The space of harmonic differentials on this surface.
 
@@ -889,6 +893,12 @@ class HarmonicDifferentials(Parent):
         from sage.all import oo
         if self.error() == oo:
             raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
+
+    def change(self, surface=None):
+        if surface is not None:
+            self = HarmonicDifferentials(surface=surface, error=self._error, cell_decomposition=self._cells.change(surface=surface))
+
+        return self
 
     @cached_method
     def ncoefficients(self, center):
@@ -991,12 +1001,11 @@ class HarmonicDifferentials(Parent):
 
     @cached_method(key=lambda self, check: None, do_pickle=True)
     def basis(self, check=True):
-        from flatsurf.geometry.homology import SimplicialHomology
-        H = SimplicialHomology(self._surface)
+        return [self(gen) for gen in self.cohomology().gens()]
+
+    def cohomology(self):
         from flatsurf.geometry.cohomology import SimplicialCohomology
-        HH = SimplicialCohomology(self._surface)
-        from sage.all import ZZ
-        return [self(HH({gen: ZZ.one()}), check=check) for gen in H.gens()]
+        return SimplicialCohomology(self._surface)
 
     @cached_method(key=lambda self, check: None, do_pickle=True)
     def period_matrix(self, check=True):
@@ -2381,3 +2390,8 @@ class GeodesicPath(Path):
 
     def __hash__(self):
         return hash((self._start, self._holonomy))
+
+
+def HarmonicDifferentials(surface, error, cell_decomposition, category=None):
+    return surface.harmonic_differentials(error, cell_decomposition, category)
+

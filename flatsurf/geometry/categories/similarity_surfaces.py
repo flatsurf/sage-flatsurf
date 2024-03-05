@@ -423,6 +423,25 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return self.apply_matrix(matrix, in_place=False).codomain()
 
+        def harmonic_differentials(self, error, cell_decomposition, category=None):
+            if self.is_mutable():
+                raise ValueError("surface must be immutable to compute harmonic differentials")
+
+            from sage.all import RR
+            coefficients = RR
+
+
+            if category is None:
+                from sage.categories.all import Modules
+                category = Modules(coefficients)
+
+            return self._harmonic_differentials(error=error, cell_decomposition=cell_decomposition, category=category)
+
+        @cached_method
+        def _harmonic_differentials(self, error, cell_decomposition, category):
+            from flatsurf.geometry.harmonic_differentials import HarmonicDifferentialSpace
+            return HarmonicDifferentialSpace(self, error, cell_decomposition, category)
+
         def homology(self, k=1, coefficients=None, generators="edge", relative=None, implementation="generic", category=None):
             r"""
             Return the ``k``-th simplicial homology group of this surface.
