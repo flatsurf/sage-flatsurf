@@ -104,6 +104,23 @@ class SimplicialCohomologyClass(Element):
 
         return self.parent()(values)
 
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op == op_NE:
+            return not self._richcmp_(other, op_EQ)
+
+        if op == op_EQ:
+            if self is other:
+                return True
+
+            if self.parent() != other.parent():
+                return False
+
+            return self._values == other._values
+
+        return super()._richcmp_(other, op)
+
 
 class SimplicialCohomologyGroup(Parent):
     r"""

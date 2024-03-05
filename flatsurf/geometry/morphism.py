@@ -574,8 +574,8 @@ class SurfaceMorphism(Morphism):
         INPUT:
 
         - ``x`` -- a point of the domain of this morphism or an object defined
-          on the domain such as a homology class, a saddle connection or a
-          cohomology class. (Mapping of most of these inputs might not be
+          on the domain such as a homology class, a saddle connection, a
+          differential, …. (Mapping of most of these inputs might not be
           implemented, either because it makes no real mathematical sense or
           because it has simply not been implemented yet.)
 
@@ -623,6 +623,11 @@ class SurfaceMorphism(Morphism):
             ...
             ValueError: homology class must be defined over the domain of this morphism
 
+        The image of a cohomology class (mapping from the cohomology of the
+        codomain to the cohomology of the domain)::
+
+            
+
         The image of a tangent vector::
 
             sage: t = S.tangent_vector(0, (0, 0), (1, 1))
@@ -651,6 +656,14 @@ class SurfaceMorphism(Morphism):
                 raise ValueError("homology class must be defined over the domain of this morphism")
             image = self._image_homology(x)
             assert image.parent().surface() is self.codomain()
+            return image
+
+        from flatsurf.geometry.cohomology import SimplicialCohomologyClass
+        if isinstance(x, SimplicialCohomologyClass):
+            if x.parent().surface() is not self.codomain():
+                raise ValueError("cohomology class must be defined over the codomain of this morphism")
+            image = self._image_cohomology(x)
+            assert image.parent().surface() is self.domain()
             return image
 
         from flatsurf.geometry.saddle_connection import SaddleConnection_base
@@ -1144,6 +1157,40 @@ class SurfaceMorphism(Morphism):
         section with linear algebra in :meth:`_section_homology_matrix`.
         """
         return SurfaceMorphism._image_homology_edge(self.section(), label, edge)
+
+    def _image_cohomology(self, f):
+        r"""
+        Return the image of the cohomology class ``f`` in the cohomology of the
+        morphism's domain.
+
+        This is a helper method for :meth:`__call__`.
+
+        Subclasses can override this method if the morphism is meaningful on
+        the level of cohomology.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialCohomology
+            sage: S = translation_surfaces.regular_octagon()
+
+            sage: from flatsurf.geometry.morphism import PolygonIsometryMorphism
+            sage: r = PolygonIsometryMorphism._create_morphism(S, S, {0: (0, 1)})
+
+            sage: H = SimplicialCohomology(S)
+            sage: a, b, c, d = H.homology().gens()
+            sage: a
+            B[(0, 1)]
+            sage: f = H({a: 1})
+            sage: r(f)
+            {B[(0, 0)]: 1}
+            sage: r.section()(r(f)) == f
+            True
+
+        """
+        from flatsurf.geometry.cohomology import SimplicialCohomology
+        domain_cohomology = SimplicialCohomology(self.domain())
+
+        return domain_cohomology({gen: f(self(gen)) for gen in domain_cohomology.homology().gens()})
 
     def __mul__(self, other):
         r"""
@@ -1847,6 +1894,7 @@ class PolygonIsometryMorphism(SurfaceMorphism):
         sage: from flatsurf.geometry.morphism import PolygonIsometryMorphism
         sage: f = PolygonIsometryMorphism._create_morphism(S, S, {0: (0, 1)})
         sage: f
+        Polygon Isometry endomorphism of Translation Surface in H_2(2) built from a regular octagon
 
     The morphism can be applied to homology classes::
 
@@ -1860,7 +1908,7 @@ class PolygonIsometryMorphism(SurfaceMorphism):
 
     A rotation of a triangle unfolding::
 
-        sage: from flatsurf import similarity_surfaces
+        sage: from flatsurf import similarity_surfaces, Polygon
         sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
         sage: # TODO: complete example
 
