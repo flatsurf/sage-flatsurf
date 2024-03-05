@@ -1826,3 +1826,75 @@ class RelabelingMorphism(SurfaceMorphism):
 
     def _repr_type(self):
         return "Relabeling"
+
+
+class PolygonIsometryMorphism(SurfaceMorphism):
+    r"""
+    A morphism that maps each polygon to an isometric polygon.
+
+    The morphism is encoded as the mapping on polygon labels and an isometry
+    for each polygon.
+
+    # TODO: Currently, there is no isometry, so we encode things very explicitly.
+
+    EXAMPLES:
+
+    A rotation of a regular octagon::
+    
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.regular_octagon()
+
+        sage: from flatsurf.geometry.morphism import PolygonIsometryMorphism
+        sage: f = PolygonIsometryMorphism._create_morphism(S, S, {0: (0, 1)})
+        sage: f
+
+    The morphism can be applied to homology classes::
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: a, b, c, d = H.gens()
+        sage: a, b, c, d
+        (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
+        sage: f(a), f(b), f(c), f(d)
+        (B[(0, 2)], B[(0, 3)], -B[(0, 0)], B[(0, 1)])
+
+    A rotation of a triangle unfolding::
+
+        sage: from flatsurf import similarity_surfaces
+        sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
+        sage: # TODO: complete example
+
+    """
+    def __init__(self, parent, polygon_mapping, category=None):
+        super().__init__(parent, category=category)
+        self._polygon_mapping = polygon_mapping
+
+        for source_label in self.domain().labels():
+            target_label, shift = self._polygon_mapping[source_label]
+
+            source_polygon = self.domain().polygon(source_label)
+            target_polygon = self.codomain().polygon(target_label)
+
+            if len(source_polygon.vertices()) != len(target_polygon.vertices()):
+                raise ValueError("isomorphism must map n-gons to n-gons")
+
+            for source_edge in range(len(source_polygon.vertices())):
+                source_opposite_label, source_opposite_edge = self.domain().opposite_edge(source_label, source_edge)
+
+                target_edge = (source_edge + shift) % len(target_polygon.vertices())
+
+                target_opposite_label, target_opposite_edge = self.codomain().opposite_edge(target_label, target_edge)
+
+                source_opposite_label_image, other_shift = self._polygon_mapping[source_opposite_label]
+                if target_opposite_label != source_opposite_label_image:
+                    raise ValueError("gluings are not compatible with the provided isometries")
+
+                if target_opposite_edge != (source_opposite_edge + other_shift) % len(self.codomain().polygon(target_opposite_label).vertices()):
+                    raise ValueError("gluings are not compatible with the provided isometries")
+
+    def _repr_type(self):
+        return "Polygon Isometry"
+
+    def _image_homology_edge(self, label, edge):
+        label, shift = self._polygon_mapping[label]
+        return [(1, label, (edge + shift) % len(self.codomain().polygon(label).vertices()))]
