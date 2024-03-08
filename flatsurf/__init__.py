@@ -47,3 +47,5 @@ from flatsurf.geometry.surface_legacy import (
     HalfTranslationSurface,
     TranslationSurface
 )
+
+from flatsurf.geometry.voronoi import VoronoiCellDecomposition, ApproximateWeightedVoronoiCellDecomposition
