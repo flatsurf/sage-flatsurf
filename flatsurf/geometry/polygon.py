@@ -38,6 +38,8 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+# TODO: Could it make sense to make all vertex and edge indexes live in Z/nZ so we do not need this % len(...) all the time?
+
 from sage.all import (
     cached_method,
     Parent,
