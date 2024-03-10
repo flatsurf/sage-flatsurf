@@ -253,6 +253,7 @@ class Cell:
             plot.append(graphical_surface.plot())
 
         for polygon_cell in self.polygon_cells():
+            # TODO: This plots additional segments along the polygon boundaries.
             plot.append(polygon_cell.plot(graphical_polygon=graphical_surface.graphical_polygon(polygon_cell.label())))
 
         return sum(plot)
@@ -321,10 +322,10 @@ class LineSegmentCell(Cell):
                     counterclockwise_from = start - end
 
                 # Find candidate next boundaries that are starting at the end
-                # point of the previous sector and in the correct sector.
-                from flatsurf.geometry.euclidean import is_between
+                # point of the previous boundary and in the correct sector.
+                from flatsurf.geometry.euclidean import is_between, is_parallel
                 polygon_cells_boundary_from_in_sector = [boundary for boundary in polygon_cells_boundary_from[end] if 
-                    (boundary[2][1] - boundary[2][0] == counterclockwise_from and counterclockwise_from != strictly_clockwise_from) or
+                    (not is_parallel(counterclockwise_from, strictly_clockwise_from) and is_parallel(boundary[2][1] - boundary[2][0], counterclockwise_from)) or 
                     is_between(counterclockwise_from, strictly_clockwise_from, boundary[2][1] - boundary[2][0])]
 
                 # Pick the first such boundary turning clockwise from the
@@ -334,11 +335,16 @@ class LineSegmentCell(Cell):
                         def __init__(self, vector, sector):
                             self._vector = vector
                             self._sector = sector
-                            assert is_between(*self._sector, self._vector)
+                            assert is_parallel(self._sector[0], self._vector) or is_between(*self._sector, self._vector)
 
                         def __gt__(self, other):
                             from flatsurf.geometry.euclidean import is_parallel
                             assert not is_parallel(self._vector, other._vector), "cell must not have equally oriented parallel boundaries"
+
+                            if is_parallel(self._sector[0], self._vector):
+                                return False
+                            if is_parallel(self._sector[0], other._vector):
+                                return True
                             return is_between(self._sector[0], self._vector, other._vector)
 
                     return AngleKey(boundary[2][1] - boundary[2][0], (counterclockwise_from, strictly_clockwise_from))
@@ -346,6 +352,8 @@ class LineSegmentCell(Cell):
                 next_polygon_cell_boundary = max(polygon_cells_boundary_from_in_sector, key=angle_key, default=None)
 
                 if next_polygon_cell_boundary is None:
+                    assert len(polygon_cells_boundary_from_in_sector) == 0
+
                     # This boundary touches the polygon edges but no explicit
                     # boundary starts at the point where it touches.
                     if end_position.is_vertex():
@@ -375,6 +383,7 @@ class LineSegmentCell(Cell):
                 else:
                     if next_polygon_cell_boundary == polygon_cell[0]:
                         break
+                    assert next_polygon_cell_boundary in unused_polygon_cells_boundaries, f"boundary segment present in multiple polygon cells"
                     unused_polygon_cells_boundaries.remove(next_polygon_cell_boundary)
 
                 assert next_polygon_cell_boundary not in polygon_cell, "boundary segment must not repeat in polygon cell boundary"
@@ -437,6 +446,9 @@ class LineBoundarySegment(BoundarySegment):
         super().__init__(cell, segment)
 
         self._start_segment = start_segment
+
+    def plot(self, graphical_surface=None):
+        return self.segment().plot(graphical_surface=graphical_surface)
 
     # def radius(self):
     #  norm = self.surface().euclidean_plane().norm()
@@ -736,7 +748,7 @@ class LineSegmentPolygonCell(PolygonCellWithCenter):
         plot = sum(OrientedSegment(*segment).translate(shift).plot(point=False) for segment in self.boundary())
 
         if plot_polygon:
-            plot = graphical_polygon.plot_polygon() + plot
+            pass # plot = graphical_polygon.plot_polygon() + plot
 
         return plot
 
@@ -955,6 +967,90 @@ class ApproximateWeightedVoronoiPolygonCell(LineSegmentPolygonCell):
 class ApproximateWeightedVoronoiCell(LineSegmentCell):
     BoundarySegment = ApproximateWeightedCellBoundarySegment
     PolygonCell = ApproximateWeightedVoronoiPolygonCell
+
+    @cached_method
+    def boundary(self):
+        surface = self.surface()
+
+        (label, coordinates) = self.center().representative()
+        vertex = surface.polygon(label).get_point_position(coordinates).get_vertex()
+
+        boundary = []
+
+        initial_label, initial_vertex = label, vertex
+
+        while True:
+            polygon = surface.polygon(label)
+
+            corners = self.decomposition()._split_polygon(label)[vertex]
+
+            assert len(corners) > 1, "cannot create segments in this polygon from a single corner"
+
+            next_label, next_vertex = surface.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
+
+            for corner, next_corner in zip(corners, corners[1:]):
+                segment = SurfaceLineSegment(surface, label, corner, next_corner - corner)
+                start_segment = SurfaceLineSegment(surface, label, polygon.vertex(vertex), corner - polygon.vertex(vertex))
+                boundary.append(ApproximateWeightedCellBoundarySegment(self, segment, start_segment))
+
+            corners_next_polygon = self.decomposition()._split_polygon(next_label)[next_vertex]
+            if surface(label, corners[-1]) != surface(next_label, corners_next_polygon[0]):
+                # The split of the polygons along the edge is not compatible,
+                # add a short segment along that edge to connect the last
+                # corner of this polygon to the first corner of the next
+                # polygon.
+                next_polygon = surface.polygon(next_label)
+                corner_next_polygon = corners_next_polygon[0] + (polygon.vertex(vertex) - next_polygon.vertex(next_vertex))
+
+                segment = SurfaceLineSegment(surface, label, corners[-1], corner_next_polygon - corners[-1])
+                start_segment = SurfaceLineSegment(surface, next_label, next_polygon.vertex(next_vertex), corners[-1] - polygon.vertex(vertex))
+
+                boundary.append(ApproximateWeightedCellBoundarySegment(self, segment, start_segment))
+
+            label, vertex = next_label, next_vertex
+
+            if (label, vertex) == (initial_label, initial_vertex):
+                break
+
+            ## next_polygon = surface.polygon(next_label)
+
+            ## next_center = next_polygon.circumscribing_circle().center().vector()
+            ## 
+            ## # Bring next_center into the coordinate system of polygon
+            ## next_center += (polygon.vertex(vertex) - next_polygon.vertex(next_vertex))
+
+            ## holonomy = next_center - center
+
+            ## if not holonomy:
+            ##     # Ambiguous Delaunay triangulation. The two circumscribing circles coincide.
+            ##     pass
+            ## else:
+            ##     # Construct the start point of the boundary segment and a segment from the center to that start point.
+            ##     start_label, start_edge = (label, vertex)
+            ##     start_holonomy = center - polygon.vertex(start_edge)
+
+            ##     from flatsurf.geometry.euclidean import ccw
+            ##     if ccw(-polygon.edge(start_edge - 1), start_holonomy) > 0:
+            ##         start_label, start_edge = surface.opposite_edge(start_label, (start_edge - 1) % len(polygon.vertices()))
+            ##         polygon = surface.polygon(start_label)
+            ##     elif ccw(polygon.edge(start_edge), start_holonomy) <= 0:
+            ##         start_label, start_edge = surface.opposite_edge(start_label, start_edge)
+            ##         polygon = surface.polygon(start_label)
+            ##         start_edge = (start_edge + 1) % len(polygon.vertices())
+
+            ##     assert ccw(-polygon.edge(start_edge), start_holonomy) <= 0 and ccw(polygon.edge(start_edge), start_holonomy) > 0, "center of Voronoi cell must be within a neighboring triangle"
+
+            ##     start_segment = SurfaceLineSegment(surface, start_label, polygon.vertex(start_edge), start_holonomy)
+
+            ##     assert not start_segment.end().is_vertex(), "boundary of a Voronoi cell cannot go through a vertex"
+
+            ##     segment = SurfaceLineSegment(surface, *start_segment.end().representative(), holonomy)
+
+            ##     boundary.append(VoronoiCellBoundarySegment(self, segment, start_segment))
+
+
+        return tuple(boundary)
+
 ## 
 ##     # @cached_method
 ##     # def _corners(self):
@@ -1077,105 +1173,103 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
             self = ApproximateWeightedVoronoiCellDecomposition(surface)
 
         return self
-## 
-##     def _exactify(self, x):
-##         R = self.surface().base_ring()
-##         return R(round(float(x), 3))
-## 
-##     @cached_method
-##     def _split_polygon(self, label):
-##         surface = self.surface()
-##         polygon = surface.polygon(label)
-##         nvertices = len(polygon.vertices())
-##         assert nvertices == 3
-## 
-##         weights = [float(surface(label, v).radius_of_convergence()) for v in range(nvertices)]
-## 
-##         splits = [self._split_segment((polygon.vertex(v), polygon.vertex(v + 1)), polygon.vertex(v + 2), weights[v:] + weights[:v]) for v in range(nvertices)]
-## 
-##         lens = [len(split) for split in splits]
-## 
-##         if lens == [1, 1, 1]:
-##             # The edges are far away from the opposite corners.
-##             # A---+---C
-##             # |  /|  /
-##             # | / | /
-##             # |/C |/
-##             # +---+
-##             # |  /
-##             # | /
-##             # |/
-##             # B
-##             # We give each small triangle in this picture to its vertex and
-##             # split the central triangle C between the three vertices. (So each
-##             # cell will be a quadrilateral.)
-##             center = sum(splits[v][0] * self._exactify((weights[v] + weights[(v+1) % nvertices]) / (2 * sum(weights))) for v in range(nvertices))
-## 
-##             return [[splits[0][0], center, splits[2][0]], [splits[1][0], center, splits[0][0]], [splits[2][0], center, splits[1][0]]]
-##         if lens == [2, 1, 1]:
-##             return [[splits[0][0], splits[2][0]], [splits[1][0], splits[0][1]], [splits[2][0], splits[0][0], splits[0][1], splits[1][0]]]
-##         if lens == [1, 1, 2]:
-##             return [[splits[0][0], splits[2][1]], [splits[1][0], splits[2][0], splits[2][1], splits[0][0]], [splits[2][0], splits[1][0]]]
-##         if lens == [1, 2, 1]:
-##             return [[splits[0][0], splits[1][0], splits[1][1], splits[2][0]], [splits[1][0], splits[0][0]], [splits[2][0], splits[1][1]]]
-## 
-##         raise NotImplementedError(f"non-trivial split for {label} with {lens}")
-## 
-##     def _split_segment(self, AB, C, weights):
-##         A, B = AB
-##         wA, wB, wC = weights
-## 
-##         def circle_of_apollonius(P, Q, w, v):
-##             if w == v:
-##                 raise NotImplementedError("circle of Apollonius is a line")
-## 
-##             C = (w * Q + v * P) / (w + v)
-##             D = (v * P - w * Q) / (v - w)
-## 
-##             center = (C + D) / 2
-## 
-##             radius = (D - C).norm() / 2
-## 
-##             return center, radius
-## 
-## 
-##         A_equal_B = A + (B - A) * self._exactify(wA / (wA + wB))
-##         if ((A - A_equal_B) / wA).norm() > ((C - A_equal_B) / wC).norm():
-##             # C is closer to A on the segment AB than B.
-##             # Construct the circle of Apollonius with foci A and C.
-##             if wA == wC:
-##                 # Circle of Apollonius is a line.
-##                 AC = C - A
-##                 midpoint = (C + A) / 2
-##                 from sage.all import vector
-##                 orthogonal_ray = (midpoint, vector((AC[1], -AC[0])))
-##                 
-##                 from flatsurf.geometry.euclidean import ray_segment_intersection
-##                 A_equal_C = ray_segment_intersection(*orthogonal_ray, (A, B))
-##                 assert A_equal_C is not None
-##             else:
-##                 center, radius = circle_of_apollonius(A, C, wA, wC)
-##                 A_equal_C = circle_segment_intersection(center, radius, (A, B))
-## 
-##             if wB == wC:
-##                 # Circle of Apollonius is a line.
-##                 BC = C - B
-##                 midpoint = (C + B) / 2
-##                 from sage.all import vector
-##                 orthogonal_ray = (midpoint, vector((-BC[1], BC[0])))
-##                 
-##                 from flatsurf.geometry.euclidean import ray_segment_intersection
-##                 B_equal_C = ray_segment_intersection(*orthogonal_ray, (B, A))
-##                 assert B_equal_C is not None
-##             else:
-##                 center, radius = circle_of_apollonius(B, C, wB, wC)
-##                 B_equal_C = circle_segment_intersection(center, radius, (B, A))
-## 
-##             return [A_equal_C, B_equal_C]
-## 
-##         return [A_equal_B]
-## 
-## 
+
+    def _exactify(self, x):
+        R = self.surface().base_ring()
+        return R(round(float(x), 3))
+
+    @cached_method
+    def _split_polygon(self, label):
+        surface = self.surface()
+        polygon = surface.polygon(label)
+        nvertices = len(polygon.vertices())
+        assert nvertices == 3
+
+        weights = [float(surface(label, v).radius_of_convergence()) for v in range(nvertices)]
+
+        splits = [self._split_segment((polygon.vertex(v), polygon.vertex(v + 1)), polygon.vertex(v + 2), weights[v:] + weights[:v]) for v in range(nvertices)]
+
+        lens = [len(split) for split in splits]
+
+        if lens == [1, 1, 1]:
+            # The edges are far away from the opposite corners.
+            # A---+---C
+            # |  /|  /
+            # | / | /
+            # |/C |/
+            # +---+
+            # |  /
+            # | /
+            # |/
+            # B
+            # We give each small triangle in this picture to its vertex and
+            # split the central triangle C between the three vertices. (So each
+            # cell will be a quadrilateral.)
+            center = sum(splits[v][0] * self._exactify((weights[v] + weights[(v+1) % nvertices]) / (2 * sum(weights))) for v in range(nvertices))
+
+            return [[splits[0][0], center, splits[2][0]], [splits[1][0], center, splits[0][0]], [splits[2][0], center, splits[1][0]]]
+        if lens == [2, 1, 1]:
+            return [[splits[0][0], splits[2][0]], [splits[1][0], splits[0][1]], [splits[2][0], splits[0][0], splits[0][1], splits[1][0]]]
+        if lens == [1, 1, 2]:
+            return [[splits[0][0], splits[2][1]], [splits[1][0], splits[2][0], splits[2][1], splits[0][0]], [splits[2][0], splits[1][0]]]
+        if lens == [1, 2, 1]:
+            return [[splits[0][0], splits[1][0], splits[1][1], splits[2][0]], [splits[1][0], splits[0][0]], [splits[2][0], splits[1][1]]]
+
+        raise NotImplementedError(f"non-trivial split for {label} with {lens}")
+
+    def _split_segment(self, AB, C, weights):
+        A, B = AB
+        wA, wB, wC = weights
+
+        def circle_of_apollonius(P, Q, w, v):
+            if w == v:
+                raise NotImplementedError("circle of Apollonius is a line")
+
+            C = (w * Q + v * P) / (w + v)
+            D = (v * P - w * Q) / (v - w)
+
+            center = (C + D) / 2
+
+            radius = (D - C).norm() / 2
+
+            return center, radius
+
+
+        A_equal_B = A + (B - A) * self._exactify(wA / (wA + wB))
+        if ((A - A_equal_B) / wA).norm() > ((C - A_equal_B) / wC).norm():
+            # C is closer to A on the segment AB than B.
+            # Construct the circle of Apollonius with foci A and C.
+            if wA == wC:
+                # Circle of Apollonius is a line.
+                AC = C - A
+                midpoint = (C + A) / 2
+                from sage.all import vector
+                orthogonal_ray = (midpoint, vector((AC[1], -AC[0])))
+                
+                from flatsurf.geometry.euclidean import ray_segment_intersection
+                A_equal_C = ray_segment_intersection(*orthogonal_ray, (A, B))
+                assert A_equal_C is not None
+            else:
+                center, radius = circle_of_apollonius(A, C, wA, wC)
+                A_equal_C = circle_segment_intersection(center, radius, (A, B))
+
+            if wB == wC:
+                # Circle of Apollonius is a line.
+                BC = C - B
+                midpoint = (C + B) / 2
+                from sage.all import vector
+                orthogonal_ray = (midpoint, vector((-BC[1], BC[0])))
+                
+                from flatsurf.geometry.euclidean import ray_segment_intersection
+                B_equal_C = ray_segment_intersection(*orthogonal_ray, (B, A))
+                assert B_equal_C is not None
+            else:
+                center, radius = circle_of_apollonius(B, C, wB, wC)
+                B_equal_C = circle_segment_intersection(center, radius, (B, A))
+
+            return [A_equal_C, B_equal_C]
+
+        return [A_equal_B]
 
 # TODO: Move to surface objects.
 class SurfaceLineSegment:
@@ -1190,8 +1284,8 @@ class SurfaceLineSegment:
             raise ValueError(f"start point of segment must be in the polygon but {start} is not in {polygon}")
         if position.is_in_edge_interior():
             edge = position.get_edge()
-            from flatsurf.geometry.euclidean import ccw
-            if ccw(polygon.edge(edge), holonomy) < 0:
+            from flatsurf.geometry.euclidean import ccw, is_anti_parallel
+            if ccw(polygon.edge(edge), holonomy) < 0 or (ccw(polygon.edge(edge), holonomy) == 0 and is_anti_parallel(polygon.edge(edge), holonomy)):
                 start -= polygon.vertex(edge + 1)
                 label, edge = surface.opposite_edge(label, edge)
                 polygon = surface.polygon(label)
@@ -1316,18 +1410,8 @@ class SurfaceLineSegment:
             holonomy += (segment[1] - segment[0])
             holonomy.set_immutable()
 
-            if label is not None:
-                midpoint = (segment[0] + segment[1]) / 2
-                for representative in surface(lbl, midpoint).representatives():
-                    if representative[0] == label:
-                        lbl = label
-                        midpoint_holonomy = midpoint - segment[0]
-                        segment = (representative[1] - midpoint_holonomy, representative[1] + midpoint_holonomy)
-                        segment[0].set_immutable()
-                        segment[1].set_immutable()
-                        break
-                else:
-                    continue
+            if label is not None and label != lbl:
+                continue
             segments.append((lbl, segment, holonomy))
 
         return segments
@@ -1342,3 +1426,34 @@ class SurfaceLineSegment:
 
     def __hash__(self):
         return hash((self.start(), self._holonomy))
+
+    def plot(self, graphical_surface=None):
+        plot_surface = graphical_surface is None
+
+        if graphical_surface is None:
+            graphical_surface = self.surface().graphical_surface(edge_labels=False, polygon_labels=False)
+
+        plot = []
+        if plot_surface:
+            plot.append(graphical_surface.plot())
+
+        subsegments = self.split()
+        for s, (label, subsegment, _) in enumerate(subsegments):
+            polygon = self.surface().polygon(label)
+
+
+            graphical_polygon = graphical_surface.graphical_polygon(label)
+
+            # TODO: This should be implemented in graphical polygon probably.
+            # TODO: This assumes that the surface is a translation surface.
+            vertex = graphical_polygon.transformed_vertex(0)
+            graphical_subsegment = [vertex + (subsegment[0] - polygon.vertex(0)), vertex + (subsegment[1] - polygon.vertex(0))]
+
+            if s == len(subsegments) - 1:
+                from sage.all import arrow2d
+                plot.append(arrow2d(*graphical_subsegment, arrowsize=2, width=1, color="green"))
+            else:
+                from sage.all import line2d
+                plot.append(line2d(graphical_subsegment))
+
+        return sum(plot)
