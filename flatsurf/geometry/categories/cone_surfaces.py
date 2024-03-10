@@ -59,6 +59,8 @@ a rotation, this is a cone surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from sage.misc.cachefunc import cached_in_parent_method
+
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
@@ -307,6 +309,8 @@ class ConeSurfaces(SurfaceCategory):
 
                 """
                 class ElementMethods:
+                    # TODO: Only cache for vertices in parent, everything else, cache only in the point.
+                    @cached_in_parent_method
                     def radius_of_convergence(self):
                         r"""
                         Return the distance of this point to the closest
@@ -328,6 +332,8 @@ class ConeSurfaces(SurfaceCategory):
                             1/4
 
                         """
+                        # TODO: Require immutable for caching.
+
                         surface = self.parent()
 
                         norm = surface.euclidean_plane().norm()
