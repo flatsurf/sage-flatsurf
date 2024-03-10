@@ -2648,6 +2648,10 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
             (0, 1)
 
         """
+        # TODO: This is very inefficient (and wont work on infinite surfaces?) But otherwise, any label is in surface.roots().
+        if root not in list(self):
+            raise KeyError
+
         return self._surface.component(root)
 
     def __iter__(self):
