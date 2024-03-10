@@ -89,6 +89,7 @@ class GraphicalPolygon:
         r"""
         Return the graphical coordinates of the vertex in double precision.
         """
+        # TODO: Where would the double precision come from that the docstring talks about?
         return self._transformation(self._p.vertex(e))
 
     def xmin(self):

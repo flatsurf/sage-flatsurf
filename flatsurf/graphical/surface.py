@@ -172,7 +172,7 @@ class GraphicalSurface:
 
         if adjacencies is None:
             if self._ss.is_finite_type():
-                self.make_all_visible()
+                self.layout()
         self._edge_labels = None
 
         self.will_plot_polygons = True
@@ -489,6 +489,79 @@ class GraphicalSurface:
                         i = i + 1
                         if i >= limit:
                             return
+
+    def layout(self):
+        surface = self._ss
+
+        self.make_all_visible()
+
+        for label in surface.labels():
+            if label not in surface.roots():
+                self.hide(label)
+
+        for label in surface.labels():
+            if self.is_visible(label):
+                continue
+
+            polygon = surface.polygon(label)
+
+            def glue_score(edge):
+                opposite_edge = surface.opposite_edge(label, edge)
+                if opposite_edge is None:
+                    return -1
+                opposite_label, opposite_edge = opposite_edge
+
+                if not self.is_visible(opposite_label):
+                    return -1
+
+                self.make_adjacent(opposite_label, opposite_edge, visible=False)
+
+                score = 0
+
+                adjacents = []
+
+                for e in range(len(polygon.vertices())):
+                    opposite_edge = surface.opposite_edge(label, e)
+                    if opposite_edge is None:
+                        continue
+                    opposite_label, opposite_edge = opposite_edge
+
+                    if not self.is_visible(opposite_label):
+                        continue
+
+                    if self.is_adjacent(label, e):
+                        adjacents.append(opposite_label)
+
+                score += len(adjacents)
+
+                assert score >= 1
+
+                for visible in self.visible():
+                    if visible in adjacents:
+                        continue
+
+                    visible_polygon = surface.polygon(visible)
+
+                    intersections = 0
+                    for e in range(len(polygon.vertices())):
+                        for f in range(len(visible_polygon.vertices())):
+                            from flatsurf.geometry.euclidean import is_segment_intersecting
+                            intersection = is_segment_intersecting(
+                                (self.graphical_polygon(label).transformed_vertex(e), self.graphical_polygon(label).transformed_vertex(e + 1)),
+                                (self.graphical_polygon(visible).transformed_vertex(f), self.graphical_polygon(visible).transformed_vertex(f + 1)),
+                            )
+                            if intersection == 2:
+                                intersections += 1
+
+                    score -= intersections
+
+                return score
+
+            edge = max(range(len(polygon.vertices())), key=glue_score)
+            # assert glue_score(edge) >= 0
+
+            self.make_adjacent(*surface.opposite_edge(label, edge))
+
 
     def get_surface(self):
         r"""
