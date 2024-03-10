@@ -499,20 +499,21 @@ class GraphicalSurface:
             if label not in surface.roots():
                 self.hide(label)
 
-        for label in surface.labels():
-            if self.is_visible(label):
-                continue
+        while True:
+            invisible_labels = [label for label in surface.labels() if not self.is_visible(label)]
+            if not invisible_labels:
+                break
 
-            polygon = surface.polygon(label)
+            def edge_score(label, edge):
+                polygon = surface.polygon(label)
 
-            def glue_score(edge):
                 opposite_edge = surface.opposite_edge(label, edge)
                 if opposite_edge is None:
-                    return -1
+                    return -1e9
                 opposite_label, opposite_edge = opposite_edge
 
                 if not self.is_visible(opposite_label):
-                    return -1
+                    return -1e9
 
                 self.make_adjacent(opposite_label, opposite_edge, visible=False)
 
@@ -553,13 +554,21 @@ class GraphicalSurface:
                             if intersection == 2:
                                 intersections += 1
 
-                    score -= intersections
+                    score -= intersections * 100
 
                 return score
 
-            edge = max(range(len(polygon.vertices())), key=glue_score)
-            # assert glue_score(edge) >= 0
+            def label_score(label):
+                assert not self.is_visible(label)
 
+                polygon = surface.polygon(label)
+
+                return max(edge_score(label, edge) for edge in range(len(polygon.vertices())))
+
+            label = max(invisible_labels, key=label_score)
+            polygon = surface.polygon(label)
+
+            edge = max(range(len(polygon.vertices())), key=lambda edge: edge_score(label, edge))
             self.make_adjacent(*surface.opposite_edge(label, edge))
 
 

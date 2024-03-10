@@ -38,12 +38,16 @@ A less trivial example, the regular octagon::
     sage: H = SimplicialCohomology(S)
     sage: a, b, c, d = H.homology().gens()
 
-    sage: f = H({ a: sqrt(2) + 1, b: 0, c: -sqrt(2) - 1, d: -sqrt(2) - 2})
+    sage: # on the untriangulated surface f = H({ a: sqrt(2) + 1, b: 0, c: -sqrt(2) - 1, d: -sqrt(2) - 2})
+    sage: f = H({a: -sqrt(2), b: 0, c: -sqrt(2) - 1, d: sqrt(2) + 1})
 
     sage: from flatsurf.geometry.voronoi import VoronoiCellDecomposition
     sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=VoronoiCellDecomposition(S))
-    sage: omega = Omega(f)
+    sage: omega = Omega(f, check=False)
     sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # TODO: Why so much tolerance?
+    (1.31414000000000*z0^2 + (-0.107413000000000)*z0^10 + O(z0^11), -2.09020000000000 + (-3.22547000000000)*z1^8 + (-2.61537000000000)*z1^16 + (-2.00436000000000)*z1^24 + (-1.53401000000000)*z1^32 + O(z1^33))
+
+    # on the untriangulated surface
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
 
 The same computation on a triangulation of the octagon::
@@ -1419,7 +1423,9 @@ class PowerSeriesConstraints:
 
         polygon_cell_boundaries = sum((boundary.polygon_cell_boundaries() for boundary in cell_boundaries), start=[])
 
-        return sum(cost for _, cost in L2_cost(polygon_cell_boundaries))
+        cost = sum(cost for _, cost in L2_cost(polygon_cell_boundaries))
+
+        return cost
 
     @cached_method
     def ζ(self, d):
