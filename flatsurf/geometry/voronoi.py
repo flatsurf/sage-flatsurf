@@ -161,8 +161,9 @@ class CellDecomposition:
         # TODO: Use SageMath test framework.
         segments = [boundary.segment() for cell in self for boundary in cell.boundary()]
 
-        for segment in segments:
-            assert -segment in segments
+        for cell in self:
+            for boundary in cell.boundary():
+                assert -boundary.segment() in segments, f"{boundary} has no negative {-boundary.segment()}"
 
 
 class Cell:
@@ -259,11 +260,18 @@ class Cell:
         if plot_surface:
             plot.append(graphical_surface.plot())
 
-        for polygon_cell in self.polygon_cells():
-            # TODO: This plots additional segments along the polygon boundaries.
-            plot.append(polygon_cell.plot(graphical_polygon=graphical_surface.graphical_polygon(polygon_cell.label())))
+        for boundary in self.boundary():
+            plot.append(boundary.plot(graphical_surface=graphical_surface))
 
         return sum(plot)
+
+    def contains_point(self, point):
+        for label, coordinates in point.representatives():
+            for polygon_cell in self.polygon_cells(label=label):
+                if polygon_cell.contains_point(coordinates):
+                    return True
+
+        return False
 
 
 class LineSegmentCell(Cell):
@@ -489,7 +497,10 @@ class LineBoundarySegment(BoundarySegment):
                     if not midpoint_position.is_in_edge_interior():
                         opposite_label = label
                     else:
-                        raise NotImplementedError
+                        edge = midpoint_position.get_edge()
+                        opposite_label, opposite_edge = self.surface().opposite_edge(label, edge)
+                        opposite_polygon = self.surface().polygon(opposite_label)
+                        midpoint += (opposite_polygon.vertex(opposite_edge + 1) - polygon.vertex(edge))
 
                     opposite_polygon_cell = [opposite_polygon_cell for opposite_polygon_cell in (-self)._cell.polygon_cells(opposite_label) if opposite_polygon_cell.contains_point(midpoint) and opposite_polygon_cell != polygon_cell]
 
@@ -555,6 +566,9 @@ class PolygonCell:
         raise NotImplementedError
 
     def __hash__(self):
+        raise NotImplementedError
+
+    def corners(self):
         raise NotImplementedError
 
 
@@ -791,60 +805,18 @@ class LineSegmentPolygonCell(PolygonCellWithCenter):
 
         return plot
 
+    def corners(self):
+        return tuple(segment[0] for segment in self._boundary)
+
 
 class ConvexLineSegmentPolygonCell(LineSegmentPolygonCell):
     def contains_segment(self, segment):
         return self.contains_point(segment.start()) and self.contains_point(segment.end())
 
+
 class VoronoiCellBoundarySegment(LineBoundarySegment):
     pass
 
-##     def segment(self):
-##         return SurfaceLineSegment(self.surface(), *self._start(), self._holonomy())
-## 
-##     # def _start(self):
-##     #     ((label, center, corner), _) = self._corners
-## 
-##     #     surface = self.surface()
-##     #     polygon = surface.polygon(label)
-## 
-##     #     if polygon.get_point_position(corner).is_outside():
-##     #         corner -= polygon.vertex(center)
-##     #         assert corner, "corner cannot be at a vertex"
-## 
-##     #         from flatsurf.geometry.euclidean import ccw
-##     #         if ccw(polygon.edge(center), corner) > 0:
-##     #             label, center = surface.opposite_edge(label, center)
-##     #             polygon = surface.polygon(label)
-##     #             center = (center + 1) % len(polygon.vertices())
-##     #         else:
-##     #             assert ccw(-polygon.edge(center - 1), corner) > 0, "center of circumcircle cannot be opposite of vertex edge"
-##     #             label, center = surface.opposite_edge(label, (center - 1) % len(polygon.vertices()))
-##     #             polygon = surface.polygon(label)
-## 
-##     #         corner += polygon.vertex(center)
-## 
-##     #     assert not polygon.get_point_position(corner).is_outside(), "center of circumcircle must be in this or a neighboring triangle"
-## 
-##     #     return (label, corner)
-## 
-##     # def _holonomy(self):
-##     #     ((label, center, corner), (next_label, next_center, next_corner)) = self._corners
-## 
-##     #     surface = self.surface()
-## 
-##     #     polygon = surface.polygon(next_label)
-##     #     next_corner -= polygon.vertex(next_center)
-## 
-##     #     while next_label != label:
-##     #         next_label, next_center = surface.opposite_edge(next_label, next_center)
-##     #         polygon = surface.polygon(next_label)
-##     #         next_center = (next_center + 1) % len(polygon.vertices())
-## 
-##     #     next_corner += polygon.vertex(next_center)
-## 
-##     #     return next_corner - corner
- 
  
 class VoronoiPolygonCell(ConvexLineSegmentPolygonCell):
     pass
@@ -914,47 +886,7 @@ class VoronoiCell(LineSegmentCell):
 
         return tuple(boundary)
 
-## 
-##     # @cached_method
-##     # def _corners(self):
-##     #     # Return (label, vertex, corner) where label, vertex single out the
-##     #     # polygon and its vertex from which the corner can be reached, and
-##     #     # corner is a vector from that vertex to the corner.
-## 
-##     #     surface = self.surface()
-## 
-##     #     (label, coordinates) = self.center().representative()
-##     #     vertex = surface.polygon(label).get_point_position(coordinates).get_vertex()
-## 
-##     #     corners = []
-## 
-##     #     # TODO: This is a very common operation (walking around a vertex) and
-##     #     # should probably be implemented generically.
-##     #     initial_label, initial_vertex = label, vertex
-##     #     while True:
-##     #         polygon = surface.polygon(label)
-## 
-##     #         corners.append((label, vertex, polygon.circumscribing_circle().center().vector()))
-## 
-##     #         if len(corners) > 1 and not self.BoundarySegment(self, corners[-2], corners[-1]):
-##     #             corners.pop()
-## 
-##     #         label, vertex = surface.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
-##     #         if (label, vertex) == (initial_label, initial_vertex):
-##     #             break
-## 
-##     #     if not self.BoundarySegment(self, corners[-1], corners[0]):
-##     #         corners.pop()
-## 
-##     #     if len(corners) < 2:
-##     #         raise NotImplementedError("cannot create cell from less than 2 corners")
-## 
-##     #     return tuple(corners)
-## 
-##     # def polygon_cells(self):
-##     #     return self._polygon_cells_corners()
-## 
-## 
+
 class VoronoiCellDecomposition(CellDecomposition):
     r"""
     EXAMPLES::
@@ -1021,7 +953,7 @@ class ApproximateWeightedVoronoiCell(LineSegmentCell):
         while True:
             polygon = surface.polygon(label)
 
-            corners = self.decomposition()._split_polygon(label)[vertex]
+            corners = self.decomposition()._split_polygon_at_vertex(label, vertex)
 
             assert len(corners) > 1, "cannot create segments in this polygon from a single corner"
 
@@ -1029,148 +961,46 @@ class ApproximateWeightedVoronoiCell(LineSegmentCell):
 
             for corner, next_corner in zip(corners, corners[1:]):
                 segment = SurfaceLineSegment(surface, label, corner, next_corner - corner)
-                start_segment = SurfaceLineSegment(surface, label, polygon.vertex(vertex), corner - polygon.vertex(vertex))
+
+                start_segment_holonomy = corner - polygon.vertex(vertex)
+                from flatsurf.geometry.euclidean import is_anti_parallel
+                if is_anti_parallel(polygon.edge(vertex - 1), start_segment_holonomy):
+                    start_segment = SurfaceLineSegment(surface, next_label, surface.polygon(next_label).vertex(next_vertex), start_segment_holonomy)
+                else:
+                    start_segment = SurfaceLineSegment(surface, label, polygon.vertex(vertex), start_segment_holonomy)
                 boundary.append(ApproximateWeightedCellBoundarySegment(self, segment, start_segment))
 
-            corners_next_polygon = self.decomposition()._split_polygon(next_label)[next_vertex]
-            if surface(label, corners[-1]) != surface(next_label, corners_next_polygon[0]):
-                # The split of the polygons along the edge is not compatible,
-                # add a short segment along that edge to connect the last
-                # corner of this polygon to the first corner of the next
-                # polygon.
-                next_polygon = surface.polygon(next_label)
-                corner_next_polygon = corners_next_polygon[0] + (polygon.vertex(vertex) - next_polygon.vertex(next_vertex))
+                # TODO: Why is this needed?
+                if len(boundary) > 1:
+                    if boundary[-1] == boundary[-2]:
+                        boundary.pop()
 
-                segment = SurfaceLineSegment(surface, label, corners[-1], corner_next_polygon - corners[-1])
-                start_segment = SurfaceLineSegment(surface, next_label, next_polygon.vertex(next_vertex), corners[-1] - polygon.vertex(vertex))
+            ## Now taken care of by split_polygon_at_vertex()
+            ## corners_next_polygon = self.decomposition()._split_polygon_at_vertex(next_label, next_vertex)
+            ## if surface(label, corners[-1]) != surface(next_label, corners_next_polygon[0]):
+            ##     # The split of the polygons along the edge is not compatible,
+            ##     # add a short segment along that edge to connect the last
+            ##     # corner of this polygon to the first corner of the next
+            ##     # polygon.
+            ##     next_polygon = surface.polygon(next_label)
+            ##     corner_next_polygon = corners_next_polygon[0] + (polygon.vertex(vertex) - next_polygon.vertex(next_vertex))
 
-                boundary.append(ApproximateWeightedCellBoundarySegment(self, segment, start_segment))
+            ##     segment = SurfaceLineSegment(surface, label, corners[-1], corner_next_polygon - corners[-1])
+            ##     start_segment = SurfaceLineSegment(surface, next_label, next_polygon.vertex(next_vertex), corners[-1] - polygon.vertex(vertex))
+
+            ##     boundary.append(ApproximateWeightedCellBoundarySegment(self, segment, start_segment))
 
             label, vertex = next_label, next_vertex
 
             if (label, vertex) == (initial_label, initial_vertex):
                 break
 
-            ## next_polygon = surface.polygon(next_label)
-
-            ## next_center = next_polygon.circumscribing_circle().center().vector()
-            ## 
-            ## # Bring next_center into the coordinate system of polygon
-            ## next_center += (polygon.vertex(vertex) - next_polygon.vertex(next_vertex))
-
-            ## holonomy = next_center - center
-
-            ## if not holonomy:
-            ##     # Ambiguous Delaunay triangulation. The two circumscribing circles coincide.
-            ##     pass
-            ## else:
-            ##     # Construct the start point of the boundary segment and a segment from the center to that start point.
-            ##     start_label, start_edge = (label, vertex)
-            ##     start_holonomy = center - polygon.vertex(start_edge)
-
-            ##     from flatsurf.geometry.euclidean import ccw
-            ##     if ccw(-polygon.edge(start_edge - 1), start_holonomy) > 0:
-            ##         start_label, start_edge = surface.opposite_edge(start_label, (start_edge - 1) % len(polygon.vertices()))
-            ##         polygon = surface.polygon(start_label)
-            ##     elif ccw(polygon.edge(start_edge), start_holonomy) <= 0:
-            ##         start_label, start_edge = surface.opposite_edge(start_label, start_edge)
-            ##         polygon = surface.polygon(start_label)
-            ##         start_edge = (start_edge + 1) % len(polygon.vertices())
-
-            ##     assert ccw(-polygon.edge(start_edge), start_holonomy) <= 0 and ccw(polygon.edge(start_edge), start_holonomy) > 0, "center of Voronoi cell must be within a neighboring triangle"
-
-            ##     start_segment = SurfaceLineSegment(surface, start_label, polygon.vertex(start_edge), start_holonomy)
-
-            ##     assert not start_segment.end().is_vertex(), "boundary of a Voronoi cell cannot go through a vertex"
-
-            ##     segment = SurfaceLineSegment(surface, *start_segment.end().representative(), holonomy)
-
-            ##     boundary.append(VoronoiCellBoundarySegment(self, segment, start_segment))
-
+        # TODO: Why is this needed?
+        if len(boundary) > 1:
+            if boundary[-1] == boundary[0]:
+                boundary.pop()
 
         return tuple(boundary)
-
-## 
-##     # @cached_method
-##     # def _corners(self):
-##     #     surface = self.surface()
-## 
-##     #     corners = []
-## 
-##     #     (label, coordinates) = self.center().representative()
-##     #     vertex = surface.polygon(label).get_point_position(coordinates).get_vertex()
-## 
-##     #     # TODO: This loop should be generically available somehow, see _corners() above.
-##     #     initial_label, initial_vertex = label, vertex
-##     #     while True:
-##     #         polygon = surface.polygon(label)
-##     #         print(label)
-## 
-##     #         for corner in self.decomposition()._split_polygon(label)[vertex]:
-##     #             corners.append((label, vertex, corner))
-##     #             if len(corners) > 1:
-##     #                 if surface(*corners[-2][::2]) == surface(*corners[-1][::2]):
-##     #                     corner = corners.pop()
-##     #                     corners.pop()
-##     #                     corners.append(corner)
-## 
-##     #         label, vertex = surface.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
-##     #         if (label, vertex) == (initial_label, initial_vertex):
-##     #             break
-## 
-##     #     if surface(*corners[-1][::2]) == surface(*corners[0][::2]):
-##     #         corners.pop()
-## 
-##     #     if len(corners) < 2:
-##     #         raise NotImplementedError("cannot create cell from less than 2 corners")
-## 
-##     #     return tuple(corners)
-## 
-##     # def polygon_cells(self):
-##     #     return self._polygon_cells_corners()
-## 
-##     # @cached_method
-##     # def polygon_cells(self):
-##     #     surface = self.surface()
-## 
-##     #     cells = {}
-##     #     for boundary in self.boundary():
-##     #         (label, center, corner) = boundary._corners[0]
-## 
-##     #         segment = boundary.segment().split()
-##     #         assert len(segment) == 1
-##     #         segment = segment[0]
-##     #         if segment[0] == label:
-##     #             pass
-##     #         else:
-##     #             assert segment[0] == boundary._corners[1][0]
-##     #             label, center, corner = boundary._corners[1]
-##     #         segment = segment[1]
-## 
-##     #         cell = (label, center)
-##     #         if cell not in cells:
-##     #             cells[cell] = []
-##     #         cells[cell].append(segment)
-## 
-##     #     return tuple(ApproximateWeightedVoronoiPolygonCell(self, label, center, tuple(boundaries)) for ((label, center), boundaries) in cells.items())
-## 
-##     ## def polygon_cells(self):
-##     ##     surface = self.surface()
-## 
-##     ##     polygon_cells = []
-## 
-##     ##     corners = self._corners()
-##     ##     corners = {(label, vertex): [corner for (lbl, v, corner) in corners if lbl == label and v == vertex] for (label, vertex, _) in corners}
-## 
-##     ##     for (label, vertex) in corners:
-##     ##         cs = corners[(label, vertex)]
-##     ##         boundaries = []
-##     ##         for corner, next_corner in zip(cs, cs[1:]):
-##     ##             boundaries.append((corner, next_corner))
-## 
-##     ##         polygon_cells.append(ApproximateWeightedVoronoiPolygonCell(self, label, vertex, boundaries))
-## 
-##     ##     return tuple(polygon_cells)
 
 
 class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
@@ -1216,6 +1046,84 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
     def _exactify(self, x):
         R = self.surface().base_ring()
         return R(round(float(x), 3))
+
+    @cached_method
+    def _split_polygon_at_vertex(self, label, vertex):
+        # Return a refined version of _split_polygon(label)[vertex] that adds points for the split polygon that happened across any edges (so each segment has a negative.)
+        surface = self.surface()
+        polygon = surface.polygon(label)
+
+        split = [polygon.vertex(vertex)]
+
+        split.extend(self._split_polygon(label)[vertex])
+        
+        # previous_label, previous_vertex = surface.opposite_edge(label, vertex)
+        # previous_polygon = surface.polygon(previous_label)
+        # previous_vertex = (previous_vertex + 1) % len(previous_polygon.vertices())
+        # previous_corner = self._split_polygon(previous_label)[previous_vertex][-1]
+        # previous_corner += (polygon.vertex(vertex) - previous_polygon.vertex(previous_vertex))
+
+        # assert polygon.get_point_position(previous_corner).is_in_edge_interior() and polygon.get_point_position(previous_corner).get_edge() == vertex
+
+        # if split[1] != previous_corner:
+        #     split = split[:1] + [previous_corner] + split[1:]
+
+        next_label, next_vertex = surface.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
+        next_polygon = surface.polygon(next_label)
+        next_corner = self._split_polygon(next_label)[next_vertex][0]
+        next_corner += (polygon.vertex(vertex) - next_polygon.vertex(next_vertex))
+
+        assert polygon.get_point_position(next_corner).is_in_edge_interior() and polygon.get_point_position(next_corner).get_edge() == (vertex - 1) % len(polygon.vertices())
+
+        if split[-1] != next_corner:
+            split.append(next_corner)
+
+        refined_split = []
+        for corner, next_corner in zip(split, split[1:] + split[:1]):
+            assert corner != next_corner
+            midpoint = (corner + next_corner) / 2
+            midpoint_position = polygon.get_point_position(midpoint)
+            if midpoint_position.is_in_edge_interior():
+                edge = midpoint_position.get_edge()
+
+                opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+                opposite_polygon = surface.polygon(opposite_label)
+
+                edge_points = self._split_polygon_edge(opposite_label, opposite_edge)
+                edge_points = [p + (polygon.vertex(edge) - opposite_polygon.vertex(opposite_edge + 1)) for p in edge_points]
+
+                assert all(polygon.get_point_position(p).get_edge() == edge for p in edge_points)
+
+                from flatsurf.geometry.euclidean import time_on_segment
+                edge_points = [p for p in edge_points if time_on_segment((corner, next_corner), p) not in [0, 1, None]]
+                for p in sorted(edge_points, key=lambda p: time_on_segment((corner, next_corner), p)):
+                    assert p not in refined_split
+                    assert p != next_corner
+                    refined_split.append(p)
+                    print("refined with", p)
+
+            assert next_corner not in refined_split
+            refined_split.append(next_corner)
+
+        return tuple(refined_split[:-1])
+
+    @cached_method
+    def _split_polygon_edge(self, label, edge):
+        polygon = self.surface().polygon(label)
+
+        points = []
+
+        for split in self._split_polygon(label):
+            for point in split:
+                position = polygon.get_point_position(point)
+                if not position.is_in_edge_interior():
+                    continue
+                if position.get_edge() != edge:
+                    continue
+                if point not in points:
+                    points.append(point)
+
+        return tuple(points)
 
     @cached_method
     def _split_polygon(self, label):
@@ -1273,6 +1181,26 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
 
             return center, radius
 
+        def circle_segment_intersection(center, radius, segment):
+            # Shift the center to the origin.
+            segment = segment[0] - center, segment[1] - center
+
+            # Let P(t) be the point on the segment at time t in [0, 1].
+            # We solve the quadratic equation for |P(t)| = radius^2.
+
+            a = (segment[1][0] - segment[0][0])**2 + (segment[1][1] - segment[0][1])**2
+            b = 2*(segment[0][0]*segment[1][0] + segment[0][1]*segment[1][1] - segment[0][0]**2 - segment[0][1]**2)
+            c = segment[0][0]**2 + segment[0][1]**2 - radius**2
+
+            from math import sqrt
+            for t in [
+                (-b + sqrt(float(b**2 - 4*a*c))) / (2*a),
+                (-b - sqrt(float(b**2 - 4*a*c))) / (2*a),
+            ]:
+                if 0 <= t <= 1:
+                    return self._exactify(t)
+
+            assert False, f"intersection point must be on segment but time {t} is not in the unit interval, i.e., segment {segment} does not intersect circle at origin with radius {radius}"
 
         A_equal_B = A + (B - A) * self._exactify(wA / (wA + wB))
         if ((A - A_equal_B) / wA).norm() > ((C - A_equal_B) / wC).norm():
@@ -1290,8 +1218,8 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
                 assert A_equal_C is not None
             else:
                 center, radius = circle_of_apollonius(A, C, wA, wC)
-                A_equal_C = circle_segment_intersection(center, radius, (A, B))
-
+                t = circle_segment_intersection(center, radius, (A, B))
+                A_equal_C = (1 - t) * A + t * B
             if wB == wC:
                 # Circle of Apollonius is a line.
                 BC = C - B
@@ -1304,7 +1232,8 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
                 assert B_equal_C is not None
             else:
                 center, radius = circle_of_apollonius(B, C, wB, wC)
-                B_equal_C = circle_segment_intersection(center, radius, (B, A))
+                t = circle_segment_intersection(center, radius, (B, A))
+                B_equal_C = (1 - t) * B + t * A
 
             return [A_equal_C, B_equal_C]
 
@@ -1325,10 +1254,10 @@ class SurfaceLineSegment:
             edge = position.get_edge()
             from flatsurf.geometry.euclidean import ccw, is_anti_parallel
             if ccw(polygon.edge(edge), holonomy) < 0 or (ccw(polygon.edge(edge), holonomy) == 0 and is_anti_parallel(polygon.edge(edge), holonomy)):
-                start -= polygon.vertex(edge + 1)
+                start -= polygon.vertex(edge)
                 label, edge = surface.opposite_edge(label, edge)
                 polygon = surface.polygon(label)
-                start += polygon.vertex(edge)
+                start += polygon.vertex(edge + 1)
         if position.is_vertex():
             vertex = position.get_vertex()
             from flatsurf.geometry.euclidean import ccw
@@ -1481,7 +1410,6 @@ class SurfaceLineSegment:
         for s, (label, subsegment, _) in enumerate(subsegments):
             polygon = self.surface().polygon(label)
 
-
             graphical_polygon = graphical_surface.graphical_polygon(label)
 
             # TODO: This should be implemented in graphical polygon probably.
@@ -1491,7 +1419,7 @@ class SurfaceLineSegment:
 
             if s == len(subsegments) - 1:
                 from sage.all import arrow2d
-                plot.append(arrow2d(*graphical_subsegment, arrowsize=2, width=1, color="green"))
+                plot.append(arrow2d(*graphical_subsegment, arrowsize=1.5, width=.4, color="green"))
             else:
                 from sage.all import line2d
                 plot.append(line2d(graphical_subsegment))

@@ -2719,6 +2719,19 @@ def time_on_ray(p, direction, q):
 
     return delta, length
 
+def time_on_segment(segment, p):
+    if p == segment[0]:
+        return 0
+    if not is_parallel(p - segment[0], segment[1] - segment[0]):
+        return None
+
+    delta, length = time_on_ray(segment[0], segment[1] - segment[0], p)
+    if delta > length:
+        return None
+    if delta < 0:
+        return None
+
+    return delta / length
 
 def ray_segment_intersection(p, direction, segment):
     r"""

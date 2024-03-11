@@ -243,7 +243,8 @@ class GraphicalSurface:
         self.edge_label_options = {"color": "blue"}
         r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge_label` when plotting a polygon label."""
 
-        self.will_plot_zero_flags = False
+        # TODO: Revert this but make easily configurable.
+        self.will_plot_zero_flags = True
         r"""
         Whether to plot line segments from the baricenter to the zero vertex of each polygon.
         """

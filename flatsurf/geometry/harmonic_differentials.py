@@ -50,6 +50,11 @@ A less trivial example, the regular octagon::
     # on the untriangulated surface
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
 
+    sage: from flatsurf.geometry.voronoi import ApproximateWeightedVoronoiCellDecomposition
+    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=ApproximateWeightedVoronoiCellDecomposition(S))
+    sage: omega = Omega(f, check=False)
+    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # TODO: Why so much tolerance?
+
 The same computation on a triangulation of the octagon::
 
     sage: from flatsurf import HarmonicDifferentials, SimplicialCohomology, Polygon, translation_surfaces
@@ -80,6 +85,36 @@ The same surface but built as the unfolding of a right triangle::
     sage: omega = Omega(f)  # long time  # random output due to precision warnings TODO
     sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: We get this output but multiplied with a root of unity.
     (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
+
+A deformed L::
+
+    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, ApproximateWeightedVoronoiCellDecomposition, GL2ROrbitClosure
+    sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+    sage: L = GL2ROrbitClosure(L).deform()
+    sage: L = L.delaunay_triangulation()
+    sage: L = L.subdivide_edges(4).codomain()
+    sage: L = L.subdivide().codomain()
+    sage: # L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: # L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [3]]).codomain()
+    sage: L = L.delaunay_triangulation()
+    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: L.plot(edge_labels=False)
+    sage: V = ApproximateWeightedVoronoiCellDecomposition(L)
+    sage: Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V, check=False)
+    sage: Omega.error_plot(cutoff=.5)
+
+    sage: L = L.delaunay_triangulation()
+    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [8, 12]]).codomain()
+    sage: L = L.delaunay_triangulation()
+    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [1, 16]]).codomain()
+    sage: L = L.delaunay_triangulation()
+    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: V = ApproximateWeightedVoronoiCellDecomposition(L)
+    sage: V.plot()
+
+    sage: Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V)
 
 Much more complicated, the unfolding of the (3, 4, 13) triangle::
 
@@ -877,7 +912,7 @@ class HarmonicDifferentialSpace(Parent):
     Element = HarmonicDifferential
 
     # TODO: Determine ncoefficients automatically
-    def __init__(self, surface, error, cell_decomposition, category=None):
+    def __init__(self, surface, error, cell_decomposition, check=True, category=None):
         # TODO: Just order labels by their order in surface.labels() instead.
         try:
             sorted(surface.labels())
@@ -894,9 +929,11 @@ class HarmonicDifferentialSpace(Parent):
         self._centers = list(self._cells.centers())
 
         # TODO: Why does calling this here fix caching issues in ncoefficients()??
-        from sage.all import oo
-        if self.error() == oo:
-            raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
+        error = self.error()
+        if check:
+            from sage.all import oo
+            if error == oo:
+                raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
 
     def change(self, surface=None):
         if surface is not None:
@@ -955,6 +992,51 @@ class HarmonicDifferentialSpace(Parent):
 
         return r / R
 
+    def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20):
+        if graphical_surface is None:
+            graphical_surface = self.surface().graphical_surface(polygon_labels=False, edge_labels=False)
+
+        plot = graphical_surface.plot(fill=False)
+
+        from sage.all import var
+        x, y = var('x,y')
+
+        # TODO: Would be better to use a global region plot over the entire surface.
+        for label in self.surface().labels():
+            from sage.all import RDF
+            polygon = self.surface().polygon(label).change_ring(RDF)
+
+            graphical_polygon = graphical_surface.graphical_polygon(label)
+
+            for polygon_cell in self._cells.polygon_cells(label):
+                radius_of_convergence = float(polygon_cell.cell().center().radius_of_convergence())
+
+                def is_visible(x, y):
+                    from sage.all import vector
+                    xy = vector((x, y))
+
+                    xy_polygon = graphical_polygon.transform_back(xy)
+                    if polygon.get_point_position(xy_polygon).is_outside():
+                        return False
+
+                    error = (xy_polygon - polygon_cell.center()).norm() / radius_of_convergence
+                    if error < cutoff:
+                        return False
+
+                    return polygon_cell.contains_point(xy_polygon)
+
+                from sage.all import region_plot
+                plot += region_plot(is_visible, (x, graphical_polygon.xmin(), graphical_polygon.xmax()), (y, graphical_polygon.ymin(), graphical_polygon.ymax()), plot_points=plot_points, incol='orange', outcol=None, bordercol='lightgrey', alpha=.2)
+
+                for corner in polygon_cell.corners():
+                    xy = graphical_polygon.transform(corner)
+                    if is_visible(*xy):
+                        from sage.all import point2d
+                        plot += point2d([xy], color="red")
+
+        return plot + self._cells.plot(graphical_surface)
+
+
     # def error_location(self, cell=None):
     #     if cell is None:
     #         cell = self.error_cell()
@@ -1005,7 +1087,7 @@ class HarmonicDifferentialSpace(Parent):
 
     @cached_method(key=lambda self, check: None, do_pickle=True)
     def basis(self, check=True):
-        return [self(gen) for gen in self.cohomology().gens()]
+        return [self(gen, check=check) for gen in self.cohomology().gens()]
 
     def cohomology(self):
         from flatsurf.geometry.cohomology import SimplicialCohomology
@@ -1736,6 +1818,11 @@ q
             0
 
         """
+        # TODO: Do not ignore boundaries that are aligned with edges!
+        if polygon_cell.label() != opposite_polygon_cell.label():
+            print("Ignoring L2 condition on edge of polygon")
+            return 0
+
         assert polygon_cell.label() == opposite_polygon_cell.label()
         assert polygon_cell.contains_segment(boundary_segment)
         assert opposite_polygon_cell.contains_segment(boundary_segment)
@@ -2398,6 +2485,6 @@ class GeodesicPath(Path):
         return hash((self._start, self._holonomy))
 
 
-def HarmonicDifferentials(surface, error, cell_decomposition, category=None):
-    return surface.harmonic_differentials(error, cell_decomposition, category)
+def HarmonicDifferentials(surface, error, cell_decomposition, check=True, category=None):
+    return surface.harmonic_differentials(error, cell_decomposition, check, category)
 
