@@ -281,7 +281,7 @@ class LineSegmentCell(Cell):
 
     @cached_method
     def corners(self):
-        return [segment.start() for segment in self.boundary()]
+        return [segment.segment().start() for segment in self.boundary()]
 
     @cached_method
     def _polygon_cells(self, label):
