@@ -230,6 +230,51 @@ class GL2ROrbitClosure:
         self.update_tangent_space_from_vector(self.H.transpose()[0])
         self.update_tangent_space_from_vector(self.H.transpose()[1])
 
+    def _lift_to_simplicial_cohomology(self, v):
+        r"""
+        Convert an element from cohomology given by its values on all edges,
+        e.g., the output of :meth:`lift`, to the corresponding simplicial
+        cohomology class.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, translation_surfaces, similarity_surfaces
+            sage: from flatsurf import GL2ROrbitClosure  # optional: pyflatsurf
+
+            sage: T = polygons.triangle(3,4,13)
+            sage: S = similarity_surfaces.billiard(T)
+            sage: S = S.minimal_cover("translation").erase_marked_points().codomain() # long time (3s, #122), optional: pyflatsurf
+            sage: O = GL2ROrbitClosure(S)  # long time (above), optional: pyflatsurf
+            sage: for d in O.decompositions(4, 20):  # long time (2s, #124), optional: pyflatsurf
+            ....:     O.update_tangent_space_from_flow_decomposition(d)
+            ....:     if O.dimension() == 4:
+            ....:         break
+
+            sage: d1, d2, d3, d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
+            sage: O._lift_to_simplicial_cohomology(d3)
+
+        """
+        H = self._surface.cohomology()
+
+        values = {}
+
+        # TODO: Implement this in a more natural way without reaching
+        # into the internals of homology.
+        for homology_gen in H.homology().gens():
+            chain = homology_gen._chain
+            value = H._coefficients.zero()
+            for ((label, edge), coefficient) in chain.monomial_coefficients().items():
+                to_pyflatsurf = self._surface.pyflatsurf()
+                half_edge = to_pyflatsurf._pyflatsurf_conversion((label, edge))
+                if half_edge.id() < 0:
+                    value -= coefficient * v[-(half_edge.id() - 1)]
+                else:
+                    value += coefficient * v[half_edge.id() - 1]
+
+            values[homology_gen] = value
+
+        return H(values)
+
     def deform(self):
         # TODO: Move this to deformation branch.
         tangents = self.tangent_space_basis()
