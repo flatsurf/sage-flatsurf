@@ -131,14 +131,8 @@ class GraphicalSurface:
 
         - ``'letter'`` -- add matching letters to glued edges in an arbitrary way
 
-    - ``adjacencies`` -- a list of pairs ``(p,e)`` to be used to set
-      adjacencies of polygons.
-
     - ``default_position_function`` -- a function mapping polygon labels to
       similarities describing the position of the corresponding polygon.
-
-    If adjacencies is not defined and the surface is finite, make_all_visible()
-    is called to make all polygons visible.
 
     EXAMPLES::
 
@@ -156,7 +150,7 @@ class GraphicalSurface:
     def __init__(
         self,
         surface,
-        adjacencies=None,
+        polygon_transformations=None,
         polygon_labels=True,
         edge_labels="gluings",
         default_position_function=None,
@@ -170,7 +164,7 @@ class GraphicalSurface:
 
         self._visible = set(self._ss.roots())
 
-        if adjacencies is None:
+        if polygon_transformations is None:
             if self._ss.is_finite_type():
                 self.layout()
         self._edge_labels = None
@@ -253,14 +247,14 @@ class GraphicalSurface:
         r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_zero_flag` when plotting a zero_flag."""
 
         self.process_options(
-            adjacencies=adjacencies,
+            polygon_transformations=polygon_transformations,
             polygon_labels=polygon_labels,
             edge_labels=edge_labels,
         )
 
     def process_options(
         self,
-        adjacencies=None,
+        polygon_transformations=None,
         polygon_labels=None,
         edge_labels=None,
         default_position_function=None,
@@ -284,9 +278,11 @@ class GraphicalSurface:
             ...
             ValueError: invalid value for edge_labels (='hey')
         """
-        if adjacencies is not None:
-            for p, e in adjacencies:
-                self.make_adjacent(p, e)
+        for label, transformation in (polygon_transformations or {}).items():
+            from flatsurf.graphical.polygon import GraphicalPolygon
+
+            self._polygons[label] = GraphicalPolygon(self._ss.polygon(label), transformation=transformation)
+            self.make_visible(label)
 
         if polygon_labels is not None:
             if not isinstance(polygon_labels, bool):
@@ -339,6 +335,7 @@ class GraphicalSurface:
         """
         gs = GraphicalSurface(
             self.get_surface(),
+            polygon_transformations={label: polygon.transformation() for (label, polygon) in self._polygons.items()},
             default_position_function=self._default_position_function,
         )
 
