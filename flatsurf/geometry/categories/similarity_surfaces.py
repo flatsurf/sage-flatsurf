@@ -914,7 +914,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 s.set_immutable()
                 return s
 
-            def relabel(self, relabeling, in_place=False):
+            def relabel(self, relabeling=None, in_place=False):
                 r"""
                 Return a morphism to a surface whose polygons have been
                 relabeled according to ``relabeling``.

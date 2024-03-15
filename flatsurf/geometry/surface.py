@@ -1823,7 +1823,7 @@ class MutableOrientedSimilaritySurface(
             us.glue((label, e), cross)
         return self
 
-    def relabel(self, relabeling, in_place=False):
+    def relabel(self, relabeling=None, in_place=False):
         r"""
         Overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
@@ -1835,6 +1835,9 @@ class MutableOrientedSimilaritySurface(
         """
         if not in_place:
             return super().relabel(relabeling=relabeling, in_place=in_place)
+
+        if relabeling is None:
+            relabeling = {label: l for (l, label) in enumerate(self.labels())}
 
         if callable(relabeling):
             relabeling = {label: relabeling(label) for label in self.labels()}
