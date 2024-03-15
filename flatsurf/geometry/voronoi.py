@@ -1100,7 +1100,6 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
                     assert p not in refined_split
                     assert p != next_corner
                     refined_split.append(p)
-                    print("refined with", p)
 
             assert next_corner not in refined_split
             refined_split.append(next_corner)
