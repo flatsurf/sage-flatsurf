@@ -153,7 +153,7 @@ Given a vector from the tangent space, we can determine the corresponding differ
     ....:     O.update_tangent_space_from_flow_decomposition(d)
     sage:     if O.dimension() > 2: break
 
-    sage: f = Omega(O._lift_to_simplicial_cohomology(O.tangent_space_basis()[-1]))
+    sage: f = Omega(O._lift_to_simplicial_cohomology(O.lift(O.tangent_space_basis()[-1])))
 
 We can determine the roots of this differential::
 
@@ -583,9 +583,18 @@ define_solve()
 class HarmonicDifferential(Element):
     def __init__(self, parent, series, residue=None, cocycle=None):
         super().__init__(parent)
+        if series is None:
+            raise ValueError  # why would we want series to be None again?
         self._series = series
         self._residue = residue
         self._cocycle = cocycle
+
+    def roots(self):
+        roots = []
+        for center, series in self._series.items():
+            roots.extend(self.parent().roots(center, series))
+
+        return roots
 
     def _add_(self, other):
         r"""
@@ -1019,6 +1028,25 @@ class HarmonicDifferentialSpace(Parent):
         r = float(cell.radius())
 
         return r / R
+
+    def roots(self, center, series):
+        roots = []
+
+        cell = self._cells.cell_at_center(center)
+
+        for (root, multiplicity) in series.polynomial().roots():
+            root = cell.point_from_complex(root)
+
+            if root is None:
+                continue
+            
+            if not cell.contains_point(root):
+                continue
+
+            for n in range(multiplicity):
+                roots.append(root)
+
+        return roots
 
     def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20):
         if graphical_surface is None:

@@ -59,7 +59,7 @@ a rotation, this is a cone surface::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
-from sage.misc.cachefunc import cached_in_parent_method
+from sage.misc.cachefunc import cached_in_parent_method, cached_method
 
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
@@ -358,7 +358,6 @@ class ConeSurfaces(SurfaceCategory):
 
                         assert False
 
-
                 class ParentMethods:
                     r"""
                     Provides methods available to all oriented cone surfaces
@@ -367,7 +366,6 @@ class ConeSurfaces(SurfaceCategory):
                     If you want to add functionality for such surfaces you most
                     likely want to put it here.
                     """
-
                     def angles(self, numerical=False, return_adjacent_edges=False):
                         r"""
                         Return the set of angles around the vertices of the surface.
@@ -461,6 +459,31 @@ class ConeSurfaces(SurfaceCategory):
                         If you want to add functionality for such surfaces you
                         most likely want to put it here.
                         """
+                        @cached_method
+                        def distance_matrix(self):
+                            vertices = list(self.vertices())
+
+                            A = [[0. if n == m else float('inf') for n in range(len(vertices))] for m in range(len(vertices))]
+
+                            def floyd():
+                                for k in range(len(vertices)):
+                                    for i in range(len(vertices)):
+                                        for j in range(len(vertices)):
+                                            A[i][j] = min(A[i][j], A[i][k] + A[k][j])
+
+                            for connection in self.saddle_connections():
+                                length = float(connection.holonomy().norm())
+                                if length >= max(x for row in A for x in row):
+                                    from sage.all import matrix
+                                    return matrix(A)
+
+                                n = vertices.index(self(*connection.start()))
+                                m = vertices.index(self(*connection.end()))
+
+                                if length < A[n][m]:
+                                    assert length < A[m][n]
+                                    A[n][m] = A[m][n] = length
+                                    floyd()
 
                         def _test_genus(self, **options):
                             r"""

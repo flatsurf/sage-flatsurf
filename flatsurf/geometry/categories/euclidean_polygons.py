@@ -2013,13 +2013,13 @@ class EuclideanPolygons(Category_over_base_ring):
                         Polygon(vertices=[(0, 0), (1/3, 0), (2/3, 0), (1, 0), (5/6, 1/6*a), (2/3, 1/3*a), (1/2, 1/2*a), (1/3, 1/3*a), (1/6, 1/6*a)])
 
                     """
-                    if parts < 1:
-                        raise ValueError("parts must be a positive integer")
+                    from collections.abc import Iterable
+                    if not isinstance(parts, Iterable):
+                        parts = [[1/parts for k in range(parts)] for e in self.edges()]
 
-                    steps = [e / parts for e in self.edges()]
                     from flatsurf import Polygon
 
-                    return Polygon(edges=[e for e in steps for p in range(parts)]).translate(self.vertex(0))
+                    return Polygon(edges=[e * part for (e, parts) in zip(self.edges(), parts) for part in parts]).translate(self.vertex(0))
 
                 def j_invariant(self):
                     r"""

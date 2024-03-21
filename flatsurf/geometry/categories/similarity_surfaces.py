@@ -2774,7 +2774,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     from itertools import chain
                     more_points = list(chain.from_iterable(more_points.values()))
                     more_points = [insert_first_point(p) for p in more_points]
-                    return insert_first_point.codomain().insert_marked_points(more_points) * insert_first_point
+                    return insert_first_point.codomain().insert_marked_points(*more_points) * insert_first_point
 
                 return insert_first_point
 
@@ -2829,7 +2829,13 @@ class SimilaritySurfaces(SurfaceCategory):
                 labels = list(self.labels())
                 polygons = [self.polygon(label) for label in labels]
 
-                subdivideds = [p.subdivide_edges(parts=parts) for p in polygons]
+                from collections.abc import Iterable
+                if not isinstance(parts, Iterable):
+                    parts = tuple(1/parts for k in range(parts))
+                if sum(parts) != 1:
+                    raise ValueError
+
+                subdivideds = [p.subdivide_edges(parts=[parts for _ in p.edges()]) for p in polygons]
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
@@ -2846,12 +2852,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     for e in range(len(polygon.vertices())):
                         opposite = self.opposite_edge(label, e)
                         if opposite is not None:
-                            for p in range(parts):
+                            for p in range(len(parts)):
                                 surface.glue(
-                                    (label, e * parts + p),
+                                    (label, e * len(parts) + p),
                                     (
                                         opposite[0],
-                                        opposite[1] * parts + (parts - p - 1),
+                                        opposite[1] * len(parts) + (len(parts) - p - 1),
                                     ),
                                 )
 

@@ -1578,8 +1578,19 @@ class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
         to_pyflatsurf = FlatTriangulationConversion.to_pyflatsurf(domain=self.codomain())
 
         label = next(iter(p.labels()))
-        coordinates = next(iter(p.coordinates(label))) - self.domain().polygon(label).vertex(0)
 
+        coordinates = next(iter(p.coordinates(label)))
+        coordinates -= self.domain().polygon(label).vertex(0)
+
+        if len(self._subdivisions[label]) == 1:
+            # No point was inserted into this polygon.
+            coordinates += self.codomain().polygon(label).vertex(0)
+            return self.codomain()(label, coordinates)
+
+        # We take the translation of the point from a nearby vertex and then
+        # translate from the image of that vertex by the same amount.
+        # Since that translation is currently only implemented in libflatsurf,
+        # we leave the heavy lifting to libflatsurf here.
         from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
         to_pyflatsurf_vector = VectorSpaceConversion.to_pyflatsurf(coordinates.parent())
 
@@ -1589,11 +1600,18 @@ class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
             """
             return v[0] * w[1] >= w[0] * v[1]
 
-        initial_edge = ((label, 0), 0)
-        mid_edge = ((label, len(self.codomain().polygons()) // len(self.domain().polygons()) - 1), 1)
+        # From the vertex 0 of the domain polygon, we want to translate by "coordinates".
+        # For libflatsurf to allow such a translate, we need to tell it in
+        # which sector of the codomain the translation vectors lives, i.e.,
+        # next to the edge that was already in the domain surface, or next to
+        # the edge that was added by the insertion.
+        original_edge = ((label, 0), 0)
+        inserted_edge = self.codomain().opposite_edge((label, 0), 2)
+        assert inserted_edge[0][0] == label
 
-        face = mid_edge if ccw(self.codomain().polygon(mid_edge[0]).edge(mid_edge[1]), coordinates) else initial_edge
-        face = to_pyflatsurf(face)
+        sector = inserted_edge if ccw(self.codomain().polygon(inserted_edge[0]).edge(inserted_edge[1]), coordinates) else original_edge
+        face = to_pyflatsurf(sector)
+
         coordinates = to_pyflatsurf_vector(coordinates)
 
         import pyflatsurf
@@ -1654,7 +1672,7 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
         return self.codomain()(*p.representative())
 
     def _image_homology_edge(self, label, edge):
-        return [(1, label, edge * self._parts + p) for p in range(self._parts)]
+        return [(1, label, edge * len(self._parts) + p) for p in range(len(self._parts))]
 
     def _section_point(self, q):
         return self.domain()(*q.representative())
@@ -1667,20 +1685,20 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
         return SaddleConnection(
             surface=self.codomain(),
-            start=(start[0], start[1] * self._parts),
-            end=(end[0], end[1] * self._parts),
+            start=(start[0], start[1] * len(self._parts)),
+            end=(end[0], end[1] * len(self._parts)),
             holonomy=c.holonomy(),
             end_holonomy=c.end_holonomy(),
             check=False)
 
     def _section_saddle_connection(self, c):
         start = c.start()
-        if start[1] % self._parts != 0:
+        if start[1] % len(self._parts) != 0:
             # TODO: This is not true. Straight line trajectories are built of such segments.
             raise NotImplementedError("cannot represent segments not starting at a vertex yet")
 
         end = c.end()
-        if end[1] % self._parts != 0:
+        if end[1] % len(self._parts) != 0:
             # TODO: This is not true. Straight line trajectories are built of such segments.
             raise NotImplementedError("cannot represent segments not terminating at a vertex yet")
 
@@ -1688,8 +1706,8 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
         return SaddleConnection(
             surface=self.domain(),
-            start=(start[0], start[1] // self._parts),
-            end=(end[0], end[1] // self._parts),
+            start=(start[0], start[1] // len(self._parts)),
+            end=(end[0], end[1] // len(self._parts)),
             holonomy=c.holonomy(),
             end_holonomy=c.end_holonomy(),
             check=False)

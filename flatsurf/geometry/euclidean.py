@@ -3996,6 +3996,9 @@ class EuclideanDistance_infinite(EuclideanDistance_base):
     def is_finite(self):
         return False
 
+    def _repr_(self):
+        return "∞"
+
 
 class EuclideanDistances(Parent):
     def __init__(self, euclidean_plane, category=None):

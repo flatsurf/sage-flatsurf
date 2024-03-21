@@ -225,6 +225,40 @@ class Cell:
         """
         return max(boundary.radius() for boundary in self.boundary())
 
+    def point_from_complex(self, z):
+        from math import pi
+
+        arg = z.arg()
+        if arg < 0:
+            arg += 2*pi
+
+        branch = int(arg * self._center.angle() // (2*pi))
+
+        from sage.all import vector
+        xy = vector(list(z ** self._center.angle()))
+
+        for polygon_cell in self.polygon_cells():
+            polygon = self.surface().polygon(polygon_cell.label())
+            center = polygon_cell.center()
+            vertex = polygon.get_point_position(center).get_vertex()
+
+            from flatsurf.geometry.euclidean import ccw
+            if ccw(polygon.edge(vertex), xy) >= 0 and ccw(-polygon.edge(vertex - 1), xy) < 0:
+                from flatsurf.geometry.euclidean import OrientedSegment
+                p = center + xy
+                if polygon_cell.root_branch(OrientedSegment(p, p + xy)) == branch:
+                    if polygon.get_point_position(p).is_outside():
+                        return None
+
+                    if not polygon_cell.contains_point(p):
+                        return None
+
+                    print(f"Root at distance {xy.norm():.5} of {self.center()} (angle {2*self.center().angle()}π)")
+
+                    return self.surface()(polygon_cell.label(), p)
+
+        assert False
+
     def __eq__(self, other):
         if not isinstance(other, Cell):
             return False
