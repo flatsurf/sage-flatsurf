@@ -695,7 +695,7 @@ class HarmonicDifferential(Element):
                             return error
 
         if kind is None or "L2" in kind:
-            C = PowerSeriesConstraints(self.parent())
+            C = self.parent()._constraints()
             consistency = C._L2_consistency()
             # print(consistency)
             abs_error = self._evaluate(consistency)
@@ -741,11 +741,6 @@ class HarmonicDifferential(Element):
     def cohomology(self):
         H = self.parent().cohomology()
         return H({ gen: self.integrate(gen).real() for gen in H.homology().gens()})
-
-    @cached_method
-    def _constraints(self):
-        # TODO: This is a hack. Come up with a better class hierarchy!
-        return PowerSeriesConstraints(differentials=self.parent())
 
     def _evaluate(self, expression):
         r"""
@@ -852,7 +847,7 @@ class HarmonicDifferential(Element):
         if numerical:
             raise NotImplementedError
 
-        C = PowerSeriesConstraints(self.parent())
+        C = self.parent()._constraints()
         return self._evaluate(C.integrate(cycle))
 
     def _repr_(self):
@@ -1168,6 +1163,14 @@ class HarmonicDifferentialSpace(Parent):
 
         return self._element_from_cohomology(x, *args, **kwargs)
 
+    def _constraints(self):
+        return PowerSeriesConstraints(self)
+
+    # TODO: The caching is a huge spaghetti mess.
+    @cached_method
+    def _L2_consistency_constraints(self):
+        return self._constraints()._L2_consistency()
+
     def _element_from_cohomology(self, cocycle, /, algorithm=["L2"], check=True):
         # TODO: In practice we could speed things up a lot with some smarter
         # caching. A lot of the quantities used in the computations only depend
@@ -1187,7 +1190,7 @@ class HarmonicDifferentialSpace(Parent):
         # At each vertex of the Voronoi diagram, write f=Σ a_k z^k + O(z^prec). Our task is now to determine
         # the a_k.
 
-        constraints = PowerSeriesConstraints(self)
+        constraints = self._constraints()
 
         # We use a variety of constraints. Which ones to use exactly is
         # determined by the "algorithm" parameter. If algorithm is a dict, it
@@ -1212,7 +1215,7 @@ class HarmonicDifferentialSpace(Parent):
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
             algorithm = [a for a in algorithm if a != "L2"]
-            constraints.optimize(weight * constraints._L2_consistency())
+            constraints.optimize(weight * self._L2_consistency_constraints())
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
