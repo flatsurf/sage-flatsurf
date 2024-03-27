@@ -2803,6 +2803,45 @@ def ray_segment_intersection(p, direction, segment):
     return intersection
 
 
+def is_box_intersecting(b, c):
+    r"""
+    Return whether the (bounding) boxes ``b`` and ``c`` intersect.
+
+    INPUT:
+
+    - ``b`` -- a pair of corners
+    - ``c`` -- a pair of corners
+
+    OUTPUT:
+
+    - ``0`` -- do not intersect
+    - ``1`` -- intersect in a point
+    - ``2`` -- intersect in a segment
+    - ``3`` -- intersection has interior points
+    
+    """
+    def normalize(b):
+        if b[0][0] > b[1][0]:
+            b[0][0], b[1][0] = b[1][0], b[0][0]
+        if b[0][1] > b[1][1]:
+            b[0][1], b[1][1] = b[1][1], b[0][1]
+
+    normalize(b)
+    normalize(c)
+
+    if b[0][0] > c[1][0]:
+        return 0
+    if c[0][0] > b[1][0]:
+        return 0
+    if b[0][1] > c[1][1]:
+        return 0
+    if c[0][1] > b[1][1]:
+        return 0
+
+    # TODO: This is not the full algorithm yet.
+    return 3
+
+
 def is_segment_intersecting(s, t):
     r"""
     Return whether the segments ``s`` and ``t`` intersect.
@@ -2834,18 +2873,21 @@ def is_segment_intersecting(s, t):
         1
 
     """
-    turn_from_s = ccw(s[1] - s[0], t[0] - s[0]) * ccw(s[1] - s[0], t[1] - s[0])
+    if not is_box_intersecting(s, t):
+        return 0
+
+    Δs = s[1] - s[0]
+    turn_from_s = ccw(Δs, t[0] - s[0]) * ccw(Δs, t[1] - s[0])
     if turn_from_s > 0:
         # Both endpoints of t are on the same side of s
         return 0
 
-    turn_from_t = ccw(t[1] - t[0], s[0] - t[0]) * ccw(t[1] - t[0], s[1] - t[0])
+    Δt = t[1] - t[0]
+    turn_from_t = ccw(Δt, s[0] - t[0]) * ccw(Δt, s[1] - t[0])
     if turn_from_t > 0:
         # Both endpoints of s are on the same side of t
         return 0
 
-    Δs = s[1] - s[0]
-    Δt = t[1] - t[0]
     if ccw(Δs, Δt) == 0:
         # Segments are parallel
         if is_anti_parallel(Δs, Δt):
