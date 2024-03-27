@@ -32,6 +32,8 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+from sage.misc.cachefunc import cached_function
+
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.modules.free_module_element import vector
@@ -535,6 +537,10 @@ class GraphicalSurface:
 
                 assert score >= 1
 
+                @cached_function
+                def transformed_vertex(label, v):
+                    return self.graphical_polygon(label).transformed_vertex(v)
+
                 for visible in self.visible():
                     if visible in adjacents:
                         continue
@@ -546,8 +552,8 @@ class GraphicalSurface:
                         for f in range(len(visible_polygon.vertices())):
                             from flatsurf.geometry.euclidean import is_segment_intersecting
                             intersection = is_segment_intersecting(
-                                (self.graphical_polygon(label).transformed_vertex(e), self.graphical_polygon(label).transformed_vertex(e + 1)),
-                                (self.graphical_polygon(visible).transformed_vertex(f), self.graphical_polygon(visible).transformed_vertex(f + 1)),
+                                (transformed_vertex(label, e), transformed_vertex(label, e + 1)),
+                                (transformed_vertex(visible, f), transformed_vertex(visible, f + 1)),
                             )
                             if intersection == 2:
                                 intersections += 1
