@@ -137,7 +137,7 @@ by their disks of convergence::
 We add marked points in the centers of some polygons::
 
     sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=V, check=False)
-    sage: Omega.error_plot()
+    sage: # Omega.error_plot()
     sage: S = S.insert_marked_points(*[S(label, S.polygon(label).centroid()) for label in (2, 18, 26, 31)]).codomain()
     sage: S = S.delaunay_triangulation()
     sage: S = S.relabel().codomain()
@@ -150,8 +150,9 @@ Given a vector from the tangent space, we can determine the corresponding differ
     sage: from flatsurf import GL2ROrbitClosure
     sage: O = GL2ROrbitClosure(S)
     sage: for d in O.decompositions(4, 20):
+    ....:     print(O.dimension())
     ....:     O.update_tangent_space_from_flow_decomposition(d)
-    sage:     if O.dimension() > 2: break
+    ....:     if O.dimension() == 7: break
 
     sage: f = Omega(O._lift_to_simplicial_cohomology(O.lift(O.tangent_space_basis()[-1])))
 
@@ -2298,6 +2299,8 @@ q
         """
         self._optimize_cost()
 
+        self._denormalize()
+
         A, b, decode, _ = self.matrix()
 
         rows, columns = A.dimensions()
@@ -2307,6 +2310,7 @@ q
 
         from sage.all import RDF, oo
         condition = A.change_ring(RDF).condition()
+        print(f"{condition=}")
 
         if condition == oo:
             print("condition number is not finite")
@@ -2377,12 +2381,36 @@ q
             if degree not in series[center]:
                 series[center][degree] = [None, None]
 
-            series[center][degree][part] = value
+            series[center][degree][part] = self._normalize(value, center=center, degree=degree, part=part)
 
         series = {point:
                   sum((self.complex_field()(*entry) * self.power_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.power_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
 
         return series, residue
+
+    def _denormalize(self):
+        # Rewrite a * x_n as (a * r^-n) * (r^n * x_n) where r is the relative
+        # radius of convergence at the center of x (0 < r < 1.)
+        # The solution of the optimization problem (r^n * x_n) is then a much
+        # smaller number for large n which should help keep the condition of
+        # the problem in check.
+        return  # TODO: Enable normalization!
+        def mul(scalar, expression):
+            # TODO: Why is there no scalar multiplication on power series expressions?
+            return expression.map_coefficients(lambda c: scalar * c)
+
+        Ω = self._differentials
+        self._constraints = [
+            sum(mul(Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(Ω._gen_center(v)))**-v.describe()[1] * constraint[v] if not Ω._gen_is_lagrange(v) else constraint[v], v) for v in constraint.variables()) + constraint.constant_coefficient()
+            for constraint in self._constraints
+        ]
+
+    def _normalize(self, x, center, degree, part):
+        return x  # TODO: Enable denormalization!
+        # Undo the effect of _denormalize on x, i.e., return r^n * x.
+        Ω = self._differentials
+        r = Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(center))
+        return x * r**-degree
 
 
 class Path:
