@@ -460,7 +460,7 @@ class ConeSurfaces(SurfaceCategory):
                         most likely want to put it here.
                         """
                         @cached_method
-                        def distance_matrix(self):
+                        def distance_matrix_vertices(self):
                             vertices = list(self.vertices())
 
                             A = [[0. if n == m else float('inf') for n in range(len(vertices))] for m in range(len(vertices))]
@@ -484,6 +484,37 @@ class ConeSurfaces(SurfaceCategory):
                                     assert length < A[m][n]
                                     A[n][m] = A[m][n] = length
                                     floyd()
+
+                        # TODO: Don't cache this.
+                        @cached_method
+                        def distance_matrix_points(self, points):
+                            insertion = self.insert_marked_points(*points)
+
+                            D = insertion.codomain().distance_matrix_vertices()
+                            V = list(insertion.codomain().vertices())
+
+                            from sage.all import matrix
+                            return matrix([[
+                                D[V.index(insertion(p))][V.index(insertion(q))] for q in points]
+                                for p in points])
+
+                        def cluster_points(self, points):
+                            D = self.distance_matrix_points(points)
+
+                            nclusters = len(points)
+                            for radius in sorted(D.list()):
+                                from sage.all import matrix
+                                adjacency = matrix([[d <= radius and i != j for j, d in enumerate(row)] for i, row in enumerate(D.rows())])
+
+                                from sage.all import Graph
+                                G = Graph(adjacency)
+
+                                import sage.graphs.cliquer
+                                clusters = list(sage.graphs.cliquer.all_cliques(G))
+                                if len(clusters) < nclusters:
+                                    nclusters = len(clusters)
+
+                                    print(f"Identifying roots within a radius {radius} the {len(points)} roots cluster as roots of orders {(len(cluster) for cluster in clusters)}")
 
                         def _test_genus(self, **options):
                             r"""
