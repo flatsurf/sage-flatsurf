@@ -24,6 +24,7 @@ from sage.plot.polygon import polygon2d
 from sage.plot.text import text
 from sage.plot.line import line2d
 from sage.plot.point import point2d
+from sage.misc.cachefunc import cached_method
 
 from flatsurf.geometry.similarity import SimilarityGroup
 

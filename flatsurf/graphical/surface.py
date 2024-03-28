@@ -499,6 +499,24 @@ class GraphicalSurface:
             if label not in surface.roots():
                 self.hide(label)
 
+        @cached_function
+        def polygon_after_glue(label, edge):
+            assert not self.is_visible(label)
+            opposite_label, opposite_edge = surface.opposite_edge(label, edge)
+            assert self.is_visible(opposite_label)
+            self.make_adjacent(opposite_label, opposite_edge, visible=False)
+            assert self.is_adjacent(label, edge)
+            return self.graphical_polygon(label).copy()
+
+        @cached_function
+        def transformed_vertex_after_glue(label, edge, vertex):
+            return polygon_after_glue(label, edge).transformed_vertex(vertex)
+
+        @cached_function
+        def transformed_vertex(label, vertex):
+            assert self.is_visible(label)
+            return self.graphical_polygon(label).transformed_vertex(vertex)
+
         while True:
             invisible_labels = [label for label in surface.labels() if not self.is_visible(label)]
             if not invisible_labels:
@@ -515,8 +533,6 @@ class GraphicalSurface:
                 if not self.is_visible(opposite_label):
                     return -1e9
 
-                self.make_adjacent(opposite_label, opposite_edge, visible=False)
-
                 score = 0
 
                 adjacents = []
@@ -530,16 +546,12 @@ class GraphicalSurface:
                     if not self.is_visible(opposite_label):
                         continue
 
-                    if self.is_adjacent(label, e):
+                    if transformed_vertex_after_glue(label, edge, e) == transformed_vertex(opposite_label, opposite_edge + 1) and transformed_vertex_after_glue(label, edge, e + 1) == transformed_vertex(opposite_label, opposite_edge):
                         adjacents.append(opposite_label)
 
                 score += len(adjacents)
 
                 assert score >= 1
-
-                @cached_function
-                def transformed_vertex(label, v):
-                    return self.graphical_polygon(label).transformed_vertex(v)
 
                 for visible in self.visible():
                     if visible in adjacents:
@@ -552,8 +564,8 @@ class GraphicalSurface:
                         for f in range(len(visible_polygon.vertices())):
                             from flatsurf.geometry.euclidean import is_segment_intersecting
                             intersection = is_segment_intersecting(
-                                (transformed_vertex(label, e), transformed_vertex(label, e + 1)),
-                                (transformed_vertex(visible, f), transformed_vertex(visible, f + 1)),
+                                (transformed_vertex_after_glue(label, edge, e), transformed_vertex_after_glue(label, edge, e + 1)),
+                                (transformed_vertex(visible, f), transformed_vertex(visible, f + 1))
                             )
                             if intersection == 2:
                                 intersections += 1
@@ -574,6 +586,8 @@ class GraphicalSurface:
 
             edge = max(range(len(polygon.vertices())), key=lambda edge: edge_score(label, edge))
             self.make_adjacent(*surface.opposite_edge(label, edge))
+            assert self.is_adjacent(label, edge)
+            assert polygon_after_glue(label, edge).transformation() == self.graphical_polygon(label).transformation()
 
 
     def get_surface(self):
@@ -691,7 +705,9 @@ class GraphicalSurface:
             g = gg * reflection * (~g)
         else:
             g = self._ss.edge_transformation(pp, ee)
+        assert self.is_visible(p)  # TODO: Remove this line
         h = self.graphical_polygon(p).transformation()
+        assert not self.is_visible(pp)  # TODO: Remove this line
         self.graphical_polygon(pp).set_transformation(h * g)
         if visible:
             self.make_visible(pp)
@@ -721,6 +737,7 @@ class GraphicalSurface:
             return False
         pp, ee = opposite
         if not self.is_visible(pp):
+            # TODO: Why does this only check visibility on pp? (and not also on p.)
             return False
         g = self.graphical_polygon(p)
         gg = self.graphical_polygon(pp)
