@@ -2821,13 +2821,14 @@ def is_box_intersecting(b, c):
     
     """
     def normalize(b):
-        if b[0][0] > b[1][0]:
-            b[0][0], b[1][0] = b[1][0], b[0][0]
-        if b[0][1] > b[1][1]:
-            b[0][1], b[1][1] = b[1][1], b[0][1]
+        x_inverted = b[0][0] > b[1][0]
+        y_inverted = b[0][1] > b[1][1]
 
-    normalize(b)
-    normalize(c)
+        return ((b[1][0] if x_inverted else b[0][0], b[1][1] if y_inverted else b[0][1]),
+                (b[0][0] if x_inverted else b[1][0], b[0][1] if y_inverted else b[1][1]))
+
+    b = normalize(b)
+    c = normalize(c)
 
     if b[0][0] > c[1][0]:
         return 0
