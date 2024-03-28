@@ -237,6 +237,9 @@ class Cell:
         from sage.all import vector
         xy = vector(list(z ** self._center.angle()))
 
+        # TODO: This is all not too robust since we are feeding
+        # floating point numbers into exact polygons here. As a
+        # result roots could show up twice or never.
         for polygon_cell in self.polygon_cells():
             polygon = self.surface().polygon(polygon_cell.label())
             center = polygon_cell.center()
@@ -246,6 +249,7 @@ class Cell:
             if ccw(polygon.edge(vertex), xy) >= 0 and ccw(-polygon.edge(vertex - 1), xy) < 0:
                 from flatsurf.geometry.euclidean import OrientedSegment
                 p = center + xy
+                p = p.change_ring(self.surface().base_ring())
                 if polygon_cell.root_branch(OrientedSegment(p, p + xy)) == branch:
                     if polygon.get_point_position(p).is_outside():
                         return None

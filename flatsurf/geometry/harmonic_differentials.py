@@ -68,7 +68,7 @@ The same computation on a triangulation of the octagon::
 
     sage: Omega = HarmonicDifferentials(S, centers="vertices", ncoefficients=11)
     sage: omega = Omega(f)  # long time
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: Why so much tolerance?
+    sage: omega.simplify(zero_threshold=1e-3)  # abs-tol 1e-4  # long time, see above  # TODO: Why so much tolerance?
     (1.31414000000000*z0^2 + (-0.107413000000000)*z0^10 + O(z0^11), -2.09020000000000 + (-3.22547000000000)*z1^8 + (-2.61537000000000)*z1^16 + (-2.00436000000000)*z1^24 + (-1.53401000000000)*z1^32 + O(z1^33))
 
 The same surface but built as the unfolding of a right triangle::
@@ -696,8 +696,9 @@ class HarmonicDifferential(Element):
 
         if kind is None or "L2" in kind:
             C = self.parent()._constraints()
-            consistency = C._L2_consistency()
-            # print(consistency)
+            consistencies = self.parent()._L2_consistency_constraints()
+            consistency = sum(consistencies.values())
+
             abs_error = self._evaluate(consistency)
 
             report = f"L2 norm of differential is {abs_error}."
@@ -708,6 +709,22 @@ class HarmonicDifferential(Element):
                 error = report
                 if not verbose:
                     return error
+            
+            expected_cost = abs(abs_error / len(consistencies))
+
+            g = self.parent().surface().graphical_surface(polygon_labels=False, edge_labels=False)
+            plot = g.plot()
+            for (polygon_cell, segment, opposite_polygon_cell), cost in consistencies.items():
+                cost =  abs(self._evaluate(cost))
+                relative_cost = cost / expected_cost
+                if relative_cost < 1:
+                    continue
+
+                print(relative_cost)
+                from sage.all import line2d
+                polygon = g.graphical_polygon(polygon_cell.label())
+                plot += line2d([polygon.transform(segment[0]), polygon.transform(segment[1])], color="red", thickness=int(relative_cost))
+            plot.show()
 
         return error
 
@@ -1169,7 +1186,7 @@ class HarmonicDifferentialSpace(Parent):
     # TODO: The caching is a huge spaghetti mess.
     @cached_method
     def _L2_consistency_constraints(self):
-        return self._constraints()._L2_consistency()
+        return self._constraints()._L2_consistencies()
 
     def _element_from_cohomology(self, cocycle, /, algorithm=["L2"], check=True):
         # TODO: In practice we could speed things up a lot with some smarter
@@ -1215,7 +1232,7 @@ class HarmonicDifferentialSpace(Parent):
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
             algorithm = [a for a in algorithm if a != "L2"]
-            constraints.optimize(weight * self._L2_consistency_constraints())
+            constraints.optimize(weight * sum(self._L2_consistency_constraints().values()))
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
@@ -1511,6 +1528,32 @@ class PowerSeriesConstraints:
         return sum(integrator.a(n) * integrator.integral(n, segment) for n in range(ncoefficients))
 
     @cached_method
+    def _L2_consistencies(self):
+        cells = self._differentials._cells
+
+        from sage.all import parallel
+
+        @parallel
+        def L2_cost(polygon_cell, boundary_segment, opposite_polygon_cell):
+            from flatsurf.geometry.euclidean import OrientedSegment
+            boundary_segment = OrientedSegment(*boundary_segment)
+
+            boundary_segments = polygon_cell.split_segment_with_constant_root_branches(boundary_segment)
+            boundary_segments = sum((opposite_polygon_cell.split_segment_with_constant_root_branches(segment) for segment in boundary_segments), start=[])
+
+            return sum(self._L2_consistency_voronoi_boundary(polygon_cell, segment, opposite_polygon_cell) for segment in boundary_segments)
+
+        # Get one copy of each cell boundary (with a random orientation.)
+        cell_boundaries = {
+            frozenset([boundary, -boundary]): boundary
+            for cell in cells
+            for boundary in cell.boundary()
+        }.values()
+
+        polygon_cell_boundaries = sum((boundary.polygon_cell_boundaries() for boundary in cell_boundaries), start=[])
+
+        return {args: cost for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries)}
+
     def _L2_consistency(self):
         r"""
         # TODO: This description is not accurate anymore.
@@ -1542,32 +1585,8 @@ class PowerSeriesConstraints:
             0
 
         """
-        cells = self._differentials._cells
-
-        from sage.all import parallel
-
-        @parallel
-        def L2_cost(polygon_cell, boundary_segment, opposite_polygon_cell):
-            from flatsurf.geometry.euclidean import OrientedSegment
-            boundary_segment = OrientedSegment(*boundary_segment)
-
-            boundary_segments = polygon_cell.split_segment_with_constant_root_branches(boundary_segment)
-            boundary_segments = sum((opposite_polygon_cell.split_segment_with_constant_root_branches(segment) for segment in boundary_segments), start=[])
-
-            return sum(self._L2_consistency_voronoi_boundary(polygon_cell, segment, opposite_polygon_cell) for segment in boundary_segments)
-
-        # Get one copy of each cell boundary (with a random orientation.)
-        cell_boundaries = {
-            frozenset([boundary, -boundary]): boundary
-            for cell in cells
-            for boundary in cell.boundary()
-        }.values()
-
-        polygon_cell_boundaries = sum((boundary.polygon_cell_boundaries() for boundary in cell_boundaries), start=[])
-
-        cost = sum(cost for _, cost in L2_cost(polygon_cell_boundaries))
-
-        return cost
+        raise NotImplementedError # should not be called anymore since it does not do caching right.
+        return sum(self._L2_consistencies().values())
 
     @cached_method
     def ζ(self, d):
