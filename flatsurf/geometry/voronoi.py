@@ -688,6 +688,27 @@ class PolygonCellWithCenter(PolygonCell):
 
         return [OrientedSegment(segment.start(), intersection), OrientedSegment(intersection, segment.end())]
 
+    @cached_method
+    def _root_branch_primitive(self):
+        S = self.surface()
+
+        center = self.cell().center()
+
+        angle = center.angle()
+
+        assert angle > 1
+
+        # Choose a horizontal ray to the right, that defines where the
+        # principal root is being used. We use the "smallest" vertex in the
+        # "smallest" polygon containing such a ray.
+        from flatsurf.geometry.euclidean import ccw
+        primitive_label, primitive_vertex = min((label, vertex) for (label, _) in center.representatives() for vertex in range(len(S.polygon(label).vertices()))
+            if S(label, vertex) == center and
+               ccw((1, 0), S.polygon(label).edge(vertex)) <= 0 and
+               ccw((1, 0), -S.polygon(label).edge(vertex - 1)) >= 0)
+
+        return primitive_label, primitive_vertex
+
     def root_branch(self, segment):
         r"""
         Return which branch can be taken consistently along the ``segment``
@@ -723,11 +744,7 @@ class PolygonCellWithCenter(PolygonCell):
         if self.split_segment_with_constant_root_branches(segment) != [segment]:
             raise ValueError("segment does not permit a consistent choice of root")
 
-        S = self.surface()
-
-        center = self.cell().center()
-
-        angle = center.angle()
+        angle = self.cell().center().angle()
 
         assert angle >= 1
         if angle == 1:
@@ -736,11 +753,7 @@ class PolygonCellWithCenter(PolygonCell):
         # Choose a horizontal ray to the right, that defines where the
         # principal root is being used. We use the "smallest" vertex in the
         # "smallest" polygon containing such a ray.
-        from flatsurf.geometry.euclidean import ccw
-        primitive_label, primitive_vertex = min((label, vertex) for (label, _) in center.representatives() for vertex in range(len(S.polygon(label).vertices()))
-            if S(label, vertex) == center and
-               ccw((1, 0), S.polygon(label).edge(vertex)) <= 0 and
-               ccw((1, 0), -S.polygon(label).edge(vertex - 1)) >= 0)
+        primitive_label, primitive_vertex = self._root_branch_primitive()
 
         # Walk around the vertex to determine the branch of the root for the
         # (midpoint of) the segment.
@@ -750,8 +763,10 @@ class PolygonCellWithCenter(PolygonCell):
         label = primitive_label
         vertex = primitive_vertex
 
+        from flatsurf.geometry.euclidean import ccw
+
         while True:
-            polygon = S.polygon(label)
+            polygon = self.surface().polygon(label)
             if label == self.label() and polygon.vertex(vertex) == self.center():
                 low = ccw((-1, 0), polygon.edge(vertex)) <= 0 and ccw((-1, 0), point - polygon.vertex(vertex)) > 0
                 if low:
@@ -762,7 +777,7 @@ class PolygonCellWithCenter(PolygonCell):
                 branch += 1
                 branch %= angle
 
-            label, vertex = S.opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
+            label, vertex = self.surface().opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
 
     def __repr__(self):
         return f"{self.cell()} restricted to polygon {self.label()} at {self._center}"

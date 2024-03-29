@@ -55,6 +55,7 @@ from flatsurf.geometry.categories.surface_category import (
 )
 from sage.misc.lazy_import import LazyImport
 from sage.all import QQ, AA
+from sage.misc.cachefunc import cached_method
 
 
 class HalfTranslationSurfaces(SurfaceCategory):
@@ -470,11 +471,13 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 """
 
                 class ElementMethods:
+                    @cached_method
                     def angle(self, numerical=False):
                         if not self.is_vertex():
                             # TODO: This is not true for points on a self-glued vertex.
                             return 1
 
+                        # TODO: This is quite inefficient but it probably does not matter unless there are lots of vertices.
                         angle = [angle for (angle, edges) in self._surface.angles(return_adjacent_edges=True) if self._surface(*edges[0]) == self]
                         assert len(angle) == 1
                         return angle[0]
@@ -489,6 +492,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     likely want to put it here.
                     """
 
+                    @cached_method
                     def angles(self, numerical=False, return_adjacent_edges=False):
                         r"""
                         Return the set of angles around the vertices of the surface.
