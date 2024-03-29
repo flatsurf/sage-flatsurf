@@ -1040,6 +1040,7 @@ class HarmonicDifferentialSpace(Parent):
 
         return abs((relative_radius**(self.ncoefficients(cell._center) + 1)) / (1 - relative_radius))
 
+    @cached_method
     def _relative_radius_of_convergence(self, cell):
         r"""
         Return the :meth:`Cell.radius` of the ``cell`` divided by the radius of
