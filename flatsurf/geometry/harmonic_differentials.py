@@ -1222,9 +1222,11 @@ class HarmonicDifferentialSpace(Parent):
         # determined by the "algorithm" parameter. If algorithm is a dict, it
         # can be used to configure aspects of the constraints.
         def get_parameter(alg, default):
+            nonlocal algorithm
             assert alg in algorithm
             if isinstance(algorithm, dict):
-                return algorithm[alg]
+                return algorithm.pop(alg)
+            algorithm = [a for a in algorithm if a != alg]
             return default
 
         # (1) The radius of convergence of the power series is the distance from the vertex of the Voronoi
@@ -1234,18 +1236,15 @@ class HarmonicDifferentialSpace(Parent):
         # class Φ.
         if "midpoint_derivatives" in algorithm:
             derivatives = get_parameter("midpoint_derivatives", self.prec//3)
-            algorithm = [a for a in algorithm if a != "midpoint_derivatives"]
             constraints.require_midpoint_derivatives(derivatives)
 
         # (1') TODO: Describe L2 optimization.
         if "L2" in algorithm:
             weight = get_parameter("L2", 1)
-            algorithm = [a for a in algorithm if a != "L2"]
             constraints.optimize(weight * sum(self._L2_consistency_constraints().values()))
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
-            algorithm = [a for a in algorithm if a != "squares"]
             constraints.optimize(weight * constraints._squares())
 
         # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
@@ -1254,9 +1253,9 @@ class HarmonicDifferentialSpace(Parent):
         constraints.require_cohomology(cocycle)
 
         if "force_singularities" in algorithm:
-            algorithm = [a for a in algorithm if a != "force_singularities"]
+            singularities = get_parameter("force_singularities", {vertex: vertex.angle() - 1 for vertex in self.surface().singularities()})
             for vertex in self.surface().singularities():
-                for degree in range(vertex.angle() - 1):
+                for degree in range(singularities.get(vertex, 0)):
                     constraints.add_constraint(constraints._gen("Re", vertex, degree))
                     constraints.add_constraint(constraints._gen("Im", vertex, degree))
 
@@ -1264,14 +1263,12 @@ class HarmonicDifferentialSpace(Parent):
         # REFERENCE?] we optimize for a proxy of this quantity to be minimal.
         if "area_upper_bound" in algorithm:
             weight = get_parameter("area_upper_bound", 1)
-            algorithm = [a for a in algorithm if a != "area_upper_bound"]
             constraints.optimize(weight * constraints._area_upper_bound())
 
         # (3') We can also optimize for the exact quantity to be minimal but
         # this is much slower.
         if "area" in algorithm:
             weight = get_parameter("area", 1)
-            algorithm = [a for a in algorithm if a != "area"]
             constraints.optimize(weight * constraints._area())
 
         if "tykhonov" in algorithm:
