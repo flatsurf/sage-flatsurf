@@ -506,15 +506,23 @@ class ConeSurfaces(SurfaceCategory):
                                 from sage.all import matrix
                                 adjacency = matrix([[d <= radius and i != j for j, d in enumerate(row)] for i, row in enumerate(D.rows())])
 
-                                from sage.all import Graph
-                                G = Graph(adjacency)
+                                clusters = []
+                                while adjacency:
+                                    from sage.all import Graph
+                                    G = Graph(adjacency)
 
-                                import sage.graphs.cliquer
-                                clusters = list(sage.graphs.cliquer.all_cliques(G))
+                                    import sage.graphs.cliquer
+                                    clique = sage.graphs.cliquer.max_clique(G)
+                                    clusters.append(clique)
+                                    adjacency = matrix([[a for j, a in enumerate(row) if j not in clique] for i, row in enumerate(adjacency.rows()) if i not in clique])
+
+                                for p in range(len(points)):
+                                    if not any(p in cluster for cluster in clusters):
+                                        clusters.append([p])
                                 if len(clusters) < nclusters:
                                     nclusters = len(clusters)
-
-                                    print(f"Identifying roots within a radius {radius} the {len(points)} roots cluster as roots of orders {(len(cluster) for cluster in clusters)}")
+                                    # TODO: Actually it's not a ball of that radius.
+                                    print(f"Identifying roots contained in a {radius:.3} ball, there are {nclusters} roots of orders {tuple(len(cluster) for cluster in clusters)}")
 
                         def _test_genus(self, **options):
                             r"""
