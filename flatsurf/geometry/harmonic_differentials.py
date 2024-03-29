@@ -2196,8 +2196,14 @@ q
             [0.828427124746190*Re(a0,0) + 0.171572875253810*Re(a1,0) - 1.38777878078145e-17*Re(a0,1) - 3.03576608295941e-18*Re(a1,1) + 8.54260702578763e-18*Im(a0,1) + 0.0857864376269050*Im(a1,1) + 0.0473785412436502*Re(a0,2) - 0.0424723326565069*Re(a1,2) - 4.71795158413990e-18*Im(a0,2) - 3.03576608295941e-18*Im(a1,2) - 1.73472347597681e-18*Re(a0,3) + 2.16840434497101e-18*Re(a1,3) + 2.19851947436667e-18*Im(a0,3) - 0.0208152801713079*Im(a1,3) + 0.00487732352790257*Re(a0,4) + 0.0100938339276945*Re(a1,4) - 9.71367022318980e-19*Im(a0,4) + 1.51788304147971e-18*Im(a1,4), 0.828427124746190*Im(a0,0) + 0.171572875253810*Im(a1,0) - 1.38777878078145e-17*Re(a0,1) - 3.03576608295941e-18*Re(a1,1) - 8.54260702578763e-18*Im(a0,1) + 0.0857864376269050*Im(a1,1) + 7.70371977754894e-34*Re(a0,2) - 2.60208521396521e-18*Re(a1,2) - 0.0473785412436502*Im(a0,2) + 0.0424723326565069*Im(a1,2) + 1.73472347597681e-18*Re(a0,3) - 2.16840434497101e-18*Re(a1,3) + 2.19851947436667e-18*Im(a0,3) + 0.0208152801713079*Im(a1,3) - 9.62964972193618e-35*Re(a0,4) - 1.08420217248550e-18*Re(a1,4) + 0.00487732352790257*Im(a0,4) + 0.0100938339276945*Im(a1,4) - 1.00000000000000]
 
         """
-        for cycle in cocycle.parent().homology().gens():
-            self.add_constraint(self.integrate(cycle).real() - self.real_field()(cocycle(cycle).real()), rank_check=False)
+        from sage.all import parallel
+
+        @parallel
+        def create_constraint(cycle):
+            return self.integrate(cycle).real() - self.real_field()(cocycle(cycle).real())
+
+        for (args, kwargs), constraint in create_constraint((cycle,) for cycle in cocycle.parent().homology().gens()):
+            self.add_constraint(constraint, rank_check=False)
 
     def lagrange_variables(self):
         return set(variable for variable in self.variables() if variable.describe()[0] == "λ?")

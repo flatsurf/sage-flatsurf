@@ -104,6 +104,7 @@ class CellDecomposition:
         for center in self.centers():
             yield self.cell_at_center(center)
 
+    @cached_method
     def _neg_boundary_segment(self, boundary_segment):
         r"""
         Return the boundary segment that has the same segment as
