@@ -728,6 +728,14 @@ class HarmonicDifferential(Element):
 
         return error
 
+    def _error_l2(self):
+        C = self.parent()._constraints()
+        consistencies = self.parent()._L2_consistency_constraints()
+        consistency = sum(consistencies.values())
+
+        abs_error = self._evaluate(consistency)
+        return abs_error
+
     def series(self, triangle):
         r"""
         Return the power series describing this harmonic differential at the
