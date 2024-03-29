@@ -1247,7 +1247,7 @@ class HarmonicDifferentialSpace(Parent):
         if "force_singularities" in algorithm:
             algorithm = [a for a in algorithm if a != "force_singularities"]
             for vertex in self.surface().singularities():
-                for degree in range(vertex.angle()):
+                for degree in range(vertex.angle() - 1):
                     constraints.add_constraint(constraints._gen("Re", vertex, degree))
                     constraints.add_constraint(constraints._gen("Im", vertex, degree))
 
