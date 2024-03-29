@@ -2427,28 +2427,30 @@ q
         return series, residue
 
     def _denormalize(self):
+        # TODO: Maybe call this one balance and the other one unbalance.
         # Rewrite a * x_n as (a * r^-n) * (r^n * x_n) where r is the relative
         # radius of convergence at the center of x (0 < r < 1.)
         # The solution of the optimization problem (r^n * x_n) is then a much
         # smaller number for large n which should help keep the condition of
         # the problem in check.
-        return  # TODO: Enable normalization!
         def mul(scalar, expression):
             # TODO: Why is there no scalar multiplication on power series expressions?
             return expression.map_coefficients(lambda c: scalar * c)
 
+        def center(v):
+            return Ω._gen_center(v)
+
         Ω = self._differentials
         self._constraints = [
-            sum(mul(Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(Ω._gen_center(v)))**-v.describe()[1] * constraint[v] if not Ω._gen_is_lagrange(v) else constraint[v], v) for v in constraint.variables()) + constraint.constant_coefficient()
+            sum(mul(Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(center(v)))**-(v.describe()[1]/center(v).angle()) * constraint[v] if not Ω._gen_is_lagrange(v) else constraint[v], v) for v in constraint.variables()) + constraint.constant_coefficient()
             for constraint in self._constraints
         ]
 
     def _normalize(self, x, center, degree, part):
-        return x  # TODO: Enable denormalization!
         # Undo the effect of _denormalize on x, i.e., return r^n * x.
         Ω = self._differentials
         r = Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(center))
-        return x * r**-degree
+        return x * r**-(degree/center.angle())
 
 
 class Path:
