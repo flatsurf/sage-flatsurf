@@ -816,10 +816,10 @@ class GraphicalSurface:
             sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
             sage: gs = s.graphical_surface()
-            sage: gs.to_surface((1,-2))
+            sage: gs.to_surface((1,1/2))
             Point (1, 1/2) of polygon 1
-            sage: gs.to_surface((1,-2), v=(1,0))
-            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, -1/2)
+            sage: gs.to_surface((1,1/2), v=(1,0))
+            SimilaritySurfaceTangentVector in polygon 1 based at (1, 1/2) with vector (1, 0)
 
             sage: from flatsurf import translation_surfaces
             sage: s = translation_surfaces.infinite_staircase()
