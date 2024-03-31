@@ -78,7 +78,7 @@ class GraphicalPolygon:
             sage: gs.graphical_polygon(0)
             GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
         """
-        return "GraphicalPolygon with vertices {}".format(self._v())
+        return "GraphicalPolygon with vertices {}".format(list(self._v()))
 
     def base_polygon(self):
         r"""
