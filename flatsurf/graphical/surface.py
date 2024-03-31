@@ -719,9 +719,7 @@ class GraphicalSurface:
             g = gg * reflection * (~g)
         else:
             g = self._ss.edge_transformation(pp, ee)
-        assert self.is_visible(p)  # TODO: Remove this line
         h = self.graphical_polygon(p).transformation()
-        assert not self.is_visible(pp)  # TODO: Remove this line
         self.graphical_polygon(pp).set_transformation(h * g)
         if visible:
             self.make_visible(pp)
