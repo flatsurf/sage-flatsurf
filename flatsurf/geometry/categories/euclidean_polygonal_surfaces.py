@@ -114,10 +114,6 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
 
                 kwargs.pop("cached")
 
-            return self._graphical_surface(*args, **kwargs).copy()
-
-        @cached_method
-        def _graphical_surface(self, *args, **kwargs):
             from flatsurf.graphical.surface import GraphicalSurface
 
             return GraphicalSurface(self, *args, **kwargs)

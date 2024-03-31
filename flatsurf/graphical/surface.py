@@ -152,6 +152,7 @@ class GraphicalSurface:
     def __init__(
         self,
         surface,
+        adjacencies=None,
         polygon_transformations=None,
         polygon_labels=True,
         edge_labels="gluings",
@@ -167,9 +168,14 @@ class GraphicalSurface:
 
         self._visible = set(self._ss.roots())
 
-        if polygon_transformations is None:
-            if self._ss.is_finite_type():
-                self.layout()
+        if adjacencies is not None:
+            # TODO: This is not implemented anymore. We should just revamp this whole interface.
+            for root in surface.roots():
+                self.make_visible(root)
+        else:
+            if polygon_transformations is None:
+                if self._ss.is_finite_type():
+                    self.layout()
         self._edge_labels = None
 
         self.will_plot_polygons = True
