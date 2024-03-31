@@ -1677,6 +1677,9 @@ class EuclideanPoint(EuclideanSet, Element):
         from sage.all import vector
         return vector((self._x, self._y))
 
+    def translate(self, v):
+        return self.parent().point(*(self.vector() + v))
+
     def _richcmp_(self, other, op):
         r"""
         Return how this point compares to ``other`` with respect to the ``op``
@@ -2054,6 +2057,40 @@ class EuclideanLine(EuclideanFacade):
 
         return a, b, c
 
+    def _an_element_(self):
+        if self._b:
+            return self.parent().point(-self._a / self._b, 0)
+
+        assert self._c
+        return self.parent().point(-self._a / self._c, 0)
+
+    def projection(self, point):
+        # Move the line to the origin, i.e., instead of a + bx + cy = 0,
+        # consider bx + cy = 0.
+        # Let v be a vector parallel to this line.
+        shift = self.an_element()
+
+        point = point.translate(-shift.vector())
+
+        (x, y) = point
+        v = (self._c, - self._b)
+        vv = v[0]**2 + v[1]**2
+
+        p = (v[0]**2 * x + v[0]*v[1] * y, v[0]*v[1] * x + v[1]*v[1] * y)
+        p = (p[0] / vv, p[1] / vv)
+
+        assert p[0] * self._b + p[1] * self._c == 0
+
+
+        return self.parent().point(*p).translate(shift.vector())
+
+
+    def contains_point(self, point):
+        x, y = point.vector()
+        return self._a + self._b * x + self._c * y == 0
+
+
+
 
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
     r"""
@@ -2213,6 +2250,27 @@ class EuclideanSegment(EuclideanFacade):
             return self.parent().ray(start, line.direction())
 
         return self
+
+    def distance(self, point):
+        # To compute the distance from the point to the segment, we compute the
+        # distance from the point to the line containing the segment.
+        # If the closest point on the line is on the segment, that's the
+        # distance to the segment. If not, the minimum distance is at one of
+        # the endpoints of the segment.
+        norm = self.parent().norm()
+        p = self._line.projection(point)
+        if self.contains_point(p):
+            return norm.from_vector(p.vector())
+        return min(
+            norm.from_vector(self._start.vector()),
+            norm.from_vector(self._end.vector()),
+        )
+
+    def contains_point(self, point):
+        if not self._line.contains_point(point):
+            return False
+
+        return bool(time_on_segment((self._start.vector(), self._end.vector()), point.vector()))
 
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):

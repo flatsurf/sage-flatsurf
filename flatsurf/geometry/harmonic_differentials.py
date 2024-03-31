@@ -1051,6 +1051,13 @@ class HarmonicDifferentialSpace(Parent):
 
         return r / R
 
+    @cached_method
+    def _relative_inradius_of_convergence(self, cell):
+        R = float(cell.center().radius_of_convergence())
+        r = float(cell.inradius())
+
+        return r / R
+
     def roots(self, center, series):
         roots = []
 
@@ -2445,14 +2452,14 @@ q
 
         Ω = self._differentials
         self._constraints = [
-            sum(mul(Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(center(v)))**-(v.describe()[1]/center(v).angle()) * constraint[v] if not Ω._gen_is_lagrange(v) else constraint[v], v) for v in constraint.variables()) + constraint.constant_coefficient()
+            sum(mul(Ω._relative_inradius_of_convergence(Ω._cells.cell_at_center(center(v)))**-(v.describe()[1]/center(v).angle()) * constraint[v] if not Ω._gen_is_lagrange(v) else constraint[v], v) for v in constraint.variables()) + constraint.constant_coefficient()
             for constraint in self._constraints
         ]
 
     def _normalize(self, x, center, degree, part):
         # Undo the effect of _denormalize on x, i.e., return r^n * x.
         Ω = self._differentials
-        r = Ω._relative_radius_of_convergence(Ω._cells.cell_at_center(center))
+        r = Ω._relative_inradius_of_convergence(Ω._cells.cell_at_center(center))
         return x * r**-(degree/center.angle())
 
 

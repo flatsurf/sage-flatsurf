@@ -226,6 +226,12 @@ class Cell:
         """
         return max(boundary.radius() for boundary in self.boundary())
 
+    def inradius(self):
+        r"""
+        Return the distance from the center to the closest boundary point of this cell.
+        """
+        return min(boundary.inradius() for boundary in self.boundary())
+
     def point_from_complex(self, z):
         from math import pi
 
@@ -563,6 +569,16 @@ class LineBoundarySegment(BoundarySegment):
             norm.from_vector(self._center_to_start.holonomy()),
             norm.from_vector(self._center_to_start.holonomy() + self._segment.holonomy()),
         ])
+
+    def inradius(self):
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        E = EuclideanPlane(self.surface().base_ring())
+        center = E.point(0, 0)
+        P = self._center_to_start.holonomy()
+        Q = P + self._segment.holonomy()
+        line = E.line(P, Q)
+        segment = E.segment(line, start=P, end=Q)
+        return segment.distance(center)
 
 
 class PolygonCell:
@@ -1394,10 +1410,6 @@ class SurfaceLineSegment:
         # TODO: Why should anything be different?
         return self._holonomy
         raise NotImplementedError("cannot determine holonomy at vertex yet")
-
-    def plot(self):
-        # TODO: Better plotting
-        return self.surface().plot() + self.start().plot(size=100) + self.end().plot(size=50)
 
     def __repr__(self):
         return f"{self.start()}→{self.end()}"
