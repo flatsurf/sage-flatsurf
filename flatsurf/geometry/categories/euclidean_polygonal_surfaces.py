@@ -146,6 +146,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                     "adjacencies",
                     "polygon_labels",
                     "edge_labels",
+                    "zero_flags",
                     "default_position_function",
                 ]
                 if key in kwargs
@@ -214,6 +215,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                 sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
                     edge_labels=labels, edge_label_options={"color":"red"})
                 ...Graphics object consisting of 4 graphics primitives
+
             """
             if graphical_surface is None:
                 graphical_surface = self.graphical_surface()

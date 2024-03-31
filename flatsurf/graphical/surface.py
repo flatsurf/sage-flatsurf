@@ -156,6 +156,7 @@ class GraphicalSurface:
         polygon_labels=True,
         edge_labels="gluings",
         default_position_function=None,
+        zero_flags=None,
     ):
         self._ss = surface
         self._default_position_function = default_position_function
@@ -239,8 +240,7 @@ class GraphicalSurface:
         self.edge_label_options = {"color": "blue"}
         r"""Options passed to :meth:`.polygon.GraphicalPolygon.plot_edge_label` when plotting a polygon label."""
 
-        # TODO: Revert this but make easily configurable.
-        self.will_plot_zero_flags = True
+        self.will_plot_zero_flags = False
         r"""
         Whether to plot line segments from the baricenter to the zero vertex of each polygon.
         """
@@ -252,6 +252,7 @@ class GraphicalSurface:
             polygon_transformations=polygon_transformations,
             polygon_labels=polygon_labels,
             edge_labels=edge_labels,
+            zero_flags=zero_flags,
         )
 
     def process_options(
@@ -260,6 +261,7 @@ class GraphicalSurface:
         polygon_labels=None,
         edge_labels=None,
         default_position_function=None,
+        zero_flags=None,
     ):
         r"""
         Process the options listed as if the graphical_surface was first
@@ -305,6 +307,12 @@ class GraphicalSurface:
                 raise ValueError(
                     "invalid value for edge_labels (={!r})".format(edge_labels)
                 )
+
+        if zero_flags is not None:
+            if not isinstance(zero_flags, bool):
+                raise ValueError("zero_flags must be True, False or None")
+
+            self.will_plot_zero_flags = zero_flags
 
         if default_position_function is not None:
             self._default_position_function = default_position_function
