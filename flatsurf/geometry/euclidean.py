@@ -3520,7 +3520,7 @@ class HalfSpace:
     def __init__(self, a, b, c):
         # TODO: Force a common base ring.
         if not b and not c:
-            raise ValueError("a and b must not both be zero")
+            raise ValueError("b and c must not both be zero")
 
         self._a = a
         self._b = b
