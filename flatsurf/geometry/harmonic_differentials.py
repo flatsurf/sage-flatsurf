@@ -710,21 +710,20 @@ class HarmonicDifferential(Element):
                 if not verbose:
                     return error
             
-            expected_cost = abs(abs_error / len(consistencies))
+            ## expected_cost = abs(abs_error / len(consistencies))
 
-            g = self.parent().surface().graphical_surface(polygon_labels=False, edge_labels=False)
-            plot = g.plot()
-            for (polygon_cell, segment, opposite_polygon_cell), cost in consistencies.items():
-                cost =  abs(self._evaluate(cost))
-                relative_cost = cost / expected_cost
-                if relative_cost < 1:
-                    continue
+            ## g = self.parent().surface().graphical_surface(polygon_labels=False, edge_labels=False)
+            ## plot = g.plot()
+            ## for (polygon_cell, segment, opposite_polygon_cell), cost in consistencies.items():
+            ##     cost =  abs(self._evaluate(cost))
+            ##     relative_cost = cost / expected_cost
+            ##     if relative_cost < 1:
+            ##         continue
 
-                print(relative_cost)
-                from sage.all import line2d
-                polygon = g.graphical_polygon(polygon_cell.label())
-                plot += line2d([polygon.transform(segment[0]), polygon.transform(segment[1])], color="red", thickness=int(relative_cost))
-            plot.show()
+            ##     from sage.all import line2d
+            ##     polygon = g.graphical_polygon(polygon_cell.label())
+            ##     plot += line2d([polygon.transform(segment[0]), polygon.transform(segment[1])], color="red", thickness=int(relative_cost))
+            ## plot.show()
 
         return error
 
