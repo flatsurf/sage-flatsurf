@@ -472,7 +472,10 @@ class ConeSurfaces(SurfaceCategory):
                                             A[i][j] = min(A[i][j], A[i][k] + A[k][j])
 
                             for connection in self.saddle_connections():
-                                length = float(connection.holonomy().norm())
+                                # TODO: Strangely, all this trickery is needed here since otherwise the symbolic machinery is confused.
+                                from sage.all import RDF
+                                length = float(abs(connection.holonomy().change_ring(RDF).norm()))
+                                # print(length)
                                 if length >= max(x for row in A for x in row):
                                     from sage.all import matrix
                                     return matrix(A)
@@ -488,7 +491,7 @@ class ConeSurfaces(SurfaceCategory):
                         # TODO: Don't cache this.
                         @cached_method
                         def distance_matrix_points(self, points):
-                            insertion = self.insert_marked_points(*points)
+                            insertion = self.insert_marked_points(*[p for p in points if not p.is_vertex()])
 
                             D = insertion.codomain().distance_matrix_vertices()
                             V = list(insertion.codomain().vertices())
