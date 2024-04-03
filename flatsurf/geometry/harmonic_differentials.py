@@ -985,11 +985,8 @@ class HarmonicDifferentialSpace(Parent):
         self._cells = cell_decomposition
         self._centers = list(self._cells.centers())
 
-        # TODO: Why does calling this here fix caching issues in ncoefficients()??
-        error = self.error()
         if check:
-            from sage.all import oo
-            if error == oo:
+            if any(self._relative_radius_of_convergence(cell) >= 1 for cell in self._cells):
                 raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
 
     def change(self, surface=None):
@@ -1000,44 +997,131 @@ class HarmonicDifferentialSpace(Parent):
 
     @cached_method
     def ncoefficients(self, center):
-        relative_radius = self._relative_radius_of_convergence(self._cells.cell_at_center(center))
-        if relative_radius >= 1:
+        r"""
+        TODO: This argument does not really make a ton of sense unfortunately.
+
+        Return the number of coefficients we need to use for the power series
+        at ``center`` to obtain the prescribed error in the differentials.
+
+        .. NOTE::
+
+            We need to clarify the notion of "error" here.
+
+            Let η be the differential we are trying to compute and let η' be an
+            approximation to that differential (given by a truncated power
+            series at each vertex of the surface.)
+
+            Consider a (short) line segment γ on the surface (in the
+            z-coordinate chart) and let ℓ be its length (on the z-coordinate
+            chart.)
+
+            Note that `\frac{1}{\ell}\int_\gamma |\eta - \eta'|` measures the
+            (coordinate-dependent) absolute error of η' on that segment.
+
+            We are determining the number of power series coefficients needed
+            to bound any such error, i.e., the supremum of these expressions
+            over all segments in the surface.
+
+        ALGORITHM:
+
+        The tool we are using here is a standard approximation for the error
+        term when approximating an analytic function with a polynomial, see 
+        https://en.wikipedia.org/wiki/Taylor's_theorem#Taylor's_theorem_in_complex_analysis
+
+        Namely, let `f(y) = \sum a_n y^n` be an analytic function with radius
+        of convergence `R`. Let `P_k(y)=a_0 + \cdots + a_k y^k` be the
+        truncation of this power series. Then, for a fixed radius 0 < r < R, we
+        have for all `|y| < r`
+
+        .. MATH::
+
+            |R_k(y)| ≔ |f(y) - P_k(y)| \le \frac{M\beta^{k + 1}}{1 - \beta}
+
+        where `\beta = \frac{r}{R}` and `M` is the maximum of `f` on the disk
+        of radius r.
+
+        So for any prescribed error bound on `|R_k(y)|`, we can readily solve
+        for `k` once we know `\beta` and `M`.
+
+        Let us now apply this to a vertex v with total angle 2πd. A
+        differential η is near that vertex given by a power series in a
+        coordinate y such that `y(v) = 0`.
+
+        .. MATH::
+
+            η = \sum_n a_n y^n dy
+
+        Let η' bet an approximation that is given by the truncated power series
+        of degree k.
+
+        Let `R^{1/d}` be the radius of convergence of the power series and let
+        us agree to only evaluate the truncated power series at a point with
+        `|y|\le r^{1/d}`, i.e., the radius of the cell with center v is
+        `r^{1/d}` in the y-chart.
+
+        We can readily determine both radii on a z coordinate chart around v
+        and then translate them back to the y coordinate chart since
+        essentially `z=y^d`. Indeed, `R`, is the distance to the closest
+        singularity to v in our polygonal representation of the surface, and
+        `r` is the :meth:`radius` of the cell centered at v.
+
+        ...
+
+        Let f(y)dy = \sum a_n y^n dy be the exact power series describing the
+        differential at the ``center`` with a variable that is y=0 at the
+        ``center``.
+
+        If we approximate f(y) = P_k(y) + R_k(y) with only a finite number of terms say those
+        with n=0,…,k, then we can bound the relative error with `\epsilon =
+        |R_k(y)/max f|` which we can bound by \frac{\beta^{k + 1}}{1 - \beta}
+        where $\beta$ is the relative radius of convergence, i.e., the distance
+        from y=0 at which we evaluate the approximation divided by the radius
+        of convergence. (See
+        https://en.wikipedia.org/wiki/Taylor's_theorem#Taylor's%20theorem%20in%20complex%20analysis)
+
+        Hence we get that k should be at least \log\epsilon + \log(1 - \beta) -
+        1 where the logarithms are with basis \beta.
+
+        At a singular point, we need to bring this formula to the z-chart.
+
+        If we want a prescribed `\epsilon` in the z-chart, then we have a d-th
+        root of that \epsilon in the y chart where 2πd is the total angle at
+        the singularity.
+
+        Similarly, if the radius of convergence is R in the z-chart, then it's
+        a d-th root of R in the y chart. The same holds for the relative radius
+        of convergence.
+
+        So at a singular point, we need k to be at least
+
+        \log\epsilon^{1/d} + \log(1 - \beta^{1/d}) - 1
+
+        where the \log is with respect to \beta^{1/d}.
+
+        """
+        beta = self._relative_radius_of_convergence(self._cells.cell_at_center(center))
+        if beta >= 1:
             raise ValueError(f"cell at {center} extends beyond radius of convergence")
 
+        d = center.angle()
+        eps = self._error
+
         from math import log, ceil
-        ncoefficients = log(self._error, relative_radius)
+        ncoefficients = ceil(log(eps, beta) + d * log(1 - beta**(1/d), beta) - 1)
 
-        ncoefficients /= center.angle()
-
-        ncoefficients = int(ceil(ncoefficients))
-
-        if ncoefficients <= 0:
-            ncoefficients = 1
-
-        # TODO: Should we still multiply here?
-        ncoefficients *= center.angle()
-
-        # print(f"{ncoefficients} coefficients at {center} with β={relative_radius}")
+        assert ncoefficients >= 1
 
         return ncoefficients
 
+    def dz(self):
+        return self({v: v.angle() * self._constraints().power_series_ring(v).gen() ** (v.angle() - 1) for v in self.surface().vertices()})
+
+        # TODO: We should maybe test against thi path:
+        # fdz = HH({gamma: RDF(sum(c * S.polygon(label).edge(edge)[0] for (label, edge), c in gamma._chain.monomial_coefficients().items())) for gamma in H.gens()})
+        # return self(self.fdz(), check=False)
+
     def surface(self):
         return self._surface
-
-    @cached_method
-    def error(self, cell=None):
-        # Returns the a-priori (is it?) error for the value of the differential
-        # anywhere in cell (or anywhere in all cells); relative to the maximum
-        # of the differential. TODO: Explain algorithm from my notes.
-        if cell is None:
-            return max(self.error(cell=cell) for cell in self._cells)
-
-        relative_radius = self._relative_radius_of_convergence(cell=cell)
-        if relative_radius >= 1:
-            from sage.all import oo
-            return oo
-
-        return abs((relative_radius**(self.ncoefficients(cell._center) + 1)) / (1 - relative_radius))
 
     @cached_method
     def _relative_radius_of_convergence(self, cell):

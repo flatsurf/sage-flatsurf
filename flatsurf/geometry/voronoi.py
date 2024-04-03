@@ -252,6 +252,10 @@ class Cell:
             center = polygon_cell.center()
             vertex = polygon.get_point_position(center).get_vertex()
 
+            if abs(xy) < 1e-16:
+                print("identifying root with vertex")
+                return self.surface()(polygon_cell.label(), center)
+
             from flatsurf.geometry.euclidean import ccw
             if ccw(polygon.edge(vertex), xy) >= 0 and ccw(-polygon.edge(vertex - 1), xy) < 0:
                 from flatsurf.geometry.euclidean import OrientedSegment
@@ -1201,7 +1205,15 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
         nvertices = len(polygon.vertices())
         assert nvertices == 3
 
-        weights = [float(surface(label, v).radius_of_convergence()) for v in range(nvertices)]
+        vertices = [surface(label, v) for v in range(nvertices)]
+
+        # TODO: If I remember correctly, the algorithm is such that
+        # essentially, the points on the boundary have distances from their
+        # respective centers according to the weights, i.e., if two vertices
+        # v0, v1 have weights w0, w1, then the distances will be such that
+        # d0/w0 == d1/w1. (So, large weight implies large distance.)
+
+        weights = [float(v.radius_of_convergence()) for v in vertices]
 
         splits = [self._split_segment((polygon.vertex(v), polygon.vertex(v + 1)), polygon.vertex(v + 2), weights[v:] + weights[:v]) for v in range(nvertices)]
 
@@ -1241,6 +1253,7 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
             if w == v:
                 raise NotImplementedError("circle of Apollonius is a line")
 
+            # The foci of the circle.
             C = (w * Q + v * P) / (w + v)
             D = (v * P - w * Q) / (v - w)
 
