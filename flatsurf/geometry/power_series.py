@@ -859,8 +859,9 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
             AttributeError: 'RationalField_with_category' object has no attribute 'prec'
 
         """
-        from sage.all import RealField
-        return RealField(self.base_ring().prec())
+        # TODO: This should depend on the base ring.
+        from sage.all import RDF
+        return RDF
 
     def is_exact(self):
         r"""

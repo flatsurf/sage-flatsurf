@@ -1420,19 +1420,19 @@ class PowerSeriesConstraints:
 
         from sage.all import ComplexField
         from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing
-        return PowerSeriesCoefficientExpressionRing(base_ring or ComplexField(54), tuple(gens))
+        return PowerSeriesCoefficientExpressionRing(base_ring or self.complex_field(), tuple(gens))
 
     @cached_method
     def complex_field(self):
-        from sage.all import ComplexField
-        # TODO: Why 54?
-        return ComplexField(54)
+        # TODO: Make this configurable.
+        from sage.all import CDF
+        return CDF
 
     @cached_method
     def real_field(self):
-        from sage.all import RealField
-        # TODO: Why 54?
-        return RealField(54)
+        # TODO: Make this configurable.
+        from sage.all import RDF
+        return RDF
 
     # TODO: Move to Harmonic Differentials; or maybe some other shared class
     # that abstracts away details of the symbolic ring.
