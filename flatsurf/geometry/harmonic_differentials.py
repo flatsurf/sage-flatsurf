@@ -896,42 +896,42 @@ class HarmonicDifferential(Element):
 
         return type(self)(self.parent(), {center: simplify(series) for (center, series) in self._series.items()}, residue=self._residue, cocycle=self._cocycle)
 
-    def plot(self, versus=None):
-        from sage.all import RealField, I, vector, complex_plot, oo
-        S = self.parent().surface()
-        GS = S.graphical_surface()
+    # def plot(self, versus=None):
+    #     from sage.all import RealField, I, vector, complex_plot, oo
+    #     S = self.parent().surface()
+    #     GS = S.graphical_surface()
 
-        plot = S.plot(fill=None)
+    #     plot = S.plot(fill=None)
 
-        for label in S.labels():
-            P = S.polygon(label)
-            PS = GS.graphical_polygon(label)
+    #     for label in S.labels():
+    #         P = S.polygon(label)
+    #         PS = GS.graphical_polygon(label)
 
-            if versus:
-                if versus.parent().surface().polygon(label).vertices() != P.vertices():
-                    raise ValueError
+    #         if versus:
+    #             if versus.parent().surface().polygon(label).vertices() != P.vertices():
+    #                 raise ValueError
 
-            from sage.all import RR
-            PR = P.change_ring(RR)
+    #         from sage.all import RR
+    #         PR = P.change_ring(RR)
 
-            def f(z):
-                xy = (z.real(), z.imag())
-                xy = PS.transform_back(xy)
-                if not PR.contains_point(vector(xy)):
-                    return oo
-                xy = xy - P.circumscribing_circle().center()
+    #         def f(z):
+    #             xy = (z.real(), z.imag())
+    #             xy = PS.transform_back(xy)
+    #             if not PR.contains_point(vector(xy)):
+    #                 return oo
+    #             xy = xy - P.circumscribing_circle().center()
 
-                xy = RealField(54)(xy[0]) + I*RealField(54)(xy[1])
-                value = self.evaluate(label, edge=None, pos=None, Δ=xy)
-                if versus:
-                    v = versus.evaluate(label, edge=None, pos=None, Δ=xy)
-                    value = (value - v) / v.abs()
-                return value
+    #             xy = RealField(54)(xy[0]) + I*RealField(54)(xy[1])
+    #             value = self.evaluate(label, edge=None, pos=None, Δ=xy)
+    #             if versus:
+    #                 v = versus.evaluate(label, edge=None, pos=None, Δ=xy)
+    #                 value = (value - v) / v.abs()
+    #             return value
 
-            bbox = PS.bounding_box()
-            plot += complex_plot(f, (bbox[0], bbox[2]), (bbox[1], bbox[3]))
+    #         bbox = PS.bounding_box()
+    #         plot += complex_plot(f, (bbox[0], bbox[2]), (bbox[1], bbox[3]))
 
-        return plot
+    #     return plot
 
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
