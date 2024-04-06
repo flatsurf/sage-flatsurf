@@ -188,6 +188,7 @@ from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.misc.cachefunc import cached_method, cached_function
 from sage.categories.all import SetsWithPartialMaps
+from scipy.integrate import quad
 
 import warnings
 
@@ -471,7 +472,6 @@ def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
 
         raise NotImplementedError
 
-    from scipy.integrate import quad
     integral, error = quad(value, 0, 1)
 
     return R(integral)
@@ -510,7 +510,6 @@ def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
 
         raise NotImplementedError
 
-    from scipy.integrate import quad
     integral, error = quad(value, 0, 1)
 
     return R(integral)
@@ -1756,7 +1755,6 @@ class PowerSeriesConstraints:
 
                     raise NotImplementedError
 
-                from scipy.integrate import quad
                 real, error = quad(lambda t: value("Re", t), 0, 1)
                 imag, error = quad(lambda t: value("Im", t), 0, 1)
 
@@ -1821,7 +1819,6 @@ class PowerSeriesConstraints:
 
                 raise NotImplementedError
 
-            from scipy.integrate import quad
             real, error = quad(lambda t: value("Re", t), 0, 1)
             imag, error = quad(lambda t: value("Im", t), 0, 1)
 
