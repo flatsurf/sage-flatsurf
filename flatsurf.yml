@@ -10,7 +10,7 @@ channels:
 dependencies:
   - gap-defaults
   - ipywidgets
-  - notebook>=7
+  - notebook
   - matplotlib-base
   - pip
   - pyeantic>=1.2.1,<2
