@@ -2018,17 +2018,20 @@ q
         """
         center = self._differentials.surface()(cell.label(), cell.center())
 
-        int = self.CellIntegrator(self, cell)
+        cell_integrator = self.CellIntegrator(self, cell)
 
         κ = cell.root_branch(boundary_segment)
         α = cell.center()
         d = center.angle() - 1
 
+        # Cast to a builtin int to speed up some operations later.
+        d = int(d)
+
         def f_(part, n, m):
-            return int.mixed_integral(part, α, κ, d, n, α, κ, d, m, boundary_segment)
+            return cell_integrator.mixed_integral(part, α, κ, d, n, α, κ, d, m, boundary_segment)
 
         return self.symbolic_ring().sum([
-            (int.Re_a(n) * int.Re_a(m) + int.Im_a(n) * int.Im_a(m)) * f_("Re", n, m) + (int.Re_a(n) * int.Im_a(m) - int.Im_a(n) * int.Re_a(m)) * f_("Im", n, m)
+            (cell_integrator.Re_a(n) * cell_integrator.Re_a(m) + cell_integrator.Im_a(n) * cell_integrator.Im_a(m)) * f_("Re", n, m) + (cell_integrator.Re_a(n) * cell_integrator.Im_a(m) - cell_integrator.Im_a(n) * cell_integrator.Re_a(m)) * f_("Im", n, m)
             for n in range(self._differentials.ncoefficients(center))
             for m in range(self._differentials.ncoefficients(center))])
 
@@ -2039,8 +2042,8 @@ q
         center = self._differentials.surface()(cell.label(), cell.center())
         opposite_center = self._differentials.surface()(opposite_cell.label(), opposite_cell.center())
 
-        int = self.CellIntegrator(self, cell)
-        jnt = self.CellIntegrator(self, opposite_cell)
+        cell_integrator = self.CellIntegrator(self, cell)
+        opposite_cell_integrator = self.CellIntegrator(self, opposite_cell)
 
         κ = cell.root_branch(boundary_segment)
         λ = opposite_cell.root_branch(boundary_segment)
@@ -2049,11 +2052,15 @@ q
         d = center.angle() - 1
         dd = opposite_center.angle() - 1
 
+        # Cast to a builtin int to speed up some operations later.
+        d = int(d)
+        dd = int(dd)
+
         def fg_(part, n, m):
-            return int.mixed_integral(part, α, κ, d, n, β, λ, dd, m, boundary_segment)
+            return cell_integrator.mixed_integral(part, α, κ, d, n, β, λ, dd, m, boundary_segment)
 
         return self.symbolic_ring().sum([
-            (int.Re_a(n) * jnt.Re_a(m) + int.Im_a(n) * jnt.Im_a(m)) * fg_("Re", n, m) + (int.Re_a(n) * jnt.Im_a(m) - int.Im_a(n) * jnt.Re_a(m)) * fg_("Im", n, m)
+            (cell_integrator.Re_a(n) * opposite_cell_integrator.Re_a(m) + cell_integrator.Im_a(n) * opposite_cell_integrator.Im_a(m)) * fg_("Re", n, m) + (cell_integrator.Re_a(n) * opposite_cell_integrator.Im_a(m) - cell_integrator.Im_a(n) * opposite_cell_integrator.Re_a(m)) * fg_("Im", n, m)
             for n in range(self._differentials.ncoefficients(center))
             for m in range(self._differentials.ncoefficients(opposite_center))])
 
@@ -2063,17 +2070,21 @@ q
         """
         opposite_center = self._differentials.surface()(opposite_cell.label(), opposite_cell.center())
 
-        jnt = self.CellIntegrator(self, opposite_cell)
+        opposite_cell_integrator = self.CellIntegrator(self, opposite_cell)
 
         λ = opposite_cell.root_branch(boundary_segment)
         β = opposite_cell.center()
         dd = opposite_center.angle() - 1
 
+        # Cast to a builtin int to speed up some operations later.
+        dd = int(dd)
+
+
         def g_(part, n, m):
-            return jnt.mixed_integral(part, β, λ, dd, n, β, λ, dd, m, boundary_segment)
+            return opposite_cell_integrator.mixed_integral(part, β, λ, dd, n, β, λ, dd, m, boundary_segment)
 
         return self.symbolic_ring().sum([
-            (jnt.Re_a(n) * jnt.Re_a(m) + jnt.Im_a(n) * jnt.Im_a(m)) * g_("Re", n, m) + (jnt.Re_a(n) * jnt.Im_a(m) - jnt.Im_a(n) * jnt.Re_a(m)) * g_("Im", n, m)
+            (opposite_cell_integrator.Re_a(n) * opposite_cell_integrator.Re_a(m) + opposite_cell_integrator.Im_a(n) * opposite_cell_integrator.Im_a(m)) * g_("Re", n, m) + (opposite_cell_integrator.Re_a(n) * opposite_cell_integrator.Im_a(m) - opposite_cell_integrator.Im_a(n) * opposite_cell_integrator.Re_a(m)) * g_("Im", n, m)
             for n in range(self._differentials.ncoefficients(opposite_center))
             for m in range(self._differentials.ncoefficients(opposite_center))])
 

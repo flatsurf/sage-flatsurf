@@ -111,6 +111,14 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
         # Implemented directly for performance.
         return bool(self._coefficients)
 
+    def is_one(self):
+        for key, value in self._coefficients.items():
+            if key == () and value.is_one():
+                continue
+            return False
+
+        return True
+
     def _repr_(self):
         r"""
         Return a printable representation of this expression.

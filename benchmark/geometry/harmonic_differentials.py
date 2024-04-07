@@ -25,13 +25,14 @@ def time_harmonic_differential(surface):
     elif surface == "3413":
         E = flatsurf.EquiangularPolygons(3, 4, 13)
         P = E.an_element()
-        surface = flatsurf.similarity_surfaces.billiard(P, rational=True).minimal_cover(cover_type="translation")
+        surface = flatsurf.similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
     else:
         raise NotImplementedError
 
     surface = surface.delaunay_triangulation()
     surface.set_immutable()
-    Ω = flatsurf.HarmonicDifferentials(surface)
+    V = flatsurf.ApproximateWeightedVoronoiCellDecomposition(surface)
+    Ω = flatsurf.HarmonicDifferentials(surface, cell_decomposition=V, error=1e-1)
     a = flatsurf.SimplicialHomology(surface).gens()[0]
     H = flatsurf.SimplicialCohomology(surface)
     Ω(H({a: 1}), check=False)
