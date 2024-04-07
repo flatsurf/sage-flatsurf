@@ -107,6 +107,10 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
 
         raise NotImplementedError
 
+    def __bool__(self):
+        # Implemented directly for performance.
+        return bool(self._coefficients)
+
     def _repr_(self):
         r"""
         Return a printable representation of this expression.
