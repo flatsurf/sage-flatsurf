@@ -212,6 +212,13 @@ def Ccpp(x):
     return complex(float(x.real()), float(x.imag()))
 
 
+@cached_function
+def zeta(d, n):
+    from sage.all import CDF
+    zeta = CDF.zeta(d)
+    return zeta ** n / d
+
+
 def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     r"""
     Return the real/imaginary part of
@@ -405,7 +412,7 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     return R(_cppyy().gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
 
 
-def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
+def integral2cpp(part, α, κ, d, n, β, λ, dd, m, a, b, C, R):
     r"""
     Return the real/imaginary part of
 
@@ -414,7 +421,7 @@ def integral2cpp(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     where γ(t) = (1-t)a + tb.
     """
     # Since γ(t) = (1 - t)a + tb, we have |·γ(t)| = |b - a|
-    constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * abs(b - a)
+    constant = zeta(d + 1, κ * (n+1)) * zeta(dd + 1, λ * (m+1)).conjugate() * abs(b - a)
 
     constant = Ccpp(constant)
 
@@ -1690,11 +1697,6 @@ class PowerSeriesConstraints:
         raise NotImplementedError # should not be called anymore since it does not do caching right.
         return sum(self._L2_consistencies().values())
 
-    @cached_method
-    def ζ(self, d):
-        from sage.all import exp, pi, I
-        return self.complex_field()(exp(2*pi*I / d))
-
     # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
         return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._differentials._centers.index(center)},?)", n))
@@ -1741,7 +1743,7 @@ class PowerSeriesConstraints:
                 a = C(*γ.start())
                 b = C(*γ.end())
 
-                constant = self._constraints.ζ(d + 1) ** (self._polygon_cell.root_branch(γ) * (n + 1)) / (d + 1) * (C(b) - C(a))
+                constant = zeta(d + 1, self._polygon_cell.root_branch(γ) * (n + 1)) * (C(b) - C(a))
 
                 def value(part, t):
                     z = self._constraints.complex_field()(*((1 - t) * a + t * b))
@@ -1779,7 +1781,7 @@ class PowerSeriesConstraints:
             α = Cab(C, α)
             β = Cab(C, β)
 
-            return integral2cpp(part, α, κ, d, self._constraints.ζ(d + 1), n, β, λ, dd, self._constraints.ζ(dd + 1), m, a=a, b=b, C=C, R=R)
+            return integral2cpp(part, α, κ, d, n, β, λ, dd, m, a=a, b=b, C=C, R=R)
 
     class CellBoundaryIntegrator:
         def __init__(self, constraints, segment):
@@ -1805,7 +1807,7 @@ class PowerSeriesConstraints:
             b = self.complex_field(*b)
 
             # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
-            constant = self.ζ(d + 1)**(κ * (n + 1)) / (d + 1) * (b - a)
+            constant = zeta(d + 1, κ * (n + 1)) * (b - a)
 
             def value(part, t):
                 z = self.complex_field(*((1 - t) * a + t * b))
