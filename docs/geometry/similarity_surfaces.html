@@ -953,6 +953,24 @@ of {1,…,d}</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.random_flip">
+<span class="sig-name descname"><span class="pre">random_flip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.Oriented.ParentMethods.random_flip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.random_flip" title="Permalink to this definition">#</a></dt>
+<dd><p>Perform random edge flip on a triangulated surface.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">repeat</span></code> – integer (default <code class="docutils literal notranslate"><span class="pre">1</span></code>). The number of edge flip to perform.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">in_place</span></code> – whether the transformation is done in place.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">ward</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">ss</span><span class="o">.</span><span class="n">random_flip</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>  <span class="c1"># random</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="ow">in</span> <span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">6</span> <span class="n">triangles</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel">
 <span class="sig-name descname"><span class="pre">relabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relabeling_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_place</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.Oriented.ParentMethods.relabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel" title="Permalink to this definition">#</a></dt>
 <dd><p>Attempt to relabel the polygons according to a relabeling_map, which takes as input
@@ -1752,6 +1770,7 @@ namely the surfaces formed by Euclidean polygons.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.minimal_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.minimal_cover()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.point"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.point()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.ramified_cover"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.ramified_cover()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.random_flip"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.random_flip()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.relabel()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.saddle_connections"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.saddle_connections()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero()</span></code></a></li>

@@ -566,6 +566,58 @@ the returned coordinates have no denominator and no non-unit gcd.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.euclidean.slope">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.slope" title="Permalink to this definition">#</a></dt>
+<dd><p>Return either <code class="docutils literal notranslate"><span class="pre">1</span></code> (positive slope) or <code class="docutils literal notranslate"><span class="pre">-1</span></code> (negative slope).</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">rotate</span></code> is set to 1 then consider the edge as if it was rotated counterclockwise
+infinitesimally.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">slope</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="o">-</span><span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="o">-</span><span class="mi">1</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="o">-</span><span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="o">-</span><span class="mi">1</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">-</span><span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">-</span><span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">1</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">rotate</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">0</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">slope</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">zero</span> <span class="n">vector</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.euclidean.solve">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.solve" title="Permalink to this definition">#</a></dt>
 <dd><p>Return (a,b) so that: x + au = y + bv</p>
@@ -663,6 +715,7 @@ the returned coordinates have no denominator and no non-unit gcd.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.is_segment_intersecting"><code class="docutils literal notranslate"><span class="pre">is_segment_intersecting()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.line_intersection"><code class="docutils literal notranslate"><span class="pre">line_intersection()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.projectivization"><code class="docutils literal notranslate"><span class="pre">projectivization()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.euclidean.slope"><code class="docutils literal notranslate"><span class="pre">slope()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.solve"><code class="docutils literal notranslate"><span class="pre">solve()</span></code></a></li>
 </ul>
 </li>
