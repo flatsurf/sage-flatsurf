@@ -1204,39 +1204,40 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return BaseRingChangedSurface(self, ring)
 
-            def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
+            def triangle_flip(self, label, edge, in_place=False, test=None, direction=None):
                 r"""
-                Flips the diagonal of the quadrilateral formed by two triangles
-                glued together along the provided edge (l1,e1). This can be broken
-                into two steps: join along the edge to form a convex quadilateral,
-                then cut along the other diagonal. Raises a ValueError if this
-                quadrilateral would be non-convex. In this case no changes to the
-                surface are made.
+                Flip the diagonal of the quadrilateral formed by two triangles
+                glued together along the ``edge`` of the polygon with
+                ``label``.
 
-                The direction parameter defaults to (0,1). This is used to decide how
-                the triangles being glued in are labeled. Let p1 be the triangle
-                associated to label l1, and p2 be the triangle associated to l2
-                but moved by a similarity to share the edge (l1,e1). Each triangle
-                has a exactly one separatrix leaving a vertex which travels in the
-                provided direction or its opposite. (For edges we only count as sepatrices
-                traveling counter-clockwise around the triangle.) This holds for p1
-                and p2 and the separatrices must point in opposite directions.
+                ALGORITHM:
 
-                The above description gives two new triangles t1 and t2 which must be
-                glued in (obtained by flipping the diagonal of the quadrilateral).
-                Up to swapping t1 and t2 we can assume the separatrix in t1 in the
-                provided direction (or its opposite) points in the same direction as
-                that of p1. Further up to cyclic permutation of vertex labels we can
-                assume that the separatrices in p1 and t1 start at the vertex with the
-                same index (an element of {0,1,2}). The same can be done for p2 and t2.
-                We apply the label l1 to t1 and the label l2 to t2. This precisely
-                determines how t1 and t2 should be used to replace p1 and p2.
+                This can be broken into two steps: join along the diagonal
+                ``edge`` to form a convex quadilateral, then cut along the
+                other diagonal.
+
+                The labels of the new triangles will be the labels of the old
+                triangles, assigned such that the flip turns the diagonal
+                counterclockwise. To make this precise suppose that triangle
+                with the ``label`` has the diagonal ``edge`` followed (in a
+                counterclockwise walk of the triangle edges) by the two edges
+                ``c`` and ``d``, and the triangle across the ``edge`` has the
+                label ``opposite_label`` with the diagonal ``opposite_edge``
+                followed by the edges ``a`` and ``b``. Then the new triangles
+                are going to be labeled ``label`` and ``opposite_label`` and
+                their diagonals are going to be ``edge`` and ``opposite_edge``
+                respectively, and the choice is made such that the ``edge`` is
+                followed by the edges that used to be called ``b`` and ``c``.
+                Note that there is no choice here to be made if ``edge`` is
+                glued to itself.
 
                 INPUT:
 
-                - ``l1`` - label of polygon
+                - ``label`` - label of a polygon
 
-                - ``e1`` - (integer) edge of the polygon
+                - ``edge`` - an integer; the edge of a polygon joining two
+                  triangles such that the quadrilateral formed after gluing
+                  these triangles is strictly convex
 
                 - ``in_place`` (boolean) - If True do the flip to the current surface
                   which must be mutable. In this case the updated surface will be
@@ -1245,48 +1246,64 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 - ``test`` (boolean) - If True we don't actually flip, and we return
                   True or False depending on whether or not the flip would be
-                  successful.
+                  successful. (deprecated)
 
-                - ``direction`` (2-dimensional vector) - Defaults to (0,1). The choice
-                  of this vector determines how the newly added triangles are labeled.
+                - ``direction`` (ignored and deprecated)
+
+                OUTPUT:
+
+                A morphism from the original surface to the surface with the
+                flipped edge.
 
                 EXAMPLES::
 
                     sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface, Polygon
 
-                    sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+                    sage: s = similarity_surfaces.right_angle_triangle(1, 1)
                     sage: s.polygon(0)
                     Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
                     sage: s.triangle_flip(0, 0, test=True)
+                    doctest:warning
+                    ...
+                    UserWarning: triangle_flip(test=True) has been deprecated and will be removed in a future version of sage-flatsurf. Use is_convex(strict=True) instead.
                     False
                     sage: s.triangle_flip(0, 1, test=True)
                     True
                     sage: s.triangle_flip(0, 2, test=True)
                     False
 
-                    sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+                    sage: s = similarity_surfaces.right_angle_triangle(1, 1)
                     sage: s = MutableOrientedSimilaritySurface.from_surface(s)
                     sage: s.triangle_flip(0, 0, in_place=True)
                     Traceback (most recent call last):
                     ...
-                    ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.
-                    sage: s.triangle_flip(0,1,in_place=True)
+                    ValueError: polygon has zero area
+
+                    sage: s.triangle_flip(0, 1, in_place=True)
+                    Triangle Flip morphism:
+                      From: Unknown Surface
+                      To:   Unknown Surface
+                    sage: s
                     Rational Cone Surface built from 2 isosceles triangles
                     sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (0, 1), (-1, 0)])
                     sage: s.polygon(1)
-                    Polygon(vertices=[(0, 0), (-1, -1), (0, -1)])
+                    Polygon(vertices=[(-1, 1), (-1, 0), (0, 1)])
                     sage: s.gluings()
-                    (((0, 0), (1, 0)), ((0, 1), (0, 2)), ((0, 2), (0, 1)), ((1, 0), (0, 0)), ((1, 1), (1, 2)), ((1, 2), (1, 1)))
-                    sage: s.triangle_flip(0,2,in_place=True)
+                    (((0, 0), (0, 2)), ((0, 1), (1, 1)), ((0, 2), (0, 0)), ((1, 0), (1, 2)), ((1, 1), (0, 1)), ((1, 2), (1, 0)))
+                    sage: s.triangle_flip(0, 2, in_place=True)
                     Traceback (most recent call last):
                     ...
-                    ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.
+                    ValueError: polygon has zero area
 
                     sage: p = Polygon(edges=[(2,0),(-1,3),(-1,-3)])
                     sage: s = similarity_surfaces.self_glued_polygon(p)
                     sage: s = MutableOrientedSimilaritySurface.from_surface(s)
-                    sage: s.triangle_flip(0,1,in_place=True)
+                    sage: s.triangle_flip(0, 1, in_place=True)
+                    Triangle Flip morphism:
+                      From: Unknown Surface
+                      To:   Unknown Surface
+                    sage: s
                     Half-Translation Surface built from a triangle
 
                     sage: s.set_immutable()
@@ -1297,29 +1314,26 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s.labels()
                     (0,)
                     sage: s.polygons()
-                    (Polygon(vertices=[(0, 0), (-3, -3), (-1, -3)]),)
+                    (Polygon(vertices=[(0, 0), (1, 3), (-2, 0)]),)
                     sage: s.gluings()
                     (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)))
                     sage: TestSuite(s).run()
 
                 """
-                if test:
-                    # Just test if the flip would be successful
-                    p1 = self.polygon(l1)
-                    if not len(p1.vertices()) == 3:
-                        return False
-                    l2, e2 = self.opposite_edge(l1, e1)
-                    p2 = self.polygon(l2)
-                    if not len(p2.vertices()) == 3:
-                        return False
-                    sim = self.edge_transformation(l2, e2)
-                    hol = sim(p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3))
-                    from flatsurf.geometry.euclidean import ccw
+                if test is not None:
+                    if test:
+                        import warnings
+                        warnings.warn("triangle_flip(test=True) has been deprecated and will be removed in a future version of sage-flatsurf. Use is_convex(strict=True) instead.")
+                        return self.is_convex(label, edge, strict=True)
+                    else:
+                        import warnings
+                        warnings.warn("the test keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf.")
 
-                    return (
-                        ccw(p1.edge((e1 + 2) % 3), hol) > 0
-                        and ccw(p1.edge((e1 + 1) % 3), hol) > 0
-                    )
+                if direction is not None:
+                    direction = None
+
+                    import warnings
+                    warnings.warn("the direction keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf. The direction keyword argument is ignored. The flip is always performed such that the flipped edge rotates counterclockwise.")
 
                 if in_place:
                     raise NotImplementedError(
@@ -1331,11 +1345,35 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.triangle_flip(
-                    l1=l1, e1=e1, in_place=True, test=test, direction=direction
+                morphism = s.triangle_flip(
+                    label=label, edge=edge, in_place=True, test=test, direction=direction
                 )
                 s.set_immutable()
-                return s
+
+                from flatsurf.geometry.morphism import TriangleFlipMorphism
+                return TriangleFlipMorphism(self, s, morphism._edge_map)
+
+            def is_convex(self, label, edge, strict=False):
+                r"""
+                Return whether the polygon obtained by joining the polygon with
+                ``label`` and the one acress ``edge`` is convex.
+                """
+                opposite_label, opposite_edge = self.opposite_edge(label, edge)
+
+                if opposite_label == label:
+                    raise ValueError("edge must be joining two different polygons")
+
+
+                p1 = self.polygon(label)
+
+                from flatsurf import Polygon
+                sim = self.edge_transformation(opposite_label, opposite_edge)
+                p2 = self.polygon(opposite_label)
+                p2 = Polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
+
+                p = p1.join(p2, edge, opposite_edge)
+
+                return p.is_convex(strict=strict)
 
             def random_flip(self, repeat=1, in_place=False):
                 r"""
@@ -1350,19 +1388,21 @@ class SimilaritySurfaces(SurfaceCategory):
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
-                    sage: ss = translation_surfaces.ward(3).triangulate()
-                    sage: ss.random_flip(15)  # random
-                    Translation Surface in H_1(0^3) built from 6 triangles
+                    sage: ss = translation_surfaces.ward(3).triangulate().codomain()
+                    sage: ss.random_flip(15)
+                    Translation Surface in H_1(0^3) built from ...
 
                 """
                 if not self.is_triangulated():
                     raise ValueError("random_flip only works for triangulated surfaces")
+
                 if not in_place:
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
 
                     self = MutableOrientedSimilaritySurface.from_surface(self)
+
                 labels = list(self.labels())
                 i = 0
                 from sage.misc.prandom import choice
@@ -1370,7 +1410,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 while i < repeat:
                     p1 = choice(labels)
                     e1 = choice(range(3))
-                    if not self.triangle_flip(p1, e1, test=True):
+                    if not self.is_convex(p1, e1, strict=True):
                         continue
                     self.triangle_flip(p1, e1, in_place=True)
                     i += 1
@@ -1922,6 +1962,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return True
 
+            # TODO: Change delaunay_triangulation() to return the codomain() of delaunay_triangulate() and deprecate.
+            # TODO: Change delaunay_decomposition() to return the codomain() of delaunay_decompose() and deprecate.
             def delaunay_triangulation(
                 self,
                 triangulated=False,
@@ -1942,12 +1984,7 @@ class SimilaritySurfaces(SurfaceCategory):
                   triangle flips are done in place.  Otherwise, a mutable copy of the
                   surface is made.
 
-                - ``direction`` (None or Vector) - with two entries in the base field
-                    Used to determine labels when a pair of triangles is flipped. Each triangle
-                    has a unique separatrix which points in the provided direction or its
-                    negation. As such a vector determines a sign for each triangle.
-                    A pair of adjacent triangles have opposite signs. Labels are chosen
-                    so that this sign is preserved (as a function of labels).
+                - ``direction`` (ignored and deprecated)
 
                 EXAMPLES::
 
@@ -1955,11 +1992,11 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
-                    sage: ss = s.delaunay_triangulation()
+                    sage: ss = s.delaunay_triangulation().codomain()
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated(limit=10)
                     True
@@ -1968,6 +2005,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     raise NotImplementedError(
                         "this surface does not implement delaunay_triangulation(in_place=True) yet"
                     )
+
+                if direction is not None:
+                    direction = None
+                    import warnings
+                    warnings.warn("the direction keyword argument for delaunay_triangulation() has been deprecated and will be removed in a future version of sage-flatsurf; the keyword argument has no effect")
 
                 if relabel is not None:
                     if relabel:
@@ -1981,28 +2023,16 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
                         )
 
-                if self.is_finite_type():
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
-
-                    s = MutableOrientedSimilaritySurface.from_surface(self)
-                    s.delaunay_triangulation(
-                        triangulated=triangulated,
-                        in_place=True,
-                        direction=direction,
-                        relabel=relabel,
-                    )
-                    s.set_immutable()
-                    return s
-
                 from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
-                return LazyDelaunayTriangulatedSurface(
+                s = LazyDelaunayTriangulatedSurface(
                     self, direction=direction, category=self.category()
                 )
+
+                from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
+                return DelaunayTriangulationMorphism._create_morphism(self, s)
 
             def delaunay_decomposition(
                 self,
@@ -2028,12 +2058,7 @@ class SimilaritySurfaces(SurfaceCategory):
                   flips are done in place. Otherwise, a mutable copy of the surface is
                   made.
 
-                - ``direction`` - (None or Vector with two entries in the base field) -
-                  Used to determine labels when a pair of triangles is flipped. Each triangle
-                  has a unique separatrix which points in the provided direction or its
-                  negation. As such a vector determines a sign for each triangle.
-                  A pair of adjacent triangles have opposite signs. Labels are chosen
-                  so that this sign is preserved (as a function of labels).
+                - ``direction`` - (ignored and deprecated)
 
                 EXAMPLES::
 
@@ -2058,7 +2083,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon(ss.root())
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_decomposed(limit=10)
                     True
@@ -2068,6 +2093,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     raise NotImplementedError(
                         "this surface does not implement delaunay_decomposition(in_place=True) yet"
                     )
+
+                if direction is not None:
+                    direction = None
+                    import warnings
+                    warnings.warn("the direction keyword argument for delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; the keyword argument has no effect")
 
                 if relabel is not None:
                     if relabel:
@@ -2081,29 +2111,11 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                if not self.is_finite_type():
-                    from flatsurf.geometry.lazy import LazyDelaunaySurface
+                from flatsurf.geometry.lazy import LazyDelaunaySurface
 
-                    s = LazyDelaunaySurface(
-                        self, direction=direction, category=self.category()
-                    )
-                    from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-                    return DelaunayDecompositionMorphism._create_morphism(self, s)
-
-                from flatsurf.geometry.surface import (
-                    MutableOrientedSimilaritySurface,
+                s = LazyDelaunaySurface(
+                    self, direction=direction, category=self.category()
                 )
-
-                s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.delaunay_decomposition(
-                    triangulated=triangulated,
-                    delaunay_triangulated=delaunay_triangulated,
-                    in_place=True,
-                    direction=direction,
-                    relabel=relabel,
-                )
-                s.set_immutable()
-
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
                 return DelaunayDecompositionMorphism._create_morphism(self, s)
 
@@ -2639,6 +2651,18 @@ class SimilaritySurfaces(SurfaceCategory):
                 return self.insert_marked_points(*[self(label, self.polygon(label).centroid()) for label in self.labels()])
 
             def insert_marked_points(self, *points):
+                if self.is_mutable():
+                    from flatsurf import MutableOrientedSimilaritySurface
+                    copy = MutableOrientedSimilaritySurface.from_surface(self)
+                    copy.set_immutable()
+
+                    codomain = copy.insert_marked_points(*points).codomain()
+
+                    # Since the domain is mutable, the morphism is not
+                    # functional but only has a .codomain().
+                    from flatsurf.geometry.morphism import SurfaceMorphism
+                    return SurfaceMorphism._create_morphism(None, codomain)
+
                 from flatsurf.geometry.morphism import IdentityMorphism
                 morphism = IdentityMorphism._create_morphism(self)
 

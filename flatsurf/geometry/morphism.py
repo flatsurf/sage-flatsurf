@@ -281,7 +281,7 @@ class SurfaceMorphismSpace(Homset):
     .. NOTE::
 
         Since surfaces are not unique parents, we need to override some
-        functionallity of the SageMath Homset here to make pickling work
+        functionality of the SageMath Homset here to make pickling work
         correctly.
 
     EXAMPLES::
@@ -327,7 +327,7 @@ class SurfaceMorphismSpace(Homset):
     # We fail tests for associativity because we do not actually decide whether
     # two morphisms are "equal" but just whether they are indistinguishable.
     # Consequently, identity * identity != identity.
-    # We disable tests that fails because of this.
+    # We disable tests that fail because of this.
     def _test_associativity(self, **options): pass
     def _test_one(self, **options): pass
     def _test_prod(self, **options): pass
@@ -403,7 +403,10 @@ class SurfaceMorphism(Morphism):
         if domain is None:
             domain = UnknownSurface(UnknownRing())
         elif domain.is_mutable():
-            domain = UnknownSurface(domain.base_ring())
+            if codomain is domain:
+                codomain = domain = UnknownSurface(domain.base_ring())
+            else:
+                domain = UnknownSurface(domain.base_ring())
 
         if codomain is None:
             codomain = UnknownSurface(UnknownRing())
@@ -1505,20 +1508,29 @@ class SectionMorphism(SurfaceMorphism):
 # contravariant induced maps in call is a hack.
 class CompositionMorphism(SurfaceMorphism):
     # TODO: docstring
-    def __init__(self, parent, lhs, rhs, category=None):
+    def __init__(self, parent, morphisms, category=None):
         # TODO: docstring
         super().__init__(parent, category=category)
 
         self._morphisms = []
-        for morphism in [rhs, lhs]:
+        for morphism in morphisms:
             if isinstance(morphism, CompositionMorphism):
                 self._morphisms.extend(morphism._morphisms)
             else:
                 self._morphisms.append(morphism)
 
     @classmethod
-    def _create_morphism(cls, lhs, rhs):
-        return super()._create_morphism(rhs.domain(), lhs.codomain(), lhs, rhs)
+    def _create_morphism(cls, *morphisms):
+        return super()._create_morphism(morphisms[-1].domain(), morphisms[0].codomain(), morphisms[::-1])
+
+    def change(self, domain=None, codomain=None, check=True):
+        morphisms = self._morphisms[::-1]
+        if domain is not None:
+            morphisms[-1] = morphisms[-1].change(domain=domain)
+        if codomain is not None:
+            morphisms[0] = morphisms[0].change(codomain=codomain)
+
+        return type(self)._create_morphism(*morphisms)
 
     def __call__(self, x):
         from flatsurf.geometry.cohomology import SimplicialCohomologyClass
@@ -1830,6 +1842,49 @@ class TriangulationMorphism(SurfaceMorphism):
             return False
 
         return self.parent() == other.parent()
+
+
+class TriangleFlipMorphism(SurfaceMorphism):
+    def __init__(self, parent, edge_map, category=None):
+        super().__init__(parent, category=category)
+
+        self._edge_map = edge_map
+
+    def _repr_type(self):
+        return "Triangle Flip"
+
+
+class DelaunayTriangulationMorphism(SurfaceMorphism):
+    def __eq__(self, other):
+        if not isinstance(other, DelaunayTriangulationMorphism):
+            return False
+
+        return self.parent() == other.parent()
+
+    def _repr_type(self):
+        return "Delaunay Triangulation"
+
+    def _image_point(self, p):
+        r"""
+        Implements :class:`SurfaceMorphism._image_point`.
+
+        EXAMPLES::
+
+            sage: import flatsurf
+
+            sage: G = SymmetricGroup(4)
+            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: triangulation = S.delaunay_triangulation()
+            sage: triangulation._image_point(S(1, 0))
+            Vertex 0 of polygon (1, 0)
+            sage: triangulation._image_point(S(1, (1/2, 1/2)))
+            Point (1/2, 1/2) of polygon (1, 0)
+
+        """
+        preimage_label, preimage_coordinates = p.representative()
+        preimage_polygon = self.domain().polygon(preimage_label)
+        
+        raise NotImplementedError
 
 
 class DelaunayDecompositionMorphism(SurfaceMorphism):

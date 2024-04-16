@@ -194,7 +194,7 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         Q_0(0, -1^4)
 
                     """
-                    angles = self.angles()
+                    angles = list(self.angles())
 
                     for a, b in self.gluings():
                         if a == b:
@@ -623,4 +623,4 @@ class HalfTranslationSurfaces(SurfaceCategory):
                                 else:
                                     angles.append(QQ((angle, 2)))
 
-                        return angles
+                        return tuple(angles)

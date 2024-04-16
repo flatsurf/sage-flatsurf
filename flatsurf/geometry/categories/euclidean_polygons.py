@@ -841,6 +841,17 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return PolygonPosition(PolygonPosition.OUTSIDE)
 
+        def join(self, other, edge, other_edge):
+            r"""
+            Return the polygon obtained by gluing this polygon and ``other``
+            along their ``edge`` and ``other_edge``, respectively.
+            """
+            if self.vertex(edge) != other.vertex(other_edge + 1) or self.vertex(edge + 1) != other.vertex(other_edge):
+                raise ValueError("edges of polygons must be identical up to orientation")
+
+            from flatsurf import Polygon
+            return Polygon(vertices=self.vertices()[:edge] + other.vertices()[other_edge + 1:] + other.vertices()[:other_edge] + self.vertices()[edge + 1:])
+
     class Rational(CategoryWithAxiom_over_base_ring):
         r"""
         The category of rational Euclidean polygons.
