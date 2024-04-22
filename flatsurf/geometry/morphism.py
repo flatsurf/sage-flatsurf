@@ -700,6 +700,14 @@ class SurfaceMorphism(Morphism):
             assert image.surface() is self.codomain()
             return image
 
+        from flatsurf.geometry.voronoi import SurfaceLineSegment
+        if isinstance(x, SurfaceLineSegment):
+            if x.surface() is not self.domain():
+                raise ValueError("segment must be on the domain of this morphism")
+            image = self._image_line_segment(x)
+            assert image.surface() is self.codomain()
+            return image
+
         raise NotImplementedError(f"cannot map {type(x).__name__} yet through {self}")
 
     def _image_point(self, p):
@@ -849,6 +857,15 @@ class SurfaceMorphism(Morphism):
         from itertools import islice
         for q in tester.some_elements(islice(self.codomain().saddle_connections(), 16)):
             tester.assertEqual(identity(q), q)
+
+    def _image_line_segment(self, s):
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a line segment yet")
+
+    def _section_line_segment(self, t):
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute a preimage of a line segment yet")
+
+    def _test_section_line_segment(self, **options):
+        raise NotImplementedError
 
     def _image_tangent_vector(self, t):
         r"""
@@ -1479,6 +1496,7 @@ class SectionMorphism(SurfaceMorphism):
     def _image_homology_gen(self, x): return self._morphism._section_homology_gen(x)
     def _image_saddle_connection(self, x): return self._morphism._section_saddle_connection(x)
     def _image_tangent_vector(self, x): return self._morphism._section_tangent_vector(x)
+    def _image_line_segment(self, x): return self._morphism._section_line_segment(x)
 
     def _image_homology_matrix(self):
         M = self._morphism._image_homology_matrix()
@@ -1506,6 +1524,7 @@ class SectionMorphism(SurfaceMorphism):
 
 # TODO: The whole composite setup is not great yet. The special handling of
 # contravariant induced maps in call is a hack.
+# TODO: We should reverse the order of _morphisms.
 class CompositionMorphism(SurfaceMorphism):
     # TODO: docstring
     def __init__(self, parent, morphisms, category=None):
@@ -1577,7 +1596,28 @@ class CompositionMorphism(SurfaceMorphism):
         return prod(morphism.section() for morphism in self._morphisms)
 
 
-class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
+class RepolygonizationMorphism(SurfaceMorphism):
+    def _image_line_segment(self, s):
+        raise NotImplementedError
+
+    def _section_line_segment(self, t):
+        from flatsurf.geometry.voronoi import SurfaceLineSegment
+
+        if not self.domain().is_translation_surface():
+            raise NotImplementedError
+
+        if t.start().angle() != 1:
+            raise NotImplementedError
+
+        start = self.section()(t.start())
+
+        assert start.angle() == 1, "preimage of a regular point must be regular"
+
+        return SurfaceLineSegment(self.domain(), *start.representative(), t.holonomy())
+
+
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class InsertMarkedPointsInFaceMorphism(RepolygonizationMorphism):
     def __init__(self, parent, subdivisions, category=None):
         self._subdivisions = subdivisions
 
@@ -1645,7 +1685,8 @@ class InsertMarkedPointsInFaceMorphism(SurfaceMorphism):
         return "InsertMarkedPoint"
 
 
-class InsertMarkedPointsOnEdgeMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class InsertMarkedPointsOnEdgeMorphism(RepolygonizationMorphism):
     def __init__(self, parent, points, category=None):
         super().__init__(parent, category=category)
         self._points = points
@@ -1657,7 +1698,8 @@ class InsertMarkedPointsOnEdgeMorphism(SurfaceMorphism):
         return "InsertMarkedPoint"
 
 
-class SubdivideEdgesMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class SubdivideEdgesMorphism(RepolygonizationMorphism):
     # TODO: docstring
 
     def __init__(self, parent, parts, category=None):
@@ -1740,7 +1782,8 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
         return "Edge-Subdivision"
 
 
-class TriangulationMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class TriangulationMorphism(RepolygonizationMorphism):
     r"""
     Morphism from a surface to its triangulation.
 
@@ -1834,6 +1877,21 @@ class TriangulationMorphism(SurfaceMorphism):
 
         assert False, "point must be in one of the polygons that split up the original polygon"
 
+    def _section_point(self, q):
+        image_label, image_coordinates = q.representative()
+        image_polygon = self.codomain().polygon(image_label)
+
+        preimage_label = self.codomain()._reference_label(image_label)
+        preimage_polygon = self.domain().polygon(preimage_label)
+
+        for preimage_edge, (lbl, edge) in self.codomain()._triangulation(preimage_label)[1].items():
+            if lbl == image_label:
+                relative_coordinates = image_coordinates - image_polygon.vertex(edge)
+                preimage_coordinates = preimage_polygon.vertex(preimage_edge) + relative_coordinates
+                return self.domain()(preimage_label, preimage_coordinates)
+
+        assert False
+
     def _repr_type(self):
         return "Triangulation"
 
@@ -1844,7 +1902,8 @@ class TriangulationMorphism(SurfaceMorphism):
         return self.parent() == other.parent()
 
 
-class TriangleFlipMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class TriangleFlipMorphism(RepolygonizationMorphism):
     def __init__(self, parent, edge_map, category=None):
         super().__init__(parent, category=category)
 
@@ -1854,7 +1913,8 @@ class TriangleFlipMorphism(SurfaceMorphism):
         return "Triangle Flip"
 
 
-class DelaunayTriangulationMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class DelaunayTriangulationMorphism(RepolygonizationMorphism):
     def __eq__(self, other):
         if not isinstance(other, DelaunayTriangulationMorphism):
             return False
@@ -1863,6 +1923,20 @@ class DelaunayTriangulationMorphism(SurfaceMorphism):
 
     def _repr_type(self):
         return "Delaunay Triangulation"
+
+    def _image_edge(self, label, edge):
+        return self.codomain()._image_edge(label, edge)
+
+    def _preimage_edge(self, label, edge):
+        return self.codomain()._preimage_edge(label, edge)
+
+    def _image_vertex(self, p):
+        label, coordinates = p.representative()
+        polygon = self.domain().polygon(label)
+
+        polygon_vertex = polygon.get_point_position(coordinates).get_vertex()
+
+        return self.codomain()(*self._image_edge(label, polygon_vertex).start())
 
     def _image_point(self, p):
         r"""
@@ -1881,13 +1955,60 @@ class DelaunayTriangulationMorphism(SurfaceMorphism):
             Point (1/2, 1/2) of polygon (1, 0)
 
         """
+        if p.is_vertex():
+            return self._image_vertex(p)
+
         preimage_label, preimage_coordinates = p.representative()
+
         preimage_polygon = self.domain().polygon(preimage_label)
-        
+        preimage_edge = 0
+
+        # Make the coordinates relative to the starting point of the edge.
+        preimage_coordinates -= preimage_polygon.vertex(preimage_edge)
+
+        image_edge = self._image_edge(preimage_label, preimage_edge)
+
         raise NotImplementedError
 
+    def _section_vertex(self, q):
+        raise NotImplementedError
 
-class DelaunayDecompositionMorphism(SurfaceMorphism):
+    # TODO: This probably works quite generically for a lot of morphisms.
+    def _section_point(self, q):
+        if q.is_vertex():
+            return self._section_vertex(q)
+
+        image_label, image_coordinates = q.representative()
+        image_polygon = self.codomain().polygon(image_label)
+
+        # Make the coordinates relative to the starting point of the edge.
+        image_edge = 0
+
+        # Write the holonomy from the vertex to the point as a linear
+        # combination of the two edges adjacent to the vertex.
+        image_coordinates = image_polygon(image_coordinates).coordinates(image_edge)
+
+        # We are gonig to make sense of these coordinates by taking the same
+        # linear combination in the domain of the mapping.
+
+        # Construct the two segments in the preimage corresponding to the edges.
+        next_image_label, next_image_edge = self.codomain().opposite_edge(image_label, len(image_polygon.vertices()) - 1)
+
+        preimage_edges = [
+            self._preimage_edge(image_label, image_edge),
+            self._preimage_edge(next_image_label, next_image_edge),
+        ]
+
+        # Construct the segment corresponding to the segment from the vertex to
+        # q in the domain.
+        from flatsurf.geometry.voronoi import SurfaceLineSegment
+        preimage_segment = SurfaceLineSegment.from_linear_combination(preimage_edges, image_coordinates)
+
+        return preimage_segment.end()
+
+
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class DelaunayDecompositionMorphism(RepolygonizationMorphism):
     def __eq__(self, other):
         if not isinstance(other, DelaunayDecompositionMorphism):
             return False
@@ -1950,7 +2071,8 @@ class GL2RMorphism(SurfaceMorphism):
         return repr(self._matrix)
 
 
-class PolygonStandardizationMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class PolygonStandardizationMorphism(RepolygonizationMorphism):
     def __init__(self, parent, vertex_zero, category=None):
         super().__init__(parent, category=category)
         self._vertex_zero = vertex_zero
@@ -1969,7 +2091,8 @@ class PolygonStandardizationMorphism(SurfaceMorphism):
         return "Polygon Standardization"
 
 
-class RelabelingMorphism(SurfaceMorphism):
+# TODO: Can we use some generic machinery from RepolygonizationMorphism here?
+class RelabelingMorphism(RepolygonizationMorphism):
     def __init__(self, parent, relabeling, category=None):
         super().__init__(parent, category=category)
         # TODO: Compactify relabeling and make it frozen and hashable.

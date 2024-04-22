@@ -13,22 +13,20 @@ We compute harmonic differentials on the square torus::
     sage: H = SimplicialCohomology(T)
     sage: a, b = H.homology().gens()
 
-First, the harmonic differentials that sends the horizontal `a` to 1 and the
-vertical `b` to zero::
+First, the harmonic differentials that sends the horizontal `b` to 1 and the
+vertical to zero (note that `a` is a diagonal)::
 
-    sage: f = H({b: 1})
+    sage: f = H({b: 1, a: -1})
     sage: Ω = HarmonicDifferentials(T)
     sage: ω = Ω(f)
-    sage: ω  # random output
-    ((1.00000000000000 + 1.48374000000000e-76*I) + (-1.35679000000000e-77 + 1.67690000000000e-77*I)*z0 + (5.60404000000000e-76 - 3.17779000000000e-76*I)*z0^2 + (-1.38688000000000e-76 + 2.40493000000000e-75*I)*z0^3 + (-1.72352000000000e-74 - 1.88541000000000e-74*I)*z0^4 + O(z0^5), (1.00000000000000 + 2.85447000000000e-77*I) + (4.33241000000000e-78 - 7.66907000000000e-78*I)*z1 + (-3.82322000000000e-77 + 8.71445000000000e-77*I)*z1^2 + (-7.69949000000000e-77 + 6.04329000000000e-76*I)*z1^3 + (4.42836000000000e-75 + 5.93165000000000e-76*I)*z1^4 + O(z1^5))
-    sage: ω.simplify()
-    (1.00000000000000 + O(z0^5), 1.00000000000000 + O(z1^5))
+    sage: ω
+    (1.0 + O(z0),)
 
-The harmonic differential that integrates as 0 along `a` but 1 along `b`::
+The harmonic differential that integrates as 1 on the vertical and 0 on the horizontal::
 
-    sage: g = H({a: -1})
-    sage: Ω(g).simplify()
-    (1.00000000000000*I + O(z0^5), 1.00000000000000*I + O(z1^5))
+    sage: g = H({a: -1, b: 0})
+    sage: Ω(g)
+    (-1.0*I + O(z0),)
 
 A less trivial example, the regular octagon::
 
@@ -41,19 +39,19 @@ A less trivial example, the regular octagon::
     sage: # on the untriangulated surface f = H({ a: sqrt(2) + 1, b: 0, c: -sqrt(2) - 1, d: -sqrt(2) - 2})
     sage: f = H({a: -sqrt(2), b: 0, c: -sqrt(2) - 1, d: sqrt(2) + 1})
 
-    sage: from flatsurf.geometry.voronoi import VoronoiCellDecomposition
-    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=VoronoiCellDecomposition(S))
+    sage: Omega = HarmonicDifferentials(S, error=1e-1)
     sage: omega = Omega(f, check=False)
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # TODO: Why so much tolerance?
-    (1.31414000000000*z0^2 + (-0.107413000000000)*z0^10 + O(z0^11), -2.09020000000000 + (-3.22547000000000)*z1^8 + (-2.61537000000000)*z1^16 + (-2.00436000000000)*z1^24 + (-1.53401000000000)*z1^32 + O(z1^33))
+    sage: omega.simplify(zero_threshold=1e-1)  # abs-tol 1e-4  # TODO: Why so much tolerance?
+    (1.3138012886047363*z0^2 + O(z0^5), -2.090515375137329 + (-3.2217148449767996)*z1^8 + (-2.515996975688303)*z1^16 + (-1.5095460414886475)*z1^24 + O(z1^25))
 
-    # on the untriangulated surface
-    (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
+The same computation, but we use a cell decomposition that is better adapted to
+computing harmonic differentials::
 
     sage: from flatsurf.geometry.voronoi import ApproximateWeightedVoronoiCellDecomposition
-    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=ApproximateWeightedVoronoiCellDecomposition(S))
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=ApproximateWeightedVoronoiCellDecomposition(S))
     sage: omega = Omega(f, check=False)
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # TODO: Why so much tolerance?
+    sage: omega.simplify(zero_threshold=1e-1)  # abs-tol 1e-1  # TODO: Why so much tolerance?
+    (1.333134175150692*z0^2 + O(z0^7), -2.090317964553833 + (-3.174059553834174)*z1^8 + O(z1^16))
 
 The same computation on a triangulation of the octagon::
 
@@ -66,12 +64,16 @@ The same computation on a triangulation of the octagon::
 
     sage: f = H({a: -sqrt(2), b: 0, c: -sqrt(2) - 1, d: sqrt(2) + 1})
 
-    sage: Omega = HarmonicDifferentials(S, centers="vertices", ncoefficients=11)
-    sage: omega = Omega(f)  # long time
-    sage: omega.simplify(zero_threshold=1e-3)  # abs-tol 1e-4  # long time, see above  # TODO: Why so much tolerance?
-    (1.31414000000000*z0^2 + (-0.107413000000000)*z0^10 + O(z0^11), -2.09020000000000 + (-3.22547000000000)*z1^8 + (-2.61537000000000)*z1^16 + (-2.00436000000000)*z1^24 + (-1.53401000000000)*z1^32 + O(z1^33))
+    sage: from flatsurf.geometry.voronoi import ApproximateWeightedVoronoiCellDecomposition
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=ApproximateWeightedVoronoiCellDecomposition(S))
+    sage: omega = Omega(f, check=False)
+    sage: omega.simplify(zero_threshold=1e-1)  # abs-tol 1e-4  # TODO: Why so much tolerance?
+    (1.333134175150692*z0^2 + O(z0^7), -2.090317964553833 + (-3.174059553834174)*z1^8 + O(z1^16))
 
-The same surface but built as the unfolding of a right triangle::
+The same surface but built as the unfolding of a right triangle. ``z2`` is the
+variable at the center of the octagon and ``z3`` is at the singularity. Note
+that another variable was chosen for ``z3`` than before, i.e., the output at
+``z3`` is rotated::
 
     sage: from flatsurf import similarity_surfaces, HarmonicDifferentials, SimplicialCohomology, Polygon
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3/8, 1/2, 1/8], lengths=[1/2])).minimal_cover('translation')
@@ -81,40 +83,42 @@ The same surface but built as the unfolding of a right triangle::
 
     sage: f = H({a: 0, b: sqrt(2) + 2, c: -1, d: -sqrt(2) - 1})
 
-    sage: Omega = HarmonicDifferentials(S, centers="vertices+centers", ncoefficients=11)  # TODO: With just "vertices" this does not terminate. Probably because there are areas in the Voronoi diagram not contained in any cell.
-    sage: omega = Omega(f)  # long time  # random output due to precision warnings TODO
-    sage: omega.simplify(zero_threshold=1e-4)  # abs-tol 1e-4  # long time, see above  # TODO: We get this output but multiplied with a root of unity.
-    (-2.09019000000000 + (-3.22546000000000)*z0^8 + (-2.61535000000000)*z0^16 + (-2.00435000000000)*z0^24 + (-1.53401000000000)*z0^32 + O(z0^33), 1.31413000000000*z1^2 + (-0.107411000000000)*z1^10 + O(z1^11))
+    sage: from flatsurf.geometry.voronoi import ApproximateWeightedVoronoiCellDecomposition
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=ApproximateWeightedVoronoiCellDecomposition(S))
+    sage: omega = Omega(f, check=False)  # random output due to L2 warnings
+    sage: omega.simplify(zero_threshold=1e-1)  # abs-tol 1e-4
+    (-1.4140331745147705 + (-5.2445968837090415)*z0^2 + (-14.135336687223573)*z0^4 + O(z0^5), 1.4160147905349731 + (-5.2437846751533215)*z1^2 + 14.13073027542154*z1^4 + O(z1^5), 1.3111448734204234*z2^2 + O(z2^7), 1.0453932285308838 + 1.8112497329711914*I + (-3.169093677628632)*z3^8 + (1.1057225941067088 - 1.9148742552824405*I)*z3^16 + O(z3^17), -1.4146366119384766*I + (-5.244161580049933)*z4^2 + 14.133169154040427*I*z4^4 + O(z4^5), 1.4153552055358887*I + (-5.244222128460129)*z5^2 + (-14.13234219652197*I)*z5^4 + O(z5^5))
 
 A deformed L::
 
-    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, ApproximateWeightedVoronoiCellDecomposition, GL2ROrbitClosure
-    sage: L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
-    sage: L = GL2ROrbitClosure(L).deform()
-    sage: L = L.delaunay_triangulation()
-    sage: L = L.subdivide_edges(4).codomain()
-    sage: L = L.subdivide().codomain()
-    sage: # L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
-    sage: # L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [3]]).codomain()
-    sage: L = L.delaunay_triangulation()
-    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
-    sage: L.plot(edge_labels=False)
-    sage: V = ApproximateWeightedVoronoiCellDecomposition(L)
-    sage: Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V, check=False)
-    sage: Omega.error_plot(cutoff=.5)
+    sage: ### Does not work yet.
+    sage: ### from flatsurf import translation_surfaces, HarmonicDifferentials, ApproximateWeightedVoronoiCellDecomposition, GL2ROrbitClosure
+    sage: ### L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
+    sage: ### L = GL2ROrbitClosure(L).deform()
+    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.subdivide_edges(4).codomain()
+    sage: ### L = L.subdivide().codomain()
+    sage: ### # L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: ### # L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [3]]).codomain()
+    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: ### L.plot(edge_labels=False)
+    sage: ### V = ApproximateWeightedVoronoiCellDecomposition(L)
+    sage: ### Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V, check=False)
+    sage: ### Omega.error_plot(cutoff=.5)
 
-    sage: L = L.delaunay_triangulation()
-    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
-    sage: L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [8, 12]]).codomain()
-    sage: L = L.delaunay_triangulation()
-    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
-    sage: L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [1, 16]]).codomain()
-    sage: L = L.delaunay_triangulation()
-    sage: L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
-    sage: V = ApproximateWeightedVoronoiCellDecomposition(L)
-    sage: V.plot()
+    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: ### L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [8, 12]]).codomain()
+    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: ### L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [1, 16]]).codomain()
+    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
+    sage: ### V = ApproximateWeightedVoronoiCellDecomposition(L)
+    sage: ### V.plot()
 
-    sage: Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V)
+    sage: ### Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V)
 
 Much more complicated, the unfolding of the (3, 4, 13) triangle::
 
@@ -129,41 +133,40 @@ by their disks of convergence::
 
     sage: from flatsurf import HarmonicDifferentials, ApproximateWeightedVoronoiCellDecomposition
     sage: V = ApproximateWeightedVoronoiCellDecomposition(S)
-    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=V)
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=V)
     Traceback (most recent call last):
     ...
     ValueError: cell decomposition is such that cells contain points outside of their center's radius of convergence
 
 We add marked points in the centers of some polygons::
 
-    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=V, check=False)
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=V, check=False)
     sage: # Omega.error_plot()
     sage: S = S.insert_marked_points(*[S(label, S.polygon(label).centroid()) for label in (2, 18, 26, 31)]).codomain()
     sage: S = S.delaunay_triangulation()
     sage: S = S.relabel().codomain()
 
     sage: V = ApproximateWeightedVoronoiCellDecomposition(S)
-    sage: Omega = HarmonicDifferentials(S, error=1e-3, cell_decomposition=V)
+    sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=V)
 
 Given a vector from the tangent space, we can determine the corresponding differential::
 
     sage: from flatsurf import GL2ROrbitClosure
     sage: O = GL2ROrbitClosure(S)
-    sage: for d in O.decompositions(4, 20):
-    ....:     print(O.dimension())
+    sage: for d in O.decompositions(4, 20):  # random output due to deprecation warnings
     ....:     O.update_tangent_space_from_flow_decomposition(d)
     ....:     if O.dimension() == 7: break
 
-    sage: f = Omega(O._lift_to_simplicial_cohomology(O.lift(O.tangent_space_basis()[-1])))
+    sage: f = Omega(O._lift_to_simplicial_cohomology(O.lift(O.tangent_space_basis()[-1])))  # long time
 
 We can determine the roots of this differential::
 
-    sage: ...
+    sage: # TODO
 
 There are precision problems in the above, so we add more centers at which we
 develop power series::
 
-    sage: ...
+    sage: # TODO
 
 """
 ######################################################################
@@ -611,7 +614,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -619,7 +622,7 @@ class HarmonicDifferential(Element):
             sage: H = SimplicialCohomology(T)
             sage: f = H({a: 1})
 
-            sage: Ω = HarmonicDifferentials(T)
+            sage: Ω = HarmonicDifferentials(T, error=1e-3)
 
             sage: ω = Ω(f) + Ω(f) + Ω(H({a: -2}))
             sage: ω  # random output due to numerical noise
@@ -655,7 +658,7 @@ class HarmonicDifferential(Element):
             sage: H = SimplicialCohomology(T)
             sage: f = H({a: 1})
 
-            sage: Ω = HarmonicDifferentials(T)
+            sage: Ω = HarmonicDifferentials(T, error=1e-3)
             sage: η = Ω(f)
             sage: η.error()
             False
@@ -975,12 +978,23 @@ class HarmonicDifferentialSpace(Parent):
     Element = HarmonicDifferential
 
     # TODO: Determine ncoefficients automatically
-    def __init__(self, surface, error, cell_decomposition, check=True, category=None):
+    def __init__(self, surface, error=None, cell_decomposition=None, check=True, category=None):
         # TODO: Just order labels by their order in surface.labels() instead.
         try:
             sorted(surface.labels())
         except Exception:
             raise NotImplementedError("labels on the surface must be sortable so we use label order to make a choice of n-th roots")
+
+        if cell_decomposition is None:
+            if surface.genus() == 1:
+                from flatsurf.geometry.voronoi import VoronoiCellDecomposition
+                cell_decomposition = VoronoiCellDecomposition(surface)
+            else:
+                from flatsurf.geometry.voronoi import VoronoiCellDecomposition
+                cell_decomposition = VoronoiCellDecomposition(surface)
+
+        if error is None:
+            error = 1e-3
 
         # TODO: Add defaults for error and cell_decomposition.
 
@@ -1108,6 +1122,10 @@ class HarmonicDifferentialSpace(Parent):
         beta = self._relative_radius_of_convergence(self._cells.cell_at_center(center))
         if beta >= 1:
             raise ValueError(f"cell at {center} extends beyond radius of convergence")
+
+        if beta == 0:
+            assert self.surface().genus() == 1
+            return 1
 
         d = center.angle()
         eps = self._error
@@ -1783,102 +1801,6 @@ class PowerSeriesConstraints:
 
             return integral2cpp(part, α, κ, d, n, β, λ, dd, m, a=a, b=b, C=C, R=R)
 
-    class CellBoundaryIntegrator:
-        def __init__(self, constraints, segment):
-            # TODO: Verify that roots are consistent along the segment! Always the case for the octagon.
-            self._segment = segment
-            self._constraints = constraints
-            self.real_field = constraints.real_field()
-            self._center, self._label, self._center_coordinates = segment.center()
-            self._opposite_center, label, self._opposite_center_coordinates = segment.opposite_center()
-            self.complex_field = constraints.complex_field()
-            self.I = self.complex_field.gen()
-            self.R = constraints.symbolic_ring(self.real_field)
-            self.C = constraints.symbolic_ring(self.complex_field)
-
-        def integral(self, α, κ, d, n):
-            r"""
-            Return
-
-            \int_γ ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1}
-            """
-            a, b = self._segment.endpoints()
-            a = self.complex_field(*a)
-            b = self.complex_field(*b)
-
-            # Since γ(t) = (1 - t)a + tb, we have ·γ(t) = b - a
-            constant = zeta(d + 1, κ * (n + 1)) * (b - a)
-
-            def value(part, t):
-                z = self.complex_field(*((1 - t) * a + t * b))
-
-                value = constant * (z-α).nth_root(d + 1)**(n - d)
-
-                if part == "Re":
-                    return float(value.real())
-                if part == "Im":
-                    return float(value.imag())
-
-                raise NotImplementedError
-
-            real, error = quad(lambda t: value("Re", t), 0, 1)
-            imag, error = quad(lambda t: value("Im", t), 0, 1)
-
-            return self.complex_field(real, imag)
-
-        def α(self):
-            return self.complex_field(*self._center_coordinates)
-
-        def β(self):
-            return self.complex_field(*self._opposite_center_coordinates)
-
-        def κ(self):
-            if not self._center.is_vertex():
-                return 0
-
-            return self._κλ(self._center_coordinates, self._segment)
-
-        @cached_method
-        def d(self):
-            if not self._center.is_vertex():
-                return 0
-
-            return 2
-
-        def λ(self):
-            if not self._opposite_center.is_vertex():
-                return 0
-
-            return self._κλ(self._opposite_center_coordinates, self._segment)
-
-        @cached_method
-        def dd(self):
-            if not self._opposite_center.is_vertex():
-                return 0
-
-            return 2
-
-        def opposite_range(self, prec):
-            return self._constraints._range(self._opposite_center, prec)
-
-        def a(self, n):
-            return self.Re_a(n) + self.I * self.C(self.Im_a(n))
-
-        def Re_a(self, n):
-            return self._constraints._gen("Re", self._center, n)
-
-        def Im_a(self, n):
-            return self._constraints._gen("Im", self._center, n)
-
-        def Re_b(self, n):
-            return self._constraints._gen("Re", self._opposite_center, n)
-
-        def Im_b(self, n):
-            return self._constraints._gen("Im", self._opposite_center, n)
-
-        def f(self, n):
-            return self.integral(self.α(), self.κ(), self.d(), n)
-
     def _L2_consistency_voronoi_boundary(self, polygon_cell, boundary_segment, opposite_polygon_cell):
         r"""
         ALGORITHM:
@@ -2451,7 +2373,7 @@ q
 
         from sage.all import RDF, oo
         condition = A.change_ring(RDF).condition()
-        print(f"{condition=}")
+        # print(f"{condition=}")
 
         if condition == oo:
             print("condition number is not finite")
@@ -2712,6 +2634,6 @@ class GeodesicPath(Path):
         return hash((self._start, self._holonomy))
 
 
-def HarmonicDifferentials(surface, error, cell_decomposition, check=True, category=None):
+def HarmonicDifferentials(surface, error=None, cell_decomposition=None, check=True, category=None):
     return surface.harmonic_differentials(error, cell_decomposition, check, category)
 

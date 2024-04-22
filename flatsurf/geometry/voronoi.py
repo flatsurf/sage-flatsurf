@@ -498,6 +498,9 @@ class BoundarySegment:
         """
         raise NotImplementedError("this cell decomposition cannot restrict its boundaries to polygons yet")
 
+    def plot(self, graphical_surface=None):
+        return self.segment().plot(graphical_surface=graphical_surface)
+
     def __eq__(self, other):
         if not isinstance(other, BoundarySegment):
             return False
@@ -563,9 +566,6 @@ class LineBoundarySegment(BoundarySegment):
                 assert False, "subsegment of boundary must also be a boundary on the level of polygons"
     
         return boundaries
-
-    def plot(self, graphical_surface=None):
-        return self.segment().plot(graphical_surface=graphical_surface)
 
     def radius(self):
         norm = self.surface().euclidean_plane().norm()
@@ -936,12 +936,12 @@ class VoronoiCell(LineSegmentCell):
                 if ccw(-polygon.edge(start_edge - 1), start_holonomy) > 0:
                     start_label, start_edge = surface.opposite_edge(start_label, (start_edge - 1) % len(polygon.vertices()))
                     polygon = surface.polygon(start_label)
-                elif ccw(polygon.edge(start_edge), start_holonomy) <= 0:
+                elif ccw(polygon.edge(start_edge), start_holonomy) < 0:
                     start_label, start_edge = surface.opposite_edge(start_label, start_edge)
                     polygon = surface.polygon(start_label)
                     start_edge = (start_edge + 1) % len(polygon.vertices())
 
-                assert ccw(-polygon.edge(start_edge), start_holonomy) <= 0 and ccw(polygon.edge(start_edge), start_holonomy) > 0, "center of Voronoi cell must be within a neighboring triangle"
+                assert ccw(-polygon.edge(start_edge - 1), start_holonomy) < 0 and ccw(polygon.edge(start_edge), start_holonomy) >= 0, "center of Voronoi cell must be within a neighboring triangle"
 
                 start_segment = SurfaceLineSegment(surface, start_label, polygon.vertex(start_edge), start_holonomy)
 
@@ -961,7 +961,7 @@ class VoronoiCell(LineSegmentCell):
         return tuple(boundary)
 
 
-class VoronoiCellDecomposition(CellDecomposition):
+class VoronoiCellDecomposition_delaunay(CellDecomposition):
     r"""
     EXAMPLES::
 
@@ -1077,7 +1077,7 @@ class ApproximateWeightedVoronoiCell(LineSegmentCell):
         return tuple(boundary)
 
 
-class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
+class ApproximateWeightedVoronoiCellDecomposition_delaunay(CellDecomposition):
     r"""
     EXAMPLES::
 
@@ -1321,8 +1321,39 @@ class ApproximateWeightedVoronoiCellDecomposition(CellDecomposition):
 
         return [A_equal_B]
 
+
+class MappedBoundarySegment(BoundarySegment):
+    def __init__(self, cell, boundary):
+        super().__init__(cell, cell._decomposition._isomorphism.section()(boundary.segment()))
+        self._codomain_boundary = boundary
+
+    def radius(self):
+        return self._codomain_boundary.radius()
+
+
+class MappedCell(Cell):
+    def __init__(self, decomposition, center):
+        super().__init__(decomposition, center)
+        self._codomain_cell = decomposition._codomain_decomposition.cell(decomposition._isomorphism(center))
+
+    @cached_method
+    def boundary(self):
+        return tuple(MappedBoundarySegment(self, boundary) for boundary in self._codomain_cell.boundary())
+
+
+class MappedCellDecomposition(CellDecomposition):
+    Cell = MappedCell
+
+    def __init__(self, codomain_decomposition, isomorphism):
+        super().__init__(isomorphism.domain())
+
+        self._codomain_decomposition = codomain_decomposition
+        self._isomorphism = isomorphism
+
+
 # TODO: Move to surface objects.
 class SurfaceLineSegment:
+    # TODO: Use tangent vectors instead of start (and end.)
     def __init__(self, surface, label, start, holonomy):
         if not holonomy:
             raise ValueError
@@ -1360,6 +1391,35 @@ class SurfaceLineSegment:
         self._start.set_immutable()
         self._holonomy.set_immutable()
 
+    @staticmethod
+    def from_linear_combination(saddle_connections, coordinates):
+        if len(saddle_connections) != len(coordinates):
+            raise ValueError
+
+        if len(saddle_connections) != 2:
+            raise NotImplementedError
+
+        surface = saddle_connections[0].surface()
+
+        if not surface.is_translation_surface():
+            raise NotImplementedError
+
+        if surface(*saddle_connections[0].start()) != surface(*saddle_connections[1].start()):
+            raise ValueError
+
+        holonomy = sum([coefficient * connection.holonomy() for (coefficient, connection) in zip(coordinates, saddle_connections)])
+
+        label, edge = saddle_connections[0].start()
+        polygon = surface.polygon(label)
+
+        # TODO: We must factor this rotation algorithm out somehow. It's used in so many places by now.
+        from flatsurf.geometry.euclidean import ccw
+        while ccw(holonomy, -polygon.edge(edge - 1)) <= 0:
+            label, edge = surface.opposite_edge(label, (edge - 1) % len(polygon.edges()))
+            polygon = surface.polygon(label)
+
+        return SurfaceLineSegment(surface, label, polygon.vertex(edge), holonomy)
+
     def surface(self):
         return self._surface
 
@@ -1368,6 +1428,12 @@ class SurfaceLineSegment:
 
     def start_representative(self):
         return self._label, self._start
+
+    def start_tangent_vector(self):
+        return self._surface.tangent_vector(self._label, self._start, self._holonomy)
+
+    def end_tangent_vector(self):
+        raise NotImplementedError
 
     def an_inner_point(self):
         segment = self.split()[0]
@@ -1391,7 +1457,7 @@ class SurfaceLineSegment:
         The initial part is returned as a segment label and a Euclidean segment
         in the corresponding polygon.
         """
-        # TDOO: This generic flowing foo should not probably be implemented in a better place.
+        # TDOO: This generic flowing foo should probably be implemented in a better place.
         surface = self.surface()
         polygon = surface.polygon(self._label)
 
@@ -1420,9 +1486,10 @@ class SurfaceLineSegment:
         if start == (self._label, self._start):
             return self._holonomy
 
-        # TODO: Why should anything be different?
+        # TODO: This is only correct for translation surfaces. (And even there
+        # it's a bit unclear what this means if start has nothing to do with
+        # the representative chosen in _start.)
         return self._holonomy
-        raise NotImplementedError("cannot determine holonomy at vertex yet")
 
     def __repr__(self):
         return f"{self.start()}→{self.end()}"
@@ -1459,6 +1526,7 @@ class SurfaceLineSegment:
                 holonomy.set_immutable()
                 segments.append((lbl, segment, holonomy))
 
+            # TODO: This assumes that this is a translation surface.
             holonomy += (segment[1] - segment[0])
 
         return segments
@@ -1503,3 +1571,19 @@ class SurfaceLineSegment:
                 plot.append(line2d(graphical_subsegment))
 
         return sum(plot)
+
+
+def VoronoiCellDecomposition(surface):
+    if surface.is_delaunay_triangulated():
+        return VoronoiCellDecomposition_delaunay(surface)
+
+    delaunay_triangulation = surface.delaunay_triangulation()
+    return MappedCellDecomposition(VoronoiCellDecomposition(delaunay_triangulation.codomain()), delaunay_triangulation)
+
+
+def ApproximateWeightedVoronoiCellDecomposition(surface):
+    if surface.is_delaunay_triangulated():
+        return ApproximateWeightedVoronoiCellDecomposition_delaunay(surface)
+
+    delaunay_triangulation = surface.delaunay_triangulation()
+    return MappedCellDecomposition(ApproximateWeightedVoronoiCellDecomposition(delaunay_triangulation.codomain()), delaunay_triangulation)

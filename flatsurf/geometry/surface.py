@@ -2083,6 +2083,9 @@ class MutableOrientedSimilaritySurface(
         if not in_place:
             return super().triangulate(in_place=False, label=label)
 
+        import warnings
+        warnings.warn("in-place triangulation has been deprecated and the in_place keyword argument will be removed from triangulate() in a future version of sage-flatsurf")
+
         labels = [label] if label is not None else list(self.labels())
 
         for label in labels:
@@ -2116,6 +2119,7 @@ class MutableOrientedSimilaritySurface(
 
         return triangulation, edge_to_edge
 
+    # TODO: Deprecate?
     def delaunay_single_flip(self):
         r"""
         Perform a single in place flip of a triangulated mutable surface
@@ -2161,6 +2165,9 @@ class MutableOrientedSimilaritySurface(
                 warnings.warn(
                     "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
                 )
+
+        import warnings
+        warnings.warn("in-place Delaunay triangulation has been deprecated and the in_place keyword argument will be removed from delaunay_triangulation() in a future version of sage-flatsurf")
 
         if not triangulated:
             self.triangulate(in_place=True)
@@ -2235,6 +2242,9 @@ class MutableOrientedSimilaritySurface(
                     "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                 )
 
+        import warnings
+        warnings.warn("in-place Delaunay decomposition has been deprecated and the in_place keyword argument will be removed from delaunay_decomposition() in a future version of sage-flatsurf")
+
         s = self
         if not delaunay_triangulated:
             s = s.delaunay_triangulation(
@@ -2253,7 +2263,7 @@ class MutableOrientedSimilaritySurface(
                 break
 
         from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-        return DelaunayDecompositionMorphism._create_morphism(self, s)
+        return DelaunayDecompositionMorphism._create_morphism(None, s)
 
     def cmp(self, s2, limit=None):
         r"""

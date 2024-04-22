@@ -1804,11 +1804,12 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return self.triangulate()
 
+            # TODO: Rename to triangulation()
             def triangulate(self, in_place=False, label=None, relabel=None):
                 r"""
                 Return a morphism to a triangulated version of this surface.
 
-                If label=None (as default) all polygons are triangulated. Otherwise,
+                If label=None (the default) all polygons are triangulated. Otherwise,
                 label should be a polygon label. In this case, just this polygon
                 is split into triangles.
 
@@ -1848,7 +1849,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     from flatsurf import MutableOrientedSimilaritySurface
                     return MutableOrientedSimilaritySurface.from_surface(self).triangulate(in_place=True, label=label)
 
-                labels = {label} if label is not None else self.labels()
+                labels = {label} if label is not None else None
 
                 from flatsurf.geometry.morphism import TriangulationMorphism
                 from flatsurf.geometry.lazy import LazyTriangulatedSurface
@@ -1923,6 +1924,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return True
 
+            # TODO: Should we rename this to is_delaunay? And remove is_delaunay_triangulated?
             def is_delaunay_decomposed(self, limit=None):
                 r"""
                 Return if the decomposition of the surface into polygons is Delaunay.
@@ -1962,8 +1964,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return True
 
-            # TODO: Change delaunay_triangulation() to return the codomain() of delaunay_triangulate() and deprecate.
-            # TODO: Change delaunay_decomposition() to return the codomain() of delaunay_decompose() and deprecate.
+            # TODO: In the long run, what should the naming strategy be?
+            # Should it say delaunay_triangulation() or delaunay_triangulate()?
+            # The latter sounds like an in-place operation. So maybe
+            # delaunay_triangulation() is better.
+            # Should there be any in-place operations at all? For anything that
+            # is linear-time or slower, it makes not a lot of sense really. If
+            # we want speed, we should call out to libflatsurf.
+            # TODO: Maybe the codomain should be a
+            # MutableOrientedSimilaritySurface that is immutable when
+            # this is finite type. (Here and for all the other functions
+            # returning a lazy surface at the moment.)
             def delaunay_triangulation(
                 self,
                 triangulated=False,
@@ -2023,16 +2034,18 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
                         )
 
+                morphism = self.triangulate()
+
                 from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
                 s = LazyDelaunayTriangulatedSurface(
-                    self, direction=direction, category=self.category()
+                    morphism.codomain(), direction=direction, category=self.category()
                 )
 
                 from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
-                return DelaunayTriangulationMorphism._create_morphism(self, s)
+                return DelaunayTriangulationMorphism._create_morphism(morphism.codomain(), s) * morphism
 
             def delaunay_decomposition(
                 self,
@@ -2111,13 +2124,15 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
+                morphism = self.delaunay_triangulation()
+
                 from flatsurf.geometry.lazy import LazyDelaunaySurface
 
                 s = LazyDelaunaySurface(
-                    self, direction=direction, category=self.category()
+                    morphism.codomain(), direction=direction, category=self.category()
                 )
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-                return DelaunayDecompositionMorphism._create_morphism(self, s)
+                return DelaunayDecompositionMorphism._create_morphism(morphism.codomain(), s) * morphism
 
             def _saddle_connections_unbounded(self, initial_label, initial_vertex, algorithm):
                 r"""

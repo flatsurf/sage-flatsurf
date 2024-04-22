@@ -26,7 +26,11 @@ class SaddleConnection(SaddleConnection_base):
     # TODO: The constructor should not do so much work. Missing parameters
     # should be filled in by calling a static factory method.
     # TODO: direction and end_direction should not be part of the data. It's
-    # just the Ray given by the holonomy.
+    # just the tangent vector given by the holonomy.
+    # TODO: start and end should probably be just a tangent vector? And the
+    # naming of start() and end() should also reflect that? Then start() and
+    # end() could actually just return the surface points instead of returning
+    # a tuple.
     def __init__(
         self,
         surface,
@@ -58,13 +62,13 @@ class SaddleConnection(SaddleConnection_base):
         ----------
         surface : a SimilaritySurface
             which will contain the saddle connection being constructed.
-        start_data : a pair
+        start : a pair
             consisting of the label of the polygon where the saddle connection starts
             and the starting vertex.
         direction : 2-dimensional vector with entries in the base_ring of the surface
             representing the direction the saddle connection is moving in (in the
             coordinates of the initial polygon).
-        end_data : a pair
+        end : a pair
             consisting of the label of the polygon where the saddle connection terminates
             and the terminating vertex.
         end_direction : 2-dimensional vector with entries in the base_ring of the surface
@@ -73,7 +77,7 @@ class SaddleConnection(SaddleConnection_base):
             or better this will be the negation of the direction vector. If the surface
             is a HalfDilation surface or better, then this will be either the direction
             vector or its negation. In either case the value can be inferred from the
-            end_data.
+            end.
         holonomy : 2-dimensional vector with entries in the base_ring of the surface
             the holonomy of the saddle connection measured from the start. To compute this
             you develop the saddle connection into the plane starting from the starting
