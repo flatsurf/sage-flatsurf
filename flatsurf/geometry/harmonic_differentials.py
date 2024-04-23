@@ -1681,40 +1681,6 @@ class PowerSeriesConstraints:
 
         return {args: cost for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries)}
 
-    def _L2_consistency(self):
-        r"""
-        # TODO: This description is not accurate anymore.
-        For each pair of adjacent centers along a homology path we use for
-        integrating, let `v` be the weighed midpoint (weighed according to the
-        radii of convergence at the adjacent centers.)
-        We develop the power series coming from both triangles around that
-        midpoint and check them for agreement. Namely, we integrate the square
-        of their difference on the circle of maximal radius around `v` as a
-        line integral. (If the power series agree, that integral should be
-        zero.)
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: H = SimplicialCohomology(T)
-            sage: a, b = H.homology().gens()
-            sage: f = H({a: 1})
-
-            sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f)
-
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: consistency = PowerSeriesConstraints(Ω)._L2_consistency()
-            sage: η._evaluate(consistency)  # tol 1e-9
-            0
-
-        """
-        raise NotImplementedError # should not be called anymore since it does not do caching right.
-        return sum(self._L2_consistencies().values())
-
     # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
         return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._differentials._centers.index(center)},?)", n))
