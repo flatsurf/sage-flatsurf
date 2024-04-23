@@ -1330,6 +1330,19 @@ class MappedBoundarySegment(BoundarySegment):
     def radius(self):
         return self._codomain_boundary.radius()
 
+    @cached_method
+    def polygon_cell_boundaries(self):
+        polygon_cell_boundaries = []
+
+        for polygon_cell, subsegment, opposite_polygon_cell in self._codomain_boundary.polygon_cell_boundaries():
+            raise NotImplementedError  # TODO: This seems to be quite complicated to compute.
+
+        return tuple(polygon_cell_boundaries)
+
+
+class MappedPolygonCell(PolygonCell):
+    pass
+
 
 class MappedCell(Cell):
     def __init__(self, decomposition, center):
@@ -1349,6 +1362,9 @@ class MappedCellDecomposition(CellDecomposition):
 
         self._codomain_decomposition = codomain_decomposition
         self._isomorphism = isomorphism
+
+    def __repr__(self):
+        return f"{self._codomain_decomposition} pulled back to {self.surface()}"
 
 
 # TODO: Move to surface objects.
