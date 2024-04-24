@@ -14,7 +14,7 @@
     "pip+flipper": [],
     "pyeantic": ["2.0.2"],
     "pyexactreal": ["4.0.0"],
-    "pyflatsurf": ["3.14.1"],
+    "pyflatsurf": ["3.13.2"],
     "python": [],
     "sagelib": ["10.2"],
     "scipy": [],
