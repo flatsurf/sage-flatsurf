@@ -391,6 +391,43 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(self)
 
+        def _describe_surface(self):
+            if not self.is_finite_type():
+                return "Surface built from infinitely many polygons"
+
+            if not self.is_connected():
+                # Many checks do not work yet if a surface is not connected, so we stop here.
+                return "Disconnected Surface"
+
+            if self.is_translation_surface(positive=True):
+                description = "Translation Surface"
+            elif self.is_translation_surface(positive=False):
+                description = "Half-Translation Surface"
+            elif self.is_dilation_surface(positive=True):
+                description = "Positive Dilation Surface"
+            elif self.is_dilation_surface(positive=False):
+                description = "Dilation Surface"
+            elif self.is_cone_surface():
+                description = "Cone Surface"
+                if self.is_rational_surface():
+                    description = f"Rational {description}"
+            else:
+                description = "Surface"
+
+            if hasattr(self, "stratum"):
+                try:
+                    description += f" in {self.stratum()}"
+                except NotImplementedError:
+                    # Computation of the stratum might fail due to #227.
+                    pass
+            elif self.genus is not NotImplemented:
+                description = f"Genus {self.genus()} {description}"
+
+            if self.is_with_boundary():
+                description += " with boundary"
+
+            return description
+
         def _mul_(self, matrix, switch_sides=True):
             r"""
             EXAMPLES::
@@ -498,63 +535,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 from sage.matrix.matrix_space import MatrixSpace
 
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
-
-            def _an_element_(self):
-                r"""
-                Return a point on this surface.
-
-                EXAMPLES::
-
-                    sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-                    sage: s = SimilaritySurfaceGenerators.example()
-                    sage: s.an_element()
-                    Point (4/3, -2/3) of polygon 0
-
-                ::
-
-                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
-
-                    sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
-                    0
-                    sage: S.glue((0, 0), (0, 2))
-                    sage: S.glue((0, 1), (0, 3))
-
-                    sage: S.an_element()
-                    Point (1/2, 1/2) of polygon 0
-
-                TESTS:
-
-                Verify that this method works over non-fields (if 2 is
-                invertible)::
-
-                  sage: from flatsurf import similarity_surfaces
-                  sage: from flatsurf import EuclideanPolygonsWithAngles
-                  sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-                  sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to pkg_resources deprecation warnings in some contexts
-                  sage: R = ExactReals(E.base_ring()) # optional: exactreal
-                  sage: angles = (3, 3, 5)
-                  sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
-                  sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
-                  sage: S = similarity_surfaces.billiard(P) # optional: exactreal
-                  sage: S.an_element()  # optional: exactreal
-                  Point ((1/2 ~ 0.50000000)*ℝ(0.303644…), 0) of polygon 0
-
-                """
-                label = next(iter(self.labels()))
-                polygon = self.polygon(label)
-
-                from sage.categories.all import Fields
-
-                # We use a point that can be constructed without problems on an
-                # infinite surface.
-                if polygon.is_convex() and self.base_ring() in Fields():
-                    coordinates = polygon.centroid()
-                else:
-                    # Sometimes, this is not implemented because it requires the edge
-                    # transformation to be known, so we prefer the centroid.
-                    coordinates = polygon.edge(0) / 2
-                return self(label, coordinates)  # pylint: disable=not-callable
 
             def underlying_surface(self):
                 r"""
@@ -1312,7 +1292,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     doctest:warning
                     ...
                     UserWarning: the ring parameter is deprecated and will be removed in a future version of sage-flatsurf; define the surface over a larger ring instead so that this points' coordinates live in the base ring
-                    sage: next(iter(z.coordinates(next(iter(z.labels()))))).parent()
+                    sage: z.representative(pc.root())[1].parent()
                     Vector space of dimension 2 over Algebraic Real Field
 
                 ::
@@ -1328,6 +1308,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     Vertex 0 of polygon 1
 
                 """
+                from sage.all import ZZ
+                if point not in ZZ:
+                    from sage.all import vector
+                    point = vector(ring or self.base_ring(), point, immutable=True)
+
                 # pylint: disable-next=not-callable
                 return self(label, point, limit=limit, ring=ring)
 
@@ -1528,7 +1513,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
                     sage: ss=s.triangulate()
                     sage: gs=ss.graphical_surface()
-                    sage: gs.make_all_visible()
+                    sage: gs.layout()
                     sage: gs
                     Graphical representation of Translation Surface in H_2(2) built from 6 isosceles triangles
 
@@ -2271,6 +2256,39 @@ class SimilaritySurfaces(SurfaceCategory):
                                 )
 
                 return surface
+
+            def graphical_surface(self, *args, **kwargs):
+                r"""
+                Return a graphical representation of this surface.
+
+                This method can be used to further configure or augment a plot
+                beyond the possibilities of :meth:`plot`.
+
+                The documentation of sage-flatsurf contains a section of example
+                plots. Consult the :mod:`flatsurf.graphical.surface` reference for all the
+                details.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S.graphical_surface()
+                    Graphical representation of Translation Surface in H_1(0) built from a square
+
+                """
+                if "cached" in kwargs:
+                    import warnings
+
+                    warnings.warn(
+                        "The cached keyword has been removed from graphical_surface(). The keyword is ignored in this version of sage-flatsurf and will be dropped completely in a future version of sage-flatsurf. "
+                        "The result of graphical_surface() is never cached anymore."
+                    )
+
+                    kwargs.pop("cached")
+
+                from flatsurf.graphical.surface import GraphicalSimilaritySurface
+
+                return GraphicalSimilaritySurface(self, *args, **kwargs)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""

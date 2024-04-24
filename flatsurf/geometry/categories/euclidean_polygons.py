@@ -491,6 +491,77 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return [vector((c, s)) for (c, s) in zip(cos, sin)]
 
+        def is_right_triangle(self):
+            r"""
+            Return whether this is a triangle with a π/2 angle.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                sage: P.is_right_triangle()
+                True
+
+            ::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (1, 0), (2, 1)])
+                sage: P.is_right_triangle()
+                False
+
+            ::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.is_right_triangle()
+                False
+
+            """
+            if len(self.vertices()) != 3:
+                return False
+
+            slopes = self.slopes(relative=True)
+            return any(slope[0] == 0 for slope in slopes)
+
+        def is_isosceles_triangle(self):
+            r"""
+            Return whether this is a triangle with two sides of equal length.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                sage: P.is_isosceles_triangle()
+                True
+
+            ::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (1, 0), (2, 1)])
+                sage: P.is_isosceles_triangle()
+                False
+
+            ::
+
+                sage: from flatsurf import polygons
+                sage: s = polygons.square()
+                sage: s.is_isosceles_triangle()
+                False
+
+            """
+            if len(self.vertices()) != 3:
+                return False
+
+            slopes = self.slopes(relative=True)
+
+            from flatsurf.geometry.euclidean import is_parallel
+
+            return (
+                is_parallel(slopes[0], slopes[1])
+                or is_parallel(slopes[0], slopes[2])
+                or is_parallel(slopes[1], slopes[2])
+            )
+
         def erase_marked_vertices(self):
             r"""
             Return a copy of this polygon without marked vertices.
@@ -745,7 +816,7 @@ class EuclideanPolygons(Category_over_base_ring):
                             for i in range(nvertices)
                         ]
                     ),
-                )
+                ), immutable=True
             )
 
         def get_point_position(self, point, translation=None):
@@ -2033,10 +2104,6 @@ class EuclideanPolygons(Category_over_base_ring):
                     matrix identifies this polygon with the other and the edges 0 in this polygon
                     is mapped to the edge ``index`` in the other.
 
-                    .. TODO::
-
-                        Implement ``is_linearly_equivalent`` and ``is_similar``.
-
                     EXAMPLES::
 
                         sage: from flatsurf import Polygon, polygons
@@ -2209,3 +2276,9 @@ class EuclideanPolygons(Category_over_base_ring):
                         oedges.append(oedges.pop(0))
 
                     return (False, None) if certificate else False
+
+                def is_similar(self, other, certificate=False):
+                    raise NotImplementedError
+
+                def is_linearly_equivalent(self, other, certificate=False):
+                    raise NotImplementedError

@@ -556,7 +556,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
 
             """
-            if all(a != 1 for a in self.angles()):
+            if all(v.angle() != 1 for v in self.vertices()):
                 # no 2π angle
                 return self
             from flatsurf.geometry.pyflatsurf_conversion import (
@@ -647,7 +647,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     from surface_dynamics import AbelianStratum
                     from sage.rings.integer_ring import ZZ
 
-                    return AbelianStratum([ZZ(a - 1) for a in self.angles()])
+                    return AbelianStratum([ZZ(a - 1) for a in [v.angle() for v in self.vertices()]])
 
                 def canonicalize(self, in_place=None):
                     r"""

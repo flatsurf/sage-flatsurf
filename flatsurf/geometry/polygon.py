@@ -239,13 +239,39 @@ class PolygonPosition:
         return self._position_type
 
     def get_edge(self):
-        if not self.is_in_edge_interior():
-            raise ValueError("Asked for edge when not in edge interior.")
-        return self._edge
+        r"""
+        If this point is on the interior of an edge, return that edge's index.
+
+        EXAMPLES::
+
+            sage: from flatsurf import polygons, Polygon
+            sage: S = polygons.square()
+
+            sage: pos = S.get_point_position((0, 0))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not in interior of any edge
+
+            sage: pos = S.get_point_position((0, 1/2))
+            sage: pos.get_edge()
+            3
+
+            sage: pos = S.get_point_position((1/2, 1/2))
+            sage: pos.get_edge()
+            Traceback (most recent call last):
+            ...
+            ValueError: not in interior of any edge
+
+        """
+        if self.is_in_edge_interior():
+            return self._edge
+
+        raise ValueError("not in interior of any edge")
 
     def get_vertex(self):
         if not self.is_vertex():
-            raise ValueError("Asked for vertex when not a vertex.")
+            raise ValueError("not at any vertex")
         return self._vertex
 
 
@@ -341,6 +367,9 @@ class EuclideanPolygon(Parent):
         )
 
         return self.category()
+
+    def adjacencies(self):
+        return tuple(((v - 1) % len(self.vertices()), v) for v in range(len(self.vertices())))
 
     @cached_method
     def __hash__(self):
@@ -563,6 +592,9 @@ class EuclideanPolygon(Parent):
             "iterating over the vertices of a polygon implicitly has been deprecated, this functionality will be removed in a future version of sage-flatsurf; iterate over vertices() instead"
         )
         return iter(self.vertices())
+
+    def apply_similarity(self, similarity):
+        return Polygon(vertices=[similarity(v) for v in self._v])
 
 
 class PolygonsConstructor:

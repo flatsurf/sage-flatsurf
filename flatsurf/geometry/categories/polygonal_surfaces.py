@@ -155,6 +155,50 @@ class PolygonalSurfaces(SurfaceCategory):
                 "cannot decide whether this (potentially infinite type) surface is triangulated"
             )
 
+        def _describe_polygons(self):
+            r"""
+            Return a string describing the nature of the polygons that make up this surface.
+
+            This is a helper method for :meth:`_repr_`.
+
+            EXAMPLES::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S._describe_polygons()
+                ''
+
+            """
+            polygons = [
+                (-len(p.erase_marked_vertices().vertices()), p.describe_polygon())
+                for p in self.polygons()
+            ]
+            polygons.sort()
+            polygons = [description for (edges, description) in polygons]
+
+            if not polygons:
+                return ""
+
+            collated = []
+            while polygons:
+                count = 1
+                polygon = polygons.pop()
+                while polygons and polygons[-1] == polygon:
+                    count += 1
+                    polygons.pop()
+
+                if count == 1:
+                    collated.append(f"{polygon[0]} {polygon[1]}")
+                else:
+                    collated.append(f"{count} {polygon[2]}")
+
+            description = collated.pop()
+
+            if collated:
+                description = ", ".join(collated) + " and " + description
+
+            return description
+
         def walker(self):
             r"""
             Return an iterable that walks the labels of the surface.

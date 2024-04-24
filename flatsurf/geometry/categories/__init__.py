@@ -137,7 +137,7 @@ available::
     sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
     Traceback (most recent call last):
     ...
-    AttributeError: ... no attribute 'angles'
+    AttributeError: ... no attribute 'angle'
 
 So this approach is quite brittle and might need a mix with the above to work::
 
@@ -171,7 +171,11 @@ from flatsurf.geometry.categories.polygonal_surfaces import PolygonalSurfaces
 from flatsurf.geometry.categories.euclidean_polygonal_surfaces import (
     EuclideanPolygonalSurfaces,
 )
+from flatsurf.geometry.categories.hyperbolic_polygonal_surfaces import (
+    HyperbolicPolygonalSurfaces,
+)
 from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
+from flatsurf.geometry.categories.hyperbolic_isometry_surfaces import HyperbolicIsometrySurfaces
 from flatsurf.geometry.categories.cone_surfaces import ConeSurfaces
 from flatsurf.geometry.categories.dilation_surfaces import DilationSurfaces
 from flatsurf.geometry.categories.half_translation_surfaces import (

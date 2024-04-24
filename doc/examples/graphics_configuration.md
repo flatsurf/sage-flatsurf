@@ -12,6 +12,8 @@ kernelspec:
   name: sagemath
 ---
 
+# TODO: Update these examples and make sure that all parameters understood by graphical surfaces are documented here.
+
 # Graphics Configuration
 
 ## Rearranging Polygons
