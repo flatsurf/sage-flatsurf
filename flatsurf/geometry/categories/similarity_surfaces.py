@@ -2155,7 +2155,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         "triangulate(label=) not implemented for infinite type surfaces"
                     )
 
-                from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+                from flatsurf.geometry.lazy import LazyTriangulatedSurface
 
                 return LazyTriangulatedSurface(self)
 
@@ -2341,7 +2341,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     s.set_immutable()
                     return s
 
-                from flatsurf.geometry.delaunay import (
+                from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
@@ -2427,7 +2427,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         )
 
                 if not self.is_finite_type():
-                    from flatsurf.geometry.delaunay import LazyDelaunaySurface
+                    from flatsurf.geometry.lazy import LazyDelaunaySurface
 
                     return LazyDelaunaySurface(
                         self, direction=direction, category=self.category()

@@ -9,14 +9,16 @@ by invoking methods on the underlying surfaces::
 
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.infinite_staircase()
-    sage: S.triangulate()
+    sage: S.triangulate().codomain()
     Triangulation of The infinite staircase
 
     sage: S.delaunay_triangulation()
     Delaunay triangulation of The infinite staircase
 
     sage: S.delaunay_decomposition()
-    Delaunay cell decomposition of The infinite staircase
+    Delaunay Decomposition morphism:
+      From: The infinite staircase
+      To:   Delaunay cell decomposition of The infinite staircase
 
 """
 # ********************************************************************
@@ -51,24 +53,27 @@ from flatsurf.geometry.surface import (
 
 class LazyTriangulatedSurface(OrientedSimilaritySurface):
     r"""
-    Surface class used to triangulate an infinite surface.
+    A triangulated surface whose structure is computed on demand.
+
+    Used to triangulate surfaces when in-place-triangulation is not requested.
+    In particular, this is used to triangulate infinite type surface.
 
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
-        sage: S = S.triangulate()
+        sage: S = S.triangulate().codomain()
 
     TESTS::
 
-        sage: from flatsurf.geometry.delaunay import LazyTriangulatedSurface
+        sage: from flatsurf.geometry.lazy import LazyTriangulatedSurface
         sage: isinstance(S, LazyTriangulatedSurface)
         True
         sage: TestSuite(S).run()  # long time (1s)
 
     """
 
-    def __init__(self, similarity_surface, relabel=None, category=None):
+    def __init__(self, surface, labels=None, relabel=None, category=None):
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
@@ -81,16 +86,35 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
                     "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyTriangulatedSurface()"
                 )
 
-        if similarity_surface.is_mutable():
+        if surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
-        self._reference = similarity_surface
+        self._reference = surface
+        self._labels = labels
 
         OrientedSimilaritySurface.__init__(
             self,
-            similarity_surface.base_ring(),
+            surface.base_ring(),
             category=category or self._reference.category(),
         )
+
+    def _reference_labels(self):
+        r"""
+        Return the labels of the polygons of the reference surface that are
+        triangulated by this triangulation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S = S.triangulate().codomain()
+            sage: S._reference_labels()
+
+        """
+        if self._labels is not None:
+            return self._labels
+
+        return self._reference.labels()
 
     def is_mutable(self):
         r"""
@@ -102,7 +126,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.is_mutable()
             False
 
@@ -119,7 +143,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.is_compact()
             False
 
@@ -137,19 +161,17 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.roots()
-            ((0, (0, 1, 2)),)
+            ((0, 0),)
 
         """
-        return tuple(
-            (reference_label, self._triangulation(reference_label)[(0, 1)])
-            for reference_label in self._reference.roots()
-        )
+        return tuple(self._triangulation(root)[0].root() for root in self._reference.roots())
 
+    @cached_method
     def _triangulation(self, reference_label):
         r"""
-        Return a triangulated of the ``reference_label`` in the underlying
+        Return a triangulation of the ``reference_label`` in the underlying
         (typically non-triangulated) reference surface.
 
         INPUT:
@@ -160,48 +182,42 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S._triangulation(0)
-            {(0, 1): (0, 1, 2),
-             (0, 2): (0, 2, 3),
-             (1, 2): (0, 1, 2),
-             (2, 0): (0, 1, 2),
-             (2, 3): (0, 2, 3),
-             (3, 0): (0, 2, 3)}
+            (Translation Surface with boundary built from 2 isosceles triangles,
+             bidict({0: ((0, 0), 0), 1: ((0, 0), 1), 2: ((0, 1), 1), 3: ((0, 1), 2)}))
 
         """
         reference_polygon = self._reference.polygon(reference_label)
 
-        outer_edges = [
-            (vertex, (vertex + 1) % len(reference_polygon.vertices()))
-            for vertex in range(len(reference_polygon.vertices()))
-        ]
-        inner_edges = reference_polygon.triangulation()
-        inner_edges.extend([(w, v) for (v, w) in inner_edges])
+        if reference_label not in self._reference_labels():
+            from flatsurf import MutableOrientedSimilaritySurface
+            triangulation = MutableOrientedSimilaritySurface(self._reference.base_ring())
+            triangulation.add_polygon(reference_polygon)
 
-        edges = outer_edges + inner_edges
+            from bidict import bidict
+            return triangulation, bidict({e: (reference_label, e) for e in range(len(reference_polygon.edges()))})
 
-        def triangle(edge):
-            v, w = edge
-            next_edges = [edge for edge in edges if edge[0] == w]
-            previous_edges = [edge for edge in edges if edge[1] == v]
+        from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+        return MutableOrientedSimilaritySurface._triangulate(self._reference, reference_label)
 
-            next_vertices = [edge[1] for edge in next_edges]
-            previous_vertices = [edge[0] for edge in previous_edges]
+    def _reference_label(self, label):
+        if label in self._reference.labels():
+            if label not in self._reference_labels():
+                return label
+            if len(self._reference.polygon(label).vertices()) == 3:
+                return label
 
-            other_vertex = set(next_vertices).intersection(set(previous_vertices))
+        if not isinstance(label, tuple):
+            raise KeyError
 
-            assert len(other_vertex) == 1
+        if len(label) != 2:
+            raise KeyError
 
-            other_vertex = next(iter(other_vertex))
+        if label[0] not in self._reference.labels():
+            raise KeyError
 
-            vertices = v, w, other_vertex
-            while vertices[0] != min(vertices):
-                vertices = vertices[1:] + vertices[:1]
-
-            return vertices
-
-        return {edge: triangle(edge) for edge in edges}
+        return label[0]
 
     def polygon(self, label):
         r"""
@@ -213,20 +229,16 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
-            sage: S.polygon((0, (0, 1, 2)))
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
+            sage: S.polygon((0, 0))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
         """
-        reference_label, vertices = label
-        reference_polygon = self._reference.polygon(reference_label)
+        reference_label = self._reference_label(label)
 
-        from flatsurf import Polygon
+        triangulation, _ = self._triangulation(reference_label)
 
-        return Polygon(
-            vertices=[reference_polygon.vertex(v) for v in vertices],
-            category=reference_polygon.category(),
-        )
+        return triangulation.polygon(label)
 
     def opposite_edge(self, label, edge):
         r"""
@@ -239,39 +251,25 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
-            sage: S.opposite_edge((0, (0, 1, 2)), 0)
-            ((1, (0, 2, 3)), 1)
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
+            sage: S.opposite_edge((0, 0), 0)
+            ((1, 1), 1)
 
         """
-        reference_label, vertices = label
-        reference_polygon = self._reference.polygon(reference_label)
+        reference_label = self._reference_label(label)
 
-        if vertices[(edge + 1) % 3] == (vertices[edge] + 1) % len(
-            reference_polygon.vertices()
-        ):
-            # This is an edge of the reference surface
-            cross_reference_label, cross_reference_edge = self._reference.opposite_edge(
-                reference_label, vertices[edge]
-            )
-            cross_reference_polygon = self._reference.polygon(cross_reference_label)
-            cross_vertices = self._triangulation(cross_reference_label)[
-                (
-                    cross_reference_edge,
-                    (cross_reference_edge + 1)
-                    % len(cross_reference_polygon.vertices()),
-                )
-            ]
+        triangulation, outer_edges = self._triangulation(reference_label)
 
-            cross_edge = cross_vertices.index(cross_reference_edge)
+        if (label, edge) in outer_edges.values():
+            reference_edge = outer_edges.inverse[(label, edge)]
+            opposite_reference_label, opposite_reference_edge = self._reference.opposite_edge(reference_label, reference_edge)
+            opposite_triangulation, opposite_outer_edges = self._triangulation(opposite_reference_label)
+            return opposite_outer_edges[opposite_reference_edge]
 
-            return (cross_reference_label, cross_vertices), cross_edge
+        return triangulation.opposite_edge(label, edge)
 
-        # This is an edge that was added by the triangulation
-        edge = (vertices[edge], vertices[(edge + 1) % 3])
-        cross_edge = (edge[1], edge[0])
-        cross_vertices = self._triangulation(reference_label)[cross_edge]
-        return (reference_label, cross_vertices), cross_vertices.index(cross_edge[0])
+    def is_triangulated(self):
+        return True
 
     def __hash__(self):
         r"""
@@ -282,7 +280,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: hash(S.triangulate()) == hash(S.triangulate())
+            sage: hash(S.triangulate().codomain()) == hash(S.triangulate().codomain())
             True
 
         """
@@ -299,14 +297,14 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S.triangulate() == S.triangulate()
+            sage: S.triangulate().codomain() == S.triangulate().codomain()
             True
 
         """
         if not isinstance(other, LazyTriangulatedSurface):
             return False
 
-        return self._reference == other._reference
+        return self._reference == other._reference and self._reference_labels() == other._reference_labels()
 
     def labels(self):
         r"""
@@ -318,41 +316,388 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.labels()
-            ((0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3)), (0, (0, 2, 3)), (1, (0, 1, 2)), (2, (0, 1, 2)), (-1, (0, 1, 2)), (-2, (0, 1, 2)), (2, (0, 2, 3)), (3, (0, 2, 3)),
-             (-2, (0, 2, 3)), (-3, (0, 2, 3)), (3, (0, 1, 2)), (4, (0, 1, 2)), (-3, (0, 1, 2)), (-4, (0, 1, 2)), …)
+            ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 
         """
-
-        class LazyLabels(Labels):
-            def __contains__(self, label):
-                reference_label, vertices = label
-                if reference_label not in self._surface._reference.labels():
-                    return False
-
-                return (
-                    vertices in self._surface._triangulation(reference_label).values()
-                )
-
         return LazyLabels(self, finite=self._reference.is_finite_type())
 
-    def __repr__(self):
+    def _repr_(self):
         r"""
         Return a printable representation of this surface.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S
             Triangulation of The infinite staircase
 
         """
+        if self._reference_labels() != self._reference.labels():
+            return f"Partial Triangulation of {self._reference!r}"
+
         return f"Triangulation of {self._reference!r}"
 
 
-class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base):
+class LazyLabels(Labels):
+    def __contains__(self, label):
+        try:
+            self._surface._reference_label(label)
+        except KeyError:
+            return False
+
+        return True
+
+
+class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
+    r"""
+    A surface that forwards all queries to an underlying reference surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.infinite_staircase()
+        sage: T = matrix([[2, 0], [0, 1]]) * S
+
+        sage: from flatsurf.geometry.lazy import LazyOrientedSimilaritySurface
+        sage: isinstance(T, LazyOrientedSimilaritySurface)
+        True
+
+    """
+
+    def __init__(self, base_ring, reference, category=None):
+        super().__init__(base_ring, category=category or reference.category())
+        self._reference = reference
+
+    def is_compact(self):
+        r"""
+        Return whether this surface is compact as a topological space.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.is_compact()
+            True
+
+        """
+        return self._reference.is_compact()
+
+    def is_translation_surface(self, positive=True):
+        r"""
+        Return whether this surface is a translation surface, i.e., glued
+        edges can be transformed into each other by translations.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.is_translation_surface()
+            True
+
+        """
+        return self._reference.is_translation_surface(positive=positive)
+
+    def roots(self):
+        r"""
+        Return root labels for the polygons forming the connected
+        components of this surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
+            sage: T = LazyMutableOrientedSimilaritySurface(S)
+            sage: T.roots()
+            (0,)
+
+        """
+        return self._reference.roots()
+
+    def labels(self):
+        r"""
+        Return the labels of this surface which are just the labels of the
+        underlying reference surface.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
+            sage: T = LazyMutableOrientedSimilaritySurface(S)
+            sage: T.labels()
+            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+        """
+        return self._reference.labels()
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = matrix([[2, 0], [0, 1]]) * S
+            sage: T.polygon(0)
+            Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+        """
+        return self._reference.polygon(label)
+
+    def opposite_edge(self, label, edge):
+        r"""
+        Return the polygon label and edge index when crossing over the ``edge``
+        of the polygon ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = matrix([[2, 0], [0, 1]]) * S
+            sage: T.opposite_edge(0, 0)
+            (1, 2)
+
+        """
+        return self._reference.opposite_edge(label, edge)
+
+
+class GL2RImageSurface(LazyOrientedSimilaritySurface):
+    r"""
+    The GL(2,R) image of an oriented similarity surface obtained by applying a
+    matrix to each polygon while keeping the gluings intact.
+
+    EXAMPLE::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.octagon_and_squares()
+        sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+        sage: SS = r * S
+
+        sage: S.canonicalize().codomain() == SS.canonicalize().codomain()
+        True
+
+    TESTS::
+
+        sage: TestSuite(SS).run()
+
+        sage: from flatsurf.geometry.lazy import GL2RImageSurface
+        sage: isinstance(SS, GL2RImageSurface)
+        True
+
+    """
+
+    def __init__(self, reference, m, category=None):
+        if reference.is_mutable():
+            if not reference.is_finite_type():
+                raise NotImplementedError("cannot apply matrix to mutable surface of infinite type")
+
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+            reference = MutableOrientedSimilaritySurface.from_surface(reference)
+
+        self._reference = reference
+
+        from sage.structure.element import get_coercion_model
+        cm = get_coercion_model()
+        base_ring = cm.common_parent(m.base_ring(), self._reference.base_ring())
+
+        from sage.all import matrix
+        self._matrix = matrix(base_ring, m, immutable=True)
+
+        super().__init__(base_ring, reference, category=category or self._reference.category())
+
+    @cached_method
+    def _sgn(self):
+        r"""
+        Return the sign of the determinant of the matrix underlying this
+        surface, i.e., whether the matrix reversed orientation or not.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+            sage: S._sgn()
+            -1
+
+        """
+        return self._matrix.det().sign()
+
+    def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (a, -a), (a + 2, -a), (2*a + 2, 0), (2*a + 2, 2), (a + 2, a + 2), (a, a + 2), (0, 2)])
+
+        """
+        return self._matrix * self._reference.polygon(label)
+
+    def opposite_edge(self, label, edge):
+        r"""
+        Return the polygon label and edge index when crossing over the ``edge``
+        of the polygon ``label``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.opposite_edge(0, 0)
+            (2, 0)
+
+        """
+        reference_edge = edge
+        if self._sgn() == -1:
+            reference_edge = len(self.polygon(label).edges()) - 1 - edge
+
+        opposite_label, opposite_edge = self._reference.opposite_edge(label, reference_edge)
+
+        if self._sgn() == -1:
+            opposite_edge = len(self._reference.polygon(opposite_label).edges()) - 1 - opposite_edge
+
+        return opposite_label, opposite_edge
+
+    def is_mutable(self):
+        r"""
+        Return whether this surface is mutable, i.e., return ``False``.
+
+        This implements
+        :meth:`flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: S = r * S
+
+            sage: S.is_mutable()
+            False
+
+        """
+        return False
+
+    def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: matrix([[0, 1], [1, 0]]) * S
+            Translation Surface in H_3(4) built from 2 squares and a regular octagon
+            sage: matrix([[0, 2], [1, 0]]) * S
+            Translation Surface in H_3(4) built from a rhombus, a rectangle and an octagon
+
+        ::
+
+            sage: m = matrix([[2, 1], [1, 1]])
+            sage: m * translation_surfaces.infinite_staircase()
+            GL2R image of The infinite staircase
+
+        """
+        if self.is_finite_type():
+            from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
+
+            S = MutableOrientedSimilaritySurface.from_surface(self)
+            S.set_immutable()
+            return repr(S)
+
+        return f"GL2R image of {self._reference!r}"
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: r = matrix(ZZ,[[0, 1], [1, 0]])
+
+            sage: hash(r * S) == hash(r * S)
+            True
+
+        """
+        return hash((self._reference, self._matrix))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this image is indistinguishable from ``other``.
+
+        See :meth:`SimilaritySurfaces.FiniteType._test_eq_surface` for details
+        on this notion of equality.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: m = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: m * S == m * S
+            True
+
+        """
+        if not isinstance(other, GL2RImageSurface):
+            return False
+
+        return (
+            self._reference == other._reference
+            and self._matrix == other._matrix
+            and self.base_ring() == other.base_ring()
+        )
+
+
+class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base):
     r"""
     A helper surface for :class:`LazyDelaunayTriangulatedSurface`.
 
@@ -371,7 +716,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
 
-        sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+        sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
         sage: T = LazyMutableOrientedSimilaritySurface(S)
         sage: p = T.polygon(0)
         sage: p
@@ -395,59 +740,11 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
         if surface not in SimilaritySurfaces().Oriented().WithoutBoundary():
             raise NotImplementedError("cannot handle surfaces with boundary yet")
 
-        self._reference = surface
-
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
         self._surface = MutableOrientedSimilaritySurface(surface.base_ring())
 
-        super().__init__(surface.base_ring(), category=category or surface.category())
-
-    def roots(self):
-        r"""
-        Return root labels for the polygons forming the connected
-        components of this surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots`.
-
-        .. NOTE::
-
-            This assumes that :meth:`glue` is never called to glue components.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase()
-
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
-            sage: T = LazyMutableOrientedSimilaritySurface(S)
-            sage: T.roots()
-            (0,)
-
-        """
-        return self._reference.roots()
-
-    def labels(self):
-        r"""
-        Return the labels of this surface which are just the labels of the
-        underlying reference surface.
-
-        This implements
-        :meth:`flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase()
-
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
-            sage: T = LazyMutableOrientedSimilaritySurface(S)
-            sage: T.labels()
-            (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
-
-        """
-        return self._reference.labels()
+        super().__init__(surface.base_ring(), surface, category=category or surface.category())
 
     def is_mutable(self):
         r"""
@@ -461,7 +758,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.is_mutable()
             True
@@ -480,7 +777,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.replace_polygon(0, T.polygon(0))
 
@@ -505,7 +802,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.gluings()
             (((0, 0), (1, 2)), ((0, 1), (-1, 3)), ((0, 2), (1, 0)), ((0, 3), (-1, 1)), ((1, 0), (0, 2)), ((1, 1), (2, 3)), ((1, 2), (0, 0)), ((1, 3), (2, 1)), ((-1, 0), (-2, 2)),
@@ -530,7 +827,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T._ensure_polygon(0)
             sage: T._ensure_gluings(0)
@@ -562,7 +859,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T._ensure_polygon(0)
 
@@ -582,7 +879,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.polygon(0)
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -604,7 +901,7 @@ class LazyMutableOrientedSimilaritySurface(MutableOrientedSimilaritySurface_base
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
 
-            sage: from flatsurf.geometry.delaunay import LazyMutableOrientedSimilaritySurface
+            sage: from flatsurf.geometry.lazy import LazyMutableOrientedSimilaritySurface
             sage: T = LazyMutableOrientedSimilaritySurface(S)
             sage: T.opposite_edge(0, 0)
             (1, 2)
@@ -632,7 +929,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: S.is_delaunay_triangulated(limit=10)
         True
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunayTriangulatedSurface
         sage: isinstance(S, LazyDelaunayTriangulatedSurface)
         True
 
@@ -647,7 +944,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         True
         sage: TestSuite(S).run()  # long time (.5s)
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunayTriangulatedSurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunayTriangulatedSurface
         sage: isinstance(S, LazyDelaunayTriangulatedSurface)
         True
 
@@ -666,24 +963,30 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                     "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunayTriangulatedSurface()"
                 )
 
+        if direction is not None:
+            direction = None
+            import warnings
+            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
 
         if not similarity_surface.is_connected():
             raise NotImplementedError("surface must be connected")
 
+        if not similarity_surface.is_triangulated():
+            raise ValueError("surface must be triangulated")
+
         self._reference = similarity_surface
 
         # This surface will converge to the Delaunay Triangulation
-        self._surface = LazyMutableOrientedSimilaritySurface(
-            LazyTriangulatedSurface(similarity_surface)
-        )
-
-        self._direction = (self._surface.base_ring() ** 2)(direction or (0, 1))
-        self._direction.set_immutable()
+        self._surface = LazyMutableOrientedSimilaritySurface(similarity_surface)
 
         # Set of labels corresponding to known delaunay polygons
         self._certified_labels = set()
+
+        # Triangle flips (as morphisms) that have been performed so far.
+        self._flips = []
 
         # Triangulate the base polygon
         root = self._surface.root()
@@ -697,6 +1000,35 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             self._surface.base_ring(),
             category=category or self._surface.category(),
         )
+
+    def _image_edge(self, label, edge):
+        r"""
+        Return the saddle connection in this surface that is identical to the
+        one given by the oriented ``edge`` in the polygon with ``label`` in the
+        original reference surface.
+        """
+        # Ensure that polygon with label is final in self._surface.
+        self.polygon(label)
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        saddle_connection = SaddleConnection.from_half_edge(self._reference, label, edge)
+
+        for flip in self._flips:
+            saddle_connection = flip(saddle_connection)
+
+        return SaddleConnection(self, start=saddle_connection.start(), end=saddle_connection.end(), holonomy=saddle_connection.holonomy(), end_holonomy=saddle_connection.end_holonomy(), check=False) 
+
+    def _preimage_edge(self, label, edge):
+        # Ensure that polygon with label is final in self._surface.
+        self.polygon(label)
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+        saddle_connection = SaddleConnection.from_half_edge(self._surface, label, edge)
+
+        for flip in self._flips[::-1]:
+            saddle_connection = flip.section()(saddle_connection)
+
+        return SaddleConnection(self._reference, start=saddle_connection.start(), end=saddle_connection.end(), holonomy=saddle_connection.holonomy(), end_holonomy=saddle_connection.end_holonomy(), check=False) 
 
     def is_mutable(self):
         r"""
@@ -745,7 +1077,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
             sage: S.roots()
-            ((0, (0, 1, 2)),)
+            ((0, 0),)
 
         """
         return self._surface.roots()
@@ -762,7 +1094,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
-            sage: S.polygon((0, (0, 1, 2)))
+            sage: S.polygon((0, 0))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
         """
@@ -809,8 +1141,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
-            sage: S.opposite_edge((0, (0, 1, 2)), 0)
-            ((1, (0, 2, 3)), 1)
+            sage: S.opposite_edge((0, 0), 0)
+            ((1, 1), 1)
 
         """
         self.polygon(label)
@@ -868,7 +1200,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                     if self._surface._delaunay_edge_needs_flip(ll, ee):
                         # Perform the flip
                         self._surface.triangle_flip(
-                            ll, ee, in_place=True, direction=self._direction
+                            ll, ee, in_place=True
                         )
 
                         # If we touch the original polygon, then we return False.
@@ -924,6 +1256,9 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._certified_labels.add(label)
         return True
 
+    def is_delaunay_triangulated(self, limit=None):
+        return True
+
     def labels(self):
         r"""
         Return the labels of this surface.
@@ -936,8 +1271,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
             sage: S.labels()
-            ((0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3)), (0, (0, 2, 3)), (1, (0, 1, 2)), (2, (0, 1, 2)), (-1, (0, 1, 2)), (-2, (0, 1, 2)), (2, (0, 2, 3)), (3, (0, 2, 3)),
-             (-2, (0, 2, 3)), (-3, (0, 2, 3)), (3, (0, 1, 2)), (4, (0, 1, 2)), (-3, (0, 1, 2)), (-4, (0, 1, 2)), …)
+            ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 
         """
         return self._surface.labels()
@@ -955,7 +1289,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             True
 
         """
-        return hash((self._reference, self._direction))
+        return hash((self._reference))
 
     def __eq__(self, other):
         r"""
@@ -976,7 +1310,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             return False
 
         return (
-            self._reference == other._reference and self._direction == other._direction
+            self._reference == other._reference
         )
 
     def __repr__(self):
@@ -1001,7 +1335,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
         sage: m = matrix([[2, 1], [1, 1]])
-        sage: S = (m * S).delaunay_decomposition()
+        sage: S = (m * S).delaunay_decomposition().codomain()
 
         sage: S.polygon(S.root())
         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -1011,7 +1345,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
         sage: TestSuite(S).run()  # long time (2s)
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
         sage: isinstance(S, LazyDelaunaySurface)
         True
 
@@ -1020,13 +1354,13 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: from flatsurf.geometry.chamanara import chamanara_surface
         sage: S = chamanara_surface(QQ(1/2))
         sage: m = matrix([[3, 4], [-4, 3]]) * matrix([[4, 0],[0, 1/4]])
-        sage: S = (m * S).delaunay_decomposition()
+        sage: S = (m * S).delaunay_decomposition().codomain()
         sage: S.is_delaunay_decomposed(limit=10)  # long time (.5s)
         True
 
         sage: TestSuite(S).run()  # long time (1.5s)
 
-        sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+        sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
         sage: isinstance(S, LazyDelaunaySurface)
         True
 
@@ -1045,14 +1379,18 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
                     "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to LazyDelaunaySurface()"
                 )
 
+        if direction is not None:
+            direction = None
+            import warnings
+            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+
         if similarity_surface.is_mutable():
-            raise ValueError("surface must be immutable.")
+            raise ValueError("surface must be immutable")
+
+        if not similarity_surface.is_delaunay_triangulated():
+            raise ValueError("surface must be triangulated")
 
         self._reference = similarity_surface
-
-        self._delaunay_triangulation = LazyDelaunayTriangulatedSurface(
-            self._reference, direction=direction, relabel=relabel
-        )
 
         super().__init__(
             similarity_surface.base_ring(),
@@ -1070,12 +1408,12 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
-            sage: S.polygon((0, (0, 1, 2)))
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
+            sage: S.polygon((0, 0))
             Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
         """
-        if label not in self._delaunay_triangulation.labels():
+        if label not in self._reference.labels():
             raise ValueError("no polygon with this label")
 
         cell, edges = self._cell(label)
@@ -1084,7 +1422,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             raise ValueError("no polygon with this label")
 
         edges = [
-            self._delaunay_triangulation.polygon(edge[0]).edge(edge[1])
+            self._reference.polygon(edge[0]).edge(edge[1])
             for edge in edges
         ]
 
@@ -1101,14 +1439,14 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S._label(frozenset({
-            ....:     ((0, (0, 1, 2))),
-            ....:     ((0, (0, 2, 3)))}))
-            (0, (0, 1, 2))
+            ....:     (0, 0),
+            ....:     (0, 1)}))
+            (0, 0)
 
         """
-        for label in self._delaunay_triangulation.labels():
+        for label in self._reference.labels():
             if label in cell:
                 return label
 
@@ -1121,11 +1459,11 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
-            sage: S._normalize_label((0, (0, 1, 2)))
-            (0, (0, 1, 2))
-            sage: S._normalize_label((0, (0, 2, 3)))
-            (0, (0, 1, 2))
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
+            sage: S._normalize_label((0, 0))
+            (0, 0)
+            sage: S._normalize_label((0, 1))
+            (0, 0)
 
         """
         cell, _ = self._cell(label)
@@ -1140,17 +1478,14 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
 
         This cell (a square) is formed by two triangles that form a cylinder,
         i.e., the two triangles are glued at two of their edges::
 
-            sage: S._cell((0, (0, 1, 2)))
-            (frozenset({(0, (0, 1, 2)), (0, (0, 2, 3))}),
-             [((0, (0, 1, 2)), 0),
-              ((0, (0, 1, 2)), 1),
-              ((0, (0, 2, 3)), 1),
-              ((0, (0, 2, 3)), 2)])
+            sage: S._cell((0, 0))
+            (frozenset({(0, 0), (0, 1)}),
+             [((0, 0), 0), ((0, 0), 1), ((0, 1), 1), ((0, 1), 2)])
 
         """
         edges = []
@@ -1162,7 +1497,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             cell.add(triangle)
 
-            delaunay = self._delaunay_triangulation._delaunay_edge_needs_join(
+            delaunay = self._reference._delaunay_edge_needs_join(
                 triangle, edge
             )
 
@@ -1170,7 +1505,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
                 edges.append((triangle, edge))
                 continue
 
-            cross_triangle, cross_edge = self._delaunay_triangulation.opposite_edge(
+            cross_triangle, cross_edge = self._reference.opposite_edge(
                 triangle, edge
             )
 
@@ -1203,12 +1538,12 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
-            sage: S.opposite_edge((0, (0, 1, 2)), 0)
-            ((1, (0, 2, 3)), 2)
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
+            sage: S.opposite_edge((0, 0), 0)
+            ((1, 1), 2)
 
         """
-        if label not in self._delaunay_triangulation.labels():
+        if label not in self._reference.labels():
             raise ValueError
 
         cell, edges = self._cell(label)
@@ -1218,7 +1553,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
         edge = edges[edge]
 
-        cross_triangle, cross_edge = self._delaunay_triangulation.opposite_edge(*edge)
+        cross_triangle, cross_edge = self._reference.opposite_edge(*edge)
 
         cross_cell, cross_edges = self._cell(cross_triangle)
         cross_label = self._label(cross_cell)
@@ -1235,12 +1570,12 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.roots()
-            ((0, (0, 1, 2)),)
+            ((0, 0),)
 
         """
-        return self._delaunay_triangulation.roots()
+        return self._reference.roots()
 
     def is_compact(self):
         r"""
@@ -1252,7 +1587,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.is_compact()
             False
 
@@ -1269,7 +1604,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.is_mutable()
             False
 
@@ -1285,11 +1620,11 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: hash(S.delaunay_decomposition()) == hash(S.delaunay_decomposition())
+            sage: hash(S.delaunay_decomposition().codomain()) == hash(S.delaunay_decomposition().codomain())
             True
 
         """
-        return hash(self._delaunay_triangulation)
+        return hash(self._reference)
 
     def __eq__(self, other):
         r"""
@@ -1301,7 +1636,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: from flatsurf.geometry.delaunay import LazyDelaunaySurface
+            sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
             sage: S = translation_surfaces.infinite_staircase()
             sage: m = matrix([[2, 1], [1, 1]])
             sage: S = LazyDelaunaySurface(m*S)
@@ -1312,7 +1647,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if not isinstance(other, LazyDelaunaySurface):
             return False
 
-        return self._delaunay_triangulation == other._delaunay_triangulation
+        return self._reference == other._reference
 
     def __repr__(self):
         r"""
@@ -1322,7 +1657,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S.delaunay_decomposition()
+            sage: S.delaunay_decomposition().codomain()
             Delaunay cell decomposition of The infinite staircase
 
         """
