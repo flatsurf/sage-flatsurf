@@ -2269,14 +2269,16 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def delaunay_triangulation(
                 self,
+                # SEE NEWS
                 triangulated=False,
+                # SEE NEWS
                 in_place=False,
+                # SEE NEWS
                 direction=None,
                 relabel=None,
             ):
                 r"""
-                Returns a Delaunay triangulation of a surface, or make some
-                triangle flips to get closer to the Delaunay decomposition.
+                Return a Delaunay triangulation of this surface.
 
                 INPUT:
 
@@ -2351,9 +2353,13 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def delaunay_decomposition(
                 self,
+                # SEE NEWS
                 triangulated=False,
+                # SEE NEWS
                 delaunay_triangulated=False,
+                # SEE NEWS
                 in_place=False,
+                # SEE NEWS
                 direction=None,
                 relabel=None,
             ):
