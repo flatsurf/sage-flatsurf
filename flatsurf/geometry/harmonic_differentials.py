@@ -157,7 +157,9 @@ Given a vector from the tangent space, we can determine the corresponding differ
     ....:     O.update_tangent_space_from_flow_decomposition(d)
     ....:     if O.dimension() == 7: break
 
-    sage: f = Omega(O._lift_to_simplicial_cohomology(O.lift(O.tangent_space_basis()[-1])))  # long time
+    sage: f = O._lift_to_simplicial_cohomology(O.lift(O.tangent_space_basis()[-1]))
+    sage: f = f.parent()({k: v / max(f._values.values()) for (k, v) in f._values.items()})
+    sage: f = Omega(f, check=False)  # long time
 
 We can determine the roots of this differential::
 
