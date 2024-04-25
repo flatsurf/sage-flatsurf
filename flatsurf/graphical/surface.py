@@ -162,6 +162,7 @@ class GraphicalSurface:
         Translation Surface with boundary built from 2 triangles
 
         sage: S.plot()
+        Graphics object consisting of 9 graphics primitives
 
     """
 
