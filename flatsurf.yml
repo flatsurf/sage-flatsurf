@@ -6,7 +6,6 @@
 name: flatsurf
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - gap-defaults
   - ipywidgets
