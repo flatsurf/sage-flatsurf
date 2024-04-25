@@ -43,6 +43,8 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from sage.misc.cachefunc import cached_method
+
 from flatsurf.geometry.categories.surface_category import SurfaceCategoryWithAxiom
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,
@@ -648,6 +650,15 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     from sage.rings.integer_ring import ZZ
 
                     return AbelianStratum([ZZ(a - 1) for a in self.angles()])
+
+                @cached_method
+                def veech_group(self):
+                    from flatsurf.geometry.iso_delaunay_tessellation import IsoDelaunayTessellation
+                    from flatsurf.geometry.veech_group import VeechGroup
+
+                    idt = IsoDelaunayTessellation(self)
+                    idt.explore()
+                    return VeechGroup(idt)
 
                 def canonicalize(self, in_place=None):
                     r"""

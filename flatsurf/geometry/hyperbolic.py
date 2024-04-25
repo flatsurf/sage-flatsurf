@@ -211,6 +211,8 @@ We can also intersect objects that are not half spaces::
 
 import collections.abc
 
+from flatsurf.geometry.surface import Surface_base
+
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 from sage.structure.element import Element
