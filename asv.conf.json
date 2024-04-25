@@ -6,6 +6,7 @@
   "show_commit_url": "https://github.com/flatsurf/sage-flatsurf/commit/",
   "repo": ".",
   "environment_type": "conda",
+  "build_command": ["python setup.py build", "python -mpip wheel --no-deps --no-build-isolation --no-index -w {build_cache_dir} {build_dir}"],
   "matrix": {
     "wheel": []
   },
