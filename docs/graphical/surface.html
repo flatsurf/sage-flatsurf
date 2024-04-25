@@ -406,6 +406,23 @@ is called to make all polygons visible.</p>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
+<p>TESTS:</p>
+<p>Verify that surfaces with boundary can be plotted:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]))</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
+<span class="mi">1</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
+<span class="n">Translation</span> <span class="n">Surface</span> <span class="k">with</span> <span class="n">boundary</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">triangles</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">9</span> <span class="n">graphics</span> <span class="n">primitives</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options">
 <span class="sig-name descname"><span class="pre">adjacent_edge_options</span></span><a class="headerlink" href="#flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options" title="Permalink to this definition">#</a></dt>
@@ -525,6 +542,17 @@ maximal x-and y- coordinates of a visible graphical polygon.</p>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 <span class="kc">True</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+<p>TESTS:</p>
+<p>Verify that this works correctly for boundary edges:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]))</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="kc">False</span>
 </pre></div>
 </div>

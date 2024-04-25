@@ -415,6 +415,24 @@
 <span class="sd">        sage: gs.plot()</span>
 <span class="sd">        ...Graphics object consisting of 13 graphics primitives</span>
 
+<span class="sd">    TESTS:</span>
+
+<span class="sd">    Verify that surfaces with boundary can be plotted::</span>
+
+<span class="sd">        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
+<span class="sd">        sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">        sage: S.add_polygon(Polygon(vertices=[(0,0), (-1, -1), (1,0)]))</span>
+<span class="sd">        0</span>
+<span class="sd">        sage: S.add_polygon(Polygon(vertices=[(0,0), (0, 1), (-1,-1)]))</span>
+<span class="sd">        1</span>
+<span class="sd">        sage: S.glue((0, 0), (1, 2))</span>
+<span class="sd">        sage: S.set_immutable()</span>
+<span class="sd">        sage: S</span>
+<span class="sd">        Translation Surface with boundary built from 2 triangles</span>
+
+<span class="sd">        sage: S.plot()</span>
+<span class="sd">        Graphics object consisting of 9 graphics primitives</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -685,6 +703,7 @@
 <span class="sd">            sage: g.make_all_visible(adjacent=False)</span>
 <span class="sd">            sage: g.plot()</span>
 <span class="sd">            ...Graphics object consisting of 16 graphics primitives</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">adjacent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">adjacent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_position_function</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -694,7 +713,10 @@
             <span class="k">if</span> <span class="n">adjacent</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">poly</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">polygons</span><span class="p">()):</span>
                     <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
-                        <span class="n">l2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="n">opposite_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ss</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">opposite_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">l2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">opposite_edge</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">l2</span><span class="p">):</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">make_adjacent</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -890,8 +912,24 @@
 <span class="sd">            True</span>
 <span class="sd">            sage: g.is_adjacent(0,1)</span>
 <span class="sd">            False</span>
+
+<span class="sd">        TESTS:</span>
+
+<span class="sd">        Verify that this works correctly for boundary edges::</span>
+
+<span class="sd">            sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
+<span class="sd">            sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">            sage: S.add_polygon(Polygon(vertices=[(0,0), (-1, -1), (1,0)]))</span>
+<span class="sd">            0</span>
+<span class="sd">            sage: G = S.graphical_surface()</span>
+<span class="sd">            sage: G.is_adjacent(0, 0)</span>
+<span class="sd">            False</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pp</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">opposite_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opposite_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">pp</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="n">opposite_edge</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="n">pp</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_polygon</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -1147,8 +1185,10 @@
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">())):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
                     <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">llab</span><span class="p">,</span> <span class="n">ee</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="n">llab</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                     <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">llab</span><span class="p">))</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_labels</span> <span class="o">==</span> <span class="s2">&quot;number&quot;</span><span class="p">:</span>
             <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">vertices</span><span class="p">()))))</span>
