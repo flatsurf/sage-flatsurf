@@ -71,7 +71,6 @@ jobs:
         with:
           number: ${{ steps.source-run-info.outputs.pullRequestNumber }}
           header: preview-comment
-          recreate: true
           message: |
             [Documentation preview for this PR](${{ steps.deploy-netlify.outputs.NETLIFY_URL }}) is ready! :tada:
             Built with commit: ${{ steps.source-run-info.outputs.sourceHeadSha }}
