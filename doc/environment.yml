@@ -9,6 +9,7 @@ channels:
 dependencies:
   # The sphinx integration of SageMath 10.0 relies on an older version of Sphinx.
   - sphinx>=5,<6
+  - jupyter_sphinx
   - myst-nb
   - tachyon
   - furo
