@@ -189,6 +189,7 @@ class SurfacePoint(Element):
             self._representatives = set()
 
             source_edge = position.get_vertex()
+
             def collect_representatives(label, source_edge, direction, limit):
                 def rotate(label, source_edge, direction):
                     if direction == -1:
