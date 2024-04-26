@@ -32,6 +32,7 @@ import re
 from IPython.core.inputtransformer2 import PromptStripper
 import IPython
 
+# Replace the transform that strips sage: and ...: with our more aggressive version.
 IPython.get_ipython().input_transformer_manager.cleanup_transforms[1] = PromptStripper(
     prompt_re=re.compile(r"^((sage: |\.\.\.\.: )|(?!sage: |\.\.\.\.: ).*)")
 )
