@@ -780,7 +780,7 @@ class Surface(OrientedSimilaritySurface):
 
         .. jupyter-execute::
 
-            sage: s.graphical_surface(cached=False,adjacencies=[]).plot()
+            sage: s.graphical_surface(adjacencies=[]).plot()
             ...Graphics object consisting of 18 graphics primitives
 
         """
