@@ -78,7 +78,7 @@ sure that you are using the latest conda and mamba::
 
 To update sage-flatsurf and all the other packages in the flatsurf environment itself::
 
-        mamba -n flatsurf upgrade --all
+        mamba upgrade -n flatsurf --all
 
 If after an upgrade something does not work correctly, please `let us know
 <https://flatsurf.github.io>`_; we probably missed to declare some dependency.
