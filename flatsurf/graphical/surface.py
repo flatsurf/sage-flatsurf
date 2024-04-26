@@ -2,8 +2,8 @@ r"""
 .. jupyter-execute::
     :hide-code:
 
-    sage: # Allow jupyter-execute blocks in this module to contain doctests
-    sage: import jupyter_doctest_tweaks
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
 
 EXAMPLES:
 
