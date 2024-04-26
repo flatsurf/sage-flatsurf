@@ -11431,7 +11431,7 @@ class HyperbolicConvexPolygon(HyperbolicConvexFacade):
                                CartesianPathPlotCommand(code='RAYTO', args=(0, 1)),
                                CartesianPathPlotCommand(code='LINETO', args=(0.000000000000000, 0.000000000000000))])
 
-        Simalarly in the Klein model picture, the arc of infinite points is
+        Similarly in the Klein model picture, the arc of infinite points is
         only part of the fill, not of the stroke::
 
             sage: P.plot("klein")[1]
