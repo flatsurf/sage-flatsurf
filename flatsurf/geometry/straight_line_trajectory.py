@@ -1,3 +1,10 @@
+r"""
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+"""
 # *********************************************************************
 #  This file is part of sage-flatsurf.
 #
@@ -247,7 +254,9 @@ class AbstractStraightLineTrajectory:
         passed on to
         :func:`flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot`.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import translation_surfaces
             sage: T = translation_surfaces.square_torus()
@@ -255,8 +264,12 @@ class AbstractStraightLineTrajectory:
             sage: L = v.straight_line_trajectory()
             sage: L.plot()
             ...Graphics object consisting of 1 graphics primitive
+
+        .. jupyter-execute::
+
             sage: L.plot(color='red')
             ...Graphics object consisting of 1 graphics primitive
+
         """
         if len(args) > 1:
             raise ValueError(
