@@ -12,6 +12,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "myst_nb",
+    "jupyter_sphinx",
 ]
 
 # Extensions when rendering .ipynb/.md notebooks
@@ -59,7 +60,8 @@ if html_css_files != ["custom-furo.css", "custom-jupyter-sphinx.css", "custom-co
 html_css_files = [
     "https://doc.sagemath.org/html/en/reference/_static/custom-furo.css",
     "https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css",
-    "https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css"
+    "https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css",
+    "jupyter_execute.css"
 ]
 
 html_theme_options["light_logo"] = html_theme_options["dark_logo"] = "logo.svg"
@@ -68,6 +70,8 @@ html_static_path = ["static"]
 # Output file base name for HTML help builder.
 htmlhelp_basename = "sage-flatsurfdoc"
 
+# Options for jupyter-sphinx
+jupyter_execute_default_kernel = "sagemath"
 
 # Only rerender example notebooks when the cache is stale.
 nb_execution_mode = "cache"
