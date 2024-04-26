@@ -1,5 +1,13 @@
 r"""
-EXAMPLES::
+.. jupyter-execute::
+    :hide-code:
+
+    sage: # Allow jupyter-execute blocks in this module to contain doctests
+    sage: import jupyter_doctest_tweaks
+
+EXAMPLES:
+
+.. jupyter-execute::
 
     sage: import flatsurf
     sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()
@@ -135,7 +143,9 @@ class GraphicalSurface:
     If adjacencies is not defined and the surface is finite, make_all_visible()
     is called to make all polygons visible.
 
-    EXAMPLES::
+    EXAMPLES:
+
+    .. jupyter-execute::
 
         sage: from flatsurf import similarity_surfaces
         sage: from flatsurf.graphical.surface import GraphicalSurface
