@@ -7,3 +7,8 @@ div.jupyter_container {
 .jupyter_container div.code_cell {
   border: 0px !important;
 }
+
+/* center all plots */
+.jupyter_container .cell_output {
+  text-align: center;
+}
