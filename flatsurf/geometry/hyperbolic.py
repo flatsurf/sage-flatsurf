@@ -1,6 +1,12 @@
 r"""
 Two dimensional hyperbolic geometry.
 
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
 EXAMPLES::
 
     sage: from flatsurf import HyperbolicPlane
@@ -4878,7 +4884,9 @@ class HyperbolicConvexSet(SageObject):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -5267,7 +5275,9 @@ class HyperbolicConvexSet(SageObject):
 
         Currently, this adds the unit circle to plots in the Klein disk model.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -5277,6 +5287,8 @@ class HyperbolicConvexSet(SageObject):
 
             sage: type(p)._enhance_plot(plot, model="half_plane")
             ...Graphics object consisting of 0 graphics primitives
+
+        .. jupyter-execute::
 
             sage: type(p)._enhance_plot(plot, model="klein")
             ...Graphics object consisting of 1 graphics primitive
@@ -6972,7 +6984,9 @@ class HyperbolicGeodesic(HyperbolicConvexFacade):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -8873,7 +8887,9 @@ class HyperbolicPoint(HyperbolicConvexSet, Element):
 
         - ``model`` -- one of ``"half_plane"`` and ``"klein"`` (default: ``"half_plane"``)
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()
@@ -12261,7 +12277,9 @@ class HyperbolicSegment(HyperbolicConvexFacade):
         See :func:`flatsurf.graphical.hyperbolic.hyperbolic_path` for additional keyword arguments to
         customize the plot.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment
@@ -13063,7 +13081,9 @@ class HyperbolicEmptySet(HyperbolicConvexFacade):
 
         Any keyword arguments are ignored.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane()

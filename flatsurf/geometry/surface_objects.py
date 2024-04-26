@@ -2,6 +2,12 @@ r"""
 Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
+
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
 """
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
@@ -514,13 +520,17 @@ class SurfacePoint(Element):
         r"""
         Return a plot of this point.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
             sage: p = S.point(0, (0, 0))
             sage: p.plot()
             ...Graphics object consisting of 1 graphics primitive
+
+        .. jupyter-execute::
 
             sage: p = S.point(0, (0, 25/12))
             sage: p.plot()
