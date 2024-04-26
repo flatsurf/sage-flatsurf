@@ -69,4 +69,6 @@ html_static_path = ["static"]
 htmlhelp_basename = "sage-flatsurfdoc"
 
 
+# Only rerender example notebooks when the cache is stale.
+nb_execution_mode = "cache"
 
