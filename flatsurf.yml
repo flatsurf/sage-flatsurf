@@ -6,7 +6,6 @@
 name: flatsurf
 channels:
   - conda-forge
-  - defaults
 dependencies:
   # SageMath uses maxima to compute roots of algebraic integers. This is used,
   # e.,g, when computing with the hyperbolic plane over AA.
