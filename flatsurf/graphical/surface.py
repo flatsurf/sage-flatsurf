@@ -429,7 +429,9 @@ class GraphicalSurface:
 
         - ``limit`` -- (default ``None``) maximal number of additional polygons to make visible
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import similarity_surfaces
 
@@ -438,6 +440,8 @@ class GraphicalSurface:
             sage: g.make_all_visible()
             sage: g.plot()
             ...Graphics object consisting of 13 graphics primitives
+
+        .. jupyter-execute::
 
             sage: s = similarity_surfaces.example()
             sage: g = s.graphical_surface(adjacencies=[])
@@ -1076,7 +1080,9 @@ class GraphicalSurface:
           ``_options`` is merged with the existing options of this surface. See
           examples below for details.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import similarity_surfaces
             sage: s = similarity_surfaces.example()
@@ -1087,7 +1093,9 @@ class GraphicalSurface:
 
         Keyword arguments that end in ``_options`` are merged into the
         corresponding attribute before plotting; see :class:`GraphicalSurface`
-        for a list of all supported ``_options``::
+        for a list of all supported ``_options``:
+
+        .. jupyter-execute::
 
             sage: gs.plot(polygon_label_options={"color": "red"})
             ...Graphics object consisting of 13 graphics primitives
@@ -1095,12 +1103,16 @@ class GraphicalSurface:
         Keyword arguments that are prefixed with such an aspect of plotting,
         are also merged into the corresponding attribute before plotting; see
         :class:`GraphicalSurface` for a list of all supported prefixes, i.e.,
-        ``_options``::
+        ``_options``:
+
+        .. jupyter-execute::
 
             sage: gs.plot(polygon_label_color="red")
             ...Graphics object consisting of 13 graphics primitives
 
-        All other arguments are passed to the polygon plotting itself::
+        All other arguments are passed to the polygon plotting itself:
+
+        .. jupyter-execute::
 
             sage: gs.plot(fill=None)
             ...Graphics object consisting of 13 graphics primitives
