@@ -24,6 +24,7 @@ dependencies:
   - sagelib=9.7
   - scipy
   - surface-dynamics>=0.4.7,<0.5
+  - veerer>=0.2.0,<0.3.0
   - pip:
     - jupyter_ui_poll >=0.2.1,<0.3
     - flipper

@@ -478,13 +478,6 @@ References:
 
 
 ```{code-cell} ipython3
-# you might need to install veerer
-# (it is not by default in the flatsurf stack... but soon)
-# the command could equally be run in a console
-%pip install git+https://github.com/flatsurf/veerer
-```
-
-```{code-cell} ipython3
 from veerer import VeeringTriangulation, FlatVeeringTriangulation
 from surface_dynamics import AbelianStratum
 ```
