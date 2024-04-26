@@ -11,7 +11,7 @@ kernelspec:
   name: sagemath
 ---
 
-# A Tour of the flatsurf Software Suite
+# A Tour of the flatsurf Suite
 
 +++
 
