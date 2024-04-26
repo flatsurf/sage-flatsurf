@@ -72,3 +72,5 @@ htmlhelp_basename = "sage-flatsurfdoc"
 # Only rerender example notebooks when the cache is stale.
 nb_execution_mode = "cache"
 
+def setup(app):
+    app.connect('autodoc-process-docstring', sage_docbuild.conf.skip_TESTS_block)
