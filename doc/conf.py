@@ -68,50 +68,5 @@ html_static_path = ["static"]
 # Output file base name for HTML help builder.
 htmlhelp_basename = "sage-flatsurfdoc"
 
-# -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {}
 
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (
-        "index",
-        "sage-flatsurf.tex",
-        "sage-flatsurf Documentation",
-        "the sage-flatsurf authors",
-        "manual",
-    ),
-]
-
-# -- Options for manual page output ---------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    (
-        "index",
-        "sage-flatsurf",
-        "sage-flatsurf Documentation",
-        ["the sage-flatsurf authors"],
-        1,
-    )
-]
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        "index",
-        "sage-flatsurf",
-        "sage-flatsurf Documentation",
-        "the sage-flatsurf authors",
-        "sage-flatsurf",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
