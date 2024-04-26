@@ -10,10 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
     
     
 
@@ -334,14 +337,6 @@ Category of simple euclidean equilateral triangles over Number Field in c with d
 <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">EuclideanPolygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">EuclideanPolygon</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
-</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.EuclideanPolygon.Element">
 <span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.polygon.EuclideanPolygon.Element" title="Permalink to this definition">#</a></dt>
@@ -383,11 +378,6 @@ base ring <code class="docutils literal notranslate"><span class="pre">ring</spa
 <span class="ne">UserWarning</span><span class="p">:</span> <span class="n">is_strictly_convex</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">is_convex</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="n">instead</span>
 <span class="kc">True</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">is_strictly_convex</span><span class="p">()</span>
-<span class="kc">False</span>
-</pre></div>
-</div>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">is_strictly_convex</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
 </div>
@@ -441,12 +431,6 @@ more of its features are discovered:</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.polygon.EuclideanPolygon.translate">
 <span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/polygon.html#EuclideanPolygon.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.polygon.EuclideanPolygon.translate" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a copy of this polygon that has been translated by <code class="docutils literal notranslate"><span class="pre">u</span></code>.</p>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span><span class="o">.</span><span class="n">translate</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
-<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -480,16 +464,6 @@ include vertices with a π angle in the output.</p></li>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.polygon</span> <span class="kn">import</span> <span class="n">EuclideanPolygonPoint</span>
-<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">EuclideanPolygonPoint</span><span class="p">)</span>
-<span class="kc">True</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -532,135 +506,6 @@ polygons with prescribed angles over such a field, one should just use
 of the polygon (the number get normalized so that they sum to (n-2)π
 automatically.</p></li>
 </ul>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">EuclideanPolygonsWithAngles</span>
-</pre></div>
-</div>
-<p>The polygons with inner angles <cite>pi/4</cite>, <cite>pi/2</cite>, <cite>5pi/4</cite>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: P = EuclideanPolygonsWithAngles(1, 2, 5)
-sage: P
-Category of simple euclidean triangles with angles (1/16, 1/8, 5/16) over Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-</pre></div>
-</div>
-<p>Internally, polygons are given by their vertices’ coordinates over some
-number field, in this case a quadratic field:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: P.base_ring()
-Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-</pre></div>
-</div>
-<p>Polygons with these angles can be created by providing a single length,
-however this feature is deprecated:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
-<span class="o">...</span>
-<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">calling</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">lengths</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span> <span class="n">instead</span><span class="o">.</span>
-<span class="n">To</span> <span class="n">make</span> <span class="n">the</span> <span class="n">resulting</span> <span class="n">polygon</span> <span class="n">non</span><span class="o">-</span><span class="n">normalized</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="p">,</span> <span class="n">the</span> <span class="n">lengths</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">actual</span> <span class="n">edge</span> <span class="n">lengths</span> <span class="n">but</span> <span class="n">the</span> <span class="n">multiple</span> <span class="n">of</span> <span class="n">slope</span> <span class="n">vectors</span><span class="p">,</span> <span class="n">use</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">length</span> <span class="o">*</span> <span class="n">slope</span> <span class="k">for</span> <span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">slope</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lengths</span><span class="p">,</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span><span class="o">.</span><span class="n">slopes</span><span class="p">())])</span><span class="o">.</span>
-<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
-</pre></div>
-</div>
-<p>Instead, one should use <a class="reference internal" href="#flatsurf.geometry.polygon.Polygon" title="flatsurf.geometry.polygon.Polygon"><code class="xref py py-func docutils literal notranslate"><span class="pre">Polygon()</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="n">lengths</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
-</pre></div>
-</div>
-<p>It is actually faster not to specify lengths since normalization can be
-costly (only relevant for polygons living in big number fields):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
-</pre></div>
-</div>
-<p>Polygons can also be defined over other number field implementations:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from pyeantic import RealEmbeddedNumberField # optional: eantic  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-sage: K = RealEmbeddedNumberField(P.base_ring()) # optional: eantic
-sage: P(K(1)) # optional: eantic
-doctest:warning
-...
-UserWarning: calling EuclideanPolygonsWithAngles() has been deprecated and will be removed in a future version of sage-flatsurf; use Polygon(angles=[...], lengths=[...]) instead.
-To make the resulting polygon non-normalized, i.e., the lengths are not actual edge lengths but the multiple of slope vectors, use Polygon(edges=[length * slope for (length, slope) in zip(lengths, EuclideanPolygonsWithAngles(angles).slopes())]).
-Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-sage: _.base_ring() # optional: eantic
-Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-</pre></div>
-</div>
-<p>However, specific instances of such polygons might be defined over another ring:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: P(1).base_ring()
-Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
-
-sage: P(AA(1))
-Polygon(vertices=[(0, 0), (1, 0), (0.7071067811865475?, 0.2928932188134525?)])
-sage: _.base_ring()
-Algebraic Real Field
-</pre></div>
-</div>
-<p>Polygons can also be defined over a module containing transcendent parameters:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to deprecation warnings with some versions of pkg_resources
-sage: R = ExactReals(P.base_ring()) # optional: exactreal
-sage: P(R(1)) # optional: exactreal
-Polygon(vertices=[(0, 0), (1, 0), ((1/2*c0 ~ 0.70710678), (-1/2*c0+1 ~ 0.29289322))])
-sage: P(R(R.random_element([0.2, 0.3]))) # random output, optional: exactreal
-Polygon(vertices=[(0, 0),])
-         (ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54), 0),
-         (((12*c0+17 ~ 33.970563)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)),
-         ((5*c0+7 ~ 14.071068)*ℝ(0.287373=2588422249976937p-53 + ℝ(0.120809…)p-54))/((17*c0+24 ~ 48.041631)))
-sage: _.base_ring() # optional: exactreal
-Real Numbers as (Real Embedded Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)-Module
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: L = P.lengths_polytope()    # polytope of admissible lengths for edges
-sage: L
-A 1-dimensional polyhedron in (Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?)^3 defined as the convex hull of 1 vertex and 1 ray
-sage: lengths = L.rays()[0].vector()
-sage: lengths
-(1, -1/2*c0 + 1, -1/2*c0 + 1)
-sage: p = P(*lengths)    # build one polygon with the given lengths
-sage: p
-Polygon(vertices=[(0, 0), (1, 0), (1/2*c0, -1/2*c0 + 1)])
-sage: p.angles()
-(1/16, 1/8, 5/16)
-sage: P.angles(integral=False)
-(1/16, 1/8, 5/16)
-sage: P.angles(integral=True)
-(1, 2, 5)
-
-sage: P = EuclideanPolygonsWithAngles(1, 2, 1, 2, 2, 1)
-sage: L = P.lengths_polytope()
-sage: L
-A 4-dimensional polyhedron in (Number Field in c with defining polynomial x^6 - 6*x^4 + 9*x^2 - 3 with c = 1.969615506024417?)^6 defined as the convex hull of 1 vertex and 6 rays
-sage: rays = [r.vector() for r in L.rays()]
-sage: rays
-[(1, 0, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, -1/6*c^5 + 5/6*c^3 - 2/3*c),
- (0, 1, 0, 0, c^2 - 3, c^2 - 2),
- (1/3*c^4 - 2*c^2 + 3, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
- (-c^4 + 4*c^2, 0, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c, 0, -1/6*c^5 + 5/6*c^3 - 2/3*c),
- (0, 1/3*c^4 - 2*c^2 + 3, c^2 - 3, 0, 0, 1/3*c^4 - c^2),
- (0, -c^4 + 4*c^2, 0, c^2 - 3, 0, -c^4 + 5*c^2 - 3)]
-sage: lengths = 3*rays[0] + rays[2] + 2*rays[3] + rays[4]
-sage: p = P(*lengths)
-sage: p
-Polygon(vertices=[(0, 0),
-                  (-5/3*c^4 + 6*c^2 + 6, 0),
-                  (3*c^5 - 5/3*c^4 - 16*c^3 + 6*c^2 + 18*c + 6, c^4 - 6*c^2 + 9),
-                  (2*c^5 - 2*c^4 - 10*c^3 + 15/2*c^2 + 9*c + 5, -1/2*c^5 + c^4 + 5/2*c^3 - 3*c^2 - 2*c),
-                  (2*c^5 - 10*c^3 - 3/2*c^2 + 9*c + 9, -3/2*c^5 + c^4 + 15/2*c^3 - 3*c^2 - 6*c),
-                  (2*c^5 - 10*c^3 - 3*c^2 + 9*c + 12, -3*c^5 + c^4 + 15*c^3 - 3*c^2 - 12*c)])
-
-sage: p.angles()
-(2/9, 4/9, 2/9, 4/9, 4/9, 2/9)
-
-sage: EuclideanPolygonsWithAngles(1, 2, 1, 2, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1)
-Category of simple euclidean pentadecagons with angles (13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/46, 13/23, 13/23, 13/23, 13/23, 13/46, 13/46, 13/23, 13/46) over Number Field in c with defining polynomial ...
-</pre></div>
-</div>
-<p>A regular pentagon:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">E</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">E</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
-<span class="o">...</span>
-<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">calling</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">()</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">lengths</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span> <span class="n">instead</span><span class="o">.</span>
-<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">3</span> <span class="o">-</span> <span class="n">c</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="p">)])</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1057,7 +902,7 @@ sage: polygons.triangle(1,2,3).angles()
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1145,5 +990,8 @@ sage: polygons.triangle(1,2,3).angles()
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

@@ -10,10 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
     
     
 
@@ -270,11 +273,22 @@
         <article role="main">
           <section id="module-flatsurf.graphical.surface">
 <span id="surface"></span><h1><code class="docutils literal notranslate"><span class="pre">surface</span></code><a class="headerlink" href="#module-flatsurf.graphical.surface" title="Permalink to this heading">#</a></h1>
+<div class="jupyter_cell docutils container">
+<div class="cell_output docutils container">
+</div>
+</div>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_2n_gon</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">18</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_1_0.png" src="../_images/surface_1_0.png" />
+</div>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface">
@@ -396,7 +410,9 @@ similarities describing the position of the corresponding polygon.</p></li>
 <p>If adjacencies is not defined and the surface is finite, make_all_visible()
 is called to make all polygons visible.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
@@ -406,22 +422,10 @@ is called to make all polygons visible.</p>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<p>Verify that surfaces with boundary can be plotted:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]))</span>
-<span class="mi">0</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]))</span>
-<span class="mi">1</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">glue</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span>
-<span class="n">Translation</span> <span class="n">Surface</span> <span class="k">with</span> <span class="n">boundary</span> <span class="n">built</span> <span class="kn">from</span> <span class="mi">2</span> <span class="n">triangles</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">9</span> <span class="n">graphics</span> <span class="n">primitives</span>
-</pre></div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_2_0.png" src="../_images/surface_2_0.png" />
+</div>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options">
@@ -545,17 +549,6 @@ maximal x-and y- coordinates of a visible graphical polygon.</p>
 <span class="kc">False</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<p>Verify that this works correctly for boundary edges:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">MutableOrientedSimilaritySurface</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">add_polygon</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]))</span>
-<span class="mi">0</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">is_adjacent</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="kc">False</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -603,20 +596,35 @@ provided.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code> – (default <code class="docutils literal notranslate"><span class="pre">None</span></code>) maximal number of additional polygons to make visible</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">make_all_visible</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_3_0.png" src="../_images/surface_3_0.png" />
+</div>
+</div>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="p">[])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">make_all_visible</span><span class="p">(</span><span class="n">adjacent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">16</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_4_0.png" src="../_images/surface_4_0.png" />
+</div>
 </div>
 </dd></dl>
 
@@ -653,7 +661,9 @@ are routed correspondingly. Also, a dictionary suffixed with
 examples below for details.</p></li>
 </ul>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">similarity_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">example</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.graphical.surface</span> <span class="kn">import</span> <span class="n">GraphicalSurface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphicalSurface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -661,39 +671,51 @@ examples below for details.</p></li>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_5_0.png" src="../_images/surface_5_0.png" />
+</div>
+</div>
 <p>Keyword arguments that end in <code class="docutils literal notranslate"><span class="pre">_options</span></code> are merged into the
 corresponding attribute before plotting; see <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface" title="flatsurf.graphical.surface.GraphicalSurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalSurface</span></code></a>
 for a list of all supported <code class="docutils literal notranslate"><span class="pre">_options</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_label_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">})</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_label_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">})</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_6_0.png" src="../_images/surface_6_0.png" />
+</div>
 </div>
 <p>Keyword arguments that are prefixed with such an aspect of plotting,
 are also merged into the corresponding attribute before plotting; see
 <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface" title="flatsurf.graphical.surface.GraphicalSurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalSurface</span></code></a> for a list of all supported prefixes, i.e.,
 <code class="docutils literal notranslate"><span class="pre">_options</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_label_color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_label_color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_7_0.png" src="../_images/surface_7_0.png" />
+</div>
 </div>
 <p>All other arguments are passed to the polygon plotting itself:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">13</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<p>Check that label options are handled correctly:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">10</span> <span class="n">graphics</span> <span class="n">primitives</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">9</span> <span class="n">graphics</span> <span class="n">primitives</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">6</span> <span class="n">graphics</span> <span class="n">primitives</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">polygon_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">5</span> <span class="n">graphics</span> <span class="n">primitives</span>
-</pre></div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_8_0.png" src="../_images/surface_8_0.png" />
+</div>
 </div>
 </dd></dl>
 
@@ -803,17 +825,6 @@ the attribute` <cite>zero_flag_options`</cite>.</p>
 created.</p>
 <p>INPUT:</p>
 <p>Consult <a class="reference internal" href="#flatsurf.graphical.surface.GraphicalSurface" title="flatsurf.graphical.surface.GraphicalSurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalSurface</span></code></a> for the possible arguments.</p>
-<p>TESTS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">c</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">chamanara</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">gs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">gs</span><span class="o">.</span><span class="n">process_options</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="s1">&#39;hey&#39;</span><span class="p">)</span>
-<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-<span class="o">...</span>
-<span class="ne">ValueError</span><span class="p">:</span> <span class="n">invalid</span> <span class="n">value</span> <span class="k">for</span> <span class="n">edge_labels</span> <span class="p">(</span><span class="o">=</span><span class="s1">&#39;hey&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1047,7 +1058,7 @@ is and the surface is infinite.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1138,5 +1149,8 @@ is and the surface is infinite.</p>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

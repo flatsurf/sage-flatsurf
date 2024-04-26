@@ -276,7 +276,7 @@ s.plot()
 Here is an example with the edge labels centered on the edge.
 
 ```{code-cell}
-gs = s.graphical_surface(cached=False)
+gs = s.graphical_surface()
 ```
 
 ```{code-cell}
@@ -295,7 +295,7 @@ gs.plot()
 ```
 
 ```{code-cell}
-gs = s.graphical_surface(cached=False)
+gs = s.graphical_surface()
 ```
 
 ```{code-cell}

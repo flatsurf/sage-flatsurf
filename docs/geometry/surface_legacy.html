@@ -10,10 +10,13 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
     
     
 
@@ -303,6 +306,10 @@ contract that surfaces used to satisfy. As an absolute minimum, they implement
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="jupyter_cell docutils container">
+<div class="cell_output docutils container">
+</div>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_legacy.ConeSurface">
@@ -613,15 +620,6 @@ with <a class="reference internal" href="#flatsurf.geometry.surface_legacy.Surfa
 <span class="kc">True</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<p>Users are being warned if they try to define a surface over an inexact ring:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">Surface_list</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span>
-<span class="o">...</span>
-<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">surface</span> <span class="n">defined</span> <span class="n">over</span> <span class="n">an</span> <span class="n">inexact</span> <span class="n">ring</span><span class="p">;</span> <span class="n">many</span> <span class="n">operations</span> <span class="ow">in</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">going</span> <span class="n">to</span> <span class="n">work</span> <span class="n">correctly</span> <span class="n">over</span> <span class="n">this</span> <span class="n">ring</span>
-<span class="n">sage</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Surface</span><span class="p">)</span>
-<span class="kc">True</span>
-</pre></div>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_legacy.Surface.add_polygon">
 <span class="sig-name descname"><span class="pre">add_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_polygon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gluing_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_legacy.html#Surface.add_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_legacy.Surface.add_polygon" title="Permalink to this definition">#</a></dt>
@@ -686,13 +684,29 @@ GraphicalSurface is returned.</p>
 Note that this mutates the cached graphical surface for future calls.</p>
 <p>EXAMPLES:</p>
 <p>Test the difference between the cached graphical_surface and the uncached version:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">32</span> <span class="n">graphics</span> <span class="n">primitives</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">cached</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">adjacencies</span><span class="o">=</span><span class="p">[])</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_legacy_1_0.png" src="../_images/surface_legacy_1_0.png" />
+</div>
+</div>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">graphical_surface</span><span class="p">(</span><span class="n">adjacencies</span><span class="o">=</span><span class="p">[])</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">18</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_legacy_2_0.png" src="../_images/surface_legacy_2_0.png" />
+</div>
 </div>
 </dd></dl>
 
@@ -764,23 +778,44 @@ polygon returns the pair (<code class="docutils literal notranslate"><span class
 <a class="reference internal" href="../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot" title="flatsurf.graphical.surface.GraphicalSurface.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.graphical.surface.GraphicalSurface.plot()</span></code></a>. Consult their
 documentation for details.</p>
 <p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">import</span> <span class="nn">flatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">flatsurf</span><span class="o">.</span><span class="n">translation_surfaces</span><span class="o">.</span><span class="n">veech_double_n_gon</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">21</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_legacy_3_0.png" src="../_images/surface_legacy_3_0.png" />
+</div>
+</div>
 <p>Keywords are passed on to the underlying plotting routines, see
 <a class="reference internal" href="../graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.plot" title="flatsurf.graphical.surface.GraphicalSurface.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.graphical.surface.GraphicalSurface.plot()</span></code></a> for details:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">21</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_legacy_4_0.png" src="../_images/surface_legacy_4_0.png" />
+</div>
+</div>
 <p>Note that some keywords mutate the underlying cached graphical surface,
 see <a class="reference internal" href="#flatsurf.geometry.surface_legacy.Surface.graphical_surface" title="flatsurf.geometry.surface_legacy.Surface.graphical_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">graphical_surface()</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="s1">&#39;gluings and number&#39;</span><span class="p">)</span>
+<div class="jupyter_cell jupyter_container docutils container">
+<div class="cell_input code_cell docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">edge_labels</span><span class="o">=</span><span class="s1">&#39;gluings and number&#39;</span><span class="p">)</span>
 <span class="o">...</span><span class="n">Graphics</span> <span class="nb">object</span> <span class="n">consisting</span> <span class="n">of</span> <span class="mi">23</span> <span class="n">graphics</span> <span class="n">primitives</span>
 </pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/surface_legacy_5_0.png" src="../_images/surface_legacy_5_0.png" />
+</div>
 </div>
 </dd></dl>
 
@@ -904,19 +939,6 @@ surface is mutable. When <code class="docutils literal notranslate"><span class=
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">change_base_label</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>TESTS:</p>
-<p>Verify that the replacement for this class implements all the features that
-used to be around:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Surface_dict</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">legacy_methods</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">Surface_dict</span><span class="p">(</span><span class="n">QQ</span><span class="p">)))</span>
-<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
-<span class="o">...</span>
-<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Surface_dict</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">MutableOrientedSimilaritySurface</span> <span class="n">instead</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">non_legacy_methods</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">method</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">legacy_methods</span> <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_legacy_methods</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
-<span class="p">[]</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -1054,19 +1076,6 @@ surface is mutable. When <code class="docutils literal notranslate"><span class=
 <span class="mi">5</span> <span class="o">-&gt;</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">28</span><span class="o">/</span><span class="mi">25</span><span class="p">,</span> <span class="mi">96</span><span class="o">/</span><span class="mi">25</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">72</span><span class="o">/</span><span class="mi">25</span><span class="p">,</span> <span class="o">-</span><span class="mi">21</span><span class="o">/</span><span class="mi">25</span><span class="p">)])</span>
 </pre></div>
 </div>
-<p>TESTS:</p>
-<p>Verify that the replacement for this class implements all the features that
-used to be around:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="p">,</span> <span class="n">Surface_list</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">legacy_methods</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">Surface_list</span><span class="p">(</span><span class="n">QQ</span><span class="p">)))</span>
-<span class="n">doctest</span><span class="p">:</span><span class="n">warning</span>
-<span class="o">...</span>
-<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Surface_list</span> <span class="n">has</span> <span class="n">been</span> <span class="n">deprecated</span> <span class="ow">and</span> <span class="n">will</span> <span class="n">be</span> <span class="n">removed</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">future</span> <span class="n">version</span> <span class="n">of</span> <span class="n">sage</span><span class="o">-</span><span class="n">flatsurf</span><span class="p">;</span> <span class="n">use</span> <span class="n">MutableOrientedSimilaritySurface</span> <span class="n">instead</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">non_legacy_methods</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">MutableOrientedSimilaritySurface</span><span class="p">(</span><span class="n">QQ</span><span class="p">)))</span>
-<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">method</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">legacy_methods</span> <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">non_legacy_methods</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)]</span>
-<span class="p">[]</span>
-</pre></div>
-</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.surface_legacy.Surface_list.change_base_label">
 <span class="sig-name descname"><span class="pre">change_base_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_base_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/surface_legacy.html#Surface_list.change_base_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.surface_legacy.Surface_list.change_base_label" title="Permalink to this definition">#</a></dt>
@@ -1172,7 +1181,7 @@ surface.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1289,5 +1298,8 @@ surface.</p>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

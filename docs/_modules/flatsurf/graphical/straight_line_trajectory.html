@@ -9,10 +9,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css" />
     
     
 
@@ -267,7 +270,14 @@
         </div>
         <article role="main">
           <h1>Source code for flatsurf.graphical.straight_line_trajectory</h1><div class="highlight"><pre>
-<span></span><span class="c1"># ****************************************************************************</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. jupyter-execute::</span>
+<span class="sd">    :hide-code:</span>
+
+<span class="sd">    # Allow jupyter-execute blocks in this module to contain doctests</span>
+<span class="sd">    import jupyter_doctest_tweaks</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># ****************************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
 <span class="c1">#       Copyright (C) 2013-2019 Vincent Delecroix</span>
@@ -322,7 +332,9 @@
 
 <div class="viewcode-block" id="GraphicalSegmentInPolygon.plot"><a class="viewcode-back" href="../../../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalSegmentInPolygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import similarity_surfaces</span>
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
@@ -333,8 +345,12 @@
 <span class="sd">            sage: gseg = GraphicalSegmentInPolygon(seg, s.graphical_surface())</span>
 <span class="sd">            sage: gseg.plot()</span>
 <span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
+
+<span class="sd">        .. jupyter-execute::</span>
+
 <span class="sd">            sage: gseg.plot(color=&#39;red&#39;)</span>
 <span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gs</span><span class="o">.</span><span class="n">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon_label</span><span class="p">()):</span>
             <span class="kn">from</span> <span class="nn">sage.plot.line</span> <span class="kn">import</span> <span class="n">line2d</span>
@@ -365,7 +381,9 @@
 
 <div class="viewcode-block" id="GraphicalStraightLineTrajectory.plot"><a class="viewcode-back" href="../../../graphical/straight_line_trajectory.html#flatsurf.graphical.straight_line_trajectory.GraphicalStraightLineTrajectory.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import similarity_surfaces</span>
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
@@ -378,6 +396,7 @@
 <span class="sd">            sage: gtraj = traj.graphical_trajectory(gs)</span>
 <span class="sd">            sage: gs.plot() + gtraj.plot()</span>
 <span class="sd">            ...Graphics object consisting of 119 graphics primitives</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">sage.plot.graphics</span> <span class="kn">import</span> <span class="n">Graphics</span>
 
@@ -397,7 +416,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -424,5 +443,8 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

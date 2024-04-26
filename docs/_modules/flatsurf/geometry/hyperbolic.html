@@ -9,10 +9,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css" />
     
     
 
@@ -269,6 +272,12 @@
           <h1>Source code for flatsurf.geometry.hyperbolic</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Two dimensional hyperbolic geometry.</span>
+
+<span class="sd">.. jupyter-execute::</span>
+<span class="sd">    :hide-code:</span>
+
+<span class="sd">    # Allow jupyter-execute blocks in this module to contain doctests</span>
+<span class="sd">    import jupyter_doctest_tweaks</span>
 
 <span class="sd">EXAMPLES::</span>
 
@@ -677,7 +686,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_base_ring</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span> <span class="o">=</span> <span class="n">geometry</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._coerce_map_from_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._coerce_map_from_">[docs]</a>    <span class="k">def</span> <span class="nf">_coerce_map_from_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_coerce_map_from_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a coercion map from ``other`` to this hyperbolic plane.</span>
 
@@ -715,7 +724,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">HyperbolicPlane</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">has_coerce_map_from</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
 
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">return</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="HyperbolicPlane.__contains__"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -838,7 +847,7 @@
 
         <span class="k">return</span> <span class="n">HyperbolicPlane</span><span class="p">(</span><span class="n">ring</span><span class="p">,</span> <span class="n">geometry</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._an_element_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._an_element_">[docs]</a>    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an element of the hyperbolic plane (mostly for testing.)</span>
 
@@ -850,7 +859,7 @@
 <span class="sd">            0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicPlane.some_subsets"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane.some_subsets">[docs]</a>    <span class="k">def</span> <span class="nf">some_subsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -944,7 +953,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">half_circle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._test_some_subsets"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._test_some_subsets">[docs]</a>    <span class="k">def</span> <span class="nf">_test_some_subsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tester</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_some_subsets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tester</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run test suite on some representative convex subsets.</span>
 
@@ -968,7 +977,7 @@
                 <span class="n">prefix</span><span class="o">=</span><span class="n">tester</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span><span class="p">,</span>
                 <span class="n">raise_on_failure</span><span class="o">=</span><span class="n">is_sub_testsuite</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">tester</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">tester</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicPlane.random_element"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane.random_element">[docs]</a>    <span class="k">def</span> <span class="nf">random_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1078,7 +1087,7 @@
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._element_constructor_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._element_constructor_">[docs]</a>    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return ``x`` as an element of the hyperbolic plane.</span>
 
@@ -1166,7 +1175,7 @@
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;cannot create a subset of the hyperbolic plane from this element yet.&quot;</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicPlane.base_ring"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3061,7 +3070,7 @@
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;no projection to GL(2, R) in the base ring&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._isometry_from_pairs"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_pairs">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_from_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_from_pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a right isometry compatible with given (preimage, image) pairs.</span>
 
@@ -3108,9 +3117,9 @@
 
                 <span class="k">return</span> <span class="n">isometry</span>
 
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="HyperbolicPlane._isometry_from_primitives"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_primitives">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_from_primitives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_from_primitives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`isometry`.</span>
 
@@ -3215,9 +3224,9 @@
             <span class="k">return</span> <span class="nb">filter</span>
 
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isometry_from_equations</span><span class="p">(</span><span class="n">equations</span><span class="p">,</span> <span class="n">create_filter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isometry_from_equations</span><span class="p">(</span><span class="n">equations</span><span class="p">,</span> <span class="n">create_filter</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isometry_from_equations</span><span class="p">(</span><span class="n">equations</span><span class="p">,</span> <span class="n">create_filter</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
-<div class="viewcode-block" id="HyperbolicPlane._isometry_untrivialize"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_untrivialize">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_untrivialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">defining</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_untrivialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">defining</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`isometry`.</span>
 
@@ -3281,7 +3290,7 @@
 
             <span class="k">return</span> <span class="p">(</span><span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="HyperbolicPlane._isometry_conditions"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defining</span><span class="p">,</span> <span class="n">remaining</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3381,7 +3390,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">defining</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._isometry_from_single_points"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_single_points">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_from_single_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_from_single_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`isometry`.</span>
 
@@ -3449,9 +3458,9 @@
                     <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">isometry</span></div>
+            <span class="k">return</span> <span class="n">isometry</span>
 
-<div class="viewcode-block" id="HyperbolicPlane._isometry_from_single_geodesics"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_single_geodesics">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_from_single_geodesics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_from_single_geodesics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preimage</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for :meth:`isometry`.</span>
 
@@ -3499,7 +3508,7 @@
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="s2">&quot;Could not determine an isometry of geodesics over the base ring. There might still be one but the implementation failed to detect it.&quot;</span>
                 <span class="p">)</span>
-            <span class="k">return</span> <span class="n">isometry</span></div>
+            <span class="k">return</span> <span class="n">isometry</span>
 
 <div class="viewcode-block" id="HyperbolicPlane._isometry_from_equations"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_from_equations">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_from_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conditions</span><span class="p">,</span> <span class="nb">filter</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3681,7 +3690,7 @@
         <span class="c1"># whether that is actually true.</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="HyperbolicPlane._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this hyperbolic plane.</span>
 
@@ -3692,7 +3701,7 @@
 <span class="sd">            Hyperbolic Plane over Algebraic Real Field</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hyperbolic Plane over </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hyperbolic Plane over </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="HyperbolicGeometry"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry">[docs]</a><span class="k">class</span> <span class="nc">HyperbolicGeometry</span><span class="p">:</span>
@@ -3772,7 +3781,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring</span></div>
 
-<div class="viewcode-block" id="HyperbolicGeometry._zero"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry._zero">[docs]</a>    <span class="k">def</span> <span class="nf">_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether ``x`` should be considered zero in the</span>
 <span class="sd">        :meth:`base_ring`.</span>
@@ -3801,9 +3810,9 @@
 <span class="sd">            True</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="HyperbolicGeometry._cmp"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry._cmp">[docs]</a>    <span class="k">def</span> <span class="nf">_cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return how ``x`` compares to ``y``.</span>
 
@@ -3852,9 +3861,9 @@
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span>
         <span class="p">),</span> <span class="s2">&quot;Geometry over this ring must override _cmp since not (x == y) and not (x &lt; y) does not imply x &gt; y&quot;</span>
-        <span class="k">return</span> <span class="mi">1</span></div>
+        <span class="k">return</span> <span class="mi">1</span>
 
-<div class="viewcode-block" id="HyperbolicGeometry._sgn"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry._sgn">[docs]</a>    <span class="k">def</span> <span class="nf">_sgn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sgn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the sign of ``x``.</span>
 
@@ -3884,7 +3893,7 @@
 <span class="sd">            0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicGeometry._equal"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry._equal">[docs]</a>    <span class="k">def</span> <span class="nf">_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3915,7 +3924,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;this geometry does not implement _equal()&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicGeometry._determinant"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry._determinant">[docs]</a>    <span class="k">def</span> <span class="nf">_determinant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_determinant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the determinant of the 2×2 matrix ``[[a, b], [c, d]]`` or</span>
 <span class="sd">        ``None`` if the matrix is singular.</span>
@@ -3951,7 +3960,7 @@
         <span class="n">det</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">d</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zero</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">det</span></div>
+        <span class="k">return</span> <span class="n">det</span>
 
 <div class="viewcode-block" id="HyperbolicGeometry.change_ring"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeometry.change_ring">[docs]</a>    <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -4341,7 +4350,7 @@
 
         <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epsilon</span></div>
 
-<div class="viewcode-block" id="HyperbolicEpsilonGeometry._determinant"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEpsilonGeometry._determinant">[docs]</a>    <span class="k">def</span> <span class="nf">_determinant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_determinant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the determinant of the 2×2 matrix ``[[a, b], [c, d]]`` or</span>
 <span class="sd">        ``None`` if the matrix is singular.</span>
@@ -4378,7 +4387,7 @@
         <span class="k">if</span> <span class="n">det</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Note that we should instead numerically detect the rank here.</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">det</span></div>
+        <span class="k">return</span> <span class="n">det</span>
 
 <div class="viewcode-block" id="HyperbolicEpsilonGeometry.projective"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEpsilonGeometry.projective">[docs]</a>    <span class="k">def</span> <span class="nf">projective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -4544,7 +4553,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not implement half_spaces()&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_half_spaces"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_half_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">_test_half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this convex set implements :meth:`half_spaces` correctly.</span>
 
@@ -4570,9 +4579,9 @@
         <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">half_spaces</span><span class="p">,</span> <span class="n">HyperbolicHalfSpaces</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">half_spaces</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">half_spaces</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]):</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">HyperbolicHalfSpaces</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">HyperbolicHalfSpaces</span><span class="o">.</span><span class="n">_lt_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._check"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._check">[docs]</a>    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate this convex subset.</span>
 
@@ -4597,7 +4606,7 @@
 <span class="sd">            ValueError: point (1, 1) is not in the unit disk in the Klein model</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet._normalize"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._normalize">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -4621,7 +4630,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_normalize"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_normalize">[docs]</a>    <span class="k">def</span> <span class="nf">_test_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that normalization is idempotent.</span>
 
@@ -4637,7 +4646,7 @@
 
         <span class="n">normalization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">()</span>
 
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="n">normalization</span><span class="o">.</span><span class="n">_normalize</span><span class="p">())</span></div>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="n">normalization</span><span class="o">.</span><span class="n">_normalize</span><span class="p">())</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.unoriented"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.unoriented">[docs]</a>    <span class="k">def</span> <span class="nf">unoriented</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -4657,7 +4666,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">oriented</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_unoriented"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_unoriented">[docs]</a>    <span class="k">def</span> <span class="nf">_test_unoriented</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_unoriented</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`unoriented` is implemented correctly.</span>
 
@@ -4671,7 +4680,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">()</span><span class="o">.</span><span class="n">unoriented</span><span class="p">())</span></div>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">()</span><span class="o">.</span><span class="n">unoriented</span><span class="p">())</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.intersection"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.intersection">[docs]</a>    <span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -4729,7 +4738,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_contains"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_contains">[docs]</a>    <span class="k">def</span> <span class="nf">_test_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`__contains__` is implemented correctly.</span>
 
@@ -4748,7 +4757,7 @@
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="c1"># Currently, containment can often not be decided when points</span>
                 <span class="c1"># do not have coordinates over the base ring.</span>
-                <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">HyperbolicPointFromGeodesic</span><span class="p">)</span></div>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="n">HyperbolicPointFromGeodesic</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.vertices"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.vertices">[docs]</a>    <span class="k">def</span> <span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -4950,7 +4959,7 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not implement is_ultra_ideal() yet&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_is_finite"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_is_finite">[docs]</a>    <span class="k">def</span> <span class="nf">_test_is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth;`is_finite`, :meth:`is_ideal`, and</span>
 <span class="sd">        :meth:`is_ultra_ideal` are implemented correctly for this set.</span>
@@ -4985,7 +4994,7 @@
 
         <span class="k">if</span> <span class="n">ultra</span><span class="p">:</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">finite</span><span class="p">)</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ideal</span><span class="p">)</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ideal</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.change_ring"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.change_ring">[docs]</a>    <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5044,7 +5053,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_change_ring"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_change_ring">[docs]</a>    <span class="k">def</span> <span class="nf">_test_change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this set implements :meth:`change_ring`.</span>
 
@@ -5057,7 +5066,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()))</span></div>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()))</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.change"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.change">[docs]</a>    <span class="k">def</span> <span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oriented</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5107,7 +5116,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;this </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not implement change()&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_change"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_change">[docs]</a>    <span class="k">def</span> <span class="nf">_test_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that the full interface of :meth:`change` has been implemented.</span>
 
@@ -5134,7 +5143,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">oriented</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">oriented</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">oriented</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.plot"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5147,7 +5156,9 @@
 
 <span class="sd">        - ``model`` -- one of ``&quot;half_plane&quot;`` and ``&quot;klein&quot;`` (default: ``&quot;half_plane&quot;``)</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
 <span class="sd">            sage: H = HyperbolicPlane()</span>
@@ -5158,7 +5169,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;this </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not support plotting&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_plot"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_plot">[docs]</a>    <span class="k">def</span> <span class="nf">_test_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this set implements :meth:`plot`.</span>
 
@@ -5176,7 +5187,7 @@
         <span class="k">if</span> <span class="bp">self</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">infinity</span><span class="p">():</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(),</span> <span class="n">Graphics</span><span class="p">)</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">),</span> <span class="n">Graphics</span><span class="p">)</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">),</span> <span class="n">Graphics</span><span class="p">)</span></div>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">),</span> <span class="n">Graphics</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.apply_isometry"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry">[docs]</a>    <span class="k">def</span> <span class="nf">apply_isometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5360,7 +5371,7 @@
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot apply isometries in this model yet&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the result of applying the ``isometry`` to this hyperbolic set.</span>
 
@@ -5388,9 +5399,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not implement _apply_isometry_klein() yet&quot;</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._acted_upon_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._acted_upon_">[docs]</a>    <span class="k">def</span> <span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">self_on_left</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">self_on_left</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the result of acting upon this set with ``x``.</span>
 
@@ -5425,7 +5436,7 @@
 <span class="sd">            sage: assert p * (m0 * m1) == (p * m0) * m1</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_isometry</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="n">self_on_left</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_isometry</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="n">self_on_left</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.is_subset"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.is_subset">[docs]</a>    <span class="k">def</span> <span class="nf">is_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5463,7 +5474,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_is_subset"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_is_subset">[docs]</a>    <span class="k">def</span> <span class="nf">_test_is_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_is_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`is_subset` is implemented correctly.</span>
 
@@ -5485,9 +5496,9 @@
             <span class="c1"># We cannot determine half spaces for points whose coordinates are not over the base ring.</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HyperbolicPointFromGeodesic</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_subset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="n">half_spaces</span><span class="p">)))</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_subset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="n">half_spaces</span><span class="p">)))</span>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._an_element_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._an_element_">[docs]</a>    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a point of this set.</span>
 
@@ -5527,16 +5538,18 @@
                 <span class="s2">&quot;cannot return points of this set yet because it has no vertices&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._enhance_plot"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._enhance_plot">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_enhance_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Modify the ``plot`` of this set to improve the resulting plot.</span>
 
 <span class="sd">        Currently, this adds the unit circle to plots in the Klein disk model.</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
 <span class="sd">            sage: H = HyperbolicPlane()</span>
@@ -5547,6 +5560,8 @@
 <span class="sd">            sage: type(p)._enhance_plot(plot, model=&quot;half_plane&quot;)</span>
 <span class="sd">            ...Graphics object consisting of 0 graphics primitives</span>
 
+<span class="sd">        .. jupyter-execute::</span>
+
 <span class="sd">            sage: type(p)._enhance_plot(plot, model=&quot;klein&quot;)</span>
 <span class="sd">            ...Graphics object consisting of 1 graphics primitive</span>
 
@@ -5556,7 +5571,7 @@
 
             <span class="n">plot</span> <span class="o">=</span> <span class="n">circle</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#d1d1d1&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">plot</span>
 
-        <span class="k">return</span> <span class="n">plot</span></div>
+        <span class="k">return</span> <span class="n">plot</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.is_empty"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.is_empty">[docs]</a>    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5640,7 +5655,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not implement dimension() yet&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_dimension"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_dimension">[docs]</a>    <span class="k">def</span> <span class="nf">_test_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that :meth:`dimension` is implemented correctly.</span>
 
@@ -5664,7 +5679,7 @@
 
         <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">()</span><span class="o">.</span><span class="n">dimension</span><span class="p">(),</span> <span class="n">dimension</span><span class="p">)</span>
         <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_point</span><span class="p">(),</span> <span class="n">dimension</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">(),</span> <span class="n">dimension</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">(),</span> <span class="n">dimension</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.is_point"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.is_point">[docs]</a>    <span class="k">def</span> <span class="nf">is_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5778,7 +5793,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HyperbolicOrientedConvexSet</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_is_oriented"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_is_oriented">[docs]</a>    <span class="k">def</span> <span class="nf">_test_is_oriented</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_is_oriented</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this set implements :meth:`is_oriented` correctly.</span>
 
@@ -5796,7 +5811,7 @@
             <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="p">)</span>
 
             <span class="c1"># Verify that neg inverts the orientation of the set</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="p">))</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="p">))</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.edges"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5871,7 +5886,7 @@
 
         <span class="k">return</span> <span class="n">HyperbolicEdges</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_edges"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_edges">[docs]</a>    <span class="k">def</span> <span class="nf">_test_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this set implements :meth:`edges` correctly.</span>
 
@@ -5897,7 +5912,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
-            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">endpoints</span><span class="p">,</span> <span class="n">vertices</span><span class="p">)</span></div>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">endpoints</span><span class="p">,</span> <span class="n">vertices</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet.__hash__"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.__hash__">[docs]</a>    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -5933,7 +5948,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the set </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not hashable&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexSet._test_hash"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._test_hash">[docs]</a>    <span class="k">def</span> <span class="nf">_test_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this set implements a good hash function.</span>
 
@@ -5968,7 +5983,7 @@
         <span class="c1"># good hash function.</span>
         <span class="k">for</span> <span class="n">subset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">some_elements</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">subset</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">hash</span><span class="p">(</span><span class="n">subset</span><span class="p">))</span></div>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">hash</span><span class="p">(</span><span class="n">subset</span><span class="p">))</span>
 
 <div class="viewcode-block" id="HyperbolicConvexSet._isometry_conditions"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._isometry_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -6135,7 +6150,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">facade_for</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexFacade._element_constructor_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexFacade._element_constructor_">[docs]</a>    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_element_constructor_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return ``x`` as a point of this set.</span>
 
@@ -6165,7 +6180,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;point not contained in this set&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">x</span></div>
+        <span class="k">return</span> <span class="n">x</span>
 
 <div class="viewcode-block" id="HyperbolicConvexFacade.base_ring"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexFacade.base_ring">[docs]</a>    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -6284,7 +6299,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geodesic</span><span class="o">.</span><span class="n">equation</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicHalfSpace._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this half space.</span>
 
@@ -6310,7 +6325,7 @@
             <span class="n">cmp</span> <span class="o">=</span> <span class="s2">&quot;≤&quot;</span>
             <span class="n">geodesic</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">())</span>
 
-        <span class="k">return</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">cmp</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">geodesic</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">cmp</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicHalfSpace.half_spaces"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace.half_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -6630,7 +6645,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">()</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HyperbolicHalfSpace._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of this half space under ``isometry``.</span>
 
@@ -6657,7 +6672,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geodesic</span><span class="o">.</span><span class="n">apply_isometry</span><span class="p">(</span>
             <span class="n">isometry</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="n">on_right</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">()</span></div>
+        <span class="p">)</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HyperbolicHalfSpace.__hash__"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace.__hash__">[docs]</a>    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -6820,7 +6835,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_c</span> <span class="o">=</span> <span class="n">c</span></div>
 
-<div class="viewcode-block" id="HyperbolicGeodesic._check"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic._check">[docs]</a>    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate the equation defining this geodesic.</span>
 
@@ -6856,7 +6871,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ultra_ideal</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;equation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_a</span><span class="si">}</span><span class="s2"> + (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="si">}</span><span class="s2">)*x + (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="si">}</span><span class="s2">)*y = 0 does not define a chord in the Klein model&quot;</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicGeodesic.is_ideal"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic.is_ideal">[docs]</a>    <span class="k">def</span> <span class="nf">is_ideal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -6941,7 +6956,7 @@
             <span class="o">&lt;</span> <span class="mi">0</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicGeodesic._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this geodesic.</span>
 
@@ -7016,7 +7031,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">polynomial_part</span><span class="p">)</span><span class="si">}</span><span class="s2"> = 0</span><span class="se">}}</span><span class="s2">&quot;</span>
 
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;printing not supported in this model&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;printing not supported in this model&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicGeodesic.equation"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic.equation">[docs]</a>    <span class="k">def</span> <span class="nf">equation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -7144,7 +7159,7 @@
 
         <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span></div>
 
-<div class="viewcode-block" id="HyperbolicGeodesic._normalize_coefficients"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic._normalize_coefficients">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_normalize_coefficients</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">strategy</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the normalized coefficients for the equation of a geodesic.</span>
@@ -7211,7 +7226,7 @@
 
             <span class="k">return</span> <span class="n">R</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">d</span><span class="p">),</span> <span class="n">R</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">d</span><span class="p">),</span> <span class="n">R</span><span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span>
 
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown normalization </span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown normalization </span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicGeodesic.half_spaces"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic.half_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -7241,7 +7256,9 @@
 
 <span class="sd">        - ``model`` -- one of ``&quot;half_plane&quot;`` and ``&quot;klein&quot;`` (default: ``&quot;half_plane&quot;``)</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
 <span class="sd">            sage: H = HyperbolicPlane()</span>
@@ -7921,7 +7938,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="o">*</span><span class="n">xy</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicGeodesic._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the result of applying the ``isometry`` to this geodesic.</span>
 
@@ -8002,9 +8019,9 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(</span>
             <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">oriented</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_oriented</span><span class="p">()</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicGeodesic._isometry_equations"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic._isometry_equations">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">λ</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">λ</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return equations that must be satisfied if this set converts to</span>
 <span class="sd">        ``image`` under ``isometry`` using ``λ`` as a free variable for the</span>
@@ -8044,9 +8061,9 @@
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
 
         <span class="n">condition</span> <span class="o">=</span> <span class="n">vector</span><span class="p">((</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="p">))</span> <span class="o">*</span> <span class="n">isometry</span> <span class="o">-</span> <span class="n">λ</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="p">(</span><span class="n">fb</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">fa</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">condition</span><span class="o">.</span><span class="n">list</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">condition</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
 
-<div class="viewcode-block" id="HyperbolicGeodesic._an_element_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic._an_element_">[docs]</a>    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a finite point on this geodesic.</span>
 
@@ -8071,7 +8088,7 @@
         <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">cross</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">cross</span>
-        <span class="k">return</span> <span class="n">cross</span></div>
+        <span class="k">return</span> <span class="n">cross</span>
 
 <div class="viewcode-block" id="HyperbolicGeodesic.vertices"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicGeodesic.vertices">[docs]</a>    <span class="k">def</span> <span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -8414,7 +8431,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">left_half_space</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HyperbolicOrientedGeodesic._configuration"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic._configuration">[docs]</a>    <span class="k">def</span> <span class="nf">_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a classification of the (Euclidean) angle between this geodesic</span>
 <span class="sd">        and ``other`` in the Klein model.</span>
@@ -8511,7 +8528,7 @@
 
         <span class="c1"># We probably would not need to consider the concave case if we always</span>
         <span class="c1"># packed all geodesics into a bounding box that contains the unit disk.</span>
-        <span class="k">return</span> <span class="s2">&quot;concave&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;concave&quot;</span>
 
 <div class="viewcode-block" id="HyperbolicOrientedGeodesic.parametrize"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic.parametrize">[docs]</a>    <span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -8702,7 +8719,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HyperbolicPoint._check"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint._check">[docs]</a>    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this is a (possibly infinite) point in the hyperbolic plane.</span>
 
@@ -8736,7 +8753,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ultra_ideal</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;point </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;klein&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not in the unit disk in the Klein model&quot;</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicPoint.is_ideal"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint.is_ideal">[docs]</a>    <span class="k">def</span> <span class="nf">is_ideal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -9142,7 +9159,9 @@
 
 <span class="sd">        - ``model`` -- one of ``&quot;half_plane&quot;`` and ``&quot;klein&quot;`` (default: ``&quot;half_plane&quot;``)</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
 <span class="sd">            sage: H = HyperbolicPlane()</span>
@@ -9247,7 +9266,7 @@
 
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="HyperbolicPoint._isometry_equations"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint._isometry_equations">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">λ</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_isometry_equations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">λ</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return equations that must be satisfied if this set converts to</span>
 <span class="sd">        ``image`` under ``isometry`` using ``λ`` as a free variable for the</span>
@@ -9290,7 +9309,7 @@
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
 
         <span class="n">equations</span> <span class="o">=</span> <span class="n">λ</span> <span class="o">*</span> <span class="n">vector</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span> <span class="o">-</span> <span class="n">isometry</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="p">(</span><span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">fz</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">equations</span><span class="o">.</span><span class="n">list</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">equations</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HyperbolicPoint.__contains__"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint.__contains__">[docs]</a>    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -9381,7 +9400,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_coordinates</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicPointFromCoordinates._coordinates_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates._coordinates_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_coordinates_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_coordinates_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the coordinates of this point in the Klein model.</span>
 
@@ -9413,9 +9432,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot produce coordinates for this ring yet&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
-<div class="viewcode-block" id="HyperbolicPointFromCoordinates._richcmp_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates._richcmp_">[docs]</a>    <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return how this point compares to ``other`` with respect to the ``op``</span>
 <span class="sd">        operator.</span>
@@ -9482,9 +9501,9 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicPointFromCoordinates._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this point.</span>
 
@@ -9520,7 +9539,7 @@
         <span class="c1"># We represent x + y*I in R[[I]] so we do not have to reimplement printing ourselves.</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span>
             <span class="n">PowerSeriesRing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">names</span><span class="o">=</span><span class="s2">&quot;I&quot;</span><span class="p">)(</span><span class="nb">list</span><span class="p">(</span><span class="n">coordinates</span><span class="p">))</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicPointFromCoordinates.change"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates.change">[docs]</a>    <span class="k">def</span> <span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oriented</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -9581,7 +9600,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="HyperbolicPointFromCoordinates._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the result of applying the ``isometry`` to this hyperbolic</span>
 <span class="sd">        point.</span>
@@ -9616,7 +9635,7 @@
             <span class="n">isometry</span> <span class="o">=</span> <span class="n">isometry</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span>
 
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">isometry</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span> <span class="o">/</span> <span class="n">z</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span> <span class="o">/</span> <span class="n">z</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicPointFromCoordinates.random_set"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromCoordinates.random_set">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">random_set</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
@@ -9764,7 +9783,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="HyperbolicPointFromGeodesic._coordinates_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromGeodesic._coordinates_klein">[docs]</a>    <span class="nd">@cached_method</span>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">_coordinates_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the coordinates of this point in the Klein model.</span>
@@ -9854,9 +9873,9 @@
                     <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">)</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicPointFromGeodesic._richcmp_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromGeodesic._richcmp_">[docs]</a>    <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return how this point compares to ``other`` with respect to the ``op``</span>
 <span class="sd">        operator.</span>
@@ -9935,9 +9954,9 @@
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geodesic</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_richcmp_</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicPointFromGeodesic._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromGeodesic._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this point.</span>
 
@@ -9976,7 +9995,7 @@
 
         <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
 
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">RR</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_ring</span><span class="p">(</span><span class="n">RR</span><span class="p">))</span>
 
 <div class="viewcode-block" id="HyperbolicPointFromGeodesic.change"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromGeodesic.change">[docs]</a>    <span class="k">def</span> <span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oriented</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -10082,7 +10101,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geodesic</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="HyperbolicPointFromGeodesic._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPointFromGeodesic._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the result of applying the ``isometry`` to this hyperbolic</span>
 <span class="sd">        point.</span>
@@ -10129,7 +10148,7 @@
             <span class="c1"># geodesic</span>
             <span class="n">image</span> <span class="o">=</span> <span class="o">-</span><span class="n">image</span>
 
-        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon">[docs]</a><span class="k">class</span> <span class="nc">HyperbolicConvexPolygon</span><span class="p">(</span><span class="n">HyperbolicConvexFacade</span><span class="p">):</span>
@@ -10196,7 +10215,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_half_spaces</span> <span class="o">=</span> <span class="n">half_spaces</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_marked_vertices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexPolygon._check"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._check">[docs]</a>    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that the marked vertices of this polygon are actually on the edges of the polygon.</span>
 
@@ -10248,7 +10267,7 @@
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;marked vertex must not be a non-marked vertex of the polygon&quot;</span>
-                <span class="p">)</span></div>
+                <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon._normalize"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._normalize">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -10352,7 +10371,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexPolygon._normalize_drop_trivially_redundant"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._normalize_drop_trivially_redundant">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize_drop_trivially_redundant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_normalize_drop_trivially_redundant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a sublist of the ``half_spaces`` defining this polygon without</span>
 <span class="sd">        changing their intersection by removing some trivially redundant half</span>
@@ -10419,7 +10438,7 @@
             <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">assume_minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon._normalize_drop_euclidean_redundant"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._normalize_drop_euclidean_redundant">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize_drop_euclidean_redundant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -11181,7 +11200,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_extend_to_euclidean_boundary</span><span class="p">(</span><span class="n">point</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexPolygon._normalize_extend_to_euclidean_boundary"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._normalize_extend_to_euclidean_boundary">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize_extend_to_euclidean_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_normalize_extend_to_euclidean_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extend ``point`` to a (Euclidean) half space which intersects the</span>
 <span class="sd">        intersection of the ``half_spaces`` defining this polygon in more than</span>
@@ -11238,9 +11257,9 @@
             <span class="c1"># There is no actual intersection in the hyperbolic plane.</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">empty_set</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">point</span></div>
+        <span class="k">return</span> <span class="n">point</span>
 
-<div class="viewcode-block" id="HyperbolicConvexPolygon._normalize_drop_marked_vertices"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._normalize_drop_marked_vertices">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize_drop_marked_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_normalize_drop_marked_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a copy of this polygon with marked vertices removed that are</span>
 <span class="sd">        already vertices of the polygon anyway.</span>
@@ -11274,7 +11293,7 @@
             <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">assume_minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">marked_vertices</span><span class="o">=</span><span class="n">vertices</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon.dimension"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.dimension">[docs]</a>    <span class="k">def</span> <span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -11544,7 +11563,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_half_spaces</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexPolygon._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this polygon.</span>
 
@@ -11567,7 +11586,7 @@
         <span class="n">vertices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">vertex</span><span class="p">)</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marked_vertices</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">vertices</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">half_spaces</span><span class="si">}</span><span class="s2"> ∪ </span><span class="se">{{</span><span class="si">{</span><span class="n">vertices</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="n">half_spaces</span></div>
+        <span class="k">return</span> <span class="n">half_spaces</span>
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon.plot"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -11684,7 +11703,7 @@
 <span class="sd">                               CartesianPathPlotCommand(code=&#39;RAYTO&#39;, args=(0, 1)),</span>
 <span class="sd">                               CartesianPathPlotCommand(code=&#39;LINETO&#39;, args=(0.000000000000000, 0.000000000000000))])</span>
 
-<span class="sd">        Simalarly in the Klein model picture, the arc of infinite points is</span>
+<span class="sd">        Similarly in the Klein model picture, the arc of infinite points is</span>
 <span class="sd">        only part of the fill, not of the stroke::</span>
 
 <span class="sd">            sage: P.plot(&quot;klein&quot;)[1]</span>
@@ -11872,7 +11891,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_half_spaces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_marked_vertices</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="HyperbolicConvexPolygon._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of this polygon under ``isometry``.</span>
 
@@ -11915,7 +11934,7 @@
             <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">assume_minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">marked_vertices</span><span class="o">=</span><span class="n">marked_vertices</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicConvexPolygon._isometry_conditions"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon._isometry_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">_isometry_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -12187,7 +12206,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">start</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="n">end</span></div>
 
-<div class="viewcode-block" id="HyperbolicSegment._check"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicSegment._check">[docs]</a>    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">require_normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify that this is a valid segment.</span>
 
@@ -12266,7 +12285,7 @@
             <span class="k">if</span> <span class="n">require_normalized</span> <span class="ow">and</span> <span class="n">end</span> <span class="o">&lt;=</span> <span class="n">start</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;end point of segment must be after start point on the underlying geodesic&quot;</span>
-                <span class="p">)</span></div>
+                <span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicSegment._normalize"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicSegment._normalize">[docs]</a>    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -12370,7 +12389,7 @@
             <span class="n">oriented</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_oriented</span><span class="p">(),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicSegment._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicSegment._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the image of this segment under ``isometry``.</span>
 
@@ -12445,9 +12464,9 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span>
             <span class="n">geodesic</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">oriented</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_oriented</span><span class="p">()</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicSegment._endpoint_half_spaces"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicSegment._endpoint_half_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">_endpoint_half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_endpoint_half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the half spaces that stop the segment at its endpoints.</span>
 
@@ -12476,9 +12495,9 @@
             <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">half_space</span><span class="p">(</span>
                 <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span> <span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
-<div class="viewcode-block" id="HyperbolicSegment._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicSegment._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this segment.</span>
 
@@ -12495,7 +12514,7 @@
         <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_geodesic</span><span class="p">)]</span>
         <span class="n">bounds</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">half_space</span><span class="p">)</span> <span class="k">for</span> <span class="n">half_space</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_half_spaces</span><span class="p">())</span>
 
-        <span class="k">return</span> <span class="s2">&quot; ∩ &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s2">&quot; ∩ &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicSegment.half_spaces"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicSegment.half_spaces">[docs]</a>    <span class="k">def</span> <span class="nf">half_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -12530,7 +12549,9 @@
 <span class="sd">        See :func:`flatsurf.graphical.hyperbolic.hyperbolic_path` for additional keyword arguments to</span>
 <span class="sd">        customize the plot.</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
 <span class="sd">            sage: from flatsurf.geometry.hyperbolic import HyperbolicSegment</span>
@@ -13253,7 +13274,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="HyperbolicEmptySet._test_an_element"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet._test_an_element">[docs]</a>    <span class="k">def</span> <span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not run tests on an element of this empty set (disabling the generic</span>
 <span class="sd">        tests run by all parents otherwise.)</span>
@@ -13264,9 +13285,9 @@
 <span class="sd">            sage: H = HyperbolicPlane()</span>
 <span class="sd">            sage: H._test_an_element()</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HyperbolicEmptySet._test_elements"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet._test_elements">[docs]</a>    <span class="k">def</span> <span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do not run any tests on the elements of this empty set (disabling the</span>
 <span class="sd">        generic tests run by all parents otherwise.)</span>
@@ -13277,9 +13298,9 @@
 <span class="sd">            sage: H = HyperbolicPlane()</span>
 <span class="sd">            sage: H._test_elements()</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HyperbolicEmptySet._repr_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of the empty set.</span>
 
@@ -13292,9 +13313,9 @@
 <span class="sd">            {}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
 
-<div class="viewcode-block" id="HyperbolicEmptySet._apply_isometry_klein"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet._apply_isometry_klein">[docs]</a>    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_apply_isometry_klein</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isometry</span><span class="p">,</span> <span class="n">on_right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the result of applying the ``isometry`` to the empty set, i.e.,</span>
 <span class="sd">        the empty set.</span>
@@ -13320,7 +13341,7 @@
 <span class="sd">            True</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="HyperbolicEmptySet.plot"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;half_plane&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -13332,7 +13353,9 @@
 
 <span class="sd">        Any keyword arguments are ignored.</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
 <span class="sd">            sage: H = HyperbolicPlane()</span>
@@ -13467,7 +13490,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">HyperbolicVertices</span><span class="p">([])</span></div>
 
-<div class="viewcode-block" id="HyperbolicEmptySet._an_element_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet._an_element_">[docs]</a>    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a point in this set, i.e., raise an exception since there are no</span>
 <span class="sd">        points.</span>
@@ -13486,7 +13509,7 @@
 <span class="sd">            Exception: empty set has no points</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;empty set has no points&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;empty set has no points&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicEmptySet.random_set"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet.random_set">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">random_set</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
@@ -14056,7 +14079,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="o">*</span><span class="n">sets</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HyperbolicVertices._slope"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicVertices._slope">[docs]</a>    <span class="k">def</span> <span class="nf">_slope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_slope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the slope of ``vertex`` with respect to the chosen reference</span>
 <span class="sd">        vertex of this set as a tuple (Δy, Δx).</span>
@@ -14077,7 +14100,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">coordinates</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">sy</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">sx</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">sy</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">sx</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HyperbolicVertices._lt_"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicVertices._lt_">[docs]</a>    <span class="k">def</span> <span class="nf">_lt_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -14527,7 +14550,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -14554,5 +14577,8 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

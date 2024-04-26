@@ -1,0 +1,14 @@
+/* force rendering of jupyter-execute blocks to match rendering of other doctests */
+div.jupyter_container {
+  border: 0px !important;
+  box-shadow: none !important;
+}
+
+.jupyter_container div.code_cell {
+  border: 0px !important;
+}
+
+/* center all plots */
+.jupyter_container .cell_output {
+  text-align: center;
+}

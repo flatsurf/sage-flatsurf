@@ -9,10 +9,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css" />
     
     
 
@@ -268,7 +271,15 @@
         <article role="main">
           <h1>Source code for flatsurf.graphical.surface</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">EXAMPLES::</span>
+<span class="sd">.. jupyter-execute::</span>
+<span class="sd">    :hide-code:</span>
+
+<span class="sd">    # Allow jupyter-execute blocks in this module to contain doctests</span>
+<span class="sd">    import jupyter_doctest_tweaks</span>
+
+<span class="sd">EXAMPLES:</span>
+
+<span class="sd">.. jupyter-execute::</span>
 
 <span class="sd">    sage: import flatsurf</span>
 <span class="sd">    sage: flatsurf.translation_surfaces.veech_2n_gon(4).plot()</span>
@@ -404,7 +415,9 @@
 <span class="sd">    If adjacencies is not defined and the surface is finite, make_all_visible()</span>
 <span class="sd">    is called to make all polygons visible.</span>
 
-<span class="sd">    EXAMPLES::</span>
+<span class="sd">    EXAMPLES:</span>
+
+<span class="sd">    .. jupyter-execute::</span>
 
 <span class="sd">        sage: from flatsurf import similarity_surfaces</span>
 <span class="sd">        sage: from flatsurf.graphical.surface import GraphicalSurface</span>
@@ -688,7 +701,9 @@
 
 <span class="sd">        - ``limit`` -- (default ``None``) maximal number of additional polygons to make visible</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import similarity_surfaces</span>
 
@@ -697,6 +712,8 @@
 <span class="sd">            sage: g.make_all_visible()</span>
 <span class="sd">            sage: g.plot()</span>
 <span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
 <span class="sd">            sage: g = s.graphical_surface(adjacencies=[])</span>
@@ -1335,7 +1352,9 @@
 <span class="sd">          ``_options`` is merged with the existing options of this surface. See</span>
 <span class="sd">          examples below for details.</span>
 
-<span class="sd">        EXAMPLES::</span>
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: from flatsurf import similarity_surfaces</span>
 <span class="sd">            sage: s = similarity_surfaces.example()</span>
@@ -1346,7 +1365,9 @@
 
 <span class="sd">        Keyword arguments that end in ``_options`` are merged into the</span>
 <span class="sd">        corresponding attribute before plotting; see :class:`GraphicalSurface`</span>
-<span class="sd">        for a list of all supported ``_options``::</span>
+<span class="sd">        for a list of all supported ``_options``:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: gs.plot(polygon_label_options={&quot;color&quot;: &quot;red&quot;})</span>
 <span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
@@ -1354,12 +1375,16 @@
 <span class="sd">        Keyword arguments that are prefixed with such an aspect of plotting,</span>
 <span class="sd">        are also merged into the corresponding attribute before plotting; see</span>
 <span class="sd">        :class:`GraphicalSurface` for a list of all supported prefixes, i.e.,</span>
-<span class="sd">        ``_options``::</span>
+<span class="sd">        ``_options``:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: gs.plot(polygon_label_color=&quot;red&quot;)</span>
 <span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
 
-<span class="sd">        All other arguments are passed to the polygon plotting itself::</span>
+<span class="sd">        All other arguments are passed to the polygon plotting itself:</span>
+
+<span class="sd">        .. jupyter-execute::</span>
 
 <span class="sd">            sage: gs.plot(fill=None)</span>
 <span class="sd">            ...Graphics object consisting of 13 graphics primitives</span>
@@ -1469,7 +1494,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1496,5 +1521,8 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>

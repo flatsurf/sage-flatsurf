@@ -9,10 +9,13 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
-    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monoai.css" />
+    <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css" />
     
     
 
@@ -352,7 +355,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Surface_base._refine_category_"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_base._refine_category_">[docs]</a>    <span class="k">def</span> <span class="nf">_refine_category_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_refine_category_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refine the category of this surface to a subcategory ``category``.</span>
 
@@ -382,7 +385,7 @@
 
         <span class="c1"># The (cached) an_element is going to fail its test suite because it has the wrong category now.</span>
         <span class="c1"># Make sure that we create a new copy of an_element when requested.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_an_element</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_an_element</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="MutablePolygonalSurface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface">[docs]</a><span class="k">class</span> <span class="nc">MutablePolygonalSurface</span><span class="p">(</span><span class="n">Surface_base</span><span class="p">):</span>
@@ -412,7 +415,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MutablePolygonalSurface._test_refined_category"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface._test_refined_category">[docs]</a>    <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_test_refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test that this surface has been refined to its best possible</span>
 <span class="sd">        subcategory (that can be computed cheaply.)</span>
@@ -435,7 +438,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutable</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_refined_category</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_test_refined_category</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MutablePolygonalSurface.add_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.add_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">add_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -821,7 +824,7 @@
 
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()),</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roots</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="MutablePolygonalSurface._repr_"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface._repr_">[docs]</a>    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_repr_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a printable representation of this surface.</span>
 
@@ -845,9 +848,9 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;Empty Surface&quot;</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_surface</span><span class="p">()</span><span class="si">}</span><span class="s2"> built from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_polygons</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_surface</span><span class="p">()</span><span class="si">}</span><span class="s2"> built from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_describe_polygons</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 
-<div class="viewcode-block" id="MutablePolygonalSurface._describe_surface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface._describe_surface">[docs]</a>    <span class="k">def</span> <span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string describing this kind of surface.</span>
 
@@ -861,9 +864,9 @@
 <span class="sd">            &#39;Translation Surface&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Surface&quot;</span></div>
+        <span class="k">return</span> <span class="s2">&quot;Surface&quot;</span>
 
-<div class="viewcode-block" id="MutablePolygonalSurface._describe_polygons"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface._describe_polygons">[docs]</a>    <span class="k">def</span> <span class="nf">_describe_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_describe_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string describing the nature of the polygons that make up this surface.</span>
 
@@ -905,7 +908,7 @@
         <span class="k">if</span> <span class="n">collated</span><span class="p">:</span>
             <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">collated</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="n">description</span>
 
-        <span class="k">return</span> <span class="n">description</span></div>
+        <span class="k">return</span> <span class="n">description</span>
 
 <div class="viewcode-block" id="MutablePolygonalSurface.set_root"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface.set_root">[docs]</a>    <span class="k">def</span> <span class="nf">set_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1187,7 +1190,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OrientedSimilaritySurface._describe_surface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.OrientedSimilaritySurface._describe_surface">[docs]</a>    <span class="k">def</span> <span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_describe_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
             <span class="k">return</span> <span class="s2">&quot;Surface built from infinitely many polygons&quot;</span>
 
@@ -1222,7 +1225,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_with_boundary</span><span class="p">():</span>
             <span class="n">description</span> <span class="o">+=</span> <span class="s2">&quot; with boundary&quot;</span>
 
-        <span class="k">return</span> <span class="n">description</span></div></div>
+        <span class="k">return</span> <span class="n">description</span></div>
 
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface_base"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface_base">[docs]</a><span class="k">class</span> <span class="nc">MutableOrientedSimilaritySurface_base</span><span class="p">(</span><span class="n">OrientedSimilaritySurface</span><span class="p">):</span>
@@ -1741,7 +1744,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;did not find any root to split&quot;</span></div>
 
-<div class="viewcode-block" id="MutableOrientedSimilaritySurface._unglue_polygon"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface._unglue_polygon">[docs]</a>    <span class="k">def</span> <span class="nf">_unglue_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_unglue_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all gluigns from polygon ``label``.</span>
 
@@ -1765,7 +1768,7 @@
                 <span class="k">continue</span>
             <span class="n">cross_label</span><span class="p">,</span> <span class="n">cross_edge</span> <span class="o">=</span> <span class="n">cross</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_gluings</span><span class="p">[</span><span class="n">cross_label</span><span class="p">][</span><span class="n">cross_edge</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gluings</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gluings</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span>
 
 <div class="viewcode-block" id="MutableOrientedSimilaritySurface.set_edge_pairing"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.set_edge_pairing">[docs]</a>    <span class="k">def</span> <span class="nf">set_edge_pairing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label0</span><span class="p">,</span> <span class="n">edge0</span><span class="p">,</span> <span class="n">label1</span><span class="p">,</span> <span class="n">edge1</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3492,7 +3495,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2016-2023, the sage-flatsurf authors
+                Copyright &#169; 2016-2024, the sage-flatsurf authors
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -3519,5 +3522,8 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/thebelab-helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
     </body>
 </html>
