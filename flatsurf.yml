@@ -15,6 +15,7 @@ dependencies:
   - notebook
   - matplotlib-base
   - pip
+  - pyintervalxt>=3,<4
   - pyeantic>=1.2.1,<2
   - pyexactreal>=3.1.0,<4
   - pyflatsurf>=3.13.3,<4
