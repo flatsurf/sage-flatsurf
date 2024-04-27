@@ -15,7 +15,7 @@ surfaces](https://en.wikipedia.org/wiki/Translation_surface) and
 [half-translation
 surfaces](https://en.wikipedia.org/wiki/Translation_surface#Half-translation_surfaces).
 
-Please consult our [documentation](https://flatsurf.github.io/sage-flatsurf/)
+Take the [Tour of flatsurf](https://flatsurf.github.io/sage-flatsurf/examples/tour)
 to see some of the capabilities of sage-flatsurf.
 
 sage-flatsurf is free software, released under the [GPL v2 (or later)](./COPYING).
