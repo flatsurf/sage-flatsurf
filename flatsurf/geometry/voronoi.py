@@ -188,6 +188,18 @@ class Cell:
         """
         return self._center
 
+    def polygon_cell(self, label, coordinates):
+        r"""
+        Return a restriction of this cell to the polygon with ``label`` that
+        contains ``coordinates``.
+        """
+        for polygon_cell in self.polygon_cells(label=label):
+            if polygon_cell.contains_point(coordinates):
+                return polygon_cell
+
+        assert not self.contains_point(self.surface()(label, coordinates))
+        return None
+
     def polygon_cells(self, label=None):
         r"""
         Return restrictions of this cell to all polygons of the surface.
@@ -232,17 +244,73 @@ class Cell:
         """
         return min(boundary.inradius() for boundary in self.boundary())
 
-    def point_from_complex(self, z):
+    def complex_from_point(self, p):
+        r"""
+        .. NOTE::
+
+        See :meth:`point_from_complex` for a description of the coordinate
+        system change involved.
+        """
+        for label, coordinates in p.representatives():
+            polygon_cell = self.polygon_cell(label, coordinates)
+            if polygon_cell is not None:
+                break
+        else:
+            raise ValueError("point not in cell")
+
+        k = polygon_cell.root_branch(coordinates)
+        d = self._center.angle() - 1
+
+        from sage.all import CDF
+        zeta = CDF.zeta(d + 1) ** k
+        z =  CDF(*(coordinates - polygon_cell.center()))
+
+        return zeta * z.nth_root(d + 1)
+
+    def point_from_complex(self, y):
+        r"""
+        Return the point of this cell which is given by the local coordinate y.
+
+        Return ``None`` if there is no such point, i.e., the coordinate
+        describes a point outside of the cell.
+
+        .. NOTE::
+
+        Points of the surface are usually given by their flat coordinate `z` in
+        one of the polygons that forms the surface. However, at a singularity
+        of degree d, we can perform a change of coordinates and write
+
+        y(z) = ζ_{d+1}^κ (z-α)^{1/(d+1)}
+
+        where z=α and y=0 are coordinates for the singularity and the last
+        exponent denotes the principal `d+1`-st root of `z`, see also
+        :meth:`root_branch` for the choice of root.
+
+        Here, we take a `y` coordinate and transform it back to the
+        corresponding `z` coordinate. We have
+
+        z(y) = y^{d+1} + α.
+
+        """
         from math import pi
 
-        arg = z.arg()
-        if arg < 0:
-            arg += 2*pi
+        d = self._center.angle() - 1
 
-        branch = int(arg * self._center.angle() // (2*pi))
+        arg = y.arg() * (d + 1)
+
+        if arg < 0:
+            arg += 2*pi * (d + 1)
+
+        branch = 0
+        while arg >= pi:
+            arg -= 2*pi
+            branch += 1
+
+        if branch > d:
+            branch -= d + 1
 
         from sage.all import vector
-        xy = vector(list(z ** self._center.angle()))
+        xy = vector(list(y ** (d + 1)))
 
         # TODO: This is all not too robust since we are feeding
         # floating point numbers into exact polygons here. As a
@@ -258,17 +326,17 @@ class Cell:
 
             from flatsurf.geometry.euclidean import ccw
             if ccw(polygon.edge(vertex), xy) >= 0 and ccw(-polygon.edge(vertex - 1), xy) < 0:
+                p = (center + xy).change_ring(self.surface().base_ring())
+
                 from flatsurf.geometry.euclidean import OrientedSegment
-                p = center + xy
-                p = p.change_ring(self.surface().base_ring())
-                if polygon_cell.root_branch(OrientedSegment(p, p + xy)) == branch:
+                if polygon_cell.root_branch(p) == branch:
                     if polygon.get_point_position(p).is_outside():
                         return None
 
                     if not polygon_cell.contains_point(p):
                         return None
 
-                    print(f"Root at distance {xy.norm():.5} of {self.center()} (angle {2*self.center().angle()}π)")
+                    # print(f"Point at distance {xy.norm():.5} of {self.center()} (angle {2*self.center().angle()}π)")
 
                     return self.surface()(polygon_cell.label(), p)
 
@@ -730,41 +798,7 @@ class PolygonCellWithCenter(PolygonCell):
 
         return primitive_label, primitive_vertex
 
-    def root_branch(self, segment):
-        r"""
-        Return which branch can be taken consistently along the ``segment``
-        when developing an n-th root at the center of this Voronoi cell.
-
-        EXAMPLES::
-
-            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.regular_octagon()
-            sage: V = VoronoiDiagram(S, S.vertices())
-            sage: cell = V.polygon_cell(0, (0, 0))
-
-            sage: from flatsurf.geometry.euclidean import OrientedSegment
-            sage: cell.root_branch(OrientedSegment((0, -1), (0, 1)))
-            Traceback (most recent call last):
-            ...
-            ValueError: segment does not permit a consistent choice of root
-
-            sage: cell.root_branch(OrientedSegment((0, 0), (0, 1/2)))
-            0
-
-            sage: cell = V.polygon_cell(0, (1, 0))
-            sage: cell.root_branch(OrientedSegment((0, 0), (0, 1/2)))
-            1
-
-            sage: a = S.base_ring().gen()
-            sage: cell = V.polygon_cell(0, (1 + a/2, a/2))
-            sage: cell.root_branch(OrientedSegment((1, 1/2 + a/2), (1 + a/2, 1/2 + a/2)))
-            2
-
-        """
-        if self.split_segment_with_constant_root_branches(segment) != [segment]:
-            raise ValueError("segment does not permit a consistent choice of root")
-
+    def root_branch(self, point):
         angle = self.cell().center().angle()
 
         assert angle >= 1
@@ -776,16 +810,13 @@ class PolygonCellWithCenter(PolygonCell):
         # "smallest" polygon containing such a ray.
         primitive_label, primitive_vertex = self._root_branch_primitive()
 
-        # Walk around the vertex to determine the branch of the root for the
-        # (midpoint of) the segment.
-        point = segment.midpoint()
-
         branch = 0
         label = primitive_label
         vertex = primitive_vertex
 
         from flatsurf.geometry.euclidean import ccw
 
+        # Walk around the vertex to determine the branch of the root.
         while True:
             polygon = self.surface().polygon(label)
             if label == self.label() and polygon.vertex(vertex) == self.center():
@@ -799,6 +830,43 @@ class PolygonCellWithCenter(PolygonCell):
                 branch %= angle
 
             label, vertex = self.surface().opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
+
+    def root_branch_for_segment(self, segment):
+        r"""
+        Return which branch can be taken consistently along the ``segment``
+        when developing an n-th root at the center of this Voronoi cell.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.voronoi import VoronoiDiagram
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.regular_octagon()
+            sage: V = VoronoiDiagram(S, S.vertices())
+            sage: cell = V.polygon_cell(0, (0, 0))
+
+            sage: from flatsurf.geometry.euclidean import OrientedSegment
+            sage: cell.root_branch_for_segment(OrientedSegment((0, -1), (0, 1)))
+            Traceback (most recent call last):
+            ...
+            ValueError: segment does not permit a consistent choice of root
+
+            sage: cell.root_branch_for_segment(OrientedSegment((0, 0), (0, 1/2)))
+            0
+
+            sage: cell = V.polygon_cell(0, (1, 0))
+            sage: cell.root_branch_for_segment(OrientedSegment((0, 0), (0, 1/2)))
+            1
+
+            sage: a = S.base_ring().gen()
+            sage: cell = V.polygon_cell(0, (1 + a/2, a/2))
+            sage: cell.root_branch_for_segment(OrientedSegment((1, 1/2 + a/2), (1 + a/2, 1/2 + a/2)))
+            2
+
+        """
+        if self.split_segment_with_constant_root_branches(segment) != [segment]:
+            raise ValueError("segment does not permit a consistent choice of root")
+
+        return self.root_branch(segment.midpoint())
 
     def __repr__(self):
         return f"{self.cell()} restricted to polygon {self.label()} at {self._center}"
@@ -869,7 +937,7 @@ class LineSegmentPolygonCell(PolygonCellWithCenter):
         if graphical_polygon is None:
             graphical_polygon = self.surface().graphical_surface().graphical_polygon(self.label())
 
-        shift = graphical_polygon.transformed_vertex(0) - self.polygon().vertex(0)
+        shift = graphical_polygon.transformed_vertex(0) - self.surface().polygon(self.label()).vertex(0)
 
         from flatsurf.geometry.euclidean import OrientedSegment
         plot = sum(OrientedSegment(*segment).translate(shift).plot(point=False) for segment in self.boundary())

@@ -601,13 +601,6 @@ class HarmonicDifferential(Element):
         self._residue = residue
         self._cocycle = cocycle
 
-    def roots(self):
-        roots = []
-        for center, series in self._series.items():
-            roots.extend(self.parent().roots(center, series))
-
-        return roots
-
     def _add_(self, other):
         r"""
         Return the sum of this harmonic differential and ``other`` by summing
@@ -746,33 +739,6 @@ class HarmonicDifferential(Element):
         abs_error = self._evaluate(consistency)
         return abs_error
 
-    def series(self, triangle):
-        r"""
-        Return the power series describing this harmonic differential at the
-        center of the circumcircle of the given Delaunay ``triangle``.
-
-        TODO: triangle is not really a triangle anymore.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
-            sage: T.set_immutable()
-
-            sage: H = SimplicialHomology(T)
-            sage: a, b = H.gens()
-            sage: H = SimplicialCohomology(T)
-            sage: f = H({b: 1})
-
-            sage: Ω = HarmonicDifferentials(T)
-            sage: η = Ω(f)
-
-            sage: η.series(T(0, (1/2, 1/2)))  # abstol 1e-9
-            1.00000000000000 + 9.80040000000000e-77*I + (-4.20905000000000e-77 - 8.26568000000000e-79*I)*z0 + (-1.05325000000000e-75 + 6.00322000000000e-78*I)*z0^2 + (-2.11385000000000e-75 - 1.14645000000000e-75*I)*z0^3 + (6.53715000000000e-75 - 1.52468000000000e-74*I)*z0^4 + O(z0^5)
-
-        """
-        return self._series[triangle]
-
     def cohomology(self):
         H = self.parent().cohomology()
         return H({ gen: self.integrate(gen).real() for gen in H.homology().gens()})
@@ -891,6 +857,35 @@ class HarmonicDifferential(Element):
 
         return repr(tuple(sparse_parent(s)(s) for s in self._series.values()))
 
+    def _series(self, label, coordinates):
+        r"""
+        Return a series `f(z) = Σ_{n ≥ 0} a_n (z-α)^\frac{n-d}{d+1}` such that
+        `f(z)dz` describes the differential near ``coordinates`` with a flat
+        coordinate ``z``.
+
+        The series is returned as a triple ``(d, α, a_n)`` where ``a_n`` is the
+        sequence of coefficients.
+        """
+        raise NotImplementedError
+
+    def rational_map(self, other=None):
+        r"""
+        Return the map to `\mathbb{P}^1` given by the quotient of this
+        differential and ``other``.
+
+        INPUT:
+
+        - ``other`` -- another differential of ``None`` (default: ``None``); if
+          ``None``, the quotient with `dz` is returned.
+        """
+        if other is None:
+            other = self.parent().dz()
+
+        return RationalMap(self, other)
+
+    def roots(self):
+        return self.rational_map().roots()
+
     def simplify(self, zero_threshold=1e-6):
         def simplify(series):
             def simplify(coefficient):
@@ -908,42 +903,151 @@ class HarmonicDifferential(Element):
 
         return type(self)(self.parent(), {center: simplify(series) for (center, series) in self._series.items()}, residue=self._residue, cocycle=self._cocycle)
 
-    # def plot(self, versus=None):
-    #     from sage.all import RealField, I, vector, complex_plot, oo
-    #     S = self.parent().surface()
-    #     GS = S.graphical_surface()
 
-    #     plot = S.plot(fill=None)
+class RationalMap:
+    r"""
+    A map from a translation surface to `\mathbb{P}^1` given by the quotient of
+    two differentials.
+    """
+    def __init__(self, numerator, denominator):
+        if numerator.parent() != denominator.parent():
+            raise ValueError("numerator and denominator must be from the same space of differentials")
 
-    #     for label in S.labels():
-    #         P = S.polygon(label)
-    #         PS = GS.graphical_polygon(label)
+        self._numerator = numerator
+        self._denominator = denominator
 
-    #         if versus:
-    #             if versus.parent().surface().polygon(label).vertices() != P.vertices():
-    #                 raise ValueError
+    def __repr__(self):
+        return f"({self._numerator})/({self._denominator})"
 
-    #         from sage.all import RR
-    #         PR = P.change_ring(RR)
+    def __call__(self, point):
+        differentials = self._numerator.parent()
+        cell = differentials._cells.cell(point)
 
-    #         def f(z):
-    #             xy = (z.real(), z.imag())
-    #             xy = PS.transform_back(xy)
-    #             if not PR.contains_point(vector(xy)):
-    #                 return oo
-    #             xy = xy - P.circumscribing_circle().center()
+        complex = cell.complex_from_point(point)
+        
+        center = cell.center()
+        numerator = self._numerator._series[center]
+        denominator = self._denominator._series[center]
 
-    #             xy = RealField(54)(xy[0]) + I*RealField(54)(xy[1])
-    #             value = self.evaluate(label, edge=None, pos=None, Δ=xy)
-    #             if versus:
-    #                 v = versus.evaluate(label, edge=None, pos=None, Δ=xy)
-    #                 value = (value - v) / v.abs()
-    #             return value
+        return numerator.polynomial()(complex) / denominator.polynomial()(complex)
 
-    #         bbox = PS.bounding_box()
-    #         plot += complex_plot(f, (bbox[0], bbox[2]), (bbox[1], bbox[3]))
+    def roots(self):
+        return self.preimages(0)
 
-    #     return plot
+    def _preimages_rational_roots(self, n, d, p, q):
+        r"""
+        Return the solutions of `n/d = p/q` where `n/d` is a meromorphic
+        function and `p/q` is a point on the projective line.
+        """
+        if q == 0:
+            return self._preimages_rational_roots(d, n, q, p)
+
+        roots = []
+
+        f = n.polynomial() * q - d.polynomial() * p
+
+        for (root, multiplicity) in f.roots():
+            if d(root) == 0:
+                # TODO: For each such x0, we have that n(x0) / d(x0) = p/q if d(x0) != 0.
+                # If d(x0) = 0, then n(x0) = 0 as well, so overall we have that for
+                # each solution its multiplicity is max(mult_x0(n) - mult_x0(d), 0)
+                raise NotImplementedError
+
+            if multiplicity != 1:
+                raise NotImplementedError
+
+            roots.append(root)
+
+        return roots
+
+    def preimages(self, p, q=1):
+        # For each cell contains a list of points that satisfy that
+        # numerator/denominator = p/q. Some points may be repeated if they are
+        # close to the boundary of a cell.
+        preimages = {}
+
+        differentials = self._numerator.parent()
+
+        surface = differentials.surface()
+        cells = differentials._cells
+
+        for center in surface.vertices():
+            cell = cells.cell_at_center(center)
+
+            numerator = self._numerator._series[center]
+            denominator = self._denominator._series[center]
+
+            complex_solutions = self._preimages_rational_roots(numerator, denominator, p, q)
+
+            points = [cell.point_from_complex(complex) for complex in complex_solutions]
+
+            preimages[center] = [point for point in points if point is not None]
+
+        return self._preimages_merge_repetitions(preimages)
+
+    def _preimages_merge_repetitions(self, preimages):
+        # TODO: This should actually do a deduplication.
+        return sum(preimages.values(), [])
+
+    def monodromy(self, steps=20):
+        S = self._numerator.parent().surface()
+
+        monodromy = []
+        for path in self._numerator.parent().cohomology().homology().gens():
+            print(f"computing monodromy for {path=}")
+            path = path.path()
+
+            bases = []
+            values = []
+            preimages = []
+
+            for label, edge in path:
+                start = S.polygon(label).vertex(edge)
+                edge = S.polygon(label).edge(edge)
+
+                for s in range(0, steps + 1):
+                    p = S(label, start + edge * s / steps)
+                    value = self(p)
+                    print(f"{value=}")
+                    if value.is_NaN():
+                        print("value at p is NaN")
+                        continue
+
+                    bases.append(p)
+                    values.append(value)
+                    qs = self.preimages(value)
+                    print(f"{len(qs)} preimages")
+                    preimages.append(qs)
+
+            monodromy.append((path, bases, values, preimages))
+
+        return monodromy
+
+    def monodromy_plot(self, steps=20):
+        from sage.all import animate
+
+        S = self._numerator.parent().surface()
+        GS = S.graphical_surface(edge_labels=False, polygon_labels=False)
+
+        plots = []
+        for (path, bases, values, monodromy) in self.monodromy(steps=steps):
+            from sage.all import arrow2d
+            path = sum(arrow2d(GS.graphical_polygon(lbl).transformed_vertex(e), GS.graphical_polygon(lbl).transformed_vertex(e + 1), color="green") for (lbl, e) in path)
+
+            values = zip(values, values[1:])
+
+            frames = []
+            for s, (b, (v, w), qs) in enumerate(zip(bases, values, monodromy)):
+                frame = GS.plot() + path.plot() + sum(q.plot(GS, color="orange", size=50) for q in qs)
+
+                frame += b.plot(GS, color="green")
+
+                # frame = frame.inset(arrow2d(v, w, color="orange", arrowsize=1*(.8 * s / len(monodromy) + .2), width=.1), pos=(.65, .65, .3, .3))
+                frames.append(frame)
+
+            plots.append(animate(frames))
+
+        return plots
 
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
@@ -1166,25 +1270,6 @@ class HarmonicDifferentialSpace(Parent):
         r = float(cell.inradius())
 
         return r / R
-
-    def roots(self, center, series):
-        roots = []
-
-        cell = self._cells.cell_at_center(center)
-
-        for (root, multiplicity) in series.polynomial().roots():
-            root = cell.point_from_complex(root)
-
-            if root is None:
-                continue
-            
-            if not cell.contains_point(root):
-                continue
-
-            for n in range(multiplicity):
-                roots.append(root)
-
-        return roots
 
     def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20):
         if graphical_surface is None:
@@ -1729,7 +1814,7 @@ class PowerSeriesConstraints:
                 a = C(*γ.start())
                 b = C(*γ.end())
 
-                constant = zeta(d + 1, self._polygon_cell.root_branch(γ) * (n + 1)) * (C(b) - C(a))
+                constant = zeta(d + 1, self._polygon_cell.root_branch_for_segment(γ) * (n + 1)) * (C(b) - C(a))
 
                 def value(part, t):
                     z = self._constraints.complex_field()(*((1 - t) * a + t * b))
@@ -1779,9 +1864,8 @@ class PowerSeriesConstraints:
 
         g(y) = Σ_{n ≥ 0} a_n y^n
 
-        where ``d`` is the order of the singularity at the center; this is,
-        however, not the representation on any of the charts in which the
-        translation surface is given.
+        This is, however, not the representation on any of the charts in which
+        the translation surface is given.
 
         To describe this power series on such a chart, let `z` denote the
         variable on that chart, we are going to have to takes `d+1`-st roots
@@ -1803,7 +1887,7 @@ class PowerSeriesConstraints:
                =: Σ_{n ≥ 0} a_n f_n(z) dz
                =: f(z) dz
 
-        Note that the formulas above hold when the center is not an actual
+        Note that the formulas above also hold when the center is not an actual
         singularity, i.e., d = 0.
 
         Now, we want to describe the error between two such series when
@@ -1910,7 +1994,7 @@ q
 
         cell_integrator = self.CellIntegrator(self, cell)
 
-        κ = cell.root_branch(boundary_segment)
+        κ = cell.root_branch_for_segment(boundary_segment)
         α = cell.center()
         d = center.angle() - 1
 
@@ -1935,8 +2019,8 @@ q
         cell_integrator = self.CellIntegrator(self, cell)
         opposite_cell_integrator = self.CellIntegrator(self, opposite_cell)
 
-        κ = cell.root_branch(boundary_segment)
-        λ = opposite_cell.root_branch(boundary_segment)
+        κ = cell.root_branch_for_segment(boundary_segment)
+        λ = opposite_cell.root_branch_for_segment(boundary_segment)
         α = cell.center()
         β = opposite_cell.center()
         d = center.angle() - 1
@@ -1962,7 +2046,7 @@ q
 
         opposite_cell_integrator = self.CellIntegrator(self, opposite_cell)
 
-        λ = opposite_cell.root_branch(boundary_segment)
+        λ = opposite_cell.root_branch_for_segment(boundary_segment)
         β = opposite_cell.center()
         dd = opposite_center.angle() - 1
 

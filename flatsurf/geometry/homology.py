@@ -280,6 +280,24 @@ class SimplicialHomologyClass(Element):
     def surface(self):
         return self.parent().surface()
 
+    def path(self):
+        edges = []
+
+        for (label, edge), multiplicity in dict(self._chain).items():
+            from sage.all import ZZ
+            if multiplicity not in ZZ:
+                raise NotImplementedError("cannot lift this homology class to a path")
+
+            if multiplicity < 0:
+                multiplicity *= - 1
+                label, edge = self.surface().opposite_edge(label, edge)
+
+            edges.extend([(label, edge)] * multiplicity)
+
+        # TODO: Sort edges such that they are continuous.
+
+        return edges
+
     def __bool__(self):
         return bool(self._chain)
 
