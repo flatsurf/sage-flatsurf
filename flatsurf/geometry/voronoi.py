@@ -53,7 +53,7 @@ class CellDecomposition:
 
     @cached_method
     def polygon_cells(self, label):
-        return [polygon_cell for cell in self for polygon_cell in cell.polygon_cells() if polygon_cell.label() == label]
+        return tuple(polygon_cell for cell in self for polygon_cell in cell.polygon_cells() if polygon_cell.label() == label)
 
     def split_segment_at_cells(self, segment):
         r"""
@@ -200,18 +200,18 @@ class Cell:
         assert not self.contains_point(self.surface()(label, coordinates))
         return None
 
-    def polygon_cells(self, label=None):
+    def polygon_cells(self, label=None, branch=None):
         r"""
         Return restrictions of this cell to all polygons of the surface.
 
         If ``label`` is given, return only the restrictions to that polygon.
         """
         if label is None:
-            return sum([self.polygon_cells(label=label) for label in self.surface().labels()], start=())
+            return sum([self.polygon_cells(label=label, branch=branch) for label in self.surface().labels()], start=())
 
-        return self._polygon_cells(label=label)
+        return self._polygon_cells(label=label, branch=branch)
 
-    def _polygon_cells(self, label):
+    def _polygon_cells(self, label, branch):
         r"""
         Return the restrictions of this cell to its connected components in the
         polygon with ``label``.
@@ -292,6 +292,10 @@ class Cell:
         z(y) = y^{d+1} + α.
 
         """
+        # TODO: This is very slow because we have to lift complex coordinates
+        # to the base ring (i.e., the rationals.) There's not much we can do
+        # about this without supporting floating point surfaces?
+
         from math import pi
 
         d = self._center.angle() - 1
@@ -302,6 +306,8 @@ class Cell:
             arg += 2*pi * (d + 1)
 
         branch = 0
+        # TODO: We could use > pi or >= pi here. This has to be compatible with
+        # root_branch() and polygon_cells().
         while arg >= pi:
             arg -= 2*pi
             branch += 1
@@ -312,11 +318,14 @@ class Cell:
         from sage.all import vector
         xy = vector(list(y ** (d + 1)))
 
+        xy_lift = xy.change_ring(self.surface().base_ring())
+
         # TODO: This is all not too robust since we are feeding
         # floating point numbers into exact polygons here. As a
         # result roots could show up twice or never.
-        for polygon_cell in self.polygon_cells():
-            polygon = self.surface().polygon(polygon_cell.label())
+        for polygon_cell in self.polygon_cells(branch=branch):
+            polygon = polygon_cell._polygon()
+            polygon_complex = polygon_cell._polygon_complex()
             center = polygon_cell.center()
             vertex = polygon.get_point_position(center).get_vertex()
 
@@ -325,8 +334,8 @@ class Cell:
                 return self.surface()(polygon_cell.label(), center)
 
             from flatsurf.geometry.euclidean import ccw
-            if ccw(polygon.edge(vertex), xy) >= 0 and ccw(-polygon.edge(vertex - 1), xy) < 0:
-                p = (center + xy).change_ring(self.surface().base_ring())
+            if ccw(polygon_complex.edge(vertex), xy) >= 0 and ccw(-polygon_complex.edge(vertex - 1), xy) < 0:
+                p = center + xy_lift
 
                 from flatsurf.geometry.euclidean import OrientedSegment
                 if polygon_cell.root_branch(p) == branch:
@@ -401,9 +410,12 @@ class LineSegmentCell(Cell):
         return [segment.segment().start() for segment in self.boundary()]
 
     @cached_method
-    def _polygon_cells(self, label):
+    def _polygon_cells(self, label, branch):
         surface = self.surface()
         polygon = surface.polygon(label)
+
+        if branch is not None:
+            return tuple(polygon_cell for polygon_cell in self._polygon_cells(label=label, branch=None) if branch in polygon_cell.root_branches())
 
         cell_boundary = self.boundary()
 
@@ -671,8 +683,13 @@ class PolygonCell:
     def label(self):
         return self._label
 
-    def polygon(self):
+    def _polygon(self):
         return self.cell().surface().polygon(self._label)
+
+    @cached_method
+    def _polygon_complex(self):
+        from sage.all import CDF
+        return self._polygon().change_ring(CDF)
 
     def surface(self):
         return self.cell().surface()
@@ -830,6 +847,19 @@ class PolygonCellWithCenter(PolygonCell):
                 branch %= angle
 
             label, vertex = self.surface().opposite_edge(label, (vertex - 1) % len(polygon.vertices()))
+
+    @cached_method
+    def root_branches(self):
+        root_branches = []
+
+        polygon = self.surface().polygon(self.label())
+        center = self.center()
+        vertex = polygon.get_point_position(center).get_vertex()
+
+        root_branches.append(self.root_branch(center + polygon.edge(vertex)))
+        root_branches.append(self.root_branch(center - polygon.edge(vertex - 1)))
+
+        return frozenset(root_branches)
 
     def root_branch_for_segment(self, segment):
         r"""

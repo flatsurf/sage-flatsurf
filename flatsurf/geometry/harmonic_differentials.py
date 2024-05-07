@@ -920,6 +920,7 @@ class RationalMap:
         return f"({self._numerator})/({self._denominator})"
 
     def __call__(self, point):
+        # TODO: This should return a projective value.
         differentials = self._numerator.parent()
         cell = differentials._cells.cell(point)
 
@@ -1008,15 +1009,12 @@ class RationalMap:
                 for s in range(0, steps + 1):
                     p = S(label, start + edge * s / steps)
                     value = self(p)
-                    print(f"{value=}")
-                    if value.is_NaN():
-                        print("value at p is NaN")
-                        continue
+                    assert not value.is_NaN()
 
                     bases.append(p)
                     values.append(value)
                     qs = self.preimages(value)
-                    print(f"{len(qs)} preimages")
+                    # TODO: Assert correct number of preimages.
                     preimages.append(qs)
 
             monodromy.append((path, bases, values, preimages))
@@ -1032,17 +1030,19 @@ class RationalMap:
         plots = []
         for (path, bases, values, monodromy) in self.monodromy(steps=steps):
             from sage.all import arrow2d
-            path = sum(arrow2d(GS.graphical_polygon(lbl).transformed_vertex(e), GS.graphical_polygon(lbl).transformed_vertex(e + 1), color="green") for (lbl, e) in path)
+            path = sum(arrow2d(GS.graphical_polygon(lbl).transformed_vertex(e), GS.graphical_polygon(lbl).transformed_vertex(e + 1), color="green", width=1) for (lbl, e) in path)
 
-            values = zip(values, values[1:])
+            inset = sum(arrow2d(v, w, color="orange", arrowsize=1, width=.1) for v, w in zip(values, values[1:]))
 
             frames = []
-            for s, (b, (v, w), qs) in enumerate(zip(bases, values, monodromy)):
+            for s, (b, v, qs) in enumerate(zip(bases, values, monodromy)):
                 frame = GS.plot() + path.plot() + sum(q.plot(GS, color="orange", size=50) for q in qs)
 
                 frame += b.plot(GS, color="green")
 
-                # frame = frame.inset(arrow2d(v, w, color="orange", arrowsize=1*(.8 * s / len(monodromy) + .2), width=.1), pos=(.65, .65, .3, .3))
+                from sage.all import point2d
+                frame = frame.inset(inset + point2d(v, color="green"), pos=(.65, .65, .3, .3))
+
                 frames.append(frame)
 
             plots.append(animate(frames))
