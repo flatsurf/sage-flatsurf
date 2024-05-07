@@ -502,26 +502,37 @@ class ConeSurfaces(SurfaceCategory):
                                 for p in points])
 
                         def cluster_points(self, points):
+                            points = tuple(points)
                             D = self.distance_matrix_points(points)
 
                             nclusters = len(points)
-                            for radius in sorted(D.list()):
+                            for radius in sorted(set(D.list())):
                                 from sage.all import matrix
                                 adjacency = matrix([[d <= radius and i != j for j, d in enumerate(row)] for i, row in enumerate(D.rows())])
+                                # print(radius)
+                                # print(adjacency)
 
                                 clusters = []
+                                ids = list(range(len(points)))
                                 while adjacency:
                                     from sage.all import Graph
                                     G = Graph(adjacency)
 
                                     import sage.graphs.cliquer
                                     clique = sage.graphs.cliquer.max_clique(G)
-                                    clusters.append(clique)
                                     adjacency = matrix([[a for j, a in enumerate(row) if j not in clique] for i, row in enumerate(adjacency.rows()) if i not in clique])
+                                    # print(adjacency)
+
+                                    clique = [ids[c] for c in clique]
+                                    # print("clique", clique)
+                                    clusters.append(clique)
+
+                                    ids = [id for id in ids if id not in clique]
 
                                 for p in range(len(points)):
                                     if not any(p in cluster for cluster in clusters):
                                         clusters.append([p])
+                                # print(clusters)
                                 if len(clusters) < nclusters:
                                     nclusters = len(clusters)
                                     # TODO: Actually it's not a ball of that radius.

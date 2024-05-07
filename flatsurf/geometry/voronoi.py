@@ -329,8 +329,8 @@ class Cell:
             center = polygon_cell.center()
             vertex = polygon.get_point_position(center).get_vertex()
 
-            if abs(xy) < 1e-16:
-                print("identifying root with vertex")
+            if abs(xy) < 1e-24:
+                # print("identifying root with vertex")
                 return self.surface()(polygon_cell.label(), center)
 
             from flatsurf.geometry.euclidean import ccw

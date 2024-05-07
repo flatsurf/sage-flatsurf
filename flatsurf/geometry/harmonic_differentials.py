@@ -927,10 +927,19 @@ class RationalMap:
         complex = cell.complex_from_point(point)
         
         center = cell.center()
-        numerator = self._numerator._series[center]
-        denominator = self._denominator._series[center]
+        numerator = self._numerator._series[center].polynomial()
+        denominator = self._denominator._series[center].polynomial()
 
-        return numerator.polynomial()(complex) / denominator.polynomial()(complex)
+        while True:
+            n = numerator(complex)
+            d = denominator(complex)
+
+            if d == 0 and n == 0:
+                numerator = (numerator(numerator.parent().gen() + complex) >> 1)(numerator.parent().gen() - complex)
+                denominator = (denominator(denominator.parent().gen() + complex) >> 1)(denominator.parent().gen() - complex)
+                continue
+
+            return (n, d)
 
     def roots(self):
         return self.preimages(0)
@@ -943,9 +952,12 @@ class RationalMap:
         if q == 0:
             return self._preimages_rational_roots(d, n, q, p)
 
+        n = n.polynomial()
+        d = d.polynomial()
+
         roots = []
 
-        f = n.polynomial() * q - d.polynomial() * p
+        f = n * q - d * p
 
         for (root, multiplicity) in f.roots():
             if d(root) == 0:
@@ -954,10 +966,7 @@ class RationalMap:
                 # each solution its multiplicity is max(mult_x0(n) - mult_x0(d), 0)
                 raise NotImplementedError
 
-            if multiplicity != 1:
-                raise NotImplementedError
-
-            roots.append(root)
+            roots.extend([root]*multiplicity)
 
         return roots
 
@@ -990,7 +999,7 @@ class RationalMap:
         # TODO: This should actually do a deduplication.
         return sum(preimages.values(), [])
 
-    def monodromy(self, steps=20):
+    def monodromy(self, steps=20, degree=None):
         S = self._numerator.parent().surface()
 
         monodromy = []
@@ -1009,30 +1018,39 @@ class RationalMap:
                 for s in range(0, steps + 1):
                     p = S(label, start + edge * s / steps)
                     value = self(p)
-                    assert not value.is_NaN()
 
                     bases.append(p)
                     values.append(value)
-                    qs = self.preimages(value)
-                    # TODO: Assert correct number of preimages.
+                    qs = self.preimages(*value)
+
+                    if degree is not None:
+                        if len(qs) != degree:
+                            print(f"expected {degree} preimages of {value} (with multiplicity) but found {len(qs)} instead: {qs}")
+                            S.cluster_points(qs)
+                            assert False
+                    else:
+                        degree = len(qs)
+
                     preimages.append(qs)
 
             monodromy.append((path, bases, values, preimages))
 
         return monodromy
 
-    def monodromy_plot(self, steps=20):
+    def monodromy_plot(self, steps=20, degree=None):
         from sage.all import animate
 
         S = self._numerator.parent().surface()
         GS = S.graphical_surface(edge_labels=False, polygon_labels=False)
 
         plots = []
-        for (path, bases, values, monodromy) in self.monodromy(steps=steps):
+        for (path, bases, values, monodromy) in self.monodromy(steps=steps, degree=degree):
             from sage.all import arrow2d
             path = sum(arrow2d(GS.graphical_polygon(lbl).transformed_vertex(e), GS.graphical_polygon(lbl).transformed_vertex(e + 1), color="green", width=1) for (lbl, e) in path)
 
-            inset = sum(arrow2d(v, w, color="orange", arrowsize=1, width=.1) for v, w in zip(values, values[1:]))
+            # TODO: Would be great to plot ∞ somehow. E.g. by labeling an arrow to a random place in the plot.
+            finite_values = [v for v in values if v[1] != 0]
+            inset = sum(arrow2d(v[0] / v[1], w[0] / w[1], color="orange", arrowsize=1, width=.1) for v, w in zip(finite_values, finite_values[1:]))
 
             frames = []
             for s, (b, v, qs) in enumerate(zip(bases, values, monodromy)):
@@ -1040,8 +1058,13 @@ class RationalMap:
 
                 frame += b.plot(GS, color="green")
 
+                jnset = inset
+
                 from sage.all import point2d
-                frame = frame.inset(inset + point2d(v, color="green"), pos=(.65, .65, .3, .3))
+                if v[1] != 0:
+                    jnset = inset + point2d(v[0]/v[1], color="green")
+
+                frame = frame.inset(jnset, pos=(.65, .65, .3, .3))
 
                 frames.append(frame)
 
