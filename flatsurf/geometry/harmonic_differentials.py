@@ -1006,34 +1006,72 @@ class RationalMap:
         for path in self._numerator.parent().cohomology().homology().gens():
             print(f"computing monodromy for {path=}")
             path = path.path()
+            print(path)
+
+            midpoint_path = []
 
             bases = []
             values = []
             preimages = []
 
-            for label, edge in path:
-                start = S.polygon(label).vertex(edge)
-                edge = S.polygon(label).edge(edge)
+            from sage.all import QQ
+            pos = QQ.one() / 3
 
+            for (label, edge), (next_label, next_edge) in zip(path, path[1:] + path[:1]):
+                print(f"Walking from {(label, edge)} to {(next_label, next_edge)}")
+                while True:
+                    start = S.polygon(label).vertex(edge) + S.polygon(label).edge(edge) * pos
+                    end = S.polygon(label).vertex(edge + 1) + S.polygon(label).edge(edge + 1) * (1 - pos)
+
+                    midpoint_path.append((label, (start, end)))
+
+                    for s in range(0, steps + 1):
+                        p = S(label, ((steps - s) * start + s * end) / steps)
+                        value = self(p)
+
+                        bases.append(p)
+                        values.append(value)
+                        qs = self.preimages(*value)
+
+                        if degree is not None:
+                            if len(qs) != degree:
+                                print(f"expected {degree} preimages of {value} (with multiplicity) but found {len(qs)} instead: {qs}")
+                                S.cluster_points(qs)
+                                assert False
+                        else:
+                            degree = len(qs)
+
+                        preimages.append(qs)
+
+                    label, edge = label, (edge + 1) % 3
+
+                    if (label, edge) == (next_label, next_edge):
+                        pos = 1 - pos
+                        break
+
+                    label, edge = S.opposite_edge(label, edge)
+
+                    if (label, edge) == (next_label, next_edge):
+                        break
+
+                    print(f"Now at {(label, edge)}")
+
+            if pos != QQ.one() / 3:
+                label, edge = path[0]
                 for s in range(0, steps + 1):
-                    p = S(label, start + edge * s / steps)
+                    start = S.polygon(label).vertex(edge) + S.polygon(label).edge(edge) * pos
+                    end = S.polygon(label).vertex(edge) + S.polygon(label).edge(edge) * (1 - pos)
+
+                    p = S(label, ((steps - s) * start + s * end) / steps)
                     value = self(p)
 
                     bases.append(p)
                     values.append(value)
                     qs = self.preimages(*value)
-
-                    if degree is not None:
-                        if len(qs) != degree:
-                            print(f"expected {degree} preimages of {value} (with multiplicity) but found {len(qs)} instead: {qs}")
-                            S.cluster_points(qs)
-                            assert False
-                    else:
-                        degree = len(qs)
-
+                    
                     preimages.append(qs)
 
-            monodromy.append((path, bases, values, preimages))
+            monodromy.append((path, midpoint_path, bases, values, preimages))
 
         return monodromy
 
@@ -1044,7 +1082,7 @@ class RationalMap:
         GS = S.graphical_surface(edge_labels=False, polygon_labels=False)
 
         plots = []
-        for (path, bases, values, monodromy) in self.monodromy(steps=steps, degree=degree):
+        for (path, midpoint_path, bases, values, monodromy) in self.monodromy(steps=steps, degree=degree):
             from sage.all import arrow2d
             path = sum(arrow2d(GS.graphical_polygon(lbl).transformed_vertex(e), GS.graphical_polygon(lbl).transformed_vertex(e + 1), color="green", width=1) for (lbl, e) in path)
 

@@ -294,9 +294,19 @@ class SimplicialHomologyClass(Element):
 
             edges.extend([(label, edge)] * multiplicity)
 
-        # TODO: Sort edges such that they are continuous.
+        connected_edges = [edges.pop()]
+        while edges:
+            for edge in edges:
+                if self.surface()(connected_edges[-1][0], connected_edges[-1][1] + 1) == self.surface()(*edge):
+                    edges.remove(edge)
+                    connected_edges.append(edge)
+                    break
+            else:
+                assert False, "path not connected"
 
-        return edges
+        assert self.surface()(connected_edges[-1][0], connected_edges[-1][1] + 1) == self.surface()(*connected_edges[0]), "path not looping"
+
+        return connected_edges
 
     def __bool__(self):
         return bool(self._chain)
