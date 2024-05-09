@@ -267,7 +267,7 @@ class Cell:
 
         return zeta * z.nth_root(d + 1)
 
-    def point_from_complex(self, y):
+    def point_from_complex(self, y, boundary_error=0):
         r"""
         Return the point of this cell which is given by the local coordinate y.
 
@@ -342,7 +342,7 @@ class Cell:
                     if polygon.get_point_position(p).is_outside():
                         return None
 
-                    if not polygon_cell.contains_point(p):
+                    if not polygon_cell.contains_point(p, boundary_error=boundary_error):
                         return None
 
                     # print(f"Point at distance {xy.norm():.5} of {self.center()} (angle {2*self.center().angle()}π)")
@@ -391,10 +391,10 @@ class Cell:
 
         return sum(plot)
 
-    def contains_point(self, point):
+    def contains_point(self, point, boundary_error=0):
         for label, coordinates in point.representatives():
             for polygon_cell in self.polygon_cells(label=label):
-                if polygon_cell.contains_point(coordinates):
+                if polygon_cell.contains_point(coordinates, boundary_error=boundary_error):
                     return True
 
         return False
@@ -697,7 +697,7 @@ class PolygonCell:
     def cell(self):
         return self._cell
 
-    def contains_point(self, point):
+    def contains_point(self, point, boundary_error=0):
         raise NotImplementedError
 
     def contains_segment(self, segment):
@@ -928,7 +928,9 @@ class LineSegmentPolygonCell(PolygonCellWithCenter):
     def boundary(self):
         return self._boundary
 
-    def contains_point(self, point):
+    def contains_point(self, point, boundary_error=0):
+        if boundary_error != 0:
+            raise NotImplementedError
         return self.polygon().contains_point(point)
 
     def polygon(self):

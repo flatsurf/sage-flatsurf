@@ -941,14 +941,42 @@ class RationalMap:
 
             return (n, d)
 
-    def roots(self):
-        return self.preimages(0)
+    # TODO: Passing the boundary_error into every method is silly. There should
+    # be a global geometry that takes care of that.
+    def roots(self, boundary_error=1e-1):
+        # TODO: Add optional parameter to control grouping of roots.
+        return self.preimages(0, boundary_error=boundary_error)
+
+    def ramification_points(self, boundary_error=1e-1):
+        # Return triples (ramification point, ramification index, branch point)
+
+        # TODO: Add optional parameter to control grouping of points.
+        return self.derivative().roots(boundary_error=boundary_error)
+
+    def branch_points(self, boundary_error=1e-1):
+        # TODO: Use the precision of the differential to determine which branch
+        # points should be identified.
+        raise NotImplementedError
+
+    def degree(self, boundary_error=1e-1):
+        degrees = {}
+        for (p, e, q) in self.ramification_points(boundary_error=boundary_error):
+            if q not in degrees:
+                degrees[q] = 0
+            degrees[q] += e
+
+        assert len(set(degrees.values())) == 1
+
+        return next(iter(degrees.values()))
 
     def _preimages_rational_roots(self, n, d, p, q):
         r"""
         Return the solutions of `n/d = p/q` where `n/d` is a meromorphic
         function and `p/q` is a point on the projective line.
         """
+        # TODO: Use the precision of the differential to determine which roots
+        # should be identified.
+
         if q == 0:
             return self._preimages_rational_roots(d, n, q, p)
 
@@ -970,7 +998,7 @@ class RationalMap:
 
         return roots
 
-    def preimages(self, p, q=1):
+    def preimages(self, p, q=1, boundary_error=1e-1):
         # For each cell contains a list of points that satisfy that
         # numerator/denominator = p/q. Some points may be repeated if they are
         # close to the boundary of a cell.
@@ -989,14 +1017,17 @@ class RationalMap:
 
             complex_solutions = self._preimages_rational_roots(numerator, denominator, p, q)
 
-            points = [cell.point_from_complex(complex) for complex in complex_solutions]
+            points = [cell.point_from_complex(complex, boundary_error=boundary_error) for complex in complex_solutions]
 
             preimages[center] = [point for point in points if point is not None]
 
         return self._preimages_merge_repetitions(preimages)
 
     def _preimages_merge_repetitions(self, preimages):
-        # TODO: This should actually do a deduplication.
+        # TODO: For each point that is within error/2 of a cell boundary, merge
+        # it with the closest point coming from the other side of the boundary.
+        # TODO: Drop all points that are beyond error / 2 on the other side of
+        # the cell boundary.
         return sum(preimages.values(), [])
 
     def monodromy(self, steps=20, degree=None):
