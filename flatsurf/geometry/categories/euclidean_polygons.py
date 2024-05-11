@@ -1716,6 +1716,22 @@ class EuclideanPolygons(Category_over_base_ring):
                         point, translation=translation
                     ).is_inside()
 
+                def distance(self, point):
+                    r"""
+                    Return the distance of the boundary of this polygon to
+                    ``point``.
+                    """
+                    return min(segment.distance(point) for segment in self.segments())
+
+                def segments(self):
+                    E = self.euclidean_plane()
+                    V = self.vertices()
+                    return [E(start).segment(end) for (start, end) in zip(V, V[1:] + V[:1])]
+
+                def euclidean_plane(self):
+                    from flatsurf import EuclideanPlane
+                    return EuclideanPlane(self.base_ring())
+
                 def flow_map(self, direction):
                     r"""
                     Return a polygonal map associated to the flow in ``direction`` in this

@@ -258,40 +258,9 @@ class Cell:
         else:
             raise ValueError("point not in cell")
 
-        k = polygon_cell.root_branch(coordinates)
-        d = self._center.angle() - 1
+        return polygon_cell.complex_from_point(coordinates)
 
-        from sage.all import CDF
-        zeta = CDF.zeta(d + 1) ** k
-        z =  CDF(*(coordinates - polygon_cell.center()))
-
-        return zeta * z.nth_root(d + 1)
-
-    def point_from_complex(self, y, boundary_error=0):
-        r"""
-        Return the point of this cell which is given by the local coordinate y.
-
-        Return ``None`` if there is no such point, i.e., the coordinate
-        describes a point outside of the cell.
-
-        .. NOTE::
-
-        Points of the surface are usually given by their flat coordinate `z` in
-        one of the polygons that forms the surface. However, at a singularity
-        of degree d, we can perform a change of coordinates and write
-
-        y(z) = ζ_{d+1}^κ (z-α)^{1/(d+1)}
-
-        where z=α and y=0 are coordinates for the singularity and the last
-        exponent denotes the principal `d+1`-st root of `z`, see also
-        :meth:`root_branch` for the choice of root.
-
-        Here, we take a `y` coordinate and transform it back to the
-        corresponding `z` coordinate. We have
-
-        z(y) = y^{d+1} + α.
-
-        """
+    def polygon_point_from_complex(self, y, boundary_error=0):
         # TODO: This is very slow because we have to lift complex coordinates
         # to the base ring (i.e., the rationals.) There's not much we can do
         # about this without supporting floating point surfaces?
@@ -347,9 +316,41 @@ class Cell:
 
                     # print(f"Point at distance {xy.norm():.5} of {self.center()} (angle {2*self.center().angle()}π)")
 
-                    return self.surface()(polygon_cell.label(), p)
+                    return polygon_cell.label(), p
 
         assert False
+
+    def point_from_complex(self, y, boundary_error=0):
+        r"""
+        Return the point of this cell which is given by the local coordinate y.
+
+        Return ``None`` if there is no such point, i.e., the coordinate
+        describes a point outside of the cell.
+
+        .. NOTE::
+
+        Points of the surface are usually given by their flat coordinate `z` in
+        one of the polygons that forms the surface. However, at a singularity
+        of degree d, we can perform a change of coordinates and write
+
+        y(z) = ζ_{d+1}^κ (z-α)^{1/(d+1)}
+
+        where z=α and y=0 are coordinates for the singularity and the last
+        exponent denotes the principal `d+1`-st root of `z`, see also
+        :meth:`root_branch` for the choice of root.
+
+        Here, we take a `y` coordinate and transform it back to the
+        corresponding `z` coordinate. We have
+
+        z(y) = y^{d+1} + α.
+
+        """
+        p = self.polygon_point_from_complex(y=y, boundary_error=boundary_error)
+
+        if p is None:
+            return None
+
+        return self.surface()(*p)
 
     def __eq__(self, other):
         if not isinstance(other, Cell):
@@ -547,6 +548,28 @@ class LineSegmentCell(Cell):
 
         return tuple(polygon_cells)
 
+    def opposite_representations(self, complex, boundary_error):
+        from flatsurf.geometry.euclidean import EuclideanPlane
+        E = EuclideanPlane(self.surface().base_ring())
+
+        point = self.point_from_complex(complex, boundary_error=boundary_error)
+        assert point is not None
+
+        representations = set()
+
+        for boundary in self.boundary():
+            for (polygon_cell, subsegment, opposite_polygon_cell) in boundary.polygon_cell_boundaries():
+                subsegment = E(subsegment[0]).segment(subsegment[1])
+                for (label, coordinates) in point.representatives():
+                    if label == polygon_cell.label():
+                        from math import sqrt
+                        close_to_boundary = float(subsegment.distance(coordinates)) < (boundary_error / 2) * sqrt(float(self.surface().polygon(polygon_cell.label()).area()))
+                        if close_to_boundary:
+                            representations.add((opposite_polygon_cell.cell().center(), opposite_polygon_cell.complex_from_point(coordinates)))
+                        break
+
+        return representations
+
 
 class BoundarySegment:
     def __init__(self, cell, segment):
@@ -714,6 +737,16 @@ class PolygonCell:
 
     def corners(self):
         raise NotImplementedError
+
+    def complex_from_point(self, coordinates):
+        k = self.root_branch(coordinates)
+        d = self.cell()._center.angle() - 1
+
+        from sage.all import CDF
+        zeta = CDF.zeta(d + 1) ** k
+        z =  CDF(*(coordinates - self.center()))
+
+        return zeta * z.nth_root(d + 1)
 
 
 class PolygonCellWithCenter(PolygonCell):
@@ -929,9 +962,20 @@ class LineSegmentPolygonCell(PolygonCellWithCenter):
         return self._boundary
 
     def contains_point(self, point, boundary_error=0):
-        if boundary_error != 0:
+        if boundary_error < 0:
             raise NotImplementedError
-        return self.polygon().contains_point(point)
+
+        P = self.polygon()
+        if P.contains_point(point):
+            return True
+
+        if boundary_error != 0:
+            from math import sqrt
+            if float(P.distance(point)) <= boundary_error * sqrt(float(self.surface().polygon(self.label()).area())):
+                # print(f"Point {point} is not in {P} but at distance {float(P.distance(point))}")
+                return True
+
+        return False
 
     def polygon(self):
         r"""

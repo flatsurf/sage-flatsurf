@@ -1802,6 +1802,13 @@ class EuclideanPoint(EuclideanSet, Element):
 
         return self
 
+    def segment(self, end):
+        end = self.parent()(end)
+
+        line = self.parent().line(self, end)
+
+        return self.parent().segment(line, start=self, end=end)
+
 
 class EuclideanLine(EuclideanFacade):
     r"""
@@ -2252,6 +2259,8 @@ class EuclideanSegment(EuclideanFacade):
         return self
 
     def distance(self, point):
+        point = self.parent()(point)
+
         # To compute the distance from the point to the segment, we compute the
         # distance from the point to the line containing the segment.
         # If the closest point on the line is on the segment, that's the
@@ -2260,10 +2269,10 @@ class EuclideanSegment(EuclideanFacade):
         norm = self.parent().norm()
         p = self._line.projection(point)
         if self.contains_point(p):
-            return norm.from_vector(p.vector())
+            return norm.from_vector(point.vector() - p.vector())
         return min(
-            norm.from_vector(self._start.vector()),
-            norm.from_vector(self._end.vector()),
+            norm.from_vector(point.vector() - self._start.vector()),
+            norm.from_vector(point.vector() - self._end.vector()),
         )
 
     def contains_point(self, point):
@@ -4009,7 +4018,11 @@ class EuclideanDistance_base(Element):
 
     def __float__(self):
         from math import sqrt
-        return sqrt(float(self.norm_squared()))
+        f = float(self.norm_squared())
+        if f < 0:
+            print("Bug https://github.com/sagemath/sage/issues/37983.")
+            return float(0)
+        return sqrt(f)
 
 
 class EuclideanDistance_squared(EuclideanDistance_base):

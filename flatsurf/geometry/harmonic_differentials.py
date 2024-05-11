@@ -203,6 +203,8 @@ with warnings.catch_warnings():
 
 complex = None
 
+DEFAULT_BOUNDARY_ERROR=1e-1
+
 
 def _cppyy():
     global complex
@@ -943,22 +945,22 @@ class RationalMap:
 
     # TODO: Passing the boundary_error into every method is silly. There should
     # be a global geometry that takes care of that.
-    def roots(self, boundary_error=1e-1):
+    def roots(self, boundary_error=DEFAULT_BOUNDARY_ERROR):
         # TODO: Add optional parameter to control grouping of roots.
         return self.preimages(0, boundary_error=boundary_error)
 
-    def ramification_points(self, boundary_error=1e-1):
+    def ramification_points(self, boundary_error=DEFAULT_BOUNDARY_ERROR):
         # Return triples (ramification point, ramification index, branch point)
 
         # TODO: Add optional parameter to control grouping of points.
         return self.derivative().roots(boundary_error=boundary_error)
 
-    def branch_points(self, boundary_error=1e-1):
+    def branch_points(self, boundary_error=DEFAULT_BOUNDARY_ERROR):
         # TODO: Use the precision of the differential to determine which branch
         # points should be identified.
         raise NotImplementedError
 
-    def degree(self, boundary_error=1e-1):
+    def degree(self, boundary_error=DEFAULT_BOUNDARY_ERROR):
         degrees = {}
         for (p, e, q) in self.ramification_points(boundary_error=boundary_error):
             if q not in degrees:
@@ -1015,20 +1017,77 @@ class RationalMap:
             numerator = self._numerator._series[center]
             denominator = self._denominator._series[center]
 
-            complex_solutions = self._preimages_rational_roots(numerator, denominator, p, q)
+            complex_solutions = [complex_solution for complex_solution in self._preimages_rational_roots(numerator, denominator, p, q) if cell.point_from_complex(complex_solution, boundary_error=boundary_error) is not None]
 
-            points = [cell.point_from_complex(complex, boundary_error=boundary_error) for complex in complex_solutions]
+            preimages[center] = complex_solutions
 
-            preimages[center] = [point for point in points if point is not None]
+        return self._preimages_merge_repetitions(preimages, boundary_error=boundary_error)
 
-        return self._preimages_merge_repetitions(preimages)
+    def _preimages_normalize_opposite(self, complex, candidates, boundary_error):
+        candidate = min(candidates, key=lambda c: abs(c - complex))
 
-    def _preimages_merge_repetitions(self, preimages):
-        # TODO: For each point that is within error/2 of a cell boundary, merge
-        # it with the closest point coming from the other side of the boundary.
-        # TODO: Drop all points that are beyond error / 2 on the other side of
-        # the cell boundary.
-        return sum(preimages.values(), [])
+        # TODO: Compare to boundary_error to check plausibility
+
+        return candidate
+
+    def _preimages_merge_repetitions(self, preimages, boundary_error):
+        differentials = self._numerator.parent()
+
+        surface = differentials.surface()
+        cells = differentials._cells
+
+        identified_points = []
+
+        for center, complexes in preimages.items():
+            for complex in complexes:
+                cell = cells.cell_at_center(center)
+                # For each preimage we determine which other centers should see that
+                # preimage.
+                # (Any preimage that is close to a boundary, should be seen by the
+                # center on the other side of the boundary.)
+                for (opposite_center, opposite_complex) in cell.opposite_representations(complex, boundary_error):
+                    # Find the representation of that point as seen from the
+                    # other side and group this pair of points.
+                    opposite_complex = self._preimages_normalize_opposite(opposite_complex, preimages[opposite_center], boundary_error=boundary_error)
+                    print(f"Identifying {(center, complex)} and {(opposite_center, opposite_complex)}")
+                    identified_points.append(((center, complex), (opposite_center, opposite_complex)))
+
+        # Throw away any points that are too far across the boundary.
+        points_without_noise = []
+
+        for center, complexes in preimages.items():
+            for complex in complexes:
+                cell = cells.cell_at_center(center)
+
+                if cell.point_from_complex(complex, boundary_error=boundary_error/2) is not None:
+                    points_without_noise.append((center, complex))
+
+        # Pick one representative of each group of points.
+        points_without_repetitions = []
+
+        for p in points_without_noise:
+            # This could easily be done sub-cubic but it's likely not a bottleneck ever.
+            # TODO: Instead of picking any representative we should probably
+            # pick the one that has likely the best precision (or average all
+            # the representatives.)
+            for x, y in identified_points:
+                if x == p and y in points_without_repetitions:
+                    break
+                if y == p and x in points_without_repetitions:
+                    break
+            else:
+                points_without_repetitions.append(p)
+
+        # Turn the complex solutions into actual points of the surface.
+        points = []
+
+        for (center, complex) in points_without_repetitions:
+            cell = cells.cell_at_center(center)
+            point = cell.point_from_complex(complex, boundary_error=boundary_error)
+            assert point is not None
+            points.append(point)
+
+        return points
 
     def monodromy(self, steps=20, degree=None):
         S = self._numerator.parent().surface()
