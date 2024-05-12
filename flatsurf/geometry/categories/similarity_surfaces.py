@@ -421,7 +421,7 @@ class SimilaritySurfaces(SurfaceCategory):
             if not switch_sides:
                 raise NotImplementedError
 
-            return self.apply_matrix(matrix, in_place=False).codomain()
+            return self.apply_matrix(matrix).codomain()
 
         def harmonic_differentials(self, error, cell_decomposition, check=True, category=None):
             if self.is_mutable():

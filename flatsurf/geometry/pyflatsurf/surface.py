@@ -139,8 +139,8 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         deformation = self._flat_triangulation.applyMatrix(*m)
         codomain = Surface_pyflatsurf(deformation.codomain())
 
-        from flatsurf.geometry.pyflatsurf.deformation import Deformation_pyflatsurf
-        return Deformation_pyflatsurf(self, codomain, deformation)
+        from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
+        return Morphism_from_Deformation._create_morphism(self, codomain, deformation)
 
     @classmethod
     def _normalize_label(cls, label):

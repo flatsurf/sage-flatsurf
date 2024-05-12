@@ -203,7 +203,7 @@ with warnings.catch_warnings():
 
 complex = None
 
-DEFAULT_BOUNDARY_ERROR=1e-1
+DEFAULT_BOUNDARY_ERROR=1e-2
 
 
 def _cppyy():
@@ -943,6 +943,19 @@ class RationalMap:
 
             return (n, d)
 
+    def derivative(self):
+        Omega = self._numerator.parent()
+
+        n = self._numerator._series
+        d = self._denominator._series
+
+        keys = n.keys()
+
+        return RationalMap(
+            Omega({key: d[key] * n[key].derivative() - n[key] * d[key].derivative() for key in keys}),
+            Omega({key: d[key] * d[key] for key in keys})
+        )
+
     # TODO: Passing the boundary_error into every method is silly. There should
     # be a global geometry that takes care of that.
     def roots(self, boundary_error=DEFAULT_BOUNDARY_ERROR):
@@ -989,12 +1002,32 @@ class RationalMap:
 
         f = n * q - d * p
 
+        def is_zero(x):
+            return abs(x) < 1e-8
+
         for (root, multiplicity) in f.roots():
-            if d(root) == 0:
-                # TODO: For each such x0, we have that n(x0) / d(x0) = p/q if d(x0) != 0.
-                # If d(x0) = 0, then n(x0) = 0 as well, so overall we have that for
-                # each solution its multiplicity is max(mult_x0(n) - mult_x0(d), 0)
-                raise NotImplementedError
+            if is_zero(d(root)):
+                assert is_zero(n(root))
+
+                def mult(f, x):
+                    mult = 0
+                    while is_zero(f(x)):
+                        assert f != 0
+                        f //= (f.parent().gen() - x)
+                        mult += 1
+                    return mult
+
+                root_multiplicity = min(mult(n, root), mult(d, root))
+
+                if is_zero((f // (f.parent().gen() - root)**root_multiplicity)(root)):
+                    multiplicity = 1
+                else:
+                    print("no solution here")
+                    print((f // (f.parent().gen() - root)**root_multiplicity)(root))
+                    multiplicity = 0
+
+            if multiplicity != 1:
+                print(f"{multiplicity=}")
 
             roots.extend([root]*multiplicity)
 
@@ -1048,6 +1081,11 @@ class RationalMap:
                 for (opposite_center, opposite_complex) in cell.opposite_representations(complex, boundary_error):
                     # Find the representation of that point as seen from the
                     # other side and group this pair of points.
+                    if not preimages[opposite_center]:
+                        print("no opposite for this point")
+                        assert cell.point_from_complex(complex, boundary_error=boundary_error/2) is None
+                        continue
+
                     opposite_complex = self._preimages_normalize_opposite(opposite_complex, preimages[opposite_center], boundary_error=boundary_error)
                     print(f"Identifying {(center, complex)} and {(opposite_center, opposite_complex)}")
                     identified_points.append(((center, complex), (opposite_center, opposite_complex)))
@@ -1062,6 +1100,8 @@ class RationalMap:
                 if cell.point_from_complex(complex, boundary_error=boundary_error/2) is not None:
                     points_without_noise.append((center, complex))
 
+        points_without_noise.sort(key=lambda p: abs(p[1]))
+
         # Pick one representative of each group of points.
         points_without_repetitions = []
 
@@ -1072,10 +1112,13 @@ class RationalMap:
             # the representatives.)
             for x, y in identified_points:
                 if x == p and y in points_without_repetitions:
+                    print("!", p)
                     break
                 if y == p and x in points_without_repetitions:
+                    print("!", p)
                     break
             else:
+                print(p)
                 points_without_repetitions.append(p)
 
         # Turn the complex solutions into actual points of the surface.

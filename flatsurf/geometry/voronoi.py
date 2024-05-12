@@ -300,7 +300,7 @@ class Cell:
 
             if abs(xy) < 1e-24:
                 # print("identifying root with vertex")
-                return self.surface()(polygon_cell.label(), center)
+                return polygon_cell.label(), center
 
             from flatsurf.geometry.euclidean import ccw
             if ccw(polygon_complex.edge(vertex), xy) >= 0 and ccw(-polygon_complex.edge(vertex - 1), xy) < 0:
