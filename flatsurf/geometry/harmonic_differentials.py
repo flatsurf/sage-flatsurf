@@ -921,6 +921,9 @@ class RationalMap:
     def __repr__(self):
         return f"({self._numerator})/({self._denominator})"
 
+    def __invert__(self):
+        return RationalMap(self._denominator, self._numerator)
+
     def __call__(self, point):
         # TODO: This should return a projective value.
         differentials = self._numerator.parent()
@@ -966,6 +969,7 @@ class RationalMap:
         # Return triples (ramification point, ramification index, branch point)
 
         # TODO: Add optional parameter to control grouping of points.
+        # TODO: This is missing points over infinity.
         return self.derivative().roots(boundary_error=boundary_error)
 
     def branch_points(self, boundary_error=DEFAULT_BOUNDARY_ERROR):
@@ -1022,12 +1026,12 @@ class RationalMap:
                 if is_zero((f // (f.parent().gen() - root)**root_multiplicity)(root)):
                     multiplicity = 1
                 else:
-                    print("no solution here")
-                    print((f // (f.parent().gen() - root)**root_multiplicity)(root))
+                    # print("no solution here")
+                    # print((f // (f.parent().gen() - root)**root_multiplicity)(root))
                     multiplicity = 0
 
-            if multiplicity != 1:
-                print(f"{multiplicity=}")
+            # if multiplicity != 1:
+            #     print(f"{multiplicity=}")
 
             roots.extend([root]*multiplicity)
 
@@ -1082,12 +1086,12 @@ class RationalMap:
                     # Find the representation of that point as seen from the
                     # other side and group this pair of points.
                     if not preimages[opposite_center]:
-                        print("no opposite for this point")
+                        # print("no opposite for this point")
                         assert cell.point_from_complex(complex, boundary_error=boundary_error/2) is None
                         continue
 
                     opposite_complex = self._preimages_normalize_opposite(opposite_complex, preimages[opposite_center], boundary_error=boundary_error)
-                    print(f"Identifying {(center, complex)} and {(opposite_center, opposite_complex)}")
+                    # print(f"Identifying {(center, complex)} and {(opposite_center, opposite_complex)}")
                     identified_points.append(((center, complex), (opposite_center, opposite_complex)))
 
         # Throw away any points that are too far across the boundary.
@@ -1112,13 +1116,13 @@ class RationalMap:
             # the representatives.)
             for x, y in identified_points:
                 if x == p and y in points_without_repetitions:
-                    print("!", p)
+                    # print("!", p)
                     break
                 if y == p and x in points_without_repetitions:
-                    print("!", p)
+                    # print("!", p)
                     break
             else:
-                print(p)
+                # print(p)
                 points_without_repetitions.append(p)
 
         # Turn the complex solutions into actual points of the surface.
@@ -1239,7 +1243,6 @@ class HarmonicDifferentialSpace(Parent):
     """
     Element = HarmonicDifferential
 
-    # TODO: Determine ncoefficients automatically
     def __init__(self, surface, error=None, cell_decomposition=None, check=True, category=None):
         # TODO: Just order labels by their order in surface.labels() instead.
         try:
@@ -1271,12 +1274,15 @@ class HarmonicDifferentialSpace(Parent):
             if any(self._relative_radius_of_convergence(cell) >= 1 for cell in self._cells):
                 raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
 
+            [self.ncoefficients(v) for v in surface.vertices()]
+
     def change(self, surface=None):
         if surface is not None:
             self = HarmonicDifferentials(surface=surface, error=self._error, cell_decomposition=self._cells.change(surface=surface))
 
         return self
 
+    # TODO: This does not cache :(
     @cached_method
     def ncoefficients(self, center):
         r"""
@@ -1396,6 +1402,11 @@ class HarmonicDifferentialSpace(Parent):
         ncoefficients = ceil(log(eps, beta) + d * log(1 - beta**(1/d), beta) - 1)
 
         assert ncoefficients >= 1
+
+        if ncoefficients > 256:
+            ncoefficients = 256
+
+        print(f"{ncoefficients} at {center} with angle {center.angle()}")
 
         return ncoefficients
 
@@ -1597,6 +1608,7 @@ class HarmonicDifferentialSpace(Parent):
 
         # (1') TODO: Describe L2 optimization.
         if "L2" in algorithm:
+            print("Adding L2 conditions")
             weight = get_parameter("L2", 1)
             constraints.optimize(weight * sum(self._L2_consistency_constraints().values()))
 
@@ -1607,6 +1619,7 @@ class HarmonicDifferentialSpace(Parent):
         # (2) We have that for any cycle γ, Re(∫fω) = Re(∫η) = Φ(γ). We can turn this into constraints
         # on the coefficients as we integrate numerically following the path γ as it intersects the radii of
         # convergence.
+        print("Adding cohomology constraints")
         constraints.require_cohomology(cocycle)
 
         if "force_singularities" in algorithm:
@@ -2568,40 +2581,30 @@ q
              0.000000000000000)
 
         """
+        print("Creating Lagrange symbols")
         self._optimize_cost()
 
+        print("Denormalizing system")
         self._denormalize()
 
+        print("Constructing linear system")
         A, b, decode, _ = self.matrix()
 
         rows, columns = A.dimensions()
         # TODO
-        # print(f"Solving {rows}×{columns} system")
+        print(f"Solving {rows}×{columns} system")
         rank = A.rank()
 
+        print("Computing condition")
         from sage.all import RDF, oo
         condition = A.change_ring(RDF).condition()
-        # print(f"{condition=}")
-
-        if condition == oo:
-            print("condition number is not finite")
-        else:
-            def cond():
-                C = A.list()
-                # numpy.random.shuffle() is much faster than random.shuffle() on large lists
-                import numpy.random
-                numpy.random.shuffle(C)
-                return A.parent()(C).change_ring(RDF).condition()
-
-            random_condition = min([cond() for i in range(8)])
-
-            if random_condition / condition < .01:
-                print(f"condition is {condition:.1e} but could be {random_condition/condition:.1e} of that")
+        print(f"{condition=}")
 
         if rank < columns:
             # TODO: Warn?
             print(f"system underdetermined: {rows}×{columns} matrix of rank {rank}")
 
+        print("Solving system")
         if algorithm == "arb":
             from sage.all import ComplexBallField
             C = ComplexBallField(self.complex_field().prec())
@@ -2625,6 +2628,7 @@ q
         else:
             raise NotImplementedError
 
+        print("Interpreting solution")
         residue = (A*solution - b).norm()
 
         lagranges = len(self.lagrange_variables())
@@ -2654,6 +2658,7 @@ q
 
             series[center][degree][part] = self._normalize(value, center=center, degree=degree, part=part)
 
+        print("Building series")
         series = {point:
                   sum((self.complex_field()(*entry) * self.power_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.power_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
 
