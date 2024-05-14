@@ -1132,116 +1132,78 @@ class RationalMap:
 
         return points
 
-    def monodromy(self, steps=20, degree=None):
-        S = self._numerator.parent().surface()
+    def monodromy_plots(self, base_point, steps=10, branch_points=None):
+        if base_point[1] == 0:
+            raise NotImplementedError
 
-        monodromy = []
-        for path in self._numerator.parent().cohomology().homology().gens():
-            print(f"computing monodromy for {path=}")
-            path = path.path()
-            print(path)
+        base_point = base_point[0] / base_point[1]
 
-            midpoint_path = []
+        if branch_points is None:
+            branch_points = self.branch_points()
 
-            bases = []
-            values = []
-            preimages = []
+        finite_branch_points = [p[0] / p[1] for p in branch_points if p[1] != 0]
 
-            from sage.all import QQ
-            pos = QQ.one() / 3
+        infinite_branch_point = any(p[1] == 0 for p in branch_points)
 
-            for (label, edge), (next_label, next_edge) in zip(path, path[1:] + path[:1]):
-                print(f"Walking from {(label, edge)} to {(next_label, next_edge)}")
-                while True:
-                    start = S.polygon(label).vertex(edge) + S.polygon(label).edge(edge) * pos
-                    end = S.polygon(label).vertex(edge + 1) + S.polygon(label).edge(edge + 1) * (1 - pos)
+        finite_radii = { p: min(abs(p - other) for other in finite_branch_points if other != p) / 2 for p in finite_branch_points }
 
-                    midpoint_path.append((label, (start, end)))
-
-                    for s in range(0, steps + 1):
-                        p = S(label, ((steps - s) * start + s * end) / steps)
-                        value = self(p)
-
-                        bases.append(p)
-                        values.append(value)
-                        qs = self.preimages(*value)
-
-                        if degree is not None:
-                            if len(qs) != degree:
-                                print(f"expected {degree} preimages of {value} (with multiplicity) but found {len(qs)} instead: {qs}")
-                                S.cluster_points(qs)
-                                assert False
-                        else:
-                            degree = len(qs)
-
-                        preimages.append(qs)
-
-                    label, edge = label, (edge + 1) % 3
-
-                    if (label, edge) == (next_label, next_edge):
-                        pos = 1 - pos
-                        break
-
-                    label, edge = S.opposite_edge(label, edge)
-
-                    if (label, edge) == (next_label, next_edge):
-                        break
-
-                    print(f"Now at {(label, edge)}")
-
-            if pos != QQ.one() / 3:
-                label, edge = path[0]
-                for s in range(0, steps + 1):
-                    start = S.polygon(label).vertex(edge) + S.polygon(label).edge(edge) * pos
-                    end = S.polygon(label).vertex(edge) + S.polygon(label).edge(edge) * (1 - pos)
-
-                    p = S(label, ((steps - s) * start + s * end) / steps)
-                    value = self(p)
-
-                    bases.append(p)
-                    values.append(value)
-                    qs = self.preimages(*value)
-                    
-                    preimages.append(qs)
-
-            monodromy.append((path, midpoint_path, bases, values, preimages))
-
-        return monodromy
-
-    def monodromy_plot(self, steps=20, degree=None):
-        from sage.all import animate
+        if infinite_branch_point:
+            infinite_center = sum(finite_branch_points) / len(finite_branch_points)
+            infinite_radius = max(abs(infinite_center - other) for other in finite_branch_points) * 3 / 2
 
         S = self._numerator.parent().surface()
         GS = S.graphical_surface(edge_labels=False, polygon_labels=False)
 
-        plots = []
-        for (path, midpoint_path, bases, values, monodromy) in self.monodromy(steps=steps, degree=degree):
-            from sage.all import arrow2d
-            path = sum(arrow2d(GS.graphical_polygon(lbl).transformed_vertex(e), GS.graphical_polygon(lbl).transformed_vertex(e + 1), color="green", width=1) for (lbl, e) in path)
+        animations = []
 
-            # TODO: Would be great to plot ∞ somehow. E.g. by labeling an arrow to a random place in the plot.
-            finite_values = [v for v in values if v[1] != 0]
-            inset = sum(arrow2d(v[0] / v[1], w[0] / w[1], color="orange", arrowsize=1, width=.1) for v, w in zip(finite_values, finite_values[1:]))
+        from sage.all import oo
 
-            frames = []
-            for s, (b, v, qs) in enumerate(zip(bases, values, monodromy)):
-                frame = GS.plot() + path.plot() + sum(q.plot(GS, color="orange", size=50) for q in qs)
+        for branch_point in finite_branch_points + ([oo] if infinite_branch_point else []):
+            print(f"Creating animation around {branch_point}")
 
-                frame += b.plot(GS, color="green")
+            if branch_point == oo:
+                ramification_points = self.preimages(1, 0)
+            else:
+                ramification_points = self.preimages(branch_point, 1)
 
-                jnset = inset
+            ramification_points = sum(p.plot(GS, color="red") for p in ramification_points)
 
-                from sage.all import point2d
-                if v[1] != 0:
-                    jnset = inset + point2d(v[0]/v[1], color="green")
+            if branch_point == oo:
+                radius = infinite_radius
+            else:
+                radius = finite_radii[branch_point]
 
-                frame = frame.inset(jnset, pos=(.65, .65, .3, .3))
+            center = branch_point
+            if branch_point == oo:
+                center = infinite_center
 
-                frames.append(frame)
+            def plot(x, color="orange"):
+                return GS.plot() + ramification_points + sum(p.plot(GS, color=color) for p in self.preimages(x))
 
-            plots.append(animate(frames))
+            def move(P, Q):
+                delta = (Q - P) / steps
+                return [plot(P + delta * step) for step in range(steps)]
 
-        return plots
+            def cycle(center, radius, ccw):
+                from sage.all import CDF
+                rotation = CDF.zeta(steps)
+                if not ccw:
+                    rotation = rotation.conjugate()
+
+                return [plot(center + rotation ** step * radius) for step in range(steps)]
+
+            frames = [plot(base_point, color="green")]
+            print(f"moving from {base_point} to {center + radius}")
+            frames.extend(move(base_point, center + radius))
+            print(f"walking around {center}")
+            frames.extend(cycle(center, radius, branch_point != oo))
+            print(f"moving back to {base_point} from {center + radius}")
+            frames.extend(move(center + radius, base_point))
+
+            from sage.all import animate
+            animations.append(animate(frames))
+            
+        return animations
 
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
