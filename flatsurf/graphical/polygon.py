@@ -344,7 +344,10 @@ class GraphicalPolygon:
             t = 0.5
 
         return line2d(
-            [self._v()[0], self._v()[0] + t * (sum(self._v()) / len(self._v()) - self._v()[0])],
+            [
+                self._v()[0],
+                self._v()[0] + t * (sum(self._v()) / len(self._v()) - self._v()[0]),
+            ],
             **options
         )
 

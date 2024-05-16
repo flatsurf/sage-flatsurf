@@ -111,7 +111,9 @@ class SimplicialHomologyClass(Element):
         multiplicities = dict(self._chain)
         other_multiplicities = dict(other._chain)
 
-        for _, adjacent_edges in self.parent().surface().angles(return_adjacent_edges=True):
+        for _, adjacent_edges in (
+            self.parent().surface().angles(return_adjacent_edges=True)
+        ):
             counter = 0
             other_counter = 0
             for edge in adjacent_edges:
@@ -285,11 +287,12 @@ class SimplicialHomologyClass(Element):
 
         for (label, edge), multiplicity in dict(self._chain).items():
             from sage.all import ZZ
+
             if multiplicity not in ZZ:
                 raise NotImplementedError("cannot lift this homology class to a path")
 
             if multiplicity < 0:
-                multiplicity *= - 1
+                multiplicity *= -1
                 label, edge = self.surface().opposite_edge(label, edge)
 
             edges.extend([(label, edge)] * multiplicity)
@@ -297,14 +300,18 @@ class SimplicialHomologyClass(Element):
         connected_edges = [edges.pop()]
         while edges:
             for edge in edges:
-                if self.surface()(connected_edges[-1][0], connected_edges[-1][1] + 1) == self.surface()(*edge):
+                if self.surface()(
+                    connected_edges[-1][0], connected_edges[-1][1] + 1
+                ) == self.surface()(*edge):
                     edges.remove(edge)
                     connected_edges.append(edge)
                     break
             else:
                 assert False, "path not connected"
 
-        assert self.surface()(connected_edges[-1][0], connected_edges[-1][1] + 1) == self.surface()(*connected_edges[0]), "path not looping"
+        assert self.surface()(
+            connected_edges[-1][0], connected_edges[-1][1] + 1
+        ) == self.surface()(*connected_edges[0]), "path not looping"
 
         return connected_edges
 
@@ -388,27 +395,35 @@ class SimplicialHomologyGroup(Parent):
     """
     Element = SimplicialHomologyClass
 
-    def __init__(self, surface, k, coefficients, generators, relative, implementation, category):
+    def __init__(
+        self, surface, k, coefficients, generators, relative, implementation, category
+    ):
         Parent.__init__(self, base=coefficients, category=category)
 
         if surface.is_mutable():
             raise TypeError("surface must be immutable")
 
         from sage.all import ZZ
+
         if k not in ZZ:
             raise TypeError("k must be an integer")
 
         from sage.categories.all import Rings
+
         if coefficients not in Rings():
             raise TypeError("coefficients must be a ring")
 
         if relative:
             for point in relative:
                 if point not in surface.vertices():
-                    raise NotImplementedError("can only compute homology relative to a subset of the vertices")
+                    raise NotImplementedError(
+                        "can only compute homology relative to a subset of the vertices"
+                    )
 
         if implementation not in ["generic"]:
-            raise NotImplementedError("cannot compute homology with this implementation yet")
+            raise NotImplementedError(
+                "cannot compute homology with this implementation yet"
+            )
 
         self._surface = surface
         self._k = k
@@ -486,7 +501,11 @@ class SimplicialHomologyGroup(Parent):
 
         """
         if self._k == 0:
-            return tuple(vertex for vertex in self._surface.vertices() if vertex not in self._relative)
+            return tuple(
+                vertex
+                for vertex in self._surface.vertices()
+                if vertex not in self._relative
+            )
         if self._k == 1:
             simplices = set()
             for edge in self._surface.edges():
@@ -509,7 +528,15 @@ class SimplicialHomologyGroup(Parent):
 
     @cached_method
     def change(self, k=None):
-        return SimplicialHomology(surface=self._surface, k=k if k is not None else self._k, coefficients=self._coefficients, generators=self._generators, relative=self._relative, implementation=self._implementation, category=self.category())
+        return SimplicialHomology(
+            surface=self._surface,
+            k=k if k is not None else self._k,
+            coefficients=self._coefficients,
+            generators=self._generators,
+            relative=self._relative,
+            implementation=self._implementation,
+            category=self.category(),
+        )
 
     def boundary(self, chain):
         r"""
@@ -562,7 +589,9 @@ class SimplicialHomologyGroup(Parent):
 
             boundary = C0.zero()
             for edge, coefficient in chain:
-                boundary += coefficient * to_C0(self._surface.point(*self._surface.opposite_edge(*edge)))
+                boundary += coefficient * to_C0(
+                    self._surface.point(*self._surface.opposite_edge(*edge))
+                )
                 boundary -= coefficient * to_C0(self._surface.point(*edge))
             return boundary
 
@@ -574,7 +603,9 @@ class SimplicialHomologyGroup(Parent):
                     if (face, edge) in C1.indices():
                         boundary += coefficient * C1((face, edge))
                     else:
-                        boundary -= coefficient * C1(self._surface.opposite_edge(face, edge))
+                        boundary -= coefficient * C1(
+                            self._surface.opposite_edge(face, edge)
+                        )
             return boundary
 
         return self.change(k=self._k - 1).chain_module().zero()
@@ -584,7 +615,14 @@ class SimplicialHomologyGroup(Parent):
             C0 = self.chain_module(dimension=0)
             label, edge = gen
             opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-            return C0(self._surface.point(opposite_label, self._surface.polygon(opposite_label).vertex(opposite_edge))) - C0(self._surface.point(label, self._surface.polygon(label).vertex(edge)))
+            return C0(
+                self._surface.point(
+                    opposite_label,
+                    self._surface.polygon(opposite_label).vertex(opposite_edge),
+                )
+            ) - C0(
+                self._surface.point(label, self._surface.polygon(label).vertex(edge))
+            )
 
         if self._generators == "voronoi":
             C0 = self.chain_module(dimension=0)
@@ -643,16 +681,29 @@ class SimplicialHomologyGroup(Parent):
             Chain complex with at most 3 nonzero terms over Integer Ring
 
         """
+
         def boundary(dimension, chain):
             boundary = self.change(k=dimension).boundary(chain)
-            coefficients = boundary.dense_coefficient_list(self.change(k=dimension - 1).chain_module().indices())
+            coefficients = boundary.dense_coefficient_list(
+                self.change(k=dimension - 1).chain_module().indices()
+            )
             return coefficients
 
         from sage.all import ChainComplex, matrix
-        return ChainComplex({
-            dimension: matrix([boundary(dimension, simplex) for simplex in self.change(k=dimension).chain_module().basis()]).transpose()
-            for dimension in range(3)
-        }, base_ring=self._coefficients, degree=-1)
+
+        return ChainComplex(
+            {
+                dimension: matrix(
+                    [
+                        boundary(dimension, simplex)
+                        for simplex in self.change(k=dimension).chain_module().basis()
+                    ]
+                ).transpose()
+                for dimension in range(3)
+            },
+            base_ring=self._coefficients,
+            degree=-1,
+        )
 
     def zero(self):
         r"""
@@ -702,7 +753,11 @@ class SimplicialHomologyGroup(Parent):
             F = self.chain_module()
 
             from sage.all import vector
-            from_homology = homology.module_morphism(function=lambda x: F.from_vector(vector(list(x.lift().lift()))), codomain=F)
+
+            from_homology = homology.module_morphism(
+                function=lambda x: F.from_vector(vector(list(x.lift().lift()))),
+                codomain=F,
+            )
 
             def _to_homology(x):
                 multiplicities = x.dense_coefficient_list(order=F.get_order())
@@ -710,11 +765,12 @@ class SimplicialHomologyGroup(Parent):
                     cycle = cycles(multiplicities)
                 except TypeError:
                     if multiplicities not in cycles:
-                        raise ValueError("chain is not a cycle so it has no representation in homology")
+                        raise ValueError(
+                            "chain is not a cycle so it has no representation in homology"
+                        )
                     raise
 
                 return homology(cycle)
-
 
             to_homology = F.module_morphism(function=_to_homology, codomain=homology)
 
@@ -723,7 +779,9 @@ class SimplicialHomologyGroup(Parent):
 
             return homology, from_homology, to_homology
 
-        raise NotImplementedError("cannot compute homology with this implementation yet")
+        raise NotImplementedError(
+            "cannot compute homology with this implementation yet"
+        )
 
     def _test_homology(self, **options):
         r"""
@@ -776,6 +834,7 @@ class SimplicialHomologyGroup(Parent):
             k = f"_{k}"
 
         from sage.all import ZZ
+
         if self._coefficients is not ZZ:
             return f"H{k}({self._surface}; {self._coefficients})"
 
@@ -885,18 +944,27 @@ class SimplicialHomologyGroup(Parent):
 
         """
         from sage.all import matrix
-        E = matrix(self.base_ring(), [[g.algebraic_intersection(h) for h in self.gens()] for g in self.gens()])
+
+        E = matrix(
+            self.base_ring(),
+            [[g.algebraic_intersection(h) for h in self.gens()] for g in self.gens()],
+        )
 
         from sage.categories.all import Fields
+
         if self.base_ring() in Fields:
             from sage.matrix.symplectic_basis import symplectic_basis_over_field
+
             F, C = symplectic_basis_over_field(E)
         else:
             from sage.matrix.symplectic_basis import symplectic_basis_over_ZZ
+
             F, C = symplectic_basis_over_ZZ(E)
 
         if any([entry not in [-1, 0, 1] for row in F for entry in row]):
-            raise NotImplementedError("cannot determine symplectic basis for this homology group over this ring yet")
+            raise NotImplementedError(
+                "cannot determine symplectic basis for this homology group over this ring yet"
+            )
 
         return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
 
@@ -909,8 +977,8 @@ class SimplicialHomologyGroup(Parent):
         tester.assertEqual(len(self.gens()), n)
         tester.assertEqual(n % 2, 0)
 
-        A = basis[:n // 2]
-        B = basis[n // 2:]
+        A = basis[: n // 2]
+        B = basis[n // 2 :]
 
         for i, a in enumerate(A):
             for j, b in enumerate(B):
@@ -928,13 +996,37 @@ class SimplicialHomologyGroup(Parent):
         if not isinstance(other, SimplicialHomologyGroup):
             return False
 
-        return self._surface == other._surface and self._coefficients == other._coefficients and self._generators == other._generators and self._relative == other._relative and self._implementation == other._implementation and self.category() == other.category()
+        return (
+            self._surface == other._surface
+            and self._coefficients == other._coefficients
+            and self._generators == other._generators
+            and self._relative == other._relative
+            and self._implementation == other._implementation
+            and self.category() == other.category()
+        )
 
     def __hash__(self):
-        return hash((self._surface, self._coefficients, self._generators, self._relative, self._implementation, self.category()))
+        return hash(
+            (
+                self._surface,
+                self._coefficients,
+                self._generators,
+                self._relative,
+                self._implementation,
+                self.category(),
+            )
+        )
 
 
-def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", relative=None, implementation="generic", category=None):
+def SimplicialHomology(
+    surface,
+    k=1,
+    coefficients=None,
+    generators="edge",
+    relative=None,
+    implementation="generic",
+    category=None,
+):
     r"""
     TESTS:
 
@@ -947,4 +1039,6 @@ def SimplicialHomology(surface, k=1, coefficients=None, generators="edge", relat
         True
 
     """
-    return surface.homology(k, coefficients, generators, relative, implementation, category)
+    return surface.homology(
+        k, coefficients, generators, relative, implementation, category
+    )

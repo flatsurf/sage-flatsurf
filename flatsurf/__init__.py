@@ -45,7 +45,10 @@ from flatsurf.geometry.surface_legacy import (
     ConeSurface,
     RationalConeSurface,
     HalfTranslationSurface,
-    TranslationSurface
+    TranslationSurface,
 )
 
-from flatsurf.geometry.voronoi import VoronoiCellDecomposition, ApproximateWeightedVoronoiCellDecomposition
+from flatsurf.geometry.voronoi import (
+    VoronoiCellDecomposition,
+    ApproximateWeightedVoronoiCellDecomposition,
+)

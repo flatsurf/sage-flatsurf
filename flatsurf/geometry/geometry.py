@@ -1,5 +1,6 @@
 # TODO: Document module.
 
+
 class Geometry:
     r"""
     Predicates and primitive geometric constructions over a base ``ring``.

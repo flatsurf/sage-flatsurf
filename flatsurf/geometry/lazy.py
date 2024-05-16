@@ -166,7 +166,9 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             ((0, 0),)
 
         """
-        return tuple(self._triangulation(root)[0].root() for root in self._reference.roots())
+        return tuple(
+            self._triangulation(root)[0].root() for root in self._reference.roots()
+        )
 
     @cached_method
     def _triangulation(self, reference_label):
@@ -192,14 +194,23 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         if reference_label not in self._reference_labels():
             from flatsurf import MutableOrientedSimilaritySurface
-            triangulation = MutableOrientedSimilaritySurface(self._reference.base_ring())
+
+            triangulation = MutableOrientedSimilaritySurface(
+                self._reference.base_ring()
+            )
             triangulation.add_polygon(reference_polygon)
 
             from bidict import bidict
-            return triangulation, bidict({e: (reference_label, e) for e in range(len(reference_polygon.edges()))})
+
+            return triangulation, bidict(
+                {e: (reference_label, e) for e in range(len(reference_polygon.edges()))}
+            )
 
         from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
-        return MutableOrientedSimilaritySurface._triangulate(self._reference, reference_label)
+
+        return MutableOrientedSimilaritySurface._triangulate(
+            self._reference, reference_label
+        )
 
     def _reference_label(self, label):
         if label in self._reference.labels():
@@ -262,8 +273,13 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         if (label, edge) in outer_edges.values():
             reference_edge = outer_edges.inverse[(label, edge)]
-            opposite_reference_label, opposite_reference_edge = self._reference.opposite_edge(reference_label, reference_edge)
-            opposite_triangulation, opposite_outer_edges = self._triangulation(opposite_reference_label)
+            (
+                opposite_reference_label,
+                opposite_reference_edge,
+            ) = self._reference.opposite_edge(reference_label, reference_edge)
+            opposite_triangulation, opposite_outer_edges = self._triangulation(
+                opposite_reference_label
+            )
             return opposite_outer_edges[opposite_reference_edge]
 
         return triangulation.opposite_edge(label, edge)
@@ -304,7 +320,10 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if not isinstance(other, LazyTriangulatedSurface):
             return False
 
-        return self._reference == other._reference and self._reference_labels() == other._reference_labels()
+        return (
+            self._reference == other._reference
+            and self._reference_labels() == other._reference_labels()
+        )
 
     def labels(self):
         r"""
@@ -520,7 +539,9 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
     def __init__(self, reference, m, category=None):
         if reference.is_mutable():
             if not reference.is_finite_type():
-                raise NotImplementedError("cannot apply matrix to mutable surface of infinite type")
+                raise NotImplementedError(
+                    "cannot apply matrix to mutable surface of infinite type"
+                )
 
             from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
@@ -529,13 +550,17 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         self._reference = reference
 
         from sage.structure.element import get_coercion_model
+
         cm = get_coercion_model()
         base_ring = cm.common_parent(m.base_ring(), self._reference.base_ring())
 
         from sage.all import matrix
+
         self._matrix = matrix(base_ring, m, immutable=True)
 
-        super().__init__(base_ring, reference, category=category or self._reference.category())
+        super().__init__(
+            base_ring, reference, category=category or self._reference.category()
+        )
 
     @cached_method
     def _sgn(self):
@@ -598,10 +623,14 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         if self._sgn() == -1:
             reference_edge = len(self.polygon(label).edges()) - 1 - edge
 
-        opposite_label, opposite_edge = self._reference.opposite_edge(label, reference_edge)
+        opposite_label, opposite_edge = self._reference.opposite_edge(
+            label, reference_edge
+        )
 
         if self._sgn() == -1:
-            opposite_edge = len(self._reference.polygon(opposite_label).edges()) - 1 - opposite_edge
+            opposite_edge = (
+                len(self._reference.polygon(opposite_label).edges()) - 1 - opposite_edge
+            )
 
         return opposite_label, opposite_edge
 
@@ -697,7 +726,9 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         )
 
 
-class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base):
+class LazyMutableOrientedSimilaritySurface(
+    LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base
+):
     r"""
     A helper surface for :class:`LazyDelaunayTriangulatedSurface`.
 
@@ -744,7 +775,9 @@ class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, Mutabl
 
         self._surface = MutableOrientedSimilaritySurface(surface.base_ring())
 
-        super().__init__(surface.base_ring(), surface, category=category or surface.category())
+        super().__init__(
+            surface.base_ring(), surface, category=category or surface.category()
+        )
 
     def is_mutable(self):
         r"""
@@ -966,7 +999,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+
+            warnings.warn(
+                "the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional"
+            )
 
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
@@ -1011,24 +1047,42 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self.polygon(label)
 
         from flatsurf.geometry.saddle_connection import SaddleConnection
-        saddle_connection = SaddleConnection.from_half_edge(self._reference, label, edge)
+
+        saddle_connection = SaddleConnection.from_half_edge(
+            self._reference, label, edge
+        )
 
         for flip in self._flips:
             saddle_connection = flip(saddle_connection)
 
-        return SaddleConnection(self, start=saddle_connection.start(), end=saddle_connection.end(), holonomy=saddle_connection.holonomy(), end_holonomy=saddle_connection.end_holonomy(), check=False) 
+        return SaddleConnection(
+            self,
+            start=saddle_connection.start(),
+            end=saddle_connection.end(),
+            holonomy=saddle_connection.holonomy(),
+            end_holonomy=saddle_connection.end_holonomy(),
+            check=False,
+        )
 
     def _preimage_edge(self, label, edge):
         # Ensure that polygon with label is final in self._surface.
         self.polygon(label)
 
         from flatsurf.geometry.saddle_connection import SaddleConnection
+
         saddle_connection = SaddleConnection.from_half_edge(self._surface, label, edge)
 
         for flip in self._flips[::-1]:
             saddle_connection = flip.section()(saddle_connection)
 
-        return SaddleConnection(self._reference, start=saddle_connection.start(), end=saddle_connection.end(), holonomy=saddle_connection.holonomy(), end_holonomy=saddle_connection.end_holonomy(), check=False) 
+        return SaddleConnection(
+            self._reference,
+            start=saddle_connection.start(),
+            end=saddle_connection.end(),
+            holonomy=saddle_connection.holonomy(),
+            end_holonomy=saddle_connection.end_holonomy(),
+            check=False,
+        )
 
     def is_mutable(self):
         r"""
@@ -1199,9 +1253,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
                     if self._surface._delaunay_edge_needs_flip(ll, ee):
                         # Perform the flip
-                        self._surface.triangle_flip(
-                            ll, ee, in_place=True
-                        )
+                        self._surface.triangle_flip(ll, ee, in_place=True)
 
                         # If we touch the original polygon, then we return False.
                         if label == ll or label == lll:
@@ -1309,9 +1361,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if not isinstance(other, LazyDelaunayTriangulatedSurface):
             return False
 
-        return (
-            self._reference == other._reference
-        )
+        return self._reference == other._reference
 
     def __repr__(self):
         r"""
@@ -1382,7 +1432,10 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+
+            warnings.warn(
+                "the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional"
+            )
 
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
@@ -1421,10 +1474,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if label != self._label(cell):
             raise ValueError("no polygon with this label")
 
-        edges = [
-            self._reference.polygon(edge[0]).edge(edge[1])
-            for edge in edges
-        ]
+        edges = [self._reference.polygon(edge[0]).edge(edge[1]) for edge in edges]
 
         from flatsurf import Polygon
 
@@ -1497,17 +1547,13 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             cell.add(triangle)
 
-            delaunay = self._reference._delaunay_edge_needs_join(
-                triangle, edge
-            )
+            delaunay = self._reference._delaunay_edge_needs_join(triangle, edge)
 
             if not delaunay:
                 edges.append((triangle, edge))
                 continue
 
-            cross_triangle, cross_edge = self._reference.opposite_edge(
-                triangle, edge
-            )
+            cross_triangle, cross_edge = self._reference.opposite_edge(triangle, edge)
 
             for shift in [2, 1]:
                 next_triangle, next_edge = cross_triangle, (cross_edge + shift) % 3

@@ -139,15 +139,17 @@ class SimplicialCohomologyGroup(Parent):
 
     def __init__(self, surface, k, coefficients, implementation, category):
         Parent.__init__(self, category=category)
-        
+
         if surface.is_mutable():
             raise TypeError("surface most be immutable")
 
         from sage.all import ZZ
+
         if k not in ZZ:
             raise TypeError("k must be an integer")
 
         from sage.categories.all import Rings
+
         if coefficients not in Rings():
             raise TypeError("coefficients must be a ring")
 
@@ -201,13 +203,16 @@ class SimplicialCohomologyGroup(Parent):
 
         """
         from flatsurf.geometry.homology import SimplicialHomology
+
         return SimplicialHomology(self._surface, self._k)
 
     def gens(self):
         return [self({gen: 1}) for gen in self.homology().gens()]
 
 
-def SimplicialCohomology(surface, k=1, coefficients=None, implementation="dual", category=None):
+def SimplicialCohomology(
+    surface, k=1, coefficients=None, implementation="dual", category=None
+):
     r"""
     TESTS:
 

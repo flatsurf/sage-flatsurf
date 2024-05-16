@@ -308,6 +308,7 @@ class ConeSurfaces(SurfaceCategory):
                     True
 
                 """
+
                 class ElementMethods:
                     # TODO: Only cache for vertices in parent, everything else, cache only in the point.
                     @cached_in_parent_method
@@ -345,7 +346,9 @@ class ConeSurfaces(SurfaceCategory):
                         center = erase_marked_points(self)
 
                         if not center.is_vertex():
-                            insert_marked_points = center.surface().insert_marked_points(center)
+                            insert_marked_points = (
+                                center.surface().insert_marked_points(center)
+                            )
                             center = insert_marked_points(center)
 
                         surface = center.parent()
@@ -366,6 +369,7 @@ class ConeSurfaces(SurfaceCategory):
                     If you want to add functionality for such surfaces you most
                     likely want to put it here.
                     """
+
                     def angles(self, numerical=False, return_adjacent_edges=False):
                         r"""
                         Return the set of angles around the vertices of the surface.
@@ -433,7 +437,16 @@ class ConeSurfaces(SurfaceCategory):
                         return angles
 
                     def singularities(self):
-                        return [self.point(edges[0][0], self.polygon(edges[0][0]).vertex(edges[0][1])) for (angle, edges) in self.angles(return_adjacent_edges=True) if angle > 1]
+                        return [
+                            self.point(
+                                edges[0][0],
+                                self.polygon(edges[0][0]).vertex(edges[0][1]),
+                            )
+                            for (angle, edges) in self.angles(
+                                return_adjacent_edges=True
+                            )
+                            if angle > 1
+                        ]
 
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""
@@ -459,11 +472,18 @@ class ConeSurfaces(SurfaceCategory):
                         If you want to add functionality for such surfaces you
                         most likely want to put it here.
                         """
+
                         @cached_method
                         def distance_matrix_vertices(self):
                             vertices = list(self.vertices())
 
-                            A = [[0. if n == m else float('inf') for n in range(len(vertices))] for m in range(len(vertices))]
+                            A = [
+                                [
+                                    0.0 if n == m else float("inf")
+                                    for n in range(len(vertices))
+                                ]
+                                for m in range(len(vertices))
+                            ]
 
                             def floyd():
                                 for k in range(len(vertices)):
@@ -474,10 +494,14 @@ class ConeSurfaces(SurfaceCategory):
                             for connection in self.saddle_connections():
                                 # TODO: Strangely, all this trickery is needed here since otherwise the symbolic machinery is confused.
                                 from sage.all import RDF
-                                length = float(abs(connection.holonomy().change_ring(RDF).norm()))
+
+                                length = float(
+                                    abs(connection.holonomy().change_ring(RDF).norm())
+                                )
                                 # print(length)
                                 if length >= max(x for row in A for x in row):
                                     from sage.all import matrix
+
                                     return matrix(A)
 
                                 n = vertices.index(self(*connection.start()))
@@ -491,15 +515,24 @@ class ConeSurfaces(SurfaceCategory):
                         # TODO: Don't cache this.
                         @cached_method
                         def distance_matrix_points(self, points):
-                            insertion = self.insert_marked_points(*[p for p in points if not p.is_vertex()])
+                            insertion = self.insert_marked_points(
+                                *[p for p in points if not p.is_vertex()]
+                            )
 
                             D = insertion.codomain().distance_matrix_vertices()
                             V = list(insertion.codomain().vertices())
 
                             from sage.all import matrix
-                            return matrix([[
-                                D[V.index(insertion(p))][V.index(insertion(q))] for q in points]
-                                for p in points])
+
+                            return matrix(
+                                [
+                                    [
+                                        D[V.index(insertion(p))][V.index(insertion(q))]
+                                        for q in points
+                                    ]
+                                    for p in points
+                                ]
+                            )
 
                         def cluster_points(self, points):
                             points = tuple(points)
@@ -508,7 +541,16 @@ class ConeSurfaces(SurfaceCategory):
                             nclusters = len(points)
                             for radius in sorted(set(D.list())):
                                 from sage.all import matrix
-                                adjacency = matrix([[d <= radius and i != j for j, d in enumerate(row)] for i, row in enumerate(D.rows())])
+
+                                adjacency = matrix(
+                                    [
+                                        [
+                                            d <= radius and i != j
+                                            for j, d in enumerate(row)
+                                        ]
+                                        for i, row in enumerate(D.rows())
+                                    ]
+                                )
                                 # print(radius)
                                 # print(adjacency)
 
@@ -516,11 +558,23 @@ class ConeSurfaces(SurfaceCategory):
                                 ids = list(range(len(points)))
                                 while adjacency:
                                     from sage.all import Graph
+
                                     G = Graph(adjacency)
 
                                     import sage.graphs.cliquer
+
                                     clique = sage.graphs.cliquer.max_clique(G)
-                                    adjacency = matrix([[a for j, a in enumerate(row) if j not in clique] for i, row in enumerate(adjacency.rows()) if i not in clique])
+                                    adjacency = matrix(
+                                        [
+                                            [
+                                                a
+                                                for j, a in enumerate(row)
+                                                if j not in clique
+                                            ]
+                                            for i, row in enumerate(adjacency.rows())
+                                            if i not in clique
+                                        ]
+                                    )
                                     # print(adjacency)
 
                                     clique = [ids[c] for c in clique]
@@ -536,7 +590,9 @@ class ConeSurfaces(SurfaceCategory):
                                 if len(clusters) < nclusters:
                                     nclusters = len(clusters)
                                     # TODO: Actually it's not a ball of that radius.
-                                    print(f"Identifying roots contained in a {radius:.3} ball, there are {nclusters} roots of orders {tuple(len(cluster) for cluster in clusters)}")
+                                    print(
+                                        f"Identifying roots contained in a {radius:.3} ball, there are {nclusters} roots of orders {tuple(len(cluster) for cluster in clusters)}"
+                                    )
 
                         def _test_genus(self, **options):
                             r"""
@@ -571,5 +627,9 @@ class ConeSurfaces(SurfaceCategory):
 
                             tester.assertAlmostEqual(
                                 self.genus(),
-                                float(sum(a - 1 for a in self.angles(numerical=True)) / 2.0 + 1),
+                                float(
+                                    sum(a - 1 for a in self.angles(numerical=True))
+                                    / 2.0
+                                    + 1
+                                ),
                             )

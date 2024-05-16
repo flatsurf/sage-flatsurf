@@ -26,9 +26,6 @@ from sage.misc.cachefunc import cached_method
 
 
 class GL2RImageSurface(OrientedSimilaritySurface):
-    @cached_method
-    def polygon(self, lab):
-
     def opposite_edge(self, p, e):
         if self._det_sign == 1:
             return self._s.opposite_edge(p, e)

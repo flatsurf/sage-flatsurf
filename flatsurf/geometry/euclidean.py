@@ -118,7 +118,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         category = category or Sets()
 
-        return super().__classcall__(cls, base_ring=base_ring, geometry=geometry, category=category)
+        return super().__classcall__(
+            cls, base_ring=base_ring, geometry=geometry, category=category
+        )
 
     def __init__(self, base_ring, geometry, category):
         r"""
@@ -211,11 +213,12 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
         """
         from sage.all import QQ
+
         return [
             self((0, 0)),
             self((1, 0)),
             self((0, 1)),
-            self((-QQ(1)/2, QQ(1)/2)),
+            self((-QQ(1) / 2, QQ(1) / 2)),
         ]
 
     def _test_some_subsets(self, tester=None, **options):
@@ -296,7 +299,7 @@ class EuclideanPlane(Parent, UniqueRepresentation):
 
             sage: E((1, 2))
             (1, 2)
-            
+
         Elements can be converted between planes with compatible base rings::
 
             sage: EuclideanPlane(AA)(E((0, 0)))
@@ -444,24 +447,36 @@ class EuclideanPlane(Parent, UniqueRepresentation):
         """
         # TODO: Allow radius to be an EuclideanDistance (and convert to one.)
         if (radius is None) == (radius_squared is None):
-            raise ValueError("exactly one of radius or radius_squared must be specified")
+            raise ValueError(
+                "exactly one of radius or radius_squared must be specified"
+            )
 
         if radius is not None:
             if radius < 0:
                 raise ValueError("radius must not be negative")
-            radius_squared = radius ** 2
+            radius_squared = radius**2
 
         center = self(center)
         radius_squared = self.base_ring()(radius_squared)
 
-        circle = self.__make_element_class__(EuclideanCircle)(self, center, radius_squared)
+        circle = self.__make_element_class__(EuclideanCircle)(
+            self, center, radius_squared
+        )
         if check:
             circle = circle._normalize()
             circle._check()
 
         return circle
 
-    def segment(self, line, start=None, end=None, oriented=None, check=True, assume_normalized=False):
+    def segment(
+        self,
+        line,
+        start=None,
+        end=None,
+        oriented=None,
+        check=True,
+        assume_normalized=False,
+    ):
         r"""
         Return the segment on the `line`` bounded by ``start`` and ``end``.
 
@@ -559,9 +574,9 @@ class EuclideanPlane(Parent, UniqueRepresentation):
                 raise ValueError(
                     "cannot deduce segment from single endpoint on an unoriented line"
                 )
-            elif line.parametrize(
-                start, check=False
-            ) > line.parametrize(end, check=False):
+            elif line.parametrize(start, check=False) > line.parametrize(
+                end, check=False
+            ):
                 line = -line
 
         segment = self.__make_element_class__(
@@ -900,7 +915,9 @@ class EuclideanExactGeometry(UniqueRepresentation, EuclideanGeometry, ExactGeome
         return EuclideanExactGeometry(ring)
 
 
-class EuclideanEpsilonGeometry(UniqueRepresentation, EuclideanGeometry, EpsilonGeometry):
+class EuclideanEpsilonGeometry(
+    UniqueRepresentation, EuclideanGeometry, EpsilonGeometry
+):
     r"""
     Predicates and primitive geometric constructions over an inexact base ring.
 
@@ -950,7 +967,7 @@ class EuclideanEpsilonGeometry(UniqueRepresentation, EuclideanGeometry, EpsilonG
         if len(v) != len(w):
             raise TypeError("vectors must have same length")
 
-        return sum((vv - ww) ** 2 for (vv, ww) in zip(v, w)) < self._epsilon ** 2
+        return sum((vv - ww) ** 2 for (vv, ww) in zip(v, w)) < self._epsilon**2
 
     def change_ring(self, ring):
         r"""
@@ -1094,7 +1111,9 @@ class EuclideanSet(SageObject):
             True
 
         """
-        raise NotImplementedError("this subset of the Euclidean plane cannot decide whether it contains a given point yet")
+        raise NotImplementedError(
+            "this subset of the Euclidean plane cannot decide whether it contains a given point yet"
+        )
 
     # TODO: Add a _test_contains test.
 
@@ -1418,7 +1437,11 @@ class EuclideanCircle(EuclideanFacade):
 
         """
         if ring is not None or geometry is not None:
-            self = self.parent().change_ring(ring, geometry=geometry).circle(self._center, radius_squared=self._radius_squared, check=False)
+            self = (
+                self.parent()
+                .change_ring(ring, geometry=geometry)
+                .circle(self._center, radius_squared=self._radius_squared, check=False)
+            )
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -1485,8 +1508,8 @@ class EuclideanCircle(EuclideanFacade):
         Return the closest point on this line to the center of the circle.
         """
         # TODO: Rewrite or deprecate and generalize
-        V3 = self.parent().base_ring()**3
-        V2 = self.parent().base_ring()**2
+        V3 = self.parent().base_ring() ** 3
+        V2 = self.parent().base_ring() ** 2
 
         cc = V3((self._center[0], self._center[1], 1))
         # point at infinite orthogonal to direction_vector:
@@ -1615,7 +1638,9 @@ class EuclideanCircle(EuclideanFacade):
 
         SG = SimilarityGroup(self.parent().base_ring())
         s = SG(similarity)
-        return self.parent().circle(s(self._center), radius_squared=s.det() * self._radius_squared)
+        return self.parent().circle(
+            s(self._center), radius_squared=s.det() * self._radius_squared
+        )
 
     ## def __str__(self):
     ##     return (
@@ -1634,7 +1659,7 @@ class EuclideanPoint(EuclideanSet, Element):
 
         sage: from flatsurf import EuclideanPlane
         sage: E = EuclideanPlane()
-        
+
         sage: p = E.point(0, 0)
 
     TESTS::
@@ -1650,6 +1675,7 @@ class EuclideanPoint(EuclideanSet, Element):
         :meth:`EuclideanPlane.point` for ways to create points
 
     """
+
     def __init__(self, parent, x, y):
         super().__init__(parent)
 
@@ -1664,7 +1690,7 @@ class EuclideanPoint(EuclideanSet, Element):
 
             sage: from flatsurf import EuclideanPlane
             sage: E = EuclideanPlane()
-            
+
             sage: p = E.point(1, 2)
             sage: list(p)
             [1, 2]
@@ -1675,6 +1701,7 @@ class EuclideanPoint(EuclideanSet, Element):
 
     def vector(self):
         from sage.all import vector
+
         return vector((self._x, self._y))
 
     def translate(self, v):
@@ -1792,7 +1819,11 @@ class EuclideanPoint(EuclideanSet, Element):
 
         """
         if ring is not None or geometry is not None:
-            self = self.parent().change_ring(ring, geometry=geometry).point(self._x, self._y)
+            self = (
+                self.parent()
+                .change_ring(ring, geometry=geometry)
+                .point(self._x, self._y)
+            )
 
         if oriented is None:
             oriented = self.is_oriented()
@@ -2048,6 +2079,7 @@ class EuclideanLine(EuclideanFacade):
             strategy = normalization.pop()
 
             from flatsurf.geometry.hyperbolic import HyperbolicGeodesic
+
             try:
                 a, b, c = HyperbolicGeodesic._normalize_coefficients(
                     a, b, c, strategy=strategy
@@ -2080,23 +2112,19 @@ class EuclideanLine(EuclideanFacade):
         point = point.translate(-shift.vector())
 
         (x, y) = point
-        v = (self._c, - self._b)
-        vv = v[0]**2 + v[1]**2
+        v = (self._c, -self._b)
+        vv = v[0] ** 2 + v[1] ** 2
 
-        p = (v[0]**2 * x + v[0]*v[1] * y, v[0]*v[1] * x + v[1]*v[1] * y)
+        p = (v[0] ** 2 * x + v[0] * v[1] * y, v[0] * v[1] * x + v[1] * v[1] * y)
         p = (p[0] / vv, p[1] / vv)
 
         assert p[0] * self._b + p[1] * self._c == 0
 
-
         return self.parent().point(*p).translate(shift.vector())
-
 
     def contains_point(self, point):
         x, y = point.vector()
         return self._a + self._b * x + self._c * y == 0
-
-
 
 
 class EuclideanOrientedLine(EuclideanLine, EuclideanOrientedSet):
@@ -2279,7 +2307,9 @@ class EuclideanSegment(EuclideanFacade):
         if not self._line.contains_point(point):
             return False
 
-        return bool(time_on_segment((self._start.vector(), self._end.vector()), point.vector()))
+        return bool(
+            time_on_segment((self._start.vector(), self._end.vector()), point.vector())
+        )
 
 
 class EuclideanOrientedSegment(EuclideanSegment, EuclideanOrientedSet):
@@ -2403,6 +2433,7 @@ class EuclideanRay(EuclideanFacade):
 
 
 ### TODO: PRE-EUCLIDEAN-PLANE CODE HERE
+
 
 def is_cosine_sine_of_rational(cos, sin, scaled=False):
     r"""
@@ -2744,7 +2775,7 @@ def line_intersection(l, m):
         sage: line_intersection((vector((-1, 0)), vector((1, 0))), (vector((0, -1)), vector((0, 1))))
         (0, 0)
 
-    Parallel lines have no single point of intersection:: 
+    Parallel lines have no single point of intersection::
 
         sage: line_intersection((vector((-1, 0)), vector((1, 0))), (vector((-1, 1)), vector((1, 1))))
 
@@ -2786,6 +2817,7 @@ def time_on_ray(p, direction, q):
 
     return delta, length
 
+
 def time_on_segment(segment, p):
     if p == segment[0]:
         return 0
@@ -2799,6 +2831,7 @@ def time_on_segment(segment, p):
         return None
 
     return delta / length
+
 
 def ray_segment_intersection(p, direction, segment):
     r"""
@@ -2885,14 +2918,17 @@ def is_box_intersecting(b, c):
     - ``1`` -- intersect in a point
     - ``2`` -- intersect in a segment
     - ``3`` -- intersection has interior points
-    
+
     """
+
     def normalize(b):
         x_inverted = b[0][0] > b[1][0]
         y_inverted = b[0][1] > b[1][1]
 
-        return ((b[1][0] if x_inverted else b[0][0], b[1][1] if y_inverted else b[0][1]),
-                (b[0][0] if x_inverted else b[1][0], b[0][1] if y_inverted else b[1][1]))
+        return (
+            (b[1][0] if x_inverted else b[0][0], b[1][1] if y_inverted else b[0][1]),
+            (b[0][0] if x_inverted else b[1][0], b[0][1] if y_inverted else b[1][1]),
+        )
 
     b = normalize(b)
     c = normalize(c)
@@ -3014,7 +3050,11 @@ def is_between(begin, end, v):
     elif begin[0] * end[1] == end[0] * begin[1]:
         # aligned vector
         if begin[0] * end[0] >= 0 and begin[1] * end[1] >= 0:
-            return v[0] * begin[1] != v[1] * begin[0] or v[0] * begin[0] < 0 or v[1] * begin[1] < 0
+            return (
+                v[0] * begin[1] != v[1] * begin[0]
+                or v[0] * begin[0] < 0
+                or v[1] * begin[1] < 0
+            )
         else:
             return begin[0] * v[1] > begin[1] * v[0]
     else:
@@ -3258,6 +3298,7 @@ class OrientedSegment:
 
         """
         from sage.all import Polyhedron
+
         return Polyhedron(vertices=[self._a, self._b])
 
     def _parametrize(self, w):
@@ -3278,6 +3319,7 @@ class OrientedSegment:
 
         """
         from sage.all import vector
+
         w = vector(w)
 
         v = self._b - self._a
@@ -3367,6 +3409,7 @@ class OrientedSegment:
 
         """
         from sage.all import vector
+
         delta = vector(delta)
 
         return OrientedSegment(self._a + delta, self._b + delta)
@@ -3421,7 +3464,9 @@ class OrientedSegment:
         # TODO: Deprecate intersection functions (and everything else) defined at the top of this file.
         if isinstance(other, OrientedSegment):
             # TODO: Rewrite using line intersection.
-            intersecting = is_segment_intersecting((self._a, self._b), (other._a, other._b))
+            intersecting = is_segment_intersecting(
+                (self._a, self._b), (other._a, other._b)
+            )
             if not intersecting:
                 return None
 
@@ -3503,6 +3548,7 @@ class OrientedSegment:
 
         """
         from sage.all import vector
+
         return vector((self.start() + self.end()) / 2, immutable=True)
 
 
@@ -3580,7 +3626,10 @@ class HalfSpace:
         if not isinstance(other, HalfSpace):
             return False
 
-        return self._a * other._c == other._a * self._c and self._b * other._c == other._b * self._c
+        return (
+            self._a * other._c == other._a * self._c
+            and self._b * other._c == other._b * self._c
+        )
 
     def __ne__(self, other):
         return not (self == other)
@@ -3618,6 +3667,7 @@ class HalfSpace:
 
         """
         from sage.all import Polyhedron
+
         return Polyhedron(ieqs=[(self._a, self._b, self._c)])
 
     @staticmethod
@@ -3644,6 +3694,7 @@ class HalfSpace:
 
         """
         from sage.all import Polyhedron
+
         intersection = Polyhedron(ieqs=[(h._a, h._b, h._c) for h in half_spaces])
 
         if intersection.is_empty():
@@ -3656,10 +3707,18 @@ class HalfSpace:
 
         segments = [segment.as_polyhedron() for segment in intersection.faces(1)]
 
-        segments = [OrientedSegment(*[vertex.vector() for vertex in segment.vertices()]) for segment in segments]
+        segments = [
+            OrientedSegment(*[vertex.vector() for vertex in segment.vertices()])
+            for segment in segments
+        ]
 
         # Orient segments such that the interior is on the left hand side.
-        segments = [segment if segment.left_half_space().contains_point(interior_point) else -segment for segment in segments]
+        segments = [
+            segment
+            if segment.left_half_space().contains_point(interior_point)
+            else -segment
+            for segment in segments
+        ]
 
         return segments
 
@@ -3731,7 +3790,9 @@ class OrientedLine:
         return self._half_space.as_polyhedron().faces(1)[0].as_polyhedron()
 
     def __neg__(self):
-        return OrientedLine(-self._half_space._a, -self._half_space._b, -self._half_space._c)
+        return OrientedLine(
+            -self._half_space._a, -self._half_space._b, -self._half_space._c
+        )
 
     def intersection(self, other):
         r"""
@@ -3777,7 +3838,12 @@ class OrientedLine:
             True
 
         """
-        return self._half_space._a + point[0] * self._half_space._b + point[1] * self._half_space._c == 0
+        return (
+            self._half_space._a
+            + point[0] * self._half_space._b
+            + point[1] * self._half_space._c
+            == 0
+        )
 
     def _points(self):
         r"""
@@ -3794,6 +3860,7 @@ class OrientedLine:
         a, b, c = self._half_space._a, self._half_space._b, self._half_space._c
 
         from sage.all import vector
+
         if not c:
             assert b
             return vector((-a / b, 0)), vector((-a / b, 1))
@@ -3824,6 +3891,7 @@ class Ray:
 
     def __init__(self, point, direction):
         from sage.all import vector
+
         self._point = vector(point, immutable=True)
         self._direction = vector(direction, immutable=True)
 
@@ -3849,10 +3917,17 @@ class Ray:
 
         """
         from sage.all import vector, sgn
+
         if not self._direction[1]:
             return vector((sgn(self._direction[0]), 0), immutable=True)
 
-        return vector((sgn(self._direction[0]) * abs(self._direction[0] / self._direction[1]), sgn(self._direction[1])), immutable=True)
+        return vector(
+            (
+                sgn(self._direction[0]) * abs(self._direction[0] / self._direction[1]),
+                sgn(self._direction[1]),
+            ),
+            immutable=True,
+        )
 
     def __repr__(self):
         return f"{self._point} + λ {self._normalized_direction()}"
@@ -3866,7 +3941,10 @@ class Ray:
         """
         if not isinstance(other, Ray):
             return False
-        return self._point == other._point and self._normalized_direction() == other._normalized_direction()
+        return (
+            self._point == other._point
+            and self._normalized_direction() == other._normalized_direction()
+        )
 
     def __ne__(self, other):
         return not (self == other)
@@ -3884,6 +3962,7 @@ class Ray:
 
         """
         from sage.all import Polyhedron
+
         return Polyhedron(vertices=[self._point], rays=[self._direction])
 
     def contains_point(self, point):
@@ -3902,7 +3981,9 @@ class Ray:
             False
 
         """
-        t = OrientedSegment(self._point, self._point + self._direction)._parametrize(point)
+        t = OrientedSegment(self._point, self._point + self._direction)._parametrize(
+            point
+        )
         if t is None:
             return False
         return t >= 0
@@ -3939,8 +4020,11 @@ class Ray:
                 s = max(s, 0)
                 if s == t:
                     from sage.all import vector
+
                     return vector(self._point + s * self._direction)
-                return OrientedSegment(self._point + s * self._direction, self._point + t * self._direction)
+                return OrientedSegment(
+                    self._point + s * self._direction, self._point + t * self._direction
+                )
             if self.contains_point(line_intersection):
                 return line_intersection
             return None
@@ -3948,7 +4032,9 @@ class Ray:
         raise NotImplementedError("cannot intersect a ray with this object yet")
 
     def _parametrize(self, point):
-        return OrientedSegment(self._point, self._point + self._direction)._parametrize(point)
+        return OrientedSegment(self._point, self._point + self._direction)._parametrize(
+            point
+        )
 
     def line(self):
         r"""
@@ -3964,7 +4050,7 @@ class Ray:
         """
         b = -self._direction[1]
         c = self._direction[0]
-        a = - (b * self._point[0] + c * self._point[1])
+        a = -(b * self._point[0] + c * self._point[1])
         return OrientedLine(a, b, c)
 
 
@@ -4018,6 +4104,7 @@ class EuclideanDistance_base(Element):
 
     def __float__(self):
         from math import sqrt
+
         f = float(self.norm_squared())
         if f < 0:
             print("Bug https://github.com/sagemath/sage/issues/37983.")
@@ -4036,10 +4123,11 @@ class EuclideanDistance_squared(EuclideanDistance_base):
 
     def norm(self):
         from sage.all import AA
+
         return AA(self._norm_squared).sqrt()
-    
+
     def _scale(self, scalar):
-        return self.parent().from_norm_squared(scalar ** 2 * self._norm_squared)
+        return self.parent().from_norm_squared(scalar**2 * self._norm_squared)
 
     def is_finite(self):
         return True
@@ -4105,6 +4193,7 @@ class EuclideanDistance_infinite(EuclideanDistance_base):
 
     def norm_squared(self):
         from sage.all import oo
+
         return oo
 
     def is_finite(self):
@@ -4118,6 +4207,7 @@ class EuclideanDistances(Parent):
     def __init__(self, euclidean_plane, category=None):
         # TODO: Pick a better category.
         from sage.categories.all import Sets
+
         super().__init__(euclidean_plane.base_ring(), category=category or Sets())
         self._euclidean_plane = euclidean_plane
 
@@ -4148,13 +4238,15 @@ class EuclideanDistances(Parent):
         return self.__make_element_class__(EuclideanDistance_squared)(self, x)
 
     def from_vector(self, v):
-        return self.from_norm_squared(v[0]**2 + v[1]**2)
+        return self.from_norm_squared(v[0] ** 2 + v[1] ** 2)
 
     def from_sum(self, *distances):
         return self.__make_element_class__(EuclideanDistance_sum)(self, distances)
 
     def from_quotient(self, dividend, divisor):
-        return self.__make_element_class__(EuclideanDistance_quotient)(self, dividend, divisor)
+        return self.__make_element_class__(EuclideanDistance_quotient)(
+            self, dividend, divisor
+        )
 
     def _element_constructor_(self, x):
         from sage.all import vector

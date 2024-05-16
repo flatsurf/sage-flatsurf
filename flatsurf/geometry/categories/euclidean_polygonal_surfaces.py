@@ -83,6 +83,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
         @cached_method
         def euclidean_plane(self):
             from flatsurf.geometry.euclidean import EuclideanPlane
+
             return EuclideanPlane(self.base_ring())
 
         def graphical_surface(self, *args, **kwargs):

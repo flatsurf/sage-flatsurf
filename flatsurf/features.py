@@ -37,7 +37,9 @@ pyexactreal_feature = PythonModule(
 
 class PyflatsurfModule(PythonModule):
     def __init__(self):
-        super().__init__("pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda")
+        super().__init__(
+            "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
+        )
 
     def is_saddle_connection_enumeration_functional(self):
         # TODO: Check whether version is >=3.14.1

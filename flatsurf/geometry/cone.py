@@ -16,6 +16,7 @@ class Cone(Element):
 
     def is_convex(self):
         from flatsurf.geometry.euclidean import ccw
+
         return ccw(self._start.vector(), self._end.vector()) >= 0
 
     # TODO: Rename to contains_cone() [arguments are reversed!]
@@ -36,6 +37,7 @@ class Cone(Element):
             return False
 
         from flatsurf.geometry.euclidean import ccw
+
         start_ccw = ccw(self._start.vector(), other._start.vector())
         end_ccw = ccw(self._end.vector(), other._end.vector())
 
@@ -78,6 +80,7 @@ class Cone(Element):
             return False
 
         from flatsurf.geometry.euclidean import ccw
+
         ccw_from_start = ccw(self._start.vector(), ray.vector())
         ccw_to_end = ccw(ray.vector(), self._end.vector())
 
@@ -90,7 +93,11 @@ class Cone(Element):
 
             return True
 
-        return not self.complement().contains_ray(ray) and ray != self._start and ray != self._end
+        return (
+            not self.complement().contains_ray(ray)
+            and ray != self._start
+            and ray != self._end
+        )
 
     def sorted_rays(self, rays):
         class Key:
@@ -101,6 +108,7 @@ class Cone(Element):
             def __lt__(self, rhs):
                 # TODO: Make sure all code paths are tested.
                 from flatsurf.geometry.euclidean import ccw
+
                 if not self._cone.is_convex():
                     start_to_self = ccw(self._cone._start.vector(), self._ray.vector())
                     start_to_rhs = ccw(self._cone._start.vector(), rhs._ray.vector())
@@ -123,6 +131,7 @@ class Cone(Element):
         rays = sorted(rays, key=lambda ray: Key(self, ray))
 
         from itertools import groupby
+
         return [ray for ray, _ in groupby(rays)]
 
     def a_ray(self):
@@ -158,9 +167,11 @@ class Cones(UniqueRepresentation, Parent):
 
     def __init__(self, base_ring, category=None):
         from sage.categories.all import Sets
+
         super().__init__(base_ring, category=category or Sets())
 
     @cached_method
     def rays(self):
         from flatsurf.geometry.ray import Rays
+
         return Rays(self.base_ring())

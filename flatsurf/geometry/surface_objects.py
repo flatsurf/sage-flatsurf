@@ -173,7 +173,9 @@ class SurfacePoint(SurfacePoint_base):
             opposite_edge = surface.opposite_edge(label, position.get_edge())
             if opposite_edge is not None:
                 cross_label, cross_edge = opposite_edge
-                cross_point = surface.edge_transformation(label, position.get_edge())(point)
+                cross_point = surface.edge_transformation(label, position.get_edge())(
+                    point
+                )
                 cross_point.set_immutable()
 
                 self._representatives.add((cross_label, cross_point))
@@ -185,13 +187,17 @@ class SurfacePoint(SurfacePoint_base):
             def collect_representatives(label, source_edge, direction, limit):
                 def rotate(label, source_edge, direction):
                     if direction == -1:
-                        source_edge = (source_edge - 1) % len(surface.polygon(label).vertices())
+                        source_edge = (source_edge - 1) % len(
+                            surface.polygon(label).vertices()
+                        )
                     opposite_edge = surface.opposite_edge(label, source_edge)
                     if opposite_edge is None:
                         return None
                     label, source_edge = opposite_edge
                     if direction == 1:
-                        source_edge = (source_edge + 1) % len(surface.polygon(label).vertices())
+                        source_edge = (source_edge + 1) % len(
+                            surface.polygon(label).vertices()
+                        )
                     return label, source_edge
 
                 while True:
@@ -208,7 +214,9 @@ class SurfacePoint(SurfacePoint_base):
                     if limit is not None:
                         limit -= 1
                         if limit < 0:
-                            raise ValueError("number of edges at singularity exceeds limit")
+                            raise ValueError(
+                                "number of edges at singularity exceeds limit"
+                            )
 
                     if (label, source_edge) in self._representatives:
                         break

@@ -846,11 +846,21 @@ class EuclideanPolygons(Category_over_base_ring):
             Return the polygon obtained by gluing this polygon and ``other``
             along their ``edge`` and ``other_edge``, respectively.
             """
-            if self.vertex(edge) != other.vertex(other_edge + 1) or self.vertex(edge + 1) != other.vertex(other_edge):
-                raise ValueError("edges of polygons must be identical up to orientation")
+            if self.vertex(edge) != other.vertex(other_edge + 1) or self.vertex(
+                edge + 1
+            ) != other.vertex(other_edge):
+                raise ValueError(
+                    "edges of polygons must be identical up to orientation"
+                )
 
             from flatsurf import Polygon
-            return Polygon(vertices=self.vertices()[:edge] + other.vertices()[other_edge + 1:] + other.vertices()[:other_edge] + self.vertices()[edge + 1:])
+
+            return Polygon(
+                vertices=self.vertices()[:edge]
+                + other.vertices()[other_edge + 1 :]
+                + other.vertices()[:other_edge]
+                + self.vertices()[edge + 1 :]
+            )
 
     class Rational(CategoryWithAxiom_over_base_ring):
         r"""
@@ -1245,7 +1255,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 """
                 import warnings
-                warnings.warn("triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead.")
+
+                warnings.warn(
+                    "triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead."
+                )
 
                 vertices = self.vertices()
 
@@ -1409,6 +1422,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 """
                 from flatsurf import MutableOrientedSimilaritySurface
+
                 triangulation = MutableOrientedSimilaritySurface(self.base_ring())
 
                 vertices = list(self.vertices())
@@ -1428,7 +1442,10 @@ class EuclideanPolygons(Category_over_base_ring):
                     label = triangulation.add_polygon(self)
 
                     from bidict import bidict
-                    return triangulation, bidict({0: (label, 0), 1: (label, 1), 2: (label, 2)})
+
+                    return triangulation, bidict(
+                        {0: (label, 0), 1: (label, 1), 2: (label, 2)}
+                    )
 
                 while len(untriangulated) > 3:
                     for i in range(len(untriangulated)):
@@ -1439,21 +1456,33 @@ class EuclideanPolygons(Category_over_base_ring):
                         b = untriangulated[j]
                         c = untriangulated[k]
 
-                        if ccw(vertices[b] - vertices[a], vertices[c] - vertices[a]) <= 0:
+                        if (
+                            ccw(vertices[b] - vertices[a], vertices[c] - vertices[a])
+                            <= 0
+                        ):
                             # The triangle (a, b, c) has non-positive area.
                             continue
 
                         # Check that (a, b, c) form an ear, i.e., that there
                         # are no other vertices contained in the triangle.
                         if any(
-                            ccw(vertices[b] - vertices[a], vertices[m] - vertices[a]) >= 0 and
-                            ccw(vertices[c] - vertices[b], vertices[m] - vertices[b]) >= 0 and
-                            ccw(vertices[a] - vertices[c], vertices[m] - vertices[c]) >= 0
-                                for m in untriangulated if m not in [a, b, c]):
+                            ccw(vertices[b] - vertices[a], vertices[m] - vertices[a])
+                            >= 0
+                            and ccw(
+                                vertices[c] - vertices[b], vertices[m] - vertices[b]
+                            )
+                            >= 0
+                            and ccw(
+                                vertices[a] - vertices[c], vertices[m] - vertices[c]
+                            )
+                            >= 0
+                            for m in untriangulated
+                            if m not in [a, b, c]
+                        ):
                             continue
 
                         triangles[(a, b, c)] = next_label()
-                        untriangulated = untriangulated[:j] + untriangulated[j + 1:]
+                        untriangulated = untriangulated[:j] + untriangulated[j + 1 :]
                         break
                     else:
                         assert False, "cannot triangulate this polygon"
@@ -1463,30 +1492,46 @@ class EuclideanPolygons(Category_over_base_ring):
                 # Add triangles to triangulated surface.
                 for triangle, label in triangles.items():
                     from flatsurf import Polygon
-                    triangulation.add_polygon(Polygon(vertices=[
-                        vertices[triangle[0]],
-                        vertices[triangle[1]],
-                        vertices[triangle[2]]]),
-                        label=label)
+
+                    triangulation.add_polygon(
+                        Polygon(
+                            vertices=[
+                                vertices[triangle[0]],
+                                vertices[triangle[1]],
+                                vertices[triangle[2]],
+                            ]
+                        ),
+                        label=label,
+                    )
 
                 # Establish gluings between triangles
                 edges = {
-                    **{triangle[:2]: (triangles[triangle], 0) for triangle in triangles},
-                    **{triangle[1:]: (triangles[triangle], 1) for triangle in triangles},
-                    **{(triangle[2], triangle[0]): (triangles[triangle], 2) for triangle in triangles}
+                    **{
+                        triangle[:2]: (triangles[triangle], 0) for triangle in triangles
+                    },
+                    **{
+                        triangle[1:]: (triangles[triangle], 1) for triangle in triangles
+                    },
+                    **{
+                        (triangle[2], triangle[0]): (triangles[triangle], 2)
+                        for triangle in triangles
+                    },
                 }
 
                 outer_edges = {}
 
                 for (a, b) in edges:
                     glued = (b, a) in edges
-                    assert not glued == (b == (a + 1) % nvertices or a == (b + 1) % nvertices)
+                    assert not glued == (
+                        b == (a + 1) % nvertices or a == (b + 1) % nvertices
+                    )
                     if glued:
                         triangulation.glue(edges[(a, b)], edges[(b, a)])
                     else:
                         outer_edges[a] = edges[(a, b)]
 
                 from bidict import bidict
+
                 return triangulation, bidict(outer_edges)
 
             def flow_to_exit(self, point, direction):
@@ -1522,6 +1567,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     segment = vertices[v], vertices[(v + 1) % len(vertices)]
 
                     from flatsurf.geometry.euclidean import ray_segment_intersection
+
                     intersection = ray_segment_intersection(point, direction, segment)
 
                     if intersection is None:
@@ -1540,7 +1586,12 @@ class EuclideanPolygons(Category_over_base_ring):
                         continue
 
                     from flatsurf.geometry.euclidean import time_on_ray
-                    if first_intersection is None or time_on_ray(point, direction, first_intersection)[0] > time_on_ray(point, direction, intersection)[0]:
+
+                    if (
+                        first_intersection is None
+                        or time_on_ray(point, direction, first_intersection)[0]
+                        > time_on_ray(point, direction, intersection)[0]
+                    ):
                         first_intersection = intersection
 
                 if first_intersection is not None:
@@ -1549,7 +1600,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 if self.get_point_position(point).is_outside():
                     raise ValueError("Cannot flow from point outside of polygon")
 
-                raise ValueError("Cannot flow from point on boundary if direction points out of the polygon")
+                raise ValueError(
+                    "Cannot flow from point on boundary if direction points out of the polygon"
+                )
 
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
@@ -1726,10 +1779,13 @@ class EuclideanPolygons(Category_over_base_ring):
                 def segments(self):
                     E = self.euclidean_plane()
                     V = self.vertices()
-                    return [E(start).segment(end) for (start, end) in zip(V, V[1:] + V[:1])]
+                    return [
+                        E(start).segment(end) for (start, end) in zip(V, V[1:] + V[:1])
+                    ]
 
                 def euclidean_plane(self):
                     from flatsurf import EuclideanPlane
+
                     return EuclideanPlane(self.base_ring())
 
                 def flow_map(self, direction):
@@ -2041,12 +2097,21 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     """
                     from collections.abc import Iterable
+
                     if not isinstance(parts, Iterable):
-                        parts = [[1/parts for k in range(parts)] for e in self.edges()]
+                        parts = [
+                            [1 / parts for k in range(parts)] for e in self.edges()
+                        ]
 
                     from flatsurf import Polygon
 
-                    return Polygon(edges=[e * part for (e, parts) in zip(self.edges(), parts) for part in parts]).translate(self.vertex(0))
+                    return Polygon(
+                        edges=[
+                            e * part
+                            for (e, parts) in zip(self.edges(), parts)
+                            for part in parts
+                        ]
+                    ).translate(self.vertex(0))
 
                 def j_invariant(self):
                     r"""

@@ -133,7 +133,13 @@ class SimilaritySurfaceTangentVector:
                     "Singular point with vector pointing away from polygon"
                 )
 
-            if is_anti_parallel(edge0, vector) and self.surface().opposite_edge(polygon_label, (v - 1) % len(p.vertices())) is not None:
+            if (
+                is_anti_parallel(edge0, vector)
+                and self.surface().opposite_edge(
+                    polygon_label, (v - 1) % len(p.vertices())
+                )
+                is not None
+            ):
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
                     polygon_label, (v - 1) % len(p.vertices())

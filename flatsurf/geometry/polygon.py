@@ -89,7 +89,7 @@ class EuclideanPolygonPoint(Element):
         self._xy = xy
 
         super().__init__(parent)
-        
+
     def coordinates(self, edge=None):
         if edge is None:
             return self._xy
@@ -97,7 +97,10 @@ class EuclideanPolygonPoint(Element):
         polygon = self.parent()
 
         from sage.all import matrix
-        return matrix([polygon.edge(edge), -polygon.edge(edge - 1)]).solve_left(self._xy - polygon.vertex(edge))
+
+        return matrix([polygon.edge(edge), -polygon.edge(edge - 1)]).solve_left(
+            self._xy - polygon.vertex(edge)
+        )
 
     def position(self):
         r"""

@@ -795,7 +795,10 @@ class SimilaritySurfaceGenerators:
     @staticmethod
     def polygon_double(P):
         import warnings
-        warnings.warn("polygon_double() has been deprecated and will be removed from a future version of sage-flatsurf. Use billiard() instead.")
+
+        warnings.warn(
+            "polygon_double() has been deprecated and will be removed from a future version of sage-flatsurf. Use billiard() instead."
+        )
 
         return SimilaritySurfaceGenerators.billiard(P)
 

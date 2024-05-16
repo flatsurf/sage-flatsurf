@@ -291,7 +291,9 @@ class GraphicalSurface:
         for label, transformation in (polygon_transformations or {}).items():
             from flatsurf.graphical.polygon import GraphicalPolygon
 
-            self._polygons[label] = GraphicalPolygon(self._ss.polygon(label), transformation=transformation)
+            self._polygons[label] = GraphicalPolygon(
+                self._ss.polygon(label), transformation=transformation
+            )
             self.make_visible(label)
 
         if polygon_labels is not None:
@@ -351,7 +353,10 @@ class GraphicalSurface:
         """
         gs = GraphicalSurface(
             self.get_surface(),
-            polygon_transformations={label: polygon.transformation() for (label, polygon) in self._polygons.items()},
+            polygon_transformations={
+                label: polygon.transformation()
+                for (label, polygon) in self._polygons.items()
+            },
             default_position_function=self._default_position_function,
         )
 
@@ -532,7 +537,9 @@ class GraphicalSurface:
             return self.graphical_polygon(label).transformed_vertex(vertex)
 
         while True:
-            invisible_labels = [label for label in surface.labels() if not self.is_visible(label)]
+            invisible_labels = [
+                label for label in surface.labels() if not self.is_visible(label)
+            ]
             if not invisible_labels:
                 break
 
@@ -560,7 +567,15 @@ class GraphicalSurface:
                     if not self.is_visible(opposite_label):
                         continue
 
-                    if transformed_vertex_after_glue(label, edge, e) == transformed_vertex(opposite_label, opposite_edge + 1) and transformed_vertex_after_glue(label, edge, e + 1) == transformed_vertex(opposite_label, opposite_edge):
+                    if transformed_vertex_after_glue(
+                        label, edge, e
+                    ) == transformed_vertex(
+                        opposite_label, opposite_edge + 1
+                    ) and transformed_vertex_after_glue(
+                        label, edge, e + 1
+                    ) == transformed_vertex(
+                        opposite_label, opposite_edge
+                    ):
                         adjacents.append(opposite_label)
 
                 score += len(adjacents)
@@ -576,10 +591,19 @@ class GraphicalSurface:
                     intersections = 0
                     for e in range(len(polygon.vertices())):
                         for f in range(len(visible_polygon.vertices())):
-                            from flatsurf.geometry.euclidean import is_segment_intersecting
+                            from flatsurf.geometry.euclidean import (
+                                is_segment_intersecting,
+                            )
+
                             intersection = is_segment_intersecting(
-                                (transformed_vertex_after_glue(label, edge, e), transformed_vertex_after_glue(label, edge, e + 1)),
-                                (transformed_vertex(visible, f), transformed_vertex(visible, f + 1))
+                                (
+                                    transformed_vertex_after_glue(label, edge, e),
+                                    transformed_vertex_after_glue(label, edge, e + 1),
+                                ),
+                                (
+                                    transformed_vertex(visible, f),
+                                    transformed_vertex(visible, f + 1),
+                                ),
                             )
                             if intersection == 2:
                                 intersections += 1
@@ -593,16 +617,22 @@ class GraphicalSurface:
 
                 polygon = surface.polygon(label)
 
-                return max(edge_score(label, edge) for edge in range(len(polygon.vertices())))
+                return max(
+                    edge_score(label, edge) for edge in range(len(polygon.vertices()))
+                )
 
             label = max(invisible_labels, key=label_score)
             polygon = surface.polygon(label)
 
-            edge = max(range(len(polygon.vertices())), key=lambda edge: edge_score(label, edge))
+            edge = max(
+                range(len(polygon.vertices())), key=lambda edge: edge_score(label, edge)
+            )
             self.make_adjacent(*surface.opposite_edge(label, edge))
             assert self.is_adjacent(label, edge)
-            assert polygon_after_glue(label, edge).transformation() == self.graphical_polygon(label).transformation()
-
+            assert (
+                polygon_after_glue(label, edge).transformation()
+                == self.graphical_polygon(label).transformation()
+            )
 
     def get_surface(self):
         r"""

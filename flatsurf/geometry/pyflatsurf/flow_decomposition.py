@@ -1,4 +1,7 @@
-from flatsurf.geometry.flow_decomposition import FlowDecomposition_base, FlowComponent_base
+from flatsurf.geometry.flow_decomposition import (
+    FlowDecomposition_base,
+    FlowComponent_base,
+)
 
 
 def tribool_to_bool_or_none(tribool):
@@ -6,6 +9,7 @@ def tribool_to_bool_or_none(tribool):
         return True
 
     import cppyy
+
     if cppyy.gbl.boost.logic.indeterminate(tribool):
         return None
 
@@ -35,7 +39,10 @@ class FlowDecomposition_pyflatsurf(FlowDecomposition_base):
 
     def components(self):
         if self._components is None:
-            self._components = [FlowComponent_pyflatsurf(component, self) for component in self._flow_decomposition.components()]
+            self._components = [
+                FlowComponent_pyflatsurf(component, self)
+                for component in self._flow_decomposition.components()
+            ]
 
         return self._components
 
@@ -57,7 +64,9 @@ class FlowComponent_pyflatsurf(FlowComponent_base):
 
     def _flow_component(self):
         if self.__flow_component is None:
-            raise NotImplementedError("component of flow decomposition has been modified externally since it was created")
+            raise NotImplementedError(
+                "component of flow decomposition has been modified externally since it was created"
+            )
         return self.__flow_component
 
     def is_cylinder(self):

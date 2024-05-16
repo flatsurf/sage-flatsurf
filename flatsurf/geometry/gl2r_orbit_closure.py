@@ -160,14 +160,19 @@ class GL2ROrbitClosure:
     """
 
     def __init__(self, surface):
-        if surface.__class__.__name__.startswith('FlatTriangulation<'):
+        if surface.__class__.__name__.startswith("FlatTriangulation<"):
             import warnings
-            warnings.warn("Creating a GL2ROrbitClosure from a FlatTriangulation has been deprecated and will be removed from a future version of sage-flatsurf; create GL2ROrbitClosure from a sage-flatsurf surface directly instead")
+
+            warnings.warn(
+                "Creating a GL2ROrbitClosure from a FlatTriangulation has been deprecated and will be removed from a future version of sage-flatsurf; create GL2ROrbitClosure from a sage-flatsurf surface directly instead"
+            )
 
             from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
             surface = Surface_pyflatsurf(surface)
 
         from flatsurf.geometry.categories import TranslationSurfaces
+
         if surface not in TranslationSurfaces():
             raise NotImplementedError("surface must be a translation surface")
 
@@ -318,9 +323,7 @@ class GL2ROrbitClosure:
 
                 eligibles = True
 
-                deformation = [
-                    self.V2(x / n, x / (2 * n)).vector for x in tangent
-                ]
+                deformation = [self.V2(x / n, x / (2 * n)).vector for x in tangent]
                 try:
                     # Valid deformations that require lots of flips take forever. It's crucial to pick n such that no/very few flips are sufficient. See #3.
                     deformed = self._flat_triangulation() + deformation
@@ -337,7 +340,9 @@ class GL2ROrbitClosure:
             scale *= 2
 
             if not eligibles:
-                raise Exception("Cannot deform. No tangent vector can be used to deform.")
+                raise Exception(
+                    "Cannot deform. No tangent vector can be used to deform."
+                )
 
     @cached_method
     def _flat_triangulation(self):
@@ -834,25 +839,37 @@ class GL2ROrbitClosure:
 
     def decomposition(self, v, limit=-1):
         import warnings
-        warnings.warn("orbit_closure.decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decomposition(direction).decompose(limit) instead.")
 
-        decomposition = self._surface.pyflatsurf().codomain().flow_decomposition(direction=v)
+        warnings.warn(
+            "orbit_closure.decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decomposition(direction).decompose(limit) instead."
+        )
+
+        decomposition = (
+            self._surface.pyflatsurf().codomain().flow_decomposition(direction=v)
+        )
         decomposition.decompose(limit=limit)
 
         return decomposition._flow_decomposition
 
     def decompositions(self, bound, limit=-1, bfs=False):
         import warnings
-        warnings.warn("orbit_closure.decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decompositions() instead.")
+
+        warnings.warn(
+            "orbit_closure.decompositions() has been deprecated and will be removed in a future version of sage-flatsurf; use surface.flow_decompositions() instead."
+        )
 
         if bfs:
             algorithm = "bfs"
         else:
             algorithm = "dfs"
 
-        decompositions = self._surface.pyflatsurf().codomain().flow_decompositions(
-            algorithm=algorithm,
-            bound=bound,
+        decompositions = (
+            self._surface.pyflatsurf()
+            .codomain()
+            .flow_decompositions(
+                algorithm=algorithm,
+                bound=bound,
+            )
         )
 
         for decomposition in decompositions:
@@ -914,9 +931,7 @@ class GL2ROrbitClosure:
             return False
 
         for decomposition in self.decompositions_depth_first(bound, limit):
-            if (
-                decomposition.is_parabolic() is False
-            ):
+            if decomposition.is_parabolic() is False:
                 return False
 
         return Unknown
@@ -1013,7 +1028,9 @@ class GL2ROrbitClosure:
                 )
                 height = self.V2._isomorphic_vector_space.base_ring()(
                     self.V2.base_ring()(
-                        component._flow_component().vertical().project(component._flow_component().circumferenceHolonomy())
+                        component._flow_component()
+                        .vertical()
+                        .project(component._flow_component().circumferenceHolonomy())
                     )
                 )
                 module_fractions.append((width, height))

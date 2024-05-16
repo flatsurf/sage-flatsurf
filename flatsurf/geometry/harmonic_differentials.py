@@ -203,14 +203,14 @@ with warnings.catch_warnings():
 
 complex = None
 
-DEFAULT_BOUNDARY_ERROR=1e-2
+DEFAULT_BOUNDARY_ERROR = 1e-2
 
 
 def _cppyy():
     global complex
     if complex is None:
-        cppyy.include('complex')
-        complex = cppyy.gbl.std.complex['double']
+        cppyy.include("complex")
+        complex = cppyy.gbl.std.complex["double"]
     return cppyy
 
 
@@ -222,8 +222,9 @@ def Ccpp(x):
 @cached_function
 def zeta(d, n):
     from sage.all import CDF
+
     zeta = CDF.zeta(d)
-    return zeta ** n / d
+    return zeta**n / d
 
 
 def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
@@ -235,7 +236,8 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     where γ(t) = (1-t)a + tb.
     """
     if not hasattr(_cppyy().gbl, "integral2arb"):
-        _cppyy().cppdef(r"""
+        _cppyy().cppdef(
+            r"""
         #include <acb_calc.h>
         #include <string>
 
@@ -412,11 +414,34 @@ def integral2arb(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
                 throw std::logic_error("unknown part");
             }
         }
-        """)
+        """
+        )
 
-        _cppyy().load_library("arb");
+        _cppyy().load_library("arb")
 
-    return R(_cppyy().gbl.integral2arb(part, float(α.real()), float(α.imag()), int(κ), int(d), float(ζd.real()), float(ζd.imag()), int(n), float(β.real()), float(β.imag()), int(λ), int(dd), float(ζdd.real()), float(ζdd.imag()), m, float(a.real()), float(a.imag()), float(b.real()), float(b.imag())))
+    return R(
+        _cppyy().gbl.integral2arb(
+            part,
+            float(α.real()),
+            float(α.imag()),
+            int(κ),
+            int(d),
+            float(ζd.real()),
+            float(ζd.imag()),
+            int(n),
+            float(β.real()),
+            float(β.imag()),
+            int(λ),
+            int(dd),
+            float(ζdd.real()),
+            float(ζdd.imag()),
+            m,
+            float(a.real()),
+            float(a.imag()),
+            float(b.real()),
+            float(b.imag()),
+        )
+    )
 
 
 def integral2cpp(part, α, κ, d, n, β, λ, dd, m, a, b, C, R):
@@ -428,7 +453,9 @@ def integral2cpp(part, α, κ, d, n, β, λ, dd, m, a, b, C, R):
     where γ(t) = (1-t)a + tb.
     """
     # Since γ(t) = (1 - t)a + tb, we have |·γ(t)| = |b - a|
-    constant = zeta(d + 1, κ * (n+1)) * zeta(dd + 1, λ * (m+1)).conjugate() * abs(b - a)
+    constant = (
+        zeta(d + 1, κ * (n + 1)) * zeta(dd + 1, λ * (m + 1)).conjugate() * abs(b - a)
+    )
 
     constant = Ccpp(constant)
 
@@ -443,7 +470,8 @@ def integral2cpp(part, α, κ, d, n, β, λ, dd, m, a, b, C, R):
     dd = int(dd)
 
     if not hasattr(_cppyy().gbl, "value"):
-        _cppyy().cppdef(r"""
+        _cppyy().cppdef(
+            r"""
         #include <complex>
 
         using complex = std::complex<double>;
@@ -462,7 +490,8 @@ def integral2cpp(part, α, κ, d, n, β, λ, dd, m, a, b, C, R):
 
             return constant * za * zb;
         }
-        """)
+        """
+        )
 
     def pow(z, e):
         z = complex(z)
@@ -500,20 +529,25 @@ def integral2(part, α, κ, d, ζd, n, β, λ, dd, ζdd, m, a, b, C, R):
     where γ(t) = (1-t)a + tb.
     """
     # Since γ(t) = (1 - t)a + tb, we have |·γ(t)| = |b - a|
-    constant = ζd**(κ * (n+1)) / (d+1) * (ζdd**(λ * (m+1)) / (dd+1)).conjugate() * abs(b - a)
+    constant = (
+        ζd ** (κ * (n + 1))
+        / (d + 1)
+        * (ζdd ** (λ * (m + 1)) / (dd + 1)).conjugate()
+        * abs(b - a)
+    )
 
     def value(t):
         z = (1 - t) * a + t * b
 
         if d == 0:
-            za = (z-α) ** n
+            za = (z - α) ** n
         else:
-            za = (z-α).nth_root(d + 1)**(n - d)
+            za = (z - α).nth_root(d + 1) ** (n - d)
 
         if dd == 0:
-            zb = ((z-β) ** m).conjugate()
+            zb = ((z - β) ** m).conjugate()
         else:
-            zb = ((z-β).nth_root(dd + 1)**(m - dd)).conjugate()
+            zb = ((z - β).nth_root(dd + 1) ** (m - dd)).conjugate()
 
         value = constant * za * zb
 
@@ -537,8 +571,12 @@ def Cab(C, a):
 def define_solve():
     if not hasattr(_cppyy().gbl, "solve"):
         import os.path
-        _cppyy().include(os.path.join(os.path.dirname(__file__), "..", "..", "mpreal-support.h"))
-        _cppyy().cppdef(r'''
+
+        _cppyy().include(
+            os.path.join(os.path.dirname(__file__), "..", "..", "mpreal-support.h")
+        )
+        _cppyy().cppdef(
+            r"""
         #include <cassert>
         #include <vector>
         #include <iostream>
@@ -585,7 +623,8 @@ def define_solve():
 
           return x;
         }
-        ''')
+        """
+        )
 
     return _cppyy().gbl.solve
 
@@ -628,16 +667,20 @@ class HarmonicDifferential(Element):
             (O(z0^5), O(z1^5))
 
         """
-        return self.parent()({
-            triangle: self._series[triangle] + other._series[triangle]
-            for triangle in self._series
-        })
+        return self.parent()(
+            {
+                triangle: self._series[triangle] + other._series[triangle]
+                for triangle in self._series
+            }
+        )
 
     def _sub_(self, other):
-        return self.parent()({
-            triangle: self._series[triangle] - other._series[triangle]
-            for triangle in self._series
-        })
+        return self.parent()(
+            {
+                triangle: self._series[triangle] - other._series[triangle]
+                for triangle in self._series
+            }
+        )
 
     # TODO: Can we increase the default precision? Somehow, we do not get much more precision easily in the octagon. Why?
     def error(self, kind=None, verbose=False, abs_tol=1e-4, rel_tol=1e-4):
@@ -715,7 +758,7 @@ class HarmonicDifferential(Element):
                 error = report
                 if not verbose:
                     return error
-            
+
             ## expected_cost = abs(abs_error / len(consistencies))
 
             ## g = self.parent().surface().graphical_surface(polygon_labels=False, edge_labels=False)
@@ -743,7 +786,7 @@ class HarmonicDifferential(Element):
 
     def cohomology(self):
         H = self.parent().cohomology()
-        return H({ gen: self.integrate(gen).real() for gen in H.homology().gens()})
+        return H({gen: self.integrate(gen).real() for gen in H.homology().gens()})
 
     def _evaluate(self, expression):
         r"""
@@ -786,7 +829,10 @@ class HarmonicDifferential(Element):
                 coefficient = self._series[center][degree]
             except (IndexError, KeyError):
                 import warnings
-                warnings.warn(f"expected a {degree}th coefficient of the power series around {center} but none found")
+
+                warnings.warn(
+                    f"expected a {degree}th coefficient of the power series around {center} but none found"
+                )
                 coefficients[variable] = 0
                 continue
 
@@ -800,6 +846,7 @@ class HarmonicDifferential(Element):
         value = expression(coefficients)
 
         from flatsurf.geometry.power_series import PowerSeriesCoefficientExpression
+
         if isinstance(value, PowerSeriesCoefficientExpression):
             assert value.total_degree() <= 0
             value = value.constant_coefficient()
@@ -812,7 +859,9 @@ class HarmonicDifferential(Element):
         # TODO: There should not be a single global precision. Instead each
         # cell has its own precision. Also these precisions are not comparable,
         # since depending on the degree of the root, we need to scale things.
-        precisions = set(series.precision_absolute() for series in self._series.values())
+        precisions = set(
+            series.precision_absolute() for series in self._series.values()
+        )
         # assert len(precisions) == 1
         return min(precisions)
 
@@ -855,7 +904,11 @@ class HarmonicDifferential(Element):
 
     def _repr_(self):
         def sparse_parent(series):
-            return type(series.parent())(series.parent().base_ring(), series.parent().variable_name(), sparse=True)
+            return type(series.parent())(
+                series.parent().base_ring(),
+                series.parent().variable_name(),
+                sparse=True,
+            )
 
         return repr(tuple(sparse_parent(s)(s) for s in self._series.values()))
 
@@ -892,18 +945,34 @@ class HarmonicDifferential(Element):
         def simplify(series):
             def simplify(coefficient):
                 if coefficient.real().abs() < zero_threshold:
-                    coefficient = coefficient.parent()(coefficient.imag() * coefficient.parent()('I'))
+                    coefficient = coefficient.parent()(
+                        coefficient.imag() * coefficient.parent()("I")
+                    )
                 if coefficient.imag().abs() < zero_threshold:
                     coefficient = coefficient.parent()(coefficient.real())
 
                 return coefficient
 
-            coefficients = {exponent: simplify(coefficient) for (exponent, coefficient) in zip(series.exponents(), series.coefficients())}
-            coefficients = {exponent: coefficient for (exponent, coefficient) in coefficients.items() if coefficient}
+            coefficients = {
+                exponent: simplify(coefficient)
+                for (exponent, coefficient) in zip(
+                    series.exponents(), series.coefficients()
+                )
+            }
+            coefficients = {
+                exponent: coefficient
+                for (exponent, coefficient) in coefficients.items()
+                if coefficient
+            }
 
             return series.parent()(coefficients, prec=series.prec())
 
-        return type(self)(self.parent(), {center: simplify(series) for (center, series) in self._series.items()}, residue=self._residue, cocycle=self._cocycle)
+        return type(self)(
+            self.parent(),
+            {center: simplify(series) for (center, series) in self._series.items()},
+            residue=self._residue,
+            cocycle=self._cocycle,
+        )
 
 
 class RationalMap:
@@ -911,9 +980,12 @@ class RationalMap:
     A map from a translation surface to `\mathbb{P}^1` given by the quotient of
     two differentials.
     """
+
     def __init__(self, numerator, denominator):
         if numerator.parent() != denominator.parent():
-            raise ValueError("numerator and denominator must be from the same space of differentials")
+            raise ValueError(
+                "numerator and denominator must be from the same space of differentials"
+            )
 
         self._numerator = numerator
         self._denominator = denominator
@@ -930,7 +1002,7 @@ class RationalMap:
         cell = differentials._cells.cell(point)
 
         complex = cell.complex_from_point(point)
-        
+
         center = cell.center()
         numerator = self._numerator._series[center].polynomial()
         denominator = self._denominator._series[center].polynomial()
@@ -940,8 +1012,12 @@ class RationalMap:
             d = denominator(complex)
 
             if d == 0 and n == 0:
-                numerator = (numerator(numerator.parent().gen() + complex) >> 1)(numerator.parent().gen() - complex)
-                denominator = (denominator(denominator.parent().gen() + complex) >> 1)(denominator.parent().gen() - complex)
+                numerator = (numerator(numerator.parent().gen() + complex) >> 1)(
+                    numerator.parent().gen() - complex
+                )
+                denominator = (denominator(denominator.parent().gen() + complex) >> 1)(
+                    denominator.parent().gen() - complex
+                )
                 continue
 
             return (n, d)
@@ -955,8 +1031,13 @@ class RationalMap:
         keys = n.keys()
 
         return RationalMap(
-            Omega({key: d[key] * n[key].derivative() - n[key] * d[key].derivative() for key in keys}),
-            Omega({key: d[key] * d[key] for key in keys})
+            Omega(
+                {
+                    key: d[key] * n[key].derivative() - n[key] * d[key].derivative()
+                    for key in keys
+                }
+            ),
+            Omega({key: d[key] * d[key] for key in keys}),
         )
 
     # TODO: Passing the boundary_error into every method is silly. There should
@@ -1017,13 +1098,13 @@ class RationalMap:
                     mult = 0
                     while is_zero(f(x)):
                         assert f != 0
-                        f //= (f.parent().gen() - x)
+                        f //= f.parent().gen() - x
                         mult += 1
                     return mult
 
                 root_multiplicity = min(mult(n, root), mult(d, root))
 
-                if is_zero((f // (f.parent().gen() - root)**root_multiplicity)(root)):
+                if is_zero((f // (f.parent().gen() - root) ** root_multiplicity)(root)):
                     multiplicity = 1
                 else:
                     # print("no solution here")
@@ -1033,7 +1114,7 @@ class RationalMap:
             # if multiplicity != 1:
             #     print(f"{multiplicity=}")
 
-            roots.extend([root]*multiplicity)
+            roots.extend([root] * multiplicity)
 
         return roots
 
@@ -1054,11 +1135,22 @@ class RationalMap:
             numerator = self._numerator._series[center]
             denominator = self._denominator._series[center]
 
-            complex_solutions = [complex_solution for complex_solution in self._preimages_rational_roots(numerator, denominator, p, q) if cell.point_from_complex(complex_solution, boundary_error=boundary_error) is not None]
+            complex_solutions = [
+                complex_solution
+                for complex_solution in self._preimages_rational_roots(
+                    numerator, denominator, p, q
+                )
+                if cell.point_from_complex(
+                    complex_solution, boundary_error=boundary_error
+                )
+                is not None
+            ]
 
             preimages[center] = complex_solutions
 
-        return self._preimages_merge_repetitions(preimages, boundary_error=boundary_error)
+        return self._preimages_merge_repetitions(
+            preimages, boundary_error=boundary_error
+        )
 
     def _preimages_normalize_opposite(self, complex, candidates, boundary_error):
         candidate = min(candidates, key=lambda c: abs(c - complex))
@@ -1082,17 +1174,31 @@ class RationalMap:
                 # preimage.
                 # (Any preimage that is close to a boundary, should be seen by the
                 # center on the other side of the boundary.)
-                for (opposite_center, opposite_complex) in cell.opposite_representations(complex, boundary_error):
+                for (
+                    opposite_center,
+                    opposite_complex,
+                ) in cell.opposite_representations(complex, boundary_error):
                     # Find the representation of that point as seen from the
                     # other side and group this pair of points.
                     if not preimages[opposite_center]:
                         # print("no opposite for this point")
-                        assert cell.point_from_complex(complex, boundary_error=boundary_error/2) is None
+                        assert (
+                            cell.point_from_complex(
+                                complex, boundary_error=boundary_error / 2
+                            )
+                            is None
+                        )
                         continue
 
-                    opposite_complex = self._preimages_normalize_opposite(opposite_complex, preimages[opposite_center], boundary_error=boundary_error)
+                    opposite_complex = self._preimages_normalize_opposite(
+                        opposite_complex,
+                        preimages[opposite_center],
+                        boundary_error=boundary_error,
+                    )
                     # print(f"Identifying {(center, complex)} and {(opposite_center, opposite_complex)}")
-                    identified_points.append(((center, complex), (opposite_center, opposite_complex)))
+                    identified_points.append(
+                        ((center, complex), (opposite_center, opposite_complex))
+                    )
 
         # Throw away any points that are too far across the boundary.
         points_without_noise = []
@@ -1101,7 +1207,10 @@ class RationalMap:
             for complex in complexes:
                 cell = cells.cell_at_center(center)
 
-                if cell.point_from_complex(complex, boundary_error=boundary_error/2) is not None:
+                if (
+                    cell.point_from_complex(complex, boundary_error=boundary_error / 2)
+                    is not None
+                ):
                     points_without_noise.append((center, complex))
 
         points_without_noise.sort(key=lambda p: abs(p[1]))
@@ -1149,11 +1258,18 @@ class RationalMap:
 
         infinite_branch_point = any(p[1] == 0 for p in branch_points)
 
-        finite_radii = { p: min(abs(p - other) for other in finite_branch_points if other != p) / 2 for p in finite_branch_points }
+        finite_radii = {
+            p: min(abs(p - other) for other in finite_branch_points if other != p) / 2
+            for p in finite_branch_points
+        }
 
         if infinite_branch_point:
             infinite_center = sum(finite_branch_points) / len(finite_branch_points)
-            infinite_radius = max(abs(infinite_center - other) for other in finite_branch_points) * 3 / 2
+            infinite_radius = (
+                max(abs(infinite_center - other) for other in finite_branch_points)
+                * 3
+                / 2
+            )
 
         S = self._numerator.parent().surface()
         GS = S.graphical_surface(edge_labels=False, polygon_labels=False)
@@ -1162,7 +1278,9 @@ class RationalMap:
 
         from sage.all import oo
 
-        for branch_point in finite_branch_points + ([oo] if infinite_branch_point else []):
+        for branch_point in finite_branch_points + (
+            [oo] if infinite_branch_point else []
+        ):
             print(f"Creating animation around {branch_point}")
 
             if branch_point == oo:
@@ -1170,7 +1288,9 @@ class RationalMap:
             else:
                 ramification_points = self.preimages(branch_point, 1)
 
-            ramification_points = sum(p.plot(GS, color="red") for p in ramification_points)
+            ramification_points = sum(
+                p.plot(GS, color="red") for p in ramification_points
+            )
 
             if branch_point == oo:
                 radius = infinite_radius
@@ -1183,7 +1303,11 @@ class RationalMap:
 
             def plot(x, color="orange"):
                 try:
-                    return GS.plot() + ramification_points + sum(p.plot(GS, color=color) for p in self.preimages(x))
+                    return (
+                        GS.plot()
+                        + ramification_points
+                        + sum(p.plot(GS, color=color) for p in self.preimages(x))
+                    )
                 except Exception:
                     print("frame missed")
                     return GS.plot()
@@ -1194,11 +1318,14 @@ class RationalMap:
 
             def cycle(center, radius, ccw):
                 from sage.all import CDF
+
                 rotation = CDF.zeta(steps)
                 if not ccw:
                     rotation = rotation.conjugate()
 
-                return [plot(center + rotation ** step * radius) for step in range(steps)]
+                return [
+                    plot(center + rotation**step * radius) for step in range(steps)
+                ]
 
             frames = [plot(base_point, color="green")]
             print(f"moving from {base_point} to {center + radius}")
@@ -1209,8 +1336,9 @@ class RationalMap:
             frames.extend(move(center + radius, base_point))
 
             from sage.all import animate
+
             animations.append(animate(frames))
-            
+
         return animations
 
 
@@ -1247,19 +1375,25 @@ class HarmonicDifferentialSpace(Parent):
     """
     Element = HarmonicDifferential
 
-    def __init__(self, surface, error=None, cell_decomposition=None, check=True, category=None):
+    def __init__(
+        self, surface, error=None, cell_decomposition=None, check=True, category=None
+    ):
         # TODO: Just order labels by their order in surface.labels() instead.
         try:
             sorted(surface.labels())
         except Exception:
-            raise NotImplementedError("labels on the surface must be sortable so we use label order to make a choice of n-th roots")
+            raise NotImplementedError(
+                "labels on the surface must be sortable so we use label order to make a choice of n-th roots"
+            )
 
         if cell_decomposition is None:
             if surface.genus() == 1:
                 from flatsurf.geometry.voronoi import VoronoiCellDecomposition
+
                 cell_decomposition = VoronoiCellDecomposition(surface)
             else:
                 from flatsurf.geometry.voronoi import VoronoiCellDecomposition
+
                 cell_decomposition = VoronoiCellDecomposition(surface)
 
         if error is None:
@@ -1275,14 +1409,22 @@ class HarmonicDifferentialSpace(Parent):
         self._centers = list(self._cells.centers())
 
         if check:
-            if any(self._relative_radius_of_convergence(cell) >= 1 for cell in self._cells):
-                raise ValueError("cell decomposition is such that cells contain points outside of their center's radius of convergence")
+            if any(
+                self._relative_radius_of_convergence(cell) >= 1 for cell in self._cells
+            ):
+                raise ValueError(
+                    "cell decomposition is such that cells contain points outside of their center's radius of convergence"
+                )
 
             [self.ncoefficients(v) for v in surface.vertices()]
 
     def change(self, surface=None):
         if surface is not None:
-            self = HarmonicDifferentials(surface=surface, error=self._error, cell_decomposition=self._cells.change(surface=surface))
+            self = HarmonicDifferentials(
+                surface=surface,
+                error=self._error,
+                cell_decomposition=self._cells.change(surface=surface),
+            )
 
         return self
 
@@ -1317,7 +1459,7 @@ class HarmonicDifferentialSpace(Parent):
         ALGORITHM:
 
         The tool we are using here is a standard approximation for the error
-        term when approximating an analytic function with a polynomial, see 
+        term when approximating an analytic function with a polynomial, see
         https://en.wikipedia.org/wiki/Taylor's_theorem#Taylor's_theorem_in_complex_analysis
 
         Namely, let `f(y) = \sum a_n y^n` be an analytic function with radius
@@ -1403,7 +1545,8 @@ class HarmonicDifferentialSpace(Parent):
         eps = self._error
 
         from math import log, ceil
-        ncoefficients = ceil(log(eps, beta) + d * log(1 - beta**(1/d), beta) - 1)
+
+        ncoefficients = ceil(log(eps, beta) + d * log(1 - beta ** (1 / d), beta) - 1)
 
         assert ncoefficients >= 1
 
@@ -1415,7 +1558,13 @@ class HarmonicDifferentialSpace(Parent):
         return ncoefficients
 
     def dz(self):
-        return self({v: v.angle() * self._constraints().power_series_ring(v).gen() ** (v.angle() - 1) for v in self.surface().vertices()})
+        return self(
+            {
+                v: v.angle()
+                * self._constraints().power_series_ring(v).gen() ** (v.angle() - 1)
+                for v in self.surface().vertices()
+            }
+        )
 
         # TODO: We should maybe test against thi path:
         # fdz = HH({gamma: RDF(sum(c * S.polygon(label).edge(edge)[0] for (label, edge), c in gamma._chain.monomial_coefficients().items())) for gamma in H.gens()})
@@ -1444,48 +1593,67 @@ class HarmonicDifferentialSpace(Parent):
 
     def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20):
         if graphical_surface is None:
-            graphical_surface = self.surface().graphical_surface(polygon_labels=False, edge_labels=False)
+            graphical_surface = self.surface().graphical_surface(
+                polygon_labels=False, edge_labels=False
+            )
 
         plot = graphical_surface.plot(fill=False)
 
         from sage.all import var
-        x, y = var('x,y')
+
+        x, y = var("x,y")
 
         # TODO: Would be better to use a global region plot over the entire surface.
         for label in self.surface().labels():
             from sage.all import RDF
+
             polygon = self.surface().polygon(label).change_ring(RDF)
 
             graphical_polygon = graphical_surface.graphical_polygon(label)
 
             for polygon_cell in self._cells.polygon_cells(label):
-                radius_of_convergence = float(polygon_cell.cell().center().radius_of_convergence())
+                radius_of_convergence = float(
+                    polygon_cell.cell().center().radius_of_convergence()
+                )
 
                 def is_visible(x, y):
                     from sage.all import vector
+
                     xy = vector((x, y))
 
                     xy_polygon = graphical_polygon.transform_back(xy)
                     if polygon.get_point_position(xy_polygon).is_outside():
                         return False
 
-                    error = (xy_polygon - polygon_cell.center()).norm() / radius_of_convergence
+                    error = (
+                        xy_polygon - polygon_cell.center()
+                    ).norm() / radius_of_convergence
                     if error < cutoff:
                         return False
 
                     return polygon_cell.contains_point(xy_polygon)
 
                 from sage.all import region_plot
-                plot += region_plot(is_visible, (x, graphical_polygon.xmin(), graphical_polygon.xmax()), (y, graphical_polygon.ymin(), graphical_polygon.ymax()), plot_points=plot_points, incol='orange', outcol=None, bordercol='lightgrey', alpha=.2)
+
+                plot += region_plot(
+                    is_visible,
+                    (x, graphical_polygon.xmin(), graphical_polygon.xmax()),
+                    (y, graphical_polygon.ymin(), graphical_polygon.ymax()),
+                    plot_points=plot_points,
+                    incol="orange",
+                    outcol=None,
+                    bordercol="lightgrey",
+                    alpha=0.2,
+                )
 
                 for corner in polygon_cell.corners():
                     xy = graphical_polygon.transform(corner)
                     if is_visible(*xy):
                         from sage.all import point2d
+
                         plot += point2d([xy], color="red")
 
         return plot + self._cells.plot(graphical_surface)
-
 
     # def error_location(self, cell=None):
     #     if cell is None:
@@ -1541,16 +1709,27 @@ class HarmonicDifferentialSpace(Parent):
 
     def cohomology(self):
         from flatsurf.geometry.cohomology import SimplicialCohomology
+
         return SimplicialCohomology(self._surface)
 
     @cached_method(key=lambda self, check: None, do_pickle=True)
     def period_matrix(self, check=True):
         from flatsurf.geometry.homology import SimplicialHomology
+
         symplectic_basis = SimplicialHomology(self._surface).symplectic_basis()
-        symplectic_basis = symplectic_basis[:len(symplectic_basis)//2]
+        symplectic_basis = symplectic_basis[: len(symplectic_basis) // 2]
 
         from sage.all import matrix
-        return matrix([[differential.integrate(path) for differential in self.basis(check=check)] for path in symplectic_basis])
+
+        return matrix(
+            [
+                [
+                    differential.integrate(path)
+                    for differential in self.basis(check=check)
+                ]
+                for path in symplectic_basis
+            ]
+        )
 
     def _element_constructor_(self, x, *args, **kwargs):
         if not x:
@@ -1607,14 +1786,16 @@ class HarmonicDifferentialSpace(Parent):
         # and the power series must coincide there. Note that this constraint is unrelated to the cohomology
         # class Φ.
         if "midpoint_derivatives" in algorithm:
-            derivatives = get_parameter("midpoint_derivatives", self.prec//3)
+            derivatives = get_parameter("midpoint_derivatives", self.prec // 3)
             constraints.require_midpoint_derivatives(derivatives)
 
         # (1') TODO: Describe L2 optimization.
         if "L2" in algorithm:
             print("Adding L2 conditions")
             weight = get_parameter("L2", 1)
-            constraints.optimize(weight * sum(self._L2_consistency_constraints().values()))
+            constraints.optimize(
+                weight * sum(self._L2_consistency_constraints().values())
+            )
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
@@ -1627,7 +1808,13 @@ class HarmonicDifferentialSpace(Parent):
         constraints.require_cohomology(cocycle)
 
         if "force_singularities" in algorithm:
-            singularities = get_parameter("force_singularities", {vertex: vertex.angle() - 1 for vertex in self.surface().singularities()})
+            singularities = get_parameter(
+                "force_singularities",
+                {
+                    vertex: vertex.angle() - 1
+                    for vertex in self.surface().singularities()
+                },
+            )
             for vertex in self.surface().singularities():
                 for degree in range(singularities.get(vertex, 0)):
                     constraints.add_constraint(constraints._gen("Re", vertex, degree))
@@ -1701,22 +1888,31 @@ class PowerSeriesConstraints:
         """
         # TODO: What's the correct precision here?
 
-        gens = [f"Re(a{n},?)" for n in range(len(self._differentials._centers))] + [f"Im(a{n},?)" for n in range(len(self._differentials._centers))] + ["λ?"]
+        gens = (
+            [f"Re(a{n},?)" for n in range(len(self._differentials._centers))]
+            + [f"Im(a{n},?)" for n in range(len(self._differentials._centers))]
+            + ["λ?"]
+        )
 
         from sage.all import ComplexField
         from flatsurf.geometry.power_series import PowerSeriesCoefficientExpressionRing
-        return PowerSeriesCoefficientExpressionRing(base_ring or self.complex_field(), tuple(gens))
+
+        return PowerSeriesCoefficientExpressionRing(
+            base_ring or self.complex_field(), tuple(gens)
+        )
 
     @cached_method
     def complex_field(self):
         # TODO: Make this configurable.
         from sage.all import CDF
+
         return CDF
 
     @cached_method
     def real_field(self):
         # TODO: Make this configurable.
         from sage.all import RDF
+
         return RDF
 
     # TODO: Move to Harmonic Differentials; or maybe some other shared class
@@ -1826,7 +2022,17 @@ class PowerSeriesConstraints:
             (-1.60217526524068*I)*Re(a0,0) + 1.60217526524068*Im(a0,0) + (5.55111512312578e-17 - 0.389300863573646*I)*Re(a1,0) + (0.389300863573646 + 5.55111512312578e-17*I)*Im(a1,0) + (-2.77555756156289e-17 + 0.327551243899061*I)*Re(a1,1) + (-0.327551243899061 - 2.77555756156289e-17*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a1,2) + 0.270679432377470*Im(a1,2)
 
         """
-        return sum((multiplicity * sgn * self._integrate_path(path) for (label, edge), multiplicity in cycle._chain.monomial_coefficients().items() for (sgn, path) in self._integrate_path_along_edge(label, edge)), start=self.symbolic_ring().zero())
+        return sum(
+            (
+                multiplicity * sgn * self._integrate_path(path)
+                for (
+                    label,
+                    edge,
+                ), multiplicity in cycle._chain.monomial_coefficients().items()
+                for (sgn, path) in self._integrate_path_along_edge(label, edge)
+            ),
+            start=self.symbolic_ring().zero(),
+        )
 
     def _integrate_path_along_edge(self, label, edge):
         r"""
@@ -1860,7 +2066,18 @@ class PowerSeriesConstraints:
         polygon = surface.polygon(label)
 
         from flatsurf.geometry.voronoi import SurfaceLineSegment
-        return [(1, SurfaceLineSegment(self._differentials.surface(), label, polygon.vertex(edge), polygon.edge(edge)))]
+
+        return [
+            (
+                1,
+                SurfaceLineSegment(
+                    self._differentials.surface(),
+                    label,
+                    polygon.vertex(edge),
+                    polygon.edge(edge),
+                ),
+            )
+        ]
 
     def _integrate_path(self, segment):
         r"""
@@ -1886,7 +2103,13 @@ class PowerSeriesConstraints:
             (-5.55111512312578e-17 - 0.389300863573646*I)*Re(a0,0) + (-1.60217526524068*I)*Re(a1,0) + (0.389300863573646 - 5.55111512312578e-17*I)*Im(a0,0) + 1.60217526524068*Im(a1,0) + (-2.08166817117217e-17 - 0.327551243899060*I)*Re(a0,1) + (1.66533453693773e-16 + 3.19522800018857e-17*I)*Re(a1,1) + (0.327551243899060 - 2.08166817117217e-17*I)*Im(a0,1) + (-3.19522800018857e-17 + 1.66533453693773e-16*I)*Im(a1,1) + (-0.270679432377470*I)*Re(a0,2) + (-1.23259516440783e-32 + 0.342727396656658*I)*Re(a1,2) + 0.270679432377470*Im(a0,2) + (-0.342727396656658 - 1.23259516440783e-32*I)*Im(a1,2) + (1.38777878078145e-17 - 0.219471472765136*I)*Re(a0,3) + (-1.24900090270330e-16 - 3.07576511193400e-17*I)*Re(a1,3) + (0.219471472765136 + 1.38777878078145e-17*I)*Im(a0,3) + (3.07576511193400e-17 - 1.24900090270330e-16*I)*Im(a1,3) + (2.42861286636753e-17 - 0.174329399573979*I)*Re(a0,4) + (1.69481835106077e-32 - 0.131965414609324*I)*Re(a1,4) + (0.174329399573979 + 2.42861286636753e-17*I)*Im(a0,4) + (0.131965414609324 + 1.69481835106077e-32*I)*Im(a1,4) + (3.12250225675825e-17 - 0.135339716188735*I)*Re(a0,5) + (0.135339716188735 + 3.12250225675825e-17*I)*Im(a0,5) + (2.77555756156289e-17 - 0.102340546397005*I)*Re(a0,6) + (0.102340546397005 + 2.77555756156289e-17*I)*Im(a0,6) + (3.46944695195361e-17 - 0.0749845895064374*I)*Re(a0,7) + (0.0749845895064374 + 3.46944695195361e-17*I)*Im(a0,7) + (3.12250225675825e-17 - 0.0527958835241931*I)*Re(a0,8) + (0.0527958835241931 + 3.12250225675825e-17*I)*Im(a0,8) + (2.77555756156289e-17 - 0.0352191503025193*I)*Re(a0,9) + (0.0352191503025193 + 2.77555756156289e-17*I)*Im(a0,9) + (2.08166817117217e-17 - 0.0216611462547145*I)*Re(a0,10) + (0.0216611462547145 + 2.08166817117217e-17*I)*Im(a0,10) + (2.08166817117217e-17 - 0.0115239671919220*I)*Re(a0,11) + (0.0115239671919220 + 2.08166817117217e-17*I)*Im(a0,11) + (1.73472347597681e-17 - 0.00423065874117904*I)*Re(a0,12) + (0.00423065874117904 + 1.73472347597681e-17*I)*Im(a0,12) + (1.04083408558608e-17 + 0.000756226861613830*I)*Re(a0,13) + (-0.000756226861613830 + 1.04083408558608e-17*I)*Im(a0,13) + (8.67361737988404e-18 + 0.00392229868304028*I)*Re(a0,14) + (-0.00392229868304028 + 8.67361737988404e-18*I)*Im(a0,14)
 
         """
-        return sum(self._integrate_path_polygon_cell(polygon_cell, segment) for (segment, polygon_cell) in self._differentials._cells.split_segment_at_polygon_cells(segment))
+        return sum(
+            self._integrate_path_polygon_cell(polygon_cell, segment)
+            for (
+                segment,
+                polygon_cell,
+            ) in self._differentials._cells.split_segment_at_polygon_cells(segment)
+        )
 
     def _integrate_path_polygon_cell(self, polygon_cell, segment):
         r"""
@@ -1912,7 +2135,10 @@ class PowerSeriesConstraints:
         """
         integrator = self.CellIntegrator(self, polygon_cell)
         ncoefficients = self._differentials.ncoefficients(polygon_cell.cell().center())
-        return sum(integrator.a(n) * integrator.integral(n, segment) for n in range(ncoefficients))
+        return sum(
+            integrator.a(n) * integrator.integral(n, segment)
+            for n in range(ncoefficients)
+        )
 
     @cached_method
     def _L2_consistencies(self):
@@ -1923,12 +2149,28 @@ class PowerSeriesConstraints:
         @parallel
         def L2_cost(polygon_cell, boundary_segment, opposite_polygon_cell):
             from flatsurf.geometry.euclidean import OrientedSegment
+
             boundary_segment = OrientedSegment(*boundary_segment)
 
-            boundary_segments = polygon_cell.split_segment_with_constant_root_branches(boundary_segment)
-            boundary_segments = sum((opposite_polygon_cell.split_segment_with_constant_root_branches(segment) for segment in boundary_segments), start=[])
+            boundary_segments = polygon_cell.split_segment_with_constant_root_branches(
+                boundary_segment
+            )
+            boundary_segments = sum(
+                (
+                    opposite_polygon_cell.split_segment_with_constant_root_branches(
+                        segment
+                    )
+                    for segment in boundary_segments
+                ),
+                start=[],
+            )
 
-            return sum(self._L2_consistency_voronoi_boundary(polygon_cell, segment, opposite_polygon_cell) for segment in boundary_segments)
+            return sum(
+                self._L2_consistency_voronoi_boundary(
+                    polygon_cell, segment, opposite_polygon_cell
+                )
+                for segment in boundary_segments
+            )
 
         # Get one copy of each cell boundary (with a random orientation.)
         cell_boundaries = {
@@ -1937,13 +2179,20 @@ class PowerSeriesConstraints:
             for boundary in cell.boundary()
         }.values()
 
-        polygon_cell_boundaries = sum((boundary.polygon_cell_boundaries() for boundary in cell_boundaries), start=[])
+        polygon_cell_boundaries = sum(
+            (boundary.polygon_cell_boundaries() for boundary in cell_boundaries),
+            start=[],
+        )
 
-        return {args: cost for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries)}
+        return {
+            args: cost for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries)
+        }
 
     # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
-        return self.symbolic_ring(self.real_field()).gen((f"{kind}(a{self._differentials._centers.index(center)},?)", n))
+        return self.symbolic_ring(self.real_field()).gen(
+            (f"{kind}(a{self._differentials._centers.index(center)},?)", n)
+        )
 
     class CellIntegrator:
         def __init__(self, constraints, polygon_cell):
@@ -1952,7 +2201,13 @@ class PowerSeriesConstraints:
 
         @cached_method
         def a(self, n):
-            return self.Re_a(n) + self._constraints.complex_field().gen() * self._constraints.symbolic_ring(self._constraints.complex_field())(self.Im_a(n))
+            return self.Re_a(
+                n
+            ) + self._constraints.complex_field().gen() * self._constraints.symbolic_ring(
+                self._constraints.complex_field()
+            )(
+                self.Im_a(n)
+            )
 
         @cached_method
         def Re_a(self, n):
@@ -1983,16 +2238,20 @@ class PowerSeriesConstraints:
             d = self._polygon_cell.cell().center().angle() - 1
             α = C(*self._polygon_cell.center())
 
-            for γ in self._polygon_cell.split_segment_with_constant_root_branches(segment):
+            for γ in self._polygon_cell.split_segment_with_constant_root_branches(
+                segment
+            ):
                 a = C(*γ.start())
                 b = C(*γ.end())
 
-                constant = zeta(d + 1, self._polygon_cell.root_branch_for_segment(γ) * (n + 1)) * (C(b) - C(a))
+                constant = zeta(
+                    d + 1, self._polygon_cell.root_branch_for_segment(γ) * (n + 1)
+                ) * (C(b) - C(a))
 
                 def value(part, t):
                     z = self._constraints.complex_field()(*((1 - t) * a + t * b))
 
-                    value = constant * (z-α).nth_root(d + 1)**(n - d)
+                    value = constant * (z - α).nth_root(d + 1) ** (n - d)
 
                     if part == "Re":
                         return float(value.real())
@@ -2027,123 +2286,125 @@ class PowerSeriesConstraints:
 
             return integral2cpp(part, α, κ, d, n, β, λ, dd, m, a=a, b=b, C=C, R=R)
 
-    def _L2_consistency_voronoi_boundary(self, polygon_cell, boundary_segment, opposite_polygon_cell):
+    def _L2_consistency_voronoi_boundary(
+        self, polygon_cell, boundary_segment, opposite_polygon_cell
+    ):
         r"""
-        ALGORITHM:
+                ALGORITHM:
 
-        Two cells meet at the ``boundary_segment``. The harmonic differential
-        can on these cells abstractly be described as a power series around
-        the center of the cell
+                Two cells meet at the ``boundary_segment``. The harmonic differential
+                can on these cells abstractly be described as a power series around
+                the center of the cell
 
-        g(y) = Σ_{n ≥ 0} a_n y^n
+                g(y) = Σ_{n ≥ 0} a_n y^n
 
-        This is, however, not the representation on any of the charts in which
-        the translation surface is given.
+                This is, however, not the representation on any of the charts in which
+                the translation surface is given.
 
-        To describe this power series on such a chart, let `z` denote the
-        variable on that chart, we are going to have to takes `d+1`-st roots
-        of `y`. Note that ``boundary_segment`` is assumed to be such that this
-        is consistently possible, namely ``boundary_segment`` does not cross
-        the horizontal line on which the singularity lives in the `z`-chart.
+                To describe this power series on such a chart, let `z` denote the
+                variable on that chart, we are going to have to takes `d+1`-st roots
+                of `y`. Note that ``boundary_segment`` is assumed to be such that this
+                is consistently possible, namely ``boundary_segment`` does not cross
+                the horizontal line on which the singularity lives in the `z`-chart.
 
-        Therefore, we write with the center y=0 being z=α
+                Therefore, we write with the center y=0 being z=α
 
-        y(z) = ζ_{d+1}^κ (z-α)^{1/(d+1)}
+                y(z) = ζ_{d+1}^κ (z-α)^{1/(d+1)}
 
-        where the last part denotes the principal `d+1`-st root of `z`.
+                where the last part denotes the principal `d+1`-st root of `z`.
 
-        Hence, we can rewrite `g(y)dy` on the `z`-chart:
+                Hence, we can rewrite `g(y)dy` on the `z`-chart:
 
-        g(y)dy = g(y(z)) dy/dz dz
-               = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ n} (z-α)^{n/(d+1)} ζ_{d+1}^κ 1/(d+1) (z-α)^{-d/(d+1)}dz
-               = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} dz
-               =: Σ_{n ≥ 0} a_n f_n(z) dz
-               =: f(z) dz
+                g(y)dy = g(y(z)) dy/dz dz
+                       = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ n} (z-α)^{n/(d+1)} ζ_{d+1}^κ 1/(d+1) (z-α)^{-d/(d+1)}dz
+                       = Σ_{n ≥ 0} a_n ζ_{d+1}^{κ (n+1)}/(d+1) (z-α)^\frac{n-d}{d+1} dz
+                       =: Σ_{n ≥ 0} a_n f_n(z) dz
+                       =: f(z) dz
 
-        Note that the formulas above also hold when the center is not an actual
-        singularity, i.e., d = 0.
+                Note that the formulas above also hold when the center is not an actual
+                singularity, i.e., d = 0.
 
-        Now, we want to describe the error between two such series when
-        integrating along the ``boundary_segment``, namely, for two such
-        differentials `f(z)dz` and `g(z)dz` we compute the L2 norm of `f-g` or
-        rather the square thereof `\int_γ (f-g)\overline{(f-g)} dz` where γ is
-        the ``boundary_segment``.
+                Now, we want to describe the error between two such series when
+                integrating along the ``boundary_segment``, namely, for two such
+                differentials `f(z)dz` and `g(z)dz` we compute the L2 norm of `f-g` or
+                rather the square thereof `\int_γ (f-g)\overline{(f-g)} dz` where γ is
+                the ``boundary_segment``.
 
-        TODO: This is not actually the integral but a norm, we get |·γ| in the
-        integration and not just the signed derivative.
+                TODO: This is not actually the integral but a norm, we get |·γ| in the
+                integration and not just the signed derivative.
 
-        As discussed above, we have
+                As discussed above, we have
 
-        f = Σ_{n ≥ 0} a_n f_n(z),
+                f = Σ_{n ≥ 0} a_n f_n(z),
 
-        g = Σ_{m ≥ 0} b_m g_m(z).
+                g = Σ_{m ≥ 0} b_m g_m(z).
 
-        The `a_n` and `b_n` are symbolic variables since we are going to
-        optimize for these later. If we evaluate that L2 norm squared we get a
-        polynomial of homogeneous degree two in these variables.
+                The `a_n` and `b_n` are symbolic variables since we are going to
+                optimize for these later. If we evaluate that L2 norm squared we get a
+                polynomial of homogeneous degree two in these variables.
 
-        Namely,
+                Namely,
 
-        (f-g)\overline{(f-g)} = f\overline{f} - 2 \Re f\overline{g} + g\overline{g}.
+                (f-g)\overline{(f-g)} = f\overline{f} - 2 \Re f\overline{g} + g\overline{g}.
 
-        Note that all terms are real.
+                Note that all terms are real.
 
-        The first term is going to yield polynomials in `a_n a_m`, the second
-        term mixed polynomials `a_n b_m`, and the last term polynomials in `b_n
-        b_m`.
+                The first term is going to yield polynomials in `a_n a_m`, the second
+                term mixed polynomials `a_n b_m`, and the last term polynomials in `b_n
+                b_m`.
 
-        In fact, our symbolic variables are going to be `\Re a_n`, `\Im a_n`,
-        `\Re b_m`, `\Im b_m`.
+                In fact, our symbolic variables are going to be `\Re a_n`, `\Im a_n`,
+                `\Re b_m`, `\Im b_m`.
 
-        Working through the first of the three components of the L2 norm
-        expression, we have
+                Working through the first of the three components of the L2 norm
+                expression, we have
 
-        \int_γ f\overline{f}
-        = Σ_{n,m ≥ 0} a_n \overline{a_m} \int_γ f_n(z)\overline{f_m(z)}
-        =: Σ_{n,m ≥ 0} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
+                \int_γ f\overline{f}
+                = Σ_{n,m ≥ 0} a_n \overline{a_m} \int_γ f_n(z)\overline{f_m(z)}
+                =: Σ_{n,m ≥ 0} a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m})
 
-        We can simplify things a bit since we know that the result is real;
-        inside the series we have therefore
+                We can simplify things a bit since we know that the result is real;
+                inside the series we have therefore
 
-        \Re (a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m}))
-        = (\Re a_n \Re a_m + \Im a_n \Im a_m - i \Re a_n \Im a_m + i \Im a_n \Re a_m) (f_{\Re, n, m} + i f_{\Im, n, m})
-        = \Re a_n \Re a_m f_{\Re, n, m} + \Im a_n \Im a_m f_{\Re, n, m} + \Re a_n \Im a_m f_{\Im, n, m} - \Im a_n \Re a_m f_{\Im, n, m}.
+                \Re (a_n \overline{a_m} (f_{\Re, n, m} + i f_{\Im, n, m}))
+                = (\Re a_n \Re a_m + \Im a_n \Im a_m - i \Re a_n \Im a_m + i \Im a_n \Re a_m) (f_{\Re, n, m} + i f_{\Im, n, m})
+                = \Re a_n \Re a_m f_{\Re, n, m} + \Im a_n \Im a_m f_{\Re, n, m} + \Re a_n \Im a_m f_{\Im, n, m} - \Im a_n \Re a_m f_{\Im, n, m}.
 
-        We get essentially the same terms for `g\overline{g}`.
+                We get essentially the same terms for `g\overline{g}`.
 
-        Finally, we need to compute the middle term:
+                Finally, we need to compute the middle term:
 
-        - \int_γ 2 \Re f\overline{g}
-        = - 2 \Re \int_γ f\overline{g}
-        = - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} \int_γ f_n{z)\overline{g_m(z)}
-        =: - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
+                - \int_γ 2 \Re f\overline{g}
+                = - 2 \Re \int_γ f\overline{g}
+                = - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} \int_γ f_n{z)\overline{g_m(z)}
+                =: - 2 \Re Σ_{n,m ≥ 0} a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m})
 
-        Again we can simplify and get inside the series
+                Again we can simplify and get inside the series
 
-        \Re (a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m}))
-        = \Re a_n \Re b_m (f,g)_{\Re, n, m} + \Im a_n \Im b_m (f,g)_{\Re, n, m} + \Re a_n \Im b_m (f,g)_{\Im, n, m} - \Im a_n \Re b_m (f,g)_{\Im, n, m}
-q
-        The integrals `f_{\Re, n, m}`, `f_{\Im, n, m}`, `(f,g)_{\Re, n, m}`,
-        and `(f,g)_{\Im, n, m}` are currently all computed numerically. We know
-        of but have not implemented a better approach, yet.
+                \Re (a_n \overline{b_m} ((f,g)_{\Re, n, m} + i (f,g)_{\Im, n, m}))
+                = \Re a_n \Re b_m (f,g)_{\Re, n, m} + \Im a_n \Im b_m (f,g)_{\Re, n, m} + \Re a_n \Im b_m (f,g)_{\Im, n, m} - \Im a_n \Re b_m (f,g)_{\Im, n, m}
+        q
+                The integrals `f_{\Re, n, m}`, `f_{\Im, n, m}`, `(f,g)_{\Re, n, m}`,
+                and `(f,g)_{\Im, n, m}` are currently all computed numerically. We know
+                of but have not implemented a better approach, yet.
 
-        TESTS::
+                TESTS::
 
-            sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
-            sage: S = translation_surfaces.regular_octagon()
-            sage: H = SimplicialHomology(S)
-            sage: Ω = HarmonicDifferentials(S)
-            sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: C = PowerSeriesConstraints(Ω)
-            sage: V = Ω._voronoi_diagram()
+                    sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology
+                    sage: S = translation_surfaces.regular_octagon()
+                    sage: H = SimplicialHomology(S)
+                    sage: Ω = HarmonicDifferentials(S)
+                    sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
+                    sage: C = PowerSeriesConstraints(Ω)
+                    sage: V = Ω._voronoi_diagram()
 
-            sage: cells, segment = next(iter(V.boundaries().items()))
-            sage: cell, opposite_cell = list(cells)
+                    sage: cells, segment = next(iter(V.boundaries().items()))
+                    sage: cell, opposite_cell = list(cells)
 
-            sage: E = C._L2_consistency_voronoi_boundary(cell, segment, opposite_cell)
-            sage: F = C._L2_consistency_voronoi_boundary(opposite_cell, -segment, cell)
-            sage: (E - F).map_coefficients(lambda c: c if abs(c) > 1e-15 else 0)
-            0
+                    sage: E = C._L2_consistency_voronoi_boundary(cell, segment, opposite_cell)
+                    sage: F = C._L2_consistency_voronoi_boundary(opposite_cell, -segment, cell)
+                    sage: (E - F).map_coefficients(lambda c: c if abs(c) > 1e-15 else 0)
+                    0
 
         """
         # TODO: Do not ignore boundaries that are aligned with edges!
@@ -2155,9 +2416,18 @@ q
         assert polygon_cell.contains_segment(boundary_segment)
         assert opposite_polygon_cell.contains_segment(boundary_segment)
 
-        return (self._L2_consistency_voronoi_boundary_f_overline_f(polygon_cell, boundary_segment)
-                - 2 * self._L2_consistency_voronoi_boundary_Re_f_overline_g(polygon_cell, boundary_segment, opposite_polygon_cell)
-                + self._L2_consistency_voronoi_boundary_g_overline_g(opposite_polygon_cell, boundary_segment))
+        return (
+            self._L2_consistency_voronoi_boundary_f_overline_f(
+                polygon_cell, boundary_segment
+            )
+            - 2
+            * self._L2_consistency_voronoi_boundary_Re_f_overline_g(
+                polygon_cell, boundary_segment, opposite_polygon_cell
+            )
+            + self._L2_consistency_voronoi_boundary_g_overline_g(
+                opposite_polygon_cell, boundary_segment
+            )
+        )
 
     def _L2_consistency_voronoi_boundary_f_overline_f(self, cell, boundary_segment):
         r"""
@@ -2175,19 +2445,37 @@ q
         d = int(d)
 
         def f_(part, n, m):
-            return cell_integrator.mixed_integral(part, α, κ, d, n, α, κ, d, m, boundary_segment)
+            return cell_integrator.mixed_integral(
+                part, α, κ, d, n, α, κ, d, m, boundary_segment
+            )
 
-        return self.symbolic_ring().sum([
-            (cell_integrator.Re_a(n) * cell_integrator.Re_a(m) + cell_integrator.Im_a(n) * cell_integrator.Im_a(m)) * f_("Re", n, m) + (cell_integrator.Re_a(n) * cell_integrator.Im_a(m) - cell_integrator.Im_a(n) * cell_integrator.Re_a(m)) * f_("Im", n, m)
-            for n in range(self._differentials.ncoefficients(center))
-            for m in range(self._differentials.ncoefficients(center))])
+        return self.symbolic_ring().sum(
+            [
+                (
+                    cell_integrator.Re_a(n) * cell_integrator.Re_a(m)
+                    + cell_integrator.Im_a(n) * cell_integrator.Im_a(m)
+                )
+                * f_("Re", n, m)
+                + (
+                    cell_integrator.Re_a(n) * cell_integrator.Im_a(m)
+                    - cell_integrator.Im_a(n) * cell_integrator.Re_a(m)
+                )
+                * f_("Im", n, m)
+                for n in range(self._differentials.ncoefficients(center))
+                for m in range(self._differentials.ncoefficients(center))
+            ]
+        )
 
-    def _L2_consistency_voronoi_boundary_Re_f_overline_g(self, cell, boundary_segment, opposite_cell):
+    def _L2_consistency_voronoi_boundary_Re_f_overline_g(
+        self, cell, boundary_segment, opposite_cell
+    ):
         r"""
         Return the real part of `\int_γ f\overline{g}.
         """
         center = self._differentials.surface()(cell.label(), cell.center())
-        opposite_center = self._differentials.surface()(opposite_cell.label(), opposite_cell.center())
+        opposite_center = self._differentials.surface()(
+            opposite_cell.label(), opposite_cell.center()
+        )
 
         cell_integrator = self.CellIntegrator(self, cell)
         opposite_cell_integrator = self.CellIntegrator(self, opposite_cell)
@@ -2204,18 +2492,36 @@ q
         dd = int(dd)
 
         def fg_(part, n, m):
-            return cell_integrator.mixed_integral(part, α, κ, d, n, β, λ, dd, m, boundary_segment)
+            return cell_integrator.mixed_integral(
+                part, α, κ, d, n, β, λ, dd, m, boundary_segment
+            )
 
-        return self.symbolic_ring().sum([
-            (cell_integrator.Re_a(n) * opposite_cell_integrator.Re_a(m) + cell_integrator.Im_a(n) * opposite_cell_integrator.Im_a(m)) * fg_("Re", n, m) + (cell_integrator.Re_a(n) * opposite_cell_integrator.Im_a(m) - cell_integrator.Im_a(n) * opposite_cell_integrator.Re_a(m)) * fg_("Im", n, m)
-            for n in range(self._differentials.ncoefficients(center))
-            for m in range(self._differentials.ncoefficients(opposite_center))])
+        return self.symbolic_ring().sum(
+            [
+                (
+                    cell_integrator.Re_a(n) * opposite_cell_integrator.Re_a(m)
+                    + cell_integrator.Im_a(n) * opposite_cell_integrator.Im_a(m)
+                )
+                * fg_("Re", n, m)
+                + (
+                    cell_integrator.Re_a(n) * opposite_cell_integrator.Im_a(m)
+                    - cell_integrator.Im_a(n) * opposite_cell_integrator.Re_a(m)
+                )
+                * fg_("Im", n, m)
+                for n in range(self._differentials.ncoefficients(center))
+                for m in range(self._differentials.ncoefficients(opposite_center))
+            ]
+        )
 
-    def _L2_consistency_voronoi_boundary_g_overline_g(self, opposite_cell, boundary_segment):
+    def _L2_consistency_voronoi_boundary_g_overline_g(
+        self, opposite_cell, boundary_segment
+    ):
         r"""
         Return the value of `\int_γ g\overline{g}.
         """
-        opposite_center = self._differentials.surface()(opposite_cell.label(), opposite_cell.center())
+        opposite_center = self._differentials.surface()(
+            opposite_cell.label(), opposite_cell.center()
+        )
 
         opposite_cell_integrator = self.CellIntegrator(self, opposite_cell)
 
@@ -2226,14 +2532,29 @@ q
         # Cast to a builtin int to speed up some operations later.
         dd = int(dd)
 
-
         def g_(part, n, m):
-            return opposite_cell_integrator.mixed_integral(part, β, λ, dd, n, β, λ, dd, m, boundary_segment)
+            return opposite_cell_integrator.mixed_integral(
+                part, β, λ, dd, n, β, λ, dd, m, boundary_segment
+            )
 
-        return self.symbolic_ring().sum([
-            (opposite_cell_integrator.Re_a(n) * opposite_cell_integrator.Re_a(m) + opposite_cell_integrator.Im_a(n) * opposite_cell_integrator.Im_a(m)) * g_("Re", n, m) + (opposite_cell_integrator.Re_a(n) * opposite_cell_integrator.Im_a(m) - opposite_cell_integrator.Im_a(n) * opposite_cell_integrator.Re_a(m)) * g_("Im", n, m)
-            for n in range(self._differentials.ncoefficients(opposite_center))
-            for m in range(self._differentials.ncoefficients(opposite_center))])
+        return self.symbolic_ring().sum(
+            [
+                (
+                    opposite_cell_integrator.Re_a(n) * opposite_cell_integrator.Re_a(m)
+                    + opposite_cell_integrator.Im_a(n)
+                    * opposite_cell_integrator.Im_a(m)
+                )
+                * g_("Re", n, m)
+                + (
+                    opposite_cell_integrator.Re_a(n) * opposite_cell_integrator.Im_a(m)
+                    - opposite_cell_integrator.Im_a(n)
+                    * opposite_cell_integrator.Re_a(m)
+                )
+                * g_("Im", n, m)
+                for n in range(self._differentials.ncoefficients(opposite_center))
+                for m in range(self._differentials.ncoefficients(opposite_center))
+            ]
+        )
 
     @cached_method
     def _elementary_line_integrals(self, label, n, m):
@@ -2273,26 +2594,34 @@ q
 
             def f(x, y):
                 from sage.all import I
-                return self.complex_field()((x + I*y)**n * (x - I*y)**m)
+
+                return self.complex_field()((x + I * y) ** n * (x - I * y) ** m)
 
             def fx(t):
                 if abs(Δx) < 1e-6:
                     return self.complex_field().zero()
-                return f(x0 + t, y0 + t * Δy/Δx)
+                return f(x0 + t, y0 + t * Δy / Δx)
 
             def fy(t):
                 if abs(Δy) < 1e-6:
                     return self.complex_field().zero()
-                return f(x0 + t * Δx/Δy, y0 + t)
+                return f(x0 + t * Δx / Δy, y0 + t)
 
             def integrate(value, t0, t1):
                 from sage.all import numerical_integral
+
                 # TODO: Should we do something about the error that is stored in [1]?
                 return numerical_integral(value, t0, t1)[0]
 
             C = self.complex_field()
-            ix += C(integrate(lambda t: fx(t).real(), 0, Δx), integrate(lambda t: fx(t).imag(), 0, Δx))
-            iy += C(integrate(lambda t: fy(t).real(), 0, Δy), integrate(lambda t: fy(t).imag(), 0, Δy))
+            ix += C(
+                integrate(lambda t: fx(t).real(), 0, Δx),
+                integrate(lambda t: fx(t).imag(), 0, Δx),
+            )
+            iy += C(
+                integrate(lambda t: fy(t).real(), 0, Δy),
+                integrate(lambda t: fy(t).imag(), 0, Δy),
+            )
 
         return ix, iy
 
@@ -2325,10 +2654,11 @@ q
         # on the boundary of the triangle:
         # -i/(2m + 1) f(n, m + 1) dx + 1/(2m + 1) f(n, m + 1) dy
 
-        ix, iy = self._elementary_line_integrals(label, n, m+1)
+        ix, iy = self._elementary_line_integrals(label, n, m + 1)
 
         from sage.all import I
-        return -I/(C(2)*(m + 1)) * ix + C(1)/(2*(m + 1)) * iy
+
+        return -I / (C(2) * (m + 1)) * ix + C(1) / (2 * (m + 1)) * iy
 
     def optimize(self, f):
         r"""
@@ -2366,7 +2696,9 @@ q
         if self._cost is not None:
             terms.append(self._cost)
 
-        return set(variable for constraint in terms for variable in constraint.variables())
+        return set(
+            variable for constraint in terms for variable in constraint.variables()
+        )
 
     def _optimize_cost(self):
         # We use Lagrange multipliers to rewrite this expression.
@@ -2405,7 +2737,7 @@ q
         self._cost = None
 
     def require_cohomology(self, cocycle):
-        r""""
+        r""" "
         Create a constraint by integrating numerically following the paths that
         form a basis of homology.
 
@@ -2447,13 +2779,19 @@ q
 
         @parallel
         def create_constraint(cycle):
-            return self.integrate(cycle).real() - self.real_field()(cocycle(cycle).real())
+            return self.integrate(cycle).real() - self.real_field()(
+                cocycle(cycle).real()
+            )
 
-        for (args, kwargs), constraint in create_constraint((cycle,) for cycle in cocycle.parent().homology().gens()):
+        for (args, kwargs), constraint in create_constraint(
+            (cycle,) for cycle in cocycle.parent().homology().gens()
+        ):
             self.add_constraint(constraint, rank_check=False)
 
     def lagrange_variables(self):
-        return set(variable for variable in self.variables() if variable.describe()[0] == "λ?")
+        return set(
+            variable for variable in self.variables() if variable.describe()[0] == "λ?"
+        )
 
     def matrix(self, nowarn=False):
         r"""
@@ -2517,7 +2855,12 @@ q
         #         warn(f"Some power series coefficients are not constrained for this harmonic differential. They will be chosen to be 0 by the solver.")
 
         from sage.all import matrix, vector
-        A = matrix(self.real_field(), len(self._constraints), len(non_lagranges) + len(self.lagrange_variables()))
+
+        A = matrix(
+            self.real_field(),
+            len(self._constraints),
+            len(non_lagranges) + len(self.lagrange_variables()),
+        )
         b = vector(self.real_field(), len(self._constraints))
 
         for row, constraint in enumerate(self._constraints):
@@ -2562,7 +2905,9 @@ q
             raise NotImplementedError
 
         point = args[0]
-        return PowerSeriesRing(self.complex_field(), f"z{self._differentials._centers.index(point)}")
+        return PowerSeriesRing(
+            self.complex_field(), f"z{self._differentials._centers.index(point)}"
+        )
 
     def solve(self, algorithm="eigen+mpfr"):
         r"""
@@ -2601,6 +2946,7 @@ q
 
         print("Computing condition")
         from sage.all import RDF, oo
+
         condition = A.change_ring(RDF).condition()
         print(f"{condition=}")
 
@@ -2611,6 +2957,7 @@ q
         print("Solving system")
         if algorithm == "arb":
             from sage.all import ComplexBallField
+
             C = ComplexBallField(self.complex_field().prec())
             CA = A.change_ring(C)
             Cb = b.change_ring(C)
@@ -2628,12 +2975,13 @@ q
             solution = define_solve()(A, b)
 
             from sage.all import vector
+
             solution = vector([self.real_field()(entry) for entry in solution])
         else:
             raise NotImplementedError
 
         print("Interpreting solution")
-        residue = (A*solution - b).norm()
+        residue = (A * solution - b).norm()
 
         lagranges = len(self.lagrange_variables())
 
@@ -2660,11 +3008,23 @@ q
             if degree not in series[center]:
                 series[center][degree] = [None, None]
 
-            series[center][degree][part] = self._normalize(value, center=center, degree=degree, part=part)
+            series[center][degree][part] = self._normalize(
+                value, center=center, degree=degree, part=part
+            )
 
         print("Building series")
-        series = {point:
-                  sum((self.complex_field()(*entry) * self.power_series_ring(point).gen()**k for (k, entry) in series[point].items()), start=self.power_series_ring(point).zero()).add_bigoh(max(series[point]) + 1) for point in series if series[point]}
+        series = {
+            point: sum(
+                (
+                    self.complex_field()(*entry)
+                    * self.power_series_ring(point).gen() ** k
+                    for (k, entry) in series[point].items()
+                ),
+                start=self.power_series_ring(point).zero(),
+            ).add_bigoh(max(series[point]) + 1)
+            for point in series
+            if series[point]
+        }
 
         return series, residue
 
@@ -2684,7 +3044,20 @@ q
 
         Ω = self._differentials
         self._constraints = [
-            sum(mul(Ω._relative_inradius_of_convergence(Ω._cells.cell_at_center(center(v)))**-(v.describe()[1]/center(v).angle()) * constraint[v] if not Ω._gen_is_lagrange(v) else constraint[v], v) for v in constraint.variables()) + constraint.constant_coefficient()
+            sum(
+                mul(
+                    Ω._relative_inradius_of_convergence(
+                        Ω._cells.cell_at_center(center(v))
+                    )
+                    ** -(v.describe()[1] / center(v).angle())
+                    * constraint[v]
+                    if not Ω._gen_is_lagrange(v)
+                    else constraint[v],
+                    v,
+                )
+                for v in constraint.variables()
+            )
+            + constraint.constant_coefficient()
             for constraint in self._constraints
         ]
 
@@ -2692,7 +3065,7 @@ q
         # Undo the effect of _denormalize on x, i.e., return r^n * x.
         Ω = self._differentials
         r = Ω._relative_inradius_of_convergence(Ω._cells.cell_at_center(center))
-        return x * r**-(degree/center.angle())
+        return x * r ** -(degree / center.angle())
 
 
 class Path:
@@ -2738,11 +3111,21 @@ class GeodesicPath(Path):
         opposite_label, opposite_edge = surface.opposite_edge(label, edge)
         opposite_polygon = surface.polygon(opposite_label)
 
-        holonomy = polygon.vertex(edge) - polygon.centroid() + opposite_polygon.centroid() - opposite_polygon.vertex(opposite_edge + 1)
+        holonomy = (
+            polygon.vertex(edge)
+            - polygon.centroid()
+            + opposite_polygon.centroid()
+            - opposite_polygon.vertex(opposite_edge + 1)
+        )
         # TODO: edge() should be immutable.
         holonomy.set_immutable()
 
-        return GeodesicPath(surface, (label, polygon.centroid()), (opposite_label, opposite_polygon.centroid()), holonomy)
+        return GeodesicPath(
+            surface,
+            (label, polygon.centroid()),
+            (opposite_label, opposite_polygon.centroid()),
+            holonomy,
+        )
 
     @staticmethod
     def along_edge(surface, label, edge):
@@ -2765,7 +3148,12 @@ class GeodesicPath(Path):
         # TODO: edge() should be immutable.
         holonomy.set_immutable()
 
-        return GeodesicPath(surface, (label, polygon.vertex(edge)), (label, polygon.vertex(edge + 1)), holonomy)
+        return GeodesicPath(
+            surface,
+            (label, polygon.vertex(edge)),
+            (label, polygon.vertex(edge + 1)),
+            holonomy,
+        )
 
     def split(self):
         r"""
@@ -2788,9 +3176,18 @@ class GeodesicPath(Path):
             raise NotImplementedError
 
         from flatsurf.geometry.euclidean import OrientedSegment
+
         # TODO: This only works for convex polygons.
-        if self._end[0] == self._start[0] and polygon.get_point_position(self._start[1] + self._holonomy).is_inside():
-            return [(self._start[0], OrientedSegment(self._start[1], self._start[1] + self._holonomy))]
+        if (
+            self._end[0] == self._start[0]
+            and polygon.get_point_position(self._start[1] + self._holonomy).is_inside()
+        ):
+            return [
+                (
+                    self._start[0],
+                    OrientedSegment(self._start[1], self._start[1] + self._holonomy),
+                )
+            ]
 
         path = OrientedSegment(self._start[1], self._start[1] + self._holonomy)
         for v in range(len(polygon.vertices())):
@@ -2803,7 +3200,9 @@ class GeodesicPath(Path):
             if intersection == self._start[1]:
                 continue
 
-            assert self._surface(self._start[0], intersection).angle() == 1, "path crosses over a singularity"
+            assert (
+                self._surface(self._start[0], intersection).angle() == 1
+            ), "path crosses over a singularity"
 
             segment = OrientedSegment(self._start[1], intersection)
 
@@ -2816,14 +3215,24 @@ class GeodesicPath(Path):
                 return prefix
 
             from flatsurf.geometry.euclidean import is_parallel
+
             assert is_parallel(holonomy, self._holonomy)
 
-            opposite_label, opposite_edge = self._surface.opposite_edge(self._start[0], v)
+            opposite_label, opposite_edge = self._surface.opposite_edge(
+                self._start[0], v
+            )
 
-            new_start = self._surface.polygon(opposite_label).vertex(opposite_edge + 1) + (intersection - polygon.vertex(v))
+            new_start = self._surface.polygon(opposite_label).vertex(
+                opposite_edge + 1
+            ) + (intersection - polygon.vertex(v))
             new_start.set_immutable()
 
-            return prefix + GeodesicPath(self._surface, (opposite_label, new_start), self._end, holonomy).split()
+            return (
+                prefix
+                + GeodesicPath(
+                    self._surface, (opposite_label, new_start), self._end, holonomy
+                ).split()
+            )
 
         assert False
 
@@ -2851,6 +3260,7 @@ class GeodesicPath(Path):
         return hash((self._start, self._holonomy))
 
 
-def HarmonicDifferentials(surface, error=None, cell_decomposition=None, check=True, category=None):
+def HarmonicDifferentials(
+    surface, error=None, cell_decomposition=None, check=True, category=None
+):
     return surface.harmonic_differentials(error, cell_decomposition, check, category)
-

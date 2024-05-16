@@ -465,7 +465,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             raise Exception("exceeded limit iterations")
                         continue
 
-                    sss = sss.apply_matrix(mi * g ** (-k) * m, in_place=False).codomain()
+                    sss = sss.apply_matrix(
+                        mi * g ** (-k) * m, in_place=False
+                    ).codomain()
                     return sss.delaunay_triangulation(direction=nonzero)
 
         def j_invariant(self):
@@ -570,19 +572,26 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             if all(a != 1 for a in self.angles()):
                 # no 2π angle
                 from flatsurf.geometry.morphism import IdentityMorphism
+
                 return IdentityMorphism._create_morphism(self)
 
             # Triangulate the surface: to_pyflatsurf maps self to a
             # triangulated libflatsurf surface (later called delaunay0_domain.)
             to_pyflatsurf = self.pyflatsurf()
-            
+
             # Delaunay triangulate: delaunay0 maps delaunay0_domain to delaunay0_codomain.
             # Since the flips of delaunay() are performed in-place, we create
             # the mapping using the Tracked[Deformation] feature of pyflatsurf.
             delaunay0_codomain = to_pyflatsurf.codomain()._flat_triangulation.clone()
 
             from pyflatsurf import flatsurf
-            delaunay0 = flatsurf.Tracked(delaunay0_codomain.combinatorial(), flatsurf.Deformation[type(delaunay0_codomain)](delaunay0_codomain.clone()))
+
+            delaunay0 = flatsurf.Tracked(
+                delaunay0_codomain.combinatorial(),
+                flatsurf.Deformation[type(delaunay0_codomain)](
+                    delaunay0_codomain.clone()
+                ),
+            )
 
             delaunay0_codomain.delaunay()
 
@@ -594,23 +603,42 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             # Again, we use a Tracked[Deformation] to create this mapping.
             delaunay1_codomain = elimination.codomain().clone()
 
-            delaunay1 = flatsurf.Tracked(delaunay1_codomain.combinatorial(), flatsurf.Deformation[type(delaunay1_codomain)](delaunay1_codomain.clone()))
+            delaunay1 = flatsurf.Tracked(
+                delaunay1_codomain.combinatorial(),
+                flatsurf.Deformation[type(delaunay1_codomain)](
+                    delaunay1_codomain.clone()
+                ),
+            )
 
             delaunay1_codomain.delaunay()
 
             # Bring the surface back into sage-flatsurf: from_pyflatsurf maps a
             # sage-flatsurf surface to delaunay1_codomain.
             from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
             codomain_pyflatsurf = Surface_pyflatsurf(delaunay1_codomain)
 
             from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
-            pyflatsurf_morphism = Morphism_from_Deformation._create_morphism(to_pyflatsurf.codomain(), codomain_pyflatsurf, delaunay1.value() * elimination * delaunay0.value())
 
-            from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            from_pyflatsurf = FlatTriangulationConversion.from_pyflatsurf(delaunay1_codomain)
+            pyflatsurf_morphism = Morphism_from_Deformation._create_morphism(
+                to_pyflatsurf.codomain(),
+                codomain_pyflatsurf,
+                delaunay1.value() * elimination * delaunay0.value(),
+            )
+
+            from flatsurf.geometry.pyflatsurf_conversion import (
+                FlatTriangulationConversion,
+            )
+
+            from_pyflatsurf = FlatTriangulationConversion.from_pyflatsurf(
+                delaunay1_codomain
+            )
 
             from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_pyflatsurf
-            from_pyflatsurf = Morphism_from_pyflatsurf._create_morphism(codomain_pyflatsurf, from_pyflatsurf.domain(), from_pyflatsurf)
+
+            from_pyflatsurf = Morphism_from_pyflatsurf._create_morphism(
+                codomain_pyflatsurf, from_pyflatsurf.domain(), from_pyflatsurf
+            )
 
             return from_pyflatsurf * pyflatsurf_morphism * to_pyflatsurf
 
@@ -650,6 +678,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             Category of connected without boundary finite type translation surfaces
 
         """
+
         class ParentMethods:
             r"""
             Provides methods available to all translation surfaces built from
@@ -685,33 +714,61 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                 """
                 from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
                 return Surface_pyflatsurf._from_flatsurf(self)
 
-            def saddle_connections(self, squared_length_bound=None, initial_label=None, initial_vertex=None, algorithm=None):
+            def saddle_connections(
+                self,
+                squared_length_bound=None,
+                initial_label=None,
+                initial_vertex=None,
+                algorithm=None,
+            ):
                 if squared_length_bound is not None and squared_length_bound < 0:
                     raise ValueError("length bound must be non-negative")
 
                 if algorithm is None:
                     from flatsurf.features import pyflatsurf_feature
-                    if pyflatsurf_feature.is_present() and pyflatsurf_feature.is_saddle_connection_enumeration_functional():
+
+                    if (
+                        pyflatsurf_feature.is_present()
+                        and pyflatsurf_feature.is_saddle_connection_enumeration_functional()
+                    ):
                         algorithm = "pyflatsurf"
                     else:
                         algorithm = "generic"
 
                 if algorithm == "pyflatsurf":
                     from flatsurf.features import pyflatsurf_feature
-                    if not flatsurf_feature.is_saddle_connection_enumeration_functional():
+
+                    if (
+                        not flatsurf_feature.is_saddle_connection_enumeration_functional()
+                    ):
                         import warnings
-                        warnings.warn("enumerating saddle connections is broken in your version of pyflatsurf, namely saddle connections are enumerated in the wrong order and consequently some might be missing when enumerating with a length bound; upgrade to pyflatsurf >=3.14.1 to resolve this warning.")
-                    return self._saddle_connections_pyflatsurf(squared_length_bound, initial_label, initial_vertex)
 
-                from flatsurf.geometry.categories.similarity_surfaces import SimilaritySurfaces
-                return SimilaritySurfaces.Oriented.ParentMethods.saddle_connections(self, squared_length_bound, initial_label, initial_vertex)
+                        warnings.warn(
+                            "enumerating saddle connections is broken in your version of pyflatsurf, namely saddle connections are enumerated in the wrong order and consequently some might be missing when enumerating with a length bound; upgrade to pyflatsurf >=3.14.1 to resolve this warning."
+                        )
+                    return self._saddle_connections_pyflatsurf(
+                        squared_length_bound, initial_label, initial_vertex
+                    )
 
-            def _saddle_connections_pyflatsurf(self, squared_length_bound, initial_label, initial_vertex):
+                from flatsurf.geometry.categories.similarity_surfaces import (
+                    SimilaritySurfaces,
+                )
+
+                return SimilaritySurfaces.Oriented.ParentMethods.saddle_connections(
+                    self, squared_length_bound, initial_label, initial_vertex
+                )
+
+            def _saddle_connections_pyflatsurf(
+                self, squared_length_bound, initial_label, initial_vertex
+            ):
                 pyflatsurf_conversion = self.pyflatsurf()
 
-                connections = pyflatsurf_conversion.codomain()._flat_triangulation.connections()
+                connections = (
+                    pyflatsurf_conversion.codomain()._flat_triangulation.connections()
+                )
                 connections = connections.byLength()
 
                 if initial_label is not None:
@@ -720,8 +777,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         raise NotImplementedError
 
                 for connection in connections:
-                    from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
-                    connection = SaddleConnection_pyflatsurf(connection, pyflatsurf_conversion.codomain())
+                    from flatsurf.geometry.pyflatsurf.saddle_connection import (
+                        SaddleConnection_pyflatsurf,
+                    )
+
+                    connection = SaddleConnection_pyflatsurf(
+                        connection, pyflatsurf_conversion.codomain()
+                    )
                     connection = pyflatsurf_conversion.section()(connection)
                     if squared_length_bound is not None:
                         holonomy = connection.holonomy()
@@ -729,7 +791,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         if holonomy.dot_product(holonomy) > squared_length_bound:
                             break
                     yield connection
-
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
@@ -802,7 +863,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     """
                     import warnings
-                    warnings.warn("canonicalize_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use canonicalize() instead")
+
+                    warnings.warn(
+                        "canonicalize_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use canonicalize() instead"
+                    )
 
                     return self.canonicalize()
 
@@ -847,15 +911,21 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     delaunay_decomposition = self.delaunay_decomposition()
 
-                    standardization = delaunay_decomposition.codomain().standardize_polygons()
+                    standardization = (
+                        delaunay_decomposition.codomain().standardize_polygons()
+                    )
 
                     from flatsurf.geometry.surface import (
                         MutableOrientedSimilaritySurface,
                     )
 
-                    s = MutableOrientedSimilaritySurface.from_surface(standardization.codomain())
+                    s = MutableOrientedSimilaritySurface.from_surface(
+                        standardization.codomain()
+                    )
 
-                    ss = MutableOrientedSimilaritySurface.from_surface(standardization.codomain())
+                    ss = MutableOrientedSimilaritySurface.from_surface(
+                        standardization.codomain()
+                    )
 
                     for label in ss.labels():
                         ss.set_roots([label])
@@ -866,22 +936,41 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # is minimal. Now we relabel all the polygons so that they
                     # are natural numbers in the order of the walk on the
                     # surface.
-                    relabeling = s.relabel({label: i for (i, label) in enumerate(s.labels())}, in_place=True)
+                    relabeling = s.relabel(
+                        {label: i for (i, label) in enumerate(s.labels())},
+                        in_place=True,
+                    )
                     s.set_immutable()
 
-                    return relabeling.change(domain=standardization.codomain(), codomain=s) * standardization * delaunay_decomposition
+                    return (
+                        relabeling.change(domain=standardization.codomain(), codomain=s)
+                        * standardization
+                        * delaunay_decomposition
+                    )
 
                 def flow_decomposition(self, direction):
                     raise NotImplementedError  # TODO: Essentially invoke on pyflatsurf().
 
                 def flow_decompositions(self, algorithm="bfs", **kwargs):
-                    for slope in self._flow_decompositions_slopes(algorithm=algorithm, **kwargs):
+                    for slope in self._flow_decompositions_slopes(
+                        algorithm=algorithm, **kwargs
+                    ):
                         yield self.flow_decomposition(slope)
 
                 def _flow_decompositions_slopes(self, algorithm, **kwargs):
                     if algorithm == "bfs":
-                        return self.pyflatsurf().codomain()._flow_decompositions_slopes_bfs(**kwargs)
+                        return (
+                            self.pyflatsurf()
+                            .codomain()
+                            ._flow_decompositions_slopes_bfs(**kwargs)
+                        )
                     if algorithm == "dfs":
-                        return self.pyflatsurf().codomain()._flow_decompositions_slopes_dfs(**kwargs)
+                        return (
+                            self.pyflatsurf()
+                            .codomain()
+                            ._flow_decompositions_slopes_dfs(**kwargs)
+                        )
 
-                    raise NotImplementedError("unsupported algorithm to produce slopes for flow decompositions")
+                    raise NotImplementedError(
+                        "unsupported algorithm to produce slopes for flow decompositions"
+                    )

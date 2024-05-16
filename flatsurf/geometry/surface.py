@@ -995,17 +995,28 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         """
         if not in_place:
             return super().triangle_flip(
-                label=label, edge=edge, in_place=in_place, test=test, direction=direction
+                label=label,
+                edge=edge,
+                in_place=in_place,
+                test=test,
+                direction=direction,
             )
 
         if test:
             return super().triangle_flip(
-                label=label, edge=edge, in_place=in_place, test=test, direction=direction
+                label=label,
+                edge=edge,
+                in_place=in_place,
+                test=test,
+                direction=direction,
             )
 
         if direction is not None:
             import warnings
-            warnings.warn("the direction keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf. The direction keyword argument is ignored. The flip is always performed such that the flipped edge rotates counterclockwise.")
+
+            warnings.warn(
+                "the direction keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf. The direction keyword argument is ignored. The flip is always performed such that the flipped edge rotates counterclockwise."
+            )
 
         if len(self.polygon(label).vertices()) != 3:
             raise ValueError("polygon must be a triangle")
@@ -1019,7 +1030,9 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             direction = (self.base_ring() ** 2)((0, 1))
 
         t1, t2, edge_map = self._triangle_flip_triangles(label=label, edge=edge)
-        gluings = list(self._triangle_flip_gluings(label=label, edge=edge, edge_map=edge_map))
+        gluings = list(
+            self._triangle_flip_gluings(label=label, edge=edge, edge_map=edge_map)
+        )
 
         self.replace_polygon(label, t1)
         if label != opposite_label:
@@ -1032,6 +1045,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             self.glue(*gluing)
 
         from flatsurf.geometry.morphism import TriangleFlipMorphism
+
         return TriangleFlipMorphism._create_morphism(None, self, edge_map)
 
     def _triangle_flip_triangles(self, label, edge):
@@ -1064,18 +1078,25 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             raise ValueError("glued polygon must be a triangle")
 
         from flatsurf import Polygon
+
         p2 = Polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
 
-        assert p1.edge(edge) == -p2.edge(opposite_edge), "triangles do not share an edge"
+        assert p1.edge(edge) == -p2.edge(
+            opposite_edge
+        ), "triangles do not share an edge"
 
         # Construct the triangles that are going to replace p1 and p2.
         t1 = [p2.vertex(opposite_edge - 1), p1.vertex(edge - 1), p1.vertex(edge)]
-        t1 = t1[-edge % 3:] + t1[:-edge % 3]
+        t1 = t1[-edge % 3 :] + t1[: -edge % 3]
         assert t1[edge] == p2.vertex(opposite_edge - 1)
         t1 = Polygon(vertices=t1)
 
-        t2 = [p1.vertex(edge - 1), p2.vertex(opposite_edge - 1), p2.vertex(opposite_edge)]
-        t2 = t2[-opposite_edge % 3:] + t2[:-opposite_edge % 3]
+        t2 = [
+            p1.vertex(edge - 1),
+            p2.vertex(opposite_edge - 1),
+            p2.vertex(opposite_edge),
+        ]
+        t2 = t2[-opposite_edge % 3 :] + t2[: -opposite_edge % 3]
         assert t2[opposite_edge] == p1.vertex(edge - 1)
         t2 = Polygon(vertices=t2)
 
@@ -1084,7 +1105,9 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         t2 = t2.translate(-t1.vertex(0))
         t1 = t1.translate(-t1.vertex(0))
 
-        assert t1.edge(edge) == -t2.edge(opposite_edge), "triangles do not share an edge after flip"
+        assert t1.edge(edge) == -t2.edge(
+            opposite_edge
+        ), "triangles do not share an edge after flip"
 
         # Construct the mapping from the edges of p1 and p2 to the edges of t1
         # and t2.
@@ -1104,12 +1127,21 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         edge_map[(label, (edge + 1) % 3)] = [find_edge(p1.edge(edge + 1))]
         edge_map[(label, (edge + 2) % 3)] = [find_edge(p1.edge(edge + 2))]
-        edge_map[(opposite_label, (opposite_edge + 1) % 3)] = [find_edge(p2.edge(opposite_edge + 1))]
-        edge_map[(opposite_label, (opposite_edge + 2) % 3)] = [find_edge(p2.edge(opposite_edge + 2))]
+        edge_map[(opposite_label, (opposite_edge + 1) % 3)] = [
+            find_edge(p2.edge(opposite_edge + 1))
+        ]
+        edge_map[(opposite_label, (opposite_edge + 2) % 3)] = [
+            find_edge(p2.edge(opposite_edge + 2))
+        ]
 
         # The diagonal "edge" can be equally written as the sum of two non-diagonal edges.
-        edge_map[(label, edge)] = edge_map[(opposite_label, (opposite_edge + 1) % 3)] + edge_map[(opposite_label, (opposite_edge + 2) % 3)]
-        edge_map[(opposite_label, opposite_edge)] = edge_map[(label, (edge + 1) % 3)] + edge_map[(label, (edge + 2) % 3)]
+        edge_map[(label, edge)] = (
+            edge_map[(opposite_label, (opposite_edge + 1) % 3)]
+            + edge_map[(opposite_label, (opposite_edge + 2) % 3)]
+        )
+        edge_map[(opposite_label, opposite_edge)] = (
+            edge_map[(label, (edge + 1) % 3)] + edge_map[(label, (edge + 2) % 3)]
+        )
 
         for original_label in [label, opposite_label]:
             for original_edge in range(3):
@@ -1118,7 +1150,12 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                     # the same holonomy.
                     # This check is not careful enough when the polygon is self
                     # glued across the edge so it is disable in that case.
-                    assert (p1 if original_label == label else p2).edge(original_edge) == sum((t1 if lbl == label else t2).edge(e) for (lbl, e) in edge_map[(original_label, original_edge)]), "edge map does not preserve edges in triangle flip"
+                    assert (p1 if original_label == label else p2).edge(
+                        original_edge
+                    ) == sum(
+                        (t1 if lbl == label else t2).edge(e)
+                        for (lbl, e) in edge_map[(original_label, original_edge)]
+                    ), "edge map does not preserve edges in triangle flip"
 
         return t1, t2, edge_map
 
@@ -1133,14 +1170,18 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         def image_edge(label, edge):
             image = edge_map.get((label, edge), [(label, edge)])
-            assert len(image) == 1, "non-diagonal edges must produce a single edge in the image"
+            assert (
+                len(image) == 1
+            ), "non-diagonal edges must produce a single edge in the image"
             return next(iter(image))
 
         # Add gluings that glue the outer edges of the quadrilateral formed by
         # joining the two triangles.
         for lbl in [label, opposite_label]:
             for e in range(3):
-                if (lbl == label and e == edge) or (lbl == opposite_label and e == opposite_edge):
+                if (lbl == label and e == edge) or (
+                    lbl == opposite_label and e == opposite_edge
+                ):
                     continue
                 yield (image_edge(lbl, e), image_edge(*self.opposite_edge(lbl, e)))
 
@@ -1152,7 +1193,9 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 if [(lbl, e)] not in edge_map.values():
                     diagonals.append((lbl, e))
 
-        assert len(diagonals) == 2, "there must be exactly two diagonals before and after the flip"
+        assert (
+            len(diagonals) == 2
+        ), "there must be exactly two diagonals before and after the flip"
 
         yield tuple(diagonals)
 
@@ -1196,10 +1239,13 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         vertex_zero = {}
         for label in self.labels():
             vertices = self.polygon(label).vertices()
-            vertex_zero[label] = min(range(len(vertices)), key=lambda v:(vertices[v][1], vertices[v][0]))
-            self.set_vertex_zero(label, vertex_zero[label], in_place=True) 
+            vertex_zero[label] = min(
+                range(len(vertices)), key=lambda v: (vertices[v][1], vertices[v][0])
+            )
+            self.set_vertex_zero(label, vertex_zero[label], in_place=True)
 
         from flatsurf.geometry.morphism import PolygonStandardizationMorphism
+
         return PolygonStandardizationMorphism._create_morphism(None, self, vertex_zero)
 
 
@@ -1683,7 +1729,10 @@ class MutableOrientedSimilaritySurface(
         """
         if in_place is None:
             import warnings
-            warnings.warn("The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly.")
+
+            warnings.warn(
+                "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
+            )
 
             in_place = True
 
@@ -1694,12 +1743,15 @@ class MutableOrientedSimilaritySurface(
             raise ValueError("matrix must not be degenerate")
 
         if m.det() < 0:
-            raise NotImplementedError("apply_matrix(in_place=True) not supported with negative determinant yet")
+            raise NotImplementedError(
+                "apply_matrix(in_place=True) not supported with negative determinant yet"
+            )
 
         for label in self.labels():
             self.replace_polygon(label, m * self.polygon(label))
 
         from flatsurf.geometry.morphism import GL2RMorphism
+
         return GL2RMorphism._create_morphism(None, self, m)
 
     def opposite_edge(self, label, edge=None):
@@ -1809,7 +1861,13 @@ class MutableOrientedSimilaritySurface(
             relabeling = {label: relabeling(label) for label in self.labels()}
 
         polygons = {label: self.polygon(label) for label in self.labels()}
-        old_gluings = {label: [self.opposite_edge(label, e) for e in range(len(self.polygon(label).vertices()))] for label in self.labels()}
+        old_gluings = {
+            label: [
+                self.opposite_edge(label, e)
+                for e in range(len(self.polygon(label).vertices()))
+            ]
+            for label in self.labels()
+        }
 
         roots = list(self.roots())
 
@@ -1828,11 +1886,15 @@ class MutableOrientedSimilaritySurface(
 
                 opposite_label, opposite_edge = gluing
 
-                self.glue((relabeling.get(label, label), e), (relabeling.get(opposite_label, opposite_label), opposite_edge))
+                self.glue(
+                    (relabeling.get(label, label), e),
+                    (relabeling.get(opposite_label, opposite_label), opposite_edge),
+                )
 
         self.set_roots([relabeling.get(root, root) for root in roots])
 
         from flatsurf.geometry.morphism import RelabelingMorphism
+
         return RelabelingMorphism._create_morphism(self, self, relabeling)
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
@@ -2084,21 +2146,27 @@ class MutableOrientedSimilaritySurface(
             return super().triangulate(in_place=False, label=label)
 
         import warnings
-        warnings.warn("in-place triangulation has been deprecated and the in_place keyword argument will be removed from triangulate() in a future version of sage-flatsurf")
+
+        warnings.warn(
+            "in-place triangulation has been deprecated and the in_place keyword argument will be removed from triangulate() in a future version of sage-flatsurf"
+        )
 
         labels = [label] if label is not None else list(self.labels())
 
         for label in labels:
-            self.refine_polygon(label, *MutableOrientedSimilaritySurface._triangulate(self, label))
+            self.refine_polygon(
+                label, *MutableOrientedSimilaritySurface._triangulate(self, label)
+            )
 
         from flatsurf.geometry.morphism import TriangulationMorphism
+
         return TriangulationMorphism._create_morphism(None, self)
 
     @staticmethod
     def _triangulate(surface, label):
         r"""
         Helper method for :meth:`triangulate`.
-        
+
         Returns a triangulation of the polygon with ``label`` of ``surface``
         together with a bidict that can be fed to :meth:`refine_polygon`.
 
@@ -2115,7 +2183,10 @@ class MutableOrientedSimilaritySurface(
         triangulation = triangulation.relabel(relabeling).codomain()
 
         from bidict import bidict
-        edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
+
+        edge_to_edge = bidict(
+            {edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()}
+        )
 
         return triangulation, edge_to_edge
 
@@ -2167,7 +2238,10 @@ class MutableOrientedSimilaritySurface(
                 )
 
         import warnings
-        warnings.warn("in-place Delaunay triangulation has been deprecated and the in_place keyword argument will be removed from delaunay_triangulation() in a future version of sage-flatsurf")
+
+        warnings.warn(
+            "in-place Delaunay triangulation has been deprecated and the in_place keyword argument will be removed from delaunay_triangulation() in a future version of sage-flatsurf"
+        )
 
         if not triangulated:
             self.triangulate(in_place=True)
@@ -2175,7 +2249,10 @@ class MutableOrientedSimilaritySurface(
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument for delaunay_triangulation() has been deprecated and will be removed in a future version of sage-flatsurf; the keyword argument has no effect")
+
+            warnings.warn(
+                "the direction keyword argument for delaunay_triangulation() has been deprecated and will be removed in a future version of sage-flatsurf; the keyword argument has no effect"
+            )
 
         from collections import deque
 
@@ -2206,6 +2283,7 @@ class MutableOrientedSimilaritySurface(
                 checked_labels.add(label)
 
         from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
+
         return DelaunayTriangulationMorphism._create_morphism(None, self)
 
     def delaunay_decomposition(
@@ -2243,7 +2321,10 @@ class MutableOrientedSimilaritySurface(
                 )
 
         import warnings
-        warnings.warn("in-place Delaunay decomposition has been deprecated and the in_place keyword argument will be removed from delaunay_decomposition() in a future version of sage-flatsurf")
+
+        warnings.warn(
+            "in-place Delaunay decomposition has been deprecated and the in_place keyword argument will be removed from delaunay_decomposition() in a future version of sage-flatsurf"
+        )
 
         s = self
         if not delaunay_triangulated:
@@ -2263,6 +2344,7 @@ class MutableOrientedSimilaritySurface(
                 break
 
         from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+
         return DelaunayDecompositionMorphism._create_morphism(None, s)
 
     def cmp(self, s2, limit=None):

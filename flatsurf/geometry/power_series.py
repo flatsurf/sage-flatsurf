@@ -140,6 +140,7 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             Re(a0,0) + Im(a0,0) + 1
 
         """
+
         def variable_name(variable):
             gen, degree = variable.describe()
 
@@ -155,14 +156,23 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
         variable_names = tuple(variable_name(variable) for variable in variables)
 
         def encode_variable_name(variable):
-            return variable.replace("(", "__open__").replace(")", "__close__").replace(",", "__comma__")
+            return (
+                variable.replace("(", "__open__")
+                .replace(")", "__close__")
+                .replace(",", "__comma__")
+            )
 
         variable_names = [encode_variable_name(name) for name in variable_names]
 
         def decode_variable_name(variable):
-            return variable.replace("__comma__", ",").replace("__close__", ")").replace("__open__", "(")
+            return (
+                variable.replace("__comma__", ",")
+                .replace("__close__", ")")
+                .replace("__open__", "(")
+            )
 
         from sage.all import PolynomialRing
+
         R = PolynomialRing(self.base_ring(), variable_names)
 
         def monomial(gens):
@@ -172,7 +182,10 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
                 monomial *= R(variable_names[variables.index(gen)])
             return monomial
 
-        f = sum(coefficient * monomial(gens) for (gens, coefficient) in self._coefficients.items())
+        f = sum(
+            coefficient * monomial(gens)
+            for (gens, coefficient) in self._coefficients.items()
+        )
 
         return decode_variable_name(repr(f))
 
@@ -204,7 +217,9 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
 
         variable = next(iter(next(iter(gen._coefficients))))
 
-        return max([monomial.count(variable) for monomial in self._coefficients], default=-1)
+        return max(
+            [monomial.count(variable) for monomial in self._coefficients], default=-1
+        )
 
     def is_monomial(self):
         r"""
@@ -295,6 +310,7 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
 
         """
         from sage.all import vector
+
         return vector(self._coefficients.values()).norm(p)
 
     def _neg_(self):
@@ -319,7 +335,10 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
 
         """
         parent = self.parent()
-        return type(self)(parent, {key: -coefficient for (key, coefficient) in self._coefficients.items()})
+        return type(self)(
+            parent,
+            {key: -coefficient for (key, coefficient) in self._coefficients.items()},
+        )
 
     def _add_(self, other):
         r"""
@@ -448,7 +467,14 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             2*Re(a0,0)
 
         """
-        return type(self)(self.parent(), {key: coefficient for (key, value) in self._coefficients.items() if (coefficient := left * value)})
+        return type(self)(
+            self.parent(),
+            {
+                key: coefficient
+                for (key, value) in self._coefficients.items()
+                if (coefficient := left * value)
+            },
+        )
 
     def constant_coefficient(self):
         r"""
@@ -494,7 +520,11 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             {Re(a0,0)}
 
         """
-        return set(self.parent().gen(gen) for monomial in self._coefficients.keys() for gen in monomial)
+        return set(
+            self.parent().gen(gen)
+            for monomial in self._coefficients.keys()
+            for gen in monomial
+        )
 
     def is_variable(self):
         r"""
@@ -578,7 +608,9 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             Re(a0,0)^2 - Im(a0,0)^2
 
         """
-        return self.map_coefficients(lambda c: c.real(), self.parent().change_ring(self.parent().real_field()))
+        return self.map_coefficients(
+            lambda c: c.real(), self.parent().change_ring(self.parent().real_field())
+        )
 
     def imag(self):
         r"""
@@ -598,7 +630,9 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             2.00000000000000*Re(a0,0)*Im(a0,0)
 
         """
-        return self.map_coefficients(lambda c: c.imag(), self.parent().change_ring(self.parent().real_field()))
+        return self.map_coefficients(
+            lambda c: c.imag(), self.parent().change_ring(self.parent().real_field())
+        )
 
     def __getitem__(self, gen):
         r"""
@@ -626,7 +660,9 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
         if not gen.is_monomial():
             raise ValueError("gen must be a monomial")
 
-        return self._coefficients.get(next(iter(gen._coefficients.keys())), self.parent().base_ring().zero())
+        return self._coefficients.get(
+            next(iter(gen._coefficients.keys())), self.parent().base_ring().zero()
+        )
 
     def __hash__(self):
         return hash(tuple(sorted(self._coefficients.items())))
@@ -724,7 +760,13 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
         if ring is None:
             ring = self.parent()
 
-        return ring({key: image for key, value in self._coefficients.items() if (image := f(value))})
+        return ring(
+            {
+                key: image
+                for key, value in self._coefficients.items()
+                if (image := f(value))
+            }
+        )
 
     def __call__(self, values):
         r"""
@@ -745,6 +787,7 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
             30.0000000000000
 
         """
+
         def evaluate(monomial):
             product = self.parent().base_ring().one()
 
@@ -753,9 +796,12 @@ class PowerSeriesCoefficientExpression(CommutativeRingElement):
 
             return product
 
-        return sum([
-            coefficient * evaluate(monomial) for (monomial, coefficient) in self._coefficients.items()
-            ])
+        return sum(
+            [
+                coefficient * evaluate(monomial)
+                for (monomial, coefficient) in self._coefficients.items()
+            ]
+        )
 
 
 class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing):
@@ -783,7 +829,9 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
 
         from sage.categories.all import CommutativeRings
 
-        CommutativeRing.__init__(self, base_ring, category=category or CommutativeRings(), normalize=False)
+        CommutativeRing.__init__(
+            self, base_ring, category=category or CommutativeRings(), normalize=False
+        )
         self.register_coercion(base_ring)
 
     Element = PowerSeriesCoefficientExpression
@@ -803,7 +851,9 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
             Ring of Power Series Coefficients in Re(a0,0),…,Im(a0,0),… over Real Field with 53 bits of precision
 
         """
-        return PowerSeriesCoefficientExpressionRing(ring, self._gens, category=self.category())
+        return PowerSeriesCoefficientExpressionRing(
+            ring, self._gens, category=self.category()
+        )
 
     def sum(self, summands):
         r"""
@@ -873,6 +923,7 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
         """
         # TODO: This should depend on the base ring.
         from sage.all import RDF
+
         return RDF
 
     def is_exact(self):
@@ -911,11 +962,17 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
             return x.map_coefficients(self.base_ring(), ring=self)
 
         if isinstance(x, dict):
-            return self.element_class(self, {
-                tuple(sorted(monomial)): self.base_ring()(coefficient) for (monomial, coefficient) in x.items() if coefficient
-            })
+            return self.element_class(
+                self,
+                {
+                    tuple(sorted(monomial)): self.base_ring()(coefficient)
+                    for (monomial, coefficient) in x.items()
+                    if coefficient
+                },
+            )
 
         from sage.all import parent
+
         if parent(x) is self.base_ring():
             if not x:
                 return self.element_class(self, {})
@@ -960,6 +1017,7 @@ class PowerSeriesCoefficientExpressionRing(UniqueRepresentation, CommutativeRing
                 gen = degree * len(self._gens) + self._gens.index(name)
 
         from sage.all import parent, ZZ
+
         if parent(gen) == ZZ:
             gen = int(gen)
 

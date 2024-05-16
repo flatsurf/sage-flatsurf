@@ -36,14 +36,19 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         self._flat_triangulation = flat_triangulation
 
         from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-        self._ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation)
+
+        self._ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(
+            flat_triangulation
+        )
 
         from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+
         self._vector_space_conversion = VectorSpaceConversion.to_pyflatsurf(
-            self._ring_conversion.domain() ** 2,
-            ring_conversion=self._ring_conversion)
+            self._ring_conversion.domain() ** 2, ring_conversion=self._ring_conversion
+        )
 
         from flatsurf.geometry.categories import TranslationSurfaces
+
         # TODO: This is assuming that the surface is connected. Currently that's the case for all surfaces in libflatsurf?
         category = TranslationSurfaces().FiniteType().Connected()
         if flat_triangulation.hasBoundary():
@@ -74,6 +79,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
     def pyflatsurf(self):
         from flatsurf.geometry.morphism import IdentityMorphism
+
         return IdentityMorphism._create_morphism(self)
 
     @classmethod
@@ -111,7 +117,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         from flatsurf.geometry.pyflatsurf.morphism import Morphism_to_pyflatsurf
 
-        return Morphism_to_pyflatsurf._create_morphism(surface, surface_pyflatsurf, to_pyflatsurf)
+        return Morphism_to_pyflatsurf._create_morphism(
+            surface, surface_pyflatsurf, to_pyflatsurf
+        )
 
     def __repr__(self):
         r"""
@@ -132,6 +140,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
     def apply_matrix(self, m):
         from sage.all import matrix
+
         m = matrix(m, ring=self.base_ring())
 
         m = [self._ring_conversion(x) for x in m.list()]
@@ -140,6 +149,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         codomain = Surface_pyflatsurf(deformation.codomain())
 
         from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
+
         return Morphism_from_Deformation._create_morphism(self, codomain, deformation)
 
     @classmethod
@@ -168,11 +178,15 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         label = Surface_pyflatsurf._normalize_label(label)
 
         from pyflatsurf import flatsurf
+
         half_edges = (flatsurf.HalfEdge(half_edge) for half_edge in label)
-        vectors = [self._flat_triangulation.fromHalfEdge(half_edge) for half_edge in half_edges]
+        vectors = [
+            self._flat_triangulation.fromHalfEdge(half_edge) for half_edge in half_edges
+        ]
         vectors = [self._vector_space_conversion.section(vector) for vector in vectors]
 
         from flatsurf.geometry.polygon import Polygon
+
         return Polygon(edges=vectors)
 
     def opposite_edge(self, label, edge):
@@ -196,6 +210,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         label = Surface_pyflatsurf._normalize_label(label)
 
         from pyflatsurf import flatsurf
+
         half_edge = flatsurf.HalfEdge(label[edge])
 
         opposite_half_edge = -half_edge
@@ -210,12 +225,16 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         direction = self._vector_space_conversion(direction)
 
         import pyflatsurf
+
         decomposition = pyflatsurf.flatsurf.makeFlowDecomposition(
             self._flat_triangulation,
             direction,
         )
 
-        from flatsurf.geometry.pyflatsurf.flow_decomposition import FlowDecomposition_pyflatsurf
+        from flatsurf.geometry.pyflatsurf.flow_decomposition import (
+            FlowDecomposition_pyflatsurf,
+        )
+
         return FlowDecomposition_pyflatsurf(decomposition, surface=self)
 
     def _flow_decompositions_slopes_bfs(self, bound):
@@ -230,7 +249,11 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
     def _flow_decompositions_slopes_from_connections(self, connections):
         import cppyy
-        slopes = cppyy.gbl.std.set[self._vector_space_conversion.codomain(), self._vector_space_conversion.codomain().CompareSlope]()
+
+        slopes = cppyy.gbl.std.set[
+            self._vector_space_conversion.codomain(),
+            self._vector_space_conversion.codomain().CompareSlope,
+        ]()
 
         for connection in connections:
             slope = connection.vector()
