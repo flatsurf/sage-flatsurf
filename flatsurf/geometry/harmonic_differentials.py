@@ -1182,7 +1182,11 @@ class RationalMap:
                 center = infinite_center
 
             def plot(x, color="orange"):
-                return GS.plot() + ramification_points + sum(p.plot(GS, color=color) for p in self.preimages(x))
+                try:
+                    return GS.plot() + ramification_points + sum(p.plot(GS, color=color) for p in self.preimages(x))
+                except Exception:
+                    print("frame missed")
+                    return GS.plot()
 
             def move(P, Q):
                 delta = (Q - P) / steps
