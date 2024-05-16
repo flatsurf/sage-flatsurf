@@ -12,6 +12,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "myst_nb",
+    "jupyter_sphinx",
 ]
 
 # Extensions when rendering .ipynb/.md notebooks
@@ -28,7 +29,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "sage-flatsurf"
-copyright = "2016-2023, the sage-flatsurf authors"
+copyright = "2016-2024, the sage-flatsurf authors"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -51,12 +52,17 @@ pygments_style = sage_docbuild.conf.pygments_style
 pygments_dark_style = sage_docbuild.conf.pygments_dark_style
 html_css_files = sage_docbuild.conf.html_css_files
 
-if html_css_files != ["custom-furo.css"]:
+if html_css_files != ["custom-furo.css", "custom-jupyter-sphinx.css", "custom-codemirror-monokai.css"]:
     raise NotImplementedError(
         "CSS customization has changed in SageMath. The configuration of sage-flatsurf documentation build needs to be updated."
     )
 
-html_css_files = ["https://doc.sagemath.org/html/en/reference/_static/custom-furo.css"]
+html_css_files = [
+    "https://doc.sagemath.org/html/en/reference/_static/custom-furo.css",
+    "https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css",
+    "https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css",
+    "jupyter_execute.css"
+]
 
 html_theme_options["light_logo"] = html_theme_options["dark_logo"] = "logo.svg"
 html_static_path = ["static"]
@@ -64,50 +70,11 @@ html_static_path = ["static"]
 # Output file base name for HTML help builder.
 htmlhelp_basename = "sage-flatsurfdoc"
 
-# -- Options for LaTeX output ---------------------------------------------
+# Options for jupyter-sphinx
+jupyter_execute_default_kernel = "sagemath"
 
-latex_elements = {}
+# Only rerender example notebooks when the cache is stale.
+nb_execution_mode = "cache"
 
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (
-        "index",
-        "sage-flatsurf.tex",
-        "sage-flatsurf Documentation",
-        "the sage-flatsurf authors",
-        "manual",
-    ),
-]
-
-# -- Options for manual page output ---------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    (
-        "index",
-        "sage-flatsurf",
-        "sage-flatsurf Documentation",
-        ["the sage-flatsurf authors"],
-        1,
-    )
-]
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        "index",
-        "sage-flatsurf",
-        "sage-flatsurf Documentation",
-        "the sage-flatsurf authors",
-        "sage-flatsurf",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
+def setup(app):
+    app.connect('autodoc-process-docstring', sage_docbuild.conf.skip_TESTS_block)

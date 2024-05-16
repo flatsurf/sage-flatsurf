@@ -16,6 +16,12 @@ EXAMPLES::
     sage: C.is_subcategory(EuclideanPolygonalSurfaces())
     True
 
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
 """
 # ####################################################################
 #  This file is part of sage-flatsurf.
@@ -127,13 +133,14 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
             plots or consult the :mod:`flatsurf.graphical.surface` reference
             for all the details.
 
-            EXAMPLES::
+            EXAMPLES:
+
+            .. jupyter-execute::
 
                 sage: from flatsurf import translation_surfaces
                 sage: S = translation_surfaces.square_torus()
                 sage: S.plot()
                 Graphics object consisting of 10 graphics primitives
-
 
             """
             graphical_surface_keywords = {
@@ -196,21 +203,27 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                   number on each edge. Otherwise edge_labels should be a list of strings of length equal to the
                   number of edges of the polygon. The strings will be printed on each edge.
 
-            EXAMPLES::
+            EXAMPLES:
+
+            .. jupyter-execute::
 
                 sage: from flatsurf import similarity_surfaces
                 sage: s = similarity_surfaces.example()
                 sage: s.plot()
                 ...Graphics object consisting of 13 graphics primitives
+
+            .. jupyter-execute::
+
                 sage: s.plot_polygon(1)
                 ...Graphics object consisting of 7 graphics primitives
 
+            .. jupyter-execute::
+
                 sage: labels = []
                 sage: p = s.polygon(1)
-                sage: for e in range(len(p.vertices())): \
-                    labels.append(str(p.edge(e)))
-                sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, \
-                    edge_labels=labels, edge_label_options={"color":"red"})
+                sage: for e in range(len(p.vertices())):
+                ....:     labels.append(str(p.edge(e)))
+                sage: s.plot_polygon(1, polygon_options=None, plot_edges=False, edge_labels=labels, edge_label_options={"color":"red"})
                 ...Graphics object consisting of 4 graphics primitives
 
             """

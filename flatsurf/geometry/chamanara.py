@@ -6,7 +6,15 @@ REFERENCES:
 - Defined as `X_\alpha` in Chamanara, Reza, "Affine automorphism groups of
   surfaces of infinite type", City University of New York, 2002.
 
-EXAMPLES::
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
+EXAMPLES:
+
+.. jupyter-execute::
 
     sage: from flatsurf import translation_surfaces
     sage: s = translation_surfaces.chamanara(1/2)

@@ -24,6 +24,12 @@ hyperbolic sets internally uses these primitives::
     facilities to plot infinite objects such as lines and rays. However, these are
     needed to plot subsets of the hyperbolic plane in the upper half plane model.
 
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
+
 """
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
@@ -1247,7 +1253,9 @@ def hyperbolic_path(commands, model="half_plane", **options):
     Many additional keyword arguments are understood, see
     :class:`CartesianPathPlot` for details.
 
-    EXAMPLES::
+    EXAMPLES:
+
+    .. jupyter-execute::
 
         sage: from flatsurf.graphical.hyperbolic import HyperbolicPathPlotCommand, hyperbolic_path
         sage: from flatsurf import HyperbolicPlane

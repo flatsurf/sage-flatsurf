@@ -2,6 +2,12 @@ r"""
 Geometric objects on surfaces.
 
 This includes singularities, saddle connections and cylinders.
+
+.. jupyter-execute::
+    :hide-code:
+
+    # Allow jupyter-execute blocks in this module to contain doctests
+    import jupyter_doctest_tweaks
 """
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
@@ -132,6 +138,27 @@ class SurfacePoint(SurfacePoint_base):
         0
         sage: S(0, 0)
         Vertex 0 of polygon 0
+
+    Verify that #275 has been resolved, i.e., points on the boundary can be
+    created::
+
+        sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface(QQ)
+        sage: S.add_polygon(Polygon(vertices=[(0,0), (-1, -1), (1,0)]))
+        0
+        sage: S.add_polygon(Polygon(vertices=[(0,0), (0, 1), (-1,-1)]))
+        1
+        sage: S.glue((0, 0), (1, 2))
+        sage: S.set_immutable()
+        sage: S
+        Translation Surface with boundary built from 2 triangles
+
+        sage: S(0, (0, 0))
+        Vertex 0 of polygon 0
+        sage: S(0, (1/2, 0))
+        Point (1/2, 0) of polygon 0
+        sage: S(0, (1, 0))
+        Vertex 2 of polygon 0
 
     """
 
@@ -511,13 +538,17 @@ class SurfacePoint(SurfacePoint_base):
         r"""
         Return a plot of this point.
 
-        EXAMPLES::
+        EXAMPLES:
+
+        .. jupyter-execute::
 
             sage: from flatsurf import half_translation_surfaces
             sage: S = half_translation_surfaces.step_billiard([1, 1, 1, 1], [1, 1/2, 1/3, 1/4])
             sage: p = S.point(0, (0, 0))
             sage: p.plot()
             ...Graphics object consisting of 1 graphics primitive
+
+        .. jupyter-execute::
 
             sage: p = S.point(0, (0, 25/12))
             sage: p.plot()
