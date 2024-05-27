@@ -64,8 +64,6 @@ from flatsurf.geometry.categories.surface_category import (
     SurfaceCategoryWithAxiom,
 )
 
-from sage.misc.cachefunc import cached_in_parent_method
-
 class ConeSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons with
@@ -307,81 +305,6 @@ class ConeSurfaces(SurfaceCategory):
                     True
 
                 """
-
-                class ParentMethods:
-                    r"""
-                    Provides methods available to all oriented cone surfaces
-                    without boundary.
-
-                    If you want to add functionality for such surfaces you most
-                    likely want to put it here.
-                    """
-
-                    def angles(self, numerical=False, return_adjacent_edges=False):
-                        r"""
-                        Return the set of angles around the vertices of the surface.
-
-                        EXAMPLES::
-
-                            sage: from flatsurf import polygons, similarity_surfaces
-                            sage: T = polygons.triangle(3, 4, 5)
-                            sage: S = similarity_surfaces.billiard(T)
-                            sage: S.angles()
-                            [1/3, 1/4, 5/12]
-                            sage: S.angles(numerical=True)   # abs tol 1e-14
-                            [0.333333333333333, 0.250000000000000, 0.416666666666667]
-
-                            sage: S.angles(return_adjacent_edges=True)
-                            [(1/3, [(0, 1), (1, 2)]), (1/4, [(0, 0), (1, 0)]), (5/12, [(1, 1), (0, 2)])]
-
-                        """
-                        if not numerical and any(
-                            not p.is_rational() for p in self.polygons()
-                        ):
-                            raise NotImplementedError(
-                                "cannot compute exact angles in this surface built from non-rational polygons yet"
-                            )
-
-                        edges = list(self.edges())
-                        edges = set(edges)
-                        angles = []
-
-                        if return_adjacent_edges:
-                            while edges:
-                                p, e = edges.pop()
-                                adjacent_edges = [(p, e)]
-                                angle = self.polygon(p).angle(e, numerical=numerical)
-                                pp, ee = self.opposite_edge(
-                                    p, (e - 1) % len(self.polygon(p).vertices())
-                                )
-                                while pp != p or ee != e:
-                                    edges.remove((pp, ee))
-                                    adjacent_edges.append((pp, ee))
-                                    angle += self.polygon(pp).angle(
-                                        ee, numerical=numerical
-                                    )
-                                    pp, ee = self.opposite_edge(
-                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
-                                    )
-                                angles.append((angle, adjacent_edges))
-                        else:
-                            while edges:
-                                p, e = edges.pop()
-                                angle = self.polygon(p).angle(e, numerical=numerical)
-                                pp, ee = self.opposite_edge(
-                                    p, (e - 1) % len(self.polygon(p).vertices())
-                                )
-                                while pp != p or ee != e:
-                                    edges.remove((pp, ee))
-                                    angle += self.polygon(pp).angle(
-                                        ee, numerical=numerical
-                                    )
-                                    pp, ee = self.opposite_edge(
-                                        pp, (ee - 1) % len(self.polygon(pp).vertices())
-                                    )
-                                angles.append(angle)
-
-                        return angles
 
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""

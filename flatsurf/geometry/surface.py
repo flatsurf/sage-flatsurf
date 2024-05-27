@@ -432,8 +432,7 @@ class MutablePolygonalSurface(Surface_base):
             Category of connected without boundary finite type translation surfaces
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
-            {'angles',
-             'apply_matrix',
+            {'apply_matrix',
              'area',
              'canonicalize',
              'canonicalize_mapping',
