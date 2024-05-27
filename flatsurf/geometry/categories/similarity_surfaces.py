@@ -2442,6 +2442,32 @@ class SimilaritySurfaces(SurfaceCategory):
             want to put it here.
             """
 
+            def some_elements(self):
+                r"""
+                Return some typical points of this surface (for testing).
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S.some_elements()
+                    [Point (0, 1/2) of polygon 0,
+                     Point (1/2, 1/2) of polygon 0,
+                     Point (1/2, 0) of polygon 0,
+                     Vertex 0 of polygon 0]
+
+                """
+                points = self.vertices()
+
+                for label in self.labels():
+                    polygon = self.polygon(label)
+                    if polygon.is_convex():
+                        points.add(self(label, polygon.centroid()))
+                    for vertex, edge in zip(polygon.vertices(), polygon.edges()):
+                        points.add(self(label, vertex + edge / 2))
+
+                return list(points)
+
             def num_singularities(self):
                 r"""
                 EXAMPLES::

@@ -43,7 +43,7 @@ a rotation, this is a cone surface::
 #
 #        Copyright (C) 2013-2019 Vincent Delecroix
 #                      2013-2019 W. Patrick Hooper
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ from flatsurf.geometry.categories.surface_category import (
     SurfaceCategoryWithAxiom,
 )
 
+from sage.misc.cachefunc import cached_in_parent_method
 
 class ConeSurfaces(SurfaceCategory):
     r"""

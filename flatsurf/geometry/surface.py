@@ -115,6 +115,24 @@ class Surface_base(Parent):
         # Make sure that we create a new copy of an_element when requested.
         self._cache_an_element = None
 
+    def an_element(self):
+        r"""
+        Return a point of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.an_element()
+            Point (1/2, 1/2) of polygon 0
+
+        """
+        # Do not use the builtin caching of an_element if this surface is mutable.
+        if self.is_mutable():
+            return self._an_element_()
+
+        return super().an_element()
+
 
 class MutablePolygonalSurface(Surface_base):
     r"""
