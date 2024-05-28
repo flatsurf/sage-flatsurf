@@ -897,13 +897,15 @@ class SimilaritySurfaces(SurfaceCategory):
                     from sage.categories.all import Fields
 
                     if polygon.is_convex() and self.base_ring() in Fields():
-                        yield self(
+                        point = self(  # pylint: disable=not-callable
                             label, polygon.centroid()
-                        )  # pylint: disable=not-callable
+                        )
                     else:
-                        yield self(
+                        point = self(  # pylint: disable=not-callable
                             label, polygon.vertex(0) + polygon.edge(0) / 2
-                        )  # pylint: disable=not-callable
+                        )
+
+                    yield point
 
                 if self.is_finite_type():
                     yield from self.vertices()
