@@ -877,6 +877,36 @@ class SimilaritySurfaces(SurfaceCategory):
             want to put it here.
             """
 
+            def some_elements(self):
+                r"""
+                Return some typical points of this surface (for testing).
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: list(S.some_elements())
+                    [Point (1/2, 1/2) of polygon 0, Vertex 0 of polygon 0]
+
+                """
+                from itertools import islice
+
+                for label in islice(self.labels(), 32):
+                    polygon = self.polygon(label)
+
+                    from sage.categories.all import Fields
+                    if polygon.is_convex() and self.base_ring() in Fields():
+                        yield self(
+                            label, polygon.centroid()
+                        )  # pylint: disable=not-callable
+                    else:
+                        yield self(
+                            label, polygon.vertex(0) + polygon.edge(0) / 2
+                        )  # pylint: disable=not-callable
+
+                if self.is_finite_type():
+                    yield from self.vertices()
+
             def angles(self, numerical=False, return_adjacent_edges=None):
                 r"""
                 Return the angles around the vertices of the surface as
@@ -1058,63 +1088,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 from sage.matrix.matrix_space import MatrixSpace
 
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
-
-            def _an_element_(self):
-                r"""
-                Return a point on this surface.
-
-                EXAMPLES::
-
-                    sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-                    sage: s = SimilaritySurfaceGenerators.example()
-                    sage: s.an_element()
-                    Point (4/3, -2/3) of polygon 0
-
-                ::
-
-                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
-
-                    sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
-                    0
-                    sage: S.glue((0, 0), (0, 2))
-                    sage: S.glue((0, 1), (0, 3))
-
-                    sage: S.an_element()
-                    Point (1/2, 1/2) of polygon 0
-
-                TESTS:
-
-                Verify that this method works over non-fields (if 2 is
-                invertible)::
-
-                  sage: from flatsurf import similarity_surfaces
-                  sage: from flatsurf import EuclideanPolygonsWithAngles
-                  sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-                  sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to pkg_resources deprecation warnings in some contexts
-                  sage: R = ExactReals(E.base_ring()) # optional: exactreal
-                  sage: angles = (3, 3, 5)
-                  sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
-                  sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
-                  sage: S = similarity_surfaces.billiard(P) # optional: exactreal
-                  sage: S.an_element()  # optional: exactreal
-                  Point ((1/2 ~ 0.50000000)*ℝ(0.303644…), 0) of polygon 0
-
-                """
-                label = next(iter(self.labels()))
-                polygon = self.polygon(label)
-
-                from sage.categories.all import Fields
-
-                # We use a point that can be constructed without problems on an
-                # infinite surface.
-                if polygon.is_convex() and self.base_ring() in Fields():
-                    coordinates = polygon.centroid()
-                else:
-                    # Sometimes, this is not implemented because it requires the edge
-                    # transformation to be known, so we prefer the centroid.
-                    coordinates = polygon.edge(0) / 2
-                return self(label, coordinates)  # pylint: disable=not-callable
 
             def underlying_surface(self):
                 r"""
@@ -3001,38 +2974,6 @@ class SimilaritySurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
-
-            def some_elements(self):
-                r"""
-                Return some typical points of this surface (for testing).
-
-                EXAMPLES::
-
-                    sage: from flatsurf import translation_surfaces
-                    sage: S = translation_surfaces.square_torus()
-                    sage: S.some_elements()
-                    [Point (0, 1/2) of polygon 0,
-                     Point (1/2, 1/2) of polygon 0,
-                     Point (1/2, 0) of polygon 0,
-                     Vertex 0 of polygon 0]
-
-                """
-                points = self.vertices()
-
-                for label in self.labels():
-                    polygon = self.polygon(label)
-                    if polygon.is_convex():
-                        point = self(
-                            label, polygon.centroid()
-                        )  # pylint: disable=not-callable
-                        points.add(point)
-                    for vertex, edge in zip(polygon.vertices(), polygon.edges()):
-                        point = self(
-                            label, vertex + edge / 2
-                        )  # pylint: disable=not-callable
-                        points.add(point)
-
-                return list(points)
 
             def num_singularities(self):
                 r"""
