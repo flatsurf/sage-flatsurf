@@ -337,7 +337,6 @@ class TopologicalSurfaces(SurfaceCategory):
             """
             return next(iter(self.some_elements()))
 
-
     class Orientable(SurfaceCategoryWithAxiom):
         r"""
         The axiom satisfied by surfaces that can be oriented.

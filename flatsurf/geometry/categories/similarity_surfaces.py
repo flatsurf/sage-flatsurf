@@ -895,6 +895,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     polygon = self.polygon(label)
 
                     from sage.categories.all import Fields
+
                     if polygon.is_convex() and self.base_ring() in Fields():
                         yield self(
                             label, polygon.centroid()
