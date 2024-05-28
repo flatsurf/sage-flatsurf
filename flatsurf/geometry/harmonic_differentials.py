@@ -1432,8 +1432,6 @@ class HarmonicDifferentialSpace(Parent):
     @cached_method
     def ncoefficients(self, center):
         r"""
-        TODO: This argument does not really make a ton of sense unfortunately.
-
         Return the number of coefficients we need to use for the power series
         at ``center`` to obtain the prescribed error in the differentials.
 
@@ -1445,16 +1443,22 @@ class HarmonicDifferentialSpace(Parent):
             approximation to that differential (given by a truncated power
             series at each vertex of the surface.)
 
-            Consider a (short) line segment γ on the surface (in the
-            z-coordinate chart) and let ℓ be its length (on the z-coordinate
-            chart.)
-
-            Note that `\frac{1}{\ell}\int_\gamma |\eta - \eta'|` measures the
-            (coordinate-dependent) absolute error of η' on that segment.
+            Away from its poles on the flat z-chart, we can write `η = f(z)dz`
+            and `η' = f'(z)dz`.. We want to bound the absolute error of `f'(z)`
+            at the place where it's approximating `f(z)` worst, namely far away
+            from the centers of the cells.
 
             We are determining the number of power series coefficients needed
-            to bound any such error, i.e., the supremum of these expressions
-            over all segments in the surface.
+            to bound this error for each approximation of the differential at
+            each center of a cell.
+
+            Note that this is a strange notion. Absolute error is not a
+            terribly meaningful notion in the first place but relative errors
+            are very hard to argue with when there are zeros. A good notion of
+            error would actually have been the error in the rational function
+            induced by η (as a distance on the unit sphere representing the
+            projective line.) But again, it is very hard to control the
+            estimates there.
 
         ALGORITHM:
 
@@ -1462,100 +1466,75 @@ class HarmonicDifferentialSpace(Parent):
         term when approximating an analytic function with a polynomial, see
         https://en.wikipedia.org/wiki/Taylor's_theorem#Taylor's_theorem_in_complex_analysis
 
-        Namely, let `f(y) = \sum a_n y^n` be an analytic function with radius
-        of convergence `R`. Let `P_k(y)=a_0 + \cdots + a_k y^k` be the
-        truncation of this power series. Then, for a fixed radius 0 < r < R, we
-        have for all `|y| < r`
+        Namely, let `f(y) = \sum a_n y^n` be an analytic function on an open
+        disk of radius `R`. Let `P_k(y)=a_0 + \cdots + a_k y^k` be the
+        truncation of this power series and `R_k(y) = f(y) - P_k(y)`. We want
+        to estimate `|R_k(y)|` for all `|y|<r_\mathrm{cell}<R`.
+
+        Pick `r` with `r_\mathrm{cell} < r < R` and let `\beta =
+        r_\mathrm{cell} / r`. Then we have the estimate
 
         .. MATH::
 
-            |R_k(y)| ≔ |f(y) - P_k(y)| \le \frac{M\beta^{k + 1}}{1 - \beta}
+            |R_k(y)| \le \frac{M_r\beta^{k+1}}{1-\beta}`
 
-        where `\beta = \frac{r}{R}` and `M` is the maximum of `f` on the disk
-        of radius r.
+        where `M_r` is the maximum of `f` on the circle of radius `r`.
 
-        So for any prescribed error bound on `|R_k(y)|`, we can readily solve
-        for `k` once we know `\beta` and `M`.
+        To estimate `M_r` we can use any finite approximation of `f(y) \simeq
+        \sum b_n y^n` and get that approximately `M_r \le \sum |b_n| r^n`.
 
-        Let us now apply this to a vertex v with total angle 2πd. A
-        differential η is near that vertex given by a power series in a
-        coordinate y such that `y(v) = 0`.
+        Since we can pick `r` arbitrarily with `r_\mathrm{cell} < r < R`, we
+        are going to pick it so it minimizes
 
         .. MATH::
 
-            η = \sum_n a_n y^n dy
+            \epsilon_y := \sum |b_n| r^n\frac{r_\mathrm{cell}}{r - r_\mathrm{cell}}\left(\frac{r_\mathrm{cell}}{r}\right)^k
 
-        Let η' bet an approximation that is given by the truncated power series
-        of degree k.
+        which is just the formula from above with `M_r` and `\beta` plugged in.
 
-        Let `R^{1/d}` be the radius of convergence of the power series and let
-        us agree to only evaluate the truncated power series at a point with
-        `|y|\le r^{1/d}`, i.e., the radius of the cell with center v is
-        `r^{1/d}` in the y-chart.
+        Algorithmically, if we want this error term to go below a certain
+        `\epsilon`, we iterate over all the integers `k` and numerically
+        optimize `r` until `\epsilon \le \epsilon_y`.
 
-        We can readily determine both radii on a z coordinate chart around v
-        and then translate them back to the y coordinate chart since
-        essentially `z=y^d`. Indeed, `R`, is the distance to the closest
-        singularity to v in our polygonal representation of the surface, and
-        `r` is the :meth:`radius` of the cell centered at v.
+        So far this discussion only directly applies to a differential that is
+        given by `f(z)dz` with an analytical `f(z)`. However, at singularities
+        the differential is of the form `g(y)dy` with a power series `g(y)=\sum
+        a_ny^n` centered at the singularity `y=0`. Let `d` be the degree of the
+        root at `y=0`, so for a regular point it would be `d=1`.
 
-        ...
+        Since we have `y^d = z - z_0` for some base point `z_0`, we get
 
-        Let f(y)dy = \sum a_n y^n dy be the exact power series describing the
-        differential at the ``center`` with a variable that is y=0 at the
-        ``center``.
+        .. MATH::
 
-        If we approximate f(y) = P_k(y) + R_k(y) with only a finite number of terms say those
-        with n=0,…,k, then we can bound the relative error with `\epsilon =
-        |R_k(y)/max f|` which we can bound by \frac{\beta^{k + 1}}{1 - \beta}
-        where $\beta$ is the relative radius of convergence, i.e., the distance
-        from y=0 at which we evaluate the approximation divided by the radius
-        of convergence. (See
-        https://en.wikipedia.org/wiki/Taylor's_theorem#Taylor's%20theorem%20in%20complex%20analysis)
+            dy = \frac{\zeta}{d} \left(z-z_0\right)^\frac{1-d}{d}dz
 
-        Hence we get that k should be at least \log\epsilon + \log(1 - \beta) -
-        1 where the logarithms are with basis \beta.
+        where `\zeta` is a certain root of unity.
 
-        At a singular point, we need to bring this formula to the z-chart.
+        If we plug this into `\eta = g(y)dy = f(z)dz`, we get
 
-        If we want a prescribed `\epsilon` in the z-chart, then we have a d-th
-        root of that \epsilon in the y chart where 2πd is the total angle at
-        the singularity.
+        .. MATH::
 
-        Similarly, if the radius of convergence is R in the z-chart, then it's
-        a d-th root of R in the y chart. The same holds for the relative radius
-        of convergence.
+            f(z) = \frac{\zeta}{d} \left(z-z_0\right)^\frac{1-d}{d} g(y).
 
-        So at a singular point, we need k to be at least
+        Let `\epsilon_z(z) = |f(z) - f'(z)|` be the absolute error in an
+        approximation to `f(z)`. From the above we get that
 
-        \log\epsilon^{1/d} + \log(1 - \beta^{1/d}) - 1
+        .. MATH::
 
-        where the \log is with respect to \beta^{1/d}.
+            \epsilon_z(z) = \frac{1}{d} |z|^\frac{1-d}{d} \epsilon_y(y) \le \frac{1}{d} r_{\mathrm{cell},z}^\frac{1-d}{d} \epsilon_y(y)
+
+        where `|z|` is the distance from `y=0` to `z` on the flat `z`-chart.
+
+        We plug in the description of `\epsilon_y(y)` we had determined at the
+        start and since `|z| \le r_{\mathrm{cell},z} =
+        r_{\mathrm{cell},y}^{1/d}`, we can simplify to
+
+        .. MATH::
+
+            \epsilon_z(z) \le \frac{1}{d} \frac{r_{\mathrm{cell},y}^{2-d}}{r_y - r_{\mathrm{cell},y}}\left(\frac{r_{\mathrm{cell},y}}{r_y}\right)^k \sum |b_n| r_y^n.
 
         """
-        beta = self._relative_radius_of_convergence(self._cells.cell_at_center(center))
-        if beta >= 1:
-            raise ValueError(f"cell at {center} extends beyond radius of convergence")
-
-        if beta == 0:
-            assert self.surface().genus() == 1
-            return 1
-
-        d = center.angle()
-        eps = self._error
-
-        from math import log, ceil
-
-        ncoefficients = ceil(log(eps, beta) + d * log(1 - beta ** (1 / d), beta) - 1)
-
-        assert ncoefficients >= 1
-
-        if ncoefficients > 256:
-            ncoefficients = 256
-
-        print(f"{ncoefficients} at {center} with angle {center.angle()}")
-
-        return ncoefficients
+        raise NotImplementedError
 
     def dz(self):
         return self(
