@@ -952,7 +952,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 {(0, 0), (0, 1), (0, 2), (0, 3)}
 
             """
-            return set(edge for (edge, holonomy) in self.edges_ccw() )
+            raise NotImplementedError("points on this surface cannot determine which edges they are contained in yet")
 
         def _test_edges(self, **options):
             r"""

@@ -624,6 +624,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return (half_turns // 2, start, vector)
 
+            def edges(self):
+                r"""
+                Return the edges of the polygons that contain this point.
+
+                Implements
+                :meth:`.polygonal_surfaces.PolygonalSurfaces.ElementMethods.edges`
+                for similarity surfaces.
+
+                """
+                return set(edge for (edge, holonomy) in self.edges_ccw())
+
             def edges_ccw(self, start=None, start_holonomy=None):
                 r"""
                 Return the edges of the polygons that are crossed when walking
