@@ -497,21 +497,27 @@ class SimilaritySurfaces(SurfaceCategory):
                     angle = self._angle_vertex(numerical=numerical)
 
                     if self.parent().is_mutable():
-                        self._angle_vertex.clear_cache()
+                        self._angle_vertex.clear_cache()  # pylint: disable=no-member
 
                     return angle
 
                 from sage.all import QQ, RR
+
                 ring = RR if numerical else QQ
 
                 if self.is_in_edge_interior():
                     label, coordinates = self.representative()
-                    edge = self.parent().polygon(label).get_point_position(coordinates).get_edge()
+                    edge = (
+                        self.parent()
+                        .polygon(label)
+                        .get_point_position(coordinates)
+                        .get_edge()
+                    )
 
                     opposite_edge = self.parent().opposite_edge(label, edge)
                     if opposite_edge is None or opposite_edge == (label, edge):
                         # The total angle at a self-glued or unglued edge is π.
-                        return ring(.5)
+                        return ring(0.5)
 
                 return ring.one()
 
@@ -537,6 +543,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 turns, start, end = self.turns()
 
                 from flatsurf.geometry.euclidean import angle
+
                 return turns + angle(start, end, numerical=numerical)
 
             def turns(self, start=None, start_holonomy=None):
@@ -616,7 +623,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     # counterclockwise (0) or clockwise (1). If they are
                     # orthogonal, we count parallel vectors as counterclockwise
                     # and anti-parallel vectors as clockwise.
-                    ccw_start_vector = (ccw(start, vector) or (1 if is_parallel(start, vector) else -1)) > 0
+                    ccw_start_vector = (
+                        ccw(start, vector) or (1 if is_parallel(start, vector) else -1)
+                    ) > 0
                     ccw_start_previous = half_turns % 2 == 0
 
                     if ccw_start_vector != ccw_start_previous:
@@ -633,7 +642,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 for similarity surfaces.
 
                 """
-                return set(edge for (edge, holonomy) in self.edges_ccw())
+                return {edge for (edge, holonomy) in self.edges_ccw()}
 
             def edges_ccw(self, start=None, start_holonomy=None):
                 r"""
@@ -705,9 +714,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     return []
 
                 if position.is_in_edge_interior():
-                    return self._edges_ccw_edge(start=start, start_holonomy=start_holonomy)
+                    return self._edges_ccw_edge(
+                        start=start, start_holonomy=start_holonomy
+                    )
 
-                return self._edges_ccw_vertex(start=start, start_holonomy=start_holonomy)
+                return self._edges_ccw_vertex(
+                    start=start, start_holonomy=start_holonomy
+                )
 
             def _test_edges_ccw(self, **options):
                 r"""
@@ -731,6 +744,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 for e, f in zip(edges[::2], edges[1::2]):
                     from flatsurf.geometry.euclidean import is_parallel
+
                     tester.assertFalse(is_parallel(e[1], f[1]))
 
             def _edges_ccw_edge(self, start=None, start_holonomy=None):
@@ -759,7 +773,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if start_holonomy is None:
                     start_holonomy = S.polygon(start[0]).edge(start[1])
                 else:
-                    start_holonomy = (S.base_ring()**2)(start)
+                    start_holonomy = (S.base_ring() ** 2)(start)
 
                 opposite = S.opposite_edge(*start)
                 if opposite is None or opposite == start:
@@ -794,36 +808,52 @@ class SimilaritySurfaces(SurfaceCategory):
                 if start is None:
                     label, coordinates = self.representative()
 
-                    initial = label, S.polygon(label).get_point_position(coordinates).get_vertex()
+                    initial = (
+                        label,
+                        S.polygon(label).get_point_position(coordinates).get_vertex(),
+                    )
                     start = initial
 
                     while True:
                         opposite = S.opposite_edge(*start)
                         if opposite is None:
                             break
-                        start = opposite[0], (opposite[1] + 1) % len(S.polygon(opposite[0]).vertices())
+                        start = opposite[0], (opposite[1] + 1) % len(
+                            S.polygon(opposite[0]).vertices()
+                        )
                         if start == initial:
                             break
 
                 if start_holonomy is None:
                     start_holonomy = S.polygon(start[0]).edge(start[1])
                 else:
-                    start_holonomy = (S.base_ring()**2)(start_holonomy)
+                    start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
                 from flatsurf.geometry.similarity import similarity_from_vectors
-                similarity = similarity_from_vectors(S.polygon(start[0]).edge(start[1]), start_holonomy)
+
+                similarity = similarity_from_vectors(
+                    S.polygon(start[0]).edge(start[1]), start_holonomy
+                )
 
                 edges = [(start, start_holonomy)]
 
                 while True:
-                    exit_edge =  (edges[-1][0][0], (edges[-1][0][1] - 1) % len(S.polygon(edges[-1][0][0]).vertices()))
-                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge(exit_edge[1])
+                    exit_edge = (
+                        edges[-1][0][0],
+                        (edges[-1][0][1] - 1)
+                        % len(S.polygon(edges[-1][0][0]).vertices()),
+                    )
+                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge(
+                        exit_edge[1]
+                    )
                     edges.append((exit_edge, exit_holonomy))
 
                     enter_edge = S.opposite_edge(*exit_edge)
                     if enter_edge is None:
                         if S.opposite_edge(*start) is not None:
-                            raise ValueError("start must be set to the most clockwise edge at this vertex on the boundary")
+                            raise ValueError(
+                                "start must be set to the most clockwise edge at this vertex on the boundary"
+                            )
                         break
 
                     similarity *= S.edge_transformation(*enter_edge).derivative()
@@ -831,7 +861,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     if enter_edge == start:
                         break
 
-                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(enter_edge[1])
+                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(
+                        enter_edge[1]
+                    )
                     edges.append((enter_edge, enter_holonomy))
 
                 return edges
@@ -961,11 +993,23 @@ class SimilaritySurfaces(SurfaceCategory):
                 if return_adjacent_edges is not None:
                     if return_adjacent_edges:
                         import warnings
-                        warnings.warn("return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead.")
-                        return [(p.angle(numerical=numerical), [e for (e, h) in p.edges_ccw()[::2]]) for p in self.vertices()]
+
+                        warnings.warn(
+                            "return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead."
+                        )
+                        return [
+                            (
+                                p.angle(numerical=numerical),
+                                [e for (e, h) in p.edges_ccw()[::2]],
+                            )
+                            for p in self.vertices()
+                        ]
 
                     import warnings
-                    warnings.warn("return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; omit the argument to not include the edges instead.")
+
+                    warnings.warn(
+                        "return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; omit the argument to not include the edges instead."
+                    )
 
                 return [p.angle(numerical=numerical) for p in self.vertices()]
 
@@ -2978,9 +3022,15 @@ class SimilaritySurfaces(SurfaceCategory):
                 for label in self.labels():
                     polygon = self.polygon(label)
                     if polygon.is_convex():
-                        points.add(self(label, polygon.centroid()))
+                        point = self(
+                            label, polygon.centroid()
+                        )  # pylint: disable=not-callable
+                        points.add(point)
                     for vertex, edge in zip(polygon.vertices(), polygon.edges()):
-                        points.add(self(label, vertex + edge / 2))
+                        point = self(
+                            label, vertex + edge / 2
+                        )  # pylint: disable=not-callable
+                        points.add(point)
 
                 return list(points)
 

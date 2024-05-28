@@ -64,6 +64,7 @@ from flatsurf.geometry.categories.surface_category import (
     SurfaceCategoryWithAxiom,
 )
 
+
 class ConeSurfaces(SurfaceCategory):
     r"""
     The category of surfaces built by gluing (Euclidean) polygons with

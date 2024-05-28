@@ -874,7 +874,12 @@ class PolygonalSurfaces(SurfaceCategory):
 
             """
             label, coordinates = self.representative()
-            return self.parent().polygon(label)(coordinates).position().is_in_edge_interior()
+            return (
+                self.parent()
+                .polygon(label)(coordinates)
+                .position()
+                .is_in_edge_interior()
+            )
 
         def is_in_polygon_interior(self):
             r"""
@@ -952,7 +957,9 @@ class PolygonalSurfaces(SurfaceCategory):
                 {(0, 0), (0, 1), (0, 2), (0, 3)}
 
             """
-            raise NotImplementedError("points on this surface cannot determine which edges they are contained in yet")
+            raise NotImplementedError(
+                "points on this surface cannot determine which edges they are contained in yet"
+            )
 
         def _test_edges(self, **options):
             r"""
