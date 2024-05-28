@@ -52,10 +52,11 @@ jobs:
             optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
-          - on: macos-12
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
-            environment: "flatsurf.yml"
-            python: "3.10.8"
+          # Disable until https://github.com/conda-forge/cppyy-feedstock/issues/78 has been fixed.
+          # - on: macos-12
+          #   optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          #   environment: "flatsurf.yml"
+          #   python: "3.10.8"
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
