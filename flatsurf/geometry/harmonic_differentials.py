@@ -1,6 +1,7 @@
 r"""
 TODO: Document this module.
 TODO: Rename this module?
+TODO: Consider using a different basis than 1,z,z^2,..., see https://sagemath.zulipchat.com/#narrow/stream/271193-flatsurf/topic/numerical.20stability
 
 EXAMPLES:
 
