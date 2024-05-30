@@ -589,89 +589,6 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         """
         return self.real(0)
 
-    def angle(self, g1, g2, numerical=True):
-        r"""
-        Return the angle between the two geodesics ``g1`` and ``g2`` divided by ``2 pi``.
-
-        If the geodesics do not intersect a ``ValueError`` is raised.
-
-        EXAMPLES::
-
-            sage: from flatsurf import HyperbolicPlane
-            sage: H = HyperbolicPlane(QQ)
-            sage: g0 = H.geodesic(-1, 1)
-            sage: g1 = H.geodesic(0, 2)
-            sage: g2 = H.geodesic(1, 2)
-            sage: H.angle(g0, g1, numerical=False)
-            1/6
-            sage: assert H.angle(g0, g1, numerical=False) == H.angle(-g0, -g1, numerical=False)
-            sage: assert H.angle(g1, g2, numerical=False) == H.angle(-g2, -g1, numerical=False)
-            sage: assert H.angle(g0, g1, numerical=False) + H.angle(g1, -g0, numerical=False) == 1/2
-            sage: assert H.angle(g1, g2, numerical=False) + H.angle(g1, -g2, numerical=False) == 1/2
-
-            sage: H.angle(H.geodesic(0, 1), H.geodesic(1, Infinity))
-            0.5
-            sage: H.angle(H.geodesic(0, 1), H.geodesic(Infinity, 1))
-            0.0
-
-            sage: m = matrix(2, [2, 1, 1, 1])
-            sage: H.angle(g0.apply_isometry(m), g1.apply_isometry(m), numerical=False)
-            1/6
-
-            sage: a = H.point(0, 1, model='half_plane')
-            sage: b = H.point(1, 1, model='half_plane')
-            sage: c = H.point(1, 2, model='half_plane')
-            sage: H.angle(H.geodesic(a, b), H.geodesic(b, c))
-            0.32379180882521663
-            sage: H.angle(H.geodesic(b, a), H.geodesic(c, b))
-            0.32379180882521663
-
-            sage: H.angle(H.geodesic(a, b), H.geodesic(b, c)) + H.angle(H.geodesic(b, c), H.geodesic(b, a))
-            0.5
-
-            sage: g3 = H.geodesic(2, 3)
-            sage: H.angle(g0, g3)
-            Traceback (most recent call last):
-            ...
-            ValueError: non-intersecting geodesics
-        """
-        from sage.rings.rational_field import QQ
-        import math
-        from .euclidean import numerical_cos_to_angle
-
-        p1 = g1.start()
-        q1 = g1.end()
-        p2 = g2.start()
-        q2 = g2.end()
-        if p1 == q2 or q1 == p2:
-            return 0.5 if numerical else QQ.one() / 2
-        elif p1 == p2 or q1 == q2:
-            return 0.0 if numerical else QQ.zero()
-        elif boundary_point_is_between(p1, q1, p2) and boundary_point_is_between(
-            q1, p1, q2
-        ):
-            sign = 1
-        elif boundary_point_is_between(p1, q1, q2) and boundary_point_is_between(
-            q1, p1, p2
-        ):
-            sign = -1
-        else:
-            raise ValueError("non-intersecting geodesics")
-
-        a1 = g1._a
-        b1 = g1._b
-        c1 = g1._c
-        a2 = g2._a
-        b2 = g2._b
-        c2 = g2._c
-        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
-        n2_squared = b2 * b2 + c2 * c2 - a2 * a2
-        n12 = math.sqrt(abs(n1_squared * n2_squared))
-        cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
-        angle = numerical_cos_to_angle(cos_angle, numerical)
-
-        return angle if sign == 1 else 1 - angle
-
     def some_subsets(self):
         r"""
         Return some subsets of the hyperbolic plane for testing.
@@ -5780,7 +5697,7 @@ class HyperbolicConvexSet(SageObject):
                 return Infinity
         H = self.parent()
         return QQ((n - 2, 2)) - sum(
-            H.angle(edges[(i + 1) % n], -edges[i], numerical=numerical)
+            (edges[(i + 1) % n]).angle(-edges[i], numerical=numerical)
             for i in range(n)
         )
 
@@ -8547,6 +8464,85 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             b = HyperbolicPointFromCoordinates.random_set(parent)
 
         return parent.geodesic(a, b)
+
+    def angle(self, other, numerical=True):
+        r"""
+        Compute the angle between this geodesic and ``other`` divided by ``2 pi``.
+
+        If ``self`` and ``other`` do not intersect a ``ValueError`` is raised.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane(QQ)
+            sage: g0 = H.geodesic(-1, 1)
+            sage: g1 = H.geodesic(0, 2)
+            sage: g2 = H.geodesic(1, 2)
+            sage: g0.angle(g1, numerical=False)
+            1/6
+            sage: assert g0.angle(g1, numerical=False) == (-g0).angle(-g1, numerical=False)
+            sage: assert g1.angle(g2, numerical=False) == (-g2).angle(-g1, numerical=False)
+            sage: assert g0.angle(g1, numerical=False) + g1.angle(-g0, numerical=False) == 1/2
+            sage: assert g1.angle(g2, numerical=False) + g1.angle(-g2, numerical=False) == 1/2
+
+            sage: H.geodesic(0, 1).angle(H.geodesic(1, Infinity))
+            0.5
+            sage: H.geodesic(0, 1).angle(H.geodesic(Infinity, 1))
+            0.0
+
+            sage: m = matrix(2, [2, 1, 1, 1])
+            sage: g0.apply_isometry(m).angle(g1.apply_isometry(m), numerical=False)
+            1/6
+
+            sage: a = H.point(0, 1, model='half_plane')
+            sage: b = H.point(1, 1, model='half_plane')
+            sage: c = H.point(1, 2, model='half_plane')
+            sage: H.geodesic(a, b).angle(H.geodesic(b, c))
+            0.32379180882521663
+            sage: H.geodesic(b, a).angle(H.geodesic(c, b))
+            0.32379180882521663
+
+            sage: H.geodesic(a, b).angle(H.geodesic(b, c)) + H.geodesic(b, c).angle(H.geodesic(b, a))
+            0.5
+
+            sage: g3 = H.geodesic(2, 3) 
+            sage: g0.angle(g3)
+            Traceback (most recent call last):
+            ...
+            ValueError: non-intersecting geodesics
+        """
+        from sage.rings.rational_field import QQ
+        import math
+        from .euclidean import numerical_cos_to_angle
+
+        p1 = self.start()
+        q1 = self.end()
+        p2 = other.start()
+        q2 = other.end()
+        if p1 == q2 or q1 == p2:
+            return 0.5 if numerical else QQ.one() / 2
+        elif p1 == p2 or q1 == q2:
+            return 0.0 if numerical else QQ.zero()
+        elif p2 in self.right_half_space() and q2 in self.left_half_space():
+            sign = 1
+        elif q2 in self.right_half_space() and p2 in self.left_half_space():
+            sign = -1
+        else:
+            raise ValueError("non-intersecting geodesics")
+
+        a1 = self._a
+        b1 = self._b
+        c1 = self._c
+        a2 = other._a
+        b2 = other._b
+        c2 = other._c
+        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
+        n2_squared = b2 * b2 + c2 * c2 - a2 * a2
+        n12 = math.sqrt(abs(n1_squared * n2_squared))
+        cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
+        angle = numerical_cos_to_angle(cos_angle, numerical)
+
+        return angle if sign == 1 else 1 - angle
 
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
@@ -14408,34 +14404,3 @@ class HyperbolicEdges(OrderedSet):
         return geodesic.parametrize(
             lhs.start(), model="euclidean"
         ) < geodesic.parametrize(rhs.start(), model="euclidean")
-
-
-def boundary_point_is_between(p0, p1, q):
-    r"""
-    Given three ideal points ``p0``, ``p1`` and ``q`` return whether ``q`` is
-    in between ``p0`` and ``p1`` (counter-clockwise order).
-    """
-    from sage.structure.element import get_coercion_model
-
-    cm = get_coercion_model()
-    H = cm.common_parent(p0, p1, q)
-    if not isinstance(H, HyperbolicPlane) or not all(
-        x.is_point() and x.is_ideal() for x in [p0, p1, q]
-    ):
-        raise ValueError("p0, p1, q must be ideal points in the hyperbolic plane")
-
-    # TODO: coordinates are not always available (because of square-roots) but we should always
-    # do exact computations here
-    from .euclidean import is_between
-
-    try:
-        p0_coords = p0.coordinates(model="klein")
-        p1_coords = p1.coordinates(model="klein")
-        q_coords = q.coordinates(model="klein")
-    except ValueError:
-        from sage.rings.qqbar import AA
-
-        p0_coords = p0.change_ring(AA).coordinates(model="klein")
-        p1_coords = p1.change_ring(AA).coordinates(model="klein")
-        q_coords = q.change_ring(AA).coordinates(model="klein")
-    return is_between(p0_coords, p1_coords, q_coords)
