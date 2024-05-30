@@ -151,6 +151,24 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
             return False
 
 
+def numerical_cos_to_angle(cos_angle, numerical=False):
+    import math
+    angle = math.acos(cos_angle) / (2 * math.pi)  # rat number between 0 and 1/2
+
+    if numerical:
+        return angle
+
+    # fast and dirty way using floating point approximation
+    # (see below for a slow but exact method)
+    from sage.all import RR
+    angle_rat = RR(angle).nearby_rational(0.00000001)
+    if angle_rat.denominator() > 256:
+        raise NotImplementedError(
+            "cannot recover a rational angle from these numerical results"
+        )
+    return angle_rat
+
+
 def angle(u, v, numerical=False):
     r"""
     Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.
@@ -209,6 +227,9 @@ def angle(u, v, numerical=False):
     v0 = float(v[0])
     v1 = float(v[1])
 
+    nuv = math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
+
+
     cos_uv = (u0 * v0 + u1 * v1) / math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
     if cos_uv < -1.0:
         assert cos_uv > -1.0000001
@@ -216,21 +237,9 @@ def angle(u, v, numerical=False):
     elif cos_uv > 1.0:
         assert cos_uv < 1.0000001
         cos_uv = 1.0
-    angle = math.acos(cos_uv) / (2 * math.pi)  # rat number between 0 and 1/2
 
-    if numerical:
-        return 1.0 - angle if u0 * v1 - u1 * v0 < 0 else angle
-
-    # fast and dirty way using floating point approximation
-    # (see below for a slow but exact method)
-    from sage.all import RR
-
-    angle_rat = RR(angle).nearby_rational(0.00000001)
-    if angle_rat.denominator() > 256:
-        raise NotImplementedError(
-            "cannot recover a rational angle from these numerical results"
-        )
-    return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
+    angle = numerical_cos_to_angle(cos_uv, numerical)
+    return 1 - angle if u0 * v1 - u1 * v0 < 0 else angle
 
     # a neater way is provided below by working only with number fields
     # but this method is slower...
