@@ -647,12 +647,16 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             return 0.5 if numerical else QQ.one() / 2
         elif p1 == p2 or q1 == q2:
             return 0.0 if numerical else QQ.zero()
-        elif boundary_point_is_between(p1, q1, p2) and boundary_point_is_between(q1, p1, q2):
+        elif boundary_point_is_between(p1, q1, p2) and boundary_point_is_between(
+            q1, p1, q2
+        ):
             sign = 1
-        elif boundary_point_is_between(p1, q1, q2) and boundary_point_is_between(q1, p1, p2):
+        elif boundary_point_is_between(p1, q1, q2) and boundary_point_is_between(
+            q1, p1, p2
+        ):
             sign = -1
         else:
-            raise ValueError('non-intersecting geodesics')
+            raise ValueError("non-intersecting geodesics")
 
         a1 = g1._a
         b1 = g1._b
@@ -660,7 +664,9 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
         a2 = g2._a
         b2 = g2._b
         c2 = g2._c
-        n12 = math.sqrt(abs((b1 * b1 + c1 * c1 - a1 * a1) * (b2 * b2 + c2 * c2 - a2 * a2)))
+        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
+        n2_squared = b2 * b2 + c2 * c2 - a2 * a2
+        n12 = math.sqrt(abs(n1_squared * n2_squared))
         cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
         angle = numerical_cos_to_angle(cos_angle, numerical)
 
@@ -5758,18 +5764,25 @@ class HyperbolicConvexSet(SageObject):
             +Infinity
         """
         from sage.rings.rational_field import QQ
+
         if self.dimension() < 2:
             return 0.0 if numerical else QQ.zero()
         edges = [e.geodesic() for e in self.edges()]
         n = len(edges)
-        if len(edges) <= 2 or any(edges[i].intersection(edges[(i + 1) % n]).is_empty() for i in range(n)):
+        if len(edges) <= 2 or any(
+            edges[i].intersection(edges[(i + 1) % n]).is_empty() for i in range(n)
+        ):
             if numerical:
-                return float('inf')
+                return float("inf")
             else:
                 from sage.rings.infinity import Infinity
+
                 return Infinity
         H = self.parent()
-        return QQ((n - 2, 2)) - sum(H.angle(edges[(i + 1) % n], -edges[i], numerical=numerical) for i in range(n))
+        return QQ((n - 2, 2)) - sum(
+            H.angle(edges[(i + 1) % n], -edges[i], numerical=numerical)
+            for i in range(n)
+        )
 
     def __hash__(self):
         r"""
@@ -14403,21 +14416,26 @@ def boundary_point_is_between(p0, p1, q):
     in between ``p0`` and ``p1`` (counter-clockwise order).
     """
     from sage.structure.element import get_coercion_model
+
     cm = get_coercion_model()
     H = cm.common_parent(p0, p1, q)
-    if not isinstance(H, HyperbolicPlane) or not all(x.is_point() and x.is_ideal() for x in [p0, p1, q]):
-        raise ValueError('p0, p1, q must be ideal points in the hyperbolic plane')
+    if not isinstance(H, HyperbolicPlane) or not all(
+        x.is_point() and x.is_ideal() for x in [p0, p1, q]
+    ):
+        raise ValueError("p0, p1, q must be ideal points in the hyperbolic plane")
 
     # TODO: coordinates are not always available (because of square-roots) but we should always
     # do exact computations here
     from .euclidean import is_between
+
     try:
-        p0_coords = p0.coordinates(model='klein')
-        p1_coords = p1.coordinates(model='klein')
-        q_coords = q.coordinates(model='klein')
+        p0_coords = p0.coordinates(model="klein")
+        p1_coords = p1.coordinates(model="klein")
+        q_coords = q.coordinates(model="klein")
     except ValueError:
         from sage.rings.qqbar import AA
-        p0_coords = p0.change_ring(AA).coordinates(model='klein')
-        p1_coords = p1.change_ring(AA).coordinates(model='klein')
-        q_coords = q.change_ring(AA).coordinates(model='klein')
+
+        p0_coords = p0.change_ring(AA).coordinates(model="klein")
+        p1_coords = p1.change_ring(AA).coordinates(model="klein")
+        q_coords = q.change_ring(AA).coordinates(model="klein")
     return is_between(p0_coords, p1_coords, q_coords)

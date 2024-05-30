@@ -153,6 +153,7 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
 
 def numerical_cos_to_angle(cos_angle, numerical=False):
     import math
+
     angle = math.acos(cos_angle) / (2 * math.pi)  # rat number between 0 and 1/2
 
     if numerical:
@@ -161,6 +162,7 @@ def numerical_cos_to_angle(cos_angle, numerical=False):
     # fast and dirty way using floating point approximation
     # (see below for a slow but exact method)
     from sage.all import RR
+
     angle_rat = RR(angle).nearby_rational(0.00000001)
     if angle_rat.denominator() > 256:
         raise NotImplementedError(
@@ -228,7 +230,6 @@ def angle(u, v, numerical=False):
     v1 = float(v[1])
 
     nuv = math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
-
 
     cos_uv = (u0 * v0 + u1 * v1) / math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
     if cos_uv < -1.0:
