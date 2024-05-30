@@ -160,7 +160,6 @@ def numerical_cos_to_angle(cos_angle, numerical=False):
         return angle
 
     # fast and dirty way using floating point approximation
-    # (see below for a slow but exact method)
     from sage.all import RR
 
     angle_rat = RR(angle).nearby_rational(0.00000001)
