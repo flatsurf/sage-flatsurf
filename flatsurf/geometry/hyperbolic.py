@@ -6200,13 +6200,10 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             sage: oo in h
             True
 
-        Currently, this is not implemented for points whose coordinates cannot
-        be represented over the base ring::
+        It also works when the base ring is made of algebraic numbers::
 
             sage: H.half_circle(0, 2).start() in h
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: cannot decide whether this ideal point is contained in the half space yet
+            True
 
         .. NOTE::
 
@@ -6233,9 +6230,14 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             if point in self.boundary():
                 return True
 
-            raise NotImplementedError(
-                "cannot decide whether this ideal point is contained in the half space yet"
-            )
+            from sage.rings.qqbar import AA
+
+            if AA.has_coerce_map_from(self.parent().base_ring()):
+                x, y = point.coordinates(model="klein", ring=AA)
+            else:
+                raise NotImplementedError(
+                    "cannot decide whether this ideal point is contained in the half space yet"
+                )
 
         a, b, c = self.equation(model="klein")
 
