@@ -746,8 +746,7 @@ class HarmonicDifferential(Element):
 
         if kind is None or "L2" in kind:
             C = self.parent()._constraints()
-            consistencies = self.parent()._L2_consistency_constraints()
-            consistency = sum(consistencies.values())
+            consistency = self.parent()._L2_consistency_constraints()
 
             abs_error = self._evaluate(consistency)
 
@@ -779,8 +778,7 @@ class HarmonicDifferential(Element):
 
     def _error_l2(self):
         C = self.parent()._constraints()
-        consistencies = self.parent()._L2_consistency_constraints()
-        consistency = sum(consistencies.values())
+        consistency = self.parent()._L2_consistency_constraints()
 
         abs_error = self._evaluate(consistency)
         return abs_error
@@ -1774,7 +1772,7 @@ class HarmonicDifferentialSpace(Parent):
             print("Adding L2 conditions")
             weight = get_parameter("L2", 1)
             constraints.optimize(
-                weight * sum(self._L2_consistency_constraints().values())
+                weight * self._L2_consistency_constraints()
             )
 
         if "squares" in algorithm:
@@ -2145,12 +2143,17 @@ class PowerSeriesConstraints:
                 start=[],
             )
 
-            return sum(
+            ret = sum(
                 self._L2_consistency_voronoi_boundary(
                     polygon_cell, segment, opposite_polygon_cell
                 )
                 for segment in boundary_segments
             )
+
+            if not ret:
+                return {}
+
+            return ret._coefficients
 
         # Get one copy of each cell boundary (with a random orientation.)
         cell_boundaries = {
@@ -2164,9 +2167,7 @@ class PowerSeriesConstraints:
             start=[],
         )
 
-        return {
-            args: cost for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries)
-        }
+        return sum(self.symbolic_ring()(cost) for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries))
 
     # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
