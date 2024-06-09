@@ -161,7 +161,6 @@ class SurfacePoint(SurfacePoint_base):
         Vertex 2 of polygon 0
 
     """
-
     def __init__(self, surface, label, point, ring=None, limit=None):
         self._surface = surface
 

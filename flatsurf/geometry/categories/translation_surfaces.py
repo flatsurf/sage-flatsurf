@@ -47,6 +47,7 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategoryWithAxi
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,
 )
+from sage.misc.cachefunc import cached_method
 
 
 class TranslationSurfaces(SurfaceCategoryWithAxiom):
@@ -497,6 +498,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 Jxy += xy
             return (Jxx, Jyy, Jxy)
 
+        @cached_method
         def erase_marked_points(self):
             r"""
             Return an isomorphism to a surface with a minimal regular vertices

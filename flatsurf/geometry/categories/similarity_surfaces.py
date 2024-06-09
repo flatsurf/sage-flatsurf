@@ -870,6 +870,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return self
 
+            @cached_method
             def edge_transformation(self, p, e):
                 r"""
                 Return the similarity bringing the provided edge to the opposite edge.
@@ -2550,9 +2551,13 @@ class SimilaritySurfaces(SurfaceCategory):
                 If ``initial_label`` and ``initial_vertex`` are provided, only
                 saddle connections are returned which emanate from the
                 corresponding vertex of a polygon (and only pointing into the
-                polygon or along the edges adjacent to that vertex.) If only
-                ``initial_label`` is provided, the saddle connections will only
-                emanate from vertices of the corresponding polygon.
+                polygon or along the edges adjacent to that vertex.)
+
+                If only ``initial_label`` is provided, the saddle connections
+                will only emanate from vertices of the corresponding polygon.
+
+                If only ``initial_vertex`` is provided, the saddle connections
+                will only emanate from that vertex.
 
                 EXAMPLES:
 
@@ -2668,8 +2673,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 # is now since we are supporting much more complicated
                 # geometries.
 
-                # TODO: Fail if initial_vertex is set but not initial_label.
-
                 if squared_length_bound is not None and squared_length_bound < 0:
                     raise ValueError("length bound must be non-negative")
 
@@ -2698,22 +2701,24 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 connections = []
 
-                if initial_label is None:
+                if initial_label is None and initial_vertex is None:
                     if not self.is_finite_type():
                         raise NotImplementedError(
                             "cannot enumerate saddle connections on surfaces that are built from inifinitely many polygons yet"
                         )
-                    initial_labels = self.labels()
+
+                    initial = [(label, range(len(self.polygon(label).vertices()))) for label in self.labels()]
+                elif initial_label is None:
+                    representatives = [(label, self.polygon(label).get_point_position(coordinates).get_vertex()) for (label, coordinates) in initial_vertex.representatives()]
+                    labels = {label for (label, _) in representatives}
+                    initial = [(label, [vertex for (lbl, vertex) in representatives if lbl == label]) for label in labels]
+                elif initial_vertex is None:
+                    initial = [(initial_label, range(len(self.polygon(initial_label).vertices())))]
                 else:
-                    initial_labels = [initial_label]
+                    initial = [(initial_label, [initial_vertex])]
 
-                for label in initial_labels:
-                    if initial_vertex is None:
-                        initial_vertices = range(len(self.polygon(label).vertices()))
-                    else:
-                        initial_vertices = [initial_vertex]
-
-                    for vertex in initial_vertices:
+                for label, vertices in initial:
+                    for vertex in vertices:
                         connections.extend(
                             self._saddle_connections_generic_from_vertex_bounded(
                                 squared_length_bound=squared_length_bound,

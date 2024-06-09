@@ -353,10 +353,9 @@ class ConeSurfaces(SurfaceCategory):
 
                         surface = center.parent()
 
-                        for connection in surface.saddle_connections():
-                            start = surface(*connection.start())
+                        for connection in surface.saddle_connections(initial_vertex=center):
                             end = surface(*connection.end())
-                            if start == center and end.angle() != 1:
+                            if end.angle() != 1:
                                 return norm.from_vector(connection.holonomy())
 
                         assert False

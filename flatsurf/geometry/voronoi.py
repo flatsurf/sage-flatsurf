@@ -468,11 +468,12 @@ class LineSegmentCell(Cell):
 
         cell_boundary = self.boundary()
 
-        if any(
-            cell_boundary[b].segment().start() != cell_boundary[b - 1].segment().end()
-            for b in range(len(cell_boundary))
-        ):
-            raise NotImplementedError("boundary of cell must be connected")
+        # TODO: Very slow, so disabled.
+        # if any(
+        #     cell_boundary[b].segment().start() != cell_boundary[b - 1].segment().end()
+        #     for b in range(len(cell_boundary))
+        # ):
+        #     raise NotImplementedError("boundary of cell must be connected")
 
         from collections import namedtuple
 

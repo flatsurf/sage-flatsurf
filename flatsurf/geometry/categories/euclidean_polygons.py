@@ -340,6 +340,7 @@ class EuclideanPolygons(Category_over_base_ring):
             """
             return [self.edge(i) for i in range(len(self.vertices()))]
 
+        @cached_method
         def edge(self, i):
             r"""
             Return the vector going from vertex ``i`` to the following vertex
@@ -833,7 +834,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
             # Determine whether the point is on an edge of the polygon.
             for i, (v, e) in enumerate(zip(self.vertices(), self.edges())):
-                if ccw(e, point - v) == 0:
+                if not ccw(e, point - v):
                     # The point lies on the line through this edge.
                     if 0 < e.dot_product(point - v) < e.dot_product(e):
                         return PolygonPosition(PolygonPosition.EDGE_INTERIOR, edge=i)
