@@ -1833,7 +1833,7 @@ class HarmonicDifferentialSpace(Parent):
 
         return r / R
 
-    def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20):
+    def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20, regions=True):
         if graphical_surface is None:
             graphical_surface = self.surface().graphical_surface(
                 polygon_labels=False, edge_labels=False
@@ -1877,16 +1877,17 @@ class HarmonicDifferentialSpace(Parent):
 
                 from sage.all import region_plot
 
-                plot += region_plot(
-                    is_visible,
-                    (x, graphical_polygon.xmin(), graphical_polygon.xmax()),
-                    (y, graphical_polygon.ymin(), graphical_polygon.ymax()),
-                    plot_points=plot_points,
-                    incol="orange",
-                    outcol=None,
-                    bordercol="lightgrey",
-                    alpha=0.2,
-                )
+                if regions:
+                    plot += region_plot(
+                        is_visible,
+                        (x, graphical_polygon.xmin(), graphical_polygon.xmax()),
+                        (y, graphical_polygon.ymin(), graphical_polygon.ymax()),
+                        plot_points=plot_points,
+                        incol="orange",
+                        outcol=None,
+                        bordercol="lightgrey",
+                        alpha=0.2,
+                    )
 
                 for corner in polygon_cell.corners():
                     xy = graphical_polygon.transform(corner)
