@@ -1781,7 +1781,23 @@ class HarmonicDifferentialSpace(Parent):
             \epsilon_z(z) \le \frac{1}{d} \frac{r_{\mathrm{cell},y}^{2-d}}{r_y - r_{\mathrm{cell},y}}\left(\frac{r_{\mathrm{cell},y}}{r_y}\right)^k \sum |b_n| r_y^n.
 
         """
-        raise NotImplementedError
+        k = 1
+        while self._ncoefficients_epsilon_z(center, k) > self._error:
+            k += 1
+
+        print(f"{k} coefficients at {center} with degree {center.angle()} for an error of {self._ncoefficients_epsilon_z(center, k)}")
+        return k
+
+    def _ncoefficients_epsilon_z(self, center, k):
+        d = center.angle()
+        cell = self._cells.cell_at_center(center)
+        rcelly = float(cell.radius()) ** (1/d)
+
+        # TODO: Numerically optimize this pair of values.
+        ry = float(center.radius_of_convergence())**(1/d)
+        mr = 1/d
+
+        return rcelly**(2-d) / (ry - rcelly) / d * (rcelly / ry)**k * mr
 
     def dz(self):
         return self(
