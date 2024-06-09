@@ -1119,7 +1119,7 @@ class RationalMap:
 
         return roots
 
-    def preimages(self, p, q=1, boundary_error=1e-1):
+    def preimages(self, p, q=1, boundary_error=DEFAULT_BOUNDARY_ERROR):
         # For each cell contains a list of points that satisfy that
         # numerator/denominator = p/q. Some points may be repeated if they are
         # close to the boundary of a cell.
