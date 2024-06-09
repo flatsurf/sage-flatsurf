@@ -1246,6 +1246,206 @@ class RationalMap:
 
         return points
 
+    def monodromy(self, base_point=None, steps=None, branch_points=None):
+        r"""
+        Return the monodromy group of this rational map.
+
+        INPUT:
+
+        - ``base_point`` -- a point on the projective line
+
+        - ``steps`` -- an integer (default: ``None``); the number of steps to
+          use initially when walking from the ``base_point`` to the branch
+          point and around the branch point. If ``None``, a default is chosen
+          automatically.
+
+        - ``branch_points`` -- all branch points of this map as points on the
+          projective line
+
+        TODO: Add a check that verifies that Riemann Hurwitz and prod() == one
+        checks out. Show these things in the examples.
+
+        """
+        if branch_points is None:
+            branch_points = self.branch_points()
+
+        if base_point is None:
+            raise NotImplementedError("cannot select a monodromy base_point automatically yet")
+
+        finite_branch_points = [p for p in branch_points if p[1] != 0]
+        infinite_branch_points = [p for p in branch_points if p[1] == 0]
+
+        # Sort branch points counterclockwise around the base point
+        from sage.all import atan2
+        branch_points = sorted(finite_branch_points, key=lambda p:atan2(*list((p[0] / p[1]) - (base_point[0] / base_point[1]))[::-1])) + infinite_branch_points
+
+        permutations = [self.monodromy_generator(base_point=base_point, branch_point=branch_point, steps=steps, branch_points=branch_points) for branch_point in branch_points]
+
+        domain = list(permutations[0].keys())
+
+        from sage.all import Permutation, PermutationGroup
+
+        return PermutationGroup([Permutation([p[x] for x in domain]).to_cycle_string() for p in permutations], canonicalize=False)
+
+    def monodromy_generator(self, base_point, branch_point, steps=None, branch_points=None):
+        r"""
+        Return the permutation of preimages of ``base_point`` corresponding to
+        a loop around ``branch_point``.
+
+        INPUT:
+
+        - ``base_point`` -- a point on the projective line
+
+        - ``branch_point`` -- a point on the projective line
+
+        - ``steps`` -- an integer (default: ``None``); the number of steps to
+          use initially when walking from the ``base_point`` to the
+          ``branch_point`` and around the ``branch_point``. If ``None``, a
+          default is chosen automatically.
+
+        OUTPUT: A bidict encoding a bijection on the preimages of ``base_point``.
+        """
+        if branch_points is None:
+            branch_points = self.branch_points()
+
+        loop, paths = self._monodromy_loop(base_point=base_point, branch_point=branch_point, branch_points=branch_points, steps=steps)
+
+        from bidict import bidict
+        return bidict({path[0]: path[-1] for path in paths})
+
+    def _monodromy_loop(self, base_point, branch_point, branch_points, steps=None):
+        r"""
+        Return a loop in `\mathbb{P}^1` and paths in the surface formed by the
+        preimages of that loop.
+
+        The loop starts and ends at ``base_point`` and walks around
+        ``branch_point`` (counterclockwise) without walking around any of the
+        other ``branch_points``.
+
+        INPUT:
+
+        - ``base_point`` -- a point on the projective line
+
+        - ``branch_point`` -- a point on the projective line
+
+        - ``branch_points`` -- points on the projective line; all the branch
+          point of this rational function
+
+        - ``steps`` -- an integer (default: ``None``); the number of steps to
+          use initially when walking from the ``base_point`` to the
+          ``branch_point`` and around the ``branch_point``. If ``None``, a
+          default is chosen automatically.
+
+        OUTPUT: A tuple (loop, paths) where loop is a sequence of points in the
+        projective line and paths is a list of paths formed by points in the
+        surface.
+        """
+        if steps is None:
+            steps = 8
+
+        finite_branch_points = [p[0] / p[1] for p in branch_points if p[1] != 0]
+
+        is_finite = branch_point[1] != 0
+
+        if is_finite:
+            center = branch_point[0] / branch_point[1]
+
+            if center not in finite_branch_points:
+                raise ValueError("branch_point must be one of branch_points")
+
+            radius = min(abs(center - other) for other in finite_branch_points if other != center) / 2
+        else:
+            center = sum(finite_branch_points) / len(finite_branch_points)
+            radius = (
+                max(abs(infinite_center - other) for other in finite_branch_points)
+                * 3
+                / 2
+            )
+
+        base_point = base_point[0] / base_point[1]
+
+        # First, we move from the base point to the closest point on the circle
+        # with "radius" around the center.
+        center_to_base_point = (base_point - center)
+        center_to_base_point /= center_to_base_point.abs()
+        circle_base_point = center + radius * center_to_base_point
+
+        loop = [base_point]
+        paths = [[p] for p in self.preimages(base_point)]
+
+        degree = len(paths)
+
+        def align_preimages(preimages):
+            previous = [path[-1] for path in paths]
+
+            aligned_preimages = [None] * len(preimages)
+
+            for preimage in preimages:
+                nclosest = iter(preimage.nclosest(previous))
+                closest_distance, closest_point = next(nclosest)
+                second_closest_distance, second_closest_point = next(nclosest)
+
+                # TODO: Make 2 configurable.
+                if second_closest_distance < 2*closest_distance:
+                    raise NotImplementedError  # TODO: Report what happened
+                    return None
+
+                aligned_preimages[previous.index(closest_point)] = preimage
+
+            if None in aligned_preimages:
+                raise NotImplementedError  # TODO: Report what happened
+                return None
+
+            return aligned_preimages
+
+        def walk(step):
+            refinements = 0
+            while True:
+                next = step(refinements)
+
+                if next is None:
+                    break
+
+                preimages = self.preimages(next)
+                preimages = align_preimages(preimages)
+
+                if preimages is None:
+                    refinements += 1
+                    continue
+
+                loop.append(next)
+                for path, preimage in zip(paths, preimages):
+                    path.append(preimage)
+
+                refinements = 0
+
+
+        def segment(destination):
+            total = destination - loop[0]
+
+            def step(refinements):
+                if loop[0] == destination:
+                    return None
+
+                remaining = (destination - loop[0]).abs()
+                delta = total / (steps * (refinements + 1))
+
+                if delta.abs() > remaining:
+                    return destination
+
+                return loop[0] + delta
+
+            walk(step)
+
+        def circle(center, radius):
+            raise NotImplementedError
+
+        segment(circle_base_point)
+        circle(center, radius)
+        segment(base_point)
+
+        return loop, paths
+
     def monodromy_plots(self, base_point, steps=10, branch_points=None):
         if base_point[1] == 0:
             raise NotImplementedError
@@ -1275,19 +1475,63 @@ class RationalMap:
         S = self._numerator.parent().surface()
         GS = S.graphical_surface(edge_labels=False, polygon_labels=False)
 
-        animations = []
-
         from sage.all import oo
 
+        from sage.all import point2d, Graphics
+        P1 = Graphics()
         for branch_point in finite_branch_points + (
             [oo] if infinite_branch_point else []
         ):
+            if branch_point == oo:
+                radius = infinite_radius
+            else:
+                radius = finite_radii[branch_point]
+
+            center = branch_point
+            if branch_point == oo:
+                center = infinite_center
+
+            def plot(x, color="blue"):
+                return point2d([x])
+
+            def move(P, Q):
+                delta = (Q - P) / steps
+                return sum(plot(P + delta * step) for step in range(steps))
+
+            def cycle(center, start, ccw=True):
+                from sage.all import CDF
+
+                rotation = CDF.zeta(steps)
+                if not ccw:
+                    rotation = rotation.conjugate()
+
+                start = min(range(steps), key=lambda step: (start - (center + rotation ** step * radius)).abs())
+
+                return sum(plot(center + rotation**(start + step) * radius) for step in range(steps))
+
+            start = center - (center - base_point) / (center - base_point).abs() * radius
+
+            P1 += move(base_point, start)
+            P1 += cycle(center, start)
+            P1 += move(start, base_point)
+
+        P1 += point2d(finite_branch_points, color="red")
+
+        P1 += plot(base_point, color="green")
+
+        from sage.all import parallel
+        @parallel
+        def monodromy_plot(branch_point):
             print(f"Creating animation around {branch_point}")
 
-            if branch_point == oo:
-                ramification_points = self.preimages(1, 0)
+            if all_ramification_points is None:
+                if branch_point == oo:
+                    ramification_points = self.preimages(1, 0)
+                else:
+                    ramification_points = self.preimages(branch_point, 1)
             else:
-                ramification_points = self.preimages(branch_point, 1)
+                # TODO: Only consider the ramification points over this branch point.
+                ramification_points = all_ramification_points
 
             ramification_points = sum(
                 p.plot(GS, color="red") for p in ramification_points
@@ -1303,45 +1547,47 @@ class RationalMap:
                 center = infinite_center
 
             def plot(x, color="orange"):
+                G = GS.plot()
                 try:
-                    return (
-                        GS.plot()
-                        + ramification_points
-                        + sum(p.plot(GS, color=color) for p in self.preimages(x))
-                    )
+                    G += ramification_points + sum(p.plot(GS, color=color) for p in self.preimages(x))
                 except Exception:
                     print("frame missed")
-                    return GS.plot()
+
+                return G.inset(P1 + point2d([x], color=color), pos=(0.8, 0.8, 0.2, 0.2), fontsize=5)
 
             def move(P, Q):
                 delta = (Q - P) / steps
                 return [plot(P + delta * step) for step in range(steps)]
 
-            def cycle(center, radius, ccw):
+            def cycle(center, start, ccw=True):
                 from sage.all import CDF
 
                 rotation = CDF.zeta(steps)
                 if not ccw:
                     rotation = rotation.conjugate()
 
+                start = min(range(steps), key=lambda step: (start - (center + rotation ** step * radius)).abs())
+
                 return [
-                    plot(center + rotation**step * radius) for step in range(steps)
+                    plot(center + rotation**(start + step) * radius) for step in range(steps)
                 ]
 
+            start = center - (center - base_point) / (center - base_point).abs() * radius
+
             frames = [plot(base_point, color="green")]
-            print(f"moving from {base_point} to {center + radius}")
-            frames.extend(move(base_point, center + radius))
+            print(f"moving from {base_point} to {start}")
+            frames.extend(move(base_point, start))
             print(f"walking around {center}")
-            frames.extend(cycle(center, radius, branch_point != oo))
-            print(f"moving back to {base_point} from {center + radius}")
-            frames.extend(move(center + radius, base_point))
+            frames.extend(cycle(center, start))
+            print(f"moving back to {base_point} from {start}")
+            frames.extend(move(start, base_point))
 
             from sage.all import animate
 
-            animations.append(animate(frames))
+            return animate(frames, dpi=1024)
 
-        return animations
-
+        for animation in monodromy_plot(finite_branch_points + ([oo] if infinite_branch_point else [])):
+            yield animation
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
 class HarmonicDifferentialSpace(Parent):
