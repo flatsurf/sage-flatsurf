@@ -5697,8 +5697,7 @@ class HyperbolicConvexSet(SageObject):
                 return Infinity
         H = self.parent()
         return QQ((n - 2, 2)) - sum(
-            (edges[(i + 1) % n]).angle(-edges[i], numerical=numerical)
-            for i in range(n)
+            (edges[(i + 1) % n]).angle(-edges[i], numerical=numerical) for i in range(n)
         )
 
     def __hash__(self):
@@ -8507,7 +8506,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: H.geodesic(a, b).angle(H.geodesic(b, c)) + H.geodesic(b, c).angle(H.geodesic(b, a))
             0.5
 
-            sage: g3 = H.geodesic(2, 3) 
+            sage: g3 = H.geodesic(2, 3)
             sage: g0.angle(g3)
             Traceback (most recent call last):
             ...
