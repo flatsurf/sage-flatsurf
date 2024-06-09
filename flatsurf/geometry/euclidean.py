@@ -1700,9 +1700,7 @@ class EuclideanPoint(EuclideanSet, Element):
         yield self._y
 
     def vector(self):
-        from sage.all import vector
-
-        return vector((self._x, self._y))
+        return self.parent().vector_space()((self._x, self._y))
 
     def translate(self, v):
         return self.parent().point(*(self.vector() + v))
@@ -2113,10 +2111,10 @@ class EuclideanLine(EuclideanFacade):
 
         (x, y) = point
         v = (self._c, -self._b)
-        vv = v[0] ** 2 + v[1] ** 2
+        vv = ~(v[0] ** 2 + v[1] ** 2)
 
         p = (v[0] ** 2 * x + v[0] * v[1] * y, v[0] * v[1] * x + v[1] * v[1] * y)
-        p = (p[0] / vv, p[1] / vv)
+        p = (p[0] * vv, p[1] * vv)
 
         assert p[0] * self._b + p[1] * self._c == 0
 

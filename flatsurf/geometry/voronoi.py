@@ -1935,6 +1935,8 @@ class SurfaceLineSegment:
     def surface(self):
         return self._surface
 
+    # TODO: Could speed this up further by doing this upon construction; the expensive get_point_position() is already done there.
+    @cached_method
     def start(self):
         return self._surface(*self.start_representative())
 
@@ -2027,9 +2029,7 @@ class SurfaceLineSegment:
 
         segments = []
 
-        from sage.all import vector
-
-        holonomy = vector((0, 0))
+        holonomy = self.surface().euclidean_plane().vector_space()((0, 0))
 
         while True:
             if self is None:
