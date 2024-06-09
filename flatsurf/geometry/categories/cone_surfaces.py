@@ -472,17 +472,19 @@ class ConeSurfaces(SurfaceCategory):
                         most likely want to put it here.
                         """
 
-                        @cached_method
-                        def distance_matrix_vertices(self):
+                        @cached_method(key=lambda self, distances: None)
+                        def distance_matrix_vertices(self, distance=lambda v,w: None):
                             vertices = list(self.vertices())
 
                             A = [
                                 [
-                                    0.0 if n == m else float("inf")
-                                    for n in range(len(vertices))
+                                    0.0 if n == m else (distance(v, w) or float("inf"))
+                                    for n, w in enumerate(vertices)
                                 ]
-                                for m in range(len(vertices))
+                                for m, v in enumerate(vertices)
                             ]
+
+                            done = [[ a != float("inf") for a in row ] for row in A]
 
                             def floyd():
                                 for k in range(len(vertices)):
@@ -490,43 +492,78 @@ class ConeSurfaces(SurfaceCategory):
                                         for j in range(len(vertices)):
                                             A[i][j] = min(A[i][j], A[i][k] + A[k][j])
 
-                            for connection in self.saddle_connections():
-                                # TODO: Strangely, all this trickery is needed here since otherwise the symbolic machinery is confused.
-                                from sage.all import RDF
+                            for label in self.labels():
+                                polygon = self.polygon(label)
+                                for e, edge in enumerate(polygon.edges()):
+                                    start = self(label, e)
+                                    start = vertices.index(start)
 
-                                length = float(
-                                    abs(connection.holonomy().change_ring(RDF).norm())
-                                )
-                                # print(length)
-                                if length >= max(x for row in A for x in row):
-                                    from sage.all import matrix
+                                    end = self(label, (e + 1) % len(polygon.vertices()))
+                                    end = vertices.index(end)
 
-                                    return matrix(A)
+                                    from sage.all import RDF
+                                    A[start][end] = A[end][start] = min(A[start][end], edge.change_ring(RDF).norm())
 
-                                n = vertices.index(self(*connection.start()))
-                                m = vertices.index(self(*connection.end()))
+                            floyd()
 
-                                if length < A[n][m]:
-                                    assert length < A[m][n]
-                                    A[n][m] = A[m][n] = length
-                                    floyd()
+                            todo = list(range(len(vertices)))
 
-                        # TODO: Don't cache this.
-                        @cached_method
-                        def distance_matrix_points(self, points):
+                            while todo:
+                                v = max(todo, key=lambda v: (len([not d for d in done[v]]), -max(A[v])))
+
+                                todo.remove(v)
+
+                                if all(d or i not in todo for (i, d) in enumerate(done[v])):
+                                    continue
+
+                                vertex = vertices[v]
+
+                                for connection in self.saddle_connections(initial_vertex=vertex, squared_length_bound=max(A[v])**2):
+                                    # TODO: Strangely, all this trickery is needed here since otherwise the symbolic machinery is confused.
+                                    from sage.all import RDF
+
+                                    length = float(
+                                        abs(connection.holonomy().change_ring(RDF).norm())
+                                    )
+
+                                    if length >= max(A[v]):
+                                        break
+
+                                    w = vertices.index(self(*connection.end()))
+
+                                    if length < A[v][w]:
+                                        assert length < A[w][v]
+                                        A[v][w] = A[w][v] = length
+
+                                        floyd()
+
+                            from sage.all import matrix
+                            return matrix(A)
+
+                        def distance_matrix_points(self, points, distance=lambda v, w: None):
                             insertion = self.insert_marked_points(
                                 *[p for p in points if not p.is_vertex()]
                             )
 
-                            D = insertion.codomain().distance_matrix_vertices()
                             V = list(insertion.codomain().vertices())
 
-                            from sage.all import matrix
+                            inserted_points = [insertion(p) for p in points]
 
+                            def inserted_distance(v, w):
+                                if v in inserted_points and w in inserted_points:
+                                    return distance(points[inserted_points.index(v)], points[inserted_points.index(w)])
+
+                                return None
+
+                            D = insertion.codomain().distance_matrix_vertices(distance=inserted_distance)
+
+                            index = {p: V.index(q) for p, q in zip(points, inserted_points)}
+
+                            from sage.all import matrix
                             return matrix(
                                 [
                                     [
-                                        D[V.index(insertion(p))][V.index(insertion(q))]
+                                        D[index[p]][index[q]]
                                         for q in points
                                     ]
                                     for p in points
@@ -632,3 +669,17 @@ class ConeSurfaces(SurfaceCategory):
                                     + 1
                                 ),
                             )
+
+                    class ElementMethods:
+                        def distance(self, other):
+                            raise NotImplementedError
+
+                        def closest(self, points):
+                            return next(iter(self.nclosest()))[1]
+
+                        def nclosest(self, points, distance=None):
+                            distances = self.parent().distance_matrix_points([self] + list(points), distance=distance)[0][1:]
+                            distances = [(distance, i) for (i, distance) in enumerate(distances)]
+
+                            for (distance, i) in sorted(distances):
+                                yield distance, points[i]

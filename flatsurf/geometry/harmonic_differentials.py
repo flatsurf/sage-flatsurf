@@ -1279,13 +1279,19 @@ class RationalMap:
         from sage.all import atan2
         branch_points = sorted(finite_branch_points, key=lambda p:atan2(*list((p[0] / p[1]) - (base_point[0] / base_point[1]))[::-1])) + infinite_branch_points
 
-        permutations = [self.monodromy_generator(base_point=base_point, branch_point=branch_point, steps=steps, branch_points=branch_points) for branch_point in branch_points]
+        from sage.all import parallel
+
+        @parallel
+        def monodromy_generator(branch_point):
+             return self.monodromy_generator(base_point=base_point, branch_point=branch_point, steps=steps, branch_points=branch_points)
+
+        permutations = [generator for (_, generator) in monodromy_generator([(p,) for p in branch_points])]
 
         domain = list(permutations[0].keys())
 
         from sage.all import Permutation, PermutationGroup
 
-        return PermutationGroup([Permutation([p[x] for x in domain]).to_cycle_string() for p in permutations], canonicalize=False)
+        return PermutationGroup([Permutation([domain.index(p[x]) + 1 for x in domain]).cycle_string() for p in permutations], canonicalize=False)
 
     def monodromy_generator(self, base_point, branch_point, steps=None, branch_points=None):
         r"""
@@ -1357,7 +1363,7 @@ class RationalMap:
         else:
             center = sum(finite_branch_points) / len(finite_branch_points)
             radius = (
-                max(abs(infinite_center - other) for other in finite_branch_points)
+                max(abs(center - other) for other in finite_branch_points)
                 * 3
                 / 2
             )
@@ -1380,71 +1386,139 @@ class RationalMap:
 
             aligned_preimages = [None] * len(preimages)
 
+            erasure = self.surface().erase_marked_points()
+            previous = [erasure(p) for p in previous]
+
+            distances = erasure.codomain().distance_matrix_points(previous)
+
+            insertion = erasure.codomain().insert_marked_points(*previous)
+            previous = [insertion(p) for p in previous]
+
+            def distance(v, w):
+                if v in previous and w in previous:
+                    return distances[previous.index(v)][previous.index(w)]
+
+                return None
+
             for preimage in preimages:
-                nclosest = iter(preimage.nclosest(previous))
+                nclosest = iter(insertion(erasure(preimage)).nclosest(previous, distance=distance))
                 closest_distance, closest_point = next(nclosest)
                 second_closest_distance, second_closest_point = next(nclosest)
 
                 # TODO: Make 2 configurable.
                 if second_closest_distance < 2*closest_distance:
-                    raise NotImplementedError  # TODO: Report what happened
+                    print(f"Not sure which path preimage continues. Best options were too close at {closest_distance} and {second_closest_distance}")
                     return None
 
                 aligned_preimages[previous.index(closest_point)] = preimage
 
             if None in aligned_preimages:
-                raise NotImplementedError  # TODO: Report what happened
+                print("Several points continue the same path. Need to refine.")
                 return None
 
             return aligned_preimages
 
         def walk(step):
-            refinements = 0
             while True:
-                next = step(refinements)
+                refinements = []
+                while True:
+                    next = step(len(refinements))
 
-                if next is None:
+                    if next is None:
+                        return
+
+                    if next in refinements:
+                        refinements.append(None)
+                        continue
+
+                    refinements.append(next)
+
+                    print(f"Walking to {next}")
+
+                    preimages = self.preimages(next)
+                    preimages = align_preimages(preimages)
+
+                    if preimages is None:
+                        print("refining path")
+                        continue
+
+                    loop.append(next)
+                    for path, preimage in zip(paths, preimages):
+                        path.append(preimage)
+
                     break
-
-                preimages = self.preimages(next)
-                preimages = align_preimages(preimages)
-
-                if preimages is None:
-                    refinements += 1
-                    continue
-
-                loop.append(next)
-                for path, preimage in zip(paths, preimages):
-                    path.append(preimage)
-
-                refinements = 0
 
 
         def segment(destination):
             total = destination - loop[0]
 
             def step(refinements):
-                if loop[0] == destination:
+                if loop[-1] == destination:
                     return None
 
-                remaining = (destination - loop[0]).abs()
+                remaining = (destination - loop[-1]).abs()
                 delta = total / (steps * (refinements + 1))
 
-                if delta.abs() > remaining:
+                if delta.abs() >= remaining:
                     return destination
 
-                return loop[0] + delta
+                return loop[-1] + delta
 
             walk(step)
 
         def circle(center, radius):
-            raise NotImplementedError
+            angle = 0
+            angle_delta = 0
+
+            start = loop[-1]
+
+            def step(refinements):
+                nonlocal angle_delta, angle
+                if refinements == 0:
+                    angle += angle_delta
+
+                if angle >= 1:
+                    return None
+
+                from sage.all import QQ
+                angle_delta = QQ((1, steps * (refinements + 1)))
+
+                from sage.all import CDF
+                rotation = CDF.zeta(steps * (refinements + 1))
+
+                if angle + angle_delta >= 1:
+                    return start
+
+                return (loop[-1] - center) * rotation + center
+
+            walk(step)
 
         segment(circle_base_point)
+
+        initial_loop = loop[:]
+        initial_paths = [path[:] for path in paths]
+
         circle(center, radius)
-        segment(base_point)
+
+        # No need to do the walk to the starting point again, it's just the
+        # reverse of the initial segment.
+        # segment(base_point)
+
+        loop.extend(initial_loop[::-1][1:])
+
+        for initial_path in initial_paths:
+            for path in paths:
+                if initial_path[-1] == path[-1]:
+                    path.extend(initial_path[::-1][1:])
+                    break
+            else:
+                assert False, f"no path in {paths} can be continued with reversed {initial_path}"
+
 
         return loop, paths
+
+    def surface(self):
+        return self._numerator.parent().surface()
 
     def monodromy_plots(self, base_point, steps=10, branch_points=None):
         if base_point[1] == 0:
@@ -1519,9 +1593,7 @@ class RationalMap:
 
         P1 += plot(base_point, color="green")
 
-        from sage.all import parallel
-        @parallel
-        def monodromy_plot(branch_point):
+        def monodromy_plot(branch_point, all_ramification_points=None):
             print(f"Creating animation around {branch_point}")
 
             if all_ramification_points is None:
@@ -1584,10 +1656,13 @@ class RationalMap:
 
             from sage.all import animate
 
-            return animate(frames, dpi=1024)
+            return animate(frames, dpi=512)
 
-        for animation in monodromy_plot(finite_branch_points + ([oo] if infinite_branch_point else [])):
-            yield animation
+        
+        for p in finite_branch_points:
+            yield monodromy_plot(p)
+        if infinite_branch_point:
+            yield monodromy_plot(oo)
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
 class HarmonicDifferentialSpace(Parent):
