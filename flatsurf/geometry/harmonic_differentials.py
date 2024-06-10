@@ -1285,13 +1285,17 @@ class RationalMap:
         def monodromy_generator(branch_point):
              return self.monodromy_generator(base_point=base_point, branch_point=branch_point, steps=steps, branch_points=branch_points)
 
-        permutations = [generator for (_, generator) in monodromy_generator([(p,) for p in branch_points])]
+        permutations = {}
+        for ((branch_point,), kwargs), generator in monodromy_generator([(branch_point,) for branch_point in branch_points]):
+            permutations[branch_point] = generator
 
-        domain = list(permutations[0].keys())
+        generators = [permutations[branch_point] for branch_point in branch_points]
+
+        domain = list(generators[0].keys())
 
         from sage.all import Permutation, PermutationGroup
 
-        return PermutationGroup([Permutation([domain.index(p[x]) + 1 for x in domain]).cycle_string() for p in permutations], canonicalize=False)
+        return PermutationGroup([Permutation([domain.index(gen[x]) + 1 for x in domain]).cycle_string() for gen in generators], canonicalize=False)
 
     def monodromy_generator(self, base_point, branch_point, steps=None, branch_points=None):
         r"""
