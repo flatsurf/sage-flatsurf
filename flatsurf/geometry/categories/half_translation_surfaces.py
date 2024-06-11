@@ -370,8 +370,6 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     Verify that #89 has been resolved::
 
-                        sage: import os
-                        sage: os.environ
                         sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to pkg_resources deprecation warnings
                         sage: from flatsurf import translation_surfaces
                         sage: S = translation_surfaces.square_torus()
