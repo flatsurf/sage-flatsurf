@@ -95,6 +95,7 @@ jobs:
         shell: bash -l {0}
         run: |
           export PYTHONPATH=test/disable-pytest:$PYTHONPATH
+          export
           sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
       - name: Run pytest
         shell: bash -l {0}
