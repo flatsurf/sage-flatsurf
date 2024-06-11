@@ -89,12 +89,14 @@ jobs:
       - name: Initialize cppyy
         shell: bash -l {0}
         run: |
+          export ROOTSYS=$CONDA_PREFIX
           # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
           python -c 'import cppyy' || true
       - name: Run SageMath doctests
         shell: bash -l {0}
         run: |
           export PYTHONPATH=test/disable-pytest:$PYTHONPATH
+          export ROOTSYS=$CONDA_PREFIX
           export
           sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
       - name: Run pytest
