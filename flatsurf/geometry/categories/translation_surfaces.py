@@ -374,13 +374,11 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         if field.zero() < c and c < 1:
                             if A0 + A1 * c + A2 * c**2 <= 0:
                                 raise ValueError(
-                                    "Triangle with label %r degenerates at critical point before endpoint"
-                                    % label
+                                    f"Triangle with label {label} degenerates at critical point before endpoint"
                                 )
                     if A0 + A1 + A2 <= field.zero():
                         raise ValueError(
-                            "Triangle with label %r degenerates at or before endpoint"
-                            % label
+                            f"Triangle with label {label} degenerates at or before endpoint"
                         )
                     # Triangle does not degenerate.
                     from flatsurf import Polygon

@@ -233,7 +233,7 @@ class EInfinitySurface(OrientedSimilaritySurface):
         Return the polygon labeled by ``lab``.
         """
         if lab not in self.labels():
-            raise ValueError("lab (=%s) not a valid label" % lab)
+            raise ValueError(f"{lab=} not a valid label")
         return polygons.rectangle(2 * self.get_black(lab), self.get_white(lab))
 
     def labels(self):
