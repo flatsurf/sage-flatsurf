@@ -774,7 +774,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if start_holonomy is None:
                     start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
                 else:
-                    start_holonomy = (S.base_ring() ** 2)(start)
+                    start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
                 opposite = S.opposite_edge(*start_edge)
                 if opposite is None or opposite == start_edge:
