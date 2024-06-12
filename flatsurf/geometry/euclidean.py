@@ -154,7 +154,9 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
 def acos(cos_angle, numerical=False):
     import math
 
-    angle = math.acos(cos_angle) / (2 * math.pi)  # rat number between 0 and 1/2
+    angle = math.acos(cos_angle) / (2 * math.pi)
+
+    assert 0 <= angle <= .5
 
     if numerical:
         return angle
