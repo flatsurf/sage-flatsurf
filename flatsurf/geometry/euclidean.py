@@ -230,8 +230,6 @@ def angle(u, v, numerical=False):
     v0 = float(v[0])
     v1 = float(v[1])
 
-    nuv = math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
-
     cos_uv = (u0 * v0 + u1 * v1) / math.sqrt((u0 * u0 + u1 * u1) * (v0 * v0 + v1 * v1))
     if cos_uv < -1.0:
         assert cos_uv > -1.0000001
