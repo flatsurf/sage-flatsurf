@@ -6212,13 +6212,43 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             sage: oo in h
             True
 
-            sage: H.half_circle(0, 2).start() in h
+        We can also check containment of ideal endpoints of geodesics::
+
+            sage: g = H.half_circle(0, 2)
+            sage: g.start() in h
             True
 
-            sage: H.half_circle(0, 2).end() in h
+            sage: g.end() in h
             False
 
-            sage: TODO: Make sure that all cases are covered by tests.
+        ::
+
+            sage: g = H.half_circle(-3, 2)
+            sage: g.start() in h
+            True
+
+            sage: g.end() in h
+            True
+
+        ::
+
+            sage: g = H.half_circle(3, 2)
+            sage: g.start() in h
+            False
+
+            sage: g.end() in h
+            False
+
+        ::
+
+            sage: h = H.half_circle(0, 2).left_half_space()
+            sage: g = H.half_circle(0, 5)
+
+            sage: g.start() in h
+            True
+
+            sage: g.start() in -h
+            False
 
         .. NOTE::
 
@@ -6254,14 +6284,14 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
                 # The boundary of the half space and the geodesic defining the
                 # point do not intersect in a single point (not even in an
                 # ultra-ideal point,) i.e., they are parallel in the Klein model.
-                return boundary.an_element() in self
+                return point._geodesic.an_element() in self
 
             if not intersection.is_finite():
                 # The intersection point between the geodesic defining the
                 # point and the half space boundary is ideal or ultra-ideal.
                 # Either the entire geodesic is in the half space or none of
                 # it.
-                return boundary.an_element() in self
+                return point._geodesic.an_element() in self
 
             # The intersection point between the geodesic defining the point
             # and the half space boundary is finite, i.e., inside the unit
@@ -8523,7 +8553,41 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         EXAMPLES:
 
-            sage: TODO
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: v = H.vertical(0)
+            aseg: g = H.half_circle(0, 2)
+
+            sage: v.ccw(g)
+            -1
+            sage: v.ccw(-g)
+            1
+
+        Two verticals meet intersect with an angle 0 at infinity::
+
+            sage: w = H.vertical(1)
+            sage: v.ccw(w)
+            0
+
+        However, we can also get the way the chords are turning in the Klein model::
+
+            sage: v.ccw(w, euclidean=True)
+            1
+
+        Geodesics that do not intersect produce an error::
+
+            sage: g = H.half_circle(2, 1)
+            sage: v.ccw(g)
+            Traceback (most recent call last):
+            ...
+            ValueError: geodesics do not intersect
+
+        However, these geodesics do intersect at an ultra-ideal point and we
+        can get their orientation at that point::
+
+            sage: v.ccw(g, euclidean=True)
+            1
 
         """
         if not isinstance(other, HyperbolicOrientedGeodesic):
