@@ -546,7 +546,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return turns + angle(start, end, numerical=numerical)
 
-            def turns(self, start=None, start_holonomy=None):
+            def turns(self, start_edge=None, start_holonomy=None):
                 r"""
                 Return the number of total 2π turns at this vertex.
 
@@ -563,8 +563,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 INPUT:
 
-                - ``start`` -- an edge or ``None`` (default: ``None``); a
-                  particular edge at which to start counting the turns.
+                - ``start_edge`` -- an edge or ``None`` (default: ``None``); a
+                  particular outgoing edge at which to start counting the
+                  turns.
 
                 - ``start_holonomy`` -- a vector or ``None`` (default: ``None``);
                   the holonomy that the first edge reported should use. If
@@ -575,7 +576,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 We count the half turns of angle π by walking around the vertex
                 and counting how often the outgoing edges go between being
-                clockwise and being counterclockwise from the ``start`` edge.
+                clockwise and being counterclockwise from the ``start_edge``.
 
                 EXAMPLES::
 
@@ -603,7 +604,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not self.is_vertex():
                     raise ValueError("point must be a vertex")
 
-                edges = self.edges_ccw(start=start, start_holonomy=start_holonomy)
+                edges = self.edges_ccw(start_edge=start_edge, start_holonomy=start_holonomy)
 
                 start = edges[0][1]
 
@@ -644,21 +645,21 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 return {edge for (edge, holonomy) in self.edges_ccw()}
 
-            def edges_ccw(self, start=None, start_holonomy=None):
+            def edges_ccw(self, start_edge=None, start_holonomy=None):
                 r"""
                 Return the edges of the polygons that are crossed when walking
                 around this point in counterclockwise direction.
 
                 Each edge is reported together with its holonomy vector in the
-                coordinate system of the ``start`` edge.
+                coordinate system of the ``start_edge``.
 
                 Each edge is reported "twice", once when leaving a polygon, and
                 once when entering a polygon.
 
                 INPUT:
 
-                - ``start`` -- an edge or ``None`` (default: ``None``); a
-                  particular edge at which to start the walk.
+                - ``start_edge`` -- an edge or ``None`` (default: ``None``); a
+                  particular outgoing edge at which to start the walk.
 
                 - ``start_holonomy`` -- a vector or ``None`` (default: ``None``);
                   the holonomy that the first edge reported should use. If
@@ -679,7 +680,7 @@ class SimilaritySurfaces(SurfaceCategory):
                      ((0, 3), (0, 5)),
                      ((0, 3), (0, 5)),
                      ((0, 2), (-1, 1))]
-                    sage: S(0, 0).edges_ccw(start=(0, 0))
+                    sage: S(0, 0).edges_ccw(start_edge=(0, 0))
                     [((0, 0), (2, 0)),
                      ((0, 3), (0, 5)),
                      ((0, 3), (0, 5)),
@@ -715,11 +716,11 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if position.is_in_edge_interior():
                     return self._edges_ccw_edge(
-                        start=start, start_holonomy=start_holonomy
+                        start_edge=start_edge, start_holonomy=start_holonomy
                     )
 
                 return self._edges_ccw_vertex(
-                    start=start, start_holonomy=start_holonomy
+                    start_edge=start_edge, start_holonomy=start_holonomy
                 )
 
             def _test_edges_ccw(self, **options):
@@ -747,7 +748,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     tester.assertFalse(is_parallel(e[1], f[1]))
 
-            def _edges_ccw_edge(self, start=None, start_holonomy=None):
+            def _edges_ccw_edge(self, start_edge=None, start_holonomy=None):
                 r"""
                 Return the edges that are crossed when walking around this
                 point on an edge.
@@ -766,22 +767,22 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 label, coordinates = self.representative()
 
-                if start is None:
+                if start_edge is None:
                     position = S.polygon(label).get_point_position(coordinates)
-                    start = label, position.get_edge()
+                    start_edge = label, position.get_edge()
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start[0]).edge(start[1])
+                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start)
 
-                opposite = S.opposite_edge(*start)
-                if opposite is None or opposite == start:
-                    return [(start, start_holonomy)]
+                opposite = S.opposite_edge(*start_edge)
+                if opposite is None or opposite == start_edge:
+                    return [(start_edge, start_holonomy)]
 
-                return [(start, start_holonomy), (opposite, -start_holonomy)]
+                return [(start_edge, start_holonomy), (opposite, -start_holonomy)]
 
-            def _edges_ccw_vertex(self, start=None, start_holonomy=None):
+            def _edges_ccw_vertex(self, start_edge=None, start_holonomy=None):
                 r"""
                 Return the edges that are crossed when walking around this
                 point at a vertex.
@@ -805,37 +806,37 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 S = self.parent()
 
-                if start is None:
+                if start_edge is None:
                     label, coordinates = self.representative()
 
                     initial = (
                         label,
                         S.polygon(label).get_point_position(coordinates).get_vertex(),
                     )
-                    start = initial
+                    start_edge = initial
 
                     while True:
-                        opposite = S.opposite_edge(*start)
+                        opposite = S.opposite_edge(*start_edge)
                         if opposite is None:
                             break
-                        start = opposite[0], (opposite[1] + 1) % len(
+                        start_edge = opposite[0], (opposite[1] + 1) % len(
                             S.polygon(opposite[0]).vertices()
                         )
-                        if start == initial:
+                        if start_edge == initial:
                             break
 
                 if start_holonomy is None:
-                    start_holonomy = S.polygon(start[0]).edge(start[1])
+                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
                 else:
                     start_holonomy = (S.base_ring() ** 2)(start_holonomy)
 
                 from flatsurf.geometry.similarity import similarity_from_vectors
 
                 similarity = similarity_from_vectors(
-                    S.polygon(start[0]).edge(start[1]), start_holonomy
+                    S.polygon(start_edge[0]).edge(start_edge[1]), start_holonomy
                 )
 
-                edges = [(start, start_holonomy)]
+                edges = [(start_edge, start_holonomy)]
 
                 while True:
                     exit_edge = (
@@ -850,15 +851,15 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     enter_edge = S.opposite_edge(*exit_edge)
                     if enter_edge is None:
-                        if S.opposite_edge(*start) is not None:
+                        if S.opposite_edge(*start_edge) is not None:
                             raise ValueError(
-                                "start must be set to the most clockwise edge at this vertex on the boundary"
+                                "start_edge must be set to the most clockwise edge at this vertex on the boundary"
                             )
                         break
 
                     similarity *= S.edge_transformation(*enter_edge).derivative()
 
-                    if enter_edge == start:
+                    if enter_edge == start_edge:
                         break
 
                     enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(
