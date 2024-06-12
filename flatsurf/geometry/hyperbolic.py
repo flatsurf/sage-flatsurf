@@ -5653,8 +5653,12 @@ class HyperbolicConvexSet(SageObject):
             sage: p = H.polygon([H.geodesic(0, 1).left_half_space(),
             ....:                 H.geodesic(1, Infinity).left_half_space(),
             ....:                 H.geodesic(Infinity, 0).left_half_space()])
+            sage: p.area()
+            0.5
             sage: p.area(numerical=False)
             1/2
+
+        ::
 
             sage: a = H.point(0, 1, model='half_plane')
             sage: b = H.point(1, 1, model='half_plane')
@@ -5667,34 +5671,43 @@ class HyperbolicConvexSet(SageObject):
             sage: p.area()
             0.0696044872730639
 
-            sage: H.point(0, 1, model='half_plane').area()
+        Zero and one-dimensional objects have area zero::
+
+            sage: p = H(I)
+            sage: p.area()
             0.0
-            sage: H.geodesic(0, 1).area()
+            sage: p.area(numerical=False)
+            0
+
+        ::
+
+            sage: g = H.geodesic(0, 1)
+            sage: g.area()
             0.0
-            sage: H.geodesic(0, 1).left_half_space().area()
+            sage: g.area(numerical=False)
+            0
+
+        A half space has infinite area::
+
+            sage: h = g.left_half_space()
+            sage: h.area()
             inf
-            sage: H.point(0, 1, model='half_plane').area(numerical=False)
-            0
-            sage: H.geodesic(0, 1).area(numerical=False)
-            0
-            sage: H.geodesic(0, 1).left_half_space().area(numerical=False)
+            sage: h.area(numerical=False)
             +Infinity
+
         """
-        from sage.rings.rational_field import QQ
+        from sage.all import QQ, Infinity
 
         if self.dimension() < 2:
             return 0.0 if numerical else QQ.zero()
+
         edges = [e.geodesic() for e in self.edges()]
         n = len(edges)
         if len(edges) <= 2 or any(
             edges[i].intersection(edges[(i + 1) % n]).is_empty() for i in range(n)
         ):
-            if numerical:
-                return float("inf")
-            else:
-                from sage.rings.infinity import Infinity
+            return float("inf") if numerical else Infinity
 
-                return Infinity
         H = self.parent()
         return QQ((n - 2, 2)) - sum(
             (edges[(i + 1) % n]).angle(-edges[i], numerical=numerical) for i in range(n)
