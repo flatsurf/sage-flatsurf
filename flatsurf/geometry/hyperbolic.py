@@ -6243,7 +6243,9 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             assert point.is_ideal()
 
             if not isinstance(point, HyperbolicPointFromGeodesic):
-                raise NotImplementedError("cannot decide whether this ideal point is contained in the half space yet")
+                raise NotImplementedError(
+                    "cannot decide whether this ideal point is contained in the half space yet"
+                )
 
             boundary = self.boundary()
             intersection = boundary._intersection(point._geodesic)
@@ -8510,7 +8512,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         INPUT:
 
         - ``other`` -- another geodesic intersecting this geodesic
-        
+
         - ``euclidean`` -- a boolean (default: ``False``); if ``True``, the
           geodesics are treated as lines in the Euclidean plane coming from
           their representations in the Klein model, i.e., geodesics
@@ -8542,6 +8544,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         sgn = self.parent().geometry._sgn
 
         from flatsurf.geometry.euclidean import ccw
+
         return sgn(ccw((self._c, -self._b), (other._c, -other._b)))
 
     def angle(self, other, numerical=True):
@@ -8626,7 +8629,9 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             if self.start() == other.end() or self.end() == other.start():
                 return ring(0.5)
 
-            assert self.start() == other.start() or self.end() == other.end(), "geodesics whose enclosed angle is zero, must have one ideal endpoint in comon"
+            assert (
+                self.start() == other.start() or self.end() == other.end()
+            ), "geodesics whose enclosed angle is zero, must have one ideal endpoint in common"
 
             return ring(0)
 
@@ -8641,11 +8646,13 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         n2_squared = b2 * b2 + c2 * c2 - a2 * a2
 
         import math
+
         n12 = math.sqrt(abs(n1_squared * n2_squared))
 
         cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
 
         from flatsurf.geometry.euclidean import acos
+
         angle = acos(cos_angle, numerical=numerical)
 
         return angle if ccw > 0 else 1 - angle
