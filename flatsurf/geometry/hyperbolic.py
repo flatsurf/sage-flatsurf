@@ -8561,13 +8561,17 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         a1 = self._a
         b1 = self._b
         c1 = self._c
+        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
+
         a2 = other._a
         b2 = other._b
         c2 = other._c
-        n1_squared = b1 * b1 + c1 * c1 - a1 * a1
         n2_squared = b2 * b2 + c2 * c2 - a2 * a2
+
         n12 = math.sqrt(abs(n1_squared * n2_squared))
+
         cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
+
         angle = acos(cos_angle, numerical=numerical)
 
         return angle if sign == 1 else 1 - angle

@@ -1,3 +1,5 @@
 **Added:**
 
-* angle and area computations in the hyperbolic plane
+* Added ``area()`` for hyperbolic convex sets.
+
+* Added ``angle()`` between hyperbolic geodesics.
