@@ -93,14 +93,11 @@ jobs:
           pip install --verbose --no-index .
       - name: Initialize cppyy
         run: |
-          export ROOTSYS=$CONDA_PREFIX
           # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
           python -c 'import cppyy' || true
       - name: Run SageMath doctests
         run: |
           export PYTHONPATH=test/disable-pytest:$PYTHONPATH
-          export ROOTSYS=$CONDA_PREFIX
-          export
           sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
       - name: Run pytest
         run: pytest -n auto
