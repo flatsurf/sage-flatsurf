@@ -191,7 +191,7 @@ def acos(cos_angle, numerical=False):
 
     angle = math.acos(cos_angle) / (2 * math.pi)
 
-    assert 0 <= angle <= .5
+    assert 0 <= angle <= 0.5
 
     if numerical:
         return angle

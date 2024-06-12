@@ -6212,10 +6212,13 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             sage: oo in h
             True
 
-        It also works when the base ring is made of algebraic numbers::
-
             sage: H.half_circle(0, 2).start() in h
             True
+
+            sage: H.half_circle(0, 2).end() in h
+            False
+
+            sage: TODO: Make sure that all cases are covered by tests.
 
         .. NOTE::
 
@@ -6239,17 +6242,33 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             # It is the starting point of a geodesic.
             assert point.is_ideal()
 
-            if point in self.boundary():
-                return True
+            if not isinstance(point, HyperbolicPointFromGeodesic):
+                raise NotImplementedError("cannot decide whether this ideal point is contained in the half space yet")
 
-            from sage.all improt AA
+            boundary = self.boundary()
+            intersection = boundary._intersection(point._geodesic)
 
-            if AA.has_coerce_map_from(self.parent().base_ring()):
-                x, y = point.coordinates(model="klein", ring=AA)
-            else:
-                raise NotImplementedError(
-                    "cannot decide whether this ideal point is contained in the half space yet"
-                )
+            if intersection is None:
+                # The boundary of the half space and the geodesic defining the
+                # point do not intersect in a single point (not even in an
+                # ultra-ideal point,) i.e., they are parallel in the Klein model.
+                return boundary.an_element() in self
+
+            if not intersection.is_finite():
+                # The intersection point between the geodesic defining the
+                # point and the half space boundary is ideal or ultra-ideal.
+                # Either the entire geodesic is in the half space or none of
+                # it.
+                return boundary.an_element() in self
+
+            # The intersection point between the geodesic defining the point
+            # and the half space boundary is finite, i.e., inside the unit
+            # circle in the Klein model. The segment between the starting point
+            # of the geodesic and that intersection point is either completely
+            # inside the half space or completely outside.
+            ccw = boundary.ccw(point._geodesic)
+            assert ccw != 0
+            return ccw < 0
 
         a, b, c = self.equation(model="klein")
 
@@ -8479,12 +8498,67 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         return parent.geodesic(a, b)
 
+    def ccw(self, other, euclidean=False):
+        r"""
+        Return +1, -1, or zero if the turn from this geodesic to ``other`` is
+        counterclockwise, clockwise, or if the geodesics are parallel at their
+        point of intersection, respectively.
+
+        If this geodesic and ``other`` do not intersect, a ``ValueError`` is
+        raised.
+
+        INPUT:
+
+        - ``other`` -- another geodesic intersecting this geodesic
+        
+        - ``euclidean`` -- a boolean (default: ``False``); if ``True``, the
+          geodesics are treated as lines in the Euclidean plane coming from
+          their representations in the Klein model, i.e., geodesics
+          intersecting at a non-finite point are reporting their Euclidean ccw.
+          Otherwise, geodesics intersecting at an ideal point have a ``ccw`` of
+          zero, and geodesics intersecting at an ultra-ideal point, are
+          producing a ``ValueError``.
+
+        EXAMPLES:
+
+            sage: TODO
+
+        """
+        intersection = self._intersection(other)
+
+        if intersection is None:
+            if self.unoriented() == other.unoriented():
+                return 0
+            raise ValueError("geodesics do not intersect")
+
+        if intersection.is_ideal():
+            if not euclidean:
+                return 0
+
+        if intersection.is_ultra_ideal():
+            if not euclidean:
+                raise ValueError("geodesics do not intersect")
+
+        sgn = self.parent().geometry._sgn
+
+        from flatsurf.geometry.euclidean import ccw
+        return sgn(ccw((self._c, -self._b), (other._c, -other._b)))
+
     def angle(self, other, numerical=True):
         r"""
         Compute the angle between this geodesic and ``other`` divided by 2π.
 
         If this geodesic and ``other`` do not intersect, a ``ValueError`` is
         raised.
+
+        INPUT:
+
+        - ``other`` -- a geodesic intersecting this geodesic in a finite or
+          ideal point.
+
+        - ``numerical`` -- a boolean (default: ``True``); whether a numerical
+          approximation of the angle is returned or whether we attempt to
+          render it as a rational number.
 
         EXAMPLES::
 
@@ -8539,24 +8613,22 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: g0.angle(g3)
             Traceback (most recent call last):
             ...
-            ValueError: non-intersecting geodesics
+            ValueError: geodesics do not intersect
 
         """
-        from sage.rings.rational_field import QQ
-        import math
-        from flatsurf.geometry.euclidean import acos
+        from sage.all import QQ
 
-        if self.start() == other.end() or self.end() == other.start():
-            return 0.5 if numerical else QQ.one() / 2
-        if self.start() == other.start() or self.end() == other.end():
-            return 0.0 if numerical else QQ.zero()
+        ring = float if numerical else QQ
 
-        if other.start() in self.right_half_space() and other.end() in self.left_half_space():
-            sign = 1
-        elif other.end() in self.right_half_space() and other.start() in self.left_half_space():
-            sign = -1
-        else:
-            raise ValueError("non-intersecting geodesics")
+        ccw = self.ccw(other)
+
+        if ccw == 0:
+            if self.start() == other.end() or self.end() == other.start():
+                return ring(0.5)
+
+            assert self.start() == other.start() or self.end() == other.end(), "geodesics whose enclosed angle is zero, must have one ideal endpoint in comon"
+
+            return ring(0)
 
         a1 = self._a
         b1 = self._b
@@ -8568,13 +8640,15 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         c2 = other._c
         n2_squared = b2 * b2 + c2 * c2 - a2 * a2
 
+        import math
         n12 = math.sqrt(abs(n1_squared * n2_squared))
 
         cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
 
+        from flatsurf.geometry.euclidean import acos
         angle = acos(cos_angle, numerical=numerical)
 
-        return angle if sign == 1 else 1 - angle
+        return angle if ccw > 0 else 1 - angle
 
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
