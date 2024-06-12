@@ -5644,7 +5644,7 @@ class HyperbolicConvexSet(SageObject):
 
     def area(self, numerical=True):
         r"""
-        Return the area of this convex set divided by ``2 pi``.
+        Return the area of this convex set divided by 2π.
 
         EXAMPLES::
 
