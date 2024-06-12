@@ -8557,7 +8557,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: H = HyperbolicPlane()
 
             sage: v = H.vertical(0)
-            aseg: g = H.half_circle(0, 2)
+            sage: g = H.half_circle(0, 2)
 
             sage: v.ccw(g)
             -1
