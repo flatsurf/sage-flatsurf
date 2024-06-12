@@ -8526,6 +8526,11 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             sage: TODO
 
         """
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise NotImplementedError("can only compute ccw between oriented geodesics")
+
+        other = self.parent()(other)
+
         intersection = self._intersection(other)
 
         if intersection is None:
@@ -8547,9 +8552,44 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         return sgn(ccw((self._c, -self._b), (other._c, -other._b)))
 
+    def _test_ccw(self, **options):
+        r"""
+        Verify that :meth:`ccw` has been implemented correctly
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0)._test_ccw()
+
+        """
+        tester = self._tester(**options)
+
+        for euclidean in [False, True]:
+            tester.assertEqual(self.ccw(self, euclidean=euclidean), 0)
+            tester.assertEqual(self.ccw(-self, euclidean=euclidean), 0)
+
+            for other in self.parent().some_subsets():
+                if other.dimension() != 1:
+                    continue
+
+                other = other.geodesic().change(oriented=True)
+
+                intersection = self._intersection(other)
+                if intersection is None:
+                    continue
+
+                if intersection.is_ultra_ideal() and not euclidean:
+                    continue
+
+                tester.assertEqual(self.ccw(other, euclidean=euclidean), -other.ccw(self, euclidean=euclidean))
+                tester.assertEqual(self.ccw(-other, euclidean=euclidean), other.ccw(self, euclidean=euclidean))
+
     def angle(self, other, numerical=True):
         r"""
-        Compute the angle between this geodesic and ``other`` divided by 2π.
+        Compute the angle between this geodesic and ``other`` divided by 2π,
+        i.e., as a number in `[0, 1)`.
 
         If this geodesic and ``other`` do not intersect, a ``ValueError`` is
         raised.
@@ -8619,8 +8659,12 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
             ValueError: geodesics do not intersect
 
         """
-        from sage.all import QQ
+        if not isinstance(other, HyperbolicOrientedGeodesic):
+            raise NotImplementedError("can only compute angle between oriented geodesics")
 
+        other = self.parent()(other)
+
+        from sage.all import QQ
         ring = float if numerical else QQ
 
         ccw = self.ccw(other)
@@ -8656,6 +8700,36 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         angle = acos(cos_angle, numerical=numerical)
 
         return angle if ccw > 0 else 1 - angle
+
+    def _test_angle(self, **options):
+        r"""
+        Verify that :meth:`angle` has been implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf import HyperbolicPlane
+            sage: H = HyperbolicPlane()
+
+            sage: H.vertical(0)._test_angle()
+
+        """
+        tester = self._tester(**options)
+
+        tester.assertEqual(self.angle(self), 0)
+        tester.assertEqual(self.angle(-self), .5)
+
+        for other in self.parent().some_subsets():
+            if other.dimension() != 1:
+                continue
+
+            other = other.geodesic().change(oriented=True)
+
+            intersection = self._intersection(other)
+            if intersection is None:
+                continue
+
+            tester.assertAlmostEqual(self.angle(other), (1 - other.angle(self)) % 1)
+            tester.assertAlmostEqual(self.angle(-other), (.5 - other.angle(self)) % 1)
 
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
