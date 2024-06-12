@@ -151,7 +151,7 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
             return False
 
 
-def numerical_cos_to_angle(cos_angle, numerical=False):
+def acos(cos_angle, numerical=False):
     import math
 
     angle = math.acos(cos_angle) / (2 * math.pi)  # rat number between 0 and 1/2
@@ -238,7 +238,7 @@ def angle(u, v, numerical=False):
         assert cos_uv < 1.0000001
         cos_uv = 1.0
 
-    angle = numerical_cos_to_angle(cos_uv, numerical)
+    angle = acos(cos_uv, numerical=numerical)
     return 1 - angle if u0 * v1 - u1 * v0 < 0 else angle
 
     # a neater way is provided below by working only with number fields

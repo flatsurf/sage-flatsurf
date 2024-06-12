@@ -8514,7 +8514,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         """
         from sage.rings.rational_field import QQ
         import math
-        from .euclidean import numerical_cos_to_angle
+        from flatsurf.geometry.euclidean import acos
 
         p1 = self.start()
         q1 = self.end()
@@ -8541,7 +8541,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         n2_squared = b2 * b2 + c2 * c2 - a2 * a2
         n12 = math.sqrt(abs(n1_squared * n2_squared))
         cos_angle = (b1 * b2 + c1 * c2 - a1 * a2) / n12
-        angle = numerical_cos_to_angle(cos_angle, numerical)
+        angle = acos(cos_angle, numerical=numerical)
 
         return angle if sign == 1 else 1 - angle
 
