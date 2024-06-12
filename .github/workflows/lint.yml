@@ -25,6 +25,9 @@ jobs:
         run: codespell flatsurf
   pycodestyle:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -39,6 +42,9 @@ jobs:
           pycodestyle --ignore=E203,W503 --max-line-length=256 flatsurf/ test/
   pylint:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -56,6 +62,9 @@ jobs:
           pylint flatsurf
   ruff:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
@@ -69,6 +78,9 @@ jobs:
           ruff check --select C4,UP008,UP031,UP034 .
   black:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
