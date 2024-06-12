@@ -2071,7 +2071,7 @@ class LabelWalker:
                     return self._label_edge_back[label]
         # Maybe the surface is not connected?
         raise KeyError(
-            "Unable to find label %s. Are you sure the surface is connected?" % (label)
+            f"Unable to find label {label}. Are you sure the surface is connected?"
         )
 
     def __iter__(self):

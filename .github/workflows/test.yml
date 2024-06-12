@@ -10,6 +10,9 @@ concurrency:
 jobs:
   test:
     runs-on: "${{ matrix.on }}"
+    defaults:
+      run:
+        shell: bash -el {0}
     strategy:
       matrix:
         include:
@@ -52,7 +55,7 @@ jobs:
             optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
-          - on: macos-11
+          - on: macos-12
             optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
@@ -62,7 +65,6 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "${{ matrix.python }}" }
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
           mamba upgrade -n base --all --yes  # mamba 1.4.1 segfaults sometimes, make sure we use a later version
           mamba install -n test sagelib=${{ matrix.sagelib }}
@@ -75,29 +77,29 @@ jobs:
           conda list
         if: ${{ matrix.environment == 'environment.yml' }}
       - name: Install dependencies (flatsurf stack)
-        shell: bash -l {0}
         run: |
           # This can fail when a new version of sage-flatsurf is released but
           # the package has not been built on conda-forge yet.
           mamba env update -n test --quiet -f flatsurf.yml
           conda list
         if: ${{ matrix.environment == 'flatsurf.yml' }}
+      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
+      - name: Fix cppyy dependencies on macOS
+        run: |
+          mamba install -y libcxx=16
+        if: ${{ matrix.on == 'macos-12' }}
       - name: Install sage-flatsurf
-        shell: bash -l {0}
         run: |
           pip install --verbose --no-index .
       - name: Initialize cppyy
-        shell: bash -l {0}
         run: |
           # Show message about cppyy regenerating pre-compiled headers so it does not show during the tests
           python -c 'import cppyy' || true
       - name: Run SageMath doctests
-        shell: bash -l {0}
         run: |
           export PYTHONPATH=test/disable-pytest:$PYTHONPATH
           sage -tp --force-lib --long --optional=${{ matrix.optionals }} flatsurf doc
       - name: Run pytest
-        shell: bash -l {0}
         run: pytest -n auto
         if: ${{ matrix.environment == 'environment.yml' }}
       - uses: flatsurf/actions/show-logs@main

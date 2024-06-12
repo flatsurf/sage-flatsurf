@@ -279,7 +279,7 @@ class DilationSurfaces(SurfaceCategory):
             r"""
             Return whether this dilation surface is given by a veering triangulation.
 
-            A triangulation is *veering* if none of its triangle are made of
+            A triangulation is *veering* if none of its triangles are made of
             three edges of the same slope (positive or negative).
 
             EXAMPLES::

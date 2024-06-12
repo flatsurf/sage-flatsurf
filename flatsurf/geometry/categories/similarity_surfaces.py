@@ -99,7 +99,7 @@ If we don't glue all the edges, we get a surface with boundary::
 #  This file is part of sage-flatsurf.
 #
 #        Copyright (C) 2016-2020 Vincent Delecroix
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ from flatsurf.geometry.categories.surface_category import (
     SurfaceCategoryWithAxiom,
 )
 from sage.categories.category_with_axiom import all_axioms
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_method, cached_in_parent_method
 from sage.all import QQ, AA
 
 
@@ -735,6 +735,433 @@ class SimilaritySurfaces(SurfaceCategory):
 
         """
 
+        class ElementMethods:
+            r"""
+            Provides methods available to all points of oriented similarity
+            surfaces.
+
+            If you want to add functionality for such surfaces, you most likely
+            want to put it here.
+            """
+
+            def angle(self, numerical=False):
+                r"""
+                Return the total angle at this point as a multiple of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean (default: ``False``); whether to
+                  return a floating point approximation of the angle or its exact
+                  value.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S(0, 0).angle()
+                    1
+                    sage: S(0, (1, 0)).angle()
+                    1/2
+                    sage: S(0, (1, 0)).angle(numerical=True)
+                    0.500000000000000
+
+                TESTS:
+
+                For mutable surfaces, the angles are not cached::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+                    sage: T._refine_category_(S.category())  # make angle() available
+                    sage: T(0, 0).angle()
+                    1
+                    sage: T.glue((0, 0), (0, 2))
+                    sage: T(0, 0).angle()
+                    3/8
+
+                .. SEEALSO::
+
+                    :meth:`turns` for the number of full 2π turns at a point.
+
+                """
+                if self.is_vertex():
+                    angle = self._angle_vertex(numerical=numerical)
+
+                    if self.parent().is_mutable():
+                        self._angle_vertex.clear_cache()  # pylint: disable=no-member
+
+                    return angle
+
+                from sage.all import QQ, RR
+
+                ring = RR if numerical else QQ
+
+                if self.is_in_edge_interior():
+                    label, coordinates = self.representative()
+                    edge = (
+                        self.parent()
+                        .polygon(label)
+                        .get_point_position(coordinates)
+                        .get_edge()
+                    )
+
+                    opposite_edge = self.parent().opposite_edge(label, edge)
+                    if opposite_edge is None or opposite_edge == (label, edge):
+                        # The total angle at a self-glued or unglued edge is π.
+                        return ring(0.5)
+
+                return ring.one()
+
+            @cached_in_parent_method
+            def _angle_vertex(self, numerical):
+                r"""
+                Return the total angle at this vertex in multiples of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean; whether to return the angle as a
+                  floating point number.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S(0, 0)._angle_vertex(numerical=False)
+                    1
+
+                """
+                turns, start, end = self.turns()
+
+                from flatsurf.geometry.euclidean import angle
+
+                return turns + angle(start, end, numerical=numerical)
+
+            def turns(self, start_edge=None, start_holonomy=None):
+                r"""
+                Return the number of total 2π turns at this vertex.
+
+                Returns a triple ``(turns, start, end)`` where ``turns`` is an
+                integer, and ``start`` and ``end`` are vectors such that start is
+                the vector at which we begin counting the turns, and ``end`` is the
+                vector at which we stop counting the turns.
+
+                If the total angle at this point is a multiple of 2π, then
+                ``start`` and ``end`` are parallel.
+
+                If the surface has no boundary, then ``start`` and ``end`` are
+                holonomy vectors of the same edge of the surface.
+
+                INPUT:
+
+                - ``start_edge`` -- an edge or ``None`` (default: ``None``); a
+                  particular outgoing edge at which to start counting the
+                  turns.
+
+                - ``start_holonomy`` -- a vector or ``None`` (default: ``None``);
+                  the holonomy that the first edge reported should use. If
+                  ``None``, then use the holonomy that the polygon edge reports
+                  normally.
+
+                ALGORITHM:
+
+                We count the half turns of angle π by walking around the vertex
+                and counting how often the outgoing edges go between being
+                clockwise and being counterclockwise from the ``start_edge``.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S(0, 0).turns()
+                    (1, (0, -1), (0, -1))
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S(0, 0).turns()
+                    (1, (-1, 1), (-1, 1))
+                    sage: S(0, (1, 0)).turns()
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: point must be a vertex
+
+                .. SEEALSO::
+
+                    :meth:`angle` for the possibly non-integral number of
+                    turns at this point.
+
+                """
+                if not self.is_vertex():
+                    raise ValueError("point must be a vertex")
+
+                edges = self.edges_ccw(
+                    start_edge=start_edge, start_holonomy=start_holonomy
+                )
+
+                start = edges[0][1]
+
+                half_turns = 0
+
+                vectors = [vector for (edge, vector) in edges[1::2]]
+
+                for vector, previous in zip(vectors, [start] + vectors):
+                    from flatsurf.geometry.euclidean import ccw, is_parallel
+
+                    # This is a vertex at a concave vertex of a polygon (with
+                    # angle <2π.) So at least one π turn must have happened.
+                    if ccw(previous, vector) < 0:
+                        half_turns += 1
+
+                    # Determine whether the turn from start to vector is
+                    # counterclockwise (0) or clockwise (1). If they are
+                    # orthogonal, we count parallel vectors as counterclockwise
+                    # and anti-parallel vectors as clockwise.
+                    ccw_start_vector = (
+                        ccw(start, vector) or (1 if is_parallel(start, vector) else -1)
+                    ) > 0
+                    ccw_start_previous = half_turns % 2 == 0
+
+                    if ccw_start_vector != ccw_start_previous:
+                        half_turns += 1
+
+                return (half_turns // 2, start, vector)
+
+            def edges(self):
+                r"""
+                Return the edges of the polygons that contain this point.
+
+                Implements
+                :meth:`.polygonal_surfaces.PolygonalSurfaces.ElementMethods.edges`
+                for similarity surfaces.
+
+                """
+                return {edge for (edge, holonomy) in self.edges_ccw()}
+
+            def edges_ccw(self, start_edge=None, start_holonomy=None):
+                r"""
+                Return the edges of the polygons that are crossed when walking
+                around this point in counterclockwise direction.
+
+                Each edge is reported together with its holonomy vector in the
+                coordinate system of the ``start_edge``.
+
+                Each edge is reported "twice", once when leaving a polygon, and
+                once when entering a polygon.
+
+                INPUT:
+
+                - ``start_edge`` -- an edge or ``None`` (default: ``None``); a
+                  particular outgoing edge at which to start the walk.
+
+                - ``start_holonomy`` -- a vector or ``None`` (default: ``None``);
+                  the holonomy that the first edge reported should use. If
+                  ``None``, then use the holonomy that the polygon edge reports
+                  normally.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S(0, 0).edges_ccw()
+                    [((0, 2), (-1, 1)),
+                     ((0, 1), (1, -4)),
+                     ((0, 1), (1, -4)),
+                     ((0, 0), (2, 0)),
+                     ((0, 0), (2, 0)),
+                     ((0, 3), (0, 5)),
+                     ((0, 3), (0, 5)),
+                     ((0, 2), (-1, 1))]
+                    sage: S(0, 0).edges_ccw(start_edge=(0, 0))
+                    [((0, 0), (2, 0)),
+                     ((0, 3), (0, 5)),
+                     ((0, 3), (0, 5)),
+                     ((0, 2), (-1, 1)),
+                     ((0, 2), (-1, 1)),
+                     ((0, 1), (1, -4)),
+                     ((0, 1), (1, -4)),
+                     ((0, 0), (2, 0))]
+                    sage: S(0, 0).edges_ccw(start_holonomy=(1, 0))
+                    [((0, 2), (1, 0)),
+                     ((0, 1), (-5/2, 3/2)),
+                     ((0, 1), (-5/2, 3/2)),
+                     ((0, 0), (-1, -1)),
+                     ((0, 0), (-1, -1)),
+                     ((0, 3), (5/2, -5/2)),
+                     ((0, 3), (5/2, -5/2)),
+                     ((0, 2), (1, 0))]
+
+                .. SEEALSO::
+
+                    :meth:`edges` for the edges containing this point in no
+                    particular order.
+
+                """
+                S = self.parent()
+
+                label, coordinates = self.representative()
+
+                position = S.polygon(label).get_point_position(coordinates)
+
+                if position.is_in_interior():
+                    return []
+
+                if position.is_in_edge_interior():
+                    return self._edges_ccw_edge(
+                        start_edge=start_edge, start_holonomy=start_holonomy
+                    )
+
+                return self._edges_ccw_vertex(
+                    start_edge=start_edge, start_holonomy=start_holonomy
+                )
+
+            def _test_edges_ccw(self, **options):
+                r"""
+                Verify that :meth:`edges_ccw` is implemented correctly.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S(0, 0)._test_edges_ccw()
+
+                """
+                tester = self._tester(**options)
+
+                edges = self.edges_ccw()
+
+                tester.assertTrue(len(edges) % 2 == 0)
+
+                for e, f in zip(edges[1::2], edges[2::2]):
+                    tester.assertEqual(e[1], f[1])
+
+                for e, f in zip(edges[::2], edges[1::2]):
+                    from flatsurf.geometry.euclidean import is_parallel
+
+                    tester.assertFalse(is_parallel(e[1], f[1]))
+
+            def _edges_ccw_edge(self, start_edge=None, start_holonomy=None):
+                r"""
+                Return the edges that are crossed when walking around this
+                point on an edge.
+
+                This is a helper method for :meth:`edges_ccw`.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S(0, (1/2, 0))._edges_ccw_edge()
+                    [((0, 2), (-1, 0)), ((0, 0), (1, 0))]
+
+                """
+                S = self.parent()
+
+                label, coordinates = self.representative()
+
+                if start_edge is None:
+                    position = S.polygon(label).get_point_position(coordinates)
+                    start_edge = label, position.get_edge()
+
+                if start_holonomy is None:
+                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                else:
+                    start_holonomy = (S.base_ring() ** 2)(start_holonomy)
+
+                opposite = S.opposite_edge(*start_edge)
+                if opposite is None or opposite == start_edge:
+                    return [(start_edge, start_holonomy)]
+
+                return [(start_edge, start_holonomy), (opposite, -start_holonomy)]
+
+            def _edges_ccw_vertex(self, start_edge=None, start_holonomy=None):
+                r"""
+                Return the edges that are crossed when walking around this
+                point at a vertex.
+
+                This is a helper method for :meth:`edges_ccw`.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: S(0, 0)._edges_ccw_vertex()
+                    [((0, 3), (0, -1)),
+                     ((0, 2), (1, 0)),
+                     ((0, 0), (1, 0)),
+                     ((0, 3), (0, 1)),
+                     ((0, 1), (0, 1)),
+                     ((0, 0), (-1, 0)),
+                     ((0, 2), (-1, 0)),
+                     ((0, 1), (0, -1))]
+
+                """
+                S = self.parent()
+
+                if start_edge is None:
+                    label, coordinates = self.representative()
+
+                    initial = (
+                        label,
+                        S.polygon(label).get_point_position(coordinates).get_vertex(),
+                    )
+                    start_edge = initial
+
+                    while True:
+                        opposite = S.opposite_edge(*start_edge)
+                        if opposite is None:
+                            break
+                        start_edge = opposite[0], (opposite[1] + 1) % len(
+                            S.polygon(opposite[0]).vertices()
+                        )
+                        if start_edge == initial:
+                            break
+
+                if start_holonomy is None:
+                    start_holonomy = S.polygon(start_edge[0]).edge(start_edge[1])
+                else:
+                    start_holonomy = (S.base_ring() ** 2)(start_holonomy)
+
+                from flatsurf.geometry.similarity import similarity_from_vectors
+
+                similarity = similarity_from_vectors(
+                    S.polygon(start_edge[0]).edge(start_edge[1]), start_holonomy
+                )
+
+                edges = [(start_edge, start_holonomy)]
+
+                while True:
+                    exit_edge = (
+                        edges[-1][0][0],
+                        (edges[-1][0][1] - 1)
+                        % len(S.polygon(edges[-1][0][0]).vertices()),
+                    )
+                    exit_holonomy = -similarity * S.polygon(exit_edge[0]).edge(
+                        exit_edge[1]
+                    )
+                    edges.append((exit_edge, exit_holonomy))
+
+                    enter_edge = S.opposite_edge(*exit_edge)
+                    if enter_edge is None:
+                        if S.opposite_edge(*start_edge) is not None:
+                            raise ValueError(
+                                "start_edge must be set to the most clockwise edge at this vertex on the boundary"
+                            )
+                        break
+
+                    similarity *= S.edge_transformation(*enter_edge).derivative()
+
+                    if enter_edge == start_edge:
+                        break
+
+                    enter_holonomy = similarity * S.polygon(enter_edge[0]).edge(
+                        enter_edge[1]
+                    )
+                    edges.append((enter_edge, enter_holonomy))
+
+                return edges
+
         class ParentMethods:
             r"""
             Provides methods available to all oriented surfaces that are built
@@ -743,6 +1170,175 @@ class SimilaritySurfaces(SurfaceCategory):
             If you want to add functionality for such surfaces you most likely
             want to put it here.
             """
+
+            def some_elements(self):
+                r"""
+                Return some typical points of this surface (for testing).
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: list(S.some_elements())
+                    [Point (1/2, 1/2) of polygon 0, Vertex 0 of polygon 0]
+
+                """
+                from itertools import islice
+
+                for label in islice(self.labels(), 32):
+                    polygon = self.polygon(label)
+
+                    from sage.categories.all import Fields
+
+                    if polygon.is_convex() and self.base_ring() in Fields():
+                        point = self(  # pylint: disable=not-callable
+                            label, polygon.centroid()
+                        )
+                    else:
+                        point = self(  # pylint: disable=not-callable
+                            label, polygon.vertex(0) + polygon.edge(0) / 2
+                        )
+
+                    yield point
+
+                if self.is_finite_type():
+                    yield from self.vertices()
+
+            def angles(self, numerical=False, return_adjacent_edges=None):
+                r"""
+                Return the angles around the vertices of the surface as
+                multiples of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean (default: ``False``);
+                  whether the angles are returned as floating point
+                  numbers or as exact algebraic numbers.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import polygons, similarity_surfaces, translation_surfaces
+                    sage: T = polygons.triangle(3, 4, 5)
+                    sage: S = similarity_surfaces.billiard(T)
+                    sage: S.angles()
+                    [1/4, 5/12, 1/3]
+                    sage: S.angles(numerical=True)   # abs tol 1e-14
+                    [0.25, 0.4166666666666667, 0.33333333333333337]
+
+                    sage: S.angles(return_adjacent_edges=True)
+                    doctest:warning
+                    ...
+                    UserWarning: return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead.
+                    [(1/4, [(0, 0), (1, 0)]), (5/12, [(0, 2), (1, 1)]), (1/3, [(0, 1), (1, 2)])]
+
+                ::
+
+                    sage: translation_surfaces.regular_octagon().angles()
+                    [3]
+                    sage: S = translation_surfaces.veech_2n_gon(5)
+                    sage: S.angles()
+                    [2, 2]
+                    sage: S.angles(numerical=True)
+                    [2.0, 2.0]
+                    sage: S.angles(return_adjacent_edges=True) # random output
+                    [(2, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
+                     (2, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
+                    sage: S.angles(numerical=True, return_adjacent_edges=True) # random output
+                    [(2.0, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),
+                     (2.0, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]
+
+                    sage: translation_surfaces.veech_2n_gon(6).angles()
+                    [5]
+                    sage: translation_surfaces.veech_double_n_gon(5).angles()
+                    [3]
+                    sage: translation_surfaces.cathedral(1, 1).angles()
+                    [3, 3, 3]
+
+                    sage: from flatsurf import polygons, similarity_surfaces
+                    sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))
+                    sage: H = B.minimal_cover(cover_type="half-translation")
+                    sage: S = B.minimal_cover(cover_type="translation")
+                    sage: H.angles()
+                    [1/2, 1/2, 1/2, 5/2]
+                    sage: S.angles()
+                    [1, 1, 5, 1]
+
+                    sage: H.angles(return_adjacent_edges=True)
+                    [(1/2, [...]), (1/2, [...]), (1/2, [...]), (5/2, [...])]
+                    sage: S.angles(return_adjacent_edges=True)
+                    [(1, [...]), (1, [...]), (5, [...]), (1, [...])]
+
+                For self-glued edges, no angle is reported for the
+                "vertex" at the midpoint of the edge::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S.angles()
+                    [1]
+
+                Non-convex examples::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: L = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(1,1),(1,2),(0,2),(0,1)])
+                    sage: S.add_polygon(L)
+                    0
+                    sage: S.glue((0, 0), (0, 5))
+                    sage: S.glue((0, 1), (0, 3))
+                    sage: S.glue((0, 2), (0, 7))
+                    sage: S.glue((0, 4), (0, 6))
+                    sage: S.set_immutable()
+                    sage: S.angles()
+                    [3]
+
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: P = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(3,1),(3,2),(2,2),(1,2),(1,1),(0,1)])
+                    sage: S.add_polygon(P)
+                    0
+                    sage: S.glue((0, 0), (0, 8))
+                    sage: S.glue((0, 1), (0, 6))
+                    sage: S.glue((0, 2), (0, 9))
+                    sage: S.glue((0, 3), (0, 5))
+                    sage: S.glue((0, 4), (0, 7))
+                    sage: S.set_immutable()
+                    sage: S.angles()
+                    [2, 2]
+
+                Angles can also be determined for surfaces with boundary::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: P = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 2)])
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(P)
+                    0
+                    sage: S.set_immutable()
+                    sage: S.angles()
+                    [1/4, 1/4, 3/8, 1/8]
+
+                """
+                if return_adjacent_edges is not None:
+                    if return_adjacent_edges:
+                        import warnings
+
+                        warnings.warn(
+                            "return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead."
+                        )
+                        return [
+                            (
+                                p.angle(numerical=numerical),
+                                [e for (e, h) in p.edges_ccw()[::2]],
+                            )
+                            for p in self.vertices()
+                        ]
+
+                    import warnings
+
+                    warnings.warn(
+                        "return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; omit the argument to not include the edges instead."
+                    )
+
+                return [p.angle(numerical=numerical) for p in self.vertices()]
 
             @cached_method
             def edge_matrix(self, p, e=None):
@@ -789,63 +1385,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 from sage.matrix.matrix_space import MatrixSpace
 
                 return similarity_from_vectors(u, -v, MatrixSpace(self.base_ring(), 2))
-
-            def _an_element_(self):
-                r"""
-                Return a point on this surface.
-
-                EXAMPLES::
-
-                    sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators
-                    sage: s = SimilaritySurfaceGenerators.example()
-                    sage: s.an_element()
-                    Point (4/3, -2/3) of polygon 0
-
-                ::
-
-                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
-
-                    sage: S = MutableOrientedSimilaritySurface(QQ)
-                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))
-                    0
-                    sage: S.glue((0, 0), (0, 2))
-                    sage: S.glue((0, 1), (0, 3))
-
-                    sage: S.an_element()
-                    Point (1/2, 1/2) of polygon 0
-
-                TESTS:
-
-                Verify that this method works over non-fields (if 2 is
-                invertible)::
-
-                  sage: from flatsurf import similarity_surfaces
-                  sage: from flatsurf import EuclideanPolygonsWithAngles
-                  sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-                  sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to pkg_resources deprecation warnings in some contexts
-                  sage: R = ExactReals(E.base_ring()) # optional: exactreal
-                  sage: angles = (3, 3, 5)
-                  sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
-                  sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
-                  sage: S = similarity_surfaces.billiard(P) # optional: exactreal
-                  sage: S.an_element()  # optional: exactreal
-                  Point ((1/2 ~ 0.50000000)*ℝ(0.303644…), 0) of polygon 0
-
-                """
-                label = next(iter(self.labels()))
-                polygon = self.polygon(label)
-
-                from sage.categories.all import Fields
-
-                # We use a point that can be constructed without problems on an
-                # infinite surface.
-                if polygon.is_convex() and self.base_ring() in Fields():
-                    coordinates = polygon.centroid()
-                else:
-                    # Sometimes, this is not implemented because it requires the edge
-                    # transformation to be known, so we prefer the centroid.
-                    coordinates = polygon.edge(0) / 2
-                return self(label, coordinates)  # pylint: disable=not-callable
 
             def underlying_surface(self):
                 r"""
