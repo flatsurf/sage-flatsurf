@@ -604,7 +604,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 if not self.is_vertex():
                     raise ValueError("point must be a vertex")
 
-                edges = self.edges_ccw(start_edge=start_edge, start_holonomy=start_holonomy)
+                edges = self.edges_ccw(
+                    start_edge=start_edge, start_holonomy=start_holonomy
+                )
 
                 start = edges[0][1]
 
