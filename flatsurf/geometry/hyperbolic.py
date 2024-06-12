@@ -8647,8 +8647,14 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
                 if intersection.is_ultra_ideal() and not euclidean:
                     continue
 
-                tester.assertEqual(self.ccw(other, euclidean=euclidean), -other.ccw(self, euclidean=euclidean))
-                tester.assertEqual(self.ccw(-other, euclidean=euclidean), other.ccw(self, euclidean=euclidean))
+                tester.assertEqual(
+                    self.ccw(other, euclidean=euclidean),
+                    -other.ccw(self, euclidean=euclidean),
+                )
+                tester.assertEqual(
+                    self.ccw(-other, euclidean=euclidean),
+                    other.ccw(self, euclidean=euclidean),
+                )
 
     def angle(self, other, numerical=True):
         r"""
@@ -8724,11 +8730,14 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
         """
         if not isinstance(other, HyperbolicOrientedGeodesic):
-            raise NotImplementedError("can only compute angle between oriented geodesics")
+            raise NotImplementedError(
+                "can only compute angle between oriented geodesics"
+            )
 
         other = self.parent()(other)
 
         from sage.all import QQ
+
         ring = float if numerical else QQ
 
         ccw = self.ccw(other)
@@ -8780,7 +8789,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
         tester = self._tester(**options)
 
         tester.assertEqual(self.angle(self), 0)
-        tester.assertEqual(self.angle(-self), .5)
+        tester.assertEqual(self.angle(-self), 0.5)
 
         for other in self.parent().some_subsets():
             if other.dimension() != 1:
@@ -8793,7 +8802,7 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
                 continue
 
             tester.assertAlmostEqual(self.angle(other), (1 - other.angle(self)) % 1)
-            tester.assertAlmostEqual(self.angle(-other), (.5 - other.angle(self)) % 1)
+            tester.assertAlmostEqual(self.angle(-other), (0.5 - other.angle(self)) % 1)
 
 
 class HyperbolicPoint(HyperbolicConvexSet, Element):
