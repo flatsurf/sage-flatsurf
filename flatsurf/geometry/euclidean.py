@@ -152,6 +152,41 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
 
 
 def acos(cos_angle, numerical=False):
+    r"""
+    Return the arccosine of ``cos_angle`` as a multiple of 2π, i.e., as a value
+    between 0 and 1/2.
+
+    INPUT:
+
+    - ``cos_angle`` -- a floating point number, the cosine of an angle
+
+    - ``numerical`` -- a boolean (default: ``False``); whether to return a
+      numerical approximation of the arccosine or try to reconstruct an exact
+      rational value for the arccosine (in radians.)
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import acos
+
+        sage: acos(1)
+        0
+        sage: acos(.5)
+        1/6
+        sage: acos(0)
+        1/4
+        sage: acos(-.5)
+        1/3
+        sage: acos(-1)
+        1/2
+
+        sage: acos(.25)
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: cannot recover a rational angle from these numerical results
+        sage: acos(.25, numerical=True)
+        0.2097846883724169
+
+    """
     import math
 
     angle = math.acos(cos_angle) / (2 * math.pi)
