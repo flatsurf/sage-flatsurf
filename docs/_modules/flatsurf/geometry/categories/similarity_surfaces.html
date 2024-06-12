@@ -372,7 +372,7 @@
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
 <span class="c1">#        Copyright (C) 2016-2020 Vincent Delecroix</span>
-<span class="c1">#                           2023 Julian Rüth</span>
+<span class="c1">#                      2023-2024 Julian Rüth</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -393,7 +393,7 @@
     <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
+<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span><span class="p">,</span> <span class="n">cached_in_parent_method</span>
 <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
 
 
@@ -717,6 +717,433 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ElementMethods</span><span class="p">:</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Provides methods available to all points of oriented similarity</span>
+<span class="sd">            surfaces.</span>
+
+<span class="sd">            If you want to add functionality for such surfaces, you most likely</span>
+<span class="sd">            want to put it here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.angle"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.angle">[docs]</a>            <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the total angle at this point as a multiple of 2π.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``numerical`` -- a boolean (default: ``False``); whether to</span>
+<span class="sd">                  return a floating point approximation of the angle or its exact</span>
+<span class="sd">                  value.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S(0, 0).angle()</span>
+<span class="sd">                    1</span>
+<span class="sd">                    sage: S(0, (1, 0)).angle()</span>
+<span class="sd">                    1/2</span>
+<span class="sd">                    sage: S(0, (1, 0)).angle(numerical=True)</span>
+<span class="sd">                    0.500000000000000</span>
+
+<span class="sd">                TESTS:</span>
+
+<span class="sd">                For mutable surfaces, the angles are not cached::</span>
+
+<span class="sd">                    sage: from flatsurf import MutableOrientedSimilaritySurface</span>
+<span class="sd">                    sage: T = MutableOrientedSimilaritySurface.from_surface(S)</span>
+<span class="sd">                    sage: T._refine_category_(S.category())  # make angle() available</span>
+<span class="sd">                    sage: T(0, 0).angle()</span>
+<span class="sd">                    1</span>
+<span class="sd">                    sage: T.glue((0, 0), (0, 2))</span>
+<span class="sd">                    sage: T(0, 0).angle()</span>
+<span class="sd">                    3/8</span>
+
+<span class="sd">                .. SEEALSO::</span>
+
+<span class="sd">                    :meth:`turns` for the number of full 2π turns at a point.</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
+                    <span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_vertex</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_vertex</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-member</span>
+
+                    <span class="k">return</span> <span class="n">angle</span>
+
+                <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">RR</span>
+
+                <span class="n">ring</span> <span class="o">=</span> <span class="n">RR</span> <span class="k">if</span> <span class="n">numerical</span> <span class="k">else</span> <span class="n">QQ</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">():</span>
+                    <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+                    <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+                        <span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">get_edge</span><span class="p">()</span>
+                    <span class="p">)</span>
+
+                    <span class="n">opposite_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">opposite_edge</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">opposite_edge</span> <span class="o">==</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+                        <span class="c1"># The total angle at a self-glued or unglued edge is π.</span>
+                        <span class="k">return</span> <span class="n">ring</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span></div>
+
+            <span class="nd">@cached_in_parent_method</span>
+            <span class="k">def</span> <span class="nf">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the total angle at this vertex in multiples of 2π.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``numerical`` -- a boolean; whether to return the angle as a</span>
+<span class="sd">                  floating point number.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S(0, 0)._angle_vertex(numerical=False)</span>
+<span class="sd">                    1</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">turns</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turns</span><span class="p">()</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">angle</span>
+
+                <span class="k">return</span> <span class="n">turns</span> <span class="o">+</span> <span class="n">angle</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.turns"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns">[docs]</a>            <span class="k">def</span> <span class="nf">turns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the number of total 2π turns at this vertex.</span>
+
+<span class="sd">                Returns a triple ``(turns, start, end)`` where ``turns`` is an</span>
+<span class="sd">                integer, and ``start`` and ``end`` are vectors such that start is</span>
+<span class="sd">                the vector at which we begin counting the turns, and ``end`` is the</span>
+<span class="sd">                vector at which we stop counting the turns.</span>
+
+<span class="sd">                If the total angle at this point is a multiple of 2π, then</span>
+<span class="sd">                ``start`` and ``end`` are parallel.</span>
+
+<span class="sd">                If the surface has no boundary, then ``start`` and ``end`` are</span>
+<span class="sd">                holonomy vectors of the same edge of the surface.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``start_edge`` -- an edge or ``None`` (default: ``None``); a</span>
+<span class="sd">                  particular outgoing edge at which to start counting the</span>
+<span class="sd">                  turns.</span>
+
+<span class="sd">                - ``start_holonomy`` -- a vector or ``None`` (default: ``None``);</span>
+<span class="sd">                  the holonomy that the first edge reported should use. If</span>
+<span class="sd">                  ``None``, then use the holonomy that the polygon edge reports</span>
+<span class="sd">                  normally.</span>
+
+<span class="sd">                ALGORITHM:</span>
+
+<span class="sd">                We count the half turns of angle π by walking around the vertex</span>
+<span class="sd">                and counting how often the outgoing edges go between being</span>
+<span class="sd">                clockwise and being counterclockwise from the ``start_edge``.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: S(0, 0).turns()</span>
+<span class="sd">                    (1, (0, -1), (0, -1))</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S(0, 0).turns()</span>
+<span class="sd">                    (1, (-1, 1), (-1, 1))</span>
+<span class="sd">                    sage: S(0, (1, 0)).turns()</span>
+<span class="sd">                    Traceback (most recent call last):</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    ValueError: point must be a vertex</span>
+
+<span class="sd">                .. SEEALSO::</span>
+
+<span class="sd">                    :meth:`angle` for the possibly non-integral number of</span>
+<span class="sd">                    turns at this point.</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;point must be a vertex&quot;</span><span class="p">)</span>
+
+                <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_ccw</span><span class="p">(</span>
+                    <span class="n">start_edge</span><span class="o">=</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="n">start_holonomy</span>
+                <span class="p">)</span>
+
+                <span class="n">start</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="n">half_turns</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">vector</span> <span class="k">for</span> <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]]</span>
+
+                <span class="k">for</span> <span class="n">vector</span><span class="p">,</span> <span class="n">previous</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vectors</span><span class="p">,</span> <span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="n">vectors</span><span class="p">):</span>
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span><span class="p">,</span> <span class="n">is_parallel</span>
+
+                    <span class="c1"># This is a vertex at a concave vertex of a polygon (with</span>
+                    <span class="c1"># angle &lt;2π.) So at least one π turn must have happened.</span>
+                    <span class="k">if</span> <span class="n">ccw</span><span class="p">(</span><span class="n">previous</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">half_turns</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="c1"># Determine whether the turn from start to vector is</span>
+                    <span class="c1"># counterclockwise (0) or clockwise (1). If they are</span>
+                    <span class="c1"># orthogonal, we count parallel vectors as counterclockwise</span>
+                    <span class="c1"># and anti-parallel vectors as clockwise.</span>
+                    <span class="n">ccw_start_vector</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">ccw</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">is_parallel</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="n">ccw_start_previous</span> <span class="o">=</span> <span class="n">half_turns</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+
+                    <span class="k">if</span> <span class="n">ccw_start_vector</span> <span class="o">!=</span> <span class="n">ccw_start_previous</span><span class="p">:</span>
+                        <span class="n">half_turns</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">return</span> <span class="p">(</span><span class="n">half_turns</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges">[docs]</a>            <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the edges of the polygons that contain this point.</span>
+
+<span class="sd">                Implements</span>
+<span class="sd">                :meth:`.polygonal_surfaces.PolygonalSurfaces.ElementMethods.edges`</span>
+<span class="sd">                for similarity surfaces.</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="p">{</span><span class="n">edge</span> <span class="k">for</span> <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">holonomy</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_ccw</span><span class="p">()}</span></div>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges_ccw"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">[docs]</a>            <span class="k">def</span> <span class="nf">edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the edges of the polygons that are crossed when walking</span>
+<span class="sd">                around this point in counterclockwise direction.</span>
+
+<span class="sd">                Each edge is reported together with its holonomy vector in the</span>
+<span class="sd">                coordinate system of the ``start_edge``.</span>
+
+<span class="sd">                Each edge is reported &quot;twice&quot;, once when leaving a polygon, and</span>
+<span class="sd">                once when entering a polygon.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``start_edge`` -- an edge or ``None`` (default: ``None``); a</span>
+<span class="sd">                  particular outgoing edge at which to start the walk.</span>
+
+<span class="sd">                - ``start_holonomy`` -- a vector or ``None`` (default: ``None``);</span>
+<span class="sd">                  the holonomy that the first edge reported should use. If</span>
+<span class="sd">                  ``None``, then use the holonomy that the polygon edge reports</span>
+<span class="sd">                  normally.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S(0, 0).edges_ccw()</span>
+<span class="sd">                    [((0, 2), (-1, 1)),</span>
+<span class="sd">                     ((0, 1), (1, -4)),</span>
+<span class="sd">                     ((0, 1), (1, -4)),</span>
+<span class="sd">                     ((0, 0), (2, 0)),</span>
+<span class="sd">                     ((0, 0), (2, 0)),</span>
+<span class="sd">                     ((0, 3), (0, 5)),</span>
+<span class="sd">                     ((0, 3), (0, 5)),</span>
+<span class="sd">                     ((0, 2), (-1, 1))]</span>
+<span class="sd">                    sage: S(0, 0).edges_ccw(start_edge=(0, 0))</span>
+<span class="sd">                    [((0, 0), (2, 0)),</span>
+<span class="sd">                     ((0, 3), (0, 5)),</span>
+<span class="sd">                     ((0, 3), (0, 5)),</span>
+<span class="sd">                     ((0, 2), (-1, 1)),</span>
+<span class="sd">                     ((0, 2), (-1, 1)),</span>
+<span class="sd">                     ((0, 1), (1, -4)),</span>
+<span class="sd">                     ((0, 1), (1, -4)),</span>
+<span class="sd">                     ((0, 0), (2, 0))]</span>
+<span class="sd">                    sage: S(0, 0).edges_ccw(start_holonomy=(1, 0))</span>
+<span class="sd">                    [((0, 2), (1, 0)),</span>
+<span class="sd">                     ((0, 1), (-5/2, 3/2)),</span>
+<span class="sd">                     ((0, 1), (-5/2, 3/2)),</span>
+<span class="sd">                     ((0, 0), (-1, -1)),</span>
+<span class="sd">                     ((0, 0), (-1, -1)),</span>
+<span class="sd">                     ((0, 3), (5/2, -5/2)),</span>
+<span class="sd">                     ((0, 3), (5/2, -5/2)),</span>
+<span class="sd">                     ((0, 2), (1, 0))]</span>
+
+<span class="sd">                .. SEEALSO::</span>
+
+<span class="sd">                    :meth:`edges` for the edges containing this point in no</span>
+<span class="sd">                    particular order.</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+                <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+
+                <span class="n">position</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">position</span><span class="o">.</span><span class="n">is_in_interior</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="p">[]</span>
+
+                <span class="k">if</span> <span class="n">position</span><span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_ccw_edge</span><span class="p">(</span>
+                        <span class="n">start_edge</span><span class="o">=</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="n">start_holonomy</span>
+                    <span class="p">)</span>
+
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_ccw_vertex</span><span class="p">(</span>
+                    <span class="n">start_edge</span><span class="o">=</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="n">start_holonomy</span>
+                <span class="p">)</span></div>
+
+            <span class="k">def</span> <span class="nf">_test_edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Verify that :meth:`edges_ccw` is implemented correctly.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: S(0, 0)._test_edges_ccw()</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+                <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_ccw</span><span class="p">()</span>
+
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+                <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">[::</span><span class="mi">2</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">is_parallel</span>
+
+                    <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">is_parallel</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+            <span class="k">def</span> <span class="nf">_edges_ccw_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the edges that are crossed when walking around this</span>
+<span class="sd">                point on an edge.</span>
+
+<span class="sd">                This is a helper method for :meth:`edges_ccw`.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: S(0, (1/2, 0))._edges_ccw_edge()</span>
+<span class="sd">                    [((0, 2), (-1, 0)), ((0, 0), (1, 0))]</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+                <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">start_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">position</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
+                    <span class="n">start_edge</span> <span class="o">=</span> <span class="n">label</span><span class="p">,</span> <span class="n">position</span><span class="o">.</span><span class="n">get_edge</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">start_holonomy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">start_holonomy</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">start_holonomy</span> <span class="o">=</span> <span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)(</span><span class="n">start_holonomy</span><span class="p">)</span>
+
+                <span class="n">opposite</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="o">*</span><span class="n">start_edge</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">opposite</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">opposite</span> <span class="o">==</span> <span class="n">start_edge</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">[(</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="p">)]</span>
+
+                <span class="k">return</span> <span class="p">[(</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="p">),</span> <span class="p">(</span><span class="n">opposite</span><span class="p">,</span> <span class="o">-</span><span class="n">start_holonomy</span><span class="p">)]</span>
+
+            <span class="k">def</span> <span class="nf">_edges_ccw_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the edges that are crossed when walking around this</span>
+<span class="sd">                point at a vertex.</span>
+
+<span class="sd">                This is a helper method for :meth:`edges_ccw`.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: S(0, 0)._edges_ccw_vertex()</span>
+<span class="sd">                    [((0, 3), (0, -1)),</span>
+<span class="sd">                     ((0, 2), (1, 0)),</span>
+<span class="sd">                     ((0, 0), (1, 0)),</span>
+<span class="sd">                     ((0, 3), (0, 1)),</span>
+<span class="sd">                     ((0, 1), (0, 1)),</span>
+<span class="sd">                     ((0, 0), (-1, 0)),</span>
+<span class="sd">                     ((0, 2), (-1, 0)),</span>
+<span class="sd">                     ((0, 1), (0, -1))]</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">start_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+
+                    <span class="n">initial</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">label</span><span class="p">,</span>
+                        <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">get_vertex</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">start_edge</span> <span class="o">=</span> <span class="n">initial</span>
+
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">opposite</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="o">*</span><span class="n">start_edge</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">opposite</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">break</span>
+                        <span class="n">start_edge</span> <span class="o">=</span> <span class="n">opposite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">opposite</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span>
+                            <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">opposite</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">start_edge</span> <span class="o">==</span> <span class="n">initial</span><span class="p">:</span>
+                            <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">start_holonomy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">start_holonomy</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">start_holonomy</span> <span class="o">=</span> <span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)(</span><span class="n">start_holonomy</span><span class="p">)</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">similarity_from_vectors</span>
+
+                <span class="n">similarity</span> <span class="o">=</span> <span class="n">similarity_from_vectors</span><span class="p">(</span>
+                    <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">start_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">start_holonomy</span>
+                <span class="p">)</span>
+
+                <span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="p">)]</span>
+
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">exit_edge</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">vertices</span><span class="p">()),</span>
+                    <span class="p">)</span>
+                    <span class="n">exit_holonomy</span> <span class="o">=</span> <span class="o">-</span><span class="n">similarity</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">exit_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span>
+                        <span class="n">exit_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">exit_edge</span><span class="p">,</span> <span class="n">exit_holonomy</span><span class="p">))</span>
+
+                    <span class="n">enter_edge</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="o">*</span><span class="n">exit_edge</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">enter_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="o">*</span><span class="n">start_edge</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                                <span class="s2">&quot;start_edge must be set to the most clockwise edge at this vertex on the boundary&quot;</span>
+                            <span class="p">)</span>
+                        <span class="k">break</span>
+
+                    <span class="n">similarity</span> <span class="o">*=</span> <span class="n">S</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="o">*</span><span class="n">enter_edge</span><span class="p">)</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="n">enter_edge</span> <span class="o">==</span> <span class="n">start_edge</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                    <span class="n">enter_holonomy</span> <span class="o">=</span> <span class="n">similarity</span> <span class="o">*</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">enter_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span>
+                        <span class="n">enter_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">enter_edge</span><span class="p">,</span> <span class="n">enter_holonomy</span><span class="p">))</span>
+
+                <span class="k">return</span> <span class="n">edges</span></div>
+
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all oriented surfaces that are built</span>
@@ -725,6 +1152,175 @@
 <span class="sd">            If you want to add functionality for such surfaces you most likely</span>
 <span class="sd">            want to put it here.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.some_elements"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.some_elements">[docs]</a>            <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return some typical points of this surface (for testing).</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: list(S.some_elements())</span>
+<span class="sd">                    [Point (1/2, 1/2) of polygon 0, Vertex 0 of polygon 0]</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+
+                <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">islice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(),</span> <span class="mi">32</span><span class="p">):</span>
+                    <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+                    <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Fields</span>
+
+                    <span class="k">if</span> <span class="n">polygon</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
+                        <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-callable</span>
+                            <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="o">.</span><span class="n">centroid</span><span class="p">()</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-callable</span>
+                            <span class="n">label</span><span class="p">,</span> <span class="n">polygon</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">polygon</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                        <span class="p">)</span>
+
+                    <span class="k">yield</span> <span class="n">point</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
+                    <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.angles"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.angles">[docs]</a>            <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_adjacent_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the angles around the vertices of the surface as</span>
+<span class="sd">                multiples of 2π.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``numerical`` -- a boolean (default: ``False``);</span>
+<span class="sd">                  whether the angles are returned as floating point</span>
+<span class="sd">                  numbers or as exact algebraic numbers.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import polygons, similarity_surfaces, translation_surfaces</span>
+<span class="sd">                    sage: T = polygons.triangle(3, 4, 5)</span>
+<span class="sd">                    sage: S = similarity_surfaces.billiard(T)</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [1/4, 5/12, 1/3]</span>
+<span class="sd">                    sage: S.angles(numerical=True)   # abs tol 1e-14</span>
+<span class="sd">                    [0.25, 0.4166666666666667, 0.33333333333333337]</span>
+
+<span class="sd">                    sage: S.angles(return_adjacent_edges=True)</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead.</span>
+<span class="sd">                    [(1/4, [(0, 0), (1, 0)]), (5/12, [(0, 2), (1, 1)]), (1/3, [(0, 1), (1, 2)])]</span>
+
+<span class="sd">                ::</span>
+
+<span class="sd">                    sage: translation_surfaces.regular_octagon().angles()</span>
+<span class="sd">                    [3]</span>
+<span class="sd">                    sage: S = translation_surfaces.veech_2n_gon(5)</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [2, 2]</span>
+<span class="sd">                    sage: S.angles(numerical=True)</span>
+<span class="sd">                    [2.0, 2.0]</span>
+<span class="sd">                    sage: S.angles(return_adjacent_edges=True) # random output</span>
+<span class="sd">                    [(2, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),</span>
+<span class="sd">                     (2, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]</span>
+<span class="sd">                    sage: S.angles(numerical=True, return_adjacent_edges=True) # random output</span>
+<span class="sd">                    [(2.0, [(0, 1), (0, 5), (0, 9), (0, 3), (0, 7)]),</span>
+<span class="sd">                     (2.0, [(0, 0), (0, 4), (0, 8), (0, 2), (0, 6)])]</span>
+
+<span class="sd">                    sage: translation_surfaces.veech_2n_gon(6).angles()</span>
+<span class="sd">                    [5]</span>
+<span class="sd">                    sage: translation_surfaces.veech_double_n_gon(5).angles()</span>
+<span class="sd">                    [3]</span>
+<span class="sd">                    sage: translation_surfaces.cathedral(1, 1).angles()</span>
+<span class="sd">                    [3, 3, 3]</span>
+
+<span class="sd">                    sage: from flatsurf import polygons, similarity_surfaces</span>
+<span class="sd">                    sage: B = similarity_surfaces.billiard(polygons.triangle(1, 2, 5))</span>
+<span class="sd">                    sage: H = B.minimal_cover(cover_type=&quot;half-translation&quot;)</span>
+<span class="sd">                    sage: S = B.minimal_cover(cover_type=&quot;translation&quot;)</span>
+<span class="sd">                    sage: H.angles()</span>
+<span class="sd">                    [1/2, 1/2, 1/2, 5/2]</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [1, 1, 5, 1]</span>
+
+<span class="sd">                    sage: H.angles(return_adjacent_edges=True)</span>
+<span class="sd">                    [(1/2, [...]), (1/2, [...]), (1/2, [...]), (5/2, [...])]</span>
+<span class="sd">                    sage: S.angles(return_adjacent_edges=True)</span>
+<span class="sd">                    [(1, [...]), (1, [...]), (5, [...]), (1, [...])]</span>
+
+<span class="sd">                For self-glued edges, no angle is reported for the</span>
+<span class="sd">                &quot;vertex&quot; at the midpoint of the edge::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [1]</span>
+
+<span class="sd">                Non-convex examples::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
+<span class="sd">                    sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                    sage: L = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(1,1),(1,2),(0,2),(0,1)])</span>
+<span class="sd">                    sage: S.add_polygon(L)</span>
+<span class="sd">                    0</span>
+<span class="sd">                    sage: S.glue((0, 0), (0, 5))</span>
+<span class="sd">                    sage: S.glue((0, 1), (0, 3))</span>
+<span class="sd">                    sage: S.glue((0, 2), (0, 7))</span>
+<span class="sd">                    sage: S.glue((0, 4), (0, 6))</span>
+<span class="sd">                    sage: S.set_immutable()</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [3]</span>
+
+<span class="sd">                    sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0,0),(1,0),(2,0),(2,1),(3,1),(3,2),(2,2),(1,2),(1,1),(0,1)])</span>
+<span class="sd">                    sage: S.add_polygon(P)</span>
+<span class="sd">                    0</span>
+<span class="sd">                    sage: S.glue((0, 0), (0, 8))</span>
+<span class="sd">                    sage: S.glue((0, 1), (0, 6))</span>
+<span class="sd">                    sage: S.glue((0, 2), (0, 9))</span>
+<span class="sd">                    sage: S.glue((0, 3), (0, 5))</span>
+<span class="sd">                    sage: S.glue((0, 4), (0, 7))</span>
+<span class="sd">                    sage: S.set_immutable()</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [2, 2]</span>
+
+<span class="sd">                Angles can also be determined for surfaces with boundary::</span>
+
+<span class="sd">                    sage: from flatsurf import MutableOrientedSimilaritySurface</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 2)])</span>
+<span class="sd">                    sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                    sage: S.add_polygon(P)</span>
+<span class="sd">                    0</span>
+<span class="sd">                    sage: S.set_immutable()</span>
+<span class="sd">                    sage: S.angles()</span>
+<span class="sd">                    [1/4, 1/4, 3/8, 1/8]</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">return_adjacent_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">return_adjacent_edges</span><span class="p">:</span>
+                        <span class="kn">import</span> <span class="nn">warnings</span>
+
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                            <span class="s2">&quot;return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; use angle() and edges_ccw()[::2] on each vertex instead.&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">return</span> <span class="p">[</span>
+                            <span class="p">(</span>
+                                <span class="n">p</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">),</span>
+                                <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">edges_ccw</span><span class="p">()[::</span><span class="mi">2</span><span class="p">]],</span>
+                            <span class="p">)</span>
+                            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
+                        <span class="p">]</span>
+
+                    <span class="kn">import</span> <span class="nn">warnings</span>
+
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">&quot;return_adjacent_edges has been deprecated as a keyword argument to angles() and will be removed in a future version of sage-flatsurf; omit the argument to not include the edges instead.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_matrix"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">[docs]</a>            <span class="nd">@cached_method</span>
             <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -771,63 +1367,6 @@
                 <span class="kn">from</span> <span class="nn">sage.matrix.matrix_space</span> <span class="kn">import</span> <span class="n">MatrixSpace</span>
 
                 <span class="k">return</span> <span class="n">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span></div>
-
-            <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Return a point on this surface.</span>
-
-<span class="sd">                EXAMPLES::</span>
-
-<span class="sd">                    sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators</span>
-<span class="sd">                    sage: s = SimilaritySurfaceGenerators.example()</span>
-<span class="sd">                    sage: s.an_element()</span>
-<span class="sd">                    Point (4/3, -2/3) of polygon 0</span>
-
-<span class="sd">                ::</span>
-
-<span class="sd">                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
-
-<span class="sd">                    sage: S = MutableOrientedSimilaritySurface(QQ)</span>
-<span class="sd">                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))</span>
-<span class="sd">                    0</span>
-<span class="sd">                    sage: S.glue((0, 0), (0, 2))</span>
-<span class="sd">                    sage: S.glue((0, 1), (0, 3))</span>
-
-<span class="sd">                    sage: S.an_element()</span>
-<span class="sd">                    Point (1/2, 1/2) of polygon 0</span>
-
-<span class="sd">                TESTS:</span>
-
-<span class="sd">                Verify that this method works over non-fields (if 2 is</span>
-<span class="sd">                invertible)::</span>
-
-<span class="sd">                  sage: from flatsurf import similarity_surfaces</span>
-<span class="sd">                  sage: from flatsurf import EuclideanPolygonsWithAngles</span>
-<span class="sd">                  sage: E = EuclideanPolygonsWithAngles((3, 3, 5))</span>
-<span class="sd">                  sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to pkg_resources deprecation warnings in some contexts</span>
-<span class="sd">                  sage: R = ExactReals(E.base_ring()) # optional: exactreal</span>
-<span class="sd">                  sage: angles = (3, 3, 5)</span>
-<span class="sd">                  sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()</span>
-<span class="sd">                  sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal</span>
-<span class="sd">                  sage: S = similarity_surfaces.billiard(P) # optional: exactreal</span>
-<span class="sd">                  sage: S.an_element()  # optional: exactreal</span>
-<span class="sd">                  Point ((1/2 ~ 0.50000000)*ℝ(0.303644…), 0) of polygon 0</span>
-
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">()))</span>
-                <span class="n">polygon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-
-                <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Fields</span>
-
-                <span class="c1"># We use a point that can be constructed without problems on an</span>
-                <span class="c1"># infinite surface.</span>
-                <span class="k">if</span> <span class="n">polygon</span><span class="o">.</span><span class="n">is_convex</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">in</span> <span class="n">Fields</span><span class="p">():</span>
-                    <span class="n">coordinates</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">centroid</span><span class="p">()</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Sometimes, this is not implemented because it requires the edge</span>
-                    <span class="c1"># transformation to be known, so we prefer the centroid.</span>
-                    <span class="n">coordinates</span> <span class="o">=</span> <span class="n">polygon</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span>  <span class="c1"># pylint: disable=not-callable</span>
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.underlying_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.underlying_surface">[docs]</a>            <span class="k">def</span> <span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

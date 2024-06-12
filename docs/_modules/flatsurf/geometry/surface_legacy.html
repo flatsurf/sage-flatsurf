@@ -2344,7 +2344,7 @@
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_edge_back</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
         <span class="c1"># Maybe the surface is not connected?</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="s2">&quot;Unable to find label </span><span class="si">%s</span><span class="s2">. Are you sure the surface is connected?&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;Unable to find label </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">. Are you sure the surface is connected?&quot;</span>
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

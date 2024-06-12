@@ -386,7 +386,25 @@
 
         <span class="c1"># The (cached) an_element is going to fail its test suite because it has the wrong category now.</span>
         <span class="c1"># Make sure that we create a new copy of an_element when requested.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_an_element</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_an_element</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Surface_base.an_element"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.Surface_base.an_element">[docs]</a>    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a point of this surface.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: S.an_element()</span>
+<span class="sd">            Point (1/2, 1/2) of polygon 0</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Do not use the builtin caching of an_element if this surface is mutable.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_an_element_</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="MutablePolygonalSurface"><a class="viewcode-back" href="../../../geometry/surface.html#flatsurf.geometry.surface.MutablePolygonalSurface">[docs]</a><span class="k">class</span> <span class="nc">MutablePolygonalSurface</span><span class="p">(</span><span class="n">Surface_base</span><span class="p">):</span>
@@ -687,8 +705,7 @@
 <span class="sd">            Category of connected without boundary finite type translation surfaces</span>
 <span class="sd">            sage: new_methods = set(method for method in dir(S) if not method.startswith(&#39;_&#39;))</span>
 <span class="sd">            sage: new_methods - old_methods</span>
-<span class="sd">            {&#39;angles&#39;,</span>
-<span class="sd">             &#39;apply_matrix&#39;,</span>
+<span class="sd">            {&#39;apply_matrix&#39;,</span>
 <span class="sd">             &#39;area&#39;,</span>
 <span class="sd">             &#39;canonicalize&#39;,</span>
 <span class="sd">             &#39;canonicalize_mapping&#39;,</span>

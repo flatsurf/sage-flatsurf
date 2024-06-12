@@ -396,34 +396,6 @@ most likely want to put it here.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ParentMethods</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods" title="Permalink to this definition">#</a></dt>
-<dd><p>Provides methods available to all oriented cone surfaces
-without boundary.</p>
-<p>If you want to add functionality for such surfaces you most
-likely want to put it here.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods.angles">
-<span class="sig-name descname"><span class="pre">angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_adjacent_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/cone_surfaces.html#ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods.angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods.angles" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the set of angles around the vertices of the surface.</p>
-<p>EXAMPLES:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">polygons</span><span class="p">,</span> <span class="n">similarity_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">triangle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">angles</span><span class="p">()</span>
-<span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">12</span><span class="p">]</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">angles</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># abs tol 1e-14</span>
-<span class="p">[</span><span class="mf">0.333333333333333</span><span class="p">,</span> <span class="mf">0.250000000000000</span><span class="p">,</span> <span class="mf">0.416666666666667</span><span class="p">]</span>
-
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">angles</span><span class="p">(</span><span class="n">return_adjacent_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="p">[(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]),</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]),</span> <span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mi">12</span><span class="p">,</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</dd></dl>
-
 </dd></dl>
 
 </dd></dl>
@@ -560,10 +532,6 @@ cone surface, see
 <li><a class="reference internal" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary"><code class="docutils literal notranslate"><span class="pre">ConeSurfaces.FiniteType.Oriented.WithoutBoundary</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.Connected"><code class="docutils literal notranslate"><span class="pre">ConeSurfaces.FiniteType.Oriented.WithoutBoundary.Connected</span></code></a><ul>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.Connected.ParentMethods"><code class="docutils literal notranslate"><span class="pre">ConeSurfaces.FiniteType.Oriented.WithoutBoundary.Connected.ParentMethods</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods"><code class="docutils literal notranslate"><span class="pre">ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods</span></code></a><ul>
-<li><a class="reference internal" href="#flatsurf.geometry.categories.cone_surfaces.ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods.angles"><code class="docutils literal notranslate"><span class="pre">ConeSurfaces.FiniteType.Oriented.WithoutBoundary.ParentMethods.angles()</span></code></a></li>
 </ul>
 </li>
 </ul>

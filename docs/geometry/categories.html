@@ -401,12 +401,11 @@ available:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">TranslationSurfaces</span><span class="o">.</span><span class="n">FiniteType</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">stratum</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
-<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-<span class="o">...</span>
-<span class="ne">AttributeError</span><span class="p">:</span> <span class="o">...</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;angles&#39;</span>
+<span class="n">H_1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>So this approach is quite brittle and might need a mix with the above to work:</p>
+<p>While this works, this approach is quite brittle and might sometimes need a mix
+with the above to work:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.categories</span> <span class="kn">import</span> <span class="n">ConeSurfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">_refine_category_</span><span class="p">(</span><span class="n">ConeSurfaces</span><span class="p">()</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="p">())</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TranslationSurfaces</span><span class="o">.</span><span class="n">FiniteType</span><span class="o">.</span><span class="n">WithoutBoundary</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">stratum</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>

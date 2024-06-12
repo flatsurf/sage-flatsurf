@@ -564,7 +564,51 @@
 <span class="sd">                sage: translation_surfaces.octagon_and_squares().genus()</span>
 <span class="sd">                3</span>
 
-<span class="sd">            &quot;&quot;&quot;</span></div></div>
+<span class="sd">            &quot;&quot;&quot;</span></div>
+
+        <span class="k">def</span> <span class="nf">_an_element_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return a point on this surface.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf.geometry.similarity_surface_generators import SimilaritySurfaceGenerators</span>
+<span class="sd">                sage: s = SimilaritySurfaceGenerators.example()</span>
+<span class="sd">                sage: s.an_element()</span>
+<span class="sd">                Point (4/3, -2/3) of polygon 0</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface</span>
+
+<span class="sd">                sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)]))</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: S.glue((0, 0), (0, 2))</span>
+<span class="sd">                sage: S.glue((0, 1), (0, 3))</span>
+
+<span class="sd">                sage: S.an_element()</span>
+<span class="sd">                Point (1/2, 1/2) of polygon 0</span>
+
+<span class="sd">            TESTS:</span>
+
+<span class="sd">            Verify that this method works over non-fields (if 2 is</span>
+<span class="sd">            invertible)::</span>
+
+<span class="sd">              sage: from flatsurf import similarity_surfaces</span>
+<span class="sd">              sage: from flatsurf import EuclideanPolygonsWithAngles</span>
+<span class="sd">              sage: E = EuclideanPolygonsWithAngles((3, 3, 5))</span>
+<span class="sd">              sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to pkg_resources deprecation warnings in some contexts</span>
+<span class="sd">              sage: R = ExactReals(E.base_ring()) # optional: exactreal</span>
+<span class="sd">              sage: angles = (3, 3, 5)</span>
+<span class="sd">              sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()</span>
+<span class="sd">              sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal</span>
+<span class="sd">              sage: S = similarity_surfaces.billiard(P) # optional: exactreal</span>
+<span class="sd">              sage: S.an_element()  # optional: exactreal</span>
+<span class="sd">              Point ((1/2 ~ 0.50000000)*ℝ(0.303644…), 0) of polygon 0</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">some_elements</span><span class="p">()))</span></div>
 
 <div class="viewcode-block" id="TopologicalSurfaces.Orientable"><a class="viewcode-back" href="../../../../geometry/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.Orientable">[docs]</a>    <span class="k">class</span> <span class="nc">Orientable</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

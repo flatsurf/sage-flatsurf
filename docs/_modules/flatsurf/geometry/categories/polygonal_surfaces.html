@@ -297,7 +297,7 @@
 <span class="c1"># ****************************************************************************</span>
 <span class="c1">#  This file is part of sage-flatsurf.</span>
 <span class="c1">#</span>
-<span class="c1">#        Copyright (C) 2023 Julian Rüth</span>
+<span class="c1">#        Copyright (C) 2023-2024 Julian Rüth</span>
 <span class="c1">#</span>
 <span class="c1">#  sage-flatsurf is free software: you can redistribute it and/or modify</span>
 <span class="c1">#  it under the terms of the GNU General Public License as published by</span>
@@ -1110,6 +1110,161 @@
             <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">()),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roots</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ElementMethods"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ElementMethods">[docs]</a>    <span class="k">class</span> <span class="nc">ElementMethods</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides methods for all points on surfaces built from polygons.</span>
+
+<span class="sd">        If you want to add functionality for such surfaces, you most likely</span>
+<span class="sd">        want to put it here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ElementMethods.is_in_edge_interior"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ElementMethods.is_in_edge_interior">[docs]</a>        <span class="k">def</span> <span class="nf">is_in_edge_interior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this point is on an edge (but not at a vertex) of</span>
+<span class="sd">            one of the polygons that make up this surface.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+
+<span class="sd">            A vertex is not contained in the interior of an edge::</span>
+
+<span class="sd">                sage: S(0, 0).is_in_edge_interior()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            A point on the edge that is not a vertex::</span>
+
+<span class="sd">                sage: S(0, (1, 0)).is_in_edge_interior()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            An inner point of a polygon::</span>
+
+<span class="sd">                sage: S(0, (1, 1)).is_in_edge_interior()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)(</span><span class="n">coordinates</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">position</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">is_in_edge_interior</span><span class="p">()</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ElementMethods.is_in_polygon_interior"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ElementMethods.is_in_polygon_interior">[docs]</a>        <span class="k">def</span> <span class="nf">is_in_polygon_interior</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return whether this point is in the interior of one of the</span>
+<span class="sd">            polygons that make up this surface and not on an edge or at a</span>
+<span class="sd">            vertex.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+
+<span class="sd">            A vertex is not contained in the interior of a polygon::</span>
+
+<span class="sd">                sage: S(0, 0).is_in_polygon_interior()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            A point on an edge::</span>
+
+<span class="sd">                sage: S(0, (1, 0)).is_in_polygon_interior()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            An inner point of a polygon::</span>
+
+<span class="sd">                sage: S(0, (1, 1)).is_in_polygon_interior()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">representative</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)(</span><span class="n">coordinates</span><span class="p">)</span><span class="o">.</span><span class="n">position</span><span class="p">()</span><span class="o">.</span><span class="n">is_in_interior</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PolygonalSurfaces.ElementMethods.edges"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ElementMethods.edges">[docs]</a>        <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the edges of the polygons that contain this point.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+
+<span class="sd">            For an inner point, no edges are reported::</span>
+
+<span class="sd">                sage: S(0, (1, 1)).edges()</span>
+<span class="sd">                set()</span>
+
+<span class="sd">            For a point on a self-glued edge, one edge is reported::</span>
+
+<span class="sd">                sage: S(0, (1, 0)).edges()</span>
+<span class="sd">                {(0, 0)}</span>
+
+<span class="sd">            For a point on a non self-glued edge, two edges are reported, for</span>
+<span class="sd">            the two sides of the edge::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                sage: S(0, (1/2, 0)).edges()</span>
+<span class="sd">                {(0, 0), (0, 2)}</span>
+
+<span class="sd">            For a point on an unglued edge, a single edge is reported::</span>
+
+<span class="sd">                sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon</span>
+<span class="sd">                sage: S = MutableOrientedSimilaritySurface(QQ)</span>
+<span class="sd">                sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))</span>
+<span class="sd">                0</span>
+<span class="sd">                sage: S(0, (1/2, 0)).edges()</span>
+<span class="sd">                {(0, 0)}</span>
+
+<span class="sd">            All edges are reported for the vertex of this square torus::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                sage: S(0, 0).edges()</span>
+<span class="sd">                {(0, 0), (0, 1), (0, 2), (0, 3)}</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;points on this surface cannot determine which edges they are contained in yet&quot;</span>
+            <span class="p">)</span></div>
+
+        <span class="k">def</span> <span class="nf">_test_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Verify that :meth:`edges` has been implemented correctly.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                sage: S(0, 0)._test_edges()</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+            <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">edges</span><span class="p">:</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_in_polygon_interior</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">opposite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="o">*</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">opposite</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">opposite</span> <span class="o">==</span> <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertGreaterEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                <span class="n">opposite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="o">*</span><span class="n">edge</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">opposite</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">opposite</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PolygonalSurfaces.FiniteType"><a class="viewcode-back" href="../../../../geometry/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.FiniteType">[docs]</a>    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
