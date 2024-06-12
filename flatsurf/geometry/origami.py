@@ -134,17 +134,17 @@ class Origami(AbstractOrigami):
         else:
             for a in domain.some_elements():
                 if r(rr(a)) != a:
-                    raise ValueError("r o rr is not identity on %s" % a)
+                    raise ValueError(f"r o rr is not identity on {a}")
                 if rr(r(a)) != a:
-                    raise ValueError("rr o r is not identity on %s" % a)
+                    raise ValueError(f"rr o r is not identity on {a}")
         if uu is None:
             uu = ~u
         else:
             for a in domain.some_elements():
                 if u(uu(a)) != a:
-                    raise ValueError("u o uu is not identity on %s" % a)
+                    raise ValueError(f"u o uu is not identity on {a}")
                 if uu(u(a)) != a:
-                    raise ValueError("uu o u is not identity on %s" % a)
+                    raise ValueError(f"uu o u is not identity on {a}")
 
         self._perms = [uu, r, u, rr]  # down,right,up,left
         AbstractOrigami.__init__(

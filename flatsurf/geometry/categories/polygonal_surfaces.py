@@ -24,7 +24,7 @@ EXAMPLES::
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2023 Julian Rüth
+#        Copyright (C) 2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -837,6 +837,161 @@ class PolygonalSurfaces(SurfaceCategory):
             tester = self._tester(**options)
 
             tester.assertEqual(len(self.components()), len(self.roots()))
+
+    class ElementMethods:
+        r"""
+        Provides methods for all points on surfaces built from polygons.
+
+        If you want to add functionality for such surfaces, you most likely
+        want to put it here.
+        """
+
+        def is_in_edge_interior(self):
+            r"""
+            Return whether this point is on an edge (but not at a vertex) of
+            one of the polygons that make up this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            A vertex is not contained in the interior of an edge::
+
+                sage: S(0, 0).is_in_edge_interior()
+                False
+
+            A point on the edge that is not a vertex::
+
+                sage: S(0, (1, 0)).is_in_edge_interior()
+                True
+
+            An inner point of a polygon::
+
+                sage: S(0, (1, 1)).is_in_edge_interior()
+                False
+
+            """
+            label, coordinates = self.representative()
+            return (
+                self.parent()
+                .polygon(label)(coordinates)
+                .position()
+                .is_in_edge_interior()
+            )
+
+        def is_in_polygon_interior(self):
+            r"""
+            Return whether this point is in the interior of one of the
+            polygons that make up this surface and not on an edge or at a
+            vertex.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            A vertex is not contained in the interior of a polygon::
+
+                sage: S(0, 0).is_in_polygon_interior()
+                False
+
+            A point on an edge::
+
+                sage: S(0, (1, 0)).is_in_polygon_interior()
+                False
+
+            An inner point of a polygon::
+
+                sage: S(0, (1, 1)).is_in_polygon_interior()
+                True
+
+            """
+            label, coordinates = self.representative()
+            return self.parent().polygon(label)(coordinates).position().is_in_interior()
+
+        def edges(self):
+            r"""
+            Return the edges of the polygons that contain this point.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+
+            For an inner point, no edges are reported::
+
+                sage: S(0, (1, 1)).edges()
+                set()
+
+            For a point on a self-glued edge, one edge is reported::
+
+                sage: S(0, (1, 0)).edges()
+                {(0, 0)}
+
+            For a point on a non self-glued edge, two edges are reported, for
+            the two sides of the edge::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S(0, (1/2, 0)).edges()
+                {(0, 0), (0, 2)}
+
+            For a point on an unglued edge, a single edge is reported::
+
+                sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+                sage: S = MutableOrientedSimilaritySurface(QQ)
+                sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                0
+                sage: S(0, (1/2, 0)).edges()
+                {(0, 0)}
+
+            All edges are reported for the vertex of this square torus::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S(0, 0).edges()
+                {(0, 0), (0, 1), (0, 2), (0, 3)}
+
+            """
+            raise NotImplementedError(
+                "points on this surface cannot determine which edges they are contained in yet"
+            )
+
+        def _test_edges(self, **options):
+            r"""
+            Verify that :meth:`edges` has been implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: S(0, 0)._test_edges()
+
+            """
+            tester = self._tester(**options)
+
+            edges = self.edges()
+
+            if not edges:
+                tester.assertTrue(self.is_in_polygon_interior())
+
+            if len(edges) == 1:
+                opposite = self.parent().opposite_edge(*edges[0])
+                tester.assertTrue(opposite is None or opposite == edges[0])
+
+            if self.is_vertex():
+                tester.assertGreaterEqual(len(edges), 2)
+
+            for edge in edges:
+                opposite = self.parent().opposite_edge(*edge)
+                if opposite is None:
+                    continue
+
+                tester.assertTrue(opposite in edges)
 
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
