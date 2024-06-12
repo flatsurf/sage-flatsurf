@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           mamba env update -n test --quiet -f environment.yml
-      - name: Install sage-flasturf
+      - name: Install sage-flatsurf
         run: |
           pip install -e .
       - name: Run pylint
