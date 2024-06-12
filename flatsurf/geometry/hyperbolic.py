@@ -6242,7 +6242,7 @@ class HyperbolicHalfSpace(HyperbolicConvexFacade):
             if point in self.boundary():
                 return True
 
-            from sage.rings.qqbar import AA
+            from sage.all improt AA
 
             if AA.has_coerce_map_from(self.parent().base_ring()):
                 x, y = point.coordinates(model="klein", ring=AA)
@@ -8481,65 +8481,79 @@ class HyperbolicOrientedGeodesic(HyperbolicGeodesic, HyperbolicOrientedConvexSet
 
     def angle(self, other, numerical=True):
         r"""
-        Compute the angle between this geodesic and ``other`` divided by ``2 pi``.
+        Compute the angle between this geodesic and ``other`` divided by 2π.
 
-        If ``self`` and ``other`` do not intersect a ``ValueError`` is raised.
+        If this geodesic and ``other`` do not intersect, a ``ValueError`` is
+        raised.
 
         EXAMPLES::
 
             sage: from flatsurf import HyperbolicPlane
             sage: H = HyperbolicPlane(QQ)
+
             sage: g0 = H.geodesic(-1, 1)
             sage: g1 = H.geodesic(0, 2)
             sage: g2 = H.geodesic(1, 2)
+
             sage: g0.angle(g1, numerical=False)
             1/6
+
             sage: assert g0.angle(g1, numerical=False) == (-g0).angle(-g1, numerical=False)
             sage: assert g1.angle(g2, numerical=False) == (-g2).angle(-g1, numerical=False)
             sage: assert g0.angle(g1, numerical=False) + g1.angle(-g0, numerical=False) == 1/2
             sage: assert g1.angle(g2, numerical=False) + g1.angle(-g2, numerical=False) == 1/2
 
+        ::
+
             sage: H.geodesic(0, 1).angle(H.geodesic(1, Infinity))
             0.5
+
             sage: H.geodesic(0, 1).angle(H.geodesic(Infinity, 1))
             0.0
 
+        ::
+
             sage: m = matrix(2, [2, 1, 1, 1])
+
             sage: g0.apply_isometry(m).angle(g1.apply_isometry(m), numerical=False)
             1/6
+
+        ::
 
             sage: a = H.point(0, 1, model='half_plane')
             sage: b = H.point(1, 1, model='half_plane')
             sage: c = H.point(1, 2, model='half_plane')
+
             sage: H.geodesic(a, b).angle(H.geodesic(b, c))
             0.32379180882521663
+
             sage: H.geodesic(b, a).angle(H.geodesic(c, b))
             0.32379180882521663
 
             sage: H.geodesic(a, b).angle(H.geodesic(b, c)) + H.geodesic(b, c).angle(H.geodesic(b, a))
             0.5
 
+        ::
+
             sage: g3 = H.geodesic(2, 3)
             sage: g0.angle(g3)
             Traceback (most recent call last):
             ...
             ValueError: non-intersecting geodesics
+
         """
         from sage.rings.rational_field import QQ
         import math
         from flatsurf.geometry.euclidean import acos
 
-        p1 = self.start()
-        q1 = self.end()
-        p2 = other.start()
-        q2 = other.end()
-        if p1 == q2 or q1 == p2:
+        if self.start() == other.end() or self.end() == other.start():
             return 0.5 if numerical else QQ.one() / 2
-        elif p1 == p2 or q1 == q2:
+        if self.start() == other.start() or self.end() == other.end():
             return 0.0 if numerical else QQ.zero()
-        elif p2 in self.right_half_space() and q2 in self.left_half_space():
+
+        if other.start() in self.right_half_space() and other.end() in self.left_half_space():
             sign = 1
-        elif q2 in self.right_half_space() and p2 in self.left_half_space():
+        elif other.end() in self.right_half_space() and other.start() in self.left_half_space():
             sign = -1
         else:
             raise ValueError("non-intersecting geodesics")
