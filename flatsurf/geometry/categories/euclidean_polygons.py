@@ -852,6 +852,74 @@ class EuclideanPolygons(Category_over_base_ring):
 
             return PolygonPosition(PolygonPosition.OUTSIDE)
 
+        def join(self, other, edge, other_edge):
+            r"""
+            Return the polygon obtained by gluing this polygon and ``other``
+            along their ``edge`` and ``other_edge``, respectively.
+
+            The polygons have to be such that the glued edges are identical but
+            with opposite orientation.
+
+            INPUT:
+
+            - ``other`` -- a polygon over the same base ring as this polygon
+
+            - ``edge`` -- an integer; the index of the edge of this polygon
+              along which to glue
+
+            - ``other_edge`` -- an integer; the index of the edge of ``other``
+              along which to glue
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon
+                sage: P = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+                sage: Q = Polygon(vertices=[(1, 0), (1, 1), (0, 1)])
+                sage: P.join(Q, 1, 2)
+                Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+                sage: P.join(P, 1, 1)
+                Traceback (most recent call last):
+                ...
+                ValueError: glued edges must be identical with opposite orientation
+
+                sage: Q = Polygon(vertices=[(0, 0), (0, 1), (-1, 1)])
+                sage: P.join(Q, 1, 2)
+                Traceback (most recent call last):
+                ...
+                ValueError: glued edges must be identical with opposite orientation
+
+                sage: P.join(Q, 2, 0)
+                Polygon(vertices=[(0, 0), (1, 0), (0, 1), (-1, 1)])
+
+            Polygons cannot be joined if that would lead to a self-intersecting
+            polygon::
+
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2), (1, 1)])
+                sage: Q = Polygon(vertices=[(0, 0), (1, 1), (2, 2), (0, 2)])
+                sage: P.join(Q, 4, 0)
+                Traceback (most recent call last):
+                ...
+                NotImplementedError: polygon self-intersects
+
+            """
+            if self.vertex(edge) != other.vertex(other_edge + 1) or self.vertex(
+                edge + 1
+            ) != other.vertex(other_edge):
+                raise ValueError(
+                    "glued edges must be identical with opposite orientation"
+                )
+
+            from flatsurf import Polygon
+
+            return Polygon(
+                base_ring=self.base_ring(),
+                vertices=self.vertices()[:edge]
+                + other.vertices()[other_edge + 1 :]
+                + other.vertices()[:other_edge]
+                + self.vertices()[edge + 1 :],
+            )
+
     class Rational(CategoryWithAxiom_over_base_ring):
         r"""
         The category of rational Euclidean polygons.
