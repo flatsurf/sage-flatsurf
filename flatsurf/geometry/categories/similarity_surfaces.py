@@ -426,7 +426,7 @@ class SimilaritySurfaces(SurfaceCategory):
             if not matrix.dimensions != (2, 2):
                 raise NotImplementedError("only implemented for 2x2 matrices")
 
-            from flatsurf.geometry.half_dilation_surface import GL2RImageSurface
+            from flatsurf.geometry.lazy import GL2RImageSurface
 
             return GL2RImageSurface(self, matrix)
 
