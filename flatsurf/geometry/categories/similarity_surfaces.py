@@ -1987,6 +1987,55 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return p.is_convex(strict=strict)
 
+            def is_convex(self, label, edge, strict=False):
+                r"""
+                Return whether the polygon with ``label`` is convex after it
+                has been glued with the polygon across its ``edge``.
+
+                INPUT:
+
+                - ``label`` -- a label of a polygon in this surface
+
+                - ``edge`` -- the index of an edge of the polygon with ``label``
+
+                - ``strict`` -- a boolean (default: ``False``); whether to
+                  determine that the polygon is strictly convex, i.e., none of
+                  its inner angles greater or equal than π.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+                    sage: S.is_convex(0, 0)
+                    True
+                    sage: S.is_convex(0, 0, strict=True)
+                    False
+
+                    sage: S.is_convex(2, 0)
+                    Traceback (most recent call last):
+                    ...
+                    ValueError: edge must be joining two different polygons
+
+                """
+                opposite_label, opposite_edge = self.opposite_edge(label, edge)
+
+                if opposite_label == label:
+                    raise ValueError("edge must be joining two different polygons")
+
+                p1 = self.polygon(label)
+
+                from flatsurf import Polygon
+
+                sim = self.edge_transformation(opposite_label, opposite_edge)
+                p2 = self.polygon(opposite_label)
+                p2 = Polygon(
+                    vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring()
+                )
+
+                p = p1.join(p2, edge, opposite_edge)
+
+                return p.is_convex(strict=strict)
+
             def random_flip(self, repeat=1, in_place=False):
                 r"""
                 Perform random edge flip on a triangulated surface.
