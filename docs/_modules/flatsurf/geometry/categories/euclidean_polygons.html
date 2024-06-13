@@ -1123,7 +1123,75 @@
             <span class="k">if</span> <span class="n">winding_number</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">PolygonPosition</span><span class="p">(</span><span class="n">PolygonPosition</span><span class="o">.</span><span class="n">INTERIOR</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">PolygonPosition</span><span class="p">(</span><span class="n">PolygonPosition</span><span class="o">.</span><span class="n">OUTSIDE</span><span class="p">)</span></div></div>
+            <span class="k">return</span> <span class="n">PolygonPosition</span><span class="p">(</span><span class="n">PolygonPosition</span><span class="o">.</span><span class="n">OUTSIDE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.join"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.join">[docs]</a>        <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">other_edge</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the polygon obtained by gluing this polygon and ``other``</span>
+<span class="sd">            along their ``edge`` and ``other_edge``, respectively.</span>
+
+<span class="sd">            The polygons have to be such that the glued edges are identical but</span>
+<span class="sd">            with opposite orientation.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``other`` -- a polygon over the same base ring as this polygon</span>
+
+<span class="sd">            - ``edge`` -- an integer; the index of the edge of this polygon</span>
+<span class="sd">              along which to glue</span>
+
+<span class="sd">            - ``other_edge`` -- an integer; the index of the edge of ``other``</span>
+<span class="sd">              along which to glue</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import Polygon</span>
+<span class="sd">                sage: P = Polygon(vertices=[(0, 0), (1, 0), (0, 1)])</span>
+<span class="sd">                sage: Q = Polygon(vertices=[(1, 0), (1, 1), (0, 1)])</span>
+<span class="sd">                sage: P.join(Q, 1, 2)</span>
+<span class="sd">                Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])</span>
+
+<span class="sd">                sage: P.join(P, 1, 1)</span>
+<span class="sd">                Traceback (most recent call last):</span>
+<span class="sd">                ...</span>
+<span class="sd">                ValueError: glued edges must be identical with opposite orientation</span>
+
+<span class="sd">                sage: Q = Polygon(vertices=[(0, 0), (0, 1), (-1, 1)])</span>
+<span class="sd">                sage: P.join(Q, 1, 2)</span>
+<span class="sd">                Traceback (most recent call last):</span>
+<span class="sd">                ...</span>
+<span class="sd">                ValueError: glued edges must be identical with opposite orientation</span>
+
+<span class="sd">                sage: P.join(Q, 2, 0)</span>
+<span class="sd">                Polygon(vertices=[(0, 0), (1, 0), (0, 1), (-1, 1)])</span>
+
+<span class="sd">            Polygons cannot be joined if that would lead to a self-intersecting</span>
+<span class="sd">            polygon::</span>
+
+<span class="sd">                sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2), (1, 1)])</span>
+<span class="sd">                sage: Q = Polygon(vertices=[(0, 0), (1, 1), (2, 2), (0, 2)])</span>
+<span class="sd">                sage: P.join(Q, 4, 0)</span>
+<span class="sd">                Traceback (most recent call last):</span>
+<span class="sd">                ...</span>
+<span class="sd">                NotImplementedError: polygon self-intersects</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">other_edge</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span>
+                <span class="n">edge</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">other_edge</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;glued edges must be identical with opposite orientation&quot;</span>
+                <span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+
+            <span class="k">return</span> <span class="n">Polygon</span><span class="p">(</span>
+                <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
+                <span class="n">vertices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[:</span><span class="n">edge</span><span class="p">]</span>
+                <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[</span><span class="n">other_edge</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+                <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[:</span><span class="n">other_edge</span><span class="p">]</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[</span><span class="n">edge</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span>
+            <span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="EuclideanPolygons.Rational"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Rational">[docs]</a>    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

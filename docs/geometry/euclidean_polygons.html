@@ -677,6 +677,55 @@ True</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.join">
+<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.ParentMethods.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.join" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the polygon obtained by gluing this polygon and <code class="docutils literal notranslate"><span class="pre">other</span></code>
+along their <code class="docutils literal notranslate"><span class="pre">edge</span></code> and <code class="docutils literal notranslate"><span class="pre">other_edge</span></code>, respectively.</p>
+<p>The polygons have to be such that the glued edges are identical but
+with opposite orientation.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">other</span></code> – a polygon over the same base ring as this polygon</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge</span></code> – an integer; the index of the edge of this polygon
+along which to glue</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">other_edge</span></code> – an integer; the index of the edge of <code class="docutils literal notranslate"><span class="pre">other</span></code>
+along which to glue</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">glued</span> <span class="n">edges</span> <span class="n">must</span> <span class="n">be</span> <span class="n">identical</span> <span class="k">with</span> <span class="n">opposite</span> <span class="n">orientation</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">glued</span> <span class="n">edges</span> <span class="n">must</span> <span class="n">be</span> <span class="n">identical</span> <span class="k">with</span> <span class="n">opposite</span> <span class="n">orientation</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>Polygons cannot be joined if that would lead to a self-intersecting
+polygon:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">polygon</span> <span class="bp">self</span><span class="o">-</span><span class="n">intersects</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.module">
 <span class="sig-name descname"><span class="pre">module</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/euclidean_polygons.html#EuclideanPolygons.ParentMethods.module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.module" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the free module of rank 2 in which this polygon embeds.</p>
@@ -1428,6 +1477,7 @@ the polygons.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_equilateral"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.is_equilateral()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_rational"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.is_rational()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_simple"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.is_simple()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.join"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.join()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.module"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.module()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.plot"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.plot()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.slopes"><code class="docutils literal notranslate"><span class="pre">EuclideanPolygons.ParentMethods.slopes()</span></code></a></li>

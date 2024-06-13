@@ -1039,6 +1039,35 @@ a polygon label and an edge.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_convex">
+<span class="sig-name descname"><span class="pre">is_convex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.Oriented.ParentMethods.is_convex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_convex" title="Permalink to this definition">#</a></dt>
+<dd><p>Return whether the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code> is convex after it
+has been glued with the polygon across its <code class="docutils literal notranslate"><span class="pre">edge</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code> – a label of a polygon in this surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edge</span></code> – the index of an edge of the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strict</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>); whether to
+determine that the polygon is strictly convex, i.e., none of
+its inner angles greater or equal than π.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="kc">False</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">edge</span> <span class="n">must</span> <span class="n">be</span> <span class="n">joining</span> <span class="n">two</span> <span class="n">different</span> <span class="n">polygons</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed">
 <span class="sig-name descname"><span class="pre">is_delaunay_decomposed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed" title="Permalink to this definition">#</a></dt>
 <dd><p>Return if the decomposition of the surface into polygons is Delaunay.</p>
@@ -2042,6 +2071,7 @@ namely the surfaces formed by Euclidean polygons.</p>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.edge_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_transformation"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.edge_transformation()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_convex"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.is_convex()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.join_polygons"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.Oriented.ParentMethods.join_polygons()</span></code></a></li>
