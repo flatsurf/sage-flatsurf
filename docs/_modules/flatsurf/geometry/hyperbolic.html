@@ -5915,6 +5915,77 @@
             <span class="n">vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
             <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">endpoints</span><span class="p">,</span> <span class="n">vertices</span><span class="p">)</span>
 
+<div class="viewcode-block" id="HyperbolicConvexSet.area"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the area of this convex set divided by 2π.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
+<span class="sd">            sage: H = HyperbolicPlane(QQ)</span>
+<span class="sd">            sage: p = H.polygon([H.geodesic(0, 1).left_half_space(),</span>
+<span class="sd">            ....:                 H.geodesic(1, Infinity).left_half_space(),</span>
+<span class="sd">            ....:                 H.geodesic(Infinity, 0).left_half_space()])</span>
+<span class="sd">            sage: p.area()</span>
+<span class="sd">            0.5</span>
+<span class="sd">            sage: p.area(numerical=False)</span>
+<span class="sd">            1/2</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: a = H.point(0, 1, model=&#39;half_plane&#39;)</span>
+<span class="sd">            sage: b = H.point(1, 1, model=&#39;half_plane&#39;)</span>
+<span class="sd">            sage: c = H.point(1, 2, model=&#39;half_plane&#39;)</span>
+<span class="sd">            sage: d = H.point(0, 2, model=&#39;half_plane&#39;)</span>
+<span class="sd">            sage: p = H.polygon([H.geodesic(a, b).left_half_space(),</span>
+<span class="sd">            ....:                H.geodesic(b, c).left_half_space(),</span>
+<span class="sd">            ....:                H.geodesic(c, d).left_half_space(),</span>
+<span class="sd">            ....:                H.geodesic(d, a).left_half_space()])</span>
+<span class="sd">            sage: p.area()</span>
+<span class="sd">            0.0696044872730639</span>
+
+<span class="sd">        Zero and one-dimensional objects have area zero::</span>
+
+<span class="sd">            sage: p = H(I)</span>
+<span class="sd">            sage: p.area()</span>
+<span class="sd">            0.0</span>
+<span class="sd">            sage: p.area(numerical=False)</span>
+<span class="sd">            0</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: g = H.geodesic(0, 1)</span>
+<span class="sd">            sage: g.area()</span>
+<span class="sd">            0.0</span>
+<span class="sd">            sage: g.area(numerical=False)</span>
+<span class="sd">            0</span>
+
+<span class="sd">        A half space has infinite area::</span>
+
+<span class="sd">            sage: h = g.left_half_space()</span>
+<span class="sd">            sage: h.area()</span>
+<span class="sd">            inf</span>
+<span class="sd">            sage: h.area(numerical=False)</span>
+<span class="sd">            +Infinity</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">Infinity</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">numerical</span> <span class="k">else</span> <span class="n">QQ</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
+
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()]</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">edges</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">])</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">numerical</span> <span class="k">else</span> <span class="n">Infinity</span>
+
+        <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">QQ</span><span class="p">((</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">edges</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">])</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="o">-</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
 <div class="viewcode-block" id="HyperbolicConvexSet.__hash__"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.__hash__">[docs]</a>    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a hash value for this convex set.</span>
@@ -6414,13 +6485,43 @@
 <span class="sd">            sage: oo in h</span>
 <span class="sd">            True</span>
 
-<span class="sd">        Currently, this is not implemented for points whose coordinates cannot</span>
-<span class="sd">        be represented over the base ring::</span>
+<span class="sd">        We can also check containment of ideal endpoints of geodesics::</span>
 
-<span class="sd">            sage: H.half_circle(0, 2).start() in h</span>
-<span class="sd">            Traceback (most recent call last):</span>
-<span class="sd">            ...</span>
-<span class="sd">            NotImplementedError: cannot decide whether this ideal point is contained in the half space yet</span>
+<span class="sd">            sage: g = H.half_circle(0, 2)</span>
+<span class="sd">            sage: g.start() in h</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: g.end() in h</span>
+<span class="sd">            False</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: g = H.half_circle(-3, 2)</span>
+<span class="sd">            sage: g.start() in h</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: g.end() in h</span>
+<span class="sd">            True</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: g = H.half_circle(3, 2)</span>
+<span class="sd">            sage: g.start() in h</span>
+<span class="sd">            False</span>
+
+<span class="sd">            sage: g.end() in h</span>
+<span class="sd">            False</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: h = H.half_circle(0, 2).left_half_space()</span>
+<span class="sd">            sage: g = H.half_circle(0, 5)</span>
+
+<span class="sd">            sage: g.start() in h</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: g.start() in -h</span>
+<span class="sd">            False</span>
 
 <span class="sd">        .. NOTE::</span>
 
@@ -6444,12 +6545,35 @@
             <span class="c1"># It is the starting point of a geodesic.</span>
             <span class="k">assert</span> <span class="n">point</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">()</span>
 
-            <span class="k">if</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">():</span>
-                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">HyperbolicPointFromGeodesic</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot decide whether this ideal point is contained in the half space yet&quot;</span>
+                <span class="p">)</span>
 
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;cannot decide whether this ideal point is contained in the half space yet&quot;</span>
-            <span class="p">)</span>
+            <span class="n">boundary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">()</span>
+            <span class="n">intersection</span> <span class="o">=</span> <span class="n">boundary</span><span class="o">.</span><span class="n">_intersection</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">_geodesic</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">intersection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># The boundary of the half space and the geodesic defining the</span>
+                <span class="c1"># point do not intersect in a single point (not even in an</span>
+                <span class="c1"># ultra-ideal point,) i.e., they are parallel in the Klein model.</span>
+                <span class="k">return</span> <span class="n">point</span><span class="o">.</span><span class="n">_geodesic</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">intersection</span><span class="o">.</span><span class="n">is_finite</span><span class="p">():</span>
+                <span class="c1"># The intersection point between the geodesic defining the</span>
+                <span class="c1"># point and the half space boundary is ideal or ultra-ideal.</span>
+                <span class="c1"># Either the entire geodesic is in the half space or none of</span>
+                <span class="c1"># it.</span>
+                <span class="k">return</span> <span class="n">point</span><span class="o">.</span><span class="n">_geodesic</span><span class="o">.</span><span class="n">an_element</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span>
+
+            <span class="c1"># The intersection point between the geodesic defining the point</span>
+            <span class="c1"># and the half space boundary is finite, i.e., inside the unit</span>
+            <span class="c1"># circle in the Klein model. The segment between the starting point</span>
+            <span class="c1"># of the geodesic and that intersection point is either completely</span>
+            <span class="c1"># inside the half space or completely outside.</span>
+            <span class="n">ccw</span> <span class="o">=</span> <span class="n">boundary</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">_geodesic</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">ccw</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">ccw</span> <span class="o">&lt;</span> <span class="mi">0</span>
 
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equation</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
 
@@ -8677,7 +8801,281 @@
         <span class="k">while</span> <span class="n">b</span> <span class="o">==</span> <span class="n">a</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="n">HyperbolicPointFromCoordinates</span><span class="o">.</span><span class="n">random_set</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">geodesic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HyperbolicOrientedGeodesic.ccw"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic.ccw">[docs]</a>    <span class="k">def</span> <span class="nf">ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return +1, -1, or zero if the turn from this geodesic to ``other`` is</span>
+<span class="sd">        counterclockwise, clockwise, or if the geodesics are parallel at their</span>
+<span class="sd">        point of intersection, respectively.</span>
+
+<span class="sd">        If this geodesic and ``other`` do not intersect, a ``ValueError`` is</span>
+<span class="sd">        raised.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``other`` -- another geodesic intersecting this geodesic</span>
+
+<span class="sd">        - ``euclidean`` -- a boolean (default: ``False``); if ``True``, the</span>
+<span class="sd">          geodesics are treated as lines in the Euclidean plane coming from</span>
+<span class="sd">          their representations in the Klein model, i.e., geodesics</span>
+<span class="sd">          intersecting at a non-finite point are reporting their Euclidean ccw.</span>
+<span class="sd">          Otherwise, geodesics intersecting at an ideal point have a ``ccw`` of</span>
+<span class="sd">          zero, and geodesics intersecting at an ultra-ideal point, are</span>
+<span class="sd">          producing a ``ValueError``.</span>
+
+<span class="sd">        EXAMPLES:</span>
+
+<span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
+<span class="sd">            sage: H = HyperbolicPlane()</span>
+
+<span class="sd">            sage: v = H.vertical(0)</span>
+<span class="sd">            sage: g = H.half_circle(0, 2)</span>
+
+<span class="sd">            sage: v.ccw(g)</span>
+<span class="sd">            -1</span>
+<span class="sd">            sage: v.ccw(-g)</span>
+<span class="sd">            1</span>
+
+<span class="sd">        Two verticals meet intersect with an angle 0 at infinity::</span>
+
+<span class="sd">            sage: w = H.vertical(1)</span>
+<span class="sd">            sage: v.ccw(w)</span>
+<span class="sd">            0</span>
+
+<span class="sd">        However, we can also get the way the chords are turning in the Klein model::</span>
+
+<span class="sd">            sage: v.ccw(w, euclidean=True)</span>
+<span class="sd">            1</span>
+
+<span class="sd">        Geodesics that do not intersect produce an error::</span>
+
+<span class="sd">            sage: g = H.half_circle(2, 1)</span>
+<span class="sd">            sage: v.ccw(g)</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            ...</span>
+<span class="sd">            ValueError: geodesics do not intersect</span>
+
+<span class="sd">        However, these geodesics do intersect at an ultra-ideal point and we</span>
+<span class="sd">        can get their orientation at that point::</span>
+
+<span class="sd">            sage: v.ccw(g, euclidean=True)</span>
+<span class="sd">            1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">HyperbolicOrientedGeodesic</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;can only compute ccw between oriented geodesics&quot;</span><span class="p">)</span>
+
+        <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="n">intersection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">intersection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unoriented</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">unoriented</span><span class="p">():</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;geodesics do not intersect&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">is_ideal</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">euclidean</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">is_ultra_ideal</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">euclidean</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;geodesics do not intersect&quot;</span><span class="p">)</span>
+
+        <span class="n">sgn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">_sgn</span>
+
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span>
+
+        <span class="k">return</span> <span class="n">sgn</span><span class="p">(</span><span class="n">ccw</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_b</span><span class="p">),</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_c</span><span class="p">,</span> <span class="o">-</span><span class="n">other</span><span class="o">.</span><span class="n">_b</span><span class="p">)))</span></div>
+
+    <span class="k">def</span> <span class="nf">_test_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify that :meth:`ccw` has been implemented correctly</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
+<span class="sd">            sage: H = HyperbolicPlane()</span>
+
+<span class="sd">            sage: H.vertical(0)._test_ccw()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">euclidean</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]:</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="n">euclidean</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="n">euclidean</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">some_subsets</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">oriented</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="n">intersection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">intersection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">intersection</span><span class="o">.</span><span class="n">is_ultra_ideal</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">euclidean</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="n">euclidean</span><span class="p">),</span>
+                    <span class="o">-</span><span class="n">other</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="n">euclidean</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="o">-</span><span class="n">other</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="n">euclidean</span><span class="p">),</span>
+                    <span class="n">other</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="n">euclidean</span><span class="p">),</span>
+                <span class="p">)</span>
+
+<div class="viewcode-block" id="HyperbolicOrientedGeodesic.angle"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic.angle">[docs]</a>    <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the angle between this geodesic and ``other`` divided by 2π,</span>
+<span class="sd">        i.e., as a number in `[0, 1)`.</span>
+
+<span class="sd">        If this geodesic and ``other`` do not intersect, a ``ValueError`` is</span>
+<span class="sd">        raised.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``other`` -- a geodesic intersecting this geodesic in a finite or</span>
+<span class="sd">          ideal point.</span>
+
+<span class="sd">        - ``numerical`` -- a boolean (default: ``True``); whether a numerical</span>
+<span class="sd">          approximation of the angle is returned or whether we attempt to</span>
+<span class="sd">          render it as a rational number.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
+<span class="sd">            sage: H = HyperbolicPlane(QQ)</span>
+
+<span class="sd">            sage: g0 = H.geodesic(-1, 1)</span>
+<span class="sd">            sage: g1 = H.geodesic(0, 2)</span>
+<span class="sd">            sage: g2 = H.geodesic(1, 2)</span>
+
+<span class="sd">            sage: g0.angle(g1, numerical=False)</span>
+<span class="sd">            1/6</span>
+
+<span class="sd">            sage: assert g0.angle(g1, numerical=False) == (-g0).angle(-g1, numerical=False)</span>
+<span class="sd">            sage: assert g1.angle(g2, numerical=False) == (-g2).angle(-g1, numerical=False)</span>
+<span class="sd">            sage: assert g0.angle(g1, numerical=False) + g1.angle(-g0, numerical=False) == 1/2</span>
+<span class="sd">            sage: assert g1.angle(g2, numerical=False) + g1.angle(-g2, numerical=False) == 1/2</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: H.geodesic(0, 1).angle(H.geodesic(1, Infinity))</span>
+<span class="sd">            0.5</span>
+
+<span class="sd">            sage: H.geodesic(0, 1).angle(H.geodesic(Infinity, 1))</span>
+<span class="sd">            0.0</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: m = matrix(2, [2, 1, 1, 1])</span>
+
+<span class="sd">            sage: g0.apply_isometry(m).angle(g1.apply_isometry(m), numerical=False)</span>
+<span class="sd">            1/6</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: a = H.point(0, 1, model=&#39;half_plane&#39;)</span>
+<span class="sd">            sage: b = H.point(1, 1, model=&#39;half_plane&#39;)</span>
+<span class="sd">            sage: c = H.point(1, 2, model=&#39;half_plane&#39;)</span>
+
+<span class="sd">            sage: H.geodesic(a, b).angle(H.geodesic(b, c))</span>
+<span class="sd">            0.32379180882521663</span>
+
+<span class="sd">            sage: H.geodesic(b, a).angle(H.geodesic(c, b))</span>
+<span class="sd">            0.32379180882521663</span>
+
+<span class="sd">            sage: H.geodesic(a, b).angle(H.geodesic(b, c)) + H.geodesic(b, c).angle(H.geodesic(b, a))</span>
+<span class="sd">            0.5</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            sage: g3 = H.geodesic(2, 3)</span>
+<span class="sd">            sage: g0.angle(g3)</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            ...</span>
+<span class="sd">            ValueError: geodesics do not intersect</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">HyperbolicOrientedGeodesic</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;can only compute angle between oriented geodesics&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">other</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span>
+
+        <span class="n">ring</span> <span class="o">=</span> <span class="nb">float</span> <span class="k">if</span> <span class="n">numerical</span> <span class="k">else</span> <span class="n">QQ</span>
+
+        <span class="n">ccw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ccw</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ccw</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">ring</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+            <span class="p">),</span> <span class="s2">&quot;geodesics whose enclosed angle is zero, must have one ideal endpoint in common&quot;</span>
+
+            <span class="k">return</span> <span class="n">ring</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_a</span>
+        <span class="n">b1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_c</span>
+        <span class="n">n1_squared</span> <span class="o">=</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">b1</span> <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">c1</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">a1</span>
+
+        <span class="n">a2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_a</span>
+        <span class="n">b2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_b</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">_c</span>
+        <span class="n">n2_squared</span> <span class="o">=</span> <span class="n">b2</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">c2</span> <span class="o">-</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">a2</span>
+
+        <span class="kn">import</span> <span class="nn">math</span>
+
+        <span class="n">n12</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">n1_squared</span> <span class="o">*</span> <span class="n">n2_squared</span><span class="p">))</span>
+
+        <span class="n">cos_angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">b1</span> <span class="o">*</span> <span class="n">b2</span> <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">c2</span> <span class="o">-</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">a2</span><span class="p">)</span> <span class="o">/</span> <span class="n">n12</span>
+
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">acos</span>
+
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">acos</span><span class="p">(</span><span class="n">cos_angle</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">ccw</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle</span></div>
+
+    <span class="k">def</span> <span class="nf">_test_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify that :meth:`angle` has been implemented correctly.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import HyperbolicPlane</span>
+<span class="sd">            sage: H = HyperbolicPlane()</span>
+
+<span class="sd">            sage: H.vertical(0)._test_angle()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tester</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tester</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
+
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">some_subsets</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">dimension</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">geodesic</span><span class="p">()</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">oriented</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">intersection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">intersection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">tester</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="o">-</span><span class="n">other</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HyperbolicPoint"><a class="viewcode-back" href="../../../geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPoint">[docs]</a><span class="k">class</span> <span class="nc">HyperbolicPoint</span><span class="p">(</span><span class="n">HyperbolicConvexSet</span><span class="p">,</span> <span class="n">Element</span><span class="p">):</span>

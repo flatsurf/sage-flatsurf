@@ -424,6 +424,62 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 
+<div class="viewcode-block" id="acos"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.acos">[docs]</a><span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">cos_angle</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the arccosine of ``cos_angle`` as a multiple of 2π, i.e., as a value</span>
+<span class="sd">    between 0 and 1/2.</span>
+
+<span class="sd">    INPUT:</span>
+
+<span class="sd">    - ``cos_angle`` -- a floating point number, the cosine of an angle</span>
+
+<span class="sd">    - ``numerical`` -- a boolean (default: ``False``); whether to return a</span>
+<span class="sd">      numerical approximation of the arccosine or try to reconstruct an exact</span>
+<span class="sd">      rational value for the arccosine (in radians.)</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.euclidean import acos</span>
+
+<span class="sd">        sage: acos(1)</span>
+<span class="sd">        0</span>
+<span class="sd">        sage: acos(.5)</span>
+<span class="sd">        1/6</span>
+<span class="sd">        sage: acos(0)</span>
+<span class="sd">        1/4</span>
+<span class="sd">        sage: acos(-.5)</span>
+<span class="sd">        1/3</span>
+<span class="sd">        sage: acos(-1)</span>
+<span class="sd">        1/2</span>
+
+<span class="sd">        sage: acos(.25)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        NotImplementedError: cannot recover a rational angle from these numerical results</span>
+<span class="sd">        sage: acos(.25, numerical=True)</span>
+<span class="sd">        0.2097846883724169</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">math</span>
+
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_angle</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mf">0.5</span>
+
+    <span class="k">if</span> <span class="n">numerical</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">angle</span>
+
+    <span class="c1"># fast and dirty way using floating point approximation</span>
+    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+
+    <span class="n">angle_rat</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">angle_rat</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">256</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot recover a rational angle from these numerical results&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">angle_rat</span></div>
+
+
 <div class="viewcode-block" id="angle"><a class="viewcode-back" href="../../../geometry/euclidean.html#flatsurf.geometry.euclidean.angle">[docs]</a><span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.</span>
@@ -489,21 +545,9 @@
     <span class="k">elif</span> <span class="n">cos_uv</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">cos_uv</span> <span class="o">&lt;</span> <span class="mf">1.0000001</span>
         <span class="n">cos_uv</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>  <span class="c1"># rat number between 0 and 1/2</span>
 
-    <span class="k">if</span> <span class="n">numerical</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle</span>
-
-    <span class="c1"># fast and dirty way using floating point approximation</span>
-    <span class="c1"># (see below for a slow but exact method)</span>
-    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
-
-    <span class="n">angle_rat</span> <span class="o">=</span> <span class="n">RR</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">.</span><span class="n">nearby_rational</span><span class="p">(</span><span class="mf">0.00000001</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">angle_rat</span><span class="o">.</span><span class="n">denominator</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">256</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;cannot recover a rational angle from these numerical results&quot;</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle_rat</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle_rat</span></div>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">acos</span><span class="p">(</span><span class="n">cos_uv</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">angle</span> <span class="k">if</span> <span class="n">u0</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">-</span> <span class="n">u1</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">angle</span></div>
 
     <span class="c1"># a neater way is provided below by working only with number fields</span>
     <span class="c1"># but this method is slower...</span>

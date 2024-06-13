@@ -280,6 +280,42 @@
 <p><a class="reference internal" href="circle.html#module-flatsurf.geometry.circle" title="flatsurf.geometry.circle"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.geometry.circle</span></code></a> for everything specific to circles in the plane</p>
 </div>
 <dl class="py function">
+<dt class="sig sig-object py" id="flatsurf.geometry.euclidean.acos">
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">acos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cos_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#acos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.acos" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the arccosine of <code class="docutils literal notranslate"><span class="pre">cos_angle</span></code> as a multiple of 2π, i.e., as a value
+between 0 and 1/2.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cos_angle</span></code> – a floating point number, the cosine of an angle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numerical</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>); whether to return a
+numerical approximation of the arccosine or try to reconstruct an exact
+rational value for the arccosine (in radians.)</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">acos</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">0</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="mf">.5</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">/</span><span class="mi">6</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">/</span><span class="mi">4</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">/</span><span class="mi">3</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">/</span><span class="mi">2</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="mf">.25</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">cannot</span> <span class="n">recover</span> <span class="n">a</span> <span class="n">rational</span> <span class="n">angle</span> <span class="kn">from</span> <span class="nn">these</span> <span class="n">numerical</span> <span class="n">results</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">acos</span><span class="p">(</span><span class="mf">.25</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="mf">0.2097846883724169</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.euclidean.angle">
 <span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.euclidean.</span></span><span class="sig-name descname"><span class="pre">angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/euclidean.html#angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.euclidean.angle" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the angle between the vectors <code class="docutils literal notranslate"><span class="pre">u</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span></code> divided by <cite>2 pi</cite>.</p>
@@ -657,6 +693,7 @@ infinitesimally.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.euclidean.acos"><code class="docutils literal notranslate"><span class="pre">acos()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.angle"><code class="docutils literal notranslate"><span class="pre">angle()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.ccw"><code class="docutils literal notranslate"><span class="pre">ccw()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.euclidean.is_anti_parallel"><code class="docutils literal notranslate"><span class="pre">is_anti_parallel()</span></code></a></li>
