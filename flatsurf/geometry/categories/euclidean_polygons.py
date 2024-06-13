@@ -892,6 +892,16 @@ class EuclideanPolygons(Category_over_base_ring):
                 sage: P.join(Q, 2, 0)
                 Polygon(vertices=[(0, 0), (1, 0), (0, 1), (-1, 1)])
 
+            Polygons cannot be joined if that would lead to a self-intersecting
+            polygon::
+
+                sage: P = Polygon(vertices=[(0, 0), (2, 0), (2, 2), (0, 2), (1, 1)])
+                sage: Q = Polygon(vertices=[(0, 0), (1, 1), (2, 2), (0, 2)])
+                sage: P.join(Q, 4, 0)
+                Traceback (most recent call last):
+                ...
+                NotImplementedError: polygon self-intersects
+
             """
             if self.vertex(edge) != other.vertex(other_edge + 1) or self.vertex(
                 edge + 1
