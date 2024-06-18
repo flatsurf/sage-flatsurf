@@ -44,6 +44,7 @@ EXAMPLES::
 # ####################################################################
 
 from flatsurf.geometry.categories.surface_category import SurfaceCategory
+from sage.misc.cachefunc import cached_method
 
 
 class EuclideanPolygonalSurfaces(SurfaceCategory):
@@ -84,6 +85,12 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
         If you want to add functionality for such surfaces you most likely
         want to put it here.
         """
+
+        @cached_method
+        def euclidean_plane(self):
+            from flatsurf.geometry.euclidean import EuclideanPlane
+
+            return EuclideanPlane(self.base_ring())
 
         def graphical_surface(self, *args, **kwargs):
             r"""
@@ -143,6 +150,7 @@ class EuclideanPolygonalSurfaces(SurfaceCategory):
                     "adjacencies",
                     "polygon_labels",
                     "edge_labels",
+                    "zero_flags",
                     "default_position_function",
                 ]
                 if key in kwargs

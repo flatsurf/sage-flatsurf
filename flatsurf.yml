@@ -7,13 +7,14 @@ name: flatsurf
 channels:
   - conda-forge
 dependencies:
+  - bidict
   # SageMath uses maxima to compute roots of algebraic integers. This is used,
   # e.,g, when computing with the hyperbolic plane over AA.
   - maxima
   - gap-defaults
   - ipywidgets
-  - notebook
   - matplotlib-base
+  - notebook>=7
   - pip
   - pyintervalxt>=3,<4
   - pyeantic>=1.2.1,<2

@@ -225,7 +225,7 @@ class Surface(OrientedSimilaritySurface):
             sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: S.is_triangulated()
             False
-            sage: S.triangulate().is_triangulated()
+            sage: S.triangulate().codomain().is_triangulated()
             True
         """
         it = self.label_iterator()
@@ -931,7 +931,7 @@ class Surface_list(Surface):
         ...
         UserWarning: copy() has been deprecated and will be removed from a future version of sage-flatsurf; for surfaces of finite type use MutableOrientedSimilaritySurface.from_surface() instead.
         Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels. However, there is no immediate replacement for lazy copying of infinite surfaces.
-        Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs.
+        Have a look at the implementation of flatsurf.geometry.lazy.LazyMutableSurface and adapt it to your needs.
         sage: # Explore the surface a bit
         sage: ts.polygon(0)
         Polygon(vertices=[(0, 0), (4, 0), (0, 3)])
@@ -1093,7 +1093,7 @@ class Surface_list(Surface):
 
         if surface is None:
             if copy is not None:
-                raise ValueError("Cannot copy when surface was provided.")
+                raise ValueError("Cannot copy when no surface was provided.")
 
             if mutable is None:
                 mutable = True

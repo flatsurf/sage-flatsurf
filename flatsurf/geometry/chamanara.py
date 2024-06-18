@@ -43,9 +43,10 @@ EXAMPLES:
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
 
-from flatsurf.geometry.surface import OrientedSimilaritySurface
+from flatsurf.geometry.surface import OrientedSimilaritySurface, Labels
 from flatsurf.geometry.minimal_cover import MinimalTranslationCover
 from sage.rings.integer_ring import ZZ
+from flatsurf.geometry.surface import Labels
 
 
 def ChamanaraPolygon(alpha):
@@ -300,6 +301,7 @@ def chamanara_half_dilation_surface(alpha, n=None):
 
 class ChamanaraTranslationSurface(MinimalTranslationCover):
     def __init__(self, alpha):
+        self._alpha = alpha
         MinimalTranslationCover.__init__(self, ChamanaraSurface(alpha))
         self._refine_category_(self.category().Compact())
 
@@ -315,6 +317,41 @@ class ChamanaraTranslationSurface(MinimalTranslationCover):
             adjacencies.append((label, 3))
             label = self.opposite_edge(label, 3)[0]
         return super().graphical_surface(adjacencies=adjacencies, **kwds)
+
+    def labels(self):
+        r"""
+        Return the polygon labels of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.labels()
+            ((0, 1, 0), (1, -1, 0), (-1, 1/2, 0), (2, -1/2, 0), (-2, 1/4, 0), (3, -1/4, 0), (-3, 1/8, 0), (4, -1/8, 0), (-4, 1/16, 0), (5, -1/16, 0), (-5, 1/32, 0), (6, -1/32, 0), (-6, 1/64, 0), (7, -1/64, 0), (-7, 1/128, 0), (8, -1/128, 0), …)
+
+        """
+        return LazyLabels(self, finite=False)
+
+
+class LazyLabels(Labels):
+    def __contains__(self, label):
+        if not isinstance(label, tuple):
+            return False
+        if len(label) != 3:
+            return False
+
+        from sage.all import ZZ
+
+        if label[0] not in ZZ:
+            return False
+
+        if label[2] != 0:
+            return False
+
+        if label[0] >= 1:
+            return label[1] == -self._surface._alpha ** (label[0] - 1)
+
+        return label[1] == self._surface._alpha ** (-label[0])
 
 
 def chamanara_surface(alpha, n=None):

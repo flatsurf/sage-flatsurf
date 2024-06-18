@@ -4,7 +4,7 @@ Tests for optional packages used by sage-flatsurf.
 # ####################################################################
 #  This file is part of sage-flatsurf.
 #
-#        Copyright (C) 2021 Julian Rüth
+#        Copyright (C) 2021-2023 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,25 @@ from sage.features import PythonModule
 cppyy_feature = PythonModule(
     "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
 )
-pyflatsurf_feature = PythonModule(
-    "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
+
+pyeantic_feature = PythonModule(
+    "pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda"
 )
+
+pyexactreal_feature = PythonModule(
+    "pyexactreal", url="https://github.com/flatsurf/exact-real/#install-with-conda"
+)
+
+
+class PyflatsurfModule(PythonModule):
+    def __init__(self):
+        super().__init__(
+            "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
+        )
+
+    def is_saddle_connection_enumeration_functional(self):
+        # TODO: Check whether version is >=3.14.1
+        return False
+
+
+pyflatsurf_feature = PyflatsurfModule()
