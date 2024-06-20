@@ -2070,7 +2070,7 @@ class MutableOrientedSimilaritySurface(
             sage: S1.set_immutable()
 
             sage: S1.triangulate()
-            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, an equilateral triangle, 5 triangles and a right triangle
+            Triangulation of Translation Surface in H_3(4, 0) built from a non-convex tridecagon with a marked vertex
 
         """
         if relabel is not None:

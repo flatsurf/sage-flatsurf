@@ -90,7 +90,7 @@ def to_pyflatsurf(S):
     if not S.is_finite_type():
         raise ValueError("the surface S must be finite")
 
-    S = S.triangulate()
+    S = S.triangulate().relabel()
 
     # populate half edges and vectors
     n = sum(len(S.polygon(lab).vertices()) for lab in S.labels())

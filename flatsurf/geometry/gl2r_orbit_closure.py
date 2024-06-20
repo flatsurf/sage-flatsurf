@@ -30,7 +30,7 @@ is set::
     sage: S = translation_surfaces.mcmullen_genus2_prototype(4,2,1,1,1/4)
     sage: l = S.base_ring().gen()
     sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-    sage: dec = O.decomposition((8*l - 25, 16), 10) # optional: pyflatsurf
+    sage: dec = O.decomposition((8*l - 25, 16), 9) # optional: pyflatsurf
     sage: dec.undeterminedComponents() # optional: pyflatsurf
     [Component with perimeter [...]]
 
@@ -396,8 +396,8 @@ class GL2ROrbitClosure:
             sage: span([v0, v1])  # optional: pyflatsurf
             Vector space of degree 9 and dimension 2 over Real Embedded Number Field in l with defining polynomial x^2 - x - 8 with l = 3.372281323269015?
             Basis matrix:
-            [                         1                          0                         -1                          0   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)   (1/4*l-1/4 ~ 0.59307033) (-1/4*l+1/4 ~ -0.59307033)                          0]
-            [                         0                          1                         -1                         -1    (1/8*l+7/8 ~ 1.2965352) (-1/8*l+1/8 ~ -0.29653517)   (1/8*l-1/8 ~ 0.29653517) (3/8*l-11/8 ~ -0.11039450) (-1/2*l+3/2 ~ -0.18614066)]
+            [                          1                           0                          -1     (1/8*l+7/8 ~ 1.2965352)  (-1/8*l+1/8 ~ -0.29653517)                          -1     (5/8*l-5/8 ~ 1.4826758)  (-1/2*l+3/2 ~ -0.18614066) (-5/8*l+13/8 ~ -0.48267583)]
+            [                          0                           1                          -1    (1/4*l-1/4 ~ 0.59307033)  (-1/4*l+1/4 ~ -0.59307033)                           0    (1/4*l-1/4 ~ 0.59307033)                           0  (-1/4*l+1/4 ~ -0.59307033)]
 
         This can be used to deform the surface::
 
@@ -831,9 +831,10 @@ class GL2ROrbitClosure:
             sage: c0, c1 = dec.components() # optional: pyflatsurf
             sage: kz = O.flow_decomposition_kontsevich_zorich_cocycle(dec) # optional: pyflatsurf
             sage: O.cylinder_circumference(c0, *kz) # optional: pyflatsurf
-            (1, 0, -1, 0)
+            (1, 1, 1, -1)
             sage: O.cylinder_circumference(c1, *kz) # optional: pyflatsurf
-            (0, 0, 0, -1)
+            (0, 0, 1, 0)
+
         """
         if (
             component.cylinder() != True
@@ -1096,14 +1097,15 @@ class GL2ROrbitClosure:
             [ 1  0]
             [-1 -1]
             [ 2  1]
+            [-2 -1]
+            [ 3  1]
+            [-1 -1]
+            [ 3  2]
             [1 0]
             [0 1]
             [ 1  0]
             [-1  1]
-            [ 1 -1]
-            [-1  2]
-            [ 1  0]
-            [-2  1]
+
         """
         sc_pos = (
             []
