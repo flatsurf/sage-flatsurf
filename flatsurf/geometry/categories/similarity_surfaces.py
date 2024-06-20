@@ -2106,20 +2106,40 @@ class SimilaritySurfaces(SurfaceCategory):
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
-                    sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
-                    sage: ss=s.triangulate()
-                    sage: gs=ss.graphical_surface()
-                    sage: gs.make_all_visible()
-                    sage: gs
-                    Graphical representation of Translation Surface in H_2(2) built from 6 isosceles triangles
+                    sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+                    sage: S.triangulate()
+                    Triangulation of Translation Surface in H_2(2) built from 3 squares
 
-                A non-strictly convex example that caused trouble:
+                A non-strictly convex example that caused trouble at some point:
 
                     sage: from flatsurf import similarity_surfaces, Polygon
-                    sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
-                    sage: s=s.triangulate()
-                    sage: len(s.polygon((0, 0)).vertices())
+                    sage: P = Polygon(edges=[(1, 1), (-3, -1), (1, 0), (1, 0)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S
+                    Half-Translation Surface in Q_0(0, -1^4) built from a triangle
+
+                    sage: T = S.triangulate()
+                    sage: len(T.polygon((0, 0)).vertices())
                     3
+
+                The surface returned is explicitly a triangulation of the
+                original surface. Use
+                :meth:`MutableOrientedSimilaritySurface.from_surface` or
+                :meth:`relabel` to get a primitive surface::
+
+                    sage: T
+                    Triangulation of Half-Translation Surface in Q_0(0, -1^4) built from a triangle
+                    sage: T.relabel()
+                    Half-Translation Surface in Q_0(0, -1^4) built from 2 triangles
+
+                ::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(T)
+                    sage: T.set_immutable()
+                    sage: T
+                    Half-Translation Surface in Q_0(0, -1^4) built from 2 triangles
+
                 """
                 if relabel is not None:
                     import warnings
@@ -2145,14 +2165,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if label is not None:
                     label = {label}
 
-                triangulation = LazyTriangulatedSurface(self, labels=label)
-
-                if self.is_finite_type():
-                    from flatsurf import MutableOrientedSimilaritySurface
-                    triangulation = MutableOrientedSimilaritySurface.from_surface(triangulation)
-                    triangulation.set_immutable()
-
-                return triangulation
+                return LazyTriangulatedSurface(self, labels=label)
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
