@@ -1284,8 +1284,8 @@ class GL2ROrbitClosure:
             sage: T = polygons.triangle(1, 2, 5)
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
-            sage: O = GL2ROrbitClosure(S) # optional: pyflatsurf
-            sage: hash(O) == hash(O)
+            sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
+            sage: hash(O) == hash(O)  # optional: pyflatsurf
             True
 
         """
@@ -1304,7 +1304,7 @@ class GL2ROrbitClosure:
             sage: S = similarity_surfaces.billiard(T)
             sage: S = S.minimal_cover(cover_type="translation")
             sage: O = GL2ROrbitClosure(S)  # optional: pyflatsurf
-            sage: loads(dumps(O)) == O  # long time (6s, #123)
+            sage: loads(dumps(O)) == O  # optional: pyflatsurf  # long time (6s, #123)
             True
         """
         return (
