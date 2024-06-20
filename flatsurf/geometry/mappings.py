@@ -916,12 +916,12 @@ class GL2RMapping(SurfaceMapping):
         sage: TestSuite(m.codomain()).run()
     """
 
-    def __init__(self, s, m, ring=None, category=None):
+    def __init__(self, s, m, category=None):
         r"""
         Hit the surface s with the 2x2 matrix m which should have positive determinant.
         """
         from flatsurf.geometry.lazy import GL2RImageSurface
-        codomain = GL2RImageSurface(s, m, ring=ring, category=category or s.category())
+        codomain = GL2RImageSurface(s, m, category=category or s.category())
         self._m = m
         self._im = ~m
         SurfaceMapping.__init__(self, s, codomain)

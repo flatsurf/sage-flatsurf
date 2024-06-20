@@ -1634,6 +1634,24 @@ class MutableOrientedSimilaritySurface(
             for i, cross in enumerate(gluing_list):
                 self.glue((label, i), cross)
 
+    def refine_polygon(self, label, surface, gluings):
+        old = self.polygon(label)
+        old_gluings = [self.opposite_edge(label, e) for e in range(len(old.vertices()))]
+
+        self.remove_polygon(label)
+
+        for surface_label in surface.labels():
+            self.add_polygon(surface.polygon(surface_label), label=surface_label)
+
+        for a, b in surface.gluings():
+            self.glue(a, b)
+
+        for (edge, opposite) in gluings.items():
+            if old_gluings[edge][0] == label:
+                self.glue(gluings[old_gluings[edge][1]], opposite)
+            else:
+                self.glue(old_gluings[edge], opposite)
+
     def replace_polygon(self, label, polygon):
         r"""
         Replace the polygon ``label`` with ``polygon`` while keeping its
@@ -2008,12 +2026,6 @@ class MutableOrientedSimilaritySurface(
         Overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`
         to allow triangulating in-place.
-
-        .. TODO::
-
-            The code here is not using
-            :meth:`~.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation`.
-            It should probably be rewritten to share the same logic.
 
         TESTS:
 
@@ -2564,7 +2576,7 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
         return components
 
 
-class LabeledCollection:
+class LabeledCollection(collections.abc.Collection):
     r"""
     Abstract base class for collection of labels as returned by ``labels()``
     methods of surfaces.
@@ -2677,6 +2689,24 @@ class LabeledCollection:
                 return True
 
         return False
+
+
+class LabeledSet(LabeledCollection, collections.abc.Set):
+    r"""
+    Abstract base class for sets of labels or related objects, such as the set
+    of gluings of a surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: gluings = S.gluings()
+
+        sage: from flatsurf.geometry.surface import LabeledSet
+        sage: isinstance(gluings, LabeledSet)
+        True
+
+    """
 
 
 class LabeledView(LabeledCollection):
@@ -2848,7 +2878,7 @@ class ComponentLabels(LabeledCollection):
                     pending.append(cross[0])
 
 
-class Labels(LabeledCollection, collections.abc.Set):
+class Labels(LabeledCollection):
     r"""
     The labels of a surface.
 
@@ -2914,7 +2944,7 @@ class LabelsFromView(Labels, LabeledView):
     """
 
 
-class Polygons(LabeledCollection, collections.abc.Collection):
+class Polygons(LabeledCollection):
     r"""
     The collection of polygons of a surface.
 
@@ -2998,7 +3028,7 @@ class Polygons_MutableOrientedSimilaritySurface(Polygons):
         return len(self._polygons)
 
 
-class Edges(LabeledCollection, collections.abc.Set):
+class Edges(LabeledSet):
     r"""
     The set of edges of a surface.
 
@@ -3035,7 +3065,7 @@ class Edges(LabeledCollection, collections.abc.Set):
         return 0 <= len(polygon.vertices()) < edge
 
 
-class Gluings(LabeledCollection, collections.abc.Set):
+class Gluings(LabeledSet):
     r"""
     The set of gluings of the surface.
 

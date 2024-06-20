@@ -735,7 +735,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     f = self.opposite_edge(lab, k)
                     if f is None:
                         continue
-                    g = self.opposite_edge(f[0], f[1])
+                    g = self.opposite_edge(*f)
                     tester.assertEqual(
                         e,
                         g,

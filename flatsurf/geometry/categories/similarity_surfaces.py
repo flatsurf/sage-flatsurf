@@ -2066,10 +2066,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.chamanara import chamanara_surface
                     sage: S = chamanara_surface(1/2)
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,1))
-                    SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, 1)
+                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, 1)
                     sage: K.<sqrt2> = QuadraticField(2)
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,sqrt2), ring=K)
-                    SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, sqrt2)
+                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, sqrt2)
                 """
                 from sage.all import vector
 
@@ -2118,7 +2118,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import similarity_surfaces, Polygon
                     sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
                     sage: s=s.triangulate()
-                    sage: len(s.polygon(0).vertices())
+                    sage: len(s.polygon((0, 0)).vertices())
                     3
                 """
                 if relabel is not None:
