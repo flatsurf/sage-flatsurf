@@ -1216,39 +1216,32 @@ class SimilaritySurfaces(SurfaceCategory):
                 s.set_immutable()
                 return s
 
-            def relabel(self, relabeling_map, in_place=False):
+            def relabel(self, relabeling=None, in_place=False):
                 r"""
-                Attempt to relabel the polygons according to a relabeling_map, which takes as input
-                a current label and outputs a new label for the same polygon. The method returns a pair
-                (surface,success) where surface is the relabeled surface, and success is a boolean value
-                indicating the success of the operation. The operation will fail if the implementation of the
-                underlying surface does not support labels used in the image of the relabeling map. In this case,
-                other (arbitrary) labels will be used to replace the labels of the surface, and the resulting
-                surface should still be okay.
-
-                Currently, the relabeling_map must be a dictionary.
-
-                If in_place is True then the relabeling is done to the current surface, otherwise a
-                mutable copy is made before relabeling.
-
-                ToDo:
-                  - Allow relabeling_map to be a function rather than just a dictionary.
-                    This will allow it to work for infinite surfaces.
+                Return a surface whose polygons have been relabeled according
+                to ``relabeling``.
 
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
-                    sage: s=translation_surfaces.veech_double_n_gon(5)
-                    sage: ss,valid=s.relabel({0:1, 1:2})
-                    sage: valid
-                    True
-                    sage: ss.root()
+                    sage: S = translation_surfaces.veech_double_n_gon(5)
+                    sage: SS = S.relabel({0: 1, 1: 2})
+                    sage: SS
+                    Translation Surface in H_2(2) built from 2 regular pentagons
+
+                    sage: SS.root()
                     1
-                    sage: ss.opposite_edge(1,0)
+
+                    sage: SS.opposite_edge(1, 0)
                     (2, 0)
-                    sage: len(ss.polygons())
-                    2
-                    sage: TestSuite(ss).run()
+
+                    sage: TestSuite(SS).run()
+
+                The relabeling can also be a callable::
+
+                    sage: SSS = SS.relabel(lambda label: label -1)
+                    sage: SSS == S
+                    True
 
                 """
                 if in_place:
@@ -1261,9 +1254,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s, valid = s.relabel(relabeling_map=relabeling_map, in_place=True)
+                s = s.relabel(relabeling=relabeling, in_place=True)
                 s.set_immutable()
-                return s, valid
+                return s
 
             def copy(
                 self,

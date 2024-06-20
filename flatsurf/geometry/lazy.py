@@ -1661,4 +1661,95 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             Delaunay cell decomposition of The infinite staircase
 
         """
-        return f"Delaunay cell decomposition of {self._reference!r}"
+        reference = self._reference
+        if isinstance(reference, LazyDelaunayTriangulatedSurface):
+            reference = reference._reference
+        if isinstance(reference, LazyTriangulatedSurface):
+            reference = reference._reference
+        return f"Delaunay cell decomposition of {reference!r}"
+
+
+class LazyRelabeledSurface(OrientedSimilaritySurface):
+    def __init__(self, similarity_surface, category=None):
+        self._reference = similarity_surface
+
+        super().__init__(similarity_surface.base_ring(), category=category or similarity_surface.category())
+
+    def _to_reference_label(self, label):
+        # TODO: Support index access for labels
+        # return self._reference.labels()[label]
+        reference_labels = iter(self._reference.labels())
+
+        try:
+            skip = range(label)
+        except TypeError:
+            raise KeyError(label)
+
+        for i in skip:
+            next(reference_labels)
+
+        return next(reference_labels)
+
+    def _from_reference_label(self, reference_label):
+        label = 0
+        for lbl in self._reference.labels():
+            if lbl == reference_label:
+                return label
+            label += 1
+
+        raise ValueError
+
+    def _test_label_map(self, **options):
+        tester = self._tester(**options)
+
+        from itertools import islice
+
+        for label in islice(self._reference.labels(), 30):
+            tester.assertEqual(label, self._to_reference_label(self._from_reference_label(label)))
+
+        for label in islice(range(30) if not self.is_finite_type() else range(len(self._reference.labels())), 30):
+            tester.assertEqual(label, self._from_reference_label(self._to_reference_label(label)))
+
+    def labels(self):
+        from flatsurf.geometry.surface import LabeledView
+        if self._reference.is_finite_type():
+            return LabeledView(self, range(len(self._reference.labels())))
+
+        from sage.all import NN
+        return LabeledView(self, NN)
+
+    def polygon(self, label):
+        return self._reference.polygon(self._to_reference_label(label))
+
+    def opposite_edge(self, label, edge):
+        label = self._to_reference_label(label)
+        opposite_edge = self._reference.opposite_edge(label, edge)
+
+        if opposite_edge is None:
+            return None
+
+        opposite_label, opposite_edge = opposite_edge
+        opposite_label = self._from_reference_label(opposite_label)
+
+        return opposite_label, opposite_edge
+
+    def roots(self):
+        return tuple(self._from_reference_label(label) for label in self._reference.roots())
+
+    def is_compact(self):
+        return self._reference.is_compact()
+
+    def is_mutable(self):
+        return self._reference.is_mutable()
+
+    def __hash__(self):
+        return hash(self._reference)
+
+    def __eq__(self, other):
+        if not isinstance(other, LazyRelabeledSurface):
+            return False
+
+        return self._reference == other._reference
+
+    def _repr_(self):
+        return repr(self._reference)

@@ -1768,86 +1768,55 @@ class MutableOrientedSimilaritySurface(
             us.glue((label, e), cross)
         return self
 
-    def relabel(self, relabeling_map, in_place=False):
+    def relabel(self, relabeling=None, in_place=False):
         r"""
         Overrides
         :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
         to allow relabeling in-place.
         """
         if not in_place:
-            return super().relabel(relabeling_map=relabeling_map, in_place=in_place)
+            return super().relabel(relabeling=relabeling, in_place=in_place)
 
-        us = self
-        if not isinstance(relabeling_map, dict):
-            raise NotImplementedError(
-                "Currently relabeling is only implemented via a dictionary."
-            )
-        domain = set()
-        codomain = set()
-        data = {}
-        for l1, l2 in relabeling_map.items():
-            p = us.polygon(l1)
-            glue = []
-            for e in range(len(p.vertices())):
-                ll, ee = us.opposite_edge(l1, e)
-                try:
-                    lll = relabeling_map[ll]
-                except KeyError:
-                    lll = ll
-                glue.append((lll, ee))
-            data[l2] = (p, glue)
-            domain.add(l1)
-            codomain.add(l2)
-        if len(domain) != len(codomain):
-            raise ValueError(
-                "The relabeling_map must be injective. Received " + str(relabeling_map)
-            )
-        changed_labels = domain.intersection(codomain)
-        added_labels = codomain.difference(domain)
-        removed_labels = domain.difference(codomain)
-        # Pass to add_polygons
-        roots = list(us.roots())
-        relabel_errors = {}
-        for l2 in added_labels:
-            p, glue = data[l2]
-            l3 = us.add_polygon(p, label=l2)
-            if not l2 == l3:
-                # This means the label l2 could not be added for some reason.
-                # Perhaps the implementation does not support this type of label.
-                # Or perhaps there is already a polygon with this label.
-                relabel_errors[l2] = l3
-        # Pass to change polygons
-        for l2 in changed_labels:
-            p, glue = data[l2]
-            us.remove_polygon(l2)
-            us.add_polygon(p, label=l2)
-            us.replace_polygon(l2, p)
-        # Deal with the component roots
-        roots = [relabeling_map.get(label, label) for label in roots]
-        roots = [relabel_errors.get(label, label) for label in roots]
-        # Pass to remove polygons:
-        for l1 in removed_labels:
-            us.remove_polygon(l1)
-        # Pass to update the edge gluings
-        if len(relabel_errors) == 0:
-            # No problems. Update the gluings.
-            for l2 in codomain:
-                p, glue = data[l2]
-                for e, cross in enumerate(glue):
-                    us.glue((l2, e), cross)
-        else:
-            # Use the gluings provided by relabel_errors when necessary
-            for l2 in codomain:
-                p, glue = data[l2]
-                for e in range(len(p.vertices())):
-                    ll, ee = glue[e]
-                    try:
-                        # First try the error dictionary
-                        us.glue((l2, e), (relabel_errors[ll], ee))
-                    except KeyError:
-                        us.glue((l2, e), (ll, ee))
-        us.set_roots(roots)
-        return self, len(relabel_errors) == 0
+        if relabeling is None:
+            relabeling = {label: l for (l, label) in enumerate(self.labels())}
+
+        if callable(relabeling):
+            relabeling = {label: relabeling(label) for label in self.labels()}
+
+        polygons = {label: self.polygon(label) for label in self.labels()}
+        old_gluings = {
+            label: [
+                self.opposite_edge(label, e)
+                for e in range(len(self.polygon(label).vertices()))
+            ]
+            for label in self.labels()
+        }
+
+        roots = list(self.roots())
+
+        labels = list(self.labels())
+
+        for label in labels:
+            self.remove_polygon(label)
+
+        for label in labels:
+            self.add_polygon(polygons[label], label=relabeling.get(label, label))
+
+        for label, gluings in old_gluings.items():
+            for e, gluing in enumerate(gluings):
+                if gluing is None:
+                    continue
+
+                opposite_label, opposite_edge = gluing
+
+                self.glue(
+                    (relabeling.get(label, label), e),
+                    (relabeling.get(opposite_label, opposite_label), opposite_edge),
+                )
+
+        self.set_roots([relabeling.get(root, root) for root in roots])
+
+        return self
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
