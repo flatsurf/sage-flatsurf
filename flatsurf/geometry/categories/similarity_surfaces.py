@@ -1253,6 +1253,8 @@ class SimilaritySurfaces(SurfaceCategory):
                     MutableOrientedSimilaritySurface,
                 )
 
+                # TODO: Support for infinite type.
+
                 s = MutableOrientedSimilaritySurface.from_surface(self)
                 s = s.relabel(relabeling=relabeling, in_place=True)
                 s.set_immutable()
