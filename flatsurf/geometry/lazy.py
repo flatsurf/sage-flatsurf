@@ -16,9 +16,7 @@ by invoking methods on the underlying surfaces::
     Delaunay triangulation of The infinite staircase
 
     sage: S.delaunay_decomposition()
-    Delaunay Decomposition morphism:
-      From: The infinite staircase
-      To:   Delaunay cell decomposition of The infinite staircase
+    Delaunay cell decomposition of The infinite staircase
 
 """
 # ********************************************************************
@@ -89,8 +87,15 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
+        if labels is None:
+            if surface.is_finite_type():
+                labels = surface.labels()
+
+        if labels is not None:
+            labels = set(labels)
+
         self._reference = surface
-        self._labels = labels
+        self._triangulated_reference_labels = labels
 
         OrientedSimilaritySurface.__init__(
             self,
@@ -98,23 +103,24 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             category=category or self._reference.category(),
         )
 
-    def _reference_labels(self):
+    def _is_triangulated(self, reference_label):
         r"""
-        Return the labels of the polygons of the reference surface that are
-        triangulated by this triangulation.
+        Return whether the ``reference_label`` of the reference surface is
+        triangulated in this surface.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
             sage: S = S.triangulate()
-            sage: S._reference_labels()
+            sage: S._is_triangulated(0)
+            True
 
         """
-        if self._labels is not None:
-            return self._labels
+        if self._triangulated_reference_labels is None:
+            return True
 
-        return self._reference.labels()
+        return reference_label in self._triangulated_reference_labels
 
     def is_mutable(self):
         r"""
@@ -190,7 +196,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         """
         reference_polygon = self._reference.polygon(reference_label)
 
-        if reference_label not in self._reference_labels():
+        if not self._is_triangulated(reference_label):
             from flatsurf import MutableOrientedSimilaritySurface
             triangulation = MutableOrientedSimilaritySurface(self._reference.base_ring())
             triangulation.add_polygon(reference_polygon)
@@ -203,7 +209,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
     def _reference_label(self, label):
         if label in self._reference.labels():
-            if label not in self._reference_labels():
+            if not self._is_triangulated(label):
                 return label
             if len(self._reference.polygon(label).vertices()) == 3:
                 return label
@@ -215,6 +221,9 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             raise KeyError
 
         if label[0] not in self._reference.labels():
+            raise KeyError
+
+        if label[1] not in self._triangulation(label[0])[1]:
             raise KeyError
 
         return label[0]
@@ -304,7 +313,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if not isinstance(other, LazyTriangulatedSurface):
             return False
 
-        return self._reference == other._reference and self._reference_labels() == other._reference_labels()
+        return self._reference == other._reference and self._triangulated_reference_labels == other._triangulated_reference_labels
 
     def labels(self):
         r"""
@@ -335,9 +344,6 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             Triangulation of The infinite staircase
 
         """
-        if self._reference_labels() != self._reference.labels():
-            return f"Partial Triangulation of {self._reference!r}"
-
         return f"Triangulation of {self._reference!r}"
 
 
@@ -696,6 +702,15 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
             and self.base_ring() == other.base_ring()
         )
 
+    def is_triangulated(self):
+        return self._reference.is_triangulated()
+
+    def is_delaunay_triangulated(self):
+        return self._reference.is_delaunay_triangulated()
+
+    def is_delaunay_decomposed(self):
+        return self._reference.is_delaunay_decomposed()
+
 
 class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base):
     r"""
@@ -966,7 +981,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulatedSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
 
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
@@ -1313,7 +1328,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             self._reference == other._reference
         )
 
-    def __repr__(self):
+    def _repr_(self):
         r"""
         Return a printable representation of this surface.
 
@@ -1323,12 +1338,15 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
 
         """
-        return f"Delaunay triangulation of {self._reference!r}"
+        reference = self._reference
+        if isinstance(reference, LazyTriangulatedSurface):
+            reference = reference._reference
+        return f"Delaunay triangulation of {reference!r}"
 
 
 class LazyDelaunaySurface(OrientedSimilaritySurface):
     r"""
-    Delaunay cell decomposition of an (infinite type) surface.
+    Delaunay cell decomposition of a (possibly infinite type) surface.
 
     EXAMPLES::
 
@@ -1382,7 +1400,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulationSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulatedSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
 
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
@@ -1639,7 +1657,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             sage: from flatsurf.geometry.lazy import LazyDelaunaySurface
             sage: S = translation_surfaces.infinite_staircase()
             sage: m = matrix([[2, 1], [1, 1]])
-            sage: S = LazyDelaunaySurface(m*S)
+            sage: S = (m * S).delaunay_triangulation()
             sage: S == S
             True
 
@@ -1649,7 +1667,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
         return self._reference == other._reference
 
-    def __repr__(self):
+    def _repr_(self):
         r"""
         Return a printable representation of this surface.
 

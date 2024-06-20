@@ -2251,6 +2251,15 @@ class TranslationSurfaceGenerators:
             graphical_surface.make_all_visible(limit=10)
             return graphical_surface
 
+        def is_triangulated(self):
+            return False
+
+        def is_delaunay_triangulated(self):
+            return False
+
+        def is_delaunay_decomposes(self):
+            return True
+
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):
         r"""

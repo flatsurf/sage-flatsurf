@@ -2059,7 +2059,7 @@ class MutableOrientedSimilaritySurface(
             sage: S1.set_immutable()
 
             sage: S1.triangulate()
-            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, 6 triangles and a right triangle
+            Translation Surface in H_3(4, 0) built from 5 isosceles triangles, an equilateral triangle, 5 triangles and a right triangle
 
         """
         if relabel is not None:
@@ -2070,40 +2070,54 @@ class MutableOrientedSimilaritySurface(
             )
 
         if not in_place:
-            return super().triangulate(in_place=in_place, label=label)
+            return super().triangulate(in_place=False, label=label)
 
-        if label is None:
-            # We triangulate the whole surface
-            # Store the current labels.
-            labels = list(self.labels())
-            s = self
-            # Subdivide each polygon in turn.
-            for label in labels:
-                s = s.triangulate(in_place=True, label=label)
-            return s
+        import warnings
 
-        poly = self.polygon(label)
-        n = len(poly.vertices())
-        if n > 3:
-            s = self
+        warnings.warn(
+            "in-place triangulation has been deprecated and the in_place keyword argument will be removed from triangulate() in a future version of sage-flatsurf"
+        )
+
+        labels = [label] if label is not None else list(self.labels())
+
+        for label in labels:
+            self.refine_polygon(
+                label, *MutableOrientedSimilaritySurface._triangulate(self, label)
+            )
+
+        return self
+
+    @staticmethod
+    def _triangulate(surface, label):
+        r"""
+        Helper method for :meth:`triangulate`.
+
+        Returns a triangulation of the polygon with ``label`` of ``surface``
+        together with a bidict that can be fed to :meth:`refine_polygon`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: MutableOrientedSimilaritySurface._triangulate(S, 0)
+            (Translation Surface with boundary built from 2 isosceles triangles,
+             bidict({0: ((0, 0), 0), 1: ((0, 0), 1), 2: ((0, 1), 1), 3: ((0, 1), 2)}))
+
+        """
+        triangulation, edge_to_edge = surface.polygon(label).triangulate()
+        if len(triangulation.labels()) == 1:
+            relabeling = {triangulation.root(): label}
         else:
-            # This polygon is already a triangle.
-            return self
-        from flatsurf.geometry.euclidean import ccw
+            relabeling = {l: (label, l) for l in triangulation.labels()}
+        triangulation = triangulation.relabel(relabeling)
 
-        for i in range(n - 3):
-            poly = s.polygon(label)
-            n = len(poly.vertices())
-            for i in range(n):
-                e1 = poly.edge(i)
-                e2 = poly.edge((i + 1) % n)
-                if ccw(e1, e2) > 0:
-                    # This is in case the polygon is a triangle with subdivided edge.
-                    e3 = poly.edge((i + 2) % n)
-                    if ccw(e1 + e2, e3) != 0:
-                        s.subdivide_polygon(label, i, (i + 2) % n)
-                        break
-        return s
+        from bidict import bidict
+
+        edge_to_edge = bidict(
+            {edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()}
+        )
+
+        return triangulation, edge_to_edge
 
     def delaunay_single_flip(self):
         r"""
