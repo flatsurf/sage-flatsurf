@@ -5,15 +5,18 @@
 **Changed:**
 
 * Renamed ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``. (If for some reason you used this module directly, you need to update your imports.)
+
 * Moved ``GL2RImageSurface`` from ``flatsurf.geometry.half_dilation_surface`` to ``flatsurf.geometry.lazy``. (If for some reason you used this class directly, you need to update your imports.)
+
+* Changed ``labels()`` and ``polygons()`` not to inherit from ``collections.abc.Set`` anymore. These are not just sets because their order matter, in particular, their order is compatible. However, ``edges()`` and ``gluings()`` are still ``collections.abc.Set``.
 
 **Deprecated:**
 
-* <news item>
+* Deprecated triangulation with ``triangulate(in_place=True)``. There is no performance advantage in such a triangulation and it complicates future work on morphisms.
 
 **Removed:**
 
-* Removed the ``ring`` keyword argument from ``GL2RImageSurface``, the ring is now always the common parent of the surface base ring and the matrix base ring. (Use ``change_ring`` if you want the surface to live over another ring.)
+* Removed the ``ring`` keyword argument from ``GL2RImageSurface`` and ``GL2RMapping``, the ring is now always the common parent of the surface base ring and the matrix base ring. (Use ``change_ring`` if you want the surface to live over another ring.)
 
 * Removed the option ``in_place=True`` from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. There is no asymptotic runtime advantage in performing this operation in place (and we need to maintain two very different copies of the same functionality.)
 
@@ -30,4 +33,3 @@
 **Performance:**
 
 * <news item>
-
