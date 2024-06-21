@@ -1,6 +1,6 @@
 **Added:**
 
-* <news item>
+* Added ``triangulate()`` method to Euclidean polygons.
 
 **Changed:**
 
