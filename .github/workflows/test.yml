@@ -81,6 +81,10 @@ jobs:
           # This can fail when a new version of sage-flatsurf is released but
           # the package has not been built on conda-forge yet.
           mamba env update -n test --quiet -f flatsurf.yml
+          # sage-flatsurf 0.5.2 does not depend on bidict yet but current
+          # sage-flatsurf needs it, so this line can be removed once 0.6.0 has
+          # been released.
+          mamba install -y bidict
           conda list
         if: ${{ matrix.environment == 'flatsurf.yml' }}
       # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78

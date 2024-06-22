@@ -301,7 +301,7 @@ class DilationSurfaces(SurfaceCategory):
                     raise NotImplementedError(
                         "can not modify in place and return a mapping"
                     )
-                from flatsurf.geometry.half_dilation_surface import GL2RMapping
+                from flatsurf.geometry.mappings import GL2RMapping
 
                 return GL2RMapping(self, m)
             if not in_place:

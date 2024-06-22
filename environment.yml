@@ -6,6 +6,7 @@ name: sage-flatsurf-build
 channels:
   - conda-forge
 dependencies:
+  - bidict
   - black >=22,<23
   - codespell >=2.2.2,<3
   - gap-defaults
