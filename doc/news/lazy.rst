@@ -10,6 +10,8 @@
 
 * Changed ``labels()`` and ``polygons()`` not to inherit from ``collections.abc.Set`` anymore. These are not just sets because their order matter, in particular, their order is compatible. However, ``edges()`` and ``gluings()`` are still ``collections.abc.Set``.
 
+* Changed ``relabel()`` on surfaces to default to relabeling to integer labels. Also the keyword parameter ``relabeling_map`` is now called ``relabeling``.
+
 **Deprecated:**
 
 * Deprecated triangulation with ``triangulate(in_place=True)``. There is no performance advantage in such a triangulation and it complicates future work on morphisms.

@@ -1221,6 +1221,16 @@ class SimilaritySurfaces(SurfaceCategory):
                 Return a surface whose polygons have been relabeled according
                 to ``relabeling``.
 
+                INPUT:
+
+                - ``relabeling`` -- a dict, a callable, or ``None`` (default:
+                  ``None``); the mapping from labels of this surface to labels
+                  of the relabeled surface. If ``None``, then relabel to the
+                  non-negative integers.
+
+                - ``in_place`` -- a boolean (default: ``False``); whether to
+                  modify this surface or return a relabeled copy instead.
+
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
@@ -1243,22 +1253,57 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: SSS == S
                     True
 
+                However, this is only supported on finite-type surfaces::
+
+                    sage: S = translation_surfaces.infinite_staircase()
+                    sage: S.labels()
+                    (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+                    sage: S.relabel(lambda label: -label)
+                    Traceback (most recent call last):
+                    ...
+                    NotImplementedError: cannot relabel a surface with an infinite number of polygons with a callable relabeling yet
+
+                ::
+
+                    sage: S.relabel({1: 'X'})
+                    Traceback (most recent call last):
+                    ...
+                    NotImplementedError: cannot relabel a surface with an infinite number of polygons with a dict relabeling yet
+
+                For infinite surfaces, we only support relabeling to the
+                non-negative integers:
+
+                    sage: S.relabel().labels()
+                    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, …)
+
                 """
                 if in_place:
                     raise NotImplementedError(
                         "this surface does not implement relabel(in_place=True) yet"
                     )
 
+                if not self.is_finite_type():
+                    if callable(relabeling):
+                        # We do not support this because the resulting surface would not be picklable.
+                        # If you need this, implement a subclass of the LazyRelabeledSurface.
+                        raise NotImplementedError("cannot relabel a surface with an infinite number of polygons with a callable relabeling yet")
+
+                    if relabeling is not None:
+                        raise NotImplementedError("cannot relabel a surface with an infinite number of polygons with a dict relabeling yet")
+
+                    from flatsurf.geometry.lazy import LazyRelabeledSurface
+                    return LazyRelabeledSurface(self)
+
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
                 )
 
-                # TODO: Support for infinite type.
+                S = MutableOrientedSimilaritySurface.from_surface(self)
+                S = S.relabel(relabeling=relabeling, in_place=True)
+                S.set_immutable()
 
-                s = MutableOrientedSimilaritySurface.from_surface(self)
-                s = s.relabel(relabeling=relabeling, in_place=True)
-                s.set_immutable()
-                return s
+                return S
 
             def copy(
                 self,
