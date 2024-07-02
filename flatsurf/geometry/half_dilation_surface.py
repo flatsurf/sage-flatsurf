@@ -21,8 +21,7 @@
 
 # Move to lazy.py?
 from flatsurf.geometry.surface import OrientedSimilaritySurface
-
-from sage.misc.cachefunc import cached_method
+from flatsurf.cache import cached_surface_method
 
 
 class GL2RImageSurface(OrientedSimilaritySurface):
