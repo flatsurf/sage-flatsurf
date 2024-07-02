@@ -21,8 +21,7 @@
 
 from flatsurf.geometry.surface import OrientedSimilaritySurface
 from flatsurf.geometry.mappings import SurfaceMapping
-
-from sage.misc.cachefunc import cached_method
+from flatsurf.cache import cached_surface_method
 
 
 class GL2RImageSurface(OrientedSimilaritySurface):
@@ -174,7 +173,7 @@ class GL2RImageSurface(OrientedSimilaritySurface):
         """
         return self._s.is_translation_surface(positive=positive)
 
-    @cached_method
+    @cached_surface_method
     def polygon(self, lab):
         r"""
         Return the polygon with ``label``.
