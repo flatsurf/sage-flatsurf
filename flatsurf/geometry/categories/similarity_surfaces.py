@@ -121,7 +121,6 @@ from flatsurf.geometry.categories.surface_category import (
 )
 from sage.categories.category_with_axiom import all_axioms
 from flatsurf.cache import cached_surface_method
-from sage.misc.cachefunc import cached_method
 from sage.all import QQ, AA
 
 
@@ -448,7 +447,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 category=category,
             )
 
-        @cached_method
+        @cached_surface_method
         def _harmonic_differentials(self, error, cell_decomposition, check, category):
             from flatsurf.geometry.harmonic_differentials import (
                 HarmonicDifferentialSpace,
@@ -530,7 +529,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 category=category,
             )
 
-        @cached_method
+        @cached_surface_method
         def _homology(
             self, k, coefficients, generators, relative, implementation, category
         ):
@@ -631,7 +630,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 category=category,
             )
 
-        @cached_method
+        @cached_surface_method
         def _cohomology(self, k, coefficients, implementation, category):
             r"""
             Return the ``k``-th cohomology group of this surface.
@@ -1410,7 +1409,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return self
 
-            @cached_method
+            @cached_surface_method
             def edge_transformation(self, p, e):
                 r"""
                 Return the similarity bringing the provided edge to the opposite edge.
