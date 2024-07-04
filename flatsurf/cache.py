@@ -58,8 +58,9 @@ def cached_surface_method(f, name=None, key=None, do_pickle=None):
     r"""
     Make a surface method cached as soon as the surface is immutable.
 
-    This is a drop-in replacement for :func:`sage.misc.cachefunc.cached_method`
-    from SageMath but it does not provide any caching for mutable surfaces.
+    This is a drop-in replacement for SageMath's
+    ``sage.misc.cachefunc.cached_method`` but it does not provide any caching
+    for mutable surfaces.
     """
     from sage.misc.cachefunc import CachedMethod
 
@@ -73,12 +74,12 @@ def cached_surface_method(f, name=None, key=None, do_pickle=None):
 
 class CachedSurfaceMethodCaller(CachedMethodCaller):
     r"""
-    Adapts the :class:`sage.misc.cachefunc.CachedMethodCaller` from SageMath to
-    not do any caching if the defining surface is mutable.
+    Adapts the ``sage.misc.cachefunc.CachedMethodCaller`` from SageMath to not
+    do any caching if the defining surface is mutable.
 
     Note that this only handles methods with arguments, for methods without
     arguments, a caller that customizes
-    :class:`sage.misc.cachefunc.CachedMethodCallerNoArgs` must be used.
+    ``sage.misc.cachefunc.CachedMethodCallerNoArgs`` must be used.
     """
 
     def __init__(self, cached_caller, *args, **kwargs):
@@ -90,11 +91,11 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
         r"""
         Invoke the underlying method with the given arguments.
 
-        The underlying :class:`sage.misc.cachefunc.CachedMethodCaller` is
-        written in Cython and highly optimized. This method is much slower (by
-        about 250ns per call.) However, once the surface is immutable, this
-        method is replaced with the underlying caching one, so the overhead is
-        only paid once.
+        The underlying ``sage.misc.cachefunc.CachedMethodCaller`` is written in
+        Cython and highly optimized. This method is much slower (by about 250ns
+        per call.) However, once the surface is immutable, this method is
+        replaced with the underlying caching one, so the overhead is only paid
+        once.
         """
         if self._instance.is_mutable():
             return self._instance_call(*args, **kwargs)
@@ -107,7 +108,7 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
 class CachedSurfaceMethod(CachedMethod):
     r"""
     Customizes a method in a class so that it conditionally enables caching
-    just like SageMath's :class:`sage.misc.cachefunc.CachedMethod` does.
+    just like SageMath's ``sage.misc.cachefunc.CachedMethod`` does.
     """
 
     def __init__(self, f, name, key, do_pickle):
