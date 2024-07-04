@@ -237,6 +237,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">The flatsurf.features Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -392,8 +394,10 @@
     <span class="n">SurfaceCategory</span><span class="p">,</span>
     <span class="n">SurfaceCategoryWithAxiom</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">flatsurf.cache</span> <span class="kn">import</span> <span class="n">cached_surface_method</span>
+
 <span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span><span class="p">,</span> <span class="n">cached_in_parent_method</span>
+<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
 <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
 
 
@@ -757,6 +761,11 @@
 <span class="sd">                    sage: T._refine_category_(S.category())  # make angle() available</span>
 <span class="sd">                    sage: T(0, 0).angle()</span>
 <span class="sd">                    1</span>
+<span class="sd">                    sage: T(0, 0).angle() is T(0, 0).angle()</span>
+<span class="sd">                    False</span>
+
+<span class="sd">                ::</span>
+
 <span class="sd">                    sage: T.glue((0, 0), (0, 2))</span>
 <span class="sd">                    sage: T(0, 0).angle()</span>
 <span class="sd">                    3/8</span>
@@ -767,12 +776,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">():</span>
-                    <span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_vertex</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_angle_vertex</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-member</span>
-
-                    <span class="k">return</span> <span class="n">angle</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
 
                 <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">RR</span>
 
@@ -793,31 +797,6 @@
                         <span class="k">return</span> <span class="n">ring</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
                 <span class="k">return</span> <span class="n">ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span></div>
-
-            <span class="nd">@cached_in_parent_method</span>
-            <span class="k">def</span> <span class="nf">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="p">):</span>
-<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Return the total angle at this vertex in multiples of 2π.</span>
-
-<span class="sd">                INPUT:</span>
-
-<span class="sd">                - ``numerical`` -- a boolean; whether to return the angle as a</span>
-<span class="sd">                  floating point number.</span>
-
-<span class="sd">                EXAMPLES::</span>
-
-<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
-<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
-<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
-<span class="sd">                    sage: S(0, 0)._angle_vertex(numerical=False)</span>
-<span class="sd">                    1</span>
-
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="n">turns</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turns</span><span class="p">()</span>
-
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">angle</span>
-
-                <span class="k">return</span> <span class="n">turns</span> <span class="o">+</span> <span class="n">angle</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.turns"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns">[docs]</a>            <span class="k">def</span> <span class="nf">turns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1322,7 +1301,32 @@
 
                 <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_matrix"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">[docs]</a>            <span class="nd">@cached_method</span>
+            <span class="nd">@cached_surface_method</span>
+            <span class="k">def</span> <span class="nf">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">numerical</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the total angle at this vertex in multiples of 2π.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``numerical`` -- a boolean; whether to return the angle as a</span>
+<span class="sd">                  floating point number.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])</span>
+<span class="sd">                    sage: S = similarity_surfaces.self_glued_polygon(P)</span>
+<span class="sd">                    sage: S._angle_vertex(S(0, 0), numerical=False)</span>
+<span class="sd">                    1</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">turns</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">turns</span><span class="p">()</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">angle</span>
+
+                <span class="k">return</span> <span class="n">turns</span> <span class="o">+</span> <span class="n">angle</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_matrix"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">[docs]</a>            <span class="nd">@cached_surface_method</span>
             <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Returns the 2x2 matrix representing a similarity which when</span>
@@ -2305,7 +2309,7 @@
 
                 <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">[docs]</a>            <span class="nd">@cached_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">:</span> <span class="n">ring</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">[docs]</a>            <span class="nd">@cached_surface_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">:</span> <span class="n">ring</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
             <span class="k">def</span> <span class="nf">tangent_bundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the tangent bundle</span>

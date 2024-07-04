@@ -238,6 +238,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -293,7 +295,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/72cdd579b1cd29f0161f534a71baf8aedfd9fd505b96456ed4be7a54edb7edc8.png" src="../_images/72cdd579b1cd29f0161f534a71baf8aedfd9fd505b96456ed4be7a54edb7edc8.png" />
+<img alt="../_images/2f8dc0b452d039b465786c1a47a5dae5e58515858d9f742cde24e2243efba90f.png" src="../_images/2f8dc0b452d039b465786c1a47a5dae5e58515858d9f742cde24e2243efba90f.png" />
 </div>
 </div>
 <p>Labels in the center of each polygon indicate the label of the polygon. Edge labels above indicate which polygon the edge is glued to.</p>
@@ -320,7 +322,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/34dce3b450a4a3622f146a498e380e7eceae46b39b3c96f0710db4095b67844c.png" src="../_images/34dce3b450a4a3622f146a498e380e7eceae46b39b3c96f0710db4095b67844c.png" />
+<img alt="../_images/0d9c83d7a166ff8420e83dc6ce9b16fe2dfe70166625802fac2005f1763d2370.png" src="../_images/0d9c83d7a166ff8420e83dc6ce9b16fe2dfe70166625802fac2005f1763d2370.png" />
 </div>
 </div>
 <p>sage-flatsurf uses a simple algorithm to layout polygons. Sometimes polygons overlap. But in this example the main concern is maybe that the picture is not as symmetric as we would like it to be. For example, we could aim for things to be symmetric around the polygons 0 and 1. Let’s say we would like to move polygon 2 so that it’s glued to 10 instead of being glued to 0. We count the edges on polygon 10 until we reach the edge glued to 2. It’s the first one. We can verify that this is correct:</p>
@@ -352,7 +354,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a99ed98db51dbf1673d069737bfb063215585428a521034c8943b6bf2a5de264.png" src="../_images/a99ed98db51dbf1673d069737bfb063215585428a521034c8943b6bf2a5de264.png" />
+<img alt="../_images/e614512eecee62ff9952c9238081441bfa2951d1eed197b3641ad86e75c5d347.png" src="../_images/e614512eecee62ff9952c9238081441bfa2951d1eed197b3641ad86e75c5d347.png" />
 </div>
 </div>
 <p>Let’s build the symmetric widget at polygon 1 by moving 7 to be adjacent to 5 and 3 to be adjacent to 7. Note that the order of the movements matter. If we do it in the wrong order, we detach things:</p>
@@ -365,7 +367,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1e48832a9e016ee6aff4bf1e756dda72147155dd2af94fd7bb93432164eda23e.png" src="../_images/1e48832a9e016ee6aff4bf1e756dda72147155dd2af94fd7bb93432164eda23e.png" />
+<img alt="../_images/b65bb490995c93867e07ebe7b5a9690ff1d14e2c2d4a080019f309f888c89de8.png" src="../_images/b65bb490995c93867e07ebe7b5a9690ff1d14e2c2d4a080019f309f888c89de8.png" />
 </div>
 </div>
 <p>Indeed, we moved 3 to be adjacent to 7 but then moved 7 away. Let’s do it in the correct order:</p>
@@ -378,7 +380,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/128fc86fa0d852bd0114e805a9f18e150976200ed1671fa1a2f156e56997d313.png" src="../_images/128fc86fa0d852bd0114e805a9f18e150976200ed1671fa1a2f156e56997d313.png" />
+<img alt="../_images/a59c6fc99fe472a1fbf1a93cfbf6e530e627260eff2c0834e15ee79823f36620.png" src="../_images/a59c6fc99fe472a1fbf1a93cfbf6e530e627260eff2c0834e15ee79823f36620.png" />
 </div>
 </div>
 <p>Finally, glue 9 to 8 for a symmetric picture:</p>
@@ -390,7 +392,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ef4bd2e8d99ef52df306c9b3b3779918f94741ce8b4d782c2ae2f1b47cd475f1.png" src="../_images/ef4bd2e8d99ef52df306c9b3b3779918f94741ce8b4d782c2ae2f1b47cd475f1.png" />
+<img alt="../_images/0b99f46627cbaa371a1e8e9a29fb2500601fc7eb97c38fb9ca467a52a0749206.png" src="../_images/0b99f46627cbaa371a1e8e9a29fb2500601fc7eb97c38fb9ca467a52a0749206.png" />
 </div>
 </div>
 </section>
@@ -430,7 +432,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/30a6ca667b41134390f41fc8017e2364781393126f6c4c9b15f566d7f6323c19.png" src="../_images/30a6ca667b41134390f41fc8017e2364781393126f6c4c9b15f566d7f6323c19.png" />
+<img alt="../_images/3e3883d5f3ffb0673d59ee12898b050da13b1dd8719fabb706a1db9c2841f9d4.png" src="../_images/3e3883d5f3ffb0673d59ee12898b050da13b1dd8719fabb706a1db9c2841f9d4.png" />
 </div>
 </div>
 <p>We can tell that the point <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">-4)</span></code> is in the unfolding, but we can’t immediately tell if it is in polygon 5 or 7. The GraphicalSurface <code class="docutils literal notranslate"><span class="pre">gs</span></code> is made out of GraphicalPolygons which we can use to deal with this sort of thing.</p>
@@ -481,7 +483,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c8755ccaff2dcc4147291fe38d43f5d4a8117873e9e21b48c8ec901988ca4cca.png" src="../_images/c8755ccaff2dcc4147291fe38d43f5d4a8117873e9e21b48c8ec901988ca4cca.png" />
+<img alt="../_images/3fc20f1089bd390d15a479e418a1c58a94d6b19af43c9fc10058daf1aa95f273.png" src="../_images/3fc20f1089bd390d15a479e418a1c58a94d6b19af43c9fc10058daf1aa95f273.png" />
 </div>
 </div>
 <p>Lets convert it to a surface point and plot it!</p>
@@ -506,7 +508,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9fcf5991787fb470de9703ac114b5c6abaeee4c74e8c0c59be0328f6f1027fd5.png" src="../_images/9fcf5991787fb470de9703ac114b5c6abaeee4c74e8c0c59be0328f6f1027fd5.png" />
+<img alt="../_images/0fb16f6509fb9fa8021179a273ca58d63df0481a3016e713ff5a56879085fbcf.png" src="../_images/0fb16f6509fb9fa8021179a273ca58d63df0481a3016e713ff5a56879085fbcf.png" />
 </div>
 </div>
 <p>Now we want to plot an upward trajectory through this point. Again, we have to deal with the fact that the coordinates might not match. You can get access to the transformation (a similarity) from geometric coordinates to graphical coordinates:</p>
@@ -598,7 +600,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b2c36573240870808c59f310191a0b6237deb0d712cb3b98fc0849252a97bd0a.png" src="../_images/b2c36573240870808c59f310191a0b6237deb0d712cb3b98fc0849252a97bd0a.png" />
+<img alt="../_images/1d3419a216735e85975214e554a3efe32b0fee7f2727f4446ba31b2c01841b7e.png" src="../_images/1d3419a216735e85975214e554a3efe32b0fee7f2727f4446ba31b2c01841b7e.png" />
 </div>
 </div>
 </section>
@@ -620,7 +622,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/033d47ddbf85b921223677dacc362742a34dd3f4a59321c94390301c755ad6da.png" src="../_images/033d47ddbf85b921223677dacc362742a34dd3f4a59321c94390301c755ad6da.png" />
+<img alt="../_images/009f8d1881e74c16b414f58c028df03c40b68a79a053d1addafc0308f9ec65b1.png" src="../_images/009f8d1881e74c16b414f58c028df03c40b68a79a053d1addafc0308f9ec65b1.png" />
 </div>
 </div>
 <p>Current polygon printing options:</p>
@@ -660,7 +662,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7c8ad41756f4f4712492d7aee983082d228c8f50d777b38fbac042bfbd6ec866.png" src="../_images/7c8ad41756f4f4712492d7aee983082d228c8f50d777b38fbac042bfbd6ec866.png" />
+<img alt="../_images/06082311435d5f7027cc2b3ca0f8b3d6ebb8d0950b227da44ae7c2e0c4a99b8a.png" src="../_images/06082311435d5f7027cc2b3ca0f8b3d6ebb8d0950b227da44ae7c2e0c4a99b8a.png" />
 </div>
 </div>
 <p>Again, to use a non-default graphical surface, we need to pass the graphical surface as a parameter.</p>
@@ -671,7 +673,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c47fb81f7e60041a9b30afd8f926f34d6f16127ab9bcd280ab2bb422eebdbfda.png" src="../_images/c47fb81f7e60041a9b30afd8f926f34d6f16127ab9bcd280ab2bb422eebdbfda.png" />
+<img alt="../_images/5ce7e2f7f9fb2f03c727b09a93a0107df0dfb9ce2af3b0d79e4f08d562bc24ca.png" src="../_images/5ce7e2f7f9fb2f03c727b09a93a0107df0dfb9ce2af3b0d79e4f08d562bc24ca.png" />
 </div>
 </div>
 <p>Lets make it prettier by drawing some stars on the faces!</p>
@@ -711,7 +713,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b2ef00fce139d64ac478e20aa25f40f14a74bfc1640d450becab4ecd24055b57.png" src="../_images/b2ef00fce139d64ac478e20aa25f40f14a74bfc1640d450becab4ecd24055b57.png" />
+<img alt="../_images/43dbbd6c233961ab90d1453fd301f04306c8d25ea93332a8d4f48d982db71a1a.png" src="../_images/43dbbd6c233961ab90d1453fd301f04306c8d25ea93332a8d4f48d982db71a1a.png" />
 </div>
 </div>
 <p>Plot using the original graphical surface.</p>
@@ -725,7 +727,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/70b667464f515484da2474eb0d104dc21c0847a4c2812667e3dd347bd6e1d9fc.png" src="../_images/70b667464f515484da2474eb0d104dc21c0847a4c2812667e3dd347bd6e1d9fc.png" />
+<img alt="../_images/0cce653c4825436df4c5600eae1f6dc8327ab0c25b02b15a2fc7331ddea6863b.png" src="../_images/0cce653c4825436df4c5600eae1f6dc8327ab0c25b02b15a2fc7331ddea6863b.png" />
 </div>
 </div>
 </section>
@@ -747,7 +749,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/680837ac533700e622b8889a4cbf6cd4322652af7b961fbb5fa4404570fe08e6.png" src="../_images/680837ac533700e622b8889a4cbf6cd4322652af7b961fbb5fa4404570fe08e6.png" />
+<img alt="../_images/d1a9f61470e1ba8e3600c767d0f5bc965bded79b9e408d165ea9f41f74b159df.png" src="../_images/d1a9f61470e1ba8e3600c767d0f5bc965bded79b9e408d165ea9f41f74b159df.png" />
 </div>
 </div>
 <p>Here is an example with the edge labels centered on the edge.</p>
@@ -779,7 +781,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f25f070a2f069a416fcddd04f27524c378184c86ea9fea5bc7330a70e52314cf.png" src="../_images/f25f070a2f069a416fcddd04f27524c378184c86ea9fea5bc7330a70e52314cf.png" />
+<img alt="../_images/062a5274d300c6b180ed8a624e9e75538e958061ca24a7c1631a2eadaa1a3df8.png" src="../_images/062a5274d300c6b180ed8a624e9e75538e958061ca24a7c1631a2eadaa1a3df8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -810,7 +812,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/aabd31a946129522a576eac15af609e4e0b62d7efb7f9a0a471d7df5a1f9669f.png" src="../_images/aabd31a946129522a576eac15af609e4e0b62d7efb7f9a0a471d7df5a1f9669f.png" />
+<img alt="../_images/989879a34e9a0e2acaab13fb035e625a968e338b2f3828e9c62326131eefc512.png" src="../_images/989879a34e9a0e2acaab13fb035e625a968e338b2f3828e9c62326131eefc512.png" />
 </div>
 </div>
 </section>
