@@ -2148,11 +2148,15 @@ class SimilaritySurfaces(SurfaceCategory):
                 Return a triangulated version of this surface. (This may be mutable
                 or not depending on the input.)
 
-                If label=None (as default) all polygons are triangulated. Otherwise,
-                label should be a polygon label. In this case, just this polygon
-                is split into triangles.
+                INPUT:
 
-                This is done in place if in_place is True (defaults to False).
+                - ``in_place`` -- a boolean (default: ``False``); whether to
+                  modify this surface or return a triangulated copy instead.
+
+                - ``label`` -- a label or ``None`` (default: ``None``); if set,
+                  then only the polygon with that label is triangulated and all
+                  other polygons are unchanged. Otherwise, all polygons are
+                  triangulated.
 
                 EXAMPLES::
 
@@ -2190,6 +2194,16 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: T.set_immutable()
                     sage: T
                     Half-Translation Surface in Q_0(0, -1^4) built from 2 triangles
+
+                We can also only triangulate part of a surface, namely a single
+                polygon::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.cathedral(1, 1)
+                    sage: S
+                    Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
+                    sage: S.triangulate(label=1).relabel()
+                    Translation Surface in H_4(2^3) built from 2 isosceles triangles, 5 triangles, a right triangle, 2 squares and an octagon
 
                 """
                 if relabel is not None:

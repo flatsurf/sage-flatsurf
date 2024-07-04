@@ -245,6 +245,9 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         """
         reference_label = self._reference_label(label)
 
+        if not self._is_triangulated(reference_label):
+            return self._reference.polygon(reference_label)
+
         triangulation, _ = self._triangulation(reference_label)
 
         return triangulation.polygon(label)
