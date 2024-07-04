@@ -17,8 +17,9 @@ EXAMPLES::
     sage: S.edge_matrix(0, 0) is S.edge_matrix(0, 0)
     False
 
-When we call :meth:`MutableOrientedSimilaritySurface.set_immutable`, caching is
-enabled for this method::
+When we call
+:meth:`flatsurf.geometry.surface.MutablePolygonalSurface.set_immutable`,
+caching is enabled for this method::
 
     sage: S.set_immutable()
     sage: S.edge_matrix(0, 0) is S.edge_matrix(0, 0)
@@ -44,12 +45,23 @@ enabled for this method::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
 
-from sage.misc.cachefunc import CachedMethod, CachedMethodCaller, CachedMethodCallerNoArgs
+from sage.misc.cachefunc import (
+    CachedMethod,
+    CachedMethodCaller,
+    CachedMethodCallerNoArgs,
+)
 from sage.misc.decorators import decorator_keywords
 
 
 @decorator_keywords
 def cached_surface_method(f, name=None, key=None, do_pickle=None):
+    r"""
+    Make a surface method cached as soon as the surface is immutable.
+
+    This is a drop-in replacement for SageMath's
+    ``sage.misc.cachefunc.cached_method`` but it does not provide any caching
+    for mutable surfaces.
+    """
     from sage.misc.cachefunc import CachedMethod
 
     fname = name or f.__name__
@@ -61,12 +73,30 @@ def cached_surface_method(f, name=None, key=None, do_pickle=None):
 
 
 class CachedSurfaceMethodCaller(CachedMethodCaller):
+    r"""
+    Adapts the ``sage.misc.cachefunc.CachedMethodCaller`` from SageMath to not
+    do any caching if the defining surface is mutable.
+
+    Note that this only handles methods with arguments, for methods without
+    arguments, a caller that customizes
+    ``sage.misc.cachefunc.CachedMethodCallerNoArgs`` must be used.
+    """
+
     def __init__(self, cached_caller, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._cached_caller = cached_caller
 
     def __call__(self, *args, **kwargs):
+        r"""
+        Invoke the underlying method with the given arguments.
+
+        The underlying ``sage.misc.cachefunc.CachedMethodCaller`` is written in
+        Cython and highly optimized. This method is much slower (by about 250ns
+        per call.) However, once the surface is immutable, this method is
+        replaced with the underlying caching one, so the overhead is only paid
+        once.
+        """
         if self._instance.is_mutable():
             return self._instance_call(*args, **kwargs)
 
@@ -76,6 +106,11 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
 
 
 class CachedSurfaceMethod(CachedMethod):
+    r"""
+    Customizes a method in a class so that it conditionally enables caching
+    just like SageMath's ``sage.misc.cachefunc.CachedMethod`` does.
+    """
+
     def __init__(self, f, name, key, do_pickle):
         super().__init__(f, name, key, do_pickle)
         self._key = key
@@ -86,9 +121,19 @@ class CachedSurfaceMethod(CachedMethod):
 
         if inst is not None and inst.is_mutable():
             if isinstance(caller, CachedMethodCallerNoArgs):
-                raise NotImplementedError("cannot cache parameterless cached methods yet")
+                raise NotImplementedError(
+                    "cannot cache parameterless cached methods yet"
+                )
             else:
-                caller = CachedSurfaceMethodCaller(caller, self, inst, cache=self._get_instance_cache(inst), name=caller.__name__, key=self._key, do_pickle=self._do_pickle)
+                caller = CachedSurfaceMethodCaller(
+                    caller,
+                    self,
+                    inst,
+                    cache=self._get_instance_cache(inst),
+                    name=caller.__name__,
+                    key=self._key,
+                    do_pickle=self._do_pickle,
+                )
 
         if inst is not None:
             setattr(inst, caller.__name__, caller)

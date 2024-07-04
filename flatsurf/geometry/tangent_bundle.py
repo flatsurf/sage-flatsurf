@@ -463,7 +463,7 @@ class SimilaritySurfaceTangentVector:
                 )
         else:
             raise NotImplementedError(
-                "Rotating tangent vectors is only implemnted when at a singularity"
+                "Rotating tangent vectors is only implemented when at a singularity"
             )
 
     def counterclockwise_to(self, w, code=False):
@@ -549,7 +549,7 @@ class SimilaritySurfaceTangentVector:
                 )
         else:
             raise NotImplementedError(
-                "Rotating tangent vectors is only implemnted when at a singularity"
+                "Rotating tangent vectors is only implemented when at a singularity"
             )
 
     def plot(self, **kwargs):

@@ -119,8 +119,8 @@ from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
 )
-from sage.categories.category_with_axiom import all_axioms
 from flatsurf.cache import cached_surface_method
+from sage.categories.category_with_axiom import all_axioms
 from sage.all import QQ, AA
 
 
