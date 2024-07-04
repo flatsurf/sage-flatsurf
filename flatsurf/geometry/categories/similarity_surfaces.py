@@ -1292,6 +1292,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         raise NotImplementedError("cannot relabel a surface with an infinite number of polygons with a callable relabeling yet")
 
                     if relabeling is not None:
+                        # It would not be difficult to add this to
+                        # LazyRelabeledSurface but so far we did not need it.
                         raise NotImplementedError("cannot relabel a surface with an infinite number of polygons with a dict relabeling yet")
 
                     from flatsurf.geometry.lazy import LazyRelabeledSurface
@@ -2378,7 +2380,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if relabel is not None:
                     if relabel:
                         raise NotImplementedError(
-                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead"
                         )
                     else:
                         import warnings
@@ -2395,7 +2397,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if relabel is not None:
                     if relabel:
                         raise NotImplementedError(
-                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead"
                         )
                     else:
                         import warnings
@@ -2486,7 +2488,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 if relabel is not None:
                     if relabel:
                         raise NotImplementedError(
-                            "the relabel keyword has been removed from delaunay_decomposition(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                            "the relabel keyword has been removed from delaunay_decomposition(); use relabel() to use integer labels instead"
                         )
                     else:
                         import warnings

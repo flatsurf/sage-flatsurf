@@ -75,7 +75,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
-                    "the relabel keyword has been removed from LazyTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                    "the relabel keyword has been removed from LazyTriangulatedSurface; use relabel() to use integer labels instead"
                 )
             else:
                 import warnings
@@ -969,7 +969,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
-                    "the relabel keyword has been removed from LazyDelaunayTriangulatedSurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                    "the relabel keyword has been removed from LazyDelaunayTriangulatedSurface; use relabel() to use integer labels instead"
                 )
             else:
                 import warnings
@@ -1388,7 +1388,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
-                    "the relabel keyword has been removed from LazyDelaunaySurface; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                    "the relabel keyword has been removed from LazyDelaunaySurface; use relabel() to use integer labels instead"
                 )
             else:
                 import warnings

@@ -1979,7 +1979,7 @@ class MutableOrientedSimilaritySurface(
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
-                    "the relabel keyword has been removed from reposition_polygon; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                    "the relabel keyword has been removed from reposition_polygon; use relabel() to use integer labels instead"
                 )
             else:
                 import warnings
