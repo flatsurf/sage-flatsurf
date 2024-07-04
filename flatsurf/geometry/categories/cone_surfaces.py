@@ -309,6 +309,57 @@ class ConeSurfaces(SurfaceCategory):
 
                 """
 
+                class ElementMethods:
+                    # TODO: Only cache for vertices in parent, everything else, cache only in the point.
+                    @cached_in_parent_method
+                    def radius_of_convergence(self):
+                        r"""
+                        Return the distance of this point to the closest
+                        (other) singularity.
+
+                        EXAMPLES::
+
+                            sage: from flatsurf import translation_surfaces
+                            sage: S = translation_surfaces.regular_octagon()
+                            sage: S(0, S.polygon(0).centroid()).radius_of_convergence()
+                            √1/2*a + 1
+                            sage: next(iter(S.vertices())).radius_of_convergence()
+                            1
+                            sage: S(0, (1/2, 1/2)).radius_of_convergence()
+                            √1/2
+                            sage: S(0, (1/2, 0)).radius_of_convergence()
+                            1/2
+                            sage: S(0, (1/4, 0)).radius_of_convergence()
+                            1/4
+
+                        """
+                        # TODO: Require immutable for caching.
+
+                        surface = self.parent()
+
+                        norm = surface.euclidean_plane().norm()
+
+                        if all(vertex.angle() == 1 for vertex in surface.vertices()):
+                            return norm.infinite()
+
+                        erase_marked_points = surface.erase_marked_points()
+                        center = erase_marked_points(self)
+
+                        if not center.is_vertex():
+                            insert_marked_points = (
+                                center.surface().insert_marked_points(center)
+                            )
+                            center = insert_marked_points(center)
+
+                        surface = center.parent()
+
+                        for connection in surface.saddle_connections(initial_vertex=center):
+                            end = surface(*connection.end())
+                            if end.angle() != 1:
+                                return norm.from_vector(connection.holonomy())
+
+                        assert False
+
                 class Connected(SurfaceCategoryWithAxiom):
                     r"""
                     The category of oriented connected cone surfaces without boundary.
