@@ -119,8 +119,10 @@ from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
 )
+from flatsurf.cache import cached_surface_method
+
 from sage.categories.category_with_axiom import all_axioms
-from sage.misc.cachefunc import cached_method, cached_in_parent_method
+from sage.misc.cachefunc import cached_method
 from sage.all import QQ, AA
 
 
@@ -484,6 +486,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: T._refine_category_(S.category())  # make angle() available
                     sage: T(0, 0).angle()
                     1
+                    sage: T(0, 0).angle() is T(0, 0).angle()
+                    False
+
+                ::
+
                     sage: T.glue((0, 0), (0, 2))
                     sage: T(0, 0).angle()
                     3/8
@@ -494,12 +501,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if self.is_vertex():
-                    angle = self._angle_vertex(numerical=numerical)
-
-                    if self.parent().is_mutable():
-                        self._angle_vertex.clear_cache()  # pylint: disable=no-member
-
-                    return angle
+                    return self.parent()._angle_vertex(self, numerical=numerical)
 
                 from sage.all import QQ, RR
 
@@ -520,31 +522,6 @@ class SimilaritySurfaces(SurfaceCategory):
                         return ring(0.5)
 
                 return ring.one()
-
-            @cached_in_parent_method
-            def _angle_vertex(self, numerical):
-                r"""
-                Return the total angle at this vertex in multiples of 2π.
-
-                INPUT:
-
-                - ``numerical`` -- a boolean; whether to return the angle as a
-                  floating point number.
-
-                EXAMPLES::
-
-                    sage: from flatsurf import Polygon, similarity_surfaces
-                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
-                    sage: S = similarity_surfaces.self_glued_polygon(P)
-                    sage: S(0, 0)._angle_vertex(numerical=False)
-                    1
-
-                """
-                turns, start, end = self.turns()
-
-                from flatsurf.geometry.euclidean import angle
-
-                return turns + angle(start, end, numerical=numerical)
 
             def turns(self, start_edge=None, start_holonomy=None):
                 r"""
@@ -1049,7 +1026,32 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return [p.angle(numerical=numerical) for p in self.vertices()]
 
-            @cached_method
+            @cached_surface_method
+            def _angle_vertex(self, vertex, numerical):
+                r"""
+                Return the total angle at this vertex in multiples of 2π.
+
+                INPUT:
+
+                - ``numerical`` -- a boolean; whether to return the angle as a
+                  floating point number.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(vertices=[(0, 0), (2, 0), (1, 4), (0, 5)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S._angle_vertex(S(0, 0), numerical=False)
+                    1
+
+                """
+                turns, start, end = vertex.turns()
+
+                from flatsurf.geometry.euclidean import angle
+
+                return turns + angle(start, end, numerical=numerical)
+
+            @cached_surface_method
             def edge_matrix(self, p, e=None):
                 r"""
                 Returns the 2x2 matrix representing a similarity which when
@@ -2072,7 +2074,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return VectorSpace(self.base_ring(), 2)
 
-            @cached_method(key=lambda self, ring: ring or self.base_ring())
+            @cached_surface_method(key=lambda self, ring: ring or self.base_ring())
             def tangent_bundle(self, ring=None):
                 r"""
                 Return the tangent bundle
