@@ -85,3 +85,5 @@ from an interactive SageMath session with |help|_.
 
    geometry
    graphical
+   features
+   cache
