@@ -18,7 +18,7 @@ EXAMPLES::
     False
 
 When we call
-:meth:`flatsurf.geometry.surface.MutableOrientedSimilaritySurface.set_immutable`,
+:meth:`flatsurf.geometry.surface.MutablePolygonalSurface.set_immutable`,
 caching is enabled for this method::
 
     sage: S.set_immutable()
