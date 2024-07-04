@@ -99,7 +99,7 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
 
 class CachedSurfaceMethod(CachedMethod):
     r"""
-    Customizes a method in a class so that it conditonally enables caching just
+    Customizes a method in a class so that it conditionally enables caching just
     like SageMath's ``CachedMethod`` does.
     """
     def __init__(self, f, name, key, do_pickle):
