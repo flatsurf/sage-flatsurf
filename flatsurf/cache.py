@@ -44,7 +44,11 @@ enabled for this method::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
 
-from sage.misc.cachefunc import CachedMethod, CachedMethodCaller, CachedMethodCallerNoArgs
+from sage.misc.cachefunc import (
+    CachedMethod,
+    CachedMethodCaller,
+    CachedMethodCallerNoArgs,
+)
 from sage.misc.decorators import decorator_keywords
 
 
@@ -75,6 +79,7 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
     arguments, a caller that customizes ``CachedMethodCallerNoArgs`` must be
     used.
     """
+
     def __init__(self, cached_caller, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -102,6 +107,7 @@ class CachedSurfaceMethod(CachedMethod):
     Customizes a method in a class so that it conditionally enables caching just
     like SageMath's ``CachedMethod`` does.
     """
+
     def __init__(self, f, name, key, do_pickle):
         super().__init__(f, name, key, do_pickle)
         self._key = key
@@ -112,9 +118,19 @@ class CachedSurfaceMethod(CachedMethod):
 
         if inst is not None and inst.is_mutable():
             if isinstance(caller, CachedMethodCallerNoArgs):
-                raise NotImplementedError("cannot cache parameterless cached methods yet")
+                raise NotImplementedError(
+                    "cannot cache parameterless cached methods yet"
+                )
             else:
-                caller = CachedSurfaceMethodCaller(caller, self, inst, cache=self._get_instance_cache(inst), name=caller.__name__, key=self._key, do_pickle=self._do_pickle)
+                caller = CachedSurfaceMethodCaller(
+                    caller,
+                    self,
+                    inst,
+                    cache=self._get_instance_cache(inst),
+                    name=caller.__name__,
+                    key=self._key,
+                    do_pickle=self._do_pickle,
+                )
 
         if inst is not None:
             setattr(inst, caller.__name__, caller)
