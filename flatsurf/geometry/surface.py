@@ -2181,8 +2181,11 @@ class MutableOrientedSimilaritySurface(
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; "
-                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+            warnings.warn(
+                "limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; "
+                "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+            )
 
         if self.is_finite_type():
             if s2.is_finite_type():
@@ -2970,13 +2973,14 @@ class Labels(LabeledCollection, collections.abc.Sequence):
             key = int(key)
             sgn = 1 if key >= 0 else -1
 
-            item = self[key:key + sgn:sgn]
+            item = self[key : key + sgn : sgn]
             if not item:
                 raise IndexError(key)
 
             return item[0]
 
         from more_itertools import islice_extended
+
         return list(islice_extended(self, key.start, key.stop, key.step))
 
 

@@ -771,7 +771,10 @@ class GraphicalSurface:
         """
         if singularity_limit is not None:
             import warnings
-            warnings.warn("singularity_limit has been deprecated as a keyword argument for to_surface() and will be removed from a future version of sage-flatsurf")
+
+            warnings.warn(
+                "singularity_limit has been deprecated as a keyword argument for to_surface() and will be removed from a future version of sage-flatsurf"
+            )
 
         surface = self.get_surface()
 

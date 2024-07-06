@@ -921,6 +921,7 @@ class GL2RMapping(SurfaceMapping):
         Hit the surface s with the 2x2 matrix m which should have positive determinant.
         """
         from flatsurf.geometry.lazy import GL2RImageSurface
+
         codomain = GL2RImageSurface(s, m, category=category or s.category())
         self._m = m
         self._im = ~m

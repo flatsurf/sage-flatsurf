@@ -1289,14 +1289,19 @@ class SimilaritySurfaces(SurfaceCategory):
                     if callable(relabeling):
                         # We do not support this because the resulting surface would not be picklable.
                         # If you need this, implement a subclass of the LazyRelabeledSurface.
-                        raise NotImplementedError("cannot relabel a surface with an infinite number of polygons with a callable relabeling yet")
+                        raise NotImplementedError(
+                            "cannot relabel a surface with an infinite number of polygons with a callable relabeling yet"
+                        )
 
                     if relabeling is not None:
                         # It would not be difficult to add this to
                         # LazyRelabeledSurface but so far we did not need it.
-                        raise NotImplementedError("cannot relabel a surface with an infinite number of polygons with a dict relabeling yet")
+                        raise NotImplementedError(
+                            "cannot relabel a surface with an infinite number of polygons with a dict relabeling yet"
+                        )
 
                     from flatsurf.geometry.lazy import LazyRelabeledSurface
+
                     return LazyRelabeledSurface(self)
 
                 from flatsurf.geometry.surface import (
@@ -2283,8 +2288,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
-                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
 
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
@@ -2318,8 +2326,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
-                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
 
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
@@ -2390,7 +2401,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if triangulated is not None:
                     import warnings
-                    warnings.warn("the triangulated keyword has been deprecated as a parameter for delaunay_triangulation() and will be removed in a future version of sage-flatsurf")
+
+                    warnings.warn(
+                        "the triangulated keyword has been deprecated as a parameter for delaunay_triangulation() and will be removed in a future version of sage-flatsurf"
+                    )
 
                 if in_place:
                     raise NotImplementedError(
@@ -2399,7 +2413,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if direction is not None:
                     import warnings
-                    warnings.warn("the direction parameter of delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf")
+
+                    warnings.warn(
+                        "the direction parameter of delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
 
                 if relabel is not None:
                     if relabel:
@@ -2494,11 +2511,17 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if triangulated is not None:
                     import warnings
-                    warnings.warn("the triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf")
+
+                    warnings.warn(
+                        "the triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf"
+                    )
 
                 if delaunay_triangulated is not None:
                     import warnings
-                    warnings.warn("the delaunay_triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf")
+
+                    warnings.warn(
+                        "the delaunay_triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf"
+                    )
 
                 if in_place:
                     raise NotImplementedError(
@@ -2507,7 +2530,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if direction is not None:
                     import warnings
-                    warnings.warn("the direction parameter of delaunay_decomposition() has been removed since it did not work correctly in previous versions of sage-flatsurf")
+
+                    warnings.warn(
+                        "the direction parameter of delaunay_decomposition() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
 
                 if relabel is not None:
                     if relabel:
@@ -3006,8 +3032,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; "
-                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
 
                 if "Oriented" not in surface.category().axioms():
                     raise NotImplementedError
@@ -3090,7 +3119,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 if not self.is_finite_type():
                     from flatsurf import MutableOrientedSimilaritySurface
-                    self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
+
+                    self = MutableOrientedSimilaritySurface.from_surface(
+                        self, labels=self.labels()[:32]
+                    )
 
                 tester.assertTrue(
                     SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(

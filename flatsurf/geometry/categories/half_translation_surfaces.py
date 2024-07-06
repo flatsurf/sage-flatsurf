@@ -279,7 +279,10 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                 if not self.is_finite_type():
                     from flatsurf import MutableOrientedSimilaritySurface
-                    self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
+
+                    self = MutableOrientedSimilaritySurface.from_surface(
+                        self, labels=self.labels()[:32]
+                    )
 
                 from flatsurf.geometry.categories import TranslationSurfaces
 

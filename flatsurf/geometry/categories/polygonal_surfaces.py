@@ -144,8 +144,11 @@ class PolygonalSurfaces(SurfaceCategory):
             """
             if limit is not None:
                 import warnings
-                warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
-                              "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
 
             roots = self.roots()
 
@@ -1242,8 +1245,11 @@ class PolygonalSurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
-                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
 
                 for p in self.polygons():
                     if len(p.vertices()) != 3:

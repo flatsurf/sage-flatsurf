@@ -1560,11 +1560,10 @@ class EuclideanPolygons(Category_over_base_ring):
                 # Establish gluings between triangles
                 edges = {
                     **{
-                        triangle[:2]: (label, 0) for (triangle, label) in triangles.items()
+                        triangle[:2]: (label, 0)
+                        for (triangle, label) in triangles.items()
                     },
-                    **{
-                        triangle[1:]: (label, 1) for (triangle, label) in triangles
-                    },
+                    **{triangle[1:]: (label, 1) for (triangle, label) in triangles},
                     **{
                         (triangle[2], triangle[0]): (label, 2)
                         for (triangle, label) in triangles.items()

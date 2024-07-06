@@ -130,7 +130,10 @@ class DilationSurfaces(SurfaceCategory):
 
                 if not self.is_finite_type():
                     from flatsurf import MutableOrientedSimilaritySurface
-                    self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
+
+                    self = MutableOrientedSimilaritySurface.from_surface(
+                        self, labels=self.labels()[:32]
+                    )
 
                 tester.assertTrue(
                     DilationSurfaces.ParentMethods._is_dilation_surface(
@@ -243,8 +246,11 @@ class DilationSurfaces(SurfaceCategory):
 
             if limit is not None:
                 import warnings
-                warnings.warn("limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; "
-                              "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
 
             labels = surface.labels()
 
@@ -548,7 +554,10 @@ class DilationSurfaces(SurfaceCategory):
 
             if not self.is_finite_type():
                 from flatsurf import MutableOrientedSimilaritySurface
-                self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
+
+                self = MutableOrientedSimilaritySurface.from_surface(
+                    self, labels=self.labels()[:32]
+                )
 
             tester.assertTrue(
                 DilationSurfaces.ParentMethods._is_dilation_surface(
