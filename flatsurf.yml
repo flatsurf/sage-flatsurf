@@ -7,6 +7,9 @@ name: flatsurf
 channels:
   - conda-forge
 dependencies:
+  # Older versions of sage-flatsurf do not require bidict yet. Once this is a
+  # requirement it can be removed here (like several other things.)
+  - bidict
   # SageMath uses maxima to compute roots of algebraic integers. This is used,
   # e.,g, when computing with the hyperbolic plane over AA.
   - maxima
