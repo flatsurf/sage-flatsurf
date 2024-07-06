@@ -302,6 +302,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         triangulation, outer_edges = self._image(reference_label)
 
         if (label, edge) in outer_edges.values():
+            # pylint does not understand the bidict return type, so we disable a failing check here
+            # pylint: disable=unsubscriptable-object
             reference_edge = outer_edges.inverse[(label, edge)]
             opposite_reference_label, opposite_reference_edge = self._reference.opposite_edge(reference_label, reference_edge)
             opposite_triangulation, opposite_outer_edges = self._image(opposite_reference_label)

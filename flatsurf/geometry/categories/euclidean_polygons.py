@@ -1475,8 +1475,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 vertices = list(self.vertices())
                 nvertices = len(vertices)
+
+                # The vertices of the polygon that have not been ear-clipped.
                 untriangulated = list(range(len(vertices)))
 
+                # Maps triples of polygon vertices to the label of the triangle in the resulting triangulation.
                 triangles = {}
 
                 def next_label():
@@ -1497,9 +1500,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 while len(untriangulated) > 3:
                     for i in range(len(untriangulated)):
+                        # We attempt to clip the j-th untriangulated vertex.
                         j = (i + 1) % len(untriangulated)
                         k = (j + 1) % len(untriangulated)
 
+                        # a, b, c are the indexes of the vertices j-1, j, j+1 in the original polygon.
                         a = untriangulated[i]
                         b = untriangulated[j]
                         c = untriangulated[k]
@@ -1555,14 +1560,14 @@ class EuclideanPolygons(Category_over_base_ring):
                 # Establish gluings between triangles
                 edges = {
                     **{
-                        triangle[:2]: (triangles[triangle], 0) for triangle in triangles
+                        triangle[:2]: (label, 0) for (triangle, label) in triangles.items()
                     },
                     **{
-                        triangle[1:]: (triangles[triangle], 1) for triangle in triangles
+                        triangle[1:]: (label, 1) for (triangle, label) in triangles
                     },
                     **{
-                        (triangle[2], triangle[0]): (triangles[triangle], 2)
-                        for triangle in triangles
+                        (triangle[2], triangle[0]): (label, 2)
+                        for (triangle, label) in triangles.items()
                     },
                 }
 
