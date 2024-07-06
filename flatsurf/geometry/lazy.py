@@ -1501,7 +1501,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: S.polygon(S.root())
         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
 
-        sage: S.is_delaunay_decomposed(limit=10)  # long time (.7s)
+        sage: S.is_delaunay_decomposed()
         True
 
         sage: TestSuite(S).run()  # long time (2s)
@@ -1516,7 +1516,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: S = chamanara_surface(QQ(1/2))
         sage: m = matrix([[3, 4], [-4, 3]]) * matrix([[4, 0],[0, 1/4]])
         sage: S = (m * S).delaunay_decomposition()
-        sage: S.is_delaunay_decomposed(limit=10)  # long time (.5s)
+        sage: S.is_delaunay_decomposed()
         True
 
         sage: TestSuite(S).run()  # long time (1.5s)
@@ -1829,7 +1829,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             reference = reference._reference
         return f"Delaunay cell decomposition of {reference!r}"
 
-    def is_delaunay_decomposed(self):
+    def is_delaunay_decomposed(self, limit=None):
         r"""
         Return whether this surface is decomposed into Delaunay cells, which it
         naturally is.
@@ -1842,6 +1842,10 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             True
 
         """
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
         return True
 
 

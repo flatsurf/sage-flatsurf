@@ -2287,7 +2287,7 @@ class TranslationSurfaceGenerators:
 
             return False
 
-        def is_delaunay_decomposed(self):
+        def is_delaunay_decomposed(self, limit=None):
             r"""
             Return whether this surface is made from Delaunay cells.
 
@@ -2299,6 +2299,10 @@ class TranslationSurfaceGenerators:
                 True
 
             """
+            if limit is not None:
+                import warnings
+                warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
             return True
 
     @staticmethod
