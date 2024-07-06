@@ -17,6 +17,7 @@ dependencies:
   - ipywidgets
   - notebook
   - matplotlib-base
+  - more-itertools
   - pip
   - pyintervalxt>=3,<4
   - pyeantic>=1.2.1,<2
