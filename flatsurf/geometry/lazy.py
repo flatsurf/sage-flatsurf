@@ -591,6 +591,21 @@ class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
         """
         return self._reference.opposite_edge(label, edge)
 
+    def is_mutable(self):
+        r"""
+        Return whether this surface could be changing.
+
+        EXAMPLES::
+            
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = matrix([[2, 0], [0, 1]]) * S
+            sage: T.is_mutable()
+            False
+
+        """
+        return self._reference.is_mutable()
+
 
 class GL2RImageSurface(LazyOrientedSimilaritySurface):
     r"""
@@ -1814,17 +1829,72 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             reference = reference._reference
         return f"Delaunay cell decomposition of {reference!r}"
 
+    def is_delaunay_decomposed(self):
+        r"""
+        Return whether this surface is decomposed into Delaunay cells, which it
+        naturally is.
 
-class LazyRelabeledSurface(OrientedSimilaritySurface):
-    def __init__(self, similarity_surface, category=None):
-        self._reference = similarity_surface
+        EXAMPLES::
 
-        super().__init__(similarity_surface.base_ring(), category=category or similarity_surface.category())
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: S.delaunay_decomposition().is_delaunay_decomposed()
+            True
+
+        """
+        return True
+
+
+class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
+    r"""
+    A relabeled surface which forwards all requests to an underlying reference
+    surface after translation of labels.
+
+    Subclasses may override ``_to_reference_label`` and
+    ``_from_reference_label`` to establish a custom mapping of labels.
+    Otherwise, labels are mapped to the non-negative integers in order.
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.chamanara import chamanara_surface
+        sage: S = chamanara_surface(1/2)
+
+    TESTS::
+
+        sage: from flatsurf.geometry.lazy import LazyRelabeledSurface
+        sage: isinstance(S, LazyRelabeledSurface)
+        True
+
+    """
+    def __init__(self, reference, category=None):
+        super().__init__(base_ring=reference.base_ring(), reference=reference, category=category or reference.category())
 
     def _to_reference_label(self, label):
+        r"""
+        Return the image of ``label`` in the underlying reference surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S._to_reference_label(0)
+            (0, 1, 0)
+
+        """
         return self._reference.labels()[label]
 
     def _from_reference_label(self, reference_label):
+        r"""
+        Return the preimage of ``reference_label`` in the labels of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S._from_reference_label((0, 1, 0))
+            0
+
+        """
         label = 0
         for lbl in self._reference.labels():
             if lbl == reference_label:
@@ -1834,6 +1904,17 @@ class LazyRelabeledSurface(OrientedSimilaritySurface):
         raise ValueError
 
     def _test_label_map(self, **options):
+        r"""
+        Verify that :meth:`_to_reference_label` and
+        :meth:`_from_reference_label` are inverse to each other.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S._test_label_map()
+
+        """
         tester = self._tester(**options)
 
         from itertools import islice
@@ -1845,17 +1926,53 @@ class LazyRelabeledSurface(OrientedSimilaritySurface):
             tester.assertEqual(label, self._from_reference_label(self._to_reference_label(label)))
 
     def labels(self):
-        from flatsurf.geometry.surface import LabeledView
+        r"""
+        Return the labels of this surface after renaming.
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.labels()
+            (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, …)
+
+        """
+        from flatsurf.geometry.surface import LabelsFromView
         if self._reference.is_finite_type():
-            return LabeledView(self, range(len(self._reference.labels())))
+            return LabelsFromView(self, range(len(self._reference.labels())))
 
         from sage.all import NN
-        return LabeledView(self, NN)
+        return LabelsFromView(self, NN)
 
     def polygon(self, label):
+        r"""
+        Return the polygon with ``label`` in this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.polygon(0)
+            Polygon(vertices=[(0, 0), (1, 0), (-1, 2), (-1, 1)])
+
+        """
         return self._reference.polygon(self._to_reference_label(label))
 
     def opposite_edge(self, label, edge):
+        r"""
+        Return the polygon label and its edge that is across from the polygon
+        with ``label`` and its ``edge``.
+
+        Return ``None`` if there is no polygon glued to that edge.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.opposite_edge(0, 0)
+            (1, 0)
+            sage: S.opposite_edge(1, 0)
+            (0, 0)
+
+        """
         label = self._to_reference_label(label)
         opposite_edge = self._reference.opposite_edge(label, edge)
 
@@ -1868,22 +1985,66 @@ class LazyRelabeledSurface(OrientedSimilaritySurface):
         return opposite_label, opposite_edge
 
     def roots(self):
+        r"""
+        Return the labels of the roots of the components of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S.roots()
+            (0,)
+
+        """
         return tuple(self._from_reference_label(label) for label in self._reference.roots())
 
-    def is_compact(self):
-        return self._reference.is_compact()
-
-    def is_mutable(self):
-        return self._reference.is_mutable()
-
     def __hash__(self):
+        r"""
+        Return a hash value for this surface that is compatible with
+        ``__eq__``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: hash(S) == hash(S)
+            True
+
+        """
         return hash(self._reference)
 
     def __eq__(self, other):
-        if not isinstance(other, LazyRelabeledSurface):
+        r"""
+        Return whether this surface and ``other`` are indistinguishable.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: T = chamanara_surface(1/2)
+            sage: S == T
+            True
+        
+        """
+        if type(self) != type(other):
+            # Since we encourage subclassing this surface, we are very strict here.
             return False
 
         return self._reference == other._reference
 
     def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        Since the relabeling is often just done to make the labels a bit easier
+        to work with, we do not mention it when printing this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.chamanara import chamanara_surface
+            sage: S = chamanara_surface(1/2)
+            sage: S
+            Minimal Translation Cover of Chamanara surface with parameter 1/2
+
+        """
         return repr(self._reference)
