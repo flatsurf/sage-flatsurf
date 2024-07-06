@@ -2252,12 +2252,45 @@ class TranslationSurfaceGenerators:
             return graphical_surface
 
         def is_triangulated(self):
+            r"""
+            Return whether this surface is triangulated, which it is not.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_triangulated()
+                False
+
+            """
             return False
 
         def is_delaunay_triangulated(self):
+            r"""
+            Return whether this surface is Delaunay triangulated, which it is not.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_delaunay_triangulated()
+                False
+
+            """
             return False
 
-        def is_delaunay_decomposes(self):
+        def is_delaunay_decomposed(self):
+            r"""
+            Return whether this surface is made from Delaunay cells.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_delaunay_decomposed()
+                True
+
+            """
             return True
 
     @staticmethod

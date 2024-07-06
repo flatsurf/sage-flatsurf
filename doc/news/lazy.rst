@@ -4,6 +4,8 @@
 
 * Added ``__getitem__()`` to all ``labels()`` so that accessing ``surface.labels()[i]`` is possible.
 
+* Added ``is_triangulated()``, ``is_delaunay_triangulated()``, and ``is_delaunay_decomposed()`` for the infinite staircase.
+
 **Changed:**
 
 * Renamed ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``. (If for some reason you used this module directly, you need to update your imports.)
