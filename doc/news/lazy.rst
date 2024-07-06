@@ -43,7 +43,3 @@
 **Fixed:**
 
 * Fixed comparison of infinite sets of labels. Labels can now be compared and hashed in some very limited cases.
-
-**Performance:**
-
-* <news item>
