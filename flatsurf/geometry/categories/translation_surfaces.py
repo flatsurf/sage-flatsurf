@@ -152,6 +152,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 True
 
             """
+            if limit is not None:
+                import warnings
+                warnings.warn("limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
             if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError(
                     "cannot decide whether a non-oriented surface is a translation surface yet"

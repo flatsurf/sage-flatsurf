@@ -309,7 +309,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         return triangulation.opposite_edge(label, edge)
 
-    def is_triangulated(self):
+    def is_triangulated(self, limit=None):
         r"""
         Return whether this surface is triangulated.
 
@@ -327,10 +327,14 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             NotImplementedError: cannot decide whether this (potentially infinite type) surface is triangulated
 
         """
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
         if self._triangulated_reference_labels is None:
             return True
 
-        return super().is_triangulated()
+        return super().is_triangulated(limit=limit)
 
     def __hash__(self):
         r"""
@@ -792,7 +796,7 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
             and self.base_ring() == other.base_ring()
         )
 
-    def is_triangulated(self):
+    def is_triangulated(self, limit=None):
         r"""
         Return whether this surface is triangulated.
 
@@ -805,7 +809,11 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
             False
 
         """
-        return self._reference.is_triangulated()
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
+        return self._reference.is_triangulated(limit=limit)
 
 
 class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base):
@@ -1208,7 +1216,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from itertools import islice
             sage: list(islice(S._walk(), 3))
-            [(0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3))]
+            [(0, 0), (1, 1), (-1, 1)]
 
         """
         visited = set()
@@ -1357,7 +1365,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._certified_labels.add(label)
         return True
 
-    def is_triangulated(self):
+    def is_triangulated(self, limit=None):
         r"""
         Return whether this surface is triangulated, which it naturally is.
 
@@ -1369,9 +1377,13 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             True
 
         """
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
         return True
 
-    def is_delaunay_triangulated(self):
+    def is_delaunay_triangulated(self, limit=None):
         r"""
         Return whether this surface is Delaunay triangulated, which it
         naturally is.
@@ -1384,6 +1396,10 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             True
 
         """
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
         return True
 
     def labels(self):

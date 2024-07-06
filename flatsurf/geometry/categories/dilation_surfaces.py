@@ -235,6 +235,10 @@ class DilationSurfaces(SurfaceCategory):
                     "cannot decide whether a non-oriented surface is dilation surface yet"
                 )
 
+            if limit is not None:
+                import warnings
+                warnings.warn("limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
             labels = surface.labels()
 
             if limit is not None:

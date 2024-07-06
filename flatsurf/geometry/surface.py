@@ -1300,9 +1300,15 @@ class MutableOrientedSimilaritySurface(
         super().__init__(base, category=category)
 
     @classmethod
-    def from_surface(cls, surface, category=None):
+    def from_surface(cls, surface, labels=None, category=None):
         r"""
         Return a mutable copy of ``surface``.
+
+        INPUT:
+
+        - ``labels`` -- a set of labels or ``None`` (default: ``None``); if
+          ``None``, the entire surface is copied, otherwise only these labels
+          are copied and glued like in the original surface.
 
         EXAMPLES::
 
@@ -1323,25 +1329,44 @@ class MutableOrientedSimilaritySurface(
             sage: S
             Disconnected Surface built from 2 squares
 
+        We can build partial copies of an infinite surface::
+
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+            Traceback (most recent call last):
+            ...
+            TypeError: cannot create a full copy of an infinite surface
+
+            sage: T = MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:10])
+            sage: T.components()
+
+            sage: T = MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:30:3])
+            sage: T.components()
+            ((0,), (-12,), (-9,), (-6,), (-3,), (2,), (5,), (8,), (11,), (14,))
+
         """
-        if not surface.is_finite_type():
-            raise TypeError
+        if labels is None:
+            if not surface.is_finite_type():
+                raise TypeError("cannot create a full copy of an infinite surface")
+            labels = surface.labels()
+
         self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category)
 
-        for label in surface.labels():
+        for label in labels:
             self.add_polygon(surface.polygon(label), label=label)
 
-        for label in surface.labels():
+        for label in labels:
             for edge in range(len(surface.polygon(label).vertices())):
                 cross = surface.opposite_edge(label, edge)
-                if cross:
+                if cross and cross[0] in labels:
                     self.glue((label, edge), cross)
 
         if isinstance(surface, MutablePolygonalSurface):
             # Only copy explicitly set roots over
-            self._roots = surface._roots
+            if surface._roots:
+                self.set_roots(root for root in surface._roots if root in labels)
         else:
-            self.set_roots(surface.roots())
+            self.set_roots(root for root in surface.roots() if root in labels)
 
         return self
 
@@ -2153,6 +2178,10 @@ class MutableOrientedSimilaritySurface(
 
         If the two surfaces are infinite, we just examine the first limit polygons.
         """
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
         if self.is_finite_type():
             if s2.is_finite_type():
                 if limit is not None:

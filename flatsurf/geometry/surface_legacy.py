@@ -228,6 +228,10 @@ class Surface(OrientedSimilaritySurface):
             sage: S.triangulate().is_triangulated()
             True
         """
+        if limit is not None:
+            import warnings
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
         it = self.label_iterator()
         if not self.is_finite_type():
             if limit is None:

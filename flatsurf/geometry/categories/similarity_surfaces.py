@@ -2281,6 +2281,10 @@ class SimilaritySurfaces(SurfaceCategory):
                   check only ``limit`` many edges if set
 
                 """
+                if limit is not None:
+                    import warnings
+                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
                         "a limit must be set for infinite surfaces."
@@ -2311,6 +2315,10 @@ class SimilaritySurfaces(SurfaceCategory):
                   check only ``limit`` many polygons if set
 
                 """
+                if limit is not None:
+                    import warnings
+                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
                         "a limit must be set for infinite surfaces."
@@ -2987,6 +2995,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
 
                 """
+                if limit is not None:
+                    import warnings
+                    warnings.warn("limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
                 if "Oriented" not in surface.category().axioms():
                     raise NotImplementedError
 

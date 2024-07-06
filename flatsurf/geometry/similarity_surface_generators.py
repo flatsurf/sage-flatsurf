@@ -2251,7 +2251,7 @@ class TranslationSurfaceGenerators:
             graphical_surface.make_all_visible(limit=10)
             return graphical_surface
 
-        def is_triangulated(self):
+        def is_triangulated(self, limit=None):
             r"""
             Return whether this surface is triangulated, which it is not.
 
@@ -2263,9 +2263,13 @@ class TranslationSurfaceGenerators:
                 False
 
             """
+            if limit is not None:
+                import warnings
+                warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
             return False
 
-        def is_delaunay_triangulated(self):
+        def is_delaunay_triangulated(self, limit=None):
             r"""
             Return whether this surface is Delaunay triangulated, which it is not.
 
@@ -2277,6 +2281,10 @@ class TranslationSurfaceGenerators:
                 False
 
             """
+            if limit is not None:
+                import warnings
+                warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+
             return False
 
         def is_delaunay_decomposed(self):
