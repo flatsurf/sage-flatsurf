@@ -6,6 +6,8 @@
 
 * Added ``is_triangulated()``, ``is_delaunay_triangulated()``, and ``is_delaunay_decomposed()`` for the infinite staircase.
 
+* Added ``labels`` parameter to ``MutableOrientedSimilaritySurface.from_surface()`` to only copy part of an existing surface.
+
 **Changed:**
 
 * Renamed ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``. (If for some reason you used this module directly, you need to update your imports.)
