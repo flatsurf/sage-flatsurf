@@ -22,6 +22,8 @@
 
 * Deprecated the ``limit`` keywords for ``is_triangulated``, ``is_delaunay_triangulated``, ``_is_*_surface``, ``cmp``. Querying infinite surfaces for properties up to a limit is often not very useful and at the same time the question can be answered trivially with knowledge of the surfaces. Also, this was implemented very inconsistently.
 
+* Deprecated the ``singularity_limit`` keywords for ``to_surface``. There is no replacement planned for this feature.
+
 **Removed:**
 
 * Removed the ``ring`` keyword argument from ``GL2RImageSurface`` and ``GL2RMapping``, the ring is now always the common parent of the surface base ring and the matrix base ring. (Use ``change_ring`` if you want the surface to live over another ring.)
