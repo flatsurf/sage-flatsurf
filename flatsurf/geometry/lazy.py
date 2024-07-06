@@ -87,12 +87,12 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if surface.is_mutable():
             raise ValueError("Surface must be immutable.")
 
-        if labels is None:
-            if surface.is_finite_type():
-                labels = surface.labels()
-
         if labels is not None:
             labels = set(labels)
+
+        if surface.is_finite_type():
+            if labels == set(surface.labels()):
+                labels = None
 
         self._reference = surface
         self._triangulated_reference_labels = labels
@@ -106,7 +106,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
     def _is_triangulated(self, reference_label):
         r"""
         Return whether the ``reference_label`` of the reference surface is
-        triangulated in this surface.
+        explicitly triangulated in this surface.
 
         EXAMPLES::
 
@@ -115,6 +115,14 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             sage: S = S.triangulate()
             sage: S._is_triangulated(0)
             True
+            sage: S._is_triangulated(1)
+            True
+
+            sage: S = S.triangulate(label=0)
+            sage: S._is_triangulated(0)
+            True
+            sage: S._is_triangulated(1)
+            False
 
         """
         if self._triangulated_reference_labels is None:
@@ -172,13 +180,16 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             ((0, 0),)
 
         """
-        return tuple(self._triangulation(root)[0].root() for root in self._reference.roots())
+        return tuple(self._image(root)[0].root() for root in self._reference.roots())
 
     @cached_method
-    def _triangulation(self, reference_label):
+    def _image(self, reference_label):
         r"""
         Return a triangulation of the ``reference_label`` in the underlying
         (typically non-triangulated) reference surface.
+
+        If the ``reference_label`` is not being triangulated, the return a
+        surface just consisting of this polygon.
 
         INPUT:
 
@@ -189,9 +200,14 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().triangulate()
-            sage: S._triangulation(0)
+            sage: S._image(0)
             (Translation Surface with boundary built from 2 isosceles triangles,
              bidict({0: ((0, 0), 0), 1: ((0, 0), 1), 2: ((0, 1), 1), 3: ((0, 1), 2)}))
+
+            sage: S = translation_surfaces.infinite_staircase().triangulate(label=1)
+            sage: S._image(0)
+            (Translation Surface with boundary built from a square,
+             bidict({0: (0, 0), 1: (0, 1), 2: (0, 2), 3: (0, 3)}))
 
         """
         reference_polygon = self._reference.polygon(reference_label)
@@ -208,6 +224,19 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         return MutableOrientedSimilaritySurface._triangulate(self._reference, reference_label)
 
     def _reference_label(self, label):
+        r"""
+        Return the label of the underlying (untriangulated) reference surface
+        which led to the creation of the polygon with ``label`` in this
+        triangulation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S._reference_label((0, 0))
+            0
+
+        """
         if label in self._reference.labels():
             if not self._is_triangulated(label):
                 return label
@@ -215,16 +244,16 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
                 return label
 
         if not isinstance(label, tuple):
-            raise KeyError
+            raise KeyError(label)
 
         if len(label) != 2:
-            raise KeyError
+            raise KeyError(label)
 
         if label[0] not in self._reference.labels():
-            raise KeyError
+            raise KeyError(label)
 
-        if label[1] not in self._triangulation(label[0])[1]:
-            raise KeyError
+        if label not in self._image(label[0])[0].labels():
+            raise KeyError(label)
 
         return label[0]
 
@@ -248,7 +277,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         if not self._is_triangulated(reference_label):
             return self._reference.polygon(reference_label)
 
-        triangulation, _ = self._triangulation(reference_label)
+        triangulation, _ = self._image(reference_label)
 
         return triangulation.polygon(label)
 
@@ -270,18 +299,38 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         """
         reference_label = self._reference_label(label)
 
-        triangulation, outer_edges = self._triangulation(reference_label)
+        triangulation, outer_edges = self._image(reference_label)
 
         if (label, edge) in outer_edges.values():
             reference_edge = outer_edges.inverse[(label, edge)]
             opposite_reference_label, opposite_reference_edge = self._reference.opposite_edge(reference_label, reference_edge)
-            opposite_triangulation, opposite_outer_edges = self._triangulation(opposite_reference_label)
+            opposite_triangulation, opposite_outer_edges = self._image(opposite_reference_label)
             return opposite_outer_edges[opposite_reference_edge]
 
         return triangulation.opposite_edge(label, edge)
 
     def is_triangulated(self):
-        return True
+        r"""
+        Return whether this surface is triangulated.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S.is_triangulated()
+            True
+
+            sage: S = translation_surfaces.infinite_staircase().triangulate(label=0)
+            sage: S.is_triangulated()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot decide whether this (potentially infinite type) surface is triangulated
+
+        """
+        if self._triangulated_reference_labels is None:
+            return True
+
+        return super().is_triangulated()
 
     def __hash__(self):
         r"""
@@ -333,7 +382,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 
         """
-        return LazyLabels(self, finite=self._reference.is_finite_type())
+        return TriangulationLabels(self, finite=self._reference.is_finite_type())
 
     def _repr_(self):
         r"""
@@ -347,11 +396,49 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
             Triangulation of The infinite staircase
 
         """
+        if self._triangulated_reference_labels is not None:
+            return f"Partial Triangulation of {self._reference!r}"
+
         return f"Triangulation of {self._reference!r}"
 
 
-class LazyLabels(Labels):
+class TriangulationLabels(Labels):
+    r"""
+    The labels of a triangulation of a (possibly infinite) surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.infinite_staircase().triangulate()
+        sage: labels = S.labels()
+
+    TESTS::
+
+        sage: from flatsurf.geometry.lazy import TriangulationLabels
+        sage: isinstance(labels, TriangulationLabels)
+        True
+
+    """
+
     def __contains__(self, label):
+        r"""
+        Return whether ``label`` is present as a label in this triangulation.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: labels = S.labels()
+            sage: 0 in labels
+            False
+            sage: (0, 0) in labels
+            True
+            sage: (0, 1) in labels
+            True
+            sage: (0, 2) in labels
+            False
+
+        """
         try:
             self._surface._reference_label(label)
         except KeyError:
@@ -706,13 +793,19 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         )
 
     def is_triangulated(self):
+        r"""
+        Return whether this surface is triangulated.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon_and_squares()
+            sage: m = matrix(ZZ,[[0, 1], [1, 0]])
+            sage: (m * S).is_triangulated()
+            False
+
+        """
         return self._reference.is_triangulated()
-
-    def is_delaunay_triangulated(self):
-        return self._reference.is_delaunay_triangulated()
-
-    def is_delaunay_decomposed(self):
-        return self._reference.is_delaunay_decomposed()
 
 
 class LazyMutableOrientedSimilaritySurface(LazyOrientedSimilaritySurface, MutableOrientedSimilaritySurface_base):
@@ -1019,35 +1112,6 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             category=category or self._surface.category(),
         )
 
-    def _image_edge(self, label, edge):
-        r"""
-        Return the saddle connection in this surface that is identical to the
-        one given by the oriented ``edge`` in the polygon with ``label`` in the
-        original reference surface.
-        """
-        # Ensure that polygon with label is final in self._surface.
-        self.polygon(label)
-
-        from flatsurf.geometry.saddle_connection import SaddleConnection
-        saddle_connection = SaddleConnection.from_half_edge(self._reference, label, edge)
-
-        for flip in self._flips:
-            saddle_connection = flip(saddle_connection)
-
-        return SaddleConnection(self, start=saddle_connection.start(), end=saddle_connection.end(), holonomy=saddle_connection.holonomy(), end_holonomy=saddle_connection.end_holonomy(), check=False) 
-
-    def _preimage_edge(self, label, edge):
-        # Ensure that polygon with label is final in self._surface.
-        self.polygon(label)
-
-        from flatsurf.geometry.saddle_connection import SaddleConnection
-        saddle_connection = SaddleConnection.from_half_edge(self._surface, label, edge)
-
-        for flip in self._flips[::-1]:
-            saddle_connection = flip.section()(saddle_connection)
-
-        return SaddleConnection(self._reference, start=saddle_connection.start(), end=saddle_connection.end(), holonomy=saddle_connection.holonomy(), end_holonomy=saddle_connection.end_holonomy(), check=False) 
-
     def is_mutable(self):
         r"""
         Return whether this surface is mutable, i.e., return ``False``.
@@ -1120,6 +1184,12 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             raise ValueError("no polygon with this label")
 
         if label not in self._certified_labels:
+            # If the label is not final in this surface, we walk the surface
+            # and thereby certify its polygons until we find that label.
+            # Note that this is somewhat inefficient since we start the walk
+            # from the start every time. However, the certification process is
+            # what consumes time, so unless there are a lot of labels, this
+            # should not impact performance too much.
             for certified_label in self._walk():
                 if label == certified_label:
                     assert label in self._certified_labels
@@ -1128,6 +1198,19 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         return self._surface.polygon(label)
 
     def _walk(self):
+        r"""
+        Return an iterator that walks the labels of the surface in order.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
+
+            sage: from itertools import islice
+            sage: list(islice(S._walk(), 3))
+            [(0, (0, 1, 2)), (1, (0, 2, 3)), (-1, (0, 2, 3))]
+
+        """
         visited = set()
         from collections import deque
 
@@ -1274,7 +1357,33 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         self._certified_labels.add(label)
         return True
 
-    def is_delaunay_triangulated(self, limit=None):
+    def is_triangulated(self):
+        r"""
+        Return whether this surface is triangulated, which it naturally is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
+            sage: S.is_triangulated()
+            True
+
+        """
+        return True
+
+    def is_delaunay_triangulated(self):
+        r"""
+        Return whether this surface is Delaunay triangulated, which it
+        naturally is.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
+            sage: S.is_delaunay_triangulated()
+            True
+
+        """
         return True
 
     def labels(self):
