@@ -18,7 +18,6 @@ The flatsurf.geometry Package
    geometry/finitely_generated_matrix_group
    geometry/fundamental_group
    geometry/gl2r_orbit_closure
-   geometry/half_dilation_surface
    geometry/half_translation_surfaces
    geometry/hyperbolic
    geometry/hyperbolic_polygons
