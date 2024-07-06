@@ -1045,7 +1045,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: len(S.polygon(S.root()).vertices())
         3
         sage: TestSuite(S).run()  # long time (.8s)
-        sage: S.is_delaunay_triangulated(limit=10)
+        sage: S.is_delaunay_triangulated()
         True
 
         sage: from flatsurf.geometry.lazy import LazyDelaunayTriangulatedSurface
@@ -1059,7 +1059,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         sage: m = matrix([[2,1],[1,1]])**4
         sage: S = (m*S).delaunay_triangulation()
         sage: TestSuite(S).run()  # long time (1s)
-        sage: S.is_delaunay_triangulated(limit=10)
+        sage: S.is_delaunay_triangulated()
         True
         sage: TestSuite(S).run()  # long time (.5s)
 

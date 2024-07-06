@@ -278,7 +278,8 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 limit = None
 
                 if not self.is_finite_type():
-                    limit = 32
+                    from flatsurf import MutableOrientedSimilaritySurface
+                    self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
 
                 from flatsurf.geometry.categories import TranslationSurfaces
 

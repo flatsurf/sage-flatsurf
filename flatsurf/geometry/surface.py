@@ -1339,6 +1339,7 @@ class MutableOrientedSimilaritySurface(
 
             sage: T = MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:10])
             sage: T.components()
+            ((0, 1, -1, 2, -2, 3, -3, 4, -4, 5),)
 
             sage: T = MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:30:3])
             sage: T.components()

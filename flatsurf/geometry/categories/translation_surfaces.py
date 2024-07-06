@@ -133,11 +133,16 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             EXAMPLES::
 
-                sage: from flatsurf import translation_surfaces
+                sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
                 sage: S = translation_surfaces.infinite_staircase()
 
                 sage: from flatsurf.geometry.categories import TranslationSurfaces
                 sage: TranslationSurfaces.ParentMethods._is_translation_surface(S, limit=8)
+                doctest:warning
+                ...
+                UserWarning: limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])
+                True
+                sage: TranslationSurfaces.ParentMethods._is_translation_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
 
             ::
@@ -371,7 +376,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             limit = None
 
             if not self.is_finite_type():
-                limit = 32
+                from flatsurf import MutableOrientedSimilaritySurface
+                self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
 
             tester.assertTrue(
                 TranslationSurfaces.ParentMethods._is_translation_surface(

@@ -129,7 +129,8 @@ class DilationSurfaces(SurfaceCategory):
                 limit = None
 
                 if not self.is_finite_type():
-                    limit = 32
+                    from flatsurf import MutableOrientedSimilaritySurface
+                    self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
 
                 tester.assertTrue(
                     DilationSurfaces.ParentMethods._is_dilation_surface(
@@ -211,11 +212,16 @@ class DilationSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import translation_surfaces
+                sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
                 sage: S = translation_surfaces.infinite_staircase()
 
                 sage: from flatsurf.geometry.categories import DilationSurfaces
                 sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, limit=8)
+                doctest:warning
+                ...
+                UserWarning: limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])
+                True
+                sage: DilationSurfaces.ParentMethods._is_dilation_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
 
             ::
@@ -540,11 +546,12 @@ class DilationSurfaces(SurfaceCategory):
             limit = None
 
             if not self.is_finite_type():
-                limit = 32
+                from flatsurf import MutableOrientedSimilaritySurface
+                self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
 
             tester.assertTrue(
                 DilationSurfaces.ParentMethods._is_dilation_surface(
-                    self, positive=False, limit=limit
+                    self, positive=False
                 )
             )
 

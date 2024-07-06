@@ -2382,7 +2382,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.polygon((0, 0))
                     Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
                     sage: TestSuite(ss).run()
-                    sage: ss.is_delaunay_triangulated(limit=10)
+                    sage: ss.is_delaunay_triangulated()
                     True
 
                 """
@@ -2486,7 +2486,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: ss.polygon(ss.root())
                     Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: TestSuite(ss).run()
-                    sage: ss.is_delaunay_decomposed(limit=10)
+                    sage: ss.is_delaunay_decomposed()
                     True
 
                 """
@@ -2992,6 +2992,13 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf.geometry.categories import SimilaritySurfaces
                     sage: SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(S, limit=8)
+                    doctest:warning
+                    ...
+                    UserWarning: limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])
+                    True
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                     True
 
                 """
@@ -3079,7 +3086,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 limit = None
 
                 if not self.is_finite_type():
-                    limit = 32
+                    from flatsurf import MutableOrientedSimilaritySurface
+                    self = MutableOrientedSimilaritySurface.from_surface(self, labels=self.labels()[:32])
 
                 tester.assertTrue(
                     SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(
