@@ -2145,7 +2145,7 @@ class MutableOrientedSimilaritySurface(
         if len(triangulation.labels()) == 1:
             relabeling = {triangulation.root(): label}
         else:
-            relabeling = {l: (label, l) for l in triangulation.labels()}
+            relabeling = {lbl: (label, lbl) for lbl in triangulation.labels()}
         triangulation = triangulation.relabel(relabeling)
 
         from bidict import bidict
@@ -2181,7 +2181,8 @@ class MutableOrientedSimilaritySurface(
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+            warnings.warn("limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; "
+                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
         if self.is_finite_type():
             if s2.is_finite_type():
@@ -2969,7 +2970,7 @@ class Labels(LabeledCollection, collections.abc.Sequence):
             key = int(key)
             sgn = 1 if key >= 0 else -1
 
-            item = self[key:key+sgn:sgn]
+            item = self[key:key + sgn:sgn]
             if not item:
                 raise IndexError(key)
 

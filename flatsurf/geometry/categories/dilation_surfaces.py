@@ -219,7 +219,7 @@ class DilationSurfaces(SurfaceCategory):
                 sage: DilationSurfaces.ParentMethods._is_dilation_surface(S, limit=8)
                 doctest:warning
                 ...
-                UserWarning: limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])
+                UserWarning: limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; ...
                 True
                 sage: DilationSurfaces.ParentMethods._is_dilation_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
@@ -243,7 +243,8 @@ class DilationSurfaces(SurfaceCategory):
 
             if limit is not None:
                 import warnings
-                warnings.warn("limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+                warnings.warn("limit has been deprecated as a keyword argument for _is_dilation_surface() and will be removed from a future version of sage-flatsurf; "
+                              "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
             labels = surface.labels()
 

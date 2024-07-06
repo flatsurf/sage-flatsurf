@@ -140,7 +140,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                 sage: TranslationSurfaces.ParentMethods._is_translation_surface(S, limit=8)
                 doctest:warning
                 ...
-                UserWarning: limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])
+                UserWarning: limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; ...
                 True
                 sage: TranslationSurfaces.ParentMethods._is_translation_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
@@ -159,7 +159,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             """
             if limit is not None:
                 import warnings
-                warnings.warn("limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+                warnings.warn("limit has been deprecated as a keyword argument for _is_translation_surface() and will be removed from a future version of sage-flatsurf; "
+                              "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
             if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError(

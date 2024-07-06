@@ -2283,7 +2283,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
+                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
@@ -2317,7 +2318,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+                    warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
+                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
@@ -2994,7 +2996,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(S, limit=8)
                     doctest:warning
                     ...
-                    UserWarning: limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])
+                    UserWarning: limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; ...
                     True
 
                     sage: from flatsurf import MutableOrientedSimilaritySurface
@@ -3004,7 +3006,8 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if limit is not None:
                     import warnings
-                    warnings.warn("limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+                    warnings.warn("limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; "
+                                  "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
                 if "Oriented" not in surface.category().axioms():
                     raise NotImplementedError

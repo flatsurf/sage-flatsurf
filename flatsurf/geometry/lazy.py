@@ -329,7 +329,8 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
         if self._triangulated_reference_labels is None:
             return True
@@ -596,7 +597,7 @@ class LazyOrientedSimilaritySurface(OrientedSimilaritySurface):
         Return whether this surface could be changing.
 
         EXAMPLES::
-            
+
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
             sage: T = matrix([[2, 0], [0, 1]]) * S
@@ -826,7 +827,8 @@ class GL2RImageSurface(LazyOrientedSimilaritySurface):
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
         return self._reference.is_triangulated(limit=limit)
 
@@ -1100,7 +1102,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulatedSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulatedSurface and will be removed in a future version of sage-flatsurf; "
+                          "its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
 
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
@@ -1394,7 +1397,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+            warnings.warn("limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
         return True
 
@@ -1413,7 +1417,8 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+            warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
+                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
         return True
 
@@ -1543,7 +1548,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         if direction is not None:
             direction = None
             import warnings
-            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulatedSurface and will be removed in a future version of sage-flatsurf; its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
+            warnings.warn("the direction keyword argument has been deprecated for LazyDelaunayTriangulatedSurface and will be removed in a future version of sage-flatsurf; "
+                          "its value is ignored in this version of sage-flatsurf; if you see this message when restoring a pickle, the object might not be fully functional")
 
         if similarity_surface.is_mutable():
             raise ValueError("surface must be immutable")
@@ -1844,7 +1850,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         """
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
+            warnings.warn("limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
+                          "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])")
 
         return True
 
@@ -2028,7 +2035,7 @@ class LazyRelabeledSurface(LazyOrientedSimilaritySurface):
             sage: T = chamanara_surface(1/2)
             sage: S == T
             True
-        
+
         """
         if type(self) != type(other):
             # Since we encourage subclassing this surface, we are very strict here.
