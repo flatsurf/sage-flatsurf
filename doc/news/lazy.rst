@@ -2,6 +2,8 @@
 
 * Added ``triangulate()`` method to Euclidean polygons.
 
+* Added ``__getitem__()`` to all ``labels()`` so that accessing ``surface.labels()[i]`` is possible.
+
 **Changed:**
 
 * Renamed ``flatsurf.geometry.delaunay`` to ``flatsurf.geometry.lazy``. (If for some reason you used this module directly, you need to update your imports.)

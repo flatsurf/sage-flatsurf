@@ -1697,19 +1697,7 @@ class LazyRelabeledSurface(OrientedSimilaritySurface):
         super().__init__(similarity_surface.base_ring(), category=category or similarity_surface.category())
 
     def _to_reference_label(self, label):
-        # TODO: Support index access for labels
-        # return self._reference.labels()[label]
-        reference_labels = iter(self._reference.labels())
-
-        try:
-            skip = range(label)
-        except TypeError:
-            raise KeyError(label)
-
-        for i in skip:
-            next(reference_labels)
-
-        return next(reference_labels)
+        return self._reference.labels()[label]
 
     def _from_reference_label(self, reference_label):
         label = 0

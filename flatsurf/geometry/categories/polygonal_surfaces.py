@@ -316,6 +316,30 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return Polygons(self)
 
+        def _test_polygons(self, **options):
+            r"""
+            Verify that polygons() has been implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_polygons()
+
+            """
+            tester = self._tester(**options)
+
+            polygons = self.polygons()
+
+            if not self.is_finite_type():
+                import itertools
+
+                polygons = itertools.islice(polygons, 32)
+
+            for polygon in polygons:
+                tester.assertEqual(polygon.base_ring(), self.base_ring())
+
         def _test_labels_polygons(self, **options):
             r"""
             Verify that :meth:`labels` and :meth:`polygons` are compatible.

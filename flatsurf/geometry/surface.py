@@ -2877,7 +2877,7 @@ class ComponentLabels(LabeledCollection):
                     pending.append(cross[0])
 
 
-class Labels(LabeledCollection):
+class Labels(LabeledCollection, collections.abc.Sequence):
     r"""
     The labels of a surface.
 
@@ -2917,6 +2917,36 @@ class Labels(LabeledCollection):
     def __iter__(self):
         for component in self._surface.components():
             yield from component
+
+    def __getitem__(self, key):
+        r"""
+        Return the labels at position ``key``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: labels = C.labels()
+            sage: labels[0]
+            0
+            sage: labels[-1]
+            2
+            sage: labels[::-1]
+            [2, 3, 1, 0]
+
+        """
+        if not isinstance(key, slice):
+            key = int(key)
+            sgn = 1 if key >= 0 else -1
+
+            item = self[key:key+sgn:sgn]
+            if not item:
+                raise IndexError(key)
+
+            return item[0]
+
+        from more_itertools import islice_extended
+        return list(islice_extended(self, key.start, key.stop, key.step))
 
 
 class LabelsFromView(Labels, LabeledView):
