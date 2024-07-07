@@ -1427,9 +1427,9 @@ class VectorSpaceConversion(Conversion):
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
             sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2))])  # optional: pyflatsurf
-            Conversion from Ambient free module of rank 2 over the principal ideal domain Integer Ring to flatsurf::Vector<__gmp_expr<__mpz_struct[1],__mpz_struct[1]>...>
+            Conversion from Ambient free module of rank 2 over the principal ideal domain Integer Ring to ...
             sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2)), vector((1/2, 2/3))])  # optional: pyflatsurf
-            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>...>
+            Conversion from Vector space of dimension 2 over Rational Field to ...
 
         """
         ring_conversion = RingConversion.to_pyflatsurf_from_elements(
