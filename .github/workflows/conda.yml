@@ -60,5 +60,5 @@ jobs:
         token: ${{ secrets.BINSTAR_TOKEN }}
 
 env:
-  MAKEFLAGS: -j2
-  SAGE_NUM_THREADS: 2
+  MAKEFLAGS: -j4
+  SAGE_NUM_THREADS: 4
