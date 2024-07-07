@@ -2184,8 +2184,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 The surface returned is explicitly a triangulation of the
                 original surface. Use
-                :meth:`MutableOrientedSimilaritySurface.from_surface` or
-                :meth:`relabel` to get a primitive surface::
+                :meth:`flatsurf.geometry.surface.MutableOrientedSimilaritySurface.from_surface`
+                or :meth:`relabel` to get a primitive surface::
 
                     sage: T
                     Triangulation of Half-Translation Surface in Q_0(0, -1^4) built from a triangle
