@@ -1438,7 +1438,7 @@ class VectorSpaceConversion(Conversion):
 
         return cls.to_pyflatsurf(
             domain=Sequence(elements).universe(),
-            codomain=codomain,
+            codomain=codomain or ring_conversion._vectors(),
             ring_conversion=ring_conversion,
         )
 
