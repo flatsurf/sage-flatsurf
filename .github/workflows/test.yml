@@ -55,7 +55,7 @@ jobs:
             optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
-          - on: macos-12
+          - on: macos-13
             optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
