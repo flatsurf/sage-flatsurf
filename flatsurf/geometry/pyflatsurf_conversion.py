@@ -65,12 +65,12 @@ class Conversion:
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
         sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
-        sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+        sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
     TESTS::
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import Conversion
-        sage: isinstance(conversion, Conversion)
+        sage: isinstance(conversion, Conversion)  # optional: pyflatsurf
         True
 
     """
@@ -89,7 +89,7 @@ class Conversion:
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
-            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)
+            sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
         """
         raise NotImplementedError(
@@ -639,6 +639,7 @@ class RingConversion_eantic(RingConversion):
             renf = RealEmbeddedNumberField(domain)
 
             import pyeantic.cppyy_eantic
+
             codomain = pyeantic.cppyy_eantic.unwrap_intrusive_ptr(renf.renf)
 
         return RingConversion_eantic(domain, codomain)
@@ -743,6 +744,7 @@ class RingConversion_eantic(RingConversion):
                 return None
 
             import pyeantic.cppyy_eantic
+
             element_ring = pyeantic.cppyy_eantic.unwrap_intrusive_ptr(element.parent())
             if ring is None or ring.degree() == 1:
                 ring = element_ring
@@ -990,7 +992,9 @@ class RingConversion_exactreal(RingConversion):
         if any(not hasattr(element, "_backend") for element in elements):
             return None
 
-        return RingConversion_exactreal._deduce_codomain_from_codomain_elements([element._backend for element in elements])
+        return RingConversion_exactreal._deduce_codomain_from_codomain_elements(
+            [element._backend for element in elements]
+        )
 
     def _vectors(self):
         r"""
@@ -2048,9 +2052,7 @@ def to_pyflatsurf(S):
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
-    return FlatTriangulationConversion.to_pyflatsurf(
-        S.triangulate()
-    ).codomain()
+    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate()).codomain()
 
 
 def sage_ring(surface):

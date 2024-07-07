@@ -26,9 +26,12 @@ cppyy_feature = PythonModule(
     "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
 )
 
+
 class PyeanticModule(PythonModule):
     def __init__(self):
-        super().__init__("pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda")
+        super().__init__(
+            "pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda"
+        )
 
     @staticmethod
     def fix_unwrap_intrusive_ptr():
@@ -44,9 +47,11 @@ class PyeanticModule(PythonModule):
 
             def unwrap_intrusive_ptr(K):
                 if isinstance(K, pyeantic.eantic.renf_class):
-                    K = cppyy.gbl.boost.intrusive_ptr['const eantic::renf_class'](K)
+                    K = cppyy.gbl.boost.intrusive_ptr["const eantic::renf_class"](K)
 
-                if not isinstance(K, cppyy.gbl.boost.intrusive_ptr['const eantic::renf_class']):
+                if not isinstance(
+                    K, cppyy.gbl.boost.intrusive_ptr["const eantic::renf_class"]
+                ):
                     raise TypeError("argument must be an intrusive_ptr to a renf_class")
 
                 wrapped = K.get()

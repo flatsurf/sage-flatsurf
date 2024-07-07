@@ -543,26 +543,54 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     """
                     if local is not None:
                         import warnings
-                        warnings.warn("the local keyword has been removed from rel_deformation() without a replacement; do not use it anymore")
+
+                        warnings.warn(
+                            "the local keyword has been removed from rel_deformation() without a replacement; do not use it anymore"
+                        )
 
                     if limit is not None:
                         import warnings
-                        warnings.warn("the limit keyword has been removed from rel_deformation() without a replacement; do not use it anymore")
+
+                        warnings.warn(
+                            "the limit keyword has been removed from rel_deformation() without a replacement; do not use it anymore"
+                        )
 
                     if not self.is_triangulated():
-                        raise NotImplementedError("only triangulated surfaces can be rel-deformed")
+                        raise NotImplementedError(
+                            "only triangulated surfaces can be rel-deformed"
+                        )
 
-                    from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+                    from flatsurf.geometry.pyflatsurf_conversion import (
+                        FlatTriangulationConversion,
+                    )
+
                     conversion = FlatTriangulationConversion.to_pyflatsurf(self)
 
                     from sage.all import vector
-                    deformation = {vertex: vector(self.base_ring(), deformation.get(vertex, (0, 0))) for vertex in self.vertices()}
 
-                    deformation = {edge: deformation[self(*self.opposite_edge(*edge))] - deformation[self(*edge)] for edge in self.edges()}
+                    deformation = {
+                        vertex: vector(
+                            self.base_ring(), deformation.get(vertex, (0, 0))
+                        )
+                        for vertex in self.vertices()
+                    }
+
+                    deformation = {
+                        edge: deformation[self(*self.opposite_edge(*edge))]
+                        - deformation[self(*edge)]
+                        for edge in self.edges()
+                    }
 
                     vector_space_conversion = conversion.vector_space_conversion()
-                    deformation = [vector_space_conversion(deformation[conversion.section(edge.positive())]) for edge in conversion.codomain().edges()]
+                    deformation = [
+                        vector_space_conversion(
+                            deformation[conversion.section(edge.positive())]
+                        )
+                        for edge in conversion.codomain().edges()
+                    ]
 
                     deformed = (conversion.codomain() + deformation).codomain()
 
-                    return FlatTriangulationConversion.from_pyflatsurf(deformed).domain()
+                    return FlatTriangulationConversion.from_pyflatsurf(
+                        deformed
+                    ).domain()
