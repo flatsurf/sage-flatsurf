@@ -11,7 +11,7 @@ objects should provide a ``_pyflatsurf()`` method that returns a
 EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
-    sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+    sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # random output due to deprecation warnings in cppyy
     sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
     sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # random output due to deprecation warnings
     sage: conversion
@@ -1399,7 +1399,7 @@ class VectorSpaceConversion(Conversion):
             sage: codomain = VectorSpaceConversion.to_pyflatsurf(QQ^2).codomain()
 
             sage: VectorSpaceConversion.from_pyflatsurf_from_elements([codomain()])
-            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>>
+            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>...>
 
         """
         if domain is None:
@@ -1425,9 +1425,9 @@ class VectorSpaceConversion(Conversion):
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
             sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2))])
-            Conversion from Ambient free module of rank 2 over the principal ideal domain Integer Ring to flatsurf::Vector<__gmp_expr<__mpz_struct[1],__mpz_struct[1]>>
+            Conversion from Ambient free module of rank 2 over the principal ideal domain Integer Ring to flatsurf::Vector<__gmp_expr<__mpz_struct[1],__mpz_struct[1]>...>
             sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2)), vector((1/2, 2/3))])
-            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>>
+            Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>...>
 
         """
         ring_conversion = RingConversion.to_pyflatsurf_from_elements(
