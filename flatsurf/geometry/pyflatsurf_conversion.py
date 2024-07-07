@@ -1861,7 +1861,7 @@ class FlatTriangulationConversion(Conversion):
         INPUT:
 
         - ``x`` -- an object defined on the domain, e.g., a
-          :class:`SurfacePoint`
+          :class:`flatsurf.geometry.surface_objects.SurfacePoint`
 
         EXAMPLES::
 
