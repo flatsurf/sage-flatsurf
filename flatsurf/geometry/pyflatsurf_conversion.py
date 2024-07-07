@@ -1738,7 +1738,7 @@ class FlatTriangulationConversion(Conversion):
         - ``domain`` -- a sage-flatsurf surface or ``None`` (default: ``None``); if
           ``None``, the corresponding surface is constructed.
 
-        .. NOTE::
+        .. NOTE:
 
             The ``domain``, if given, must be indistinguishable from the domain
             that this method would construct automatically.
