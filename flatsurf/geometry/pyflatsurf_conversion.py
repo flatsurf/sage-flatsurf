@@ -471,7 +471,7 @@ class RingConversion(Conversion):
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
 
-            sage: import gmpxxyy
+            sage: import gmpxxyy  # optional: gmpxxyy
             sage: conversion = RingConversion.from_pyflatsurf_from_elements([gmpxxyy.mpz()])  # optional: gmpxxyy
 
         """
@@ -768,7 +768,7 @@ class RingConversion_algebraic(RingConversion):
     finite number field::
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-        sage: conversion = RingConversion.to_pyflatsurf(domain=AA)
+        sage: conversion = RingConversion.to_pyflatsurf(domain=AA)  # optional: pyeantic
         Traceback (most recent call last):
         ...
         NotImplementedError: ...
@@ -801,7 +801,7 @@ class RingConversion_algebraic(RingConversion):
         know the libflatsurf number field upfront::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_algebraic
-            sage: from pyeantic import RealEmbeddedNumberField
+            sage: from pyeantic import RealEmbeddedNumberField  # optional: pyeantic
 
             sage: RingConversion_algebraic._create_conversion(domain=AA, codomain=RealEmbeddedNumberField(QuadraticField(2)).renf)  # optional: pyeantic
             Conversion from Algebraic Real Field to NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
@@ -824,7 +824,7 @@ class RingConversion_algebraic(RingConversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-            sage: conversion = RingConversion.to_pyflatsurf_from_elements(elements=[AA(sqrt(2))])
+            sage: conversion = RingConversion.to_pyflatsurf_from_elements(elements=[AA(sqrt(2))])  # optional: pyeantic
 
             sage: conversion(AA(sqrt(2)))  # optional: pyeantic
             (a ~ 1.4142136)
@@ -865,7 +865,7 @@ class RingConversion_algebraic(RingConversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_algebraic
-            sage: from pyeantic import RealEmbeddedNumberField
+            sage: from pyeantic import RealEmbeddedNumberField  # optional: pyeantic
 
             sage: RingConversion_algebraic._deduce_codomain_from_codomain_elements([RealEmbeddedNumberField(QuadraticField(2)).renf.gen()])  # optional: pyeantic
             NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
@@ -881,7 +881,7 @@ class RingConversion_exactreal(RingConversion):
     EXAMPLES::
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-        sage: from pyexactreal import ExactReals
+        sage: from pyexactreal import ExactReals  # optional: pyexactreal
         sage: conversion = RingConversion.to_pyflatsurf(domain=ExactReals(QQ))  # optional: pyexactreal
         Traceback (most recent call last):
         ...
@@ -1631,7 +1631,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
-            sage: FlatTriangulationConversion._pyflatsurf_vectors(S)
+            sage: FlatTriangulationConversion._pyflatsurf_vectors(S)  # optional: pyflatsurf
             [(1, 0),
              ((1/2*a^2 - 3/2 ~ 0.30901699), (1/2*a ~ 0.95105652)),
              ((-1/2*a^2 + 1/2 ~ -1.3090170), (-1/2*a ~ -0.95105652)),
@@ -1874,12 +1874,12 @@ class FlatTriangulationConversion(Conversion):
         We map a point::
 
             sage: p = SurfacePoint(S, (0, 2), (0, 1/2))
-            sage: conversion(p)
+            sage: conversion(p)  # optional: pyflatsurf
             ((-1/4*a^2 + 1/2*a + 1/2 ~ 0.54654802), (1/4*a^2 - 3/4 ~ 0.15450850), (1/4 ~ 0.25000000)) in (-6, 8, 9)
 
         We map a half edge::
 
-            sage: conversion(((0, 0), 0))
+            sage: conversion(((0, 0), 0))  # optional: pyflatsurf
             1
 
         """
