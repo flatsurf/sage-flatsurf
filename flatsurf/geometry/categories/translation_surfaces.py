@@ -272,98 +272,6 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             return canonicalize_translation_surface_mapping(self)
 
-        def j_invariant(self):
-            r"""
-            Return the Kenyon-Smillie J-invariant of this translation surface.
-
-            It is assumed that the coordinates are defined over a number field.
-
-            EXAMPLES::
-
-                sage: from flatsurf import translation_surfaces
-                sage: O = translation_surfaces.regular_octagon()
-                sage: O.j_invariant()
-                (
-                          [2 2]
-                (0), (0), [2 1]
-                )
-            """
-            it = iter(self.labels())
-            lab = next(it)
-            P = self.polygon(lab)
-            Jxx, Jyy, Jxy = P.j_invariant()
-            for lab in it:
-                xx, yy, xy = self.polygon(lab).j_invariant()
-                Jxx += xx
-                Jyy += yy
-                Jxy += xy
-            return (Jxx, Jyy, Jxy)
-
-        def erase_marked_points(self):
-            r"""
-            Return an isometric or similar surface with a minimal number of regular
-            vertices of angle 2π.
-
-            EXAMPLES::
-
-                sage: import flatsurf
-
-                sage: G = SymmetricGroup(4)
-                sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
-                sage: S.stratum()
-                H_2(2, 0)
-                sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-                H_2(2)
-
-                sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
-                ....:     T = flatsurf.polygons.triangle(a,b,c)
-                ....:     S = flatsurf.similarity_surfaces.billiard(T)
-                ....:     S = S.minimal_cover("translation")
-                ....:     print(S.erase_marked_points().stratum())
-                H_6(10)
-                H_6(2^5)
-                H_8(12, 2)
-
-            If the surface had no marked points then it is returned unchanged by this
-            function::
-
-                sage: O = flatsurf.translation_surfaces.regular_octagon()
-                sage: O.erase_marked_points() is O
-                True
-
-            TESTS:
-
-            Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
-
-                sage: from flatsurf import Polygon, similarity_surfaces
-                sage: P = Polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
-                sage: B = similarity_surfaces.billiard(P)
-                sage: S = B.minimal_cover(cover_type="translation")
-                sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
-
-            ::
-
-                sage: from flatsurf import Polygon, similarity_surfaces
-                sage: P = Polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
-                sage: B = similarity_surfaces.billiard(P)
-                sage: S_mp = B.minimal_cover(cover_type="translation")
-                sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
-
-            """
-            if all(a != 1 for a in self.angles()):
-                # no 2π angle
-                return self
-            from flatsurf.geometry.pyflatsurf_conversion import (
-                from_pyflatsurf,
-                to_pyflatsurf,
-            )
-
-            S = to_pyflatsurf(self)
-            S.delaunay()
-            S = S.eliminateMarkedPoints().surface()
-            S.delaunay()
-            return from_pyflatsurf(S)
-
         def _test_translation_surface(self, **options):
             r"""
             Verify that this is a translation surface.
@@ -421,8 +329,8 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
             class ParentMethods:
                 r"""
-                Provides methods available to all translation surfaces that are
-                built from finitely many polygons.
+                Provides methods available to all translation surfaces without
+                boundary that are built from finitely many polygons.
 
                 If you want to add functionality for such surfaces you most likely
                 want to put it here.
@@ -512,3 +420,95 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     s.relabel(labels, in_place=True)
                     s.set_immutable()
                     return s
+
+                def j_invariant(self):
+                    r"""
+                    Return the Kenyon-Smillie J-invariant of this translation surface.
+
+                    It is assumed that the coordinates are defined over a number field.
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: O = translation_surfaces.regular_octagon()
+                        sage: O.j_invariant()
+                        (
+                                  [2 2]
+                        (0), (0), [2 1]
+                        )
+                    """
+                    it = iter(self.labels())
+                    lab = next(it)
+                    P = self.polygon(lab)
+                    Jxx, Jyy, Jxy = P.j_invariant()
+                    for lab in it:
+                        xx, yy, xy = self.polygon(lab).j_invariant()
+                        Jxx += xx
+                        Jyy += yy
+                        Jxy += xy
+                    return (Jxx, Jyy, Jxy)
+
+                def erase_marked_points(self):
+                    r"""
+                    Return an isometric or similar surface with a minimal number of regular
+                    vertices of angle 2π.
+
+                    EXAMPLES::
+
+                        sage: import flatsurf
+
+                        sage: G = SymmetricGroup(4)
+                        sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+                        sage: S.stratum()
+                        H_2(2, 0)
+                        sage: S.erase_marked_points().stratum() # optional: pyflatsurf  # long time (1s)  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+                        H_2(2)
+
+                        sage: for (a,b,c) in [(1,4,11), (1,4,15), (3,4,13)]: # long time (10s), optional: pyflatsurf
+                        ....:     T = flatsurf.polygons.triangle(a,b,c)
+                        ....:     S = flatsurf.similarity_surfaces.billiard(T)
+                        ....:     S = S.minimal_cover("translation")
+                        ....:     print(S.erase_marked_points().stratum())
+                        H_6(10)
+                        H_6(2^5)
+                        H_8(12, 2)
+
+                    If the surface had no marked points then it is returned unchanged by this
+                    function::
+
+                        sage: O = flatsurf.translation_surfaces.regular_octagon()
+                        sage: O.erase_marked_points() is O
+                        True
+
+                    TESTS:
+
+                    Verify that https://github.com/flatsurf/flatsurf/issues/263 has been resolved::
+
+                        sage: from flatsurf import Polygon, similarity_surfaces
+                        sage: P = Polygon(angles=(10, 8, 3, 1, 1, 1), lengths=(1, 1, 2, 4))
+                        sage: B = similarity_surfaces.billiard(P)
+                        sage: S = B.minimal_cover(cover_type="translation")
+                        sage: S = S.erase_marked_points() # long time (3s), optional: pyflatsurf
+
+                    ::
+
+                        sage: from flatsurf import Polygon, similarity_surfaces
+                        sage: P = Polygon(angles=(10, 7, 2, 2, 2, 1), lengths=(1, 1, 2, 3))
+                        sage: B = similarity_surfaces.billiard(P)
+                        sage: S_mp = B.minimal_cover(cover_type="translation")
+                        sage: S = S_mp.erase_marked_points() # long time (3s), optional: pyflatsurf
+
+                    """
+                    if all(a != 1 for a in self.angles()):
+                        # no 2π angle
+                        return self
+                    from flatsurf.geometry.pyflatsurf_conversion import (
+                        from_pyflatsurf,
+                        to_pyflatsurf,
+                    )
+
+                    S = to_pyflatsurf(self)
+                    S.delaunay()
+                    S = S.eliminateMarkedPoints().surface()
+                    S.delaunay()
+                    return from_pyflatsurf(S)
