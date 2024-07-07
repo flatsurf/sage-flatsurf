@@ -1499,7 +1499,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             True
 
         """
-        return hash((self._reference))
+        return hash(self._reference)
 
     def __eq__(self, other):
         r"""
