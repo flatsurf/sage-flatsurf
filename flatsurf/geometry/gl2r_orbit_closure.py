@@ -410,8 +410,8 @@ class GL2ROrbitClosure:
             ....:     if O.dimension() == 4:
             ....:         break
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/280 - d4/201  # long time (above), optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/230 + d4/250  # long time (above), optional: pyflatsurf
+            sage: dreal = d1/132 + d2/227 + d3/1280 - d4/13201  # long time (above), optional: pyflatsurf
+            sage: dimag = d1/141 - d2/233 + d4/1230 + d4/14250  # long time (above), optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
             sage: S2 = O._surface + d  # long time (6s), optional: pyflatsurf
 
