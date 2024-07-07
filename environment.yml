@@ -28,6 +28,6 @@ dependencies:
   - pycodestyle >=2.9.1,<3
   - pyeantic>=1,<2  # optional: eantic
   - pyexactreal>=3.1.0,<4  # optional: exactreal
-  - pyflatsurf>=3.10.1,<4  # optional: pyflatsurf
+  - pyflatsurf>=3.12.0,<4  # optional: pyflatsurf
   - pyintervalxt>=3,<4  # optional: pyflatsurf
   - pip: [flipper]  # optional: flipper
