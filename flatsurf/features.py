@@ -26,9 +26,44 @@ cppyy_feature = PythonModule(
     "cppyy", url="https://cppyy.readthedocs.io/en/latest/installation.html"
 )
 
-pyeantic_feature = PythonModule(
-    "pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda"
-)
+class PyeanticModule(PythonModule):
+    def __init__(self):
+        super().__init__("pyeantic", url="https://github.com/flatsurf/e-antic/#install-with-conda")
+
+    @staticmethod
+    def fix_unwrap_intrusive_ptr():
+        r"""
+        Unconditionally backports a fix from e-antic 2.0.1, see
+        https://github.com/flatsurf/e-antic/pull/260.
+        """
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            import pyeantic, cppyy
+
+            def unwrap_intrusive_ptr(K):
+                if isinstance(K, pyeantic.eantic.renf_class):
+                    K = cppyy.gbl.boost.intrusive_ptr['const eantic::renf_class'](K)
+
+                if not isinstance(K, cppyy.gbl.boost.intrusive_ptr['const eantic::renf_class']):
+                    raise TypeError("argument must be an intrusive_ptr to a renf_class")
+
+                wrapped = K.get()
+                wrapped.__lifeline = K
+
+                return wrapped
+
+            import pyeantic.cppyy_eantic
+
+            pyeantic.cppyy_eantic.unwrap_intrusive_ptr = unwrap_intrusive_ptr
+
+            pyeantic.eantic.renf = lambda *args: unwrap_intrusive_ptr(
+                pyeantic.eantic.renf_class.make(*args)
+            )
+
+
+pyeantic_feature = PyeanticModule()
 
 pyexactreal_feature = PythonModule(
     "pyexactreal", url="https://github.com/flatsurf/exact-real/#install-with-conda"

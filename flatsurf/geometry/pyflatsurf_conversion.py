@@ -14,6 +14,8 @@ EXAMPLES::
     sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
     sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
     sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # random output due to deprecation warnings
+    sage: conversion
+    Conversion from Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons to FlatTriangulationCombinatorial(...) with vectors ...
 
 """
 # ********************************************************************
@@ -38,34 +40,11 @@ EXAMPLES::
 
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.features import pyflatsurf_feature
+from flatsurf.features import pyflatsurf_feature, pyeantic_feature
 
 
-# TODO: Remove this once e-antic 2.0.1 can be used. (We are waiting for a SageMath does works with FLINT 3.)
-import warnings
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    import pyeantic
-
-    def unwrap_intrusive_ptr(K):
-        import cppyy
-
-        if isinstance(K, pyeantic.eantic.renf_class):
-            K = cppyy.gbl.boost.intrusive_ptr["const eantic::renf_class"](K)
-        if isinstance(K, cppyy.gbl.boost.intrusive_ptr["const eantic::renf_class"]):
-            ptr = K.get()
-            ptr.__intrusive__ = K
-            K = ptr
-        return K
-
-    import pyeantic.cppyy_eantic
-
-    pyeantic.cppyy_eantic.unwrap_intrusive_ptr = unwrap_intrusive_ptr
-
-    pyeantic.eantic.renf = lambda *args: unwrap_intrusive_ptr(
-        pyeantic.eantic.renf_class.make(*args)
-    )
+if pyeantic_feature.is_present():
+    pyeantic_feature.fix_unwrap_intrusive_ptr()
 
 
 class Conversion:
@@ -629,7 +608,9 @@ class RingConversion_eantic(RingConversion):
             from pyeantic import RealEmbeddedNumberField
 
             renf = RealEmbeddedNumberField(domain)
-            codomain = unwrap_intrusive_ptr(renf.renf)
+
+            import pyeantic.cppyy_eantic
+            codomain = pyeantic.cppyy_eantic.unwrap_intrusive_ptr(renf.renf)
 
         return RingConversion_eantic(domain, codomain)
 
@@ -732,7 +713,8 @@ class RingConversion_eantic(RingConversion):
             if not isinstance(element, pyeantic.eantic.renf_elem_class):
                 return None
 
-            element_ring = unwrap_intrusive_ptr(element.parent())
+            import pyeantic.cppyy_eantic
+            element_ring = pyeantic.cppyy_eantic.unwrap_intrusive_ptr(element.parent())
             if ring is None or ring.degree() == 1:
                 ring = element_ring
             elif element_ring != ring and element_ring.degree() != 1:
@@ -917,7 +899,8 @@ class RingConversion_exactreal(RingConversion):
             if not element.__class__.__name__.startswith("Element<"):
                 return None
 
-            element_module = unwrap_intrusive_ptr(element.module())
+            import pyeantic.cppyy_eantic
+            element_module = pyeantic.cppyy_eantic.unwrap_intrusive_ptr(element.module())
             if module is None:
                 module = element_module
             module = module.span(module, element_module)
