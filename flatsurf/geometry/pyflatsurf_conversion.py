@@ -277,7 +277,11 @@ class RingConversion(Conversion):
             [<class 'flatsurf.geometry.pyflatsurf_conversion.RingConversion_eantic'>]
 
         """
-        from flatsurf.features import pyeantic_feature, pyexactreal_feature, gmpxxyy_feature
+        from flatsurf.features import (
+            pyeantic_feature,
+            pyexactreal_feature,
+            gmpxxyy_feature,
+        )
 
         if gmpxxyy_feature.is_present():
             yield RingConversion_gmp
