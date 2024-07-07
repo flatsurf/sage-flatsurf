@@ -27,12 +27,12 @@ jobs:
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,pyflatsurf"
+            optionals: "sage,flipper,eantic"
             sagelib: "9.4"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,pyflatsurf"
+            optionals: "sage,flipper,eantic"
             sagelib: "9.5"
             environment: "environment.yml"
             python: "3.9.15"
