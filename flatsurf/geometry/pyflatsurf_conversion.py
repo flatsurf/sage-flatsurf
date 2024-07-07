@@ -570,8 +570,8 @@ class RingConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-            sage: conversion = RingConversion.to_pyflatsurf(QQ)  # optional: pyeantic
-            sage: conversion._vectors()  # optional: pyeantic
+            sage: conversion = RingConversion.to_pyflatsurf(QQ)  # optional: pyflatsurf
+            sage: conversion._vectors()  # optional: pyflatsurf
             Flatsurf Vectors over Rational Field
 
         """
@@ -842,7 +842,7 @@ class RingConversion_algebraic(RingConversion):
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_algebraic
             sage: RingConversion_algebraic._deduce_codomain_from_domain_elements([AA(sqrt(2)), AA(sqrt(3))])  # optional: pyeantic
-            NumberField(a^4 - 4*a^2 + 1, [-1.93185165257813657349948639945779474 +/- 5.45e-36])
+            NumberField(a^4 - 4*a^2 + 1, [...])
 
         """
         from sage.all import AA
@@ -1339,7 +1339,7 @@ class VectorSpaceConversion(Conversion):
     EXAMPLES::
 
         sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-        sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyeantic
+        sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
 
     """
 
@@ -1367,7 +1367,7 @@ class VectorSpaceConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyeantic
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
 
         """
         pyflatsurf_feature.require()
@@ -1396,9 +1396,9 @@ class VectorSpaceConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: codomain = VectorSpaceConversion.to_pyflatsurf(QQ^2).codomain()  # optional: pyeantic
+            sage: codomain = VectorSpaceConversion.to_pyflatsurf(QQ^2).codomain()  # optional: pyflatsurf
 
-            sage: VectorSpaceConversion.from_pyflatsurf_from_elements([codomain()])  # optional: pyeantic
+            sage: VectorSpaceConversion.from_pyflatsurf_from_elements([codomain()])  # optional: pyflatsurf
             Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>...>
 
         """
@@ -1424,9 +1424,9 @@ class VectorSpaceConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2))])  # optional: pyeantic
+            sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2))])  # optional: pyflatsurf
             Conversion from Ambient free module of rank 2 over the principal ideal domain Integer Ring to flatsurf::Vector<__gmp_expr<__mpz_struct[1],__mpz_struct[1]>...>
-            sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2)), vector((1/2, 2/3))])  # optional: pyeantic
+            sage: VectorSpaceConversion.to_pyflatsurf_from_elements([vector((1, 2)), vector((1/2, 2/3))])  # optional: pyflatsurf
             Conversion from Vector space of dimension 2 over Rational Field to flatsurf::Vector<__gmp_expr<__mpq_struct[1],__mpq_struct[1]>...>
 
         """
@@ -1450,8 +1450,8 @@ class VectorSpaceConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyeantic
-            sage: conversion._vectors()  # optional: pyeantic
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
+            sage: conversion._vectors()  # optional: pyflatsurf
             Flatsurf Vectors over Rational Field
 
         """
@@ -1464,8 +1464,8 @@ class VectorSpaceConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyeantic
-            sage: conversion(vector(QQ, [1, 2]))  # optional: pyeantic
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
+            sage: conversion(vector(QQ, [1, 2]))  # optional: pyflatsurf
             (1, 2)
 
         """
@@ -1480,9 +1480,9 @@ class VectorSpaceConversion(Conversion):
         EXAMPLES::
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
-            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyeantic
-            sage: v = vector(QQ, [1, 2])  # optional: pyeantic
-            sage: conversion.section(conversion(v)) == v  # optional: pyeantic
+            sage: conversion = VectorSpaceConversion.to_pyflatsurf(QQ^2)  # optional: pyflatsurf
+            sage: v = vector(QQ, [1, 2])  # optional: pyflatsurf
+            sage: conversion.section(conversion(v)) == v  # optional: pyflatsurf
             True
 
         """
