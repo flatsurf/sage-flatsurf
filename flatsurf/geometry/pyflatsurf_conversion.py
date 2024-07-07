@@ -310,7 +310,7 @@ class RingConversion(Conversion):
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_eantic
             sage: RingConversion_eantic._create_conversion(QuadraticField(2))  # optional: pyeantic
-            Conversion from Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095? to NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            Conversion from Number Field in a with defining polynomial x^2 - 2 with a = 1.414213562373095? to NumberField(a^2 - 2, [...])
 
         """
         raise NotImplementedError(
@@ -336,7 +336,7 @@ class RingConversion(Conversion):
             sage: element = conversion.codomain().gen()  # optional: pyeantic
 
             sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element])  # optional: pyeantic
-            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            NumberField(a^2 - 2, [...])
 
         """
         raise NotImplementedError(
@@ -360,7 +360,7 @@ class RingConversion(Conversion):
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion, RingConversion_eantic
             sage: K.<a> = QuadraticField(2)
             sage: RingConversion_eantic._deduce_codomain_from_domain_elements([a])  # optional: pyeantic
-            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            NumberField(a^2 - 2, [...])
 
         """
         from sage.all import Sequence
@@ -604,7 +604,7 @@ class RingConversion_eantic(RingConversion):
 
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion_eantic
             sage: RingConversion_eantic._create_conversion(domain=QuadraticField(3))  # optional: pyeantic
-            Conversion from Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878? to NumberField(a^2 - 3, [1.732050807568877293527446341505872367 +/- 2.90e-37])
+            Conversion from Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878? to NumberField(a^2 - 3, [...])
 
         """
         if domain is None and codomain is None:
@@ -728,13 +728,13 @@ class RingConversion_eantic(RingConversion):
             sage: element = conversion.codomain().gen()  # optional: pyeantic
 
             sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element])  # optional: pyeantic
-            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            NumberField(a^2 - 2, [...])
             sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element, 2*element])  # optional: pyeantic
-            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            NumberField(a^2 - 2, [...])
 
             sage: import cppyy  # optional: pyeantic
             sage: RingConversion_eantic._deduce_codomain_from_codomain_elements([element, cppyy.gbl.eantic.renf_elem_class()])  # optional: pyeantic
-            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            NumberField(a^2 - 2, [...])
 
         """
         import pyeantic
@@ -804,7 +804,7 @@ class RingConversion_algebraic(RingConversion):
             sage: from pyeantic import RealEmbeddedNumberField  # optional: pyeantic
 
             sage: RingConversion_algebraic._create_conversion(domain=AA, codomain=RealEmbeddedNumberField(QuadraticField(2)).renf)  # optional: pyeantic
-            Conversion from Algebraic Real Field to NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            Conversion from Algebraic Real Field to NumberField(a^2 - 2, [...])
 
         """
         if codomain is None:
@@ -868,7 +868,7 @@ class RingConversion_algebraic(RingConversion):
             sage: from pyeantic import RealEmbeddedNumberField  # optional: pyeantic
 
             sage: RingConversion_algebraic._deduce_codomain_from_codomain_elements([RealEmbeddedNumberField(QuadraticField(2)).renf.gen()])  # optional: pyeantic
-            NumberField(a^2 - 2, [1.4142135623730950488016887242096980786 +/- 7.96e-38])
+            NumberField(a^2 - 2, [...])
 
         """
         return RingConversion_eantic._deduce_codomain_from_codomain_elements(elements)
@@ -1297,7 +1297,9 @@ class RingConversion_gmp(RingConversion):
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
             sage: domain = QQ
             sage: conversion = RingConversion.to_pyflatsurf(QQ)  # optional: gmpxxyy
-            sage: conversion(1 / 3)  # optional: gmpxxyy
+            sage: x = 1/3
+            sage: y = conversion(x)  # optional: gmpxxyy
+            sage: conversion.section(y)  # optional: gmpxxyy
             1/3
 
         """
@@ -1826,7 +1828,7 @@ class FlatTriangulationConversion(Conversion):
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion.ring_conversion()  # optional: pyflatsurf
-            Conversion from Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to NumberField(a^4 - 5*a^2 + 5, [1.902113032590307144232878666758764287 +/- 6.87e-37])
+            Conversion from Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to NumberField(a^4 - 5*a^2 + 5, [...])
 
         """
         return RingConversion.to_pyflatsurf(domain=self.domain().base_ring())
