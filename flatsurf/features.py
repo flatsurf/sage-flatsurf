@@ -80,3 +80,7 @@ pyexactreal_feature = PythonModule(
 pyflatsurf_feature = PythonModule(
     "pyflatsurf", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
 )
+
+gmpxxyy_feature = PythonModule(
+    "gmpxxyy", url="https://github.com/flatsurf/flatsurf/#install-with-conda"
+)

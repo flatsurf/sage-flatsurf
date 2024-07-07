@@ -277,11 +277,11 @@ class RingConversion(Conversion):
             [<class 'flatsurf.geometry.pyflatsurf_conversion.RingConversion_eantic'>]
 
         """
-        from flatsurf.features import pyeantic_feature, pyexactreal_feature
+        from flatsurf.features import pyeantic_feature, pyexactreal_feature, gmpxxyy_feature
 
-        yield RingConversion_gmp
-
-        yield RingConversion_int
+        if gmpxxyy_feature.is_present():
+            yield RingConversion_gmp
+            yield RingConversion_int
 
         if pyeantic_feature.is_present():
             yield RingConversion_eantic
@@ -1223,6 +1223,7 @@ class RingConversion_gmp(RingConversion):
 
         from sage.all import ZZ, QQ
         import cppyy
+        import gmpxxyy
 
         if domain is None:
             if codomain == cppyy.gbl.mpz_class:
@@ -1271,6 +1272,7 @@ class RingConversion_gmp(RingConversion):
 
         """
         import cppyy
+        import gmpxxyy
 
         ring = None
         for element in elements:
@@ -2122,6 +2124,7 @@ def to_sage_ring(x):
 
     cppyy_feature.require()
     import cppyy
+    import gmpxxyy
 
     def maybe_type(t):
         try:
