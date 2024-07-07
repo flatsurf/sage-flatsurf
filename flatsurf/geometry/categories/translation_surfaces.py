@@ -512,3 +512,44 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     S = S.eliminateMarkedPoints().surface()
                     S.delaunay()
                     return from_pyflatsurf(S)
+
+                def rel_deformation(self, deformation, local=None, limit=None):
+                    r"""
+                    Return a deformed surface obtained by shifting the vertices
+                    by ``deformation``.
+
+                    INPUT:
+
+                    - ``deformation`` -- a dict which maps the vertices of this
+                      surfaces to vectors. The rel deformation will move each
+                      vertex by that amount (relative to the others); any
+                      vertex not present in the dict will be treated as a
+                      deformation by the zero vector.
+
+
+                    EXAMPLES::
+
+                        sage: from flatsurf import translation_surfaces
+                        sage: S = translation_surfaces.arnoux_yoccoz(4)
+                        sage: S1 = S.rel_deformation({S(0, 0): (1, 0)}).canonicalize()  # TODO: long time?
+
+                        sage: a = S.base_ring().gen()
+                        sage: S2 = S.rel_deformation({S(0, 0): (a, 0)}).canonicalize()  # TODO: long time?
+
+                        sage: M = matrix([[a, 0], [0, ~a]])
+                        sage: S2.cmp((M*S1).canonicalize())  # TODO: long time?
+                        0
+
+                    """
+                    if local is not None:
+                        import warnings
+                        warnings.warn("the local keyword has been removed from rel_deformation() without a replacement; do not use it anymore")
+
+                    if limit is not None:
+                        import warnings
+                        warnings.warn("the limit keyword has been removed from rel_deformation() without a replacement; do not use it anymore")
+
+                    if not self.is_triangulated():
+                        raise NotImplementedError("only triangulated surfaces can be rel-deformed")
+
+                    raise NotImplementedError

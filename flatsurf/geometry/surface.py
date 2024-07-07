@@ -443,6 +443,7 @@ class MutablePolygonalSurface(Surface_base):
              'l_infinity_delaunay_triangulation',
              'minimal_translation_cover',
              'normalized_coordinates',
+             'rel_deformation',
              'stratum',
              'veering_triangulation'}
 

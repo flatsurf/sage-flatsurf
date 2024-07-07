@@ -38,7 +38,7 @@
 
 * Removed the ``direction`` keyword from ``delaunay_triangulation()`` and ``delaunay_decomposition()``. The claimed behavior about separatrices does not actually hold so the behavior here was somewhat random. Instead, we now always turn each edge counterclockwise when flipping.
 
-* Removed ``rel_deformation()``. It should be replaced by the ``operator+`` that is implemented in libflatsurf and performs much better. If you need this method, let us know and we'll add something back quickly.
+* Removed ``local`` and ``limit`` parameters from ``rel_deformation()``. The method is now backed by libflatsurf and should be much faster in practice.
 
 **Fixed:**
 
