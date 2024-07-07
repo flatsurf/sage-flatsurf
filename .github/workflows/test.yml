@@ -17,32 +17,32 @@ jobs:
       matrix:
         include:
           - on: ubuntu-22.04
-            optionals: "sage,flipper"
+            optionals: "sage,flipper,gmpxxyy"
             sagelib: "9.2"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,pyeantic"
+            optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.3"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,pyeantic"
+            optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.4"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,pyeantic"
+            optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.5"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             sagelib: "9.6"
             environment: "environment.yml"
             python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             sagelib: "9.7"
             environment: "environment.yml"
             python: "3.10.8"
@@ -52,11 +52,11 @@ jobs:
           #   environment: "environment.yml"
           #   python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
           - on: macos-13
-            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
     steps:
