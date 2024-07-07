@@ -45,3 +45,5 @@
 * Fixed comparison of infinite sets of labels. Labels can now be compared and hashed in some very limited cases.
 
 * Fixed ``j_invariant()`` and ``erase_marked_points()`` they are now not available for infinite type surfaces anymore (where they failed before.)
+
+* Fixed ``subdivide()`` and ``subdivide_polygons()``; they now return immutable surfaces in the correct category.

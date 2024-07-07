@@ -2886,6 +2886,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         if opposite is not None:
                             surface.glue(((label, p), 0), (opposite, 0))
 
+                surface.set_immutable()
+
                 return surface
 
             def subdivide_edges(self, parts=2):
@@ -2962,6 +2964,8 @@ class SimilaritySurfaces(SurfaceCategory):
                                         opposite[1] * parts + (parts - p - 1),
                                     ),
                                 )
+
+                surface.set_immutable()
 
                 return surface
 
