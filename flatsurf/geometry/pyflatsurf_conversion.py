@@ -1496,7 +1496,7 @@ class VectorSpaceConversion(Conversion):
 
 class FlatTriangulationConversion(Conversion):
     r"""
-    Converts a :class:`Surface` object to a ``FlatTriangulation`` object and
+    Converts a sage-flatsurf surface to a ``FlatTriangulation`` object and
     vice-versa.
 
     EXAMPLES::
@@ -1535,7 +1535,7 @@ class FlatTriangulationConversion(Conversion):
 
         INPUT:
 
-        - ``domain`` -- a :class:`Surface`
+        - ``domain`` -- a sage-flatsurf surface
 
         - ``codomain`` -- a ``FlatTriangulation`` or ``None`` (default:
           ``None``); if ``None``, the corresponding ``FlatTriangulation`` is
@@ -1667,7 +1667,7 @@ class FlatTriangulationConversion(Conversion):
 
         INPUT:
 
-        - ``domain`` -- a :class:`Surface`
+        - ``domain`` -- a sage-flatsurf surface
 
         EXAMPLES::
 
@@ -1735,8 +1735,8 @@ class FlatTriangulationConversion(Conversion):
 
         - ``codomain`` -- a ``FlatTriangulation``
 
-        - ``domain`` -- a :class:`Surface` or ``None`` (default: ``None``); if
-          ``None``, the corresponding :class:`Surface` is constructed.
+        - ``domain`` -- a sage-flatsurf surface or ``None`` (default: ``None``); if
+          ``None``, the corresponding surface is constructed.
 
         .. NOTE::
 
