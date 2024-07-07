@@ -659,7 +659,9 @@ class RingConversion_eantic(RingConversion):
         """
         import sage.structure.element
 
+        # pylint: disable=c-extension-no-member
         parent = sage.structure.element.parent(x)
+        # pylint: enable=c-extension-no-member
 
         if parent is not self.domain():
             raise ValueError(
@@ -956,7 +958,9 @@ class RingConversion_exactreal(RingConversion):
         """
         import sage.structure.element
 
+        # pylint: disable=c-extension-no-member
         parent = sage.structure.element.parent(x)
+        # pylint: enable=c-extension-no-member
 
         if parent is not self.domain():
             raise ValueError(
@@ -1299,7 +1303,9 @@ class RingConversion_gmp(RingConversion):
         """
         import sage.structure.element
 
+        # pylint: disable=c-extension-no-member
         parent = sage.structure.element.parent(x)
+        # pylint: enable=c-extension-no-member
 
         if parent is not self.domain():
             raise ValueError(
@@ -1925,8 +1931,6 @@ class FlatTriangulationConversion(Conversion):
             return self._preimage_point(y)
         if isinstance(y, pyflatsurf.flatsurf.HalfEdge):
             return self._preimage_half_edge(y)
-        if isinstance(y, pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())]):
-            return self._preimage_saddle_connection(y)
 
         raise NotImplementedError(
             f"cannot compute the preimage of a {type(y)} in sage-flatsurf yet"

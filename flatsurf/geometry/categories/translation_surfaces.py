@@ -575,11 +575,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         for vertex in self.vertices()
                     }
 
+                    # pylint: disable=not-callable
                     deformation = {
                         edge: deformation[self(*self.opposite_edge(*edge))]
                         - deformation[self(*edge)]
                         for edge in self.edges()
                     }
+                    # pylint: enable=not-callable
 
                     vector_space_conversion = conversion.vector_space_conversion()
                     deformation = [

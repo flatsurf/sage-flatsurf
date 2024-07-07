@@ -43,7 +43,8 @@ class PyeanticModule(PythonModule):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            import pyeantic, cppyy
+            import pyeantic
+            import cppyy
 
             def unwrap_intrusive_ptr(K):
                 if isinstance(K, pyeantic.eantic.renf_class):
@@ -55,7 +56,9 @@ class PyeanticModule(PythonModule):
                     raise TypeError("argument must be an intrusive_ptr to a renf_class")
 
                 wrapped = K.get()
+                # pylint: disable=unused-private-member
                 wrapped.__lifeline = K
+                # pylint: enable=unused-private-member
 
                 return wrapped
 
