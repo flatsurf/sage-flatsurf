@@ -531,13 +531,13 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                         sage: from flatsurf import translation_surfaces
                         sage: S = translation_surfaces.arnoux_yoccoz(4)
-                        sage: S1 = S.rel_deformation({S(0, 0): (1, 0)}).canonicalize()  # TODO: long time?
+                        sage: S1 = S.rel_deformation({S(0, 0): (1, 0)}).canonicalize()  # optional: pyflatsurf
 
                         sage: a = S.base_ring().gen()
-                        sage: S2 = S.rel_deformation({S(0, 0): (a, 0)}).canonicalize()  # TODO: long time?
+                        sage: S2 = S.rel_deformation({S(0, 0): (a, 0)}).canonicalize()  # optional: pyflatsurf
 
                         sage: M = matrix([[a, 0], [0, ~a]])
-                        sage: S2.cmp((M*S1).canonicalize())  # TODO: long time?
+                        sage: S2.cmp((M*S1).canonicalize())  # optional: pyflatsurf
                         0
 
                     """
@@ -552,4 +552,17 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if not self.is_triangulated():
                         raise NotImplementedError("only triangulated surfaces can be rel-deformed")
 
-                    raise NotImplementedError
+                    from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+                    conversion = FlatTriangulationConversion.to_pyflatsurf(self)
+
+                    from sage.all import vector
+                    deformation = {vertex: vector(self.base_ring(), deformation.get(vertex, (0, 0))) for vertex in self.vertices()}
+
+                    deformation = {edge: deformation[self(*self.opposite_edge(*edge))] - deformation[self(*edge)] for edge in self.edges()}
+
+                    vector_space_conversion = conversion.vector_space_conversion()
+                    deformation = [vector_space_conversion(deformation[conversion.section(edge.positive())]) for edge in conversion.codomain().edges()]
+
+                    deformed = (conversion.codomain() + deformation).codomain()
+
+                    return FlatTriangulationConversion.from_pyflatsurf(deformed).domain()
