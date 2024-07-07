@@ -22,41 +22,41 @@ jobs:
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic"
+            optionals: "sage,flipper,pyeantic"
             sagelib: "9.3"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic"
+            optionals: "sage,flipper,pyeantic"
             sagelib: "9.4"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic"
+            optionals: "sage,flipper,pyeantic"
             sagelib: "9.5"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
             sagelib: "9.6"
             environment: "environment.yml"
             python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
             sagelib: "9.7"
             environment: "environment.yml"
             python: "3.10.8"
           # surface-dynamics is not available for SageMath 9.8 on conda-forge, see https://github.com/conda-forge/surface-dynamics-feedstock/pull/17
-          # - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          # - optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
           #   sagelib: "9.8"
           #   environment: "environment.yml"
           #   python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
           - on: macos-13
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
     steps:

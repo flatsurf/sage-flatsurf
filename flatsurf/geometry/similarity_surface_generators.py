@@ -772,14 +772,14 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import EuclideanPolygonsWithAngles
             sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-            sage: from pyexactreal import ExactReals # optional: exactreal
-            sage: R = ExactReals(E.base_ring()) # optional: exactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal
+            sage: R = ExactReals(E.base_ring()) # optional: pyexactreal
             sage: angles = (3, 3, 5)
             sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
-            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
-            sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
+            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: pyexactreal
+            sage: S = similarity_surfaces.billiard(P); S # optional: pyexactreal
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
-            sage: TestSuite(S).run() # long time (6s), optional: exactreal
+            sage: TestSuite(S).run() # long time (6s), optional: pyexactreal
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: S in ConeSurfaces()
             True
@@ -1865,15 +1865,15 @@ class TranslationSurfaceGenerators:
             Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
             sage: TestSuite(C).run()
 
-            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal
             sage: K = QuadraticField(5, embedding=AA(5).sqrt())
-            sage: R = ExactReals(K) # optional: exactreal
-            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
-            sage: C  # optional: exactreal
+            sage: R = ExactReals(K) # optional: pyexactreal
+            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: pyexactreal
+            sage: C  # optional: pyexactreal
             Translation Surface in H_4(2^3) built from 2 rectangles, a hexagon with 4 marked vertices and an octagon
-            sage: C.stratum() # optional: exactreal
+            sage: C.stratum() # optional: pyexactreal
             H_4(2^3)
-            sage: TestSuite(C).run() # long time (6s), optional: exactreal
+            sage: TestSuite(C).run() # long time (6s), optional: pyexactreal
         """
         ring = Sequence([a, b]).universe()
         if isinstance(ring, type):
