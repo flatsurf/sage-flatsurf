@@ -1336,7 +1336,7 @@ class RingConversion_gmp(RingConversion):
 
 class VectorSpaceConversion(Conversion):
     r"""
-    Converts vectors in a SageMath vector space into libflatsurf ``Vector<T>``s.
+    Converts vectors in a SageMath vector space into libflatsurf ``Vector<T>``\s.
 
     EXAMPLES::
 
