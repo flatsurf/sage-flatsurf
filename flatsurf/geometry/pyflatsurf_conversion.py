@@ -1541,7 +1541,7 @@ class FlatTriangulationConversion(Conversion):
           ``None``); if ``None``, the corresponding ``FlatTriangulation`` is
           constructed.
 
-        .. NOTE::
+        .. NOTE:
 
             The ``codomain``, if given, must be indistinguishable from the
             codomain that this method would construct automatically.
