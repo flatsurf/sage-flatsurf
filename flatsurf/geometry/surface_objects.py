@@ -162,6 +162,13 @@ class SurfacePoint(SurfacePoint_base):
 
     """
     def __init__(self, surface, label, point, ring=None, limit=None):
+        if limit is not None:
+            import warnings
+
+            warnings.warn(
+                "limit has been deprecated as a keyword argument when creating points and will be removed without replacement in a future version of sage-flatsurf"
+            )
+
         self._surface = surface
 
         if ring is None:

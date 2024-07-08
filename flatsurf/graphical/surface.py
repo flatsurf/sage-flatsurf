@@ -906,8 +906,6 @@ class GraphicalSurface:
             sage: gs = pc.graphical_surface()
             sage: gs.to_surface((3,2), search_all=True, search_limit=20)
             Vertex 0 of polygon (0, (x, y) |-> (x + 3, y + 2))
-            sage: gs.to_surface((3,2), search_all=True, search_limit=20, singularity_limit=4)
-            Vertex 0 of polygon (0, (x, y) |-> (x + 3, y + 2))
             sage: p = gs.to_surface((sqrt(3),sqrt(2)), ring=AA, search_all=True, search_limit=20)
             doctest:warning
             ...
@@ -919,6 +917,13 @@ class GraphicalSurface:
             Tangent bundle of Minimal Planar Cover of Translation Surface in H_1(0) built from a square defined over Algebraic Real Field
 
         """
+        if singularity_limit is not None:
+            import warnings
+
+            warnings.warn(
+                "singularity_limit has been deprecated as a keyword argument for to_surface() and will be removed from a future version of sage-flatsurf"
+            )
+
         surface = self.get_surface()
 
         point = vector(point, ring or surface.base_ring())

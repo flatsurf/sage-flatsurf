@@ -765,14 +765,14 @@ class SimilaritySurfaceGenerators:
 
             sage: from flatsurf import EuclideanPolygonsWithAngles
             sage: E = EuclideanPolygonsWithAngles((3, 3, 5))
-            sage: from pyexactreal import ExactReals # optional: exactreal
-            sage: R = ExactReals(E.base_ring()) # optional: exactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal
+            sage: R = ExactReals(E.base_ring()) # optional: pyexactreal
             sage: angles = (3, 3, 5)
             sage: slopes = EuclideanPolygonsWithAngles(*angles).slopes()
-            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: exactreal
-            sage: S = similarity_surfaces.billiard(P); S # optional: exactreal
+            sage: P = Polygon(angles=angles, edges=[R.random_element() * slopes[0]])  # optional: pyexactreal
+            sage: S = similarity_surfaces.billiard(P); S # optional: pyexactreal
             Genus 0 Rational Cone Surface built from 2 isosceles triangles
-            sage: TestSuite(S).run() # long time (6s), optional: exactreal
+            sage: TestSuite(S).run() # long time (6s), optional: pyexactreal
             sage: from flatsurf.geometry.categories import ConeSurfaces
             sage: S in ConeSurfaces()
             True
@@ -1734,15 +1734,15 @@ class TranslationSurfaceGenerators:
             Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
             sage: TestSuite(C).run()
 
-            sage: from pyexactreal import ExactReals # optional: exactreal
+            sage: from pyexactreal import ExactReals # optional: pyexactreal
             sage: K = QuadraticField(5, embedding=AA(5).sqrt())
-            sage: R = ExactReals(K) # optional: exactreal
-            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: exactreal
-            sage: C  # optional: exactreal
+            sage: R = ExactReals(K) # optional: pyexactreal
+            sage: C = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2])) # optional: pyexactreal
+            sage: C  # optional: pyexactreal
             Translation Surface in H_4(2^3) built from 2 rectangles, a hexagon with 4 marked vertices and an octagon
-            sage: C.stratum() # optional: exactreal
+            sage: C.stratum() # optional: pyexactreal
             H_4(2^3)
-            sage: TestSuite(C).run() # long time (6s), optional: exactreal
+            sage: TestSuite(C).run() # long time (6s), optional: pyexactreal
         """
         ring = Sequence([a, b]).universe()
         if isinstance(ring, type):
@@ -2119,6 +2119,72 @@ class TranslationSurfaceGenerators:
             )
             graphical_surface.make_all_visible(limit=10)
             return graphical_surface
+
+        def is_triangulated(self, limit=None):
+            r"""
+            Return whether this surface is triangulated, which it is not.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_triangulated()
+                False
+
+            """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
+            return False
+
+        def is_delaunay_triangulated(self, limit=None):
+            r"""
+            Return whether this surface is Delaunay triangulated, which it is not.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_delaunay_triangulated()
+                False
+
+            """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
+            return False
+
+        def is_delaunay_decomposed(self, limit=None):
+            r"""
+            Return whether this surface is made from Delaunay cells.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.infinite_staircase()
+                sage: S.is_delaunay_decomposed()
+                True
+
+            """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
+            return True
 
     @staticmethod
     def t_fractal(w=ZZ_1, r=ZZ_2, h1=ZZ_1, h2=ZZ_1):

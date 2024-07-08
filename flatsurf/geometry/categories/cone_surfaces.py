@@ -146,11 +146,16 @@ class ConeSurfaces(SurfaceCategory):
 
             EXAMPLES::
 
-                sage: from flatsurf import translation_surfaces
+                sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
                 sage: S = translation_surfaces.infinite_staircase()
 
                 sage: from flatsurf.geometry.categories import ConeSurfaces
                 sage: ConeSurfaces.ParentMethods._is_cone_surface(S, limit=8)
+                doctest:warning
+                ...
+                UserWarning: limit has been deprecated as a keyword argument for _is_cone_surface() and will be removed from a future version of sage-flatsurf; ...
+                True
+                sage: ConeSurfaces.ParentMethods._is_cone_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                 True
 
             ::
@@ -163,6 +168,14 @@ class ConeSurfaces(SurfaceCategory):
                 True
 
             """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for _is_cone_surface() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
             if "Oriented" not in surface.category().axioms():
                 raise NotImplementedError(
                     "cannot check whether a non-oriented surface is a cone surface yet"

@@ -128,7 +128,7 @@ class PolygonalSurfaces(SurfaceCategory):
 
             return category
 
-        def is_triangulated(self):
+        def is_triangulated(self, limit=None):
             r"""
             Return whether this surface is built from triangles.
 
@@ -142,6 +142,14 @@ class PolygonalSurfaces(SurfaceCategory):
                 False
 
             """
+            if limit is not None:
+                import warnings
+
+                warnings.warn(
+                    "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                    "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                )
+
             roots = self.roots()
 
             if not roots:
@@ -315,6 +323,30 @@ class PolygonalSurfaces(SurfaceCategory):
             from flatsurf.geometry.surface import Polygons
 
             return Polygons(self)
+
+        def _test_polygons(self, **options):
+            r"""
+            Verify that polygons() has been implemented correctly.
+
+            EXAMPLES::
+
+                sage: from flatsurf import Polygon, similarity_surfaces
+                sage: P = Polygon(vertices=[(0,0), (2,0), (1,4), (0,5)])
+                sage: S = similarity_surfaces.self_glued_polygon(P)
+                sage: S._test_polygons()
+
+            """
+            tester = self._tester(**options)
+
+            polygons = self.polygons()
+
+            if not self.is_finite_type():
+                import itertools
+
+                polygons = itertools.islice(polygons, 32)
+
+            for polygon in polygons:
+                tester.assertEqual(polygon.base_ring(), self.base_ring())
 
         def _test_labels_polygons(self, **options):
             r"""
@@ -735,7 +767,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     f = self.opposite_edge(lab, k)
                     if f is None:
                         continue
-                    g = self.opposite_edge(f[0], f[1])
+                    g = self.opposite_edge(*f)
                     tester.assertEqual(
                         e,
                         g,
@@ -1198,7 +1230,7 @@ class PolygonalSurfaces(SurfaceCategory):
                 """
                 return True
 
-            def is_triangulated(self):
+            def is_triangulated(self, limit=None):
                 r"""
                 Return whether this surfaces is built from triangles.
 
@@ -1211,6 +1243,14 @@ class PolygonalSurfaces(SurfaceCategory):
                     False
 
                 """
+                if limit is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_triangulated() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
+
                 for p in self.polygons():
                     if len(p.vertices()) != 3:
                         return False

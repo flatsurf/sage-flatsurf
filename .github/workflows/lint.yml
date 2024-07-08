@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   codespell:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash -el {0}
@@ -24,7 +24,7 @@ jobs:
       - name: Run codespell
         run: codespell flatsurf
   pycodestyle:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash -el {0}
@@ -41,7 +41,7 @@ jobs:
           # We ignore warnings that are incompatible with black's formatting rules
           pycodestyle --ignore=E203,W503 --max-line-length=256 flatsurf/ test/
   pylint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash -el {0}
@@ -61,7 +61,7 @@ jobs:
           # A lot of linters are disabled, see .pylintrc. We should enable most of them eventually.
           pylint flatsurf
   ruff:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash -el {0}
@@ -77,7 +77,7 @@ jobs:
         run: |
           ruff check --select C4,UP008,UP031,UP034 .
   black:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash -el {0}

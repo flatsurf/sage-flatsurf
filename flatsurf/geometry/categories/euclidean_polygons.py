@@ -1398,6 +1398,76 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 assert False
 
+            def flow_to_exit(self, point, direction):
+                r"""
+                Flow a point in the direction of holonomy until the point
+                hits the boundary of the polygon and return the point on
+                the boundary where the trajectory exits.
+
+                INPUT:
+
+                - ``point`` -- a point in the closure of the polygon (as a vector)
+
+                - ``holonomy`` -- direction of motion (a vector of non-zero length)
+
+                TESTS::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                    sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                    (2, 3)
+                    sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                    (1, 1)
+
+                """
+                if not direction:
+                    raise ValueError("direction must be non-zero")
+
+                vertices = self.vertices()
+
+                first_intersection = None
+
+                for v in range(len(vertices)):
+                    segment = vertices[v], vertices[(v + 1) % len(vertices)]
+
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+
+                    intersection = ray_segment_intersection(point, direction, segment)
+
+                    if intersection is None:
+                        continue
+
+                    if isinstance(intersection, tuple):
+                        if intersection[0] != point:
+                            # The flow overlaps with this edge but it hits
+                            # a vertex before it gets here.
+                            continue
+
+                        intersection = intersection[1]
+                        assert intersection != point
+
+                    if intersection == point:
+                        continue
+
+                    from flatsurf.geometry.euclidean import time_on_ray
+
+                    if (
+                        first_intersection is None
+                        or time_on_ray(point, direction, first_intersection)[0]
+                        > time_on_ray(point, direction, intersection)[0]
+                    ):
+                        first_intersection = intersection
+
+                if first_intersection is not None:
+                    return first_intersection
+
+                if self.get_point_position(point).is_outside():
+                    raise ValueError("Cannot flow from point outside of polygon")
+
+                raise ValueError(
+                    "Cannot flow from point on boundary if direction points out of the polygon"
+                )
+
             def triangulate(self):
                 r"""
                 Return a triangulation of this polygon.
@@ -1477,7 +1547,6 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     sage: x = polygen(QQ)
                     sage: K.<c> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
-
                     sage: _ = Polygon(vertices=[(0, 0), (1, 0), (1/2*c + 1, -1/2), (c + 1, 0), (-3/2*c + 1, 5/2), (0, c - 2)]).triangulate()
 
                 """
@@ -1487,8 +1556,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 vertices = list(self.vertices())
                 nvertices = len(vertices)
+
+                # The vertices of the polygon that have not been ear-clipped.
                 untriangulated = list(range(len(vertices)))
 
+                # Maps triples of polygon vertices to the label of the triangle in the resulting triangulation.
                 triangles = {}
 
                 def next_label():
@@ -1509,9 +1581,11 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 while len(untriangulated) > 3:
                     for i in range(len(untriangulated)):
+                        # We attempt to clip the j-th untriangulated vertex.
                         j = (i + 1) % len(untriangulated)
                         k = (j + 1) % len(untriangulated)
 
+                        # a, b, c are the indexes of the vertices j-1, j, j+1 in the original polygon.
                         a = untriangulated[i]
                         b = untriangulated[j]
                         c = untriangulated[k]
@@ -1567,14 +1641,16 @@ class EuclideanPolygons(Category_over_base_ring):
                 # Establish gluings between triangles
                 edges = {
                     **{
-                        triangle[:2]: (triangles[triangle], 0) for triangle in triangles
+                        triangle[:2]: (label, 0)
+                        for (triangle, label) in triangles.items()
                     },
                     **{
-                        triangle[1:]: (triangles[triangle], 1) for triangle in triangles
+                        triangle[1:]: (label, 1)
+                        for (triangle, label) in triangles.items()
                     },
                     **{
-                        (triangle[2], triangle[0]): (triangles[triangle], 2)
-                        for triangle in triangles
+                        (triangle[2], triangle[0]): (label, 2)
+                        for (triangle, label) in triangles.items()
                     },
                 }
 
@@ -1593,76 +1669,6 @@ class EuclideanPolygons(Category_over_base_ring):
                 from bidict import bidict
 
                 return triangulation, bidict(outer_edges)
-
-            def flow_to_exit(self, point, direction):
-                r"""
-                Flow a point in the direction of holonomy until the point
-                hits the boundary of the polygon and return the point on
-                the boundary where the trajectory exits.
-
-                INPUT:
-
-                - ``point`` -- a point in the closure of the polygon (as a vector)
-
-                - ``holonomy`` -- direction of motion (a vector of non-zero length)
-
-                TESTS::
-
-                    sage: from flatsurf import Polygon
-                    sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
-                    sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
-                    (2, 3)
-                    sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
-                    (1, 1)
-
-                """
-                if not direction:
-                    raise ValueError("direction must be non-zero")
-
-                vertices = self.vertices()
-
-                first_intersection = None
-
-                for v in range(len(vertices)):
-                    segment = vertices[v], vertices[(v + 1) % len(vertices)]
-
-                    from flatsurf.geometry.euclidean import ray_segment_intersection
-
-                    intersection = ray_segment_intersection(point, direction, segment)
-
-                    if intersection is None:
-                        continue
-
-                    if isinstance(intersection, tuple):
-                        if intersection[0] != point:
-                            # The flow overlaps with this edge but it hits
-                            # a vertex before it gets here.
-                            continue
-
-                        intersection = intersection[1]
-                        assert intersection != point
-
-                    if intersection == point:
-                        continue
-
-                    from flatsurf.geometry.euclidean import time_on_ray
-
-                    if (
-                        first_intersection is None
-                        or time_on_ray(point, direction, first_intersection)[0]
-                        > time_on_ray(point, direction, intersection)[0]
-                    ):
-                        first_intersection = intersection
-
-                if first_intersection is not None:
-                    return first_intersection
-
-                if self.get_point_position(point).is_outside():
-                    raise ValueError("Cannot flow from point outside of polygon")
-
-                raise ValueError(
-                    "Cannot flow from point on boundary if direction points out of the polygon"
-                )
 
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""

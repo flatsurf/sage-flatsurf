@@ -279,7 +279,11 @@ class HalfTranslationSurfaces(SurfaceCategory):
                 limit = None
 
                 if not self.is_finite_type():
-                    limit = 32
+                    from flatsurf import MutableOrientedSimilaritySurface
+
+                    self = MutableOrientedSimilaritySurface.from_surface(
+                        self, labels=self.labels()[:32]
+                    )
 
                 from flatsurf.geometry.categories import TranslationSurfaces
 
@@ -371,11 +375,11 @@ class HalfTranslationSurfaces(SurfaceCategory):
 
                     Verify that #89 has been resolved::
 
-                        sage: from pyexactreal import ExactReals  # optional: exactreal  # random output due to pkg_resources deprecation warnings
+                        sage: from pyexactreal import ExactReals  # optional: pyexactreal  # random output due to pkg_resources deprecation warnings
                         sage: from flatsurf import translation_surfaces
                         sage: S = translation_surfaces.square_torus()
-                        sage: S = S.change_ring(ExactReals())  # optional: exactreal
-                        sage: S.normalized_coordinates()  # optional: exactreal
+                        sage: S = S.change_ring(ExactReals())  # optional: pyexactreal
+                        sage: S.normalized_coordinates()  # optional: pyexactreal
                         Traceback (most recent call last):
                         ...
                         NotImplementedError: base ring must be a field to normalize coordinates of the surface

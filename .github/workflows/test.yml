@@ -17,46 +17,46 @@ jobs:
       matrix:
         include:
           - on: ubuntu-22.04
-            optionals: "sage,flipper"
+            optionals: "sage,flipper,gmpxxyy"
             sagelib: "9.2"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic"
+            optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.3"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.4"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.5"
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             sagelib: "9.6"
             environment: "environment.yml"
             python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             sagelib: "9.7"
             environment: "environment.yml"
             python: "3.10.8"
           # surface-dynamics is not available for SageMath 9.8 on conda-forge, see https://github.com/conda-forge/surface-dynamics-feedstock/pull/17
-          # - optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          # - optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
           #   sagelib: "9.8"
           #   environment: "environment.yml"
           #   python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
-          - on: macos-12
-            optionals: "sage,flipper,eantic,exactreal,pyflatsurf"
+          - on: macos-13
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
             python: "3.10.8"
     steps:
@@ -81,13 +81,17 @@ jobs:
           # This can fail when a new version of sage-flatsurf is released but
           # the package has not been built on conda-forge yet.
           mamba env update -n test --quiet -f flatsurf.yml
+          # sage-flatsurf 0.5.2 does not depend on bidict yet but current
+          # sage-flatsurf needs it, so this line can be removed once 0.6.0 has
+          # been released.
+          mamba install -y bidict
           conda list
         if: ${{ matrix.environment == 'flatsurf.yml' }}
       # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
       - name: Fix cppyy dependencies on macOS
         run: |
           mamba install -y libcxx=16
-        if: ${{ matrix.on == 'macos-12' }}
+        if: ${{ matrix.on == 'macos-13' }}
       - name: Install sage-flatsurf
         run: |
           pip install --verbose --no-index .
@@ -106,5 +110,5 @@ jobs:
         if: ${{ always() }}
 
 env:
-  MAKEFLAGS: -j2
-  SAGE_NUM_THREADS: 2
+  MAKEFLAGS: -j4
+  SAGE_NUM_THREADS: 4
