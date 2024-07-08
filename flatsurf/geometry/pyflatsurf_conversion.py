@@ -126,7 +126,7 @@ class Conversion:
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import RingConversion
             sage: conversion = RingConversion.to_pyflatsurf_from_elements([1, 2, 3])  # optional: gmpxxyy  # random output due to cppyy deprecation warnings
-            sage: conversion
+            sage: conversion  # optional: gmpxxyy
             Conversion from Integer Ring to __gmp_expr<__mpz_struct[1],__mpz_struct[1]>
 
         """
