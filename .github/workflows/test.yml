@@ -91,7 +91,7 @@ jobs:
       - name: Fix cppyy dependencies on macOS
         run: |
           mamba install -y libcxx=16
-        if: ${{ matrix.on == 'macos-12' }}
+        if: ${{ matrix.on == 'macos-13' }}
       - name: Install sage-flatsurf
         run: |
           pip install --verbose --no-index .
