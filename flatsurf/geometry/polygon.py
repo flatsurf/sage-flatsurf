@@ -38,6 +38,8 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+# TODO: Could it make sense to make all vertex and edge indexes live in Z/nZ so we do not need this % len(...) all the time?
+
 from sage.all import (
     cached_method,
     Parent,
@@ -87,6 +89,18 @@ class EuclideanPolygonPoint(Element):
         self._xy = xy
 
         super().__init__(parent)
+
+    def coordinates(self, edge=None):
+        if edge is None:
+            return self._xy
+
+        polygon = self.parent()
+
+        from sage.all import matrix
+
+        return matrix([polygon.edge(edge), -polygon.edge(edge - 1)]).solve_left(
+            self._xy - polygon.vertex(edge)
+        )
 
     def position(self):
         r"""

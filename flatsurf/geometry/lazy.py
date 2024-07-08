@@ -9,14 +9,16 @@ by invoking methods on the underlying surfaces::
 
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.infinite_staircase()
-    sage: S.triangulate()
+    sage: S.triangulate().codomain()
     Triangulation of The infinite staircase
 
     sage: S.delaunay_triangulation()
     Delaunay triangulation of The infinite staircase
 
     sage: S.delaunay_decomposition()
-    Delaunay cell decomposition of The infinite staircase
+    Delaunay Decomposition morphism:
+      From: The infinite staircase
+      To:   Delaunay cell decomposition of The infinite staircase
 
 """
 # ********************************************************************
@@ -60,7 +62,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
-        sage: S = S.triangulate()
+        sage: S = S.triangulate().codomain()
 
     TESTS::
 
@@ -140,7 +142,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.is_mutable()
             False
 
@@ -157,7 +159,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.is_compact()
             False
 
@@ -175,7 +177,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.roots()
             ((0, 0),)
 
@@ -365,7 +367,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: hash(S.triangulate()) == hash(S.triangulate())
+            sage: hash(S.triangulate().codomain()) == hash(S.triangulate().codomain())
             True
 
         """
@@ -382,7 +384,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S.triangulate() == S.triangulate()
+            sage: S.triangulate().codomain() == S.triangulate().codomain()
             True
 
         """
@@ -405,7 +407,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S.labels()
             ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 
@@ -419,7 +421,7 @@ class LazyTriangulatedSurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().triangulate()
+            sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
             sage: S
             Triangulation of The infinite staircase
 
@@ -1181,6 +1183,53 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             category=category or self._surface.category(),
         )
 
+    def _image_edge(self, label, edge):
+        r"""
+        Return the saddle connection in this surface that is identical to the
+        one given by the oriented ``edge`` in the polygon with ``label`` in the
+        original reference surface.
+        """
+        # Ensure that polygon with label is final in self._surface.
+        self.polygon(label)
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        saddle_connection = SaddleConnection.from_half_edge(
+            self._reference, label, edge
+        )
+
+        for flip in self._flips:
+            saddle_connection = flip(saddle_connection)
+
+        return SaddleConnection(
+            self,
+            start=saddle_connection.start(),
+            end=saddle_connection.end(),
+            holonomy=saddle_connection.holonomy(),
+            end_holonomy=saddle_connection.end_holonomy(),
+            check=False,
+        )
+
+    def _preimage_edge(self, label, edge):
+        # Ensure that polygon with label is final in self._surface.
+        self.polygon(label)
+
+        from flatsurf.geometry.saddle_connection import SaddleConnection
+
+        saddle_connection = SaddleConnection.from_half_edge(self._surface, label, edge)
+
+        for flip in self._flips[::-1]:
+            saddle_connection = flip.section()(saddle_connection)
+
+        return SaddleConnection(
+            self._reference,
+            start=saddle_connection.start(),
+            end=saddle_connection.end(),
+            holonomy=saddle_connection.holonomy(),
+            end_holonomy=saddle_connection.end_holonomy(),
+            check=False,
+        )
+
     def is_mutable(self):
         r"""
         Return whether this surface is mutable, i.e., return ``False``.
@@ -1546,7 +1595,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.infinite_staircase()
         sage: m = matrix([[2, 1], [1, 1]])
-        sage: S = (m * S).delaunay_decomposition()
+        sage: S = (m * S).delaunay_decomposition().codomain()
 
         sage: S.polygon(S.root())
         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
@@ -1651,7 +1700,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S._label(frozenset({
             ....:     (0, 0),
             ....:     (0, 1)}))
@@ -1690,7 +1739,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
 
         This cell (a square) is formed by two triangles that form a cylinder,
         i.e., the two triangles are glued at two of their edges::
@@ -1778,7 +1827,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.roots()
             ((0, 0),)
 
@@ -1795,7 +1844,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.is_compact()
             False
 
@@ -1812,7 +1861,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition()
+            sage: S = translation_surfaces.infinite_staircase().delaunay_decomposition().codomain()
             sage: S.is_mutable()
             False
 
@@ -1828,7 +1877,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: hash(S.delaunay_decomposition()) == hash(S.delaunay_decomposition())
+            sage: hash(S.delaunay_decomposition().codomain()) == hash(S.delaunay_decomposition().codomain())
             True
 
         """
@@ -1865,7 +1914,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase()
-            sage: S.delaunay_decomposition()
+            sage: S.delaunay_decomposition().codomain()
             Delaunay cell decomposition of The infinite staircase
 
         """

@@ -1,5 +1,5 @@
-The flatsurf.cache Modules
-**************************
+The flatsurf.cache Module
+*************************
 
 .. automodule:: flatsurf.cache
    :members:

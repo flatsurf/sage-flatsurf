@@ -15,8 +15,8 @@ dependencies:
   - maxima
   - gap-defaults
   - ipywidgets
-  - notebook
   - matplotlib-base
+  - notebook>=7
   - more-itertools
   - pip
   - pyintervalxt>=3,<4

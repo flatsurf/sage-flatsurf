@@ -24,6 +24,7 @@ from sage.plot.polygon import polygon2d
 from sage.plot.text import text
 from sage.plot.line import line2d
 from sage.plot.point import point2d
+from sage.misc.cachefunc import cached_method
 
 from flatsurf.geometry.similarity import SimilarityGroup
 
@@ -77,7 +78,7 @@ class GraphicalPolygon:
             sage: gs.graphical_polygon(0)
             GraphicalPolygon with vertices [(0.0, 0.0), (2.0, -2.0), (2.0, 0.0)]
         """
-        return "GraphicalPolygon with vertices {}".format(self._v)
+        return "GraphicalPolygon with vertices {}".format(list(self._v()))
 
     def base_polygon(self):
         r"""
@@ -89,7 +90,12 @@ class GraphicalPolygon:
         r"""
         Return the graphical coordinates of the vertex in double precision.
         """
+        # TODO: Where would the double precision come from that the docstring talks about?
         return self._transformation(self._p.vertex(e))
+
+    @cached_method
+    def _v(self):
+        return tuple(V(self._transformation(v)) for v in self._p.vertices())
 
     def xmin(self):
         r"""
@@ -99,7 +105,7 @@ class GraphicalPolygon:
 
             to fit with Sage conventions this should be xmin
         """
-        return min([v[0] for v in self._v])
+        return min([v[0] for v in self._v()])
 
     def ymin(self):
         r"""
@@ -109,7 +115,7 @@ class GraphicalPolygon:
 
             to fit with Sage conventions this should be ymin
         """
-        return min([v[1] for v in self._v])
+        return min([v[1] for v in self._v()])
 
     def xmax(self):
         r"""
@@ -119,7 +125,7 @@ class GraphicalPolygon:
 
             to fit with Sage conventions this should be xmax
         """
-        return max([v[0] for v in self._v])
+        return max([v[0] for v in self._v()])
 
     def ymax(self):
         r"""
@@ -129,7 +135,7 @@ class GraphicalPolygon:
 
             To fit with Sage conventions this should be ymax
         """
-        return max([v[1] for v in self._v])
+        return max([v[1] for v in self._v()])
 
     def bounding_box(self):
         r"""
@@ -186,8 +192,7 @@ class GraphicalPolygon:
             self._transformation = SimilarityGroup(self._p.base_ring()).one()
         else:
             self._transformation = transformation
-        # recompute the location of vertices:
-        self._v = [V(self._transformation(v)) for v in self._p.vertices()]
+        self._v.clear_cache()
 
     def plot_polygon(self, **options):
         r"""
@@ -198,7 +203,7 @@ class GraphicalPolygon:
         """
         if "axes" not in options:
             options["axes"] = False
-        return polygon2d(self._v, **options)
+        return polygon2d(self._v(), **options)
 
     def plot_label(self, label, **options):
         r"""
@@ -214,7 +219,7 @@ class GraphicalPolygon:
         if "position" in options:
             return text(str(label), options.pop("position"), **options)
         else:
-            return text(str(label), sum(self._v) / len(self._v), **options)
+            return text(str(label), sum(self._v()) / len(self._v()), **options)
 
     def plot_edge(self, e, **options):
         r"""
@@ -224,7 +229,7 @@ class GraphicalPolygon:
         Options are processed as in sage.plot.line.line2d.
         """
         return line2d(
-            [self._v[e], self._v[(e + 1) % len(self.base_polygon().vertices())]],
+            [self._v()[e], self._v()[(e + 1) % len(self.base_polygon().vertices())]],
             **options
         )
 
@@ -245,7 +250,7 @@ class GraphicalPolygon:
 
         Other options are processed as in sage.plot.text.text.
         """
-        e = self._v[(i + 1) % len(self.base_polygon().vertices())] - self._v[i]
+        e = self._v()[(i + 1) % len(self.base_polygon().vertices())] - self._v()[i]
 
         if "position" in options:
             if options["position"] not in ["inside", "outside", "edge"]:
@@ -321,7 +326,7 @@ class GraphicalPolygon:
         # Now push_off stores the amount it should be pushed into the polygon
 
         no = V((-e[1], e[0]))
-        return text(label, self._v[i] + t * e + push_off * no, **options)
+        return text(label, self._v()[i] + t * e + push_off * no, **options)
 
     def plot_zero_flag(self, **options):
         r"""
@@ -339,7 +344,10 @@ class GraphicalPolygon:
             t = 0.5
 
         return line2d(
-            [self._v[0], self._v[0] + t * (sum(self._v) / len(self._v) - self._v[0])],
+            [
+                self._v()[0],
+                self._v()[0] + t * (sum(self._v()) / len(self._v()) - self._v()[0]),
+            ],
             **options
         )
 
