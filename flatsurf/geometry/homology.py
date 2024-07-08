@@ -135,7 +135,7 @@ class SimplicialHomologyClass(Element):
 
     def _acted_upon_(self, c, self_on_left=None):
         r"""
-        Return the coefficients of this element in terms of the generators of homology.
+        Return this homology class scaled by ``c``.
 
         EXAMPLES::
 
