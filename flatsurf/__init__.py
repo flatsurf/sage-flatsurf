@@ -25,6 +25,9 @@ from flatsurf.geometry.gl2r_orbit_closure import GL2ROrbitClosure
 
 from flatsurf.geometry.hyperbolic import HyperbolicPlane
 
+from flatsurf.geometry.homology import SimplicialHomology
+from flatsurf.geometry.cohomology import SimplicialCohomology
+
 from flatsurf.geometry.surface_legacy import (
     Surface_list,
     Surface_dict,
