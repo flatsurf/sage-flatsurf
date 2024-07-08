@@ -111,12 +111,11 @@ class SimplicialHomologyClass(Element):
         multiplicities = dict(self._chain)
         other_multiplicities = dict(other._chain)
 
-        for _, adjacent_edges in (
-            self.parent().surface().angles(return_adjacent_edges=True)
-        ):
+        for vertex in self.parent().surface().vertices():
             counter = 0
             other_counter = 0
-            for edge in adjacent_edges:
+
+            for edge in [edge for (edge, _) in vertex.edges_ccw()[::2]]:
                 opposite_edge = self.parent().surface().opposite_edge(*edge)
 
                 counter += multiplicities.get(edge, 0)
