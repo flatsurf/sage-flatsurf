@@ -428,7 +428,7 @@ class SimilaritySurfaces(SurfaceCategory):
             if not matrix.dimensions != (2, 2):
                 raise NotImplementedError("only implemented for 2x2 matrices")
 
-            from flatsurf.geometry.half_dilation_surface import GL2RImageSurface
+            from flatsurf.geometry.lazy import GL2RImageSurface
 
             return GL2RImageSurface(self, matrix)
 
@@ -1218,39 +1218,66 @@ class SimilaritySurfaces(SurfaceCategory):
                 s.set_immutable()
                 return s
 
-            def relabel(self, relabeling_map, in_place=False):
+            def relabel(self, relabeling=None, in_place=False):
                 r"""
-                Attempt to relabel the polygons according to a relabeling_map, which takes as input
-                a current label and outputs a new label for the same polygon. The method returns a pair
-                (surface,success) where surface is the relabeled surface, and success is a boolean value
-                indicating the success of the operation. The operation will fail if the implementation of the
-                underlying surface does not support labels used in the image of the relabeling map. In this case,
-                other (arbitrary) labels will be used to replace the labels of the surface, and the resulting
-                surface should still be okay.
+                Return a surface whose polygons have been relabeled according
+                to ``relabeling``.
 
-                Currently, the relabeling_map must be a dictionary.
+                INPUT:
 
-                If in_place is True then the relabeling is done to the current surface, otherwise a
-                mutable copy is made before relabeling.
+                - ``relabeling`` -- a dict, a callable, or ``None`` (default:
+                  ``None``); the mapping from labels of this surface to labels
+                  of the relabeled surface. If ``None``, then relabel to the
+                  non-negative integers.
 
-                ToDo:
-                  - Allow relabeling_map to be a function rather than just a dictionary.
-                    This will allow it to work for infinite surfaces.
+                - ``in_place`` -- a boolean (default: ``False``); whether to
+                  modify this surface or return a relabeled copy instead.
 
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
-                    sage: s=translation_surfaces.veech_double_n_gon(5)
-                    sage: ss,valid=s.relabel({0:1, 1:2})
-                    sage: valid
-                    True
-                    sage: ss.root()
+                    sage: S = translation_surfaces.veech_double_n_gon(5)
+                    sage: SS = S.relabel({0: 1, 1: 2})
+                    sage: SS
+                    Translation Surface in H_2(2) built from 2 regular pentagons
+
+                    sage: SS.root()
                     1
-                    sage: ss.opposite_edge(1,0)
+
+                    sage: SS.opposite_edge(1, 0)
                     (2, 0)
-                    sage: len(ss.polygons())
-                    2
-                    sage: TestSuite(ss).run()
+
+                    sage: TestSuite(SS).run()
+
+                The relabeling can also be a callable::
+
+                    sage: SSS = SS.relabel(lambda label: label -1)
+                    sage: SSS == S
+                    True
+
+                However, this is only supported on finite-type surfaces::
+
+                    sage: S = translation_surfaces.infinite_staircase()
+                    sage: S.labels()
+                    (0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, …)
+
+                    sage: S.relabel(lambda label: -label)
+                    Traceback (most recent call last):
+                    ...
+                    NotImplementedError: cannot relabel a surface with an infinite number of polygons with a callable relabeling yet
+
+                ::
+
+                    sage: S.relabel({1: 'X'})
+                    Traceback (most recent call last):
+                    ...
+                    NotImplementedError: cannot relabel a surface with an infinite number of polygons with a dict relabeling yet
+
+                For infinite surfaces, we only support relabeling to the
+                non-negative integers:
+
+                    sage: S.relabel().labels()
+                    (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, …)
 
                 """
                 if in_place:
@@ -1258,14 +1285,34 @@ class SimilaritySurfaces(SurfaceCategory):
                         "this surface does not implement relabel(in_place=True) yet"
                     )
 
+                if not self.is_finite_type():
+                    if callable(relabeling):
+                        # We do not support this because the resulting surface would not be picklable.
+                        # If you need this, implement a subclass of the LazyRelabeledSurface.
+                        raise NotImplementedError(
+                            "cannot relabel a surface with an infinite number of polygons with a callable relabeling yet"
+                        )
+
+                    if relabeling is not None:
+                        # It would not be difficult to add this to
+                        # LazyRelabeledSurface but so far we did not need it.
+                        raise NotImplementedError(
+                            "cannot relabel a surface with an infinite number of polygons with a dict relabeling yet"
+                        )
+
+                    from flatsurf.geometry.lazy import LazyRelabeledSurface
+
+                    return LazyRelabeledSurface(self)
+
                 from flatsurf.geometry.surface import (
                     MutableOrientedSimilaritySurface,
                 )
 
-                s = MutableOrientedSimilaritySurface.from_surface(self)
-                s, valid = s.relabel(relabeling_map=relabeling_map, in_place=True)
-                s.set_immutable()
-                return s, valid
+                S = MutableOrientedSimilaritySurface.from_surface(self)
+                S = S.relabel(relabeling=relabeling, in_place=True)
+                S.set_immutable()
+
+                return S
 
             def copy(
                 self,
@@ -2075,10 +2122,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf.geometry.chamanara import chamanara_surface
                     sage: S = chamanara_surface(1/2)
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,1))
-                    SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, 1)
+                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, 1)
                     sage: K.<sqrt2> = QuadraticField(2)
                     sage: S.tangent_vector(S.root(), (1/2,1/2), (1,sqrt2), ring=K)
-                    SimilaritySurfaceTangentVector in polygon (1, -1, 0) based at (1/2, -3/2) with vector (1, sqrt2)
+                    SimilaritySurfaceTangentVector in polygon 1 based at (1/2, -3/2) with vector (1, sqrt2)
                 """
                 from sage.all import vector
 
@@ -2106,29 +2153,63 @@ class SimilaritySurfaces(SurfaceCategory):
                 Return a triangulated version of this surface. (This may be mutable
                 or not depending on the input.)
 
-                If label=None (as default) all polygons are triangulated. Otherwise,
-                label should be a polygon label. In this case, just this polygon
-                is split into triangles.
+                INPUT:
 
-                This is done in place if in_place is True (defaults to False).
+                - ``in_place`` -- a boolean (default: ``False``); whether to
+                  modify this surface or return a triangulated copy instead.
+
+                - ``label`` -- a label or ``None`` (default: ``None``); if set,
+                  then only the polygon with that label is triangulated and all
+                  other polygons are unchanged. Otherwise, all polygons are
+                  triangulated.
 
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
-                    sage: s=translation_surfaces.mcmullen_L(1,1,1,1)
-                    sage: ss=s.triangulate()
-                    sage: gs=ss.graphical_surface()
-                    sage: gs.make_all_visible()
-                    sage: gs
-                    Graphical representation of Translation Surface in H_2(2) built from 6 isosceles triangles
+                    sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+                    sage: S.triangulate()
+                    Triangulation of Translation Surface in H_2(2) built from 3 squares
 
-                A non-strictly convex example that caused trouble:
+                A non-strictly convex example that caused trouble at some point:
 
                     sage: from flatsurf import similarity_surfaces, Polygon
-                    sage: s=similarity_surfaces.self_glued_polygon(Polygon(edges=[(1,1),(-3,-1),(1,0),(1,0)]))
-                    sage: s=s.triangulate()
-                    sage: len(s.polygon(0).vertices())
+                    sage: P = Polygon(edges=[(1, 1), (-3, -1), (1, 0), (1, 0)])
+                    sage: S = similarity_surfaces.self_glued_polygon(P)
+                    sage: S
+                    Half-Translation Surface in Q_0(0, -1^4) built from a triangle
+
+                    sage: T = S.triangulate()
+                    sage: len(T.polygon((0, 0)).vertices())
                     3
+
+                The surface returned is explicitly a triangulation of the
+                original surface. Use
+                :meth:`flatsurf.geometry.surface.MutableOrientedSimilaritySurface.from_surface`
+                or :meth:`relabel` to get a primitive surface::
+
+                    sage: T
+                    Triangulation of Half-Translation Surface in Q_0(0, -1^4) built from a triangle
+                    sage: T.relabel()
+                    Half-Translation Surface in Q_0(0, -1^4) built from 2 triangles
+
+                ::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(T)
+                    sage: T.set_immutable()
+                    sage: T
+                    Half-Translation Surface in Q_0(0, -1^4) built from 2 triangles
+
+                We can also only triangulate part of a surface, namely a single
+                polygon::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.cathedral(1, 1)
+                    sage: S
+                    Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
+                    sage: S.triangulate(label=1).relabel()
+                    Translation Surface in H_4(2^3) built from 2 isosceles triangles, 5 triangles, a right triangle, 2 squares and an octagon
+
                 """
                 if relabel is not None:
                     import warnings
@@ -2142,24 +2223,19 @@ class SimilaritySurfaces(SurfaceCategory):
                         "this surface does not implement triangulate(in_place=True) yet"
                     )
 
-                if self.is_finite_type():
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
-                    )
+                if self.is_mutable():
+                    from flatsurf import MutableOrientedSimilaritySurface
 
                     s = MutableOrientedSimilaritySurface.from_surface(self)
-                    s.triangulate(in_place=True, label=label, relabel=relabel)
                     s.set_immutable()
-                    return s
+                    return s.triangulate(label=label, relabel=relabel)
+
+                from flatsurf.geometry.lazy import LazyTriangulatedSurface
 
                 if label is not None:
-                    raise NotImplementedError(
-                        "triangulate(label=) not implemented for infinite type surfaces"
-                    )
+                    label = {label}
 
-                from flatsurf.geometry.delaunay import LazyTriangulatedSurface
-
-                return LazyTriangulatedSurface(self)
+                return LazyTriangulatedSurface(self, labels=label)
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -2210,6 +2286,14 @@ class SimilaritySurfaces(SurfaceCategory):
                   check only ``limit`` many edges if set
 
                 """
+                if limit is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_delaunay_triangulated() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
+
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
                         "a limit must be set for infinite surfaces."
@@ -2240,6 +2324,14 @@ class SimilaritySurfaces(SurfaceCategory):
                   check only ``limit`` many polygons if set
 
                 """
+                if limit is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for is_delaunay_decomposed() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
+
                 if not self.is_finite_type() and limit is None:
                     raise NotImplementedError(
                         "a limit must be set for infinite surfaces."
@@ -2271,55 +2363,65 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def delaunay_triangulation(
                 self,
-                triangulated=False,
+                triangulated=None,
                 in_place=False,
                 direction=None,
                 relabel=None,
             ):
                 r"""
-                Returns a Delaunay triangulation of a surface, or make some
-                triangle flips to get closer to the Delaunay decomposition.
+                Return a Delaunay triangulation of this surface.
 
                 INPUT:
 
-                - ``triangulated`` (boolean) - If true, the algorithm assumes the
-                  surface is already triangulated. It does this without verification.
+                - ``triangulated`` - ``None``; ignored
 
-                - ``in_place`` (boolean) - If true, the triangulating and the
-                  triangle flips are done in place.  Otherwise, a mutable copy of the
-                  surface is made.
+                - ``in_place`` - boolean (default: ``False``); whether this
+                  ssurface is modified and returned or just a copy of the
+                  surface
 
-                - ``direction`` (None or Vector) - with two entries in the base field
-                    Used to determine labels when a pair of triangles is flipped. Each triangle
-                    has a unique separatrix which points in the provided direction or its
-                    negation. As such a vector determines a sign for each triangle.
-                    A pair of adjacent triangles have opposite signs. Labels are chosen
-                    so that this sign is preserved (as a function of labels).
+                - ``direction`` - ``None``; ignored
+
+                - ``relabel`` - ``None``; ignored
 
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
 
-                    sage: m = matrix([[2,1],[1,1]])
-                    sage: s = m*translation_surfaces.infinite_staircase()
+                    sage: m = matrix([[2, 1], [1, 1]])
+                    sage: s = m * translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_triangulation()
                     sage: ss.root()
-                    (0, (0, 1, 2))
-                    sage: ss.polygon((0, (0, 1, 2)))
+                    (0, 0)
+                    sage: ss.polygon((0, 0))
                     Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
                     sage: TestSuite(ss).run()
-                    sage: ss.is_delaunay_triangulated(limit=10)
+                    sage: ss.is_delaunay_triangulated()
                     True
+
                 """
+                if triangulated is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the triangulated keyword has been deprecated as a parameter for delaunay_triangulation() and will be removed in a future version of sage-flatsurf"
+                    )
+
                 if in_place:
                     raise NotImplementedError(
                         "this surface does not implement delaunay_triangulation(in_place=True) yet"
                     )
 
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
                 if relabel is not None:
                     if relabel:
                         raise NotImplementedError(
-                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead"
                         )
                     else:
                         import warnings
@@ -2328,33 +2430,35 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
                         )
 
-                if self.is_finite_type():
-                    from flatsurf.geometry.surface import (
-                        MutableOrientedSimilaritySurface,
+                if in_place:
+                    raise NotImplementedError(
+                        "this surface does not implement delaunay_triangulation(in_place=True) yet"
                     )
 
-                    s = MutableOrientedSimilaritySurface.from_surface(self)
-                    s.delaunay_triangulation(
-                        triangulated=triangulated,
-                        in_place=True,
-                        direction=direction,
-                        relabel=relabel,
-                    )
-                    s.set_immutable()
-                    return s
+                if relabel is not None:
+                    if relabel:
+                        raise NotImplementedError(
+                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead"
+                        )
+                    else:
+                        import warnings
 
-                from flatsurf.geometry.delaunay import (
+                        warnings.warn(
+                            "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
+                        )
+
+                from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
-                return LazyDelaunayTriangulatedSurface(
-                    self, direction=direction, category=self.category()
-                )
+                self = self.triangulate(in_place=False)
+
+                return LazyDelaunayTriangulatedSurface(self, category=self.category())
 
             def delaunay_decomposition(
                 self,
-                triangulated=False,
-                delaunay_triangulated=False,
+                triangulated=None,
+                delaunay_triangulated=None,
                 in_place=False,
                 direction=None,
                 relabel=None,
@@ -2364,23 +2468,17 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 INPUT:
 
-                - ``triangulated`` (boolean) - If true, the algorithm assumes the
-                  surface is already triangulated. It does this without verification.
+                - ``triangulated`` - ``None``; ignored
 
-                - ``delaunay_triangulated`` (boolean) - If true, the algorithm assumes
-                  the surface is already delaunay_triangulated. It does this without
-                  verification.
+                - ``delaunay_triangulated`` - ``None``; ignored
 
-                - ``in_place`` (boolean) - If true, the triangulating and the triangle
-                  flips are done in place. Otherwise, a mutable copy of the surface is
-                  made.
+                - ``in_place`` - boolean (default: ``False``); whether this
+                  surface is modified and returned or just a copy of the
+                  surface
 
-                - ``direction`` - (None or Vector with two entries in the base field) -
-                  Used to determine labels when a pair of triangles is flipped. Each triangle
-                  has a unique separatrix which points in the provided direction or its
-                  negation. As such a vector determines a sign for each triangle.
-                  A pair of adjacent triangles have opposite signs. Labels are chosen
-                  so that this sign is preserved (as a function of labels).
+                - ``direction`` - ``None``; ignored
+
+                - ``relabel`` - ``None``; ignored
 
                 EXAMPLES::
 
@@ -2390,7 +2488,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: m = Matrix([[1,2+a],[0,1]])
                     sage: s = m*s0
                     sage: s = s.triangulate()
-                    sage: ss = s.delaunay_decomposition(triangulated=True)
+                    sage: ss = s.delaunay_decomposition()
                     sage: len(ss.polygons())
                     3
 
@@ -2403,23 +2501,44 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_decomposition()
                     sage: ss.root()
-                    (0, (0, 1, 2))
+                    (0, 0)
                     sage: ss.polygon(ss.root())
                     Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                     sage: TestSuite(ss).run()
-                    sage: ss.is_delaunay_decomposed(limit=10)
+                    sage: ss.is_delaunay_decomposed()
                     True
 
                 """
+                if triangulated is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf"
+                    )
+
+                if delaunay_triangulated is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the delaunay_triangulated keyword has been deprecated as a parameter for delaunay_decomposition() and will be removed in a future version of sage-flatsurf"
+                    )
+
                 if in_place:
                     raise NotImplementedError(
                         "this surface does not implement delaunay_decomposition(in_place=True) yet"
                     )
 
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of delaunay_decomposition() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
                 if relabel is not None:
                     if relabel:
                         raise NotImplementedError(
-                            "the relabel keyword has been removed from delaunay_decomposition(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                            "the relabel keyword has been removed from delaunay_decomposition(); use relabel() to use integer labels instead"
                         )
                     else:
                         import warnings
@@ -2428,27 +2547,11 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                if not self.is_finite_type():
-                    from flatsurf.geometry.delaunay import LazyDelaunaySurface
+                self = self.delaunay_triangulation()
 
-                    return LazyDelaunaySurface(
-                        self, direction=direction, category=self.category()
-                    )
+                from flatsurf.geometry.lazy import LazyDelaunaySurface
 
-                from flatsurf.geometry.surface import (
-                    MutableOrientedSimilaritySurface,
-                )
-
-                s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.delaunay_decomposition(
-                    triangulated=triangulated,
-                    delaunay_triangulated=delaunay_triangulated,
-                    in_place=True,
-                    direction=direction,
-                    relabel=relabel,
-                )
-                s.set_immutable()
-                return s
+                return LazyDelaunaySurface(self, category=self.category())
 
             def saddle_connections(
                 self,
@@ -2783,6 +2886,8 @@ class SimilaritySurfaces(SurfaceCategory):
                         if opposite is not None:
                             surface.glue(((label, p), 0), (opposite, 0))
 
+                surface.set_immutable()
+
                 return surface
 
             def subdivide_edges(self, parts=2):
@@ -2860,6 +2965,8 @@ class SimilaritySurfaces(SurfaceCategory):
                                     ),
                                 )
 
+                surface.set_immutable()
+
                 return surface
 
     class Rational(SurfaceCategoryWithAxiom):
@@ -2917,9 +3024,24 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf.geometry.categories import SimilaritySurfaces
                     sage: SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(S, limit=8)
+                    doctest:warning
+                    ...
+                    UserWarning: limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; ...
+                    True
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface
+                    sage: SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:8]))
                     True
 
                 """
+                if limit is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "limit has been deprecated as a keyword argument for _is_rational_surface() and will be removed from a future version of sage-flatsurf; "
+                        "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+                    )
+
                 if "Oriented" not in surface.category().axioms():
                     raise NotImplementedError
 
@@ -3000,7 +3122,11 @@ class SimilaritySurfaces(SurfaceCategory):
                 limit = None
 
                 if not self.is_finite_type():
-                    limit = 32
+                    from flatsurf import MutableOrientedSimilaritySurface
+
+                    self = MutableOrientedSimilaritySurface.from_surface(
+                        self, labels=self.labels()[:32]
+                    )
 
                 tester.assertTrue(
                     SimilaritySurfaces.Rational.ParentMethods._is_rational_surface(

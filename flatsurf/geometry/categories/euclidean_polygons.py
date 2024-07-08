@@ -1387,6 +1387,208 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 assert False
 
+            def triangulate(self):
+                r"""
+                Return a triangulation of this polygon.
+
+                Returns a pair consisting of a surface and a bidict. The
+                surfaces consists of the triangles that form the triangulation,
+                glued to the original polygon. The bidict provides the mapping
+                from the edge index of the polygon to the (label, edge) of the
+                corresponding unglued edge in the surface.
+
+                ALGORITHM:
+
+                We use a simple quadratic time ear-clipping algorithm. There
+                are asymptotically faster algorithms out there. But we are
+                usually dealing with a very small number of vertices, so the
+                asymptotic behavior does not seem to be the limiting factor
+                here.
+
+                EXAMPLES:
+
+                We triangulate a non-convex polygon::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
+                    ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)])
+                    sage: P.triangulate()
+                    (Translation Surface with boundary built from 6 isosceles triangles and 4 triangles,
+                     bidict({0: (0, 0), 3: (2, 0), 7: (6, 0), 1: (0, 1), 2: (1, 1), 4: (2, 1), 5: (4, 1), 6: (5, 1), 8: (6, 1), 9: (8, 1), 10: (9, 1), 11: (9, 2)}))
+
+                TESTS::
+
+                    sage: _ = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1)]).triangulate()
+
+                    sage: quad = [(0,0), (1,-1), (0,1), (-1,-1)]
+                    sage: for i in range(4):
+                    ....:     _ = Polygon(vertices=quad[i:] + quad[:i]).triangulate()
+
+                    sage: poly = [(0,0),(1,1),(2,0),(3,1),(4,0),(4,2),
+                    ....:     (-4,2),(-4,0),(-3,1),(-2,0),(-1,1)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+                    sage: for i in range(len(poly)):
+                    ....:     _ = Polygon(vertices=poly[i:] + poly[:i]).triangulate()
+
+                    sage: poly = [(0,0), (1,0), (2,0), (2,1), (2,2), (1,2), (0,2), (0,1)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+                    sage: for i in range(len(poly)):
+                    ....:     _ = Polygon(vertices=poly[i:] + poly[:i]).triangulate()
+
+                    sage: poly = [(0,0), (1,2), (3,3), (1,4), (0,6), (-1,4), (-3,-3), (-1,2)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+                    sage: for i in range(len(poly)):
+                    ....:     _ = Polygon(vertices=poly[i:] + poly[:i]).triangulate()
+
+                    sage: x = polygen(QQ)
+                    sage: p = x^4 - 5*x^2 + 5
+                    sage: r = AA.polynomial_root(p, RIF(1.17,1.18))
+                    sage: K.<a> = NumberField(p, embedding=r)
+
+                    sage: poly = [(1/2*a^2 - 3/2, 1/2*a),
+                    ....:  (-a^3 + 2*a^2 + 2*a - 4, 0),
+                    ....:  (1/2*a^2 - 3/2, -1/2*a),
+                    ....:   (1/2*a^3 - a^2 - 1/2*a + 1, 1/2*a^2 - a),
+                    ....:   (-1/2*a^2 + 1, 1/2*a^3 - 3/2*a),
+                    ....:   (-1/2*a + 1, a^3 - 3/2*a^2 - 2*a + 5/2),
+                    ....:   (1, 0),
+                    ....:   (-1/2*a + 1, -a^3 + 3/2*a^2 + 2*a - 5/2),
+                    ....:   (-1/2*a^2 + 1, -1/2*a^3 + 3/2*a),
+                    ....:   (1/2*a^3 - a^2 - 1/2*a + 1, -1/2*a^2 + a)]
+                    sage: _ = Polygon(vertices=poly).triangulate()
+
+                    sage: z = QQbar.zeta(24)
+                    sage: pts = [(1+i%2) * z**i for i in range(24)]
+                    sage: pts = [vector(AA, (x.real(), x.imag())) for x in pts]
+                    sage: _ = Polygon(vertices=pts).triangulate()
+
+                This is https://github.com/flatsurf/sage-flatsurf/issues/87 ::
+
+                    sage: x = polygen(QQ)
+                    sage: K.<c> = NumberField(x^2 - 3, embedding=AA(3).sqrt())
+                    sage: _ = Polygon(vertices=[(0, 0), (1, 0), (1/2*c + 1, -1/2), (c + 1, 0), (-3/2*c + 1, 5/2), (0, c - 2)]).triangulate()
+
+                """
+                from flatsurf import MutableOrientedSimilaritySurface
+
+                triangulation = MutableOrientedSimilaritySurface(self.base_ring())
+
+                vertices = list(self.vertices())
+                nvertices = len(vertices)
+
+                # The vertices of the polygon that have not been ear-clipped.
+                untriangulated = list(range(len(vertices)))
+
+                # Maps triples of polygon vertices to the label of the triangle in the resulting triangulation.
+                triangles = {}
+
+                def next_label():
+                    return len(triangles)
+
+                if len(untriangulated) < 3:
+                    raise ValueError("cannot triangulate such a degenerate polygon")
+
+                if len(untriangulated) == 3:
+                    # No need to triangulate. We special-case so we get nicer labels.
+                    label = triangulation.add_polygon(self)
+
+                    from bidict import bidict
+
+                    return triangulation, bidict(
+                        {0: (label, 0), 1: (label, 1), 2: (label, 2)}
+                    )
+
+                while len(untriangulated) > 3:
+                    for i in range(len(untriangulated)):
+                        # We attempt to clip the j-th untriangulated vertex.
+                        j = (i + 1) % len(untriangulated)
+                        k = (j + 1) % len(untriangulated)
+
+                        # a, b, c are the indexes of the vertices j-1, j, j+1 in the original polygon.
+                        a = untriangulated[i]
+                        b = untriangulated[j]
+                        c = untriangulated[k]
+
+                        if (
+                            ccw(vertices[b] - vertices[a], vertices[c] - vertices[a])
+                            <= 0
+                        ):
+                            # The triangle (a, b, c) has non-positive area.
+                            continue
+
+                        # Check that (a, b, c) form an ear, i.e., that there
+                        # are no other vertices contained in the triangle.
+                        if any(
+                            ccw(vertices[b] - vertices[a], vertices[m] - vertices[a])
+                            >= 0
+                            and ccw(
+                                vertices[c] - vertices[b], vertices[m] - vertices[b]
+                            )
+                            >= 0
+                            and ccw(
+                                vertices[a] - vertices[c], vertices[m] - vertices[c]
+                            )
+                            >= 0
+                            for m in untriangulated
+                            if m not in [a, b, c]
+                        ):
+                            continue
+
+                        triangles[(a, b, c)] = next_label()
+                        untriangulated = untriangulated[:j] + untriangulated[j + 1 :]
+                        break
+                    else:
+                        assert False, "cannot triangulate this polygon"
+
+                triangles[tuple(untriangulated)] = next_label()
+
+                # Add triangles to triangulated surface.
+                for triangle, label in triangles.items():
+                    from flatsurf import Polygon
+
+                    triangulation.add_polygon(
+                        Polygon(
+                            vertices=[
+                                vertices[triangle[0]],
+                                vertices[triangle[1]],
+                                vertices[triangle[2]],
+                            ]
+                        ),
+                        label=label,
+                    )
+
+                # Establish gluings between triangles
+                edges = {
+                    **{
+                        triangle[:2]: (label, 0)
+                        for (triangle, label) in triangles.items()
+                    },
+                    **{
+                        triangle[1:]: (label, 1)
+                        for (triangle, label) in triangles.items()
+                    },
+                    **{
+                        (triangle[2], triangle[0]): (label, 2)
+                        for (triangle, label) in triangles.items()
+                    },
+                }
+
+                outer_edges = {}
+
+                for (a, b) in edges:
+                    glued = (b, a) in edges
+                    assert not glued == (
+                        b == (a + 1) % nvertices or a == (b + 1) % nvertices
+                    )
+                    if glued:
+                        triangulation.glue(edges[(a, b)], edges[(b, a)])
+                    else:
+                        outer_edges[a] = edges[(a, b)]
+
+                from bidict import bidict
+
+                return triangulation, bidict(outer_edges)
+
         class Convex(CategoryWithAxiom_over_base_ring):
             r"""
             The subcategory of the simple convex Euclidean polygons.
