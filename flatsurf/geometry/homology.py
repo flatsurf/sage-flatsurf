@@ -346,21 +346,10 @@ class SimplicialHomologyGroup(Parent):
     - ``relative`` -- a subset of points of the ``surface`` (default: the empty
       set)
 
-    - ``implementation`` -- one of ``"spanning_tree"`` or ``"generic"``
-      (default: ``"generic"``); whether the homology is computed with a (very
-      efficient) spanning tree algorithm or the generic homology machinery
-      provided by SageMath.
-
-
-    .. TODO::
-
-        Implement the ``"spanning_tree"`` algorithm froom
-        ``GL2ROrbitClosure._spanning_tree``.
-
-    .. TODO::
-
-        Use https://github.com/flatsurf/sage-flatsurf/pull/114/files to force
-        the representatives to live in particular subgraph of the dual graph.
+    - ``implementation`` -- a string
+      (default: ``"generic"``); the algorithm used to compute the homology,
+      only ``"generic"`` is supported at the moment which uses the generic
+      homology machinery of SageMath.
 
     EXAMPLES::
 
@@ -382,12 +371,6 @@ class SimplicialHomologyGroup(Parent):
         H₁(Translation Surface in H_1(0) built from a square)
 
     TESTS::
-
-        sage: T = translation_surfaces.torus((1, 0), (0, 1))
-        sage: H = SimplicialHomology(T, implementation="spanning_tree")  # not tested, spanning_tree not implemented yet
-        sage: TestSuite(H).run()  # not tested, spanning_tree not implemented yet
-
-    ::
 
         sage: T = translation_surfaces.torus((1, 0), (0, 1))
         sage: H = SimplicialHomology(T, implementation="generic")
