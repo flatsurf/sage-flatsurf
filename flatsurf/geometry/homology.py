@@ -9,7 +9,7 @@ The absolute homology of the regular octagon::
     sage: S = translation_surfaces.regular_octagon()
     sage: H = SimplicialHomology(S)
 
-A basis of homology, with generators written as oriented edges::
+A basis of homology, with generators written as (sums of) oriented edges::
 
     sage: H.gens()
     (B[(0, 1)], B[(0, 2)], B[(0, 3)], B[(0, 0)])
@@ -29,9 +29,14 @@ Relative homology, relative to the singularities of the surface::
     sage: H1 = SimplicialHomology(S, relative=S.vertices())
     sage: len(H1.gens())
     17
+
+We can also form relative `H_0` and `H_2`, though they are not overly
+interesting of course::
+
     sage: H0 = SimplicialHomology(S, relative=S.vertices(), k=0)
     sage: len(H0.gens())
     0
+
     sage: H2 = SimplicialHomology(S, relative=S.vertices(), k=2)
     sage: len(H2.gens())
     1
@@ -338,9 +343,6 @@ class SimplicialHomologyGroup(Parent):
 
     - ``coefficients`` -- a ring (default: the integers)
 
-    - ``generators`` -- one of ``edge``, ``voronoi`` (default: ``edge``) how
-      generators are represented
-
     - ``relative`` -- a subset of points of the ``surface`` (default: the empty
       set)
 
@@ -395,7 +397,7 @@ class SimplicialHomologyGroup(Parent):
     Element = SimplicialHomologyClass
 
     def __init__(
-        self, surface, k, coefficients, generators, relative, implementation, category
+        self, surface, k, coefficients, relative, implementation, category
     ):
         Parent.__init__(self, base=coefficients, category=category)
 
@@ -427,7 +429,6 @@ class SimplicialHomologyGroup(Parent):
         self._surface = surface
         self._k = k
         self._coefficients = coefficients
-        self._generators = generators
         self._relative = relative
         self._implementation = implementation
 
@@ -517,13 +518,7 @@ class SimplicialHomologyGroup(Parent):
         return ()
 
     def _simplices_polygons(self):
-        if self._generators == "edge":
-            return tuple(self._surface.labels())
-
-        if self._generators == "voronoi":
-            return tuple(self._surface.edges())
-
-        raise NotImplementedError
+        return tuple(self._surface.labels())
 
     @cached_method
     def change(self, k=None):
@@ -531,7 +526,6 @@ class SimplicialHomologyGroup(Parent):
             surface=self._surface,
             k=k if k is not None else self._k,
             coefficients=self._coefficients,
-            generators=self._generators,
             relative=self._relative,
             implementation=self._implementation,
             category=self.category(),
@@ -610,59 +604,28 @@ class SimplicialHomologyGroup(Parent):
         return self.change(k=self._k - 1).chain_module().zero()
 
     def _boundary_segment(self, gen):
-        if self._generators == "edge":
-            C0 = self.chain_module(dimension=0)
-            label, edge = gen
-            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-            return C0(
-                self._surface.point(
-                    opposite_label,
-                    self._surface.polygon(opposite_label).vertex(opposite_edge),
-                )
-            ) - C0(
-                self._surface.point(label, self._surface.polygon(label).vertex(edge))
+        C0 = self.chain_module(dimension=0)
+        label, edge = gen
+        opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
+        return C0(
+            self._surface.point(
+                opposite_label,
+                self._surface.polygon(opposite_label).vertex(opposite_edge),
             )
-
-        if self._generators == "voronoi":
-            C0 = self.chain_module(dimension=0)
-            label, edge = gen
-            opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-
-            return C0(opposite_label) - C0(label)
-
-        raise NotImplementedError
+        ) - C0(
+            self._surface.point(label, self._surface.polygon(label).vertex(edge))
+        )
 
     def _boundary_polygon(self, gen):
-        if self._generators == "edge":
-            C1 = self.chain_module(dimension=1)
-            boundary = C1.zero()
-            face = gen
-            for edge in range(len(self._surface.polygon(face).vertices())):
-                if (face, edge) in C1.indices():
-                    boundary += C1((face, edge))
-                else:
-                    boundary -= C1(self._surface.opposite_edge(face, edge))
-            return boundary
-
-        if self._generators == "voronoi":
-            C1 = self.chain_module(dimension=1)
-            boundary = C1.zero()
-            label, vertex = gen
-            # The counterclockwise walk around "vertex" is a boundary.
-            while True:
-                edge = (vertex - 1) % len(self._surface.polygon(label).vertices())
-                opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-                if (label, edge) in C1.indices():
-                    boundary += C1((label, edge))
-                else:
-                    boundary -= C1((opposite_label, opposite_edge))
-
-                if (opposite_label, opposite_edge) == gen:
-                    return boundary
-
-                label, vertex = opposite_label, opposite_edge
-
-        raise NotImplementedError
+        C1 = self.chain_module(dimension=1)
+        boundary = C1.zero()
+        face = gen
+        for edge in range(len(self._surface.polygon(face).vertices())):
+            if (face, edge) in C1.indices():
+                boundary += C1((face, edge))
+            else:
+                boundary -= C1(self._surface.opposite_edge(face, edge))
+        return boundary
 
     @cached_method
     def _chain_complex(self):
@@ -998,7 +961,6 @@ class SimplicialHomologyGroup(Parent):
         return (
             self._surface == other._surface
             and self._coefficients == other._coefficients
-            and self._generators == other._generators
             and self._relative == other._relative
             and self._implementation == other._implementation
             and self.category() == other.category()
@@ -1009,7 +971,6 @@ class SimplicialHomologyGroup(Parent):
             (
                 self._surface,
                 self._coefficients,
-                self._generators,
                 self._relative,
                 self._implementation,
                 self.category(),
@@ -1021,7 +982,6 @@ def SimplicialHomology(
     surface,
     k=1,
     coefficients=None,
-    generators="edge",
     relative=None,
     implementation="generic",
     category=None,
@@ -1039,5 +999,5 @@ def SimplicialHomology(
 
     """
     return surface.homology(
-        k, coefficients, generators, relative, implementation, category
+        k, coefficients, relative, implementation, category
     )

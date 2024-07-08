@@ -436,7 +436,6 @@ class SimilaritySurfaces(SurfaceCategory):
             self,
             k=1,
             coefficients=None,
-            generators="edge",
             relative=None,
             implementation="generic",
             category=None,
@@ -450,11 +449,6 @@ class SimilaritySurfaces(SurfaceCategory):
 
             - ``coefficients`` -- a ring (default: the integer ring); consider
               the homology with coefficients in this ring
-
-            - ``generators`` -- a string (default: ``"edge"``); how the
-              generators of homology are represented. Currently only ``"edge"``
-              is implemented, i.e., the generators are written as formal sums
-              of half edges.
 
             - ``relative`` -- a set (default: the empty set); if non-empty, then
               relative homology with respect to this set is constructed.
@@ -498,7 +492,6 @@ class SimilaritySurfaces(SurfaceCategory):
             return self._homology(
                 k=k,
                 coefficients=coefficients,
-                generators=generators,
                 relative=relative,
                 implementation=implementation,
                 category=category,
@@ -506,7 +499,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
         @cached_surface_method
         def _homology(
-            self, k, coefficients, generators, relative, implementation, category
+            self, k, coefficients, relative, implementation, category
         ):
             r"""
             Return the ``k``-th homology group of this surface.
@@ -544,7 +537,7 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.homology import SimplicialHomologyGroup
 
             return SimplicialHomologyGroup(
-                self, k, coefficients, generators, relative, implementation, category
+                self, k, coefficients, relative, implementation, category
             )
 
         def cohomology(
