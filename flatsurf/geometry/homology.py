@@ -25,7 +25,7 @@ The absolute homology of the unfolding of the (3, 4, 13) triangle::
 
 Relative homology, relative to the singularities of the surface::
 
-    sage: S = S.erase_marked_points().codomain()
+    sage: S = S.erase_marked_points()
     sage: H1 = SimplicialHomology(S, relative=S.vertices())
     sage: len(H1.gens())
     17
