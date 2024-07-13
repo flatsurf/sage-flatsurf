@@ -19,6 +19,8 @@ The absolute homology of the unfolding of the (3, 4, 13) triangle::
     sage: from flatsurf import Polygon, similarity_surfaces
     sage: P = Polygon(angles=[3, 4, 13])
     sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation")
+    sage: S.genus()
+    8
     sage: H = SimplicialHomology(S)
     sage: len(H.gens())
     16
@@ -69,6 +71,41 @@ from sage.misc.cachefunc import cached_method
 
 
 class SimplicialHomologyClass(Element):
+    r"""
+    An element of a homology group.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, SimplicialHomology
+        sage: S = translation_surfaces.regular_octagon()
+        sage: H0 = SimplicialHomology(S, k=0)
+        sage: g0 = H0.gens()[0]
+        sage: g0
+        B[Vertex 0 of polygon 0]
+
+        sage: H1 = SimplicialHomology(S, k=1)
+        sage: g1 = H1.gens()[0]
+        sage: g1
+        B[(0, 1)]
+
+        sage: H2 = SimplicialHomology(S, k=2)
+        sage: g2 = H2.gens()[0]
+        sage: g2
+        B[0]
+
+    TESTS::
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyClass
+        sage: isinstance(g0, SimplicialHomologyClass)
+        True
+
+        sage: isinstance(g1, SimplicialHomologyClass)
+        True
+
+        sage: isinstance(g2, SimplicialHomologyClass)
+        True
+
+    """
     def __init__(self, parent, chain):
         super().__init__(parent)
 
@@ -111,6 +148,9 @@ class SimplicialHomologyClass(Element):
             2
 
         """
+        if self.parent().degree() != 1:
+            raise NotImplementedError("algebraic intersections only available for homology in degree 1")
+
         intersection = 0
 
         multiplicities = dict(self._chain)
@@ -150,12 +190,14 @@ class SimplicialHomologyClass(Element):
             sage: H = SimplicialHomology(T)
             sage: 3 * H.gens()[0]
             3*B[(0, 1)]
+            sage: 0 * H.gens()[0]
+            0
 
         """
         return self.parent()(c * self._chain)
 
     @cached_method
-    def _homology(self):
+    def coefficients(self):
         r"""
         Return the coefficients of this element in terms of the generators of homology.
 
@@ -165,9 +207,9 @@ class SimplicialHomologyClass(Element):
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
-            sage: H.gens()[0]._homology()
+            sage: H.gens()[0].coefficients()
             (1, 0)
-            sage: H.gens()[1]._homology()
+            sage: H.gens()[1].coefficients()
             (0, 1)
 
         """
@@ -200,14 +242,41 @@ class SimplicialHomologyClass(Element):
             if self.parent() != other.parent():
                 return False
 
-            return self._homology() == other._homology()
+            return self.coefficients() == other.coefficients()
 
         return super()._richcmp_(other, op)
 
     def __hash__(self):
-        return hash(self._homology())
+        r"""
+        Return a hash value of this class that is compatible with
+        :meth:`_richcmp_`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: hash(H.gens()[0]) == hashe(H.gens()[0])
+            True
+
+        """
+        return hash(self.coefficients())
 
     def _repr_(self):
+        r"""
+        Return a printable representation of this class.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H.gens()[0]
+            B[(0, 1)]
+
+        """
         return repr(self._chain)
 
     def coefficient(self, gen):
@@ -234,7 +303,7 @@ class SimplicialHomologyClass(Element):
             ValueError: gen must be a generator not B[(0, 0)] + B[(0, 1)]
 
         """
-        coefficients = gen._homology()
+        coefficients = gen.coefficients()
         indexes = [i for (i, c) in enumerate(coefficients) if c]
 
         if len(indexes) != 1 or coefficients[indexes[0]] != 1:
@@ -242,11 +311,11 @@ class SimplicialHomologyClass(Element):
 
         index = indexes[0]
 
-        return self._homology()[index]
+        return self.coefficients()[index]
 
     def _add_(self, other):
         r"""
-        Return the formal sum of homology classes.
+        Return the formal sum of this class and ``other``.
 
         EXAMPLES::
 
@@ -262,6 +331,20 @@ class SimplicialHomologyClass(Element):
         return self.parent()(self._chain + other._chain)
 
     def _sub_(self, other):
+        r"""
+        Return the formal difference of this class and ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: a, b = H.gens()
+            sage: a - b
+            B[(0, 0)] - B[(0, 1)]
+
+        """
         return self.parent()(self._chain - other._chain)
 
     def _neg_(self):
@@ -284,42 +367,38 @@ class SimplicialHomologyClass(Element):
         return self.parent()(-self._chain)
 
     def surface(self):
+        r"""
+        Return the surface on which this homology class in defined.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: h = H.gens()[0]
+            sage: h.surface()
+
+        """
         return self.parent().surface()
 
-    def path(self):
-        edges = []
-
-        for (label, edge), multiplicity in dict(self._chain).items():
-            from sage.all import ZZ
-
-            if multiplicity not in ZZ:
-                raise NotImplementedError("cannot lift this homology class to a path")
-
-            if multiplicity < 0:
-                multiplicity *= -1
-                label, edge = self.surface().opposite_edge(label, edge)
-
-            edges.extend([(label, edge)] * multiplicity)
-
-        connected_edges = [edges.pop()]
-        while edges:
-            for edge in edges:
-                if self.surface()(
-                    connected_edges[-1][0], connected_edges[-1][1] + 1
-                ) == self.surface()(*edge):
-                    edges.remove(edge)
-                    connected_edges.append(edge)
-                    break
-            else:
-                assert False, "path not connected"
-
-        assert self.surface()(
-            connected_edges[-1][0], connected_edges[-1][1] + 1
-        ) == self.surface()(*connected_edges[0]), "path not looping"
-
-        return connected_edges
-
     def __bool__(self):
+        r"""
+        Return whether this class is non-trivial.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: h = H.gens()[0]
+            sage: bool(h)
+            True
+            sage: bool(h-h)
+            False
+
+        """
         return bool(self._chain)
 
 
@@ -341,15 +420,13 @@ class SimplicialHomologyGroup(Parent):
 
     - ``k`` -- an integer
 
-    - ``coefficients`` -- a ring (default: the integers)
+    - ``coefficients`` -- a ring
 
-    - ``relative`` -- a subset of points of the ``surface`` (default: the empty
-      set)
+    - ``relative`` -- a subset of points of the ``surface``
 
-    - ``implementation`` -- a string
-      (default: ``"generic"``); the algorithm used to compute the homology,
-      only ``"generic"`` is supported at the moment which uses the generic
-      homology machinery of SageMath.
+    - ``implementation`` -- a string; the algorithm used to compute the
+      homology, only ``"generic"`` is supported at the moment which uses the
+      generic homology machinery of SageMath.
 
     EXAMPLES::
 
@@ -450,9 +527,8 @@ class SimplicialHomologyGroup(Parent):
     @cached_method
     def chain_module(self):
         r"""
-        Return the free module of simplicial chains of the
-        triangulation, i.e., formal sums of simplicies, e.g., formal sums of
-        edges of the triangulation.
+        Return the free module of simplicial chains of the surface i.e., formal
+        sums of simplicies, e.g., formal sums of edges of the surface.
 
         EXAMPLES::
 
@@ -478,9 +554,30 @@ class SimplicialHomologyGroup(Parent):
             sage: from flatsurf import translation_surfaces, SimplicialHomology
             sage: T = translation_surfaces.torus((1, 0), (0, 1))
             sage: T.set_immutable()
+
+        In dimension 1, this is the set of edges::
+
             sage: H = SimplicialHomology(T)
             sage: H.simplices()
             ((0, 1), (0, 0))
+
+        In dimension 0, this is the set of vertices::
+
+            sage: H = SimplicialHomology(T, k=0)
+            sage: H.simplices()
+            (Vertex 0 of polygon 0,)
+
+        In dimension 2, this is the set of polygons::
+
+            sage: H = SimplicialHomology(T, k=2)
+            sage: H.simplices()
+            (0,)
+
+        In all other dimensions, there are no simplices::
+
+            sage: H = SimplicialHomology(T, k=12)
+            sage: H.simplices()
+            ()
 
         """
         if self._k == 0:
@@ -500,11 +597,24 @@ class SimplicialHomologyGroup(Parent):
 
         return ()
 
-    def _simplices_polygons(self):
-        return tuple(self._surface.labels())
-
     @cached_method
     def change(self, k=None):
+        r"""
+        Return this homology but in dimension ``k``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+            sage: H = SimplicialHomology(T)
+            sage: H
+            H₁(Translation Surface in H_1(0) built from a square)
+
+            sage: H.change(k=0)
+            H₀(Translation Surface in H_1(0) built from a square)
+
+        """
         return SimplicialHomology(
             surface=self._surface,
             k=k if k is not None else self._k,
@@ -516,7 +626,8 @@ class SimplicialHomologyGroup(Parent):
 
     def boundary(self, chain):
         r"""
-        Return the boundary of ``chain`` as an element of the :meth:`chain_module`.
+        Return the boundary of ``chain`` as an element of the
+        :meth:`chain_module` in lower dimension.
 
         INPUT:
 
@@ -586,30 +697,6 @@ class SimplicialHomologyGroup(Parent):
 
         return self.change(k=self._k - 1).chain_module().zero()
 
-    def _boundary_segment(self, gen):
-        C0 = self.chain_module(dimension=0)
-        label, edge = gen
-        opposite_label, opposite_edge = self._surface.opposite_edge(label, edge)
-        return C0(
-            self._surface.point(
-                opposite_label,
-                self._surface.polygon(opposite_label).vertex(opposite_edge),
-            )
-        ) - C0(
-            self._surface.point(label, self._surface.polygon(label).vertex(edge))
-        )
-
-    def _boundary_polygon(self, gen):
-        C1 = self.chain_module(dimension=1)
-        boundary = C1.zero()
-        face = gen
-        for edge in range(len(self._surface.polygon(face).vertices())):
-            if (face, edge) in C1.indices():
-                boundary += C1((face, edge))
-            else:
-                boundary -= C1(self._surface.opposite_edge(face, edge))
-        return boundary
-
     @cached_method
     def _chain_complex(self):
         r"""
@@ -624,6 +711,12 @@ class SimplicialHomologyGroup(Parent):
             sage: H = SimplicialHomology(T)
             sage: H._chain_complex()
             Chain complex with at most 3 nonzero terms over Integer Ring
+
+        ::
+
+            sage: H = SimplicialHomology(T, relative=T.vertices())
+            sage: H._chain_complex()
+            Chain complex with at most 2 nonzero terms over Integer Ring
 
         """
 
@@ -652,7 +745,7 @@ class SimplicialHomologyGroup(Parent):
 
     def zero(self):
         r"""
-        Return the zero element of homology.
+        Return the zero homology class.
 
         EXAMPLES::
 
@@ -730,7 +823,7 @@ class SimplicialHomologyGroup(Parent):
 
     def _test_homology(self, **options):
         r"""
-        Test that :meth:`_homology` compute homology correctly.
+        Test that :meth:`_homology` computes homology correctly.
 
         EXAMPLES::
 
@@ -787,6 +880,8 @@ class SimplicialHomologyGroup(Parent):
 
     def _element_constructor_(self, x):
         r"""
+        Return ``x`` as an element of this homology.
+
         TESTS::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
@@ -794,15 +889,21 @@ class SimplicialHomologyGroup(Parent):
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
+        ::
+
             sage: H(0)
             0
             sage: H(None)
             0
 
+        ::
+
             sage: H((0, 0))
             B[(0, 0)]
             sage: H((0, 2))
             -B[(0, 0)]
+
+        ::
 
             sage: H = SimplicialHomology(T, 0)
             sage: H(H.chain_module().gens()[0])
@@ -831,7 +932,7 @@ class SimplicialHomologyGroup(Parent):
         if x.parent() is self.chain_module():
             return self.element_class(self, x)
 
-        raise NotImplementedError
+        raise NotImplementedError("cannot convert this element to a homology class yet")
 
     @cached_method
     def gens(self):
@@ -868,6 +969,23 @@ class SimplicialHomologyGroup(Parent):
 
         homology, from_homology, to_homology = self._homology()
         return tuple(self(from_homology(g)) for g in homology.gens())
+
+    def degree(self):
+        r"""
+        Return the degree `k` for this homology `H_k`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, SimplicialHomology
+            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T.set_immutable()
+
+            sage: H = SimplicialHomology(T)
+            sage: H.degree()
+            1
+
+        """
+        return self._k
 
     def symplectic_basis(self):
         r"""
