@@ -504,13 +504,20 @@ class SimilaritySurfaces(SurfaceCategory):
             r"""
             Return the ``k``-th homology group of this surface.
 
-            This is a helper method for :meth:`homology`. We cannot make
-            :class:`SimplicialHomologyGroup` a unique representation because
-            equal surfaces can be non-identical so the homology of
-            non-identical surfaces could be identical. We work around this
-            issue by attaching the homology to the actual surface so a surface
-            has a unique homology, but it is different from another equal
-            surface's.
+            This is a helper method for :meth:`homology` which passes
+            normalized parameters to us. The approach chosen here is quite
+            non-standard. Usually, one would not use a cached method but make
+            :class:`SimplicialHomologyGroup` a unique representation. But this
+            is not possible because equal surfaces can be non-identical so the
+            homology of non-identical surfaces would be identical. We work
+            around this issue by attaching the homology to the actual surface
+            so a surface has a unique homology, but it is different from
+            another equal surface's.
+
+            A proper fix for the underlying problem could be to change
+            :meth:`MutableOrientedSimilaritySurface.set_immutable` to return an
+            immutable copy of the surface so that all immutable surfaces are
+            unique.
 
             TESTS:
 
@@ -603,13 +610,8 @@ class SimilaritySurfaces(SurfaceCategory):
             r"""
             Return the ``k``-th cohomology group of this surface.
 
-            This is a helper method for :meth:`cohomology`. We cannot make
-            :class:`SimplicialCohomologyGroup` a unique representation because
-            equal surfaces can be non-identical so the cohomology of
-            non-identical surfaces could be identical. We work around this
-            issue by attaching the cohomology to the actual surface so a
-            surface has a unique cohomology, but it is different from another
-            equal surface's.
+            This is a helper method for :meth:`cohomology`, see
+            :meth:`homology` for details.
 
             TESTS:
 
@@ -3577,4 +3579,3 @@ class SimilaritySurfaces(SurfaceCategory):
 # Currently, there is no "Rational" axiom in SageMath so we make it known to
 # the category framework.
 all_axioms += ("Rational",)
-
