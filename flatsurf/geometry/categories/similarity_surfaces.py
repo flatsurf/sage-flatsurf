@@ -548,7 +548,7 @@ class SimilaritySurfaces(SurfaceCategory):
             )
 
         def cohomology(
-            self, k=1, coefficients=None, implementation="dual", category=None
+            self, k=1, coefficients=None, relative=None, implementation="dual", category=None
         ):
             r"""
             Return the ``k``-th simplicial cohomology group of this surface.
@@ -560,13 +560,16 @@ class SimilaritySurfaces(SurfaceCategory):
             - ``coefficients`` -- a ring (default: the reals); consider
               cohomology with coefficients in this ring
 
+            - ``relative`` -- a set (default: the empty set); if non-empty, then
+              relative cohomology with respect to this set is constructed.
+
             - ``implementation`` -- a string (default: ``"dual"``); the
               algorithm used to compute the cohomology groups. Currently only
               ``"dual"`` is supported, i.e., the groups are computed as duals
               of the generic homology groups from SageMath.
 
             - ``category`` -- a category; if not specified, a category for the
-              homology group is chosen automatically depending on
+              cohomology group is chosen automatically depending on
               ``coefficients``.
 
             EXAMPLES::
@@ -593,6 +596,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             coefficients = coefficients or RR
 
+            relative = frozenset(relative or {})
+
             if category is None:
                 from sage.categories.all import Modules
 
@@ -601,12 +606,13 @@ class SimilaritySurfaces(SurfaceCategory):
             return self._cohomology(
                 k=k,
                 coefficients=coefficients,
+                relative=relative,
                 implementation=implementation,
                 category=category,
             )
 
         @cached_surface_method
-        def _cohomology(self, k, coefficients, implementation, category):
+        def _cohomology(self, k, coefficients, relative, implementation, category):
             r"""
             Return the ``k``-th cohomology group of this surface.
 
@@ -638,7 +644,7 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.cohomology import SimplicialCohomologyGroup
 
             return SimplicialCohomologyGroup(
-                self, k, coefficients, implementation, category
+                self, k, coefficients, relative, implementation, category
             )
 
 

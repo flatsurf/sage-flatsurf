@@ -205,7 +205,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus(()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: 3 * H.gens()[0]
@@ -225,7 +225,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus(()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0].coefficients()
@@ -245,7 +245,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0] == H.gens()[0]
@@ -278,7 +278,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: hash(H.gens()[0]) == hash(H.gens()[0])
@@ -294,7 +294,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0]
@@ -310,7 +310,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a,b = H.gens()
@@ -344,7 +344,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
@@ -361,7 +361,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
@@ -378,7 +378,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: a, b = H.gens()
@@ -397,7 +397,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: h = H.gens()[0]
@@ -414,7 +414,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: h = H.gens()[0]
@@ -455,7 +455,7 @@ class SimplicialHomologyGroup(Parent):
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces, SimplicialHomology, MutableOrientedSimilaritySurface
-        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T = translation_surfaces.square_torus()
 
     Surfaces must be immutable to compute their homology::
 
@@ -473,7 +473,7 @@ class SimplicialHomologyGroup(Parent):
 
     TESTS::
 
-        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T = translation_surfaces.square_torus()
         sage: H = SimplicialHomology(T, implementation="generic")
         sage: TestSuite(H).run()
 
@@ -505,7 +505,13 @@ class SimplicialHomologyGroup(Parent):
                         "can only compute homology relative to a subset of the vertices"
                     )
 
-        if implementation not in ["generic"]:
+        if implementation == "generic":
+            if not surface.is_finite_type():
+                raise NotImplementedError("homology only implemented for surfaces with finitely many polygons")
+
+            if surface.is_with_boundary():
+                raise NotImplementedError("homology only implemented for surfaces without boundary")
+        else:
             raise NotImplementedError(
                 "cannot compute homology with this implementation yet"
             )
@@ -518,12 +524,13 @@ class SimplicialHomologyGroup(Parent):
 
     def is_absolute(self):
         r"""
-        Return whether this is absolute homology (or relative to some set of points.)
+        Return whether this is absolute homology (and not relative to some set
+        of points.)
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.is_absolute()
@@ -539,7 +546,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.some_elements()
@@ -555,7 +562,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.surface() == T
@@ -573,7 +580,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.chain_module()
@@ -592,7 +599,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
         In dimension 1, this is the set of edges::
@@ -645,7 +652,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
@@ -676,7 +683,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
         ::
@@ -746,7 +753,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._chain_complex()
@@ -790,7 +797,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.zero()
@@ -808,7 +815,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._homology()
@@ -868,7 +875,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._test_homology()
@@ -894,7 +901,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H
@@ -915,7 +922,7 @@ class SimplicialHomologyGroup(Parent):
 
         X = repr(self.surface())
         if not self.is_absolute():
-            X = f"{X}, {self._relative}"
+            X = f"{X}, {set(self._relative)}"
 
         from sage.all import ZZ
 
@@ -931,7 +938,7 @@ class SimplicialHomologyGroup(Parent):
         TESTS::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
@@ -988,7 +995,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
         ::
@@ -1023,7 +1030,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -1042,7 +1049,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
         ::
@@ -1084,7 +1091,7 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H._test_symplectic_basis()
@@ -1126,11 +1133,11 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: HH = SimplicialHomology(T)
 
@@ -1156,11 +1163,11 @@ class SimplicialHomologyGroup(Parent):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
 
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: HH = SimplicialHomology(T)
 
@@ -1180,12 +1187,36 @@ def SimplicialHomology(
     category=None,
 ):
     r"""
+    Return the ``k``-th simplicial homology group of ``surface``.
+
+    INPUT:
+
+    - ``surface`` -- a surface
+
+    - ``k`` -- an integer (default: ``1``)
+
+    - ``coefficients`` -- a ring (default: the integer ring);
+      consider the homology with coefficients in this ring
+
+    - ``relative`` -- a set (default: the empty set); if non-empty,
+      then relative homology with respect to this set is
+      constructed.
+
+    - ``implementation`` -- a string (default: ``"generic"``); the
+      algorithm used to compute the homology groups. Currently only
+      ``"generic"`` is supported, i.e., the groups are computed
+      with the generic homology machinery from SageMath.
+
+    - ``category`` -- a category; if not specified, a category for
+      the homology group is chosen automatically depending on
+      ``coefficients``.
+
     TESTS:
 
     Homology is unique and cached::
 
         sage: from flatsurf import translation_surfaces, SimplicialHomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T = translation_surfaces.square_torus()
         sage: T.set_immutable()
         sage: SimplicialHomology(T) is SimplicialHomology(T)
         True
