@@ -577,12 +577,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: S.cohomology()
-                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon; Real Field with 53 bits of precision)
+                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
 
             ::
 
                 sage: S.cohomology(0)
-                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon; Real Field with 53 bits of precision)
+                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
 
             """
             if self.is_mutable():

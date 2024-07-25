@@ -205,7 +205,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.square_torus(()
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: 3 * H.gens()[0]
@@ -225,7 +225,7 @@ class SimplicialHomologyClass(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.square_torus(()
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
             sage: H = SimplicialHomology(T)
             sage: H.gens()[0].coefficients()
