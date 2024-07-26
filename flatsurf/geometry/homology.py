@@ -1084,7 +1084,7 @@ class SimplicialHomologyGroup(Parent):
 
             F, C = symplectic_basis_over_ZZ(E)
 
-        if any([entry not in [-1, 0, 1] for row in F for entry in row]):
+        if any(entry not in [-1, 0, 1] for row in F for entry in row):
             raise NotImplementedError(
                 "cannot determine symplectic basis for this homology group over this ring yet"
             )
