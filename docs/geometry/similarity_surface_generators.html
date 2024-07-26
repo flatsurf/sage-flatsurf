@@ -189,6 +189,7 @@
 <li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -213,7 +215,6 @@
 <li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -282,8 +283,8 @@
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.basic_dilation_torus">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">basic_dilation_torus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#DilationSurfaceGenerators.basic_dilation_torus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.basic_dilation_torus" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a dilation torus built from a <cite>1 times 1</cite> square and a <cite>a
-times 1</cite> rectangle. Each edge of the square is glued to the opposite
+<dd><p>Return a dilation torus built from a <span class="math notranslate nohighlight">\(1 \times 1\)</span> square and a <span class="math notranslate nohighlight">\(a
+\times 1\)</span> rectangle. Each edge of the square is glued to the opposite
 edge of the rectangle. This results in horizontal edges glued by a
 dilation with a scaling factor of a, and vertical edges being glued by
 translation:</p>
@@ -330,9 +331,9 @@ represent the lengths of an edge of the resulting octagon, as below:</p>
      <span class="n">a</span>
 </pre></div>
 </div>
-<p>The other edges will have length <cite>1-a</cite>, <cite>1-b</cite>, <cite>1-c</cite>, and <cite>1-d</cite>.
-Dilations used to glue edges will be by factors <cite>c/a</cite>, <cite>d/b</cite>,
-<cite>(1-c)/(1-a)</cite> and <cite>(1-d)/(1-b)</cite>.</p>
+<p>The other edges will have length <span class="math notranslate nohighlight">\(1-a\)</span>, <span class="math notranslate nohighlight">\(1-b\)</span>, <span class="math notranslate nohighlight">\(1-c\)</span>, and <span class="math notranslate nohighlight">\(1-d\)</span>.
+Dilations used to glue edges will be by factors <span class="math notranslate nohighlight">\(c/a\)</span>, <span class="math notranslate nohighlight">\(d/b\)</span>,
+<span class="math notranslate nohighlight">\((1-c)/(1-a)\)</span> and <span class="math notranslate nohighlight">\((1-d)/(1-b)\)</span>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">dilation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">dilation_surfaces</span><span class="o">.</span><span class="n">genus_two_square</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
@@ -351,7 +352,7 @@ Dilations used to glue edges will be by factors <cite>c/a</cite>, <cite>d/b</cit
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.EInfinitySurface">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.similarity_surface_generators.</span></span><span class="sig-name descname"><span class="pre">EInfinitySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_squared</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#EInfinitySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.EInfinitySurface" title="Permalink to this definition">#</a></dt>
-<dd><p>The surface based on the <cite>E_infinity</cite> graph.</p>
+<dd><p>The surface based on the <span class="math notranslate nohighlight">\(E_\infinity\)</span> graph.</p>
 <p>The biparite graph is shown below, with edges numbered:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="mi">0</span>   <span class="mi">1</span>   <span class="mi">2</span>  <span class="o">-</span><span class="mi">2</span>   <span class="mi">3</span>  <span class="o">-</span><span class="mi">3</span>   <span class="mi">4</span>  <span class="o">-</span><span class="mi">4</span>
 <span class="o">*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*...</span>
@@ -839,7 +840,7 @@ curves and totally geodesic subvarieties of moduli space” (2017):</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.e_infinity_surface">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">e_infinity_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_squared</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.e_infinity_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.e_infinity_surface" title="Permalink to this definition">#</a></dt>
-<dd><p>The translation surface based on the <cite>E_infinity</cite> graph.</p>
+<dd><p>The translation surface based on the <span class="math notranslate nohighlight">\(E_\infinity\)</span> graph.</p>
 <p>The biparite graph is shown below, with edges numbered:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="mi">0</span>   <span class="mi">1</span>   <span class="mi">2</span>  <span class="o">-</span><span class="mi">2</span>   <span class="mi">3</span>  <span class="o">-</span><span class="mi">3</span>   <span class="mi">4</span>  <span class="o">-</span><span class="mi">4</span>
 <span class="o">*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*---</span><span class="n">o</span><span class="o">---*...</span>
@@ -922,7 +923,7 @@ represent horizontal cylinders.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lanneau_nguyen_genus3_prototype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.lanneau_nguyen_genus3_prototype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.lanneau_nguyen_genus3_prototype" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the Lanneau–Ngyuen prototype in the stratum H(4) with
 parameters <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span></code>, and <code class="docutils literal notranslate"><span class="pre">e</span></code>.</p>
-<p>The associated discriminant is <cite>e^2 + 8 wh</cite>.</p>
+<p>The associated discriminant is <span class="math notranslate nohighlight">\(e^2 + 8 wh\)</span>.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">w</span></code> – a positive integer</p></li>
@@ -951,14 +952,14 @@ Topology 7.2, 2014, pp.475-522</p></li>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lanneau_nguyen_genus4_prototype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/similarity_surface_generators.html#TranslationSurfaceGenerators.lanneau_nguyen_genus4_prototype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.lanneau_nguyen_genus4_prototype" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the Lanneau–Ngyuen prototype in the stratum H(6) with
 parameters <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span></code>, and <code class="docutils literal notranslate"><span class="pre">e</span></code>.</p>
-<p>The associated discriminant is <cite>D = e^2 + 4 wh</cite>.</p>
+<p>The associated discriminant is <span class="math notranslate nohighlight">\(D = e^2 + 4 wh\)</span>.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">w</span></code> – a positive integer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> – a positive integer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">t</span></code> – a non-negative integer strictly smaller than the gcd of
 <code class="docutils literal notranslate"><span class="pre">w</span></code> and <code class="docutils literal notranslate"><span class="pre">h</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">e</span></code> – a positive integer strictly smaller than <cite>2w - sqrt{D}</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">e</span></code> – a positive integer strictly smaller than <span class="math notranslate nohighlight">\(2w - \sqrt{D}\)</span></p></li>
 </ul>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
@@ -1011,7 +1012,7 @@ genus four”, Journal of the Institute of Mathematics of Jussieu,
 two: Discriminant and spin” (2004). The notation from that paper are
 quadruple <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">e)</span></code> which translates in our notation as
 <code class="docutils literal notranslate"><span class="pre">w</span> <span class="pre">=</span> <span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span> <span class="pre">=</span> <span class="pre">c</span></code>, <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">a</span></code> (and <code class="docutils literal notranslate"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">e</span></code>).</p>
-<p>The associated discriminant is <cite>D = e^2 + 4 wh</cite>.</p>
+<p>The associated discriminant is <span class="math notranslate nohighlight">\(D = e^2 + 4 wh\)</span>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">rel</span></code> is a positive parameter (less than w-lambda) the surface belongs
 to the eigenform locus in H(1,1).</p>
 <p>EXAMPLES:</p>
@@ -1415,7 +1416,7 @@ sage: AA(K_sage.gen())                                     # optional - flipper
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

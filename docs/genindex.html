@@ -187,6 +187,7 @@
 <li class="toctree-l2"><a class="reference internal" href="geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -197,6 +198,7 @@
 <li class="toctree-l2"><a class="reference internal" href="geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -211,7 +213,6 @@
 <li class="toctree-l2"><a class="reference internal" href="geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -859,6 +860,8 @@
         </ul></li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.adjacent_edge_options">adjacent_edge_options (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
 </li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection">algebraic_intersection() (flatsurf.geometry.homology.SimplicialHomologyClass method)</a>
+</li>
         <li><a href="geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.ambient_stratum">ambient_stratum() (flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure method)</a>
 </li>
         <li><a href="geometry/euclidean_polygons_with_angles.html#flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods.an_element">an_element() (flatsurf.geometry.categories.euclidean_polygons_with_angles.EuclideanPolygonsWithAngles.SubcategoryMethods method)</a>
@@ -938,17 +941,15 @@
 </li>
           <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicPlane.base_ring">(flatsurf.geometry.hyperbolic.HyperbolicPlane method)</a>
 </li>
-          <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.base_ring">(flatsurf.geometry.relative_homology.RelativeHomology method)</a>
-</li>
           <li><a href="geometry/similarity.html#flatsurf.geometry.similarity.SimilarityGroup.base_ring">(flatsurf.geometry.similarity.SimilarityGroup method)</a>
 </li>
           <li><a href="geometry/tangent_bundle.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.base_ring">(flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/surface.html#flatsurf.geometry.surface.BaseRingChangedSurface">BaseRingChangedSurface (class in flatsurf.geometry.surface)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators.basic_dilation_torus">basic_dilation_torus() (flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators static method)</a>
 </li>
         <li><a href="geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators.billiard">billiard() (flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators static method)</a>
@@ -965,9 +966,11 @@
 </li>
         <li><a href="geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.boundaries">boundaries() (flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure method)</a>
 </li>
-        <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace.boundary">boundary() (flatsurf.geometry.hyperbolic.HyperbolicHalfSpace method)</a>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.boundary">boundary() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
 
         <ul>
+          <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace.boundary">(flatsurf.geometry.hyperbolic.HyperbolicHalfSpace method)</a>
+</li>
           <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.boundary">(flatsurf.geometry.surface_objects.Cylinder method)</a>
 </li>
         </ul></li>
@@ -1025,6 +1028,8 @@
 </li>
         <li><a href="geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.centroid">centroid() (flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods method)</a>
 </li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module">chain_module() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
+</li>
         <li><a href="geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators.chamanara">chamanara() (flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators static method)</a>
 </li>
         <li><a href="geometry/chamanara.html#flatsurf.geometry.chamanara.chamanara_half_dilation_surface">chamanara_half_dilation_surface() (in module flatsurf.geometry.chamanara)</a>
@@ -1037,9 +1042,11 @@
 </li>
         <li><a href="geometry/chamanara.html#flatsurf.geometry.chamanara.ChamanaraTranslationSurface">ChamanaraTranslationSurface (class in flatsurf.geometry.chamanara)</a>
 </li>
-        <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.change">change() (flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon method)</a>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.change">change() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
 
         <ul>
+          <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon.change">(flatsurf.geometry.hyperbolic.HyperbolicConvexPolygon method)</a>
+</li>
           <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.change">(flatsurf.geometry.hyperbolic.HyperbolicConvexSet method)</a>
 </li>
           <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet.change">(flatsurf.geometry.hyperbolic.HyperbolicEmptySet method)</a>
@@ -1126,8 +1133,6 @@
         <ul>
           <li><a href="geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.cmp">(flatsurf.geometry.surface.MutableOrientedSimilaritySurface method)</a>
 </li>
-          <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.cmp">(in module flatsurf.geometry.relative_homology)</a>
-</li>
         </ul></li>
         <li><a href="graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.CartesianPathPlotCommand.code">code (flatsurf.graphical.hyperbolic.CartesianPathPlotCommand attribute)</a>
 
@@ -1143,6 +1148,12 @@
           <li><a href="geometry/pyflatsurf_conversion.html#flatsurf.geometry.pyflatsurf_conversion.Conversion.codomain">(flatsurf.geometry.pyflatsurf_conversion.Conversion method)</a>
 </li>
         </ul></li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">coefficient() (flatsurf.geometry.homology.SimplicialHomologyClass method)</a>
+</li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients">coefficients() (flatsurf.geometry.homology.SimplicialHomologyClass method)</a>
+</li>
+        <li><a href="geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology">cohomology() (flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods method)</a>
+</li>
         <li><a href="geometry/straight_line_trajectory.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.combinatorial_length">combinatorial_length() (flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory method)</a>
 
         <ul>
@@ -1255,6 +1266,8 @@
 </li>
         <li><a href="geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.decompositions_depth_first">decompositions_depth_first() (flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure method)</a>
 </li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.degree">degree() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
+</li>
         <li><a href="geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition">delaunay_decomposition() (flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods method)</a>
 </li>
         <li><a href="geometry/mappings.html#flatsurf.geometry.mappings.delaunay_decomposition_mapping">delaunay_decomposition_mapping() (in module flatsurf.geometry.mappings)</a>
@@ -1281,10 +1294,10 @@
 </li>
         <li><a href="geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType">DilationSurfaces.FiniteType (class in flatsurf.geometry.categories.dilation_surfaces)</a>
 </li>
-        <li><a href="geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods">DilationSurfaces.FiniteType.ParentMethods (class in flatsurf.geometry.categories.dilation_surfaces)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.FiniteType.ParentMethods">DilationSurfaces.FiniteType.ParentMethods (class in flatsurf.geometry.categories.dilation_surfaces)</a>
+</li>
         <li><a href="geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods">DilationSurfaces.ParentMethods (class in flatsurf.geometry.categories.dilation_surfaces)</a>
 </li>
         <li><a href="geometry/dilation_surfaces.html#flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.Positive">DilationSurfaces.Positive (class in flatsurf.geometry.categories.dilation_surfaces)</a>
@@ -1340,8 +1353,6 @@
         <li><a href="geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.edge">edge() (flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods method)</a>
 
         <ul>
-          <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.edge">(flatsurf.geometry.relative_homology.RelativeHomology method)</a>
-</li>
           <li><a href="geometry/straight_line_trajectory.html#flatsurf.geometry.straight_line_trajectory.SegmentInPolygon.edge">(flatsurf.geometry.straight_line_trajectory.SegmentInPolygon method)</a>
 </li>
           <li><a href="geometry/tangent_bundle.html#flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle.edge">(flatsurf.geometry.tangent_bundle.SimilaritySurfaceTangentBundle method)</a>
@@ -1393,18 +1404,18 @@
         </ul></li>
         <li><a href="geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">edges_ccw() (flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods method)</a>
 </li>
-        <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.edges_with_weights">edges_with_weights() (flatsurf.geometry.relative_homology.RelativeHomologyClass method)</a>
-</li>
         <li><a href="geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.EInfinitySurface">EInfinitySurface (class in flatsurf.geometry.similarity_surface_generators)</a>
 </li>
-        <li><a href="geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.FundamentalGroup.Element">Element (flatsurf.geometry.fundamental_group.FundamentalGroup attribute)</a>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.Element">Element (flatsurf.geometry.cohomology.SimplicialCohomologyGroup attribute)</a>
 
         <ul>
+          <li><a href="geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.FundamentalGroup.Element">(flatsurf.geometry.fundamental_group.FundamentalGroup attribute)</a>
+</li>
+          <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.Element">(flatsurf.geometry.homology.SimplicialHomologyGroup attribute)</a>
+</li>
           <li><a href="geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.Element">(flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup attribute)</a>
 </li>
           <li><a href="geometry/polygon.html#flatsurf.geometry.polygon.EuclideanPolygon.Element">(flatsurf.geometry.polygon.EuclideanPolygon attribute)</a>
-</li>
-          <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.Element">(flatsurf.geometry.relative_homology.RelativeHomology attribute)</a>
 </li>
           <li><a href="geometry/similarity.html#flatsurf.geometry.similarity.SimilarityGroup.Element">(flatsurf.geometry.similarity.SimilarityGroup attribute)</a>
 </li>
@@ -1667,6 +1678,13 @@
 </li>
         </ul></li>
         <li>
+    flatsurf.geometry.cohomology
+
+        <ul>
+          <li><a href="geometry/cohomology.html#module-flatsurf.geometry.cohomology">module</a>
+</li>
+        </ul></li>
+        <li>
     flatsurf.geometry.euclidean
 
         <ul>
@@ -1692,6 +1710,13 @@
 
         <ul>
           <li><a href="geometry/gl2r_orbit_closure.html#module-flatsurf.geometry.gl2r_orbit_closure">module</a>
+</li>
+        </ul></li>
+        <li>
+    flatsurf.geometry.homology
+
+        <ul>
+          <li><a href="geometry/homology.html#module-flatsurf.geometry.homology">module</a>
 </li>
         </ul></li>
         <li>
@@ -1722,6 +1747,8 @@
           <li><a href="geometry/lazy.html#module-flatsurf.geometry.lazy">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     flatsurf.geometry.mappings
 
@@ -1729,8 +1756,6 @@
           <li><a href="geometry/mappings.html#module-flatsurf.geometry.mappings">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     flatsurf.geometry.mega_wollmilchsau
 
@@ -1771,13 +1796,6 @@
 
         <ul>
           <li><a href="geometry/pyflatsurf_conversion.html#module-flatsurf.geometry.pyflatsurf_conversion">module</a>
-</li>
-        </ul></li>
-        <li>
-    flatsurf.geometry.relative_homology
-
-        <ul>
-          <li><a href="geometry/relative_homology.html#module-flatsurf.geometry.relative_homology">module</a>
 </li>
         </ul></li>
         <li>
@@ -1949,9 +1967,13 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.gen">gen() (flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup method)</a>
 </li>
-        <li><a href="geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.FundamentalGroup.gens">gens() (flatsurf.geometry.fundamental_group.FundamentalGroup method)</a>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.gens">gens() (flatsurf.geometry.cohomology.SimplicialCohomologyGroup method)</a>
 
         <ul>
+          <li><a href="geometry/fundamental_group.html#flatsurf.geometry.fundamental_group.FundamentalGroup.gens">(flatsurf.geometry.fundamental_group.FundamentalGroup method)</a>
+</li>
+          <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.gens">(flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
+</li>
           <li><a href="geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.gens">(flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup method)</a>
 </li>
         </ul></li>
@@ -1989,10 +2011,10 @@
 </li>
         <li><a href="geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.EInfinitySurface.get_white">get_white() (flatsurf.geometry.similarity_surface_generators.EInfinitySurface method)</a>
 </li>
-        <li><a href="geometry/lazy.html#flatsurf.geometry.lazy.GL2RImageSurface">GL2RImageSurface (class in flatsurf.geometry.lazy)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="geometry/lazy.html#flatsurf.geometry.lazy.GL2RImageSurface">GL2RImageSurface (class in flatsurf.geometry.lazy)</a>
+</li>
         <li><a href="geometry/mappings.html#flatsurf.geometry.mappings.GL2RMapping">GL2RMapping (class in flatsurf.geometry.mappings)</a>
 </li>
         <li><a href="geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure">GL2ROrbitClosure (class in flatsurf.geometry.gl2r_orbit_closure)</a>
@@ -2101,12 +2123,18 @@
           <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.holonomy">(flatsurf.geometry.surface_objects.SaddleConnection method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/gl2r_orbit_closure.html#flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure.holonomy_dual">holonomy_dual() (flatsurf.geometry.gl2r_orbit_closure.GL2ROrbitClosure method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/half_translation_surfaces.html#flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.ParentMethods.holonomy_field">holonomy_field() (flatsurf.geometry.categories.half_translation_surfaces.HalfTranslationSurfaces.Oriented.ParentMethods method)</a>
 </li>
+        <li><a href="geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology">homology() (flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods method)</a>
+
+        <ul>
+          <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.homology">(flatsurf.geometry.cohomology.SimplicialCohomologyGroup method)</a>
+</li>
+        </ul></li>
         <li><a href="graphical/hyperbolic.html#flatsurf.graphical.hyperbolic.hyperbolic_path">hyperbolic_path() (in module flatsurf.graphical.hyperbolic)</a>
 </li>
         <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicConvexFacade">HyperbolicConvexFacade (class in flatsurf.geometry.hyperbolic)</a>
@@ -2221,6 +2249,12 @@
           <li><a href="geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup.is_abelian">(flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroup method)</a>
 </li>
           <li><a href="geometry/similarity.html#flatsurf.geometry.similarity.SimilarityGroup.is_abelian">(flatsurf.geometry.similarity.SimilarityGroup method)</a>
+</li>
+        </ul></li>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.is_absolute">is_absolute() (flatsurf.geometry.cohomology.SimplicialCohomologyGroup method)</a>
+
+        <ul>
+          <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute">(flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
 </li>
         </ul></li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.is_adjacent">is_adjacent() (flatsurf.graphical.surface.GraphicalSurface method)</a>
@@ -2801,6 +2835,8 @@
 </li>
           <li><a href="geometry/circle.html#module-flatsurf.geometry.circle">flatsurf.geometry.circle</a>
 </li>
+          <li><a href="geometry/cohomology.html#module-flatsurf.geometry.cohomology">flatsurf.geometry.cohomology</a>
+</li>
           <li><a href="geometry/euclidean.html#module-flatsurf.geometry.euclidean">flatsurf.geometry.euclidean</a>
 </li>
           <li><a href="geometry/finitely_generated_matrix_group.html#module-flatsurf.geometry.finitely_generated_matrix_group">flatsurf.geometry.finitely_generated_matrix_group</a>
@@ -2808,6 +2844,8 @@
           <li><a href="geometry/fundamental_group.html#module-flatsurf.geometry.fundamental_group">flatsurf.geometry.fundamental_group</a>
 </li>
           <li><a href="geometry/gl2r_orbit_closure.html#module-flatsurf.geometry.gl2r_orbit_closure">flatsurf.geometry.gl2r_orbit_closure</a>
+</li>
+          <li><a href="geometry/homology.html#module-flatsurf.geometry.homology">flatsurf.geometry.homology</a>
 </li>
           <li><a href="geometry/hyperbolic.html#module-flatsurf.geometry.hyperbolic">flatsurf.geometry.hyperbolic</a>
 </li>
@@ -2830,8 +2868,6 @@
           <li><a href="geometry/polyhedra.html#module-flatsurf.geometry.polyhedra">flatsurf.geometry.polyhedra</a>
 </li>
           <li><a href="geometry/pyflatsurf_conversion.html#module-flatsurf.geometry.pyflatsurf_conversion">flatsurf.geometry.pyflatsurf_conversion</a>
-</li>
-          <li><a href="geometry/relative_homology.html#module-flatsurf.geometry.relative_homology">flatsurf.geometry.relative_homology</a>
 </li>
           <li><a href="geometry/similarity.html#module-flatsurf.geometry.similarity">flatsurf.geometry.similarity</a>
 </li>
@@ -3450,10 +3486,6 @@
           <li><a href="geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.relabel">(flatsurf.geometry.surface.MutableOrientedSimilaritySurface method)</a>
 </li>
         </ul></li>
-        <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology">RelativeHomology (class in flatsurf.geometry.relative_homology)</a>
-</li>
-        <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass">RelativeHomologyClass (class in flatsurf.geometry.relative_homology)</a>
-</li>
         <li><a href="geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.remove_polygon">remove_polygon() (flatsurf.geometry.surface.MutableOrientedSimilaritySurface method)</a>
 
         <ul>
@@ -3470,14 +3502,14 @@
           <li><a href="geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.replace_polygon">(flatsurf.geometry.surface.MutableOrientedSimilaritySurface method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons">reposition_polygons() (flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods method)</a>
 
         <ul>
           <li><a href="geometry/surface.html#flatsurf.geometry.surface.MutableOrientedSimilaritySurface.reposition_polygons">(flatsurf.geometry.surface.MutableOrientedSimilaritySurface method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representative">representative() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
 </li>
         <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representatives">representatives() (flatsurf.geometry.surface_objects.SurfacePoint method)</a>
@@ -3686,6 +3718,20 @@
 </li>
         <li><a href="geometry/polygons.html#flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods.Simple">Simple() (flatsurf.geometry.categories.polygons.Polygons.SubcategoryMethods method)</a>
 </li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices">simplices() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
+</li>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomology">SimplicialCohomology() (in module flatsurf.geometry.cohomology)</a>
+</li>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyClass">SimplicialCohomologyClass (class in flatsurf.geometry.cohomology)</a>
+</li>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup">SimplicialCohomologyGroup (class in flatsurf.geometry.cohomology)</a>
+</li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomology">SimplicialHomology() (in module flatsurf.geometry.homology)</a>
+</li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass">SimplicialHomologyClass (class in flatsurf.geometry.homology)</a>
+</li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup">SimplicialHomologyGroup (class in flatsurf.geometry.homology)</a>
+</li>
         <li><a href="geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.singularity">singularity() (flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods method)</a>
 </li>
         <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">Singularity() (in module flatsurf.geometry.surface_objects)</a>
@@ -3704,6 +3750,8 @@
 
         <ul>
           <li><a href="geometry/finitely_generated_matrix_group.html#flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup.some_elements">(flatsurf.geometry.finitely_generated_matrix_group.FinitelyGenerated2x2MatrixGroup method)</a>
+</li>
+          <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements">(flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
 </li>
           <li><a href="geometry/hyperbolic.html#flatsurf.geometry.hyperbolic.HyperbolicEmptySet.some_elements">(flatsurf.geometry.hyperbolic.HyperbolicEmptySet method)</a>
 </li>
@@ -3814,9 +3862,15 @@
         </ul></li>
         <li><a href="geometry/surface_legacy.html#flatsurf.geometry.surface_legacy.Surface">Surface (class in flatsurf.geometry.surface_legacy)</a>
 </li>
-        <li><a href="geometry/straight_line_trajectory.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.surface">surface() (flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory method)</a>
+        <li><a href="geometry/cohomology.html#flatsurf.geometry.cohomology.SimplicialCohomologyGroup.surface">surface() (flatsurf.geometry.cohomology.SimplicialCohomologyGroup method)</a>
 
         <ul>
+          <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.surface">(flatsurf.geometry.homology.SimplicialHomologyClass method)</a>
+</li>
+          <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.surface">(flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
+</li>
+          <li><a href="geometry/straight_line_trajectory.html#flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory.surface">(flatsurf.geometry.straight_line_trajectory.AbstractStraightLineTrajectory method)</a>
+</li>
           <li><a href="geometry/straight_line_trajectory.html#flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory.surface">(flatsurf.geometry.straight_line_trajectory.StraightLineTrajectory method)</a>
 </li>
           <li><a href="geometry/surface_legacy.html#flatsurf.geometry.surface_legacy.LabelWalker.surface">(flatsurf.geometry.surface_legacy.LabelWalker method)</a>
@@ -3859,6 +3913,8 @@
         <li><a href="geometry/mappings.html#flatsurf.geometry.mappings.SurfaceMappingComposition">SurfaceMappingComposition (class in flatsurf.geometry.mappings)</a>
 </li>
         <li><a href="geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint">SurfacePoint (class in flatsurf.geometry.surface_objects)</a>
+</li>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis">symplectic_basis() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -4124,20 +4180,16 @@
 </li>
         <li><a href="geometry/mega_wollmilchsau.html#flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroupElement.wedge">wedge() (flatsurf.geometry.mega_wollmilchsau.MegaWollmilchsauGroupElement static method)</a>
 </li>
-        <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.weight">weight() (flatsurf.geometry.relative_homology.RelativeHomologyClass method)</a>
-</li>
-        <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomologyClass.weighted_edges">weighted_edges() (flatsurf.geometry.relative_homology.RelativeHomologyClass method)</a>
-</li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.will_plot_adjacent_edges">will_plot_adjacent_edges (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
 </li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.will_plot_edge_labels">will_plot_edge_labels (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
 </li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.will_plot_edges">will_plot_edges (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.will_plot_non_adjacent_edges">will_plot_non_adjacent_edges (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygon_labels">will_plot_polygon_labels (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
 </li>
         <li><a href="graphical/surface.html#flatsurf.graphical.surface.GraphicalSurface.will_plot_polygons">will_plot_polygons (flatsurf.graphical.surface.GraphicalSurface attribute)</a>
@@ -4206,7 +4258,7 @@
   <h2>Z</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="geometry/relative_homology.html#flatsurf.geometry.relative_homology.RelativeHomology.zero">zero() (flatsurf.geometry.relative_homology.RelativeHomology method)</a>
+        <li><a href="geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.zero">zero() (flatsurf.geometry.homology.SimplicialHomologyGroup method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>

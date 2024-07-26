@@ -188,6 +188,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -198,6 +199,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -212,7 +214,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -704,7 +705,225 @@
 
             <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">GL2RImageSurface</span>
 
-            <span class="k">return</span> <span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.homology"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology">[docs]</a>        <span class="k">def</span> <span class="nf">homology</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">implementation</span><span class="o">=</span><span class="s2">&quot;generic&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the ``k``-th simplicial homology group of this surface.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``k`` -- an integer (default: ``1``)</span>
+
+<span class="sd">            - ``coefficients`` -- a ring (default: the integer ring); consider</span>
+<span class="sd">              the homology with coefficients in this ring</span>
+
+<span class="sd">            - ``relative`` -- a set (default: the empty set); if non-empty, then</span>
+<span class="sd">              relative homology with respect to this set is constructed.</span>
+
+<span class="sd">            - ``implementation`` -- a string (default: ``&quot;generic&quot;``); the</span>
+<span class="sd">              algorithm used to compute the homology groups. Currently only</span>
+<span class="sd">              ``&quot;generic&quot;`` is supported, i.e., the groups are computed with</span>
+<span class="sd">              the generic homology machinery from SageMath.</span>
+
+<span class="sd">            - ``category`` -- a category; if not specified, a category for the</span>
+<span class="sd">              homology group is chosen automatically depending on</span>
+<span class="sd">              ``coefficients``.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import dilation_surfaces</span>
+<span class="sd">                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)</span>
+<span class="sd">                sage: S.homology()</span>
+<span class="sd">                H₁(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)</span>
+
+<span class="sd">                sage: S.homology(0)</span>
+<span class="sd">                H₀(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;surface must be immutable to compute homology&quot;</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+
+            <span class="n">k</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+            <span class="n">coefficients</span> <span class="o">=</span> <span class="n">coefficients</span> <span class="ow">or</span> <span class="n">ZZ</span>
+
+            <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Modules</span>
+
+                <span class="n">category</span> <span class="o">=</span> <span class="n">Modules</span><span class="p">(</span><span class="n">coefficients</span><span class="p">)</span>
+
+            <span class="n">relative</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">relative</span> <span class="ow">or</span> <span class="p">{})</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_homology</span><span class="p">(</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">coefficients</span><span class="o">=</span><span class="n">coefficients</span><span class="p">,</span>
+                <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">,</span>
+                <span class="n">implementation</span><span class="o">=</span><span class="n">implementation</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+        <span class="nd">@cached_surface_method</span>
+        <span class="k">def</span> <span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the ``k``-th homology group of this surface.</span>
+
+<span class="sd">            This is a helper method for :meth:`homology` which passes</span>
+<span class="sd">            normalized parameters to us. The approach chosen here is quite</span>
+<span class="sd">            non-standard. Usually, one would not use a cached method but make</span>
+<span class="sd">            :class:`SimplicialHomologyGroup` a unique representation. But this</span>
+<span class="sd">            is not possible because equal surfaces can be non-identical so the</span>
+<span class="sd">            homology of non-identical surfaces would be identical. We work</span>
+<span class="sd">            around this issue by attaching the homology to the actual surface</span>
+<span class="sd">            so a surface has a unique homology, but it is different from</span>
+<span class="sd">            another equal surface&#39;s.</span>
+
+<span class="sd">            A proper fix for the underlying problem could be to change</span>
+<span class="sd">            :meth:`MutableOrientedSimilaritySurface.set_immutable` to return an</span>
+<span class="sd">            immutable copy of the surface so that all immutable surfaces are</span>
+<span class="sd">            unique.</span>
+
+<span class="sd">            TESTS:</span>
+
+<span class="sd">            Homology of a surface is unique::</span>
+
+<span class="sd">                sage: from flatsurf import dilation_surfaces</span>
+<span class="sd">                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)</span>
+<span class="sd">                sage: S.homology() is S.homology()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            But non-identical surfaces have different homology::</span>
+
+<span class="sd">                sage: from flatsurf import MutableOrientedSimilaritySurface</span>
+<span class="sd">                sage: T = MutableOrientedSimilaritySurface.from_surface(S)</span>
+<span class="sd">                sage: T.set_immutable()</span>
+<span class="sd">                sage: S == T</span>
+<span class="sd">                True</span>
+<span class="sd">                sage: S is T</span>
+<span class="sd">                False</span>
+<span class="sd">                sage: S.homology() is T.homology()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.homology</span> <span class="kn">import</span> <span class="n">SimplicialHomologyGroup</span>
+
+            <span class="k">return</span> <span class="n">SimplicialHomologyGroup</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.cohomology"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology">[docs]</a>        <span class="k">def</span> <span class="nf">cohomology</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">implementation</span><span class="o">=</span><span class="s2">&quot;dual&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the ``k``-th simplicial cohomology group of this surface.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``k`` -- an integer (default: ``1``)</span>
+
+<span class="sd">            - ``coefficients`` -- a ring (default: the reals); consider</span>
+<span class="sd">              cohomology with coefficients in this ring</span>
+
+<span class="sd">            - ``relative`` -- a set (default: the empty set); if non-empty, then</span>
+<span class="sd">              relative cohomology with respect to this set is constructed.</span>
+
+<span class="sd">            - ``implementation`` -- a string (default: ``&quot;dual&quot;``); the</span>
+<span class="sd">              algorithm used to compute the cohomology groups. Currently only</span>
+<span class="sd">              ``&quot;dual&quot;`` is supported, i.e., the groups are computed as duals</span>
+<span class="sd">              of the generic homology groups from SageMath.</span>
+
+<span class="sd">            - ``category`` -- a category; if not specified, a category for the</span>
+<span class="sd">              cohomology group is chosen automatically depending on</span>
+<span class="sd">              ``coefficients``.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import dilation_surfaces</span>
+<span class="sd">                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)</span>
+<span class="sd">                sage: S.cohomology()</span>
+<span class="sd">                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)</span>
+
+<span class="sd">            ::</span>
+
+<span class="sd">                sage: S.cohomology(0)</span>
+<span class="sd">                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;surface must be immutable to compute cohomology&quot;</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">ZZ</span>
+
+            <span class="n">k</span> <span class="o">=</span> <span class="n">ZZ</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">RR</span>
+
+            <span class="n">coefficients</span> <span class="o">=</span> <span class="n">coefficients</span> <span class="ow">or</span> <span class="n">RR</span>
+
+            <span class="n">relative</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">relative</span> <span class="ow">or</span> <span class="p">{})</span>
+
+            <span class="k">if</span> <span class="n">category</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">sage.categories.all</span> <span class="kn">import</span> <span class="n">Modules</span>
+
+                <span class="n">category</span> <span class="o">=</span> <span class="n">Modules</span><span class="p">(</span><span class="n">coefficients</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cohomology</span><span class="p">(</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">coefficients</span><span class="o">=</span><span class="n">coefficients</span><span class="p">,</span>
+                <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">,</span>
+                <span class="n">implementation</span><span class="o">=</span><span class="n">implementation</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+        <span class="nd">@cached_surface_method</span>
+        <span class="k">def</span> <span class="nf">_cohomology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return the ``k``-th cohomology group of this surface.</span>
+
+<span class="sd">            This is a helper method for :meth:`cohomology`, see</span>
+<span class="sd">            :meth:`homology` for details.</span>
+
+<span class="sd">            TESTS:</span>
+
+<span class="sd">            Cohomology of a surface is unique::</span>
+
+<span class="sd">                sage: from flatsurf import dilation_surfaces</span>
+<span class="sd">                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)</span>
+<span class="sd">                sage: S.cohomology() is S.cohomology()</span>
+<span class="sd">                True</span>
+
+<span class="sd">            But non-identical surfaces have different cohomology::</span>
+
+<span class="sd">                sage: from flatsurf import MutableOrientedSimilaritySurface</span>
+<span class="sd">                sage: T = MutableOrientedSimilaritySurface.from_surface(S)</span>
+<span class="sd">                sage: T.set_immutable()</span>
+<span class="sd">                sage: S == T</span>
+<span class="sd">                True</span>
+<span class="sd">                sage: S is T</span>
+<span class="sd">                False</span>
+<span class="sd">                sage: S.cohomology() is T.cohomology()</span>
+<span class="sd">                False</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.cohomology</span> <span class="kn">import</span> <span class="n">SimplicialCohomologyGroup</span>
+
+            <span class="k">return</span> <span class="n">SimplicialCohomologyGroup</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span>
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimilaritySurfaces.Oriented"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented">[docs]</a>    <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>

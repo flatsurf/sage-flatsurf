@@ -189,6 +189,7 @@
 <li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -213,7 +215,6 @@
 <li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -473,7 +474,7 @@ want to put it here.</p>
 <span class="sig-name descname"><span class="pre">_test_eq_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface" title="Permalink to this definition">#</a></dt>
 <dd><p>Verify that this surface follows our standards for equality of
 surfaces.</p>
-<p>We want two surfaces to compare equal (<cite>S == T</cite>) iff they are
+<p>We want two surfaces to compare equal (<span class="math notranslate nohighlight">\(S == T\)</span>) iff they are
 virtually indistinguishable; so without a lot of non-Pythonic
 effort, you should not be able to tell them apart. They have
 (virtually) the same type, are made from equally labeled
@@ -482,9 +483,9 @@ Any other data that was used when creating them should be
 indistinguishable. They might of course live at different
 memory addresses have differences in their internal caches and
 representation but everything user-facing should be the same.</p>
-<p>People often want <cite>==</cite> to mean that the two surfaces are
+<p>People often want <span class="math notranslate nohighlight">\(==\)</span> to mean that the two surfaces are
 isomorphic in some more-or-less strong sense. Such a notion for
-<cite>==</cite> always leads to trouble down the road. The operator <cite>==</cite>
+<span class="math notranslate nohighlight">\(==\)</span> always leads to trouble down the road. The operator <span class="math notranslate nohighlight">\(==\)</span>
 is used to identify surfaces in caches and identify surfaces in
 sets. Sometimes “are isomorphic” is a good notion in such cases
 but most of the time “are indistinguishable” is the much safer
@@ -978,9 +979,9 @@ surface</p></li>
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">
 <span class="sig-name descname"><span class="pre">edge_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.Oriented.ParentMethods.edge_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the 2x2 matrix representing a similarity which when
-applied to the polygon with label <cite>p</cite> makes it so the edge <cite>e</cite>
+applied to the polygon with label <span class="math notranslate nohighlight">\(p\)</span> makes it so the edge <span class="math notranslate nohighlight">\(e\)</span>
 can be glued to its opposite edge by translation.</p>
-<p>If <cite>e</cite> is not provided, then <cite>p</cite> should be a pair consisting of
+<p>If <span class="math notranslate nohighlight">\(e\)</span> is not provided, then <span class="math notranslate nohighlight">\(p\)</span> should be a pair consisting of
 a polygon label and an edge.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity_surface_generators</span> <span class="kn">import</span> <span class="n">SimilaritySurfaceGenerators</span>
@@ -1779,6 +1780,69 @@ Euclidean polygons that are glued by similarities.</p>
 <p>If you want to add functionality for such surfaces you most likely
 want to put it here.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology">
+<span class="sig-name descname"><span class="pre">cohomology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dual'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.ParentMethods.cohomology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">k</span></code>-th simplicial cohomology group of this surface.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code> – an integer (default: <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coefficients</span></code> – a ring (default: the reals); consider
+cohomology with coefficients in this ring</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">relative</span></code> – a set (default: the empty set); if non-empty, then
+relative cohomology with respect to this set is constructed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">implementation</span></code> – a string (default: <code class="docutils literal notranslate"><span class="pre">&quot;dual&quot;</span></code>); the
+algorithm used to compute the cohomology groups. Currently only
+<code class="docutils literal notranslate"><span class="pre">&quot;dual&quot;</span></code> is supported, i.e., the groups are computed as duals
+of the generic homology groups from SageMath.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> – a category; if not specified, a category for the
+cohomology group is chosen automatically depending on
+<code class="docutils literal notranslate"><span class="pre">coefficients</span></code>.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import dilation_surfaces
+sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+sage: S.cohomology()
+H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: S.cohomology(0)
+H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology">
+<span class="sig-name descname"><span class="pre">homology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.ParentMethods.homology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">k</span></code>-th simplicial homology group of this surface.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">k</span></code> – an integer (default: <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coefficients</span></code> – a ring (default: the integer ring); consider
+the homology with coefficients in this ring</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">relative</span></code> – a set (default: the empty set); if non-empty, then
+relative homology with respect to this set is constructed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">implementation</span></code> – a string (default: <code class="docutils literal notranslate"><span class="pre">&quot;generic&quot;</span></code>); the
+algorithm used to compute the homology groups. Currently only
+<code class="docutils literal notranslate"><span class="pre">&quot;generic&quot;</span></code> is supported, i.e., the groups are computed with
+the generic homology machinery from SageMath.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> – a category; if not specified, a category for the
+homology group is chosen automatically depending on
+<code class="docutils literal notranslate"><span class="pre">coefficients</span></code>.</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import dilation_surfaces
+sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+sage: S.homology()
+H₁(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+sage: S.homology(0)
+H₀(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface">
 <span class="sig-name descname"><span class="pre">is_cone_surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/categories/similarity_surfaces.html#SimilaritySurfaces.ParentMethods.is_cone_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface" title="Permalink to this definition">#</a></dt>
 <dd><p>Return whether this surface is a cone surface, i.e., glued edges
@@ -2141,6 +2205,8 @@ namely the surfaces formed by Euclidean polygons.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.ParentMethods</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.ParentMethods.cohomology()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.ParentMethods.homology()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.ParentMethods.is_cone_surface()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.ParentMethods.is_dilation_surface()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_rational_surface"><code class="docutils literal notranslate"><span class="pre">SimilaritySurfaces.ParentMethods.is_rational_surface()</span></code></a></li>
@@ -2183,5 +2249,7 @@ namely the surfaces formed by Euclidean polygons.</p>
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

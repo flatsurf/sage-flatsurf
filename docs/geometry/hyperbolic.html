@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="hyperbolic_polygons" href="hyperbolic_polygons.html" /><link rel="prev" title="half_translation_surfaces" href="half_translation_surfaces.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="hyperbolic_polygons" href="hyperbolic_polygons.html" /><link rel="prev" title="homology" href="homology.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
         <title>hyperbolic - sage-flatsurf 0.5.2 documentation</title>
@@ -189,6 +189,7 @@
 <li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -213,7 +215,6 @@
 <li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -1603,14 +1604,14 @@ the methods that create a subset, say <a class="reference internal" href="#flats
 take care of this by calling a sets
 <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexSet._normalize" title="flatsurf.geometry.hyperbolic.HyperbolicConvexSet._normalize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HyperbolicConvexSet._normalize()</span></code></a> to rewrite a set in its most
 natural representation. To get the denormalized representation, we can
-always set <cite>check=False</cite> when creating the object. For this to work,
-the <cite>__init__</cite> should not take care of any such normalization and
+always set <span class="math notranslate nohighlight">\(check=False\)</span> when creating the object. For this to work,
+the <span class="math notranslate nohighlight">\(__init__\)</span> should not take care of any such normalization and
 accept any input that can possibly be made sense of.</p>
 <p>Comparison with <code class="docutils literal notranslate"><span class="pre">==</span></code> should mean “is essentially indistinguishable
 from”: Implementing == to mean anything else would get us into trouble
 in the long run. In particular we cannot implement &lt;= to mean “is
 subset of” since then an oriented and an unoriented geodesic would be
-<cite>==</cite>. So, objects of a different type should almost never be equal. A
+<span class="math notranslate nohighlight">\(==\)</span>. So, objects of a different type should almost never be equal. A
 notable exception are objects that are indistinguishable to the end
 user but use different implementations: the starting point of the
 geodesic going from 0 to infinity, a
@@ -1789,17 +1790,17 @@ sage: segment._normalize()
 <dd><p>Return the image of this set under the <code class="docutils literal notranslate"><span class="pre">isometry</span></code>.</p>
 <p>INPUT:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">isometry</span></code> – a 2×2 matrix in <cite>GL(2,mathbb{R})</cite>, if <code class="docutils literal notranslate"><span class="pre">model</span></code> is
+<li><p><code class="docutils literal notranslate"><span class="pre">isometry</span></code> – a 2×2 matrix in <span class="math notranslate nohighlight">\(GL(2,\mathbb{R})\)</span>, if <code class="docutils literal notranslate"><span class="pre">model</span></code> is
 <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, or a 3×3 matrix giving a similitude that preserves
-a quadratic form of type <cite>(1, 2)</cite>, if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>.</p></li>
+a quadratic form of type <span class="math notranslate nohighlight">\((1, 2)\)</span>, if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> – a string (default: <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>); either
 <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">on_right</span></code> – a boolean (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) whether to apply the
 right action.</p></li>
 </ul>
 <p>ALGORITHM:</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, the 2×2 matrix with entries <cite>a, b, c,
-d</cite> encodes a fractional linear transformation sending</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, the 2×2 matrix with entries <span class="math notranslate nohighlight">\(a, b, c,
+d\)</span> encodes a fractional linear transformation sending</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[z \mapsto \frac{az + b}{cz + d}\]</div>
@@ -1872,7 +1873,7 @@ parabolic isometry:</p>
 </pre></div>
 </div>
 <p>An isometry of the Klein model, must preserve a quadratic form of type
-<cite>(1, 2)</cite>:</p>
+<span class="math notranslate nohighlight">\((1, 2)\)</span>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">isometry</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">vertical</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">apply_isometry</span><span class="p">(</span><span class="n">isometry</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;klein&quot;</span><span class="p">)</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
@@ -3118,7 +3119,7 @@ frequently when plotting.):</p>
 <p>This is the abstract base class of <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicUnorientedGeodesic" title="flatsurf.geometry.hyperbolic.HyperbolicUnorientedGeodesic"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicUnorientedGeodesic</span></code></a>
 and <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic" title="flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic"><code class="xref py py-class docutils literal notranslate"><span class="pre">HyperbolicOrientedGeodesic</span></code></a>.</p>
 <p>ALGORITHM:</p>
-<p>Internally, we represent geodesics as a triple <cite>a, b, c</cite> such that they satisfy the equation</p>
+<p>Internally, we represent geodesics as a triple <span class="math notranslate nohighlight">\(a, b, c\)</span> such that they satisfy the equation</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[a + bx + cy = 0\]</div>
@@ -3402,10 +3403,10 @@ in the smaller ring:</p>
 <span class="sig-name descname"><span class="pre">equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicGeodesic.equation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicGeodesic.equation" title="Permalink to this definition">#</a></dt>
 <dd><p>Return an equation for this geodesic as a triple <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code> such that:</p>
 <ul class="simple">
-<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, a point <cite>x + iy</cite> of the upper half
-plane is on the geodesic if it satisfies <cite>a(x^2 + y^2) + bx + c = 0</cite>.</p></li>
-<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>, points <cite>(x, y)</cite> in the unit disk satisfy
-are on the geodesic if <cite>a + bx + cy = 0</cite>.</p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, a point <span class="math notranslate nohighlight">\(x + iy\)</span> of the upper half
+plane is on the geodesic if it satisfies <span class="math notranslate nohighlight">\(a(x^2 + y^2) + bx + c = 0\)</span>.</p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>, points <span class="math notranslate nohighlight">\((x, y)\)</span> in the unit disk satisfy
+are on the geodesic if <span class="math notranslate nohighlight">\(a + bx + cy = 0\)</span>.</p></li>
 </ul>
 <p>INPUT:</p>
 <ul class="simple">
@@ -3605,7 +3606,7 @@ They only exist internally during constructions in the Euclidean plane.</p>
 that interchanges the ideal endpoints of this geodesic.</p>
 <p>ALGORITHM:</p>
 <p>For the vertical connecting zero and infinity, the Möbius
-transformation sending z to <cite>-1/z</cite> has the imaginary unit as its fixed
+transformation sending z to <span class="math notranslate nohighlight">\(-1/z\)</span> has the imaginary unit as its fixed
 point. For a half circle centered at the origin its point on the
 imaginary axis must be the fixed point (due to symmetry or a direct
 computation.) All other geodesics, are just translated versions of
@@ -3638,8 +3639,8 @@ through that point.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">point_or_geodesic</span></code> is another geodesic, return a
 geodesic that is also perpendicular to that geodesic.</p>
 <p>ALGORITHM:</p>
-<p>We use the construction as explained on <cite>Wikipedia
-&lt;https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions&gt;</cite>.</p>
+<p>We use the construction as explained on <span class="math notranslate nohighlight">\(Wikipedia
+&lt;https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions&gt;\)</span>.</p>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">point_or_geodesic</span></code> – a point or a geodesic in the
@@ -3722,8 +3723,8 @@ random. It should probably be counterclockwise to this geodesic.</p>
 <dd><p>Return the pole of this geodesic.</p>
 <p>ALGORITHM:</p>
 <p>The pole is the intersection of tangents of the Klein disk at
-the ideal endpoints of this geodesic, see <cite>Wikipedia
-&lt;https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions&gt;</cite>.</p>
+the ideal endpoints of this geodesic, see <span class="math notranslate nohighlight">\(Wikipedia
+&lt;https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions&gt;\)</span>.</p>
 <p>EXAMPLES:</p>
 <p>The pole of a geodesic is an ultra ideal point:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
@@ -3830,7 +3831,7 @@ will be represented</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Abstract methods are not marked with <cite>&#64;abstractmethod</cite> since we cannot
+<p>Abstract methods are not marked with <span class="math notranslate nohighlight">\(&#64;abstractmethod\)</span> since we cannot
 use the ABCMeta metaclass to enforce their implementation; otherwise,
 our subclasses could not use the unique representation metaclasses.</p>
 </div>
@@ -4011,9 +4012,9 @@ the square of the radius of the half circle</p></li>
 <p>INPUT:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">f</span></code> – a triple of elements <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c)</span></code> of <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicGeometry.base_ring" title="flatsurf.geometry.hyperbolic.HyperbolicGeometry.base_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code></a>
-encoding the line <cite>a + bx + cy = 0</cite></p></li>
+encoding the line <span class="math notranslate nohighlight">\(a + bx + cy = 0\)</span></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">g</span></code> – a triple of elements <code class="docutils literal notranslate"><span class="pre">(a,</span> <span class="pre">b,</span> <span class="pre">c)</span></code> of <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicGeometry.base_ring" title="flatsurf.geometry.hyperbolic.HyperbolicGeometry.base_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code></a>
-encoding the line <cite>a + bx + cy = 0</cite></p></li>
+encoding the line <span class="math notranslate nohighlight">\(a + bx + cy = 0\)</span></p></li>
 </ul>
 <p>OUTPUT: A pair of elements of <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicGeometry.base_ring" title="flatsurf.geometry.hyperbolic.HyperbolicGeometry.base_ring"><code class="xref py py-meth docutils literal notranslate"><span class="pre">base_ring()</span></code></a>, the coordinates of the
 point of intersection, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the lines do not intersect.</p>
@@ -4358,10 +4359,10 @@ NotImplementedError: half spaces cannot have an explicit orientation</p>
 <span class="sig-name descname"><span class="pre">equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicHalfSpace.equation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicHalfSpace.equation" title="Permalink to this definition">#</a></dt>
 <dd><p>Return an inequality for this half space as a triple <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">c</span></code> such that:</p>
 <ul class="simple">
-<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, a point <cite>x + iy</cite> of the upper half
-plane is in the half space if it satisfies <cite>a(x^2 + y^2) + bx + c ge 0</cite>.</p></li>
-<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>, points <cite>(x, y)</cite> in the unit disk satisfy
-<cite>a + bx + cy ge 0</cite>.</p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, a point <span class="math notranslate nohighlight">\(x + iy\)</span> of the upper half
+plane is in the half space if it satisfies <span class="math notranslate nohighlight">\(a(x^2 + y^2) + bx + c \ge 0\)</span>.</p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>, points <span class="math notranslate nohighlight">\((x, y)\)</span> in the unit disk satisfy
+<span class="math notranslate nohighlight">\(a + bx + cy \ge 0\)</span>.</p></li>
 </ul>
 <p>Note that the output is not unique since the coefficients can be scaled
 by a positive scalar.</p>
@@ -4722,7 +4723,7 @@ all geodesics.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic.angle">
 <span class="sig-name descname"><span class="pre">angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicOrientedGeodesic.angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicOrientedGeodesic.angle" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the angle between this geodesic and <code class="docutils literal notranslate"><span class="pre">other</span></code> divided by 2π,
-i.e., as a number in <cite>[0, 1)</cite>.</p>
+i.e., as a number in <span class="math notranslate nohighlight">\([0, 1)\)</span>.</p>
 <p>If this geodesic and <code class="docutils literal notranslate"><span class="pre">other</span></code> do not intersect, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is
 raised.</p>
 <p>INPUT:</p>
@@ -4856,7 +4857,7 @@ sage: H.vertical(0).end()
 </pre></div>
 </div>
 <p>The coordinates of the end points of the half circle of radius
-<cite>sqrt{2}</cite> around 0 can not be written down in the rationals:</p>
+<span class="math notranslate nohighlight">\(\sqrt{2}\)</span> around 0 can not be written down in the rationals:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">half_circle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span>
 <span class="mf">1.41421356237310</span>
@@ -4997,7 +4998,7 @@ sage: H.vertical(0).right_half_space()
 </pre></div>
 </div>
 <p>The coordinates of the end points of the half circle of radius
-<cite>sqrt{2}</cite> around 0 can not be written down in the rationals:</p>
+<span class="math notranslate nohighlight">\(\sqrt{2}\)</span> around 0 can not be written down in the rationals:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">half_circle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">p</span>
 <span class="o">-</span><span class="mf">1.41421356237310</span>
@@ -5249,7 +5250,7 @@ the Klein model. In that model it tends to be easier to perform
 computations without having to extend the base ring and we can also rely on
 standard algorithms for geometry in the Euclidean plane.</p>
 <p>For the Klein model, we use a unit disk centered at (0, 0). The map from
-the upper half plane sends the imaginary unit <cite>i</cite> to the center at the
+the upper half plane sends the imaginary unit <span class="math notranslate nohighlight">\(i\)</span> to the center at the
 origin, and sends 0 to (0, -1), 1 to (1, 0), -1 to (-1, 0) and infinity to
 (0, 1). The Möbius transformation</p>
 <div class="math-wrapper docutils container">
@@ -5296,7 +5297,7 @@ the Klein model, which in polar coordinates sends</p>
 </div>
 <p>in the upper half plane model.</p>
 <p>Note that the intersection of two geodesics defined by coefficients in a
-field <cite>K</cite> in the Klein model has coordinates in <cite>K</cite> in the Klein model.
+field <span class="math notranslate nohighlight">\(K\)</span> in the Klein model has coordinates in <span class="math notranslate nohighlight">\(K\)</span> in the Klein model.
 The corresponding statement is not true for the upper half plane model.</p>
 <p>INPUT:</p>
 <ul class="simple">
@@ -5501,7 +5502,7 @@ presented it with.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_gl2_to_sim12">
 <span class="sig-name descname"><span class="pre">_isometry_gl2_to_sim12</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">isometry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicPlane._isometry_gl2_to_sim12"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicPlane._isometry_gl2_to_sim12" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a lift of the <code class="docutils literal notranslate"><span class="pre">isometry</span></code> to a 3×3 matrix in the similitude
-group <cite>mathrm{Sim}(1, 2)</cite> describing an isometry in hyperboloid
+group <span class="math notranslate nohighlight">\(\mathrm{Sim}(1, 2)\)</span> describing an isometry in hyperboloid
 model.</p>
 <p>This is a helper method for <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicPlane.isometry" title="flatsurf.geometry.hyperbolic.HyperbolicPlane.isometry"><code class="xref py py-meth docutils literal notranslate"><span class="pre">isometry()</span></code></a> and
 <a class="reference internal" href="#flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry" title="flatsurf.geometry.hyperbolic.HyperbolicConvexSet.apply_isometry"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HyperbolicConvexSet.apply_isometry()</span></code></a> since isometries in the
@@ -5542,7 +5543,7 @@ represent in the Klein model.</p>
 <code class="docutils literal notranslate"><span class="pre">isometry</span></code>.</p>
 <p>INPUT:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">isometry</span></code> – a 3×3 matrix in <cite>mathrm{Sim}(1, 2)</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">isometry</span></code> – a 3×3 matrix in <span class="math notranslate nohighlight">\(\mathrm{Sim}(1, 2)\)</span></p></li>
 </ul>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
@@ -5575,8 +5576,8 @@ represent in the Klein model.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicPlane.base_ring">
 <span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicPlane.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicPlane.base_ring" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the base ring over which objects in the plane are defined.</p>
-<p>More specifically, all geodesics must have an equation <cite>a + bx + cy =
-0</cite> in the Klein model with coefficients in this ring, and all points
+<p>More specifically, all geodesics must have an equation <span class="math notranslate nohighlight">\(a + bx + cy =
+0\)</span> in the Klein model with coefficients in this ring, and all points
 must have coordinates in this ring when written in the Klein model, or
 be the end point of a geodesic. All other objects are built from these
 primitives.</p>
@@ -6198,7 +6199,7 @@ isometry to a convex set.</p>
 <dt class="sig sig-object py" id="flatsurf.geometry.hyperbolic.HyperbolicPlane.point">
 <span class="sig-name descname"><span class="pre">point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicPlane.point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicPlane.point" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the point with coordinates (x, y) in the given model.</p>
-<p>When <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, return the point <cite>x + iy</cite> in the upper half plane.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;half_plane&quot;</span></code>, return the point <span class="math notranslate nohighlight">\(x + iy\)</span> in the upper half plane.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">model</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;klein&quot;</span></code>, return the point (x, y) in the Klein model.</p>
 <p>INPUT:</p>
 <ul class="simple">
@@ -7759,8 +7760,8 @@ sage: segment.half_spaces()
 <span class="sig-name descname"><span class="pre">midpoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/hyperbolic.html#HyperbolicSegment.midpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.hyperbolic.HyperbolicSegment.midpoint" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the midpoint of this segment.</p>
 <p>ALGORITHM:</p>
-<p>We use the construction as explained on <cite>Wikipedia
-&lt;https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions&gt;</cite>.</p>
+<p>We use the construction as explained on <span class="math notranslate nohighlight">\(Wikipedia
+&lt;https://en.wikipedia.org/wiki/Beltrami%E2%80%93Klein_model#Compass_and_straightedge_constructions&gt;\)</span>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">HyperbolicPlane</span>
 <span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.hyperbolic</span> <span class="kn">import</span> <span class="n">HyperbolicSegment</span>
@@ -8532,14 +8533,14 @@ sage: list(half_spaces.triples())
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="half_translation_surfaces.html">
+          <a class="prev-page" href="homology.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">homology</span></code></div>
                 
               </div>
             </a>
@@ -8929,7 +8930,7 @@ sage: list(half_spaces.triples())
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

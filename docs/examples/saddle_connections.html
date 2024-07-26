@@ -189,6 +189,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -213,7 +215,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -291,7 +292,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1deca6dc74ed9a6c730682a13a25995a4dfe51c7bb33fc546ee15761b1139dbd.png" src="../_images/1deca6dc74ed9a6c730682a13a25995a4dfe51c7bb33fc546ee15761b1139dbd.png" />
+<img alt="../_images/b30c3e3e6a50b59bc3137a7fa61e333d908d0cdb57b03b119767c66ca53ee1eb.png" src="../_images/b30c3e3e6a50b59bc3137a7fa61e333d908d0cdb57b03b119767c66ca53ee1eb.png" />
 </div>
 </div>
 <p>We get a list of all saddle connections of length less than 10.</p>
@@ -357,7 +358,7 @@ Holonomy of sc2 is(-1/2*a^2 + 1/2, -a^3 + 5/2*a) = (-1.30901699437495, -2.126627
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/fe900e7f45fc25616cf0d527342facbbe4f5ba744e7285a22d4664ced3d7033e.png" src="../_images/fe900e7f45fc25616cf0d527342facbbe4f5ba744e7285a22d4664ced3d7033e.png" />
+<img alt="../_images/87a20048cb74b9d6543a0225e80d47ae199532cdbec1ab40103ae2a00bcb4d39.png" src="../_images/87a20048cb74b9d6543a0225e80d47ae199532cdbec1ab40103ae2a00bcb4d39.png" />
 </div>
 </div>
 <p>We can test that they intersect. By default the singularity does not count.</p>
@@ -407,7 +408,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e5c9d974b8293e1f0121b077253cafc91e9ec088098fa012cbf8ebaa99fa163a.png" src="../_images/e5c9d974b8293e1f0121b077253cafc91e9ec088098fa012cbf8ebaa99fa163a.png" />
+<img alt="../_images/cde1251edcb13c5042c9b5e02d3abbfc70f775f9e70173a6efa6dfb6273bdf64.png" src="../_images/cde1251edcb13c5042c9b5e02d3abbfc70f775f9e70173a6efa6dfb6273bdf64.png" />
 </div>
 </div>
 <p>We can plot all the saddle connections:</p>
@@ -421,7 +422,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a7e463ca0d1deb67e0c91a2c8c0818e7367e7c2e44de85fab93ba0503c5d6f1f.png" src="../_images/a7e463ca0d1deb67e0c91a2c8c0818e7367e7c2e44de85fab93ba0503c5d6f1f.png" />
+<img alt="../_images/2fb810ed50d985855a09c7c9e329078a88fa5549e0f6c825de5921144f8b1e41.png" src="../_images/2fb810ed50d985855a09c7c9e329078a88fa5549e0f6c825de5921144f8b1e41.png" />
 </div>
 </div>
 <p>We will build a subset of the saddle connection graph where vertices are saddle connections and two vertices are joined by an edge if and only if the saddle connections do not intersect (on their interiors).</p>
@@ -467,7 +468,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/2597b347e3d996470b9511383bf085877c7b8dddb702f80399c21c7442ab8ec7.png" src="../_images/2597b347e3d996470b9511383bf085877c7b8dddb702f80399c21c7442ab8ec7.png" />
+<img alt="../_images/3ac57c4b030652b65efb3bf7e2441aea69945437e85f14146354648689e2a97d.png" src="../_images/3ac57c4b030652b65efb3bf7e2441aea69945437e85f14146354648689e2a97d.png" />
 </div>
 </div>
 </section>
@@ -531,7 +532,7 @@ Point (1/6*a^2 - 2/3, -1/6*a^3 + 1/6*a) of polygon 1
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

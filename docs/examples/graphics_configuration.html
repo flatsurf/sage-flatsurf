@@ -189,6 +189,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
@@ -213,7 +215,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/relative_homology.html"><code class="docutils literal notranslate"><span class="pre">relative_homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
@@ -294,7 +295,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/72cdd579b1cd29f0161f534a71baf8aedfd9fd505b96456ed4be7a54edb7edc8.png" src="../_images/72cdd579b1cd29f0161f534a71baf8aedfd9fd505b96456ed4be7a54edb7edc8.png" />
+<img alt="../_images/91b0820f563151ad3da8ceb072b7d6a3e61c3f4e6f4c31c1bb1582e031f1eed8.png" src="../_images/91b0820f563151ad3da8ceb072b7d6a3e61c3f4e6f4c31c1bb1582e031f1eed8.png" />
 </div>
 </div>
 <p>Labels in the center of each polygon indicate the label of the polygon. Edge labels above indicate which polygon the edge is glued to.</p>
@@ -321,7 +322,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/34dce3b450a4a3622f146a498e380e7eceae46b39b3c96f0710db4095b67844c.png" src="../_images/34dce3b450a4a3622f146a498e380e7eceae46b39b3c96f0710db4095b67844c.png" />
+<img alt="../_images/4fdba98cdc3b400ade2e65fcc0d62da78bbdc513c0a0455a925442c69a7893f5.png" src="../_images/4fdba98cdc3b400ade2e65fcc0d62da78bbdc513c0a0455a925442c69a7893f5.png" />
 </div>
 </div>
 <p>sage-flatsurf uses a simple algorithm to layout polygons. Sometimes polygons overlap. But in this example the main concern is maybe that the picture is not as symmetric as we would like it to be. For example, we could aim for things to be symmetric around the polygons 0 and 1. Let’s say we would like to move polygon 2 so that it’s glued to 10 instead of being glued to 0. We count the edges on polygon 10 until we reach the edge glued to 2. It’s the first one. We can verify that this is correct:</p>
@@ -353,7 +354,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a99ed98db51dbf1673d069737bfb063215585428a521034c8943b6bf2a5de264.png" src="../_images/a99ed98db51dbf1673d069737bfb063215585428a521034c8943b6bf2a5de264.png" />
+<img alt="../_images/52c70bf762680e504a4cb801a2f5b548626a4e001fbd0528ef6b67619ec03f5c.png" src="../_images/52c70bf762680e504a4cb801a2f5b548626a4e001fbd0528ef6b67619ec03f5c.png" />
 </div>
 </div>
 <p>Let’s build the symmetric widget at polygon 1 by moving 7 to be adjacent to 5 and 3 to be adjacent to 7. Note that the order of the movements matter. If we do it in the wrong order, we detach things:</p>
@@ -366,7 +367,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1e48832a9e016ee6aff4bf1e756dda72147155dd2af94fd7bb93432164eda23e.png" src="../_images/1e48832a9e016ee6aff4bf1e756dda72147155dd2af94fd7bb93432164eda23e.png" />
+<img alt="../_images/21010a7e0e7e2f634833b0423701e457a9de5901a073ed6232a92a2ae3288236.png" src="../_images/21010a7e0e7e2f634833b0423701e457a9de5901a073ed6232a92a2ae3288236.png" />
 </div>
 </div>
 <p>Indeed, we moved 3 to be adjacent to 7 but then moved 7 away. Let’s do it in the correct order:</p>
@@ -379,7 +380,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/128fc86fa0d852bd0114e805a9f18e150976200ed1671fa1a2f156e56997d313.png" src="../_images/128fc86fa0d852bd0114e805a9f18e150976200ed1671fa1a2f156e56997d313.png" />
+<img alt="../_images/dd339ae28977d89d72591d015edecdd75a606af5a8cddf3124d6834ebf86be45.png" src="../_images/dd339ae28977d89d72591d015edecdd75a606af5a8cddf3124d6834ebf86be45.png" />
 </div>
 </div>
 <p>Finally, glue 9 to 8 for a symmetric picture:</p>
@@ -391,7 +392,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ef4bd2e8d99ef52df306c9b3b3779918f94741ce8b4d782c2ae2f1b47cd475f1.png" src="../_images/ef4bd2e8d99ef52df306c9b3b3779918f94741ce8b4d782c2ae2f1b47cd475f1.png" />
+<img alt="../_images/2f1e2bcd8f26d9b4805cbf8d9432ed61e52156c6765ba32009d495acf86d58dd.png" src="../_images/2f1e2bcd8f26d9b4805cbf8d9432ed61e52156c6765ba32009d495acf86d58dd.png" />
 </div>
 </div>
 </section>
@@ -431,7 +432,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/30a6ca667b41134390f41fc8017e2364781393126f6c4c9b15f566d7f6323c19.png" src="../_images/30a6ca667b41134390f41fc8017e2364781393126f6c4c9b15f566d7f6323c19.png" />
+<img alt="../_images/5dfad8b01c22c432324ff6b9d07bc1e6c8dc11df772af02f5707041338d2d9a2.png" src="../_images/5dfad8b01c22c432324ff6b9d07bc1e6c8dc11df772af02f5707041338d2d9a2.png" />
 </div>
 </div>
 <p>We can tell that the point <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">-4)</span></code> is in the unfolding, but we can’t immediately tell if it is in polygon 5 or 7. The GraphicalSurface <code class="docutils literal notranslate"><span class="pre">gs</span></code> is made out of GraphicalPolygons which we can use to deal with this sort of thing.</p>
@@ -482,7 +483,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c8755ccaff2dcc4147291fe38d43f5d4a8117873e9e21b48c8ec901988ca4cca.png" src="../_images/c8755ccaff2dcc4147291fe38d43f5d4a8117873e9e21b48c8ec901988ca4cca.png" />
+<img alt="../_images/2fc48370f14b601581aa3db0cf24014204d5a68dfe9c3f6f24db0473650188c7.png" src="../_images/2fc48370f14b601581aa3db0cf24014204d5a68dfe9c3f6f24db0473650188c7.png" />
 </div>
 </div>
 <p>Lets convert it to a surface point and plot it!</p>
@@ -507,7 +508,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9fcf5991787fb470de9703ac114b5c6abaeee4c74e8c0c59be0328f6f1027fd5.png" src="../_images/9fcf5991787fb470de9703ac114b5c6abaeee4c74e8c0c59be0328f6f1027fd5.png" />
+<img alt="../_images/7b79366115b2684ebe6df1c2c0ffa713383bb0f9a8d4044ac1f4a41afac57804.png" src="../_images/7b79366115b2684ebe6df1c2c0ffa713383bb0f9a8d4044ac1f4a41afac57804.png" />
 </div>
 </div>
 <p>Now we want to plot an upward trajectory through this point. Again, we have to deal with the fact that the coordinates might not match. You can get access to the transformation (a similarity) from geometric coordinates to graphical coordinates:</p>
@@ -599,7 +600,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b2c36573240870808c59f310191a0b6237deb0d712cb3b98fc0849252a97bd0a.png" src="../_images/b2c36573240870808c59f310191a0b6237deb0d712cb3b98fc0849252a97bd0a.png" />
+<img alt="../_images/82f6fb58c6bb8fe8eab97ce09a1fdaee73f9e51f1846b7f1bc6d5d70e6e78f67.png" src="../_images/82f6fb58c6bb8fe8eab97ce09a1fdaee73f9e51f1846b7f1bc6d5d70e6e78f67.png" />
 </div>
 </div>
 </section>
@@ -621,7 +622,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/033d47ddbf85b921223677dacc362742a34dd3f4a59321c94390301c755ad6da.png" src="../_images/033d47ddbf85b921223677dacc362742a34dd3f4a59321c94390301c755ad6da.png" />
+<img alt="../_images/99fd85a15824883c1281584688fef98425d3470b1ced6e0402b79f1c3ebb09f1.png" src="../_images/99fd85a15824883c1281584688fef98425d3470b1ced6e0402b79f1c3ebb09f1.png" />
 </div>
 </div>
 <p>Current polygon printing options:</p>
@@ -661,7 +662,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7c8ad41756f4f4712492d7aee983082d228c8f50d777b38fbac042bfbd6ec866.png" src="../_images/7c8ad41756f4f4712492d7aee983082d228c8f50d777b38fbac042bfbd6ec866.png" />
+<img alt="../_images/b27fa8e0210a92cd8e2b4f9aeb5c754d640a904510eaec82930c2f5eb3fe15f2.png" src="../_images/b27fa8e0210a92cd8e2b4f9aeb5c754d640a904510eaec82930c2f5eb3fe15f2.png" />
 </div>
 </div>
 <p>Again, to use a non-default graphical surface, we need to pass the graphical surface as a parameter.</p>
@@ -672,7 +673,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c47fb81f7e60041a9b30afd8f926f34d6f16127ab9bcd280ab2bb422eebdbfda.png" src="../_images/c47fb81f7e60041a9b30afd8f926f34d6f16127ab9bcd280ab2bb422eebdbfda.png" />
+<img alt="../_images/1213cd0ad165a031f2075e5054aa44bdd1f918d4a19f98b267e41d5928c5449a.png" src="../_images/1213cd0ad165a031f2075e5054aa44bdd1f918d4a19f98b267e41d5928c5449a.png" />
 </div>
 </div>
 <p>Lets make it prettier by drawing some stars on the faces!</p>
@@ -712,7 +713,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b2ef00fce139d64ac478e20aa25f40f14a74bfc1640d450becab4ecd24055b57.png" src="../_images/b2ef00fce139d64ac478e20aa25f40f14a74bfc1640d450becab4ecd24055b57.png" />
+<img alt="../_images/677afc878049d6ce02dcf498d6ca7ba71b8af2a0f58833db0cac2b9a8ba5d51f.png" src="../_images/677afc878049d6ce02dcf498d6ca7ba71b8af2a0f58833db0cac2b9a8ba5d51f.png" />
 </div>
 </div>
 <p>Plot using the original graphical surface.</p>
@@ -726,7 +727,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/70b667464f515484da2474eb0d104dc21c0847a4c2812667e3dd347bd6e1d9fc.png" src="../_images/70b667464f515484da2474eb0d104dc21c0847a4c2812667e3dd347bd6e1d9fc.png" />
+<img alt="../_images/5a247dd6e95b9ce0820b3247ed6e867dfe4678001695158c715f694abea9dea1.png" src="../_images/5a247dd6e95b9ce0820b3247ed6e867dfe4678001695158c715f694abea9dea1.png" />
 </div>
 </div>
 </section>
@@ -748,7 +749,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/680837ac533700e622b8889a4cbf6cd4322652af7b961fbb5fa4404570fe08e6.png" src="../_images/680837ac533700e622b8889a4cbf6cd4322652af7b961fbb5fa4404570fe08e6.png" />
+<img alt="../_images/c52499cda251b9e33ca879c7067b031a164053010513de2556d2452dc61b52b7.png" src="../_images/c52499cda251b9e33ca879c7067b031a164053010513de2556d2452dc61b52b7.png" />
 </div>
 </div>
 <p>Here is an example with the edge labels centered on the edge.</p>
@@ -780,7 +781,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f25f070a2f069a416fcddd04f27524c378184c86ea9fea5bc7330a70e52314cf.png" src="../_images/f25f070a2f069a416fcddd04f27524c378184c86ea9fea5bc7330a70e52314cf.png" />
+<img alt="../_images/993a6a0b08720b74cbf9496e70f9011219cbd5df29193454155743f31d0b1ba7.png" src="../_images/993a6a0b08720b74cbf9496e70f9011219cbd5df29193454155743f31d0b1ba7.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -811,7 +812,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/aabd31a946129522a576eac15af609e4e0b62d7efb7f9a0a471d7df5a1f9669f.png" src="../_images/aabd31a946129522a576eac15af609e4e0b62d7efb7f9a0a471d7df5a1f9669f.png" />
+<img alt="../_images/88d3213bd51b690d62545414b610f2e5c71be516a3903a65bf4d9d695ed40c63.png" src="../_images/88d3213bd51b690d62545414b610f2e5c71be516a3903a65bf4d9d695ed40c63.png" />
 </div>
 </div>
 </section>
@@ -898,7 +899,7 @@ To get a new suface, you can call <code class="docutils literal notranslate"><sp
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

@@ -9,6 +9,7 @@ The flatsurf.geometry Package
    geometry/categories
    geometry/chamanara
    geometry/circle
+   geometry/cohomology
    geometry/cone_surfaces
    geometry/dilation_surfaces
    geometry/euclidean
@@ -19,6 +20,7 @@ The flatsurf.geometry Package
    geometry/fundamental_group
    geometry/gl2r_orbit_closure
    geometry/half_translation_surfaces
+   geometry/homology
    geometry/hyperbolic
    geometry/hyperbolic_polygons
    geometry/interval_exchange_transformation
@@ -33,7 +35,6 @@ The flatsurf.geometry Package
    geometry/polygons
    geometry/polyhedra
    geometry/pyflatsurf_conversion
-   geometry/relative_homology
    geometry/similarity
    geometry/similarity_surface_generators
    geometry/similarity_surfaces
