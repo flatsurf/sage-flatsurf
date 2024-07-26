@@ -431,7 +431,7 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.lazy import GL2RImageSurface
 
             return GL2RImageSurface(self, matrix)
-    
+
         def homology(
             self,
             k=1,
@@ -498,9 +498,7 @@ class SimilaritySurfaces(SurfaceCategory):
             )
 
         @cached_surface_method
-        def _homology(
-            self, k, coefficients, relative, implementation, category
-        ):
+        def _homology(self, k, coefficients, relative, implementation, category):
             r"""
             Return the ``k``-th homology group of this surface.
 
@@ -548,7 +546,12 @@ class SimilaritySurfaces(SurfaceCategory):
             )
 
         def cohomology(
-            self, k=1, coefficients=None, relative=None, implementation="dual", category=None
+            self,
+            k=1,
+            coefficients=None,
+            relative=None,
+            implementation="dual",
+            category=None,
         ):
             r"""
             Return the ``k``-th simplicial cohomology group of this surface.
@@ -646,7 +649,6 @@ class SimilaritySurfaces(SurfaceCategory):
             return SimplicialCohomologyGroup(
                 self, k, coefficients, relative, implementation, category
             )
-
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""

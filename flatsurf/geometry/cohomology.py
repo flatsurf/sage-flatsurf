@@ -79,6 +79,7 @@ class SimplicialCohomologyClass(Element):
         True
 
     """
+
     def __init__(self, parent, values):
         super().__init__(parent)
 
@@ -230,16 +231,24 @@ class SimplicialCohomologyGroup(Parent):
 
         if implementation == "dual":
             if not surface.is_compact():
-                raise NotImplementedError("dual implementation can only handle cohomology of compact surfaces")
+                raise NotImplementedError(
+                    "dual implementation can only handle cohomology of compact surfaces"
+                )
 
             if surface.is_with_boundary():
-                raise NotImplementedError("dual implementation can only handle cohomology of surfaces without boundary")
+                raise NotImplementedError(
+                    "dual implementation can only handle cohomology of surfaces without boundary"
+                )
 
             if coefficients.characteristic() > 0:
-                raise NotImplementedError("dual implementation can only handle cohomology with coefficients of characteristic zero")
+                raise NotImplementedError(
+                    "dual implementation can only handle cohomology with coefficients of characteristic zero"
+                )
 
             if not coefficients.is_integral_domain():
-                raise NotImplementedError("dual implementation can only handle cohomology with flat coefficient rings")
+                raise NotImplementedError(
+                    "dual implementation can only handle cohomology with flat coefficient rings"
+                )
 
         else:
             raise NotImplementedError("unknown implementation for cohomology group")

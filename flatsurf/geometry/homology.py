@@ -113,6 +113,7 @@ class SimplicialHomologyClass(Element):
         True
 
     """
+
     def __init__(self, parent, chain):
         super().__init__(parent)
 
@@ -160,12 +161,16 @@ class SimplicialHomologyClass(Element):
 
         """
         if not self.parent().is_absolute():
-            raise NotImplementedError("algebraic intersection only available for absolute homology classes")
+            raise NotImplementedError(
+                "algebraic intersection only available for absolute homology classes"
+            )
 
         other = self.parent()(other)
 
         if self.parent().degree() != 1:
-            raise NotImplementedError("algebraic intersections only available for homology in degree 1")
+            raise NotImplementedError(
+                "algebraic intersections only available for homology in degree 1"
+            )
 
         intersection = 0
 
@@ -480,9 +485,7 @@ class SimplicialHomologyGroup(Parent):
     """
     Element = SimplicialHomologyClass
 
-    def __init__(
-        self, surface, k, coefficients, relative, implementation, category
-    ):
+    def __init__(self, surface, k, coefficients, relative, implementation, category):
         Parent.__init__(self, base=coefficients, category=category)
 
         if surface.is_mutable():
@@ -507,10 +510,14 @@ class SimplicialHomologyGroup(Parent):
 
         if implementation == "generic":
             if not surface.is_finite_type():
-                raise NotImplementedError("homology only implemented for surfaces with finitely many polygons")
+                raise NotImplementedError(
+                    "homology only implemented for surfaces with finitely many polygons"
+                )
 
             if surface.is_with_boundary():
-                raise NotImplementedError("homology only implemented for surfaces without boundary")
+                raise NotImplementedError(
+                    "homology only implemented for surfaces without boundary"
+                )
         else:
             raise NotImplementedError(
                 "cannot compute homology with this implementation yet"
@@ -1153,7 +1160,8 @@ class SimplicialHomologyGroup(Parent):
             and self._coefficients == other._coefficients
             and self._relative == other._relative
             and self._implementation == other._implementation
-            and self.category() == other.category())
+            and self.category() == other.category()
+        )
 
     def __hash__(self):
         r"""
@@ -1175,7 +1183,15 @@ class SimplicialHomologyGroup(Parent):
             True
 
         """
-        return hash((self._surface, self._coefficients, self._relative, self._implementation, self.category()))
+        return hash(
+            (
+                self._surface,
+                self._coefficients,
+                self._relative,
+                self._implementation,
+                self.category(),
+            )
+        )
 
 
 def SimplicialHomology(
@@ -1222,6 +1238,4 @@ def SimplicialHomology(
         True
 
     """
-    return surface.homology(
-        k, coefficients, relative, implementation, category
-    )
+    return surface.homology(k, coefficients, relative, implementation, category)
