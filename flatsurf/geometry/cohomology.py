@@ -64,7 +64,7 @@ class SimplicialCohomologyClass(Element):
     - ``parent`` -- the cohomology group
 
     - ``values`` -- a dict; the value at each generator of
-      :meth:`SimplicialCohomology.homology`.
+      :meth:`SimplicialCohomologyGroup.homology`.
 
     EXAMPLES::
 

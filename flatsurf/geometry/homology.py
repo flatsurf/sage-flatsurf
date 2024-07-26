@@ -79,7 +79,7 @@ class SimplicialHomologyClass(Element):
 
     - ``parent`` -- a :class:`SimplicialHomology`
 
-    - ``chain`` -- an element of the :meth:`SimplicialHomology.chain_module`.
+    - ``chain`` -- an element of the :meth:`SimplicialHomologyGroup.chain_module`.
 
     EXAMPLES::
 
