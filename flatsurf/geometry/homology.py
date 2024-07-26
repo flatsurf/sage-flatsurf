@@ -934,7 +934,8 @@ class SimplicialHomologyGroup(Parent):
         from sage.all import ZZ
 
         if self._coefficients is not ZZ:
-            X = f"{X}; {self._coefficients}"
+            sep = ";"
+            X = f"{X}{sep} {self._coefficients}"
 
         return f"{H_k}({X})"
 

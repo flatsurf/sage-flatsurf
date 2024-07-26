@@ -314,7 +314,8 @@ class SimplicialCohomologyGroup(Parent):
         from sage.all import RR
 
         if self._coefficients is not RR:
-            X = f"{X}; {self._coefficients}"
+            sep = ";"
+            X = f"{X}{sep} {self._coefficients}"
 
         return f"{Hk}({X})"
 
