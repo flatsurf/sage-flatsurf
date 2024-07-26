@@ -5,3 +5,7 @@
 **Removed:**
 
 * Removed the old ``flatsurf.geometry.relative_homology`` without prior deprecation (since it was not exposed publicly anywhere.) The new implementation should cover all the relevant features.
+
+**Fixed:**
+
+* Fixed rendering of formulas in documentation.
