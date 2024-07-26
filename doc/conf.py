@@ -1,5 +1,5 @@
 from flatsurf.version import version
-from sage_docbuild.conf import html_theme, html_theme_options, pygments_style, pygments_dark_style, html_css_files, skip_TESTS_block, mathjax3_config
+from sage_docbuild.conf import html_theme, html_theme_options, pygments_style, pygments_dark_style, html_css_files, skip_TESTS_block, mathjax3_config, default_role
 
 # -- General configuration ------------------------------------------------
 extensions = [
