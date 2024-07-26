@@ -35,7 +35,6 @@ The flatsurf.geometry Package
    geometry/polygons
    geometry/polyhedra
    geometry/pyflatsurf_conversion
-   geometry/relative_homology
    geometry/similarity
    geometry/similarity_surface_generators
    geometry/similarity_surfaces
