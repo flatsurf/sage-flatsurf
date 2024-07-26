@@ -233,7 +233,7 @@ class SimplicialCohomologyGroup(Parent):
                 raise NotImplementedError("dual implementation can only handle cohomology of compact surfaces")
 
             if surface.is_with_boundary():
-                raise NotImplementedError("dual implementation can only hanlde cohomology of surfaces without boundary")
+                raise NotImplementedError("dual implementation can only handle cohomology of surfaces without boundary")
 
             if coefficients.characteristic() > 0:
                 raise NotImplementedError("dual implementation can only handle cohomology with coefficients of characteristic zero")
