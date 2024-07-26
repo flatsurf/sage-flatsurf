@@ -25,9 +25,9 @@ The absolute cohomology of the unfolding of the (3, 4, 13) triangle::
 
 The relative cohomology, relative to the vertices::
 
-    sage: S = S.erase_marked_points()
-    sage: H = SimplicialCohomology(S, relative=S.vertices())
-    sage: len(H.gens())
+    sage: S = S.erase_marked_points()  # optional: pyflatsurf
+    sage: H = SimplicialCohomology(S, relative=S.vertices())  # optional: pyflatsurf
+    sage: len(H.gens())  # optional: pyflatsurf
     17
 
 """
