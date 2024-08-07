@@ -43,6 +43,28 @@ interesting of course::
     sage: len(H2.gens())
     1
 
+# We create the homology class corresponding to the core curve of a cylinder
+# (the interface here is terrible at the moment, see
+# https://github.com/flatsurf/sage-flatsurf/issues/166)::
+
+    sage: from flatsurf import Polygon, similarity_surfaces, SimplicialHomology, GL2ROrbitClosure
+
+    sage: P = Polygon(angles=[3, 4, 13])
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation").triangulate()
+
+    sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # optional: pyflatsurf
+    sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+    sage: T = conversion.codomain()  # optional: pyflatsurf
+    sage: O = GL2ROrbitClosure(T)  # optional: pyflatsurf
+
+    sage: D = O.decomposition((13, 37))  # optional: pyflatsurf
+    sage: cylinder = D.cylinders()[0]  # optional: pyflatsurf
+
+    sage: H = SimplicialHomology(S)
+    sage: core = sum(int(str(chain[edge])) * H(conversion.section(edge.positive())) for segment in cylinder.right() for chain in [segment.saddleConnection().chain()] for edge in T.edges())  # optional: pyflatsurf
+    sage: core  # optional: pyflatsurf
+    972725347814111665129717*B[((0, -1/2*c0, -1/2*c0^2 + 3/2), 2)] + 587352809047576581321682*B[((0, -1/2*c0^2 + 1, -1/2*c0^3 + 3/2*c0), 2)] + 60771110563809382932401*B[((0, -1/2*c0^2 + 1, 1/2*c0^3 - 3/2*c0), 2)] - 53041758653090465566717*B[((0, -1/2*c0^3 + 3/2*c0, -1/2*c0^2 + 1), 0)] + 9569109991987279798288*B[((0, -1/2*c0^3 + 3/2*c0, 1/2*c0^2 - 1), 2)] + 146594474592000186826071*B[((0, -1/2*c0^2 + 3/2, -1/2*c0), 0)] + 146594474592000186826071*B[((0, -1/2*c0^2 + 3/2, 1/2*c0), 1)] - 146594474904869031529173*B[((0, 1/2*c0^2 - 3/2, -1/2*c0), 1)] - 146594474904869031529173*B[((0, 1/2*c0^2 - 3/2, 1/2*c0), 0)] - 922367310107642373100892*B[((0, 1/2*c0^2 - 3/2, 1/2*c0), 2)] + 983138417147555026377551*B[((0, 1/2*c0^3 - 3/2*c0, -1/2*c0^2 + 1), 1)] - 548135568126349916760439*B[((0, 1/2*c0^3 - 3/2*c0, 1/2*c0^2 - 1), 2)] - 919683588071959715358072*B[((0, 1/2*c0^2 - 1, 1/2*c0^3 - 3/2*c0), 1)] + 912798196922094867592241*B[((0, 1, 0), 1)] - 113812867046195658069918*B[((1, -1/2*c0, -1/2*c0^2 + 3/2), 1)] + 3239309661817714*B[((1, -1/2*c0, 1/2*c0^2 - 3/2), 0)] - 3239309661817714*B[((1, -1/2*c0^2 + 1, -1/2*c0^3 + 3/2*c0), 0)] + 792773930720275561265269*B[((1, -1/2*c0^2 + 1, 1/2*c0^3 - 3/2*c0), 0)] - 859756441462564627735887*B[((1, -1/2*c0^3 + 3/2*c0, -1/2*c0^2 + 1), 0)] - 919683588071959715358072*B[((1, -1/2*c0^2 + 3/2, -1/2*c0), 1)] + 587352812882549535638467*B[((1, 0, 1), 0)] - 126909659967450796512016*B[((1, 0, 1), 2)] - 548135571004454994159207*B[((1, 1/2*c0^2 - 3/2, -1/2*c0), 0)] + 113812867046195658069918*B[((1, 1/2*c0^2 - 3/2, 1/2*c0), 0)] + 63454829075595311019479*B[((1, 1/2*c0^3 - 3/2*c0, -1/2*c0^2 + 1), 1)] + 113812867046195658069918*B[((1, 1/2*c0^3 - 3/2*c0, 1/2*c0^2 - 1), 1)] + 845815686757599384412773*B[((1, 1/2*c0, 1/2*c0^2 - 3/2), 1)] + 912798196922094867592241*B[((1, 1, 0), 1)]
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
