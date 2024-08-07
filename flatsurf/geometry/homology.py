@@ -62,7 +62,7 @@ https://github.com/flatsurf/sage-flatsurf/issues/166)::
 
     sage: H = SimplicialHomology(S)
     sage: core = sum(int(str(chain[edge])) * H(conversion.section(edge.positive())) for segment in cylinder.right() for chain in [segment.saddleConnection().chain()] for edge in T.edges())  # optional: pyflatsurf
-    sage: core  # optional: pyflatsurf
+    sage: core  # optional: pyflatsurf  # random output, the chosen generators vary between operating systems
     972725347814111665129717*B[((0, -1/2*c0, -1/2*c0^2 + 3/2), 2)] + 587352809047576581321682*B[((0, -1/2*c0^2 + 1, -1/2*c0^3 + 3/2*c0), 2)] + 60771110563809382932401*B[((0, -1/2*c0^2 + 1, 1/2*c0^3 - 3/2*c0), 2)] ...
 
 """
