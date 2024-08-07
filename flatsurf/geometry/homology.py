@@ -43,6 +43,28 @@ interesting of course::
     sage: len(H2.gens())
     1
 
+We create the homology class corresponding to the core curve of a cylinder (the
+interface here is terrible at the moment, see
+https://github.com/flatsurf/sage-flatsurf/issues/166)::
+
+    sage: from flatsurf import Polygon, similarity_surfaces, SimplicialHomology, GL2ROrbitClosure
+
+    sage: P = Polygon(angles=[3, 4, 13])
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation").triangulate()
+
+    sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # optional: pyflatsurf
+    sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+    sage: T = conversion.codomain()  # optional: pyflatsurf
+    sage: O = GL2ROrbitClosure(T)  # optional: pyflatsurf
+
+    sage: D = O.decomposition((13, 37))  # optional: pyflatsurf
+    sage: cylinder = D.cylinders()[0]  # optional: pyflatsurf
+
+    sage: H = SimplicialHomology(S)
+    sage: core = sum(int(str(chain[edge])) * H(conversion.section(edge.positive())) for segment in cylinder.right() for chain in [segment.saddleConnection().chain()] for edge in T.edges())  # optional: pyflatsurf
+    sage: core  # optional: pyflatsurf  # random output, the chosen generators vary between operating systems
+    972725347814111665129717*B[((0, -1/2*c0, -1/2*c0^2 + 3/2), 2)] + 587352809047576581321682*B[((0, -1/2*c0^2 + 1, -1/2*c0^3 + 3/2*c0), 2)] + 60771110563809382932401*B[((0, -1/2*c0^2 + 1, 1/2*c0^3 - 3/2*c0), 2)] ...
+
 """
 ######################################################################
 #  This file is part of sage-flatsurf.
