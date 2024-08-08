@@ -1116,8 +1116,31 @@ class SimplicialHomologyGroup(Parent):
         return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
 
     def hom(self, f):
-        # TODO: Return the homology morphism induced by the affine automorphism f.
+        r"""
+        Return the homomorphism of homology induced by ``f``.
 
+        INPUT:
+
+        - ``f`` -- an affine automorphism
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: g.matrix()
+
+            sage: H.gens()
+            sage: [g(h) for h in H.gens()]
+
+        """
         if f.domain() is self.surface() and f.codomain() is self.surface():
             from sage.all import Hom
             parent = Hom(self, self)
@@ -1229,23 +1252,145 @@ class SimplicialHomologyGroup(Parent):
 
 
 class SimplicialHomologyMorphism_base(Morphism):
+    r"""
+    Base class for all homomorphisms of homology.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: A = S.affine_automorphism_group()
+        sage: M = matrix([[1, 2], [0, 1]])
+        sage: f = A.derivative().section()(M, check=False)
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: g = H.hom(f)
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_base
+        sage: isinstance(g, SimplicialHomologyMorphism_base)
+        True
+
+    """
+    @cached_method
     def matrix(self):
-        raise NotImplementedError
+        r"""
+        Return the matrix describing this homomorphism on the generators of
+        homology (as a multiplication from the left.)
 
-    def _repr_defn(self):
-        return repr(self.matrix())
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: g.matrix()
+
+        """
+        from sage.all import matrix
+        return matrix([list(self(gen).coefficients()) for gen in self.domain().gens()]).transpose()
 
 
-class SimplicialHomologyMorphism_induced(Morphism):
+class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
+    r"""
+    A homomorphism of homology induced by a morphism of surfaces.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: A = S.affine_automorphism_group()
+        sage: M = matrix([[1, 2], [0, 1]])
+        sage: f = A.derivative().section()(M, check=False)
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: g = H.hom(f)
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_induced
+        sage: isinstance(g, SimplicialHomologyMorphism_induced)
+        True
+
+    """
     def __init__(self, parent, morphism):
         super().__init__(parent)
 
         self._morphism = morphism
 
+    def _call_(self, x):
+        r"""
+        Return the image of the homology class ``x`` under this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+
+            sage: H.gens()
+            (B[(0, 1)], B[(0, 0)])
+            sage: [g(h) for h in H.gens()]
+
+        """
+        return self._morphism._image_homology(x, codomain=self.codomain())
+
     def _repr_type(self):
+        r"""
+        Helper method for :meth:`_repr_` to produce a printable representation
+        of this homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: g._repr_type()
+            'Induced'
+
+        """
         return "Induced"
 
     def _repr_defn(self):
+        r"""
+        Helper method for :meth:`_repr_` to produce a printable representation
+        of this homomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: M = matrix([[1, 2], [0, 1]])
+            sage: f = A.derivative().section()(M, check=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(S)
+            sage: g = H.hom(f)
+            sage: print(g._repr_defn())
+            Induced by Affine endomorphism of Translation Surface in H_1(0) built from a square
+              Defn: Lift of linear action given by
+                    [1 2]
+                    [0 1]
+
+        """
         return f"Induced by {self._morphism!r}"
 
 

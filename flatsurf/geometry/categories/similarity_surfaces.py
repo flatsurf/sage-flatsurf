@@ -678,6 +678,33 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.veech_group import AffineAutomorphismGroup_generic
             return AffineAutomorphismGroup_generic(self)
 
+        @cached_surface_method
+        def veech_group(self):
+            r"""
+            Return the Veech group of this surface, i.e., the group of matrices
+            that fix the vertices of this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: V = S.veech_group(); V
+                VeechGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            TESTS:
+
+            This group is uniquely attached to a surface::
+
+                sage: V is S.veech_group()
+                True
+
+            """
+            if self.is_mutable():
+                raise NotImplementedError("affine automorphism group only implemented for immutable surfaces")
+
+            from flatsurf.geometry.veech_group import VeechGroup_generic
+            return VeechGroup_generic(self)
+
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
