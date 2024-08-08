@@ -650,6 +650,35 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, k, coefficients, relative, implementation, category
             )
 
+        @cached_surface_method
+        def affine_automorphism_group(self):
+            r"""
+            Return the group of affine automorphisms of this surface, i.e., the
+            group of homeomorphisms that can be locally expressed as affine
+            transformations.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: A = S.affine_automorphism_group(); A
+                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            TESTS:
+
+            This group is uniquely attached to a surface::
+
+                sage: A is S.affine_automorphism_group()
+                True
+
+            """
+            if self.is_mutable():
+                raise NotImplementedError("affine automorphism group only implemented for immutable surfaces")
+
+            from flatsurf.geometry.veech_group import AffineAutomorphismGroup_generic
+            return AffineAutomorphismGroup_generic(self)
+
+
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
         The category of oriented surfaces built from Euclidean polygons that

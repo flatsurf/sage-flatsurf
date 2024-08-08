@@ -89,6 +89,7 @@ from typing import List, Tuple
 
 from sage.structure.parent import Parent
 from sage.structure.element import Element
+from sage.categories.morphism import Morphism
 
 from sage.misc.cachefunc import cached_method
 
@@ -1114,6 +1115,16 @@ class SimplicialHomologyGroup(Parent):
 
         return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
 
+    def hom(self, f):
+        # TODO: Return the homology morphism induced by the affine automorphism f.
+
+        if f.domain() is self.surface() and f.codomain() is self.surface():
+            from sage.all import Hom
+            parent = Hom(self, self)
+            return parent.__make_element_class__(SimplicialHomologyMorphism_induced)(parent, f)
+
+        raise NotImplementedError("cannot create a morphism in homology from this data yet")
+
     def _test_symplectic_basis(self, **options):
         r"""
         Verify that :meth:`symplectic_basis` has been implemented correctly.
@@ -1215,6 +1226,27 @@ class SimplicialHomologyGroup(Parent):
                 self.category(),
             )
         )
+
+
+class SimplicialHomologyMorphism_base(Morphism):
+    def matrix(self):
+        raise NotImplementedError
+
+    def _repr_defn(self):
+        return repr(self.matrix())
+
+
+class SimplicialHomologyMorphism_induced(Morphism):
+    def __init__(self, parent, morphism):
+        super().__init__(parent)
+
+        self._morphism = morphism
+
+    def _repr_type(self):
+        return "Induced"
+
+    def _repr_defn(self):
+        return f"Induced by {self._morphism!r}"
 
 
 def SimplicialHomology(
