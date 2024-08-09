@@ -50,7 +50,7 @@ https://github.com/flatsurf/sage-flatsurf/issues/166)::
     sage: from flatsurf import Polygon, similarity_surfaces, SimplicialHomology, GL2ROrbitClosure
 
     sage: P = Polygon(angles=[3, 4, 13])
-    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation").triangulate()
+    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type="translation").triangulate().codomain()
 
     sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # optional: pyflatsurf
     sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf

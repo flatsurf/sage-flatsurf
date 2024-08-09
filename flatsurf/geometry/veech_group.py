@@ -351,13 +351,30 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
             sage: A = S.affine_automorphism_group()
             sage: f = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
             sage: f._factorization()
+            Composite endomorphism of Translation Surface in H_1(0) built from a square
+              Defn:   Linear morphism:
+                      From: Translation Surface in H_1(0) built from a square
+                      To:   Translation Surface in H_1(0) built from a quadrilateral
+                      Defn: [1 3]
+                            [0 1]
+                    then
+                      Delaunay decomposition morphism:
+                      From: Translation Surface in H_1(0) built from a quadrilateral
+                      To:   Delaunay cell decomposition of Translation Surface in H_1(0) built from a square
+                    then
+                      Section morphism:
+                      From: Delaunay cell decomposition of Translation Surface in H_1(0) built from a square
+                      To:   Translation Surface in H_1(0) built from a square
+                      Defn: Section of Delaunay decomposition morphism:
+                              From: Translation Surface in H_1(0) built from a square
+                              To:   Delaunay cell decomposition of Translation Surface in H_1(0) built from a square
 
         """
         deformation = self.domain().apply_matrix(self._matrix, in_place=False)
         codomain_normalization = self.codomain().delaunay_decompose()
         normalization = deformation.codomain().delaunay_decompose(codomain=codomain_normalization.codomain())
 
-        return deformation * normalization * codomain_normalization.section()
+        return codomain_normalization.section() * normalization * deformation
 
 
 class DerivativeMap(Morphism):

@@ -2499,12 +2499,14 @@ class SimilaritySurfaces(SurfaceCategory):
                     s.set_immutable()
                     return s.triangulate(label=label, relabel=relabel)
 
+                labels = {label} if label is not None else self.labels()
+
+                from flatsurf.geometry.morphism import TriangulationMorphism
                 from flatsurf.geometry.lazy import LazyTriangulatedSurface
 
-                if label is not None:
-                    label = {label}
-
-                return LazyTriangulatedSurface(self, labels=label)
+                return TriangulationMorphism._create_morphism(
+                    self, LazyTriangulatedSurface(self, labels=labels)
+                )
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -2668,6 +2670,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
 
                 """
+                import warnings
+                warnings.warn("delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulation().codomain() instead")
+
                 if triangulated is not None:
                     import warnings
 
@@ -2716,13 +2721,43 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
                         )
 
+                return self.triangulate().codomain()
+
+            def delaunay_triangulate(self):
+                r"""
+                Return a Delaunay triangulation of this surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+
+                    sage: M = matrix([[2, 1], [1, 1]])
+                    sage: S = M * translation_surfaces.infinite_staircase()
+                    sage: S = S.delaunay_triangulate().codomain()
+
+                    sage: S.root()
+                    (0, 0)
+                    sage: S.polygon((0, 0))
+                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+
+                    sage: S.is_delaunay_triangulated()
+                    True
+
+                TESTS::
+
+                    sage: TestSuite(S).run()
+
+                """
+                triangulation = self.triangulate()
+
                 from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
-                self = self.triangulate(in_place=False)
+                codomain = LazyDelaunayTriangulatedSurface(triangulation.codomain(), category=self.category())
 
-                return LazyDelaunayTriangulatedSurface(self, category=self.category())
+                from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
+                return DelaunayTriangulationMorphism._create_morphism(self, codomain, triangulation)
 
             def delaunay_decomposition(
                 self,
@@ -2825,7 +2860,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return LazyDelaunaySurface(self, category=self.category())
 
-            def delaunay_decompose(self):
+            def delaunay_decompose(self, codomain=None):
                 r"""
                 Return a Delaunay decomposition of this surface, i.e., a
                 representation of this surface such that the circumscribed disk
@@ -2837,6 +2872,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 edges from a Delaunay triangulation. An edge is ambiguous if
                 after its removal the circumscribed disk of each polygon
                 (still) contains no vertices in its interior.
+
+                INPUT:
+
+                - ``codomain`` -- a Delaunay decomposed surface or ``None``
+                  (default: ``None``); if present, the morphism returned goes
+                  from this surface to ``codomain``.
 
                 EXAMPLES::
 
@@ -2886,12 +2927,25 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: TestSuite(U).run()
 
                 """
-                from flatsurf.geometry.lazy import LazyDelaunaySurface
+                if codomain is not None:
+                    decomposition = self.delaunay_decompose()
 
-                s = LazyDelaunaySurface(self, category=self.category())
+                    from flatsurf.geometry.morphism import DelaunayDecompositionIsomorphism
+                    isomorphism = DelaunayDecompositionIsomorphism._create_morphism(decomposition.codomain(), codomain)
+
+                    from flatsurf.geometry.morphism import NamedFactorizationMorphism
+                    return NamedFactorizationMorphism._create_morphism(self, codomain, "Delaunay decomposition", isomorphism * decomposition)
+
+                delaunay_triangulation = self.delaunay_triangulate()
+
+                from flatsurf.geometry.lazy import LazyDelaunaySurface
+                decomposed = LazyDelaunaySurface(delaunay_triangulation.codomain(), category=self.category())
 
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-                return DelaunayDecompositionMorphism._create_morphism(self, s)
+                decomposition = DelaunayDecompositionMorphism._create_morphism(delaunay_triangulation.codomain(), decomposed)
+
+                from flatsurf.geometry.morphism import NamedFactorizationMorphism
+                return NamedFactorizationMorphism._create_morphism(self, decomposed, "Delaunay decomposition", decomposition * delaunay_triangulation)
 
             def saddle_connections(
                 self,
