@@ -432,6 +432,56 @@ class SimilaritySurfaces(SurfaceCategory):
 
             return GL2RImageSurface(self, matrix)
 
+        def apply_matrix(self, m, in_place=None):
+            r"""
+            Apply the 2×2 matrix ``m`` to the polygons of this surface and
+            return a morphism from this surface to the deformed surface.
+
+            INPUT:
+
+            - ``m`` -- a 2×2 matrix
+
+            - ``in_place`` -- a boolean (default: ``True``); whether to modify
+              this surface itself or return a modified copy of this surface
+              instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+                sage: morphism.domain()
+                Translation Surface in H_1(0) built from a square
+                sage: morphism.codomain()
+                Translation Surface in H_1(0) built from a rectangle
+
+                sage: morphism.codomain().polygon(0)
+                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+            """
+            if in_place is None:
+                import warnings
+
+                warnings.warn(
+                    "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
+                )
+
+                in_place = True
+
+            if in_place:
+                raise NotImplementedError(
+                    "this surface does not support applying a GL(2,R) action in-place yet"
+                )
+
+            from flatsurf.geometry.lazy import GL2RImageSurface
+
+            image = GL2RImageSurface(self, m)
+
+            from flatsurf.geometry.morphism import GL2RMorphism
+
+            return GL2RMorphism._create_morphism(self, image, m)
+
         def homology(
             self,
             k=1,
