@@ -115,6 +115,24 @@ class Surface_base(Parent):
         # Make sure that we create a new copy of an_element when requested.
         self._cache_an_element = None
 
+    def an_element(self):
+        r"""
+        Return a point of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.an_element()
+            Point (1/2, 1/2) of polygon 0
+
+        """
+        # Do not use the builtin caching of an_element if this surface is mutable.
+        if self.is_mutable():
+            return self._an_element_()
+
+        return super().an_element()
+
 
 class MutablePolygonalSurface(Surface_base):
     r"""
@@ -414,7 +432,7 @@ class MutablePolygonalSurface(Surface_base):
             Category of connected without boundary finite type translation surfaces
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
-            {'angles',
+            {'apply_matrix',
              'area',
              'canonicalize',
              'canonicalize_mapping',
@@ -1283,9 +1301,15 @@ class MutableOrientedSimilaritySurface(
         super().__init__(base, category=category)
 
     @classmethod
-    def from_surface(cls, surface, category=None):
+    def from_surface(cls, surface, labels=None, category=None):
         r"""
         Return a mutable copy of ``surface``.
+
+        INPUT:
+
+        - ``labels`` -- a set of labels or ``None`` (default: ``None``); if
+          ``None``, the entire surface is copied, otherwise only these labels
+          are copied and glued like in the original surface.
 
         EXAMPLES::
 
@@ -1306,25 +1330,45 @@ class MutableOrientedSimilaritySurface(
             sage: S
             Disconnected Surface built from 2 squares
 
+        We can build partial copies of an infinite surface::
+
+            sage: S = translation_surfaces.infinite_staircase()
+            sage: T = MutableOrientedSimilaritySurface.from_surface(S)
+            Traceback (most recent call last):
+            ...
+            TypeError: cannot create a full copy of an infinite surface
+
+            sage: T = MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:10])
+            sage: T.components()
+            ((0, 1, -1, 2, -2, 3, -3, 4, -4, 5),)
+
+            sage: T = MutableOrientedSimilaritySurface.from_surface(S, labels=S.labels()[:30:3])
+            sage: T.components()
+            ((0,), (-12,), (-9,), (-6,), (-3,), (2,), (5,), (8,), (11,), (14,))
+
         """
-        if not surface.is_finite_type():
-            raise TypeError
+        if labels is None:
+            if not surface.is_finite_type():
+                raise TypeError("cannot create a full copy of an infinite surface")
+            labels = surface.labels()
+
         self = MutableOrientedSimilaritySurface(surface.base_ring(), category=category)
 
-        for label in surface.labels():
+        for label in labels:
             self.add_polygon(surface.polygon(label), label=label)
 
-        for label in surface.labels():
+        for label in labels:
             for edge in range(len(surface.polygon(label).vertices())):
                 cross = surface.opposite_edge(label, edge)
-                if cross:
+                if cross and cross[0] in labels:
                     self.glue((label, edge), cross)
 
         if isinstance(surface, MutablePolygonalSurface):
             # Only copy explicitly set roots over
-            self._roots = surface._roots
+            if surface._roots:
+                self.set_roots(root for root in surface._roots if root in labels)
         else:
-            self.set_roots(surface.roots())
+            self.set_roots(root for root in surface.roots() if root in labels)
 
         return self
 
@@ -1823,24 +1867,21 @@ class MutableOrientedSimilaritySurface(
             us.glue((label, e), cross)
         return self
 
-    def relabel(self, relabeling, in_place=False):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
-        to allow relabeling in-place.
-
-        # TODO: Test that this works for surfaces with boundary.
-
-        # TODO: Remove support for errors.
-        """
-        if not in_place:
-            return super().relabel(relabeling=relabeling, in_place=in_place)
+    def relabel(self, relabeling=None, in_place=False):
+        if relabeling is None:
+            relabeling = {label: l for (l, label) in enumerate(self.labels())}
 
         if callable(relabeling):
             relabeling = {label: relabeling(label) for label in self.labels()}
 
         polygons = {label: self.polygon(label) for label in self.labels()}
-        old_gluings = {label: [self.opposite_edge(label, e) for e in range(len(self.polygon(label).vertices()))] for label in self.labels()}
+        old_gluings = {
+            label: [
+                self.opposite_edge(label, e)
+                for e in range(len(self.polygon(label).vertices()))
+            ]
+            for label in self.labels()
+        }
 
         roots = list(self.roots())
 
@@ -1859,13 +1900,14 @@ class MutableOrientedSimilaritySurface(
 
                 opposite_label, opposite_edge = gluing
 
-                self.glue((relabeling.get(label, label), e), (relabeling.get(opposite_label, opposite_label), opposite_edge))
+                self.glue(
+                    (relabeling.get(label, label), e),
+                    (relabeling.get(opposite_label, opposite_label), opposite_edge),
+                )
 
         self.set_roots([relabeling.get(root, root) for root in roots])
 
-        # TODO: Use the homset to create the morphism so we get the category right. (Here and everywhere else we are constructing morphisms.)
-        from flatsurf.geometry.morphism import RelabelingMorphism
-        return RelabelingMorphism._create_morphism(self, self, relabeling)
+        return self
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
@@ -2011,7 +2053,7 @@ class MutableOrientedSimilaritySurface(
         if relabel is not None:
             if relabel:
                 raise NotImplementedError(
-                    "the relabel keyword has been removed from reposition_polygon; use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
+                    "the relabel keyword has been removed from reposition_polygon; use relabel() to use integer labels instead"
                 )
             else:
                 import warnings
@@ -2115,10 +2157,18 @@ class MutableOrientedSimilaritySurface(
         if not in_place:
             return super().triangulate(in_place=False, label=label)
 
+        import warnings
+
+        warnings.warn(
+            "in-place triangulation has been deprecated and the in_place keyword argument will be removed from triangulate() in a future version of sage-flatsurf"
+        )
+
         labels = [label] if label is not None else list(self.labels())
 
         for label in labels:
-            self.refine_polygon(label, *MutableOrientedSimilaritySurface._triangulate(self, label))
+            self.refine_polygon(
+                label, *MutableOrientedSimilaritySurface._triangulate(self, label)
+            )
 
         from flatsurf.geometry.morphism import TriangulationMorphism
         return TriangulationMorphism._create_morphism(self, self)
@@ -2127,24 +2177,31 @@ class MutableOrientedSimilaritySurface(
     def _triangulate(surface, label):
         r"""
         Helper method for :meth:`triangulate`.
-        
+
         Returns a triangulation of the polygon with ``label`` of ``surface``
         together with a bidict that can be fed to :meth:`refine_polygon`.
 
         EXAMPLES::
 
-            TODO
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: MutableOrientedSimilaritySurface._triangulate(S, 0)
+            (Translation Surface with boundary built from 2 isosceles triangles,
+             bidict({0: ((0, 0), 0), 1: ((0, 0), 1), 2: ((0, 1), 1), 3: ((0, 1), 2)}))
 
         """
         triangulation, edge_to_edge = surface.polygon(label).triangulate()
         if len(triangulation.labels()) == 1:
             relabeling = {triangulation.root(): label}
         else:
-            relabeling = {l: (label, l) for l in triangulation.labels()}
-        triangulation = triangulation.relabel(relabeling).codomain()
+            relabeling = {lbl: (label, lbl) for lbl in triangulation.labels()}
+        triangulation = triangulation.relabel(relabeling)
 
         from bidict import bidict
-        edge_to_edge = bidict({edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()})
+
+        edge_to_edge = bidict(
+            {edge: (relabeling[l], e) for (edge, (l, e)) in edge_to_edge.items()}
+        )
 
         return triangulation, edge_to_edge
 
@@ -2162,133 +2219,6 @@ class MutableOrientedSimilaritySurface(
                 return True
         return False
 
-    def delaunay_triangulation(
-        self,
-        triangulated=False,
-        in_place=False,
-        direction=None,
-        relabel=None,
-    ):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation`
-        to allow triangulating in-place.
-        """
-        if not in_place:
-            return super().delaunay_triangulation(
-                triangulated=triangulated,
-                in_place=in_place,
-                direction=direction,
-                relabel=relabel,
-            )
-
-        if relabel is not None:
-            if relabel:
-                raise NotImplementedError(
-                    "the relabel keyword has been removed from delaunay_triangulation(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
-                )
-            else:
-                import warnings
-
-                warnings.warn(
-                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
-                )
-
-        if triangulated:
-            s = self
-        else:
-            s = self
-            self.triangulate(in_place=True)
-
-        if direction is None:
-            direction = (self.base_ring() ** 2)((0, 1))
-
-        if direction.is_zero():
-            raise ValueError
-
-        from collections import deque
-
-        unchecked_labels = deque(s.labels())
-        checked_labels = set()
-        while unchecked_labels:
-            label = unchecked_labels.popleft()
-            flipped = False
-            for edge in range(3):
-                if s._delaunay_edge_needs_flip(label, edge):
-                    # Record the current opposite edge:
-                    label2, edge2 = s.opposite_edge(label, edge)
-                    # Perform the flip.
-                    s.triangle_flip(label, edge, in_place=True, direction=direction)
-                    # Move the opposite polygon to the list of labels we need to check.
-                    if label2 != label:
-                        try:
-                            checked_labels.remove(label2)
-                            unchecked_labels.append(label2)
-                        except KeyError:
-                            # Occurs if label2 is not in checked_labels
-                            pass
-                    flipped = True
-                    break
-            if flipped:
-                unchecked_labels.append(label)
-            else:
-                checked_labels.add(label)
-        return s
-
-    def delaunay_decomposition(
-        self,
-        triangulated=False,
-        delaunay_triangulated=False,
-        in_place=False,
-        direction=None,
-        relabel=None,
-    ):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition`
-        to allow normalizing in-place.
-        """
-        if not in_place:
-            return super().delaunay_decomposition(
-                triangulated=triangulated,
-                delaunay_triangulated=delaunay_triangulated,
-                in_place=in_place,
-                direction=direction,
-                relabel=relabel,
-            )
-
-        if relabel is not None:
-            if relabel:
-                raise NotImplementedError(
-                    "the relabel keyword has been removed from delaunay_decomposition(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
-                )
-            else:
-                import warnings
-
-                warnings.warn(
-                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
-                )
-
-        s = self
-        if not delaunay_triangulated:
-            s = s.delaunay_triangulation(
-                triangulated=triangulated,
-                in_place=True,
-                direction=direction,
-                relabel=relabel,
-            )
-
-        while True:
-            for (l1, e1), (l2, e2) in s.gluings():
-                if s._delaunay_edge_needs_join(l1, e1):
-                    s.join_polygons(l1, e1, in_place=True)
-                    break
-            else:
-                break
-
-        from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-        return DelaunayDecompositionMorphism._create_morphism(self, s)
-
     def cmp(self, s2, limit=None):
         r"""
         Compare two surfaces. This is an ordering returning -1, 0, or 1.
@@ -2298,6 +2228,14 @@ class MutableOrientedSimilaritySurface(
 
         If the two surfaces are infinite, we just examine the first limit polygons.
         """
+        if limit is not None:
+            import warnings
+
+            warnings.warn(
+                "limit has been deprecated as a keyword argument for _cmp() and will be removed from a future version of sage-flatsurf; "
+                "if you rely on this check, you can try to run this method on MutableOrientedSimilaritySurface.from_surface(surface, labels=surface.labels()[:limit])"
+            )
+
         if self.is_finite_type():
             if s2.is_finite_type():
                 if limit is not None:
@@ -2720,7 +2658,7 @@ class RootedComponents_MutablePolygonalSurface(collections.abc.Mapping):
         return components
 
 
-class LabeledCollection:
+class LabeledCollection(collections.abc.Collection):
     r"""
     Abstract base class for collection of labels as returned by ``labels()``
     methods of surfaces.
@@ -2833,6 +2771,24 @@ class LabeledCollection:
                 return True
 
         return False
+
+
+class LabeledSet(LabeledCollection, collections.abc.Set):
+    r"""
+    Abstract base class for sets of labels or related objects, such as the set
+    of gluings of a surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: gluings = S.gluings()
+
+        sage: from flatsurf.geometry.surface import LabeledSet
+        sage: isinstance(gluings, LabeledSet)
+        True
+
+    """
 
 
 class LabeledView(LabeledCollection):
@@ -3004,7 +2960,7 @@ class ComponentLabels(LabeledCollection):
                     pending.append(cross[0])
 
 
-class Labels(LabeledCollection, collections.abc.Set):
+class Labels(LabeledCollection, collections.abc.Sequence):
     r"""
     The labels of a surface.
 
@@ -3045,6 +3001,37 @@ class Labels(LabeledCollection, collections.abc.Set):
         for component in self._surface.components():
             yield from component
 
+    def __getitem__(self, key):
+        r"""
+        Return the labels at position ``key``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: C = translation_surfaces.cathedral(1, 2)
+            sage: labels = C.labels()
+            sage: labels[0]
+            0
+            sage: labels[-1]
+            2
+            sage: labels[::-1]
+            [2, 3, 1, 0]
+
+        """
+        if not isinstance(key, slice):
+            key = int(key)
+            sgn = 1 if key >= 0 else -1
+
+            item = self[key : key + sgn : sgn]
+            if not item:
+                raise IndexError(key)
+
+            return item[0]
+
+        from more_itertools import islice_extended
+
+        return list(islice_extended(self, key.start, key.stop, key.step))
+
 
 class LabelsFromView(Labels, LabeledView):
     r"""
@@ -3077,7 +3064,7 @@ class LabelsFromView(Labels, LabeledView):
         return super().__eq__(other)
 
 
-class Polygons(LabeledCollection, collections.abc.Collection):
+class Polygons(LabeledCollection):
     r"""
     The collection of polygons of a surface.
 
@@ -3161,7 +3148,7 @@ class Polygons_MutableOrientedSimilaritySurface(Polygons):
         return len(self._polygons)
 
 
-class Edges(LabeledCollection, collections.abc.Set):
+class Edges(LabeledSet):
     r"""
     The set of edges of a surface.
 
@@ -3198,7 +3185,7 @@ class Edges(LabeledCollection, collections.abc.Set):
         return 0 <= len(polygon.vertices()) < edge
 
 
-class Gluings(LabeledCollection, collections.abc.Set):
+class Gluings(LabeledSet):
     r"""
     The set of gluings of the surface.
 

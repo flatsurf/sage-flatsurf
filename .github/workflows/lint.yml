@@ -9,89 +9,92 @@ concurrency:
 
 jobs:
   codespell:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
           mamba install codespell=2.2.2
       - name: Run codespell
-        shell: bash -l {0}
         run: codespell flatsurf
   pycodestyle:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
           mamba install pycodestyle=2.9.1
       - name: Run pycodestyle
-        shell: bash -l {0}
         run: |
           # We ignore warnings that are incompatible with black's formatting rules
           pycodestyle --ignore=E203,W503 --max-line-length=256 flatsurf/ test/
   pylint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
           mamba env update -n test --quiet -f environment.yml
-      - name: Install sage-flasturf
-        shell: bash -l {0}
+      - name: Install sage-flatsurf
         run: |
           pip install -e .
       - name: Run pylint
-        shell: bash -l {0}
         run: |
           # A lot of linters are disabled, see .pylintrc. We should enable most of them eventually.
           pylint flatsurf
   ruff:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
           mamba env update -n test --quiet -f environment.yml
       - name: Run ruff
-        shell: bash -l {0}
         run: |
           ruff check --select C4,UP008,UP031,UP034 .
   black:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v2
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest" }
       - name: Install dependencies
-        shell: bash -l {0}
         run: |
           mamba env update -n test --quiet -f environment.yml
           mamba install black=22.12
       - name: Run black
-        shell: bash -l {0}
         run: |
           black `find flatsurf -name '*.py'`
           # We run our notebooks through black to make sure everything is nicely formatted in our examples.
           # Consequently, we cannot use SageMath syntax in the notebooks. (But presently we do not need it anyway.)
           jupytext --sync --pipe black doc/examples/*.md
       - name: Detect changes
-        shell: bash -l {0}
         run: git diff --exit-code

@@ -1,9 +1,18 @@
+r"""
+Sanitizes jupyter-sphinx cells in the documentation.
+
+We use jupyter-execute to render plots in the module reference manual. At the
+same time, we want to use these jupyter-execute blocks as doctests. However,
+the sample output in these doctests cause syntax errors when passed to the
+SageMath Jupyter kernel.
+
+Here, we drop all lines that do not start with sage: or ....: so that the
+Jupyter kernel can execute them.
+"""
 # ****************************************************************************
 #  This file is part of sage-flatsurf.
 #
-#       Copyright (C) 2013-2019 Vincent Delecroix
-#                     2013-2019 W. Patrick Hooper
-#                          2023 Julian Rüth
+#       Copyright (C) 2024 Julian Rüth <julian.rueth@fsfe.org>
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,21 +28,11 @@
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# Move to lazy.py?
-from flatsurf.geometry.surface import OrientedSimilaritySurface
+import re
+from IPython.core.inputtransformer2 import PromptStripper
+import IPython
 
-from sage.misc.cachefunc import cached_method
-
-
-class GL2RImageSurface(OrientedSimilaritySurface):
-    @cached_method
-    def polygon(self, lab):
-
-    def opposite_edge(self, p, e):
-        if self._det_sign == 1:
-            return self._s.opposite_edge(p, e)
-        else:
-            polygon = self._s.polygon(p)
-            pp, ee = self._s.opposite_edge(p, len(polygon.vertices()) - 1 - e)
-            polygon2 = self._s.polygon(pp)
-            return pp, len(polygon2.vertices()) - 1 - ee
+# Replace the transform that strips sage: and ...: with our more aggressive version.
+IPython.get_ipython().input_transformer_manager.cleanup_transforms[1] = PromptStripper(
+    prompt_re=re.compile(r"^((sage: |\.\.\.\.: )|(?!sage: |\.\.\.\.: ).*)")
+)

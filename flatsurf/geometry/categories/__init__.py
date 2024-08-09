@@ -135,11 +135,10 @@ available::
     sage: S = MutableOrientedSimilaritySurface.from_surface(S)
 
     sage: TranslationSurfaces.FiniteType.WithoutBoundary.ParentMethods.stratum(S)
-    Traceback (most recent call last):
-    ...
-    AttributeError: ... no attribute 'angles'
+    H_1(0)
 
-So this approach is quite brittle and might need a mix with the above to work::
+While this works, this approach is quite brittle and might sometimes need a mix
+with the above to work::
 
     sage: from flatsurf.geometry.categories import ConeSurfaces
     sage: S._refine_category_(ConeSurfaces().WithoutBoundary())

@@ -48,6 +48,7 @@ Demos of some of the capabilities of sage-flatsurf:
 .. toctree::
    :maxdepth: 1
 
+   examples/tour
    examples/defining_surfaces
    examples/graphics_configuration
    examples/linear_action_and_delaunay
@@ -84,3 +85,5 @@ from an interactive SageMath session with |help|_.
 
    geometry
    graphical
+   features
+   cache

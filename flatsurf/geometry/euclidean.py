@@ -2377,9 +2377,9 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
 
     TESTS::
 
-        sage: from pyexactreal import ExactReals # optional: exactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
-        sage: R = ExactReals() # optional: exactreal
-        sage: is_cosine_sine_of_rational(R.one(), R.zero()) # optional: exactreal
+        sage: from pyexactreal import ExactReals # optional: pyexactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
+        sage: R = ExactReals() # optional: pyexactreal
+        sage: is_cosine_sine_of_rational(R.one(), R.zero()) # optional: pyexactreal
         True
 
     """
@@ -2457,6 +2457,62 @@ def is_cosine_sine_of_rational(cos, sin, scaled=False):
             return False
 
 
+def acos(cos_angle, numerical=False):
+    r"""
+    Return the arccosine of ``cos_angle`` as a multiple of 2π, i.e., as a value
+    between 0 and 1/2.
+
+    INPUT:
+
+    - ``cos_angle`` -- a floating point number, the cosine of an angle
+
+    - ``numerical`` -- a boolean (default: ``False``); whether to return a
+      numerical approximation of the arccosine or try to reconstruct an exact
+      rational value for the arccosine (in radians.)
+
+    EXAMPLES::
+
+        sage: from flatsurf.geometry.euclidean import acos
+
+        sage: acos(1)
+        0
+        sage: acos(.5)
+        1/6
+        sage: acos(0)
+        1/4
+        sage: acos(-.5)
+        1/3
+        sage: acos(-1)
+        1/2
+
+        sage: acos(.25)
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: cannot recover a rational angle from these numerical results
+        sage: acos(.25, numerical=True)
+        0.2097846883724169
+
+    """
+    import math
+
+    angle = math.acos(cos_angle) / (2 * math.pi)
+
+    assert 0 <= angle <= 0.5
+
+    if numerical:
+        return angle
+
+    # fast and dirty way using floating point approximation
+    from sage.all import RR
+
+    angle_rat = RR(angle).nearby_rational(0.00000001)
+    if angle_rat.denominator() > 256:
+        raise NotImplementedError(
+            "cannot recover a rational angle from these numerical results"
+        )
+    return angle_rat
+
+
 def angle(u, v, numerical=False):
     r"""
     Return the angle between the vectors ``u`` and ``v`` divided by `2 \pi`.
@@ -2522,21 +2578,9 @@ def angle(u, v, numerical=False):
     elif cos_uv > 1.0:
         assert cos_uv < 1.0000001
         cos_uv = 1.0
-    angle = math.acos(cos_uv) / (2 * math.pi)  # rat number between 0 and 1/2
 
-    if numerical:
-        return 1.0 - angle if u0 * v1 - u1 * v0 < 0 else angle
-
-    # fast and dirty way using floating point approximation
-    # (see below for a slow but exact method)
-    from sage.all import RR
-
-    angle_rat = RR(angle).nearby_rational(0.00000001)
-    if angle_rat.denominator() > 256:
-        raise NotImplementedError(
-            "cannot recover a rational angle from these numerical results"
-        )
-    return 1 - angle_rat if u0 * v1 - u1 * v0 < 0 else angle_rat
+    angle = acos(cos_uv, numerical=numerical)
+    return 1 - angle if u0 * v1 - u1 * v0 < 0 else angle
 
 
 def ccw(v, w):

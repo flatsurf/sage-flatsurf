@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.15.2
+    jupytext_version: 1.16.3
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -238,7 +238,7 @@ Currently we have to triangulate to do a rel deformation.
 jupyter:
   outputs_hidden: false
 ---
-s = s.triangulate()
+s = s.triangulate().relabel()
 ```
 
 A singularity is an equivalence class of vertices of polygons.

@@ -6,23 +6,13 @@
   "show_commit_url": "https://github.com/flatsurf/sage-flatsurf/commit/",
   "repo": ".",
   "environment_type": "conda",
+  "build_command": ["python setup.py build", "python -mpip wheel --no-deps --no-build-isolation --no-index -w {build_cache_dir} {build_dir}"],
   "matrix": {
-    "cppyy>=2.0.0,<3": [],
-    "cxx-compiler": [],
-    "gap-defaults": [],
-    "matplotlib-base": [],
-    "pip+flipper": [],
-    "pyeantic": ["1.3.0"],
-    "pyexactreal": ["3.1.0"],
-    "pyflatsurf": ["3.13.3"],
-    "python": [],
-    "sagelib": ["10.0"],
-    "scipy": [],
-    "surface-dynamics>=0.4.7": []
+    "wheel": []
   },
-  "conda_channels": ["conda-forge", "default"],
   "benchmark_dir": "benchmark",
   "env_dir": ".asv/env",
   "results_dir": ".asv/results",
-  "html_dir": ".asv/html"
+  "html_dir": ".asv/html",
+  "branches": ["master"]
 }

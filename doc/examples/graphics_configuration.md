@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.15.2
+    jupytext_version: 1.16.3
 kernelspec:
   display_name: SageMath 9.7
   language: sage
@@ -276,7 +276,7 @@ s.plot()
 Here is an example with the edge labels centered on the edge.
 
 ```{code-cell}
-gs = s.graphical_surface(cached=False)
+gs = s.graphical_surface()
 ```
 
 ```{code-cell}
@@ -295,7 +295,7 @@ gs.plot()
 ```
 
 ```{code-cell}
-gs = s.graphical_surface(cached=False)
+gs = s.graphical_surface()
 ```
 
 ```{code-cell}
