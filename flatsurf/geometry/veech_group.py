@@ -353,7 +353,11 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
             sage: f._factorization()
 
         """
-        raise NotImplementedError
+        deformation = self.domain().apply_matrix(self._matrix, in_place=False)
+        codomain_normalization = self.codomain().delaunay_decompose()
+        normalization = deformation.codomain().delaunay_decompose(codomain=codomain_normalization.codomain())
+
+        return deformation * normalization * codomain_normalization.section()
 
 
 class DerivativeMap(Morphism):

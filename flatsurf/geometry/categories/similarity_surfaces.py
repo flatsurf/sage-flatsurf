@@ -2728,6 +2728,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
 
                 """
+                import warnings
+                warnings.warn("delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead")
+
                 if triangulated is not None:
                     import warnings
 
@@ -2771,6 +2774,74 @@ class SimilaritySurfaces(SurfaceCategory):
                 from flatsurf.geometry.lazy import LazyDelaunaySurface
 
                 return LazyDelaunaySurface(self, category=self.category())
+
+            def delaunay_decompose(self):
+                r"""
+                Return a Delaunay decomposition of this surface, i.e., a
+                representation of this surface such that the circumscribed disk
+                of each polygon contains exactly the vertices of that polygon.
+
+                ALGORITHM:
+
+                The Delaunay decomposition is obtained by removing ambiguous
+                edges from a Delaunay triangulation. An edge is ambiguous if
+                after its removal the circumscribed disk of each polygon
+                (still) contains no vertices in its interior.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.octagon_and_squares()
+                    sage: a = S.base_ring().gens()[0]
+                    sage: M = Matrix([[1, 2 + a], [0, 1]])
+                    sage: S = M * S
+                    sage: S = S.triangulate()
+
+                    sage: S = S.delaunay_decompose().codomain()
+                    sage: S.is_delaunay_decomposed()
+                    True
+                    sage: S
+
+                ::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(edges=[(4, 0), (-2, 1), (-2, -1)])
+                    sage: T = similarity_surfaces.self_glued_polygon(P)
+
+                    sage: T = S.delaunay_decomposition().codomain()
+                    sage: T.is_delaunay_decomposed()
+                    True
+                    sage: T
+
+                    sage: TestSuite(S).run()
+
+                ::
+
+                    sage: M = matrix([[2, 1], [1, 1]])
+                    sage: U = M * translation_surfaces.infinite_staircase()
+
+                    sage: U = U.delaunay_decomposition().codomain()
+                    sage: U.is_delaunay_decomposed()
+                    True
+
+                    sage: U.root()
+                    (0, 0)
+                    sage: U.polygon((0, 0))
+                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+
+                TESTS::
+
+                    sage: TestSuite(S).run()
+                    sage: TestSuite(T).run()
+                    sage: TestSuite(U).run()
+
+                """
+                from flatsurf.geometry.lazy import LazyDelaunaySurface
+
+                s = LazyDelaunaySurface(self, category=self.category())
+
+                from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+                return DelaunayDecompositionMorphism._create_morphism(self, s)
 
             def saddle_connections(
                 self,

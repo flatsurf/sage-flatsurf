@@ -1603,7 +1603,7 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             raise ValueError("surface must be immutable")
 
         if not similarity_surface.is_delaunay_triangulated():
-            raise ValueError("surface must be triangulated")
+            raise ValueError("surface must be Delaunay triangulated")
 
         self._reference = similarity_surface
 
