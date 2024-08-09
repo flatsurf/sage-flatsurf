@@ -80,6 +80,17 @@ class SimilaritySurfaceTangentVector:
         sage: s.tangent_vector(0, (1, 1), (0, -1))
         SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (0, -1)
 
+    TESTS:
+
+    We verify that the saddle connections in a cathedral can be computed. This
+    failed at some point::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.cathedral(1, 2)
+        sage: connections = S.saddle_connections(2)  # random output due to cppyy deprecation warnings
+        sage: len(connections)
+        40
+
     """
 
     def __init__(self, tangent_bundle, polygon_label, point, vector):
@@ -118,18 +129,24 @@ class SimilaritySurfaceTangentVector:
                 self._position = pos
         elif pos.is_vertex():
             v = pos.get_vertex()
-            p = self.surface().polygon(polygon_label)
             # subsequent edge:
             edge1 = p.edge(v)
             # prior edge:
-            edge0 = p.edge((v - 1) % len(p.vertices()))
+            edge0 = p.edge(v - 1)
             wp1 = ccw(edge1, vector)
             wp0 = ccw(edge0, vector)
             if wp1 < 0 or wp0 < 0:
                 raise ValueError(
                     "Singular point with vector pointing away from polygon"
                 )
-            if wp0 == 0:
+
+            if (
+                is_anti_parallel(edge0, vector)
+                and self.surface().opposite_edge(
+                    polygon_label, (v - 1) % len(p.vertices())
+                )
+                is not None
+            ):
                 # vector points backward along edge 0
                 label2, e2 = self.surface().opposite_edge(
                     polygon_label, (v - 1) % len(p.vertices())
@@ -146,7 +163,7 @@ class SimilaritySurfaceTangentVector:
                     self.surface().polygon(label2).get_point_position(point2)
                 )
             else:
-                # vector points along edge1 in that directior or points into polygons interior
+                # vector points along edge1 or points into polygons interior
                 self._polygon_label = polygon_label
                 self._point = point
                 self._vector = vector
@@ -337,12 +354,10 @@ class SimilaritySurfaceTangentVector:
             SimilaritySurfaceTangentVector in polygon 1 based at (2/3, 2) with vector (4, -3)
         """
         p = self.polygon()
-        point2, pos2 = p.flow_to_exit(self.point(), self.vector())
-        # diff=point2-point
-        new_vector = SimilaritySurfaceTangentVector(
+        point2 = p.flow_to_exit(self.point(), self.vector())
+        return SimilaritySurfaceTangentVector(
             self.bundle(), self.polygon_label(), point2, -self.vector()
         )
-        return new_vector
 
     def straight_line_trajectory(self):
         r"""
@@ -580,6 +595,48 @@ class SimilaritySurfaceTangentBundle:
         from sage.modules.free_module import VectorSpace
 
         self._V = VectorSpace(self._base_ring, 2)
+
+    def some_elements(self):
+        r"""
+        Return some typical tangent vectors (for testing).
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: T = S.tangent_bundle()
+            sage: list(T.some_elements())
+            [SimilaritySurfaceTangentVector in polygon 0 based at (0, 1) with vector (1/2, -1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 1) with vector (-1/2, -1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 0) with vector (-1/2, 1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (1/2, 1/2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1/2, 1/2) with vector (1, 2),
+             SimilaritySurfaceTangentVector in polygon 0 based at (2/3, 0) with vector (1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (2/3, 1) with vector (-1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 2/3) with vector (0, 1),
+             SimilaritySurfaceTangentVector in polygon 0 based at (0, 2/3) with vector (0, -1),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1/3, 0) with vector (1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1/3, 1) with vector (-1, 0),
+             SimilaritySurfaceTangentVector in polygon 0 based at (1, 1/3) with vector (0, 1),
+             SimilaritySurfaceTangentVector in polygon 0 based at (0, 1/3) with vector (0, -1)]
+
+        """
+        S = self.surface()
+        for point in S.some_elements():
+            for label, coordinates in point.representatives():
+                polygon = S.polygon(label)
+                polygon_point = polygon(coordinates)
+                position = polygon_point.position()
+                if position.is_in_interior():
+                    yield self(label, coordinates, (1, 2))
+                elif position.is_in_edge_interior():
+                    edge = polygon.edge(position.get_edge())
+                    yield self(label, coordinates, edge)
+                else:
+                    assert position.is_vertex()
+                    vertex = position.get_vertex()
+                    bisector = (polygon.edge(vertex) - polygon.edge(vertex - 1)) / 2
+                    yield self(label, coordinates, bisector)
 
     def __call__(self, polygon_label, point, vector):
         r"""

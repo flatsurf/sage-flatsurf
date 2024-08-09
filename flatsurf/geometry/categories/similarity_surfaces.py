@@ -395,14 +395,16 @@ class SimilaritySurfaces(SurfaceCategory):
 
         def _mul_(self, matrix, switch_sides=True):
             r"""
+            Apply the 2×2 ``matrix`` to the polygons of this surface.
+
             EXAMPLES::
 
                 sage: from flatsurf import translation_surfaces
                 sage: s = translation_surfaces.infinite_staircase()
                 sage: s
                 The infinite staircase
-                sage: m=Matrix([[1,2],[0,1]])
-                sage: s2=m*s
+                sage: m = matrix([[1,2],[0,1]])
+                sage: s2 = m * s
                 sage: TestSuite(s2).run()
                 sage: s2.polygon(0)
                 Polygon(vertices=[(0, 0), (1, 0), (3, 1), (2, 1)])
@@ -421,16 +423,57 @@ class SimilaritySurfaces(SurfaceCategory):
             if not switch_sides:
                 raise NotImplementedError
 
-            from sage.structure.element import is_Matrix
+            return self.apply_matrix(matrix, in_place=False).codomain()
 
-            if not is_Matrix(matrix):
-                raise NotImplementedError("only implemented for matrices")
-            if not matrix.dimensions != (2, 2):
-                raise NotImplementedError("only implemented for 2x2 matrices")
+        def apply_matrix(self, m, in_place=None):
+            r"""
+            Apply the 2×2 matrix ``m`` to the polygons of this surface and
+            return a morphism from this surface to the deformed surface.
+
+            INPUT:
+
+            - ``m`` -- a 2×2 matrix
+
+            - ``in_place`` -- a boolean (default: ``True``); whether to modify
+              this surface itself or return a modified copy of this surface
+              instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+                sage: morphism.domain()
+                Translation Surface in H_1(0) built from a square
+                sage: morphism.codomain()
+                Translation Surface in H_1(0) built from a rectangle
+
+                sage: morphism.codomain().polygon(0)
+                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+            """
+            if in_place is None:
+                import warnings
+
+                warnings.warn(
+                    "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
+                )
+
+                in_place = True
+
+            if in_place:
+                raise NotImplementedError(
+                    "this surface does not support applying a GL(2,R) action in-place yet"
+                )
 
             from flatsurf.geometry.lazy import GL2RImageSurface
 
-            return GL2RImageSurface(self, matrix)
+            image = GL2RImageSurface(self, m)
+
+            from flatsurf.geometry.morphism import GL2RMorphism
+
+            return GL2RMorphism._create_morphism(self, image, m)
 
         def homology(
             self,
@@ -1438,8 +1481,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def relabel(self, relabeling=None, in_place=False):
                 r"""
-                Return a surface whose polygons have been relabeled according
-                to ``relabeling``.
+                Return a morphism to a surface whose polygons have been
+                relabeled according to ``relabeling``.
 
                 INPUT:
 
@@ -1449,16 +1492,16 @@ class SimilaritySurfaces(SurfaceCategory):
                   non-negative integers.
 
                 - ``in_place`` -- a boolean (default: ``False``); whether to
-                  modify this surface or return a relabeled copy instead.
+                  mutate this surface or return a morphism to an independent copy.
 
                 EXAMPLES::
 
                     sage: from flatsurf import translation_surfaces
                     sage: S = translation_surfaces.veech_double_n_gon(5)
-                    sage: SS = S.relabel({0: 1, 1: 2})
+                    sage: relabeling = S.relabel({0: 1, 1: 2})
+                    sage: SS = relabeling.codomain()
                     sage: SS
                     Translation Surface in H_2(2) built from 2 regular pentagons
-
                     sage: SS.root()
                     1
 
@@ -1469,7 +1512,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 The relabeling can also be a callable::
 
-                    sage: SSS = SS.relabel(lambda label: label -1)
+                    sage: SSS = SS.relabel(lambda label: label -1).codomain()
                     sage: SSS == S
                     True
 
@@ -1494,7 +1537,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 For infinite surfaces, we only support relabeling to the
                 non-negative integers:
 
-                    sage: S.relabel().labels()
+                    sage: S.relabel().codomain().labels()
                     (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, …)
 
                 """
@@ -1526,11 +1569,11 @@ class SimilaritySurfaces(SurfaceCategory):
                     MutableOrientedSimilaritySurface,
                 )
 
-                S = MutableOrientedSimilaritySurface.from_surface(self)
-                S = S.relabel(relabeling=relabeling, in_place=True)
-                S.set_immutable()
+                s = MutableOrientedSimilaritySurface.from_surface(self)
+                morphism = s.relabel(relabeling=relabeling, in_place=True)
+                s.set_immutable()
 
-                return S
+                return morphism.change(domain=self, codomain=s, check=False)
 
             def copy(
                 self,
@@ -1616,7 +1659,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     message += " Use relabel({old: new for (new, old) in enumerate(surface.labels())}) for integer labels."
 
                 if not self.is_finite_type():
-                    message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.delaunay.LazyMutableSurface and adapt it to your needs."
+                    message += " However, there is no immediate replacement for lazy copying of infinite surfaces. Have a look at the implementation of flatsurf.geometry.lazy.LazyMutableSurface and adapt it to your needs."
 
                 if new_field is not None:
                     message += " Use change_ring() to change the field over which the surface is defined."
@@ -2359,17 +2402,33 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def triangulation_mapping(self):
                 r"""
-                Return a ``SurfaceMapping`` triangulating the surface
-                or ``None`` if the surface is already triangulated.
-                """
-                from flatsurf.geometry.mappings import triangulation_mapping
+                Return a morphism triangulating the surface or
+                ``None`` if the surface is already triangulated.
 
-                return triangulation_mapping(self)
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+                    sage: S.triangulation_mapping()
+                    doctest:warning
+                    ...
+                    UserWarning: triangulation_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use triangulate() instead
+                    Triangulation morphism:
+                      From: Translation Surface in H_2(2) built from 3 squares
+                      To:   Triangulation of Translation Surface in H_2(2) built from 3 squares
+
+                """
+                import warnings
+
+                warnings.warn(
+                    "triangulation_mapping() has been deprecated and will be removed in a future version of sage-flatsurf; use triangulate() instead"
+                )
+
+                return self.triangulate()
 
             def triangulate(self, in_place=False, label=None, relabel=None):
                 r"""
-                Return a triangulated version of this surface. (This may be mutable
-                or not depending on the input.)
+                Return a morphism to a triangulated version of this surface.
 
                 INPUT:
 
@@ -2396,7 +2455,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S
                     Half-Translation Surface in Q_0(0, -1^4) built from a triangle
 
-                    sage: T = S.triangulate()
+                    sage: T = S.triangulate().codomain()
                     sage: len(T.polygon((0, 0)).vertices())
                     3
 
@@ -2444,16 +2503,18 @@ class SimilaritySurfaces(SurfaceCategory):
                 if self.is_mutable():
                     from flatsurf import MutableOrientedSimilaritySurface
 
-                    s = MutableOrientedSimilaritySurface.from_surface(self)
-                    s.set_immutable()
-                    return s.triangulate(label=label, relabel=relabel)
+                    return MutableOrientedSimilaritySurface.from_surface(
+                        self
+                    ).triangulate(in_place=True, label=label)
 
+                labels = {label} if label is not None else self.labels()
+
+                from flatsurf.geometry.morphism import TriangulationMorphism
                 from flatsurf.geometry.lazy import LazyTriangulatedSurface
 
-                if label is not None:
-                    label = {label}
-
-                return LazyTriangulatedSurface(self, labels=label)
+                return TriangulationMorphism._create_morphism(
+                    self, LazyTriangulatedSurface(self, labels=labels)
+                )
 
             def _delaunay_edge_needs_flip(self, p1, e1):
                 r"""
@@ -2705,19 +2766,19 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: a = s0.base_ring().gens()[0]
                     sage: m = Matrix([[1,2+a],[0,1]])
                     sage: s = m*s0
-                    sage: s = s.triangulate()
-                    sage: ss = s.delaunay_decomposition()
+                    sage: s = s.triangulate().codomain()
+                    sage: ss = s.delaunay_decomposition().codomain()
                     sage: len(ss.polygons())
                     3
 
                     sage: p = Polygon(edges=[(4,0),(-2,1),(-2,-1)])
                     sage: s0 = similarity_surfaces.self_glued_polygon(p)
-                    sage: s = s0.delaunay_decomposition()
+                    sage: s = s0.delaunay_decomposition().codomain()
                     sage: TestSuite(s).run()
 
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
-                    sage: ss = s.delaunay_decomposition()
+                    sage: ss = s.delaunay_decomposition().codomain()
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon(ss.root())
@@ -2765,180 +2826,533 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                self = self.delaunay_triangulation()
+                if not self.is_finite_type():
+                    from flatsurf.geometry.lazy import LazyDelaunaySurface
 
-                from flatsurf.geometry.lazy import LazyDelaunaySurface
+                    s = LazyDelaunaySurface(
+                        self, direction=direction, category=self.category()
+                    )
+                    from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
 
-                return LazyDelaunaySurface(self, category=self.category())
+                    return DelaunayDecompositionMorphism._create_morphism(self, s)
+
+                from flatsurf.geometry.surface import (
+                    MutableOrientedSimilaritySurface,
+                )
+
+                s = MutableOrientedSimilaritySurface.from_surface(self)
+                s.delaunay_decomposition(
+                    triangulated=triangulated,
+                    delaunay_triangulated=delaunay_triangulated,
+                    in_place=True,
+                    direction=direction,
+                    relabel=relabel,
+                )
+                s.set_immutable()
+
+                from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+
+                return DelaunayDecompositionMorphism._create_morphism(self, s)
+
+            def _saddle_connections_unbounded(
+                self, initial_label, initial_vertex, algorithm
+            ):
+                r"""
+                Enumerate all saddle connections in this surface ordered by length.
+
+                This is a helper method for :meth:`saddle_connections`.
+                """
+
+                def squared_length(v):
+                    return v[0] ** 2 + v[1] ** 2
+
+                # Enumerate all saddle connections by length
+                connections = set()
+                shortest_edge = min(
+                    squared_length(self.polygon(label).edge(edge))
+                    for (label, edge) in self.edges()
+                )
+
+                length_bound = shortest_edge
+                while True:
+                    more_connections = [
+                        connection
+                        for connection in self.saddle_connections(
+                            squared_length_bound=length_bound,
+                            initial_label=initial_label,
+                            initial_vertex=initial_vertex,
+                            algorithm=algorithm,
+                        )
+                        if connection not in connections
+                    ]
+                    for connection in sorted(
+                        more_connections,
+                        key=lambda connection: squared_length(connection.holonomy()),
+                    ):
+                        connections.add(connection)
+                        yield connection
+
+                    length_bound *= 2
+
+            def _saddle_connections_generic_cone_bounded(
+                self, squared_length_bound, source, incoming_edge, similarity, cone
+            ):
+                r"""
+                Enumerate the saddle connections of length at most square root
+                of ``squared_length_bound`` and which are strictly inside the
+                ``cone``.
+
+                This is a helper method for :meth:`saddle_connections`.
+
+                ALGORITHM:
+
+                We check for each vertex of the polygon if it is contained in
+                the cone. If it is, it leads to a saddle connection (unless
+                it's hidden or too far away.)
+
+                Then we recursively propagate the cone across each edge it hits
+                into the neighboring polygons.
+
+                INPUT:
+
+                - ``squared_length_bound`` -- a number, the square of the
+                  length up to which saddle connections should be considered;
+                  the length of saddle connections is determined using their
+                  holonomy vector written in their source polygon.
+
+                - ``source`` -- a pair of a polygon label and a vertex
+                  index; the vertex where all saddle connections enumerated by
+                  this method start.
+
+                - ``incoming_edge`` -- a pair of a polygon label and an edge
+                  index; the ``cone`` is crossing over this ``incoming_edge``
+                  (after transforming that polygon with the inverse of the
+                   ``similarity``.)
+
+                - ``similarity`` -- a similarity of the plane; describes a
+                  translation, rotation, and dilation of the ``incoming_edge``
+                  polygon to position it relative to the ``cone``
+
+                - ``cone`` -- an open cone in the plane which bounds the
+                  holonomy of the saddle connections.
+
+                """
+                assert not cone.is_empty()
+
+                label = incoming_edge[0]
+                polygon = similarity(self.polygon(label))
+
+                incoming_edge_segment = (
+                    polygon.vertex(incoming_edge[1]),
+                    polygon.vertex(incoming_edge[1] + 1),
+                )
+                origin = (polygon.base_ring() ** 2).zero()
+
+                from flatsurf.geometry.cone import Cones
+
+                if polygon.vertex(incoming_edge[1]):
+                    incoming_edge_cone = Cones(self.base_ring())(
+                        polygon.vertex(incoming_edge[1] + 1),
+                        polygon.vertex(incoming_edge[1]),
+                    )
+                else:
+                    incoming_edge_cone = Cones(self.base_ring())(
+                        polygon.vertex(incoming_edge[1] + 1),
+                        polygon.vertex(incoming_edge[1] - 1),
+                    )
+
+                if not cone.is_subset(incoming_edge_cone):
+                    raise ValueError(
+                        "cone must be contained in the cone formed by the incoming edge"
+                    )
+
+                from flatsurf import EuclideanPlane
+
+                bounding_circle = EuclideanPlane(self.base_ring()).circle(
+                    (0, 0),
+                    radius_squared=squared_length_bound,
+                )
+
+                # Each vertex that is contained in the cone's interior yields a
+                # saddle connection (if it is "behind" the incoming edge and
+                # not hidden by some other edge; these conditions are only
+                # possible for polygons that are not strictly convex.)
+                for v, vertex in enumerate(polygon.vertices()):
+                    if cone.contains_point(vertex):
+                        if v == incoming_edge[1]:
+                            continue
+
+                        from flatsurf.geometry.euclidean import (
+                            time_on_ray,
+                            ray_segment_intersection,
+                        )
+
+                        vertex_time_on_ray = time_on_ray(
+                            origin,
+                            vertex,
+                            ray_segment_intersection(
+                                origin, vertex, incoming_edge_segment
+                            ),
+                        )
+                        if vertex_time_on_ray[0] > vertex_time_on_ray[1]:
+                            assert not polygon.is_convex()
+                            # The cone hits the vertex before entering the polygon.
+                            continue
+
+                        exit = polygon.flow_to_exit(vertex, -vertex)
+
+                        # TODO: This is probably very inefficient. It would be enough to check if this point is on the incoming_edge.
+                        exit = polygon.get_point_position(exit)
+
+                        if exit.is_vertex() and exit.get_vertex() != incoming_edge[1]:
+                            # Another vertex hides this vertex.
+                            continue
+
+                        if (
+                            exit.is_in_edge_interior()
+                            and exit.get_edge() != incoming_edge[1]
+                        ):
+                            # Another edge hides this vertex.
+                            continue
+
+                        # The vertex is not hidden by some other vertex or
+                        # edge. This is a saddle connection.
+                        holonomy = vertex
+                        if bounding_circle.point_position(holonomy) >= 0:
+                            # The saddle connection is within the squared_length_bound.
+                            from flatsurf.geometry.saddle_connection import (
+                                SaddleConnection,
+                            )
+
+                            yield SaddleConnection(
+                                surface=self,
+                                start=source,
+                                end=(label, v),
+                                holonomy=vertex,
+                                end_holonomy=~similarity.derivative() * vertex,
+                            )
+
+                # We need to propagate the cone across edges to neighboring
+                # polygons. For this, we split the cone into smaller subcones,
+                # such that each subcone contains no vertex in its interior.
+                cone_space = cone.parent()
+                ray_space = cone_space.rays()
+                vertex_directions = (
+                    [cone.start()]
+                    + cone.sorted_rays(
+                        [
+                            ray_space(vertex)
+                            for v, vertex in enumerate(polygon.vertices())
+                            if v != incoming_edge[1]
+                            and cone.contains_point(vertex)
+                            and ray_space(vertex) not in [cone.start(), cone.end()]
+                        ]
+                    )
+                    + [cone.end()]
+                )
+
+                subcones = [
+                    cone_space(v, w)
+                    for (v, w) in zip(vertex_directions, vertex_directions[1:])
+                ]
+                # Now we propagate each subcone across the first edge it hits
+                # after crossing over the incoming edge.
+                for subcone in subcones:
+                    ray = subcone.a_ray()
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+
+                    start = ray_segment_intersection(
+                        origin, ray.vector(), incoming_edge_segment
+                    )
+                    exit = polygon.flow_to_exit(start, ray.vector())
+                    exit = polygon.get_point_position(exit)
+                    assert exit.is_in_edge_interior()
+                    outgoing_edge = exit.get_edge()
+                    if (
+                        bounding_circle.line_segment_position(
+                            polygon.vertex(outgoing_edge),
+                            polygon.vertex(outgoing_edge + 1),
+                        )
+                        != 1
+                    ):
+                        # No part of the edge is inside the
+                        # squared_length_bound, search ends here.
+                        continue
+
+                    opposite_edge = self.opposite_edge(label, outgoing_edge)
+                    if opposite_edge is None:
+                        # Unglued edge. Search ends here.
+                        continue
+
+                    # Recurse
+                    yield from self._saddle_connections_generic_cone_bounded(
+                        squared_length_bound,
+                        source,
+                        opposite_edge,
+                        similarity * self.edge_transformation(*opposite_edge),
+                        subcone,
+                    )
+
+            def _saddle_connections_generic_from_vertex_bounded(
+                self, squared_length_bound, source
+            ):
+                r"""
+                Enumerate all the saddle connections up to length
+                ``squared_length_bound`` which start at ``source``.
+
+                This is a helper method for :meth:`saddle_connections`.
+
+                ALGORITHM:
+
+                We consider saddle connections that come from the edges
+                adjacent to the vertex of ``source`` and then use
+                :meth:`_saddle_connections_generic_cone_bounded` to enumerate the
+                saddle connections in the open cone formed by these edges.
+
+                INPUT:
+
+                - ``squared_length_bound`` -- a number, the square of the
+                  length up to which saddle connections should be considered;
+                  the length of saddle connections is determined using their
+                  holonomy vector written in their source polygon.
+
+                - ``source`` -- a pair consisting of a polygon label and a vertex
+                  index. The saddle connection starts at that vertex and is
+                  contained in the closed cone that is formed by the two edges
+                  adjacent to the vertex.
+
+                """
+                polygon = self.polygon(source[0])
+
+                from flatsurf.geometry.saddle_connection import SaddleConnection
+
+                for connection in [
+                    SaddleConnection.from_half_edge(self, source[0], source[1]),
+                    -SaddleConnection.from_half_edge(
+                        self, source[0], (source[1] - 1) % len(polygon.edges())
+                    ),
+                ]:
+                    if connection.length_squared() <= squared_length_bound:
+                        yield connection
+
+                from flatsurf.geometry.similarity import SimilarityGroup
+
+                G = SimilarityGroup(self.base_ring())
+                similarity = G.translation(*-polygon.vertex(source[1]))
+
+                from flatsurf.geometry.cone import Cones
+
+                cone = Cones(polygon.base_ring())(
+                    polygon.edge(source[1]), -polygon.edge(source[1] - 1)
+                )
+
+                yield from self._saddle_connections_generic_cone_bounded(
+                    squared_length_bound, source, source, similarity, cone
+                )
 
             def saddle_connections(
                 self,
-                squared_length_bound,
+                squared_length_bound=None,
                 initial_label=None,
                 initial_vertex=None,
-                sc_list=None,
-                check=False,
+                algorithm=None,
             ):
                 r"""
-                Returns a list of saddle connections on the surface whose length squared is less than or equal to squared_length_bound.
-                The length of a saddle connection is measured using holonomy from polygon in which the trajectory starts.
+                Return the saddle connections on this surface whose length
+                squared is at most ``squared_length_bound`` (ordered by
+                length.)
 
-                If initial_label and initial_vertex are not provided, we return all saddle connections satisfying the bound condition.
+                The length of a saddle connection is measured using holonomy
+                from the polygon in which the trajectory starts.
 
-                If initial_label and initial_vertex are provided, it only provides saddle connections emanating from the corresponding
-                vertex of a polygon. If only initial_label is provided, the added saddle connections will only emanate from the
-                corresponding polygon.
+                If no ``squared_length_bound`` is given, all saddle connections
+                are enumerated (ordered by length.)
 
-                If sc_list is provided the found saddle connections are appended to this list and the resulting list is returned.
+                If ``initial_label`` and ``initial_vertex`` are provided, only
+                saddle connections are returned which emanate from the
+                corresponding vertex of a polygon (and only pointing into the
+                polygon or along the edges adjacent to that vertex.) If only
+                ``initial_label`` is provided, the saddle connections will only
+                emanate from vertices of the corresponding polygon.
 
-                If check==True it uses the checks in the SaddleConnection class to sanity check our results.
+                EXAMPLES:
 
-                EXAMPLES::
+                Return the connections of length up to square root of 5::
+
                     sage: from flatsurf import translation_surfaces
-                    sage: s = translation_surfaces.square_torus()
-                    sage: sc_list = s.saddle_connections(13, check=True)
-                    sage: len(sc_list)
-                    32
-                """
-                if squared_length_bound <= 0:
-                    raise ValueError
+                    sage: S = translation_surfaces.square_torus()
+                    sage: connections = S.saddle_connections(5)
+                    sage: list(connections)
+                    [Saddle connection (0, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (1, 0) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (0, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (-1, 0) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (1, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (-1, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (-1, -1) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (-1, 2) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (1, -2) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (-2, 1) from vertex 1 of polygon 0 to vertex 3 of polygon 0,
+                     Saddle connection (-2, -1) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (-1, -2) from vertex 2 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (2, -1) from vertex 3 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (1, 2) from vertex 0 of polygon 0 to vertex 2 of polygon 0]
 
-                if sc_list is None:
-                    sc_list = []
+                We get the same result if we take the first 16 saddle
+                connections without a length bound::
+
+                    sage: from itertools import islice
+                    sage: set(connections) == set(islice(S.saddle_connections(), 16))
+                    True
+
+                While enumerating saddle connections without a bound is not
+                asymptotically slower than enumerating with a bound, in the
+                current implementation it is quite a bit slower in practice in
+                particular if the bound is small.
+
+                TESTS:
+
+                Verify that saddle connections are enumerated correctly when
+                there are unglued edges::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                    0
+                    sage: S.set_immutable()
+                    sage: len(list(S.saddle_connections(10)))
+                    6
+
+                Verify that saddle connections are enumerated correctly when
+                there are self-glued edges::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (0, 1)]))
+                    0
+                    sage: S.glue((0, 0), (0, 0))
+                    sage: S.glue((0, 1), (0, 1))
+                    sage: S.glue((0, 2), (0, 2))
+                    sage: S.set_immutable()
+
+                    sage: from itertools import islice
+                    sage: list(islice(S.saddle_connections(), 8))
+                    [Saddle connection (0, -1) from vertex 2 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (1, 0) from vertex 0 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (-1, 1) from vertex 1 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 0 of polygon 0,
+                     Saddle connection (1, -2) from vertex 2 of polygon 0 to vertex 2 of polygon 0,
+                     Saddle connection (-2, 1) from vertex 1 of polygon 0 to vertex 1 of polygon 0,
+                     Saddle connection (1, 2) from vertex 0 of polygon 0 to vertex 0 of polygon 0]
+
+                    sage: len(list(S.saddle_connections(1)))
+                    2
+
+                    sage: len(list(S.saddle_connections(1, initial_label=0, initial_vertex=1)))
+                    1
+
+                We can also enumerate saddle connections on surfaces that are
+                built from non-convex polygons such as this L shaped polygon::
+
+                    sage: from flatsurf import MutableOrientedSimilaritySurface, Polygon
+                    sage: L = MutableOrientedSimilaritySurface(QQ)
+                    sage: L.add_polygon(Polygon(vertices=[(0, 0), (3, 0), (7, 0), (7, 2), (3, 2), (3, 3), (0, 3), (0, 2)]))
+                    0
+                    sage: L.glue((0, 0), (0, 5))
+                    sage: L.glue((0, 1), (0, 3))
+                    sage: L.glue((0, 2), (0, 7))
+                    sage: L.glue((0, 4), (0, 6))
+                    sage: L.set_immutable()
+
+                    sage: connections = L.saddle_connections(128)
+                    sage: len(connections)
+                    164
+
+                Note that on translation surfaces, enumerating saddle
+                connections with the (default) ``"pyflatsurf"`` algorithm is
+                usually much faster than the ``"generic"`` algorithm::
+
+                    sage: connections = L.saddle_connections(128)
+                    sage: len(connections)
+                    164
+
+                    sage: connections = L.saddle_connections(128, algorithm="generic")
+                    sage: len(connections)
+                    164
+
+                """
+                # TODO: Add benchmarks of the generic "cone" algorithm against
+                # the pyflatsurf algorithm. Also benchmark how much slower this
+                # is now since we are supporting much more complicated
+                # geometries.
+
+                # TODO: Fail if initial_vertex is set but not initial_label.
+
+                if squared_length_bound is not None and squared_length_bound < 0:
+                    raise ValueError("length bound must be non-negative")
+
+                if algorithm is None:
+                    algorithm = "generic"
+
+                if algorithm == "generic":
+                    return self._saddle_connections_generic(
+                        squared_length_bound, initial_label, initial_vertex
+                    )
+
+                raise NotImplementedError(
+                    "cannot enumerate saddle connections with this algorithm yet"
+                )
+
+            def _saddle_connections_generic(
+                self, squared_length_bound, initial_label, initial_vertex
+            ):
+                if squared_length_bound is None:
+                    # Enumerate all (usually infinitely many) saddle connections.
+                    return self._saddle_connections_unbounded(
+                        initial_label=initial_label,
+                        initial_vertex=initial_vertex,
+                        algorithm="generic",
+                    )
+
+                connections = []
+
                 if initial_label is None:
                     if not self.is_finite_type():
-                        raise NotImplementedError
-                    if initial_vertex is not None:
-                        raise ValueError(
-                            "when initial_label is not provided, then initial_vertex must not be provided either"
+                        raise NotImplementedError(
+                            "cannot enumerate saddle connections on surfaces that are built from inifinitely many polygons yet"
                         )
-                    for label in self.labels():
-                        self.saddle_connections(
-                            squared_length_bound, initial_label=label, sc_list=sc_list
-                        )
-                    return sc_list
-                if initial_vertex is None:
-                    for vertex in range(len(self.polygon(initial_label).vertices())):
-                        self.saddle_connections(
-                            squared_length_bound,
-                            initial_label=initial_label,
-                            initial_vertex=vertex,
-                            sc_list=sc_list,
-                        )
-                    return sc_list
+                    initial_labels = self.labels()
+                else:
+                    initial_labels = [initial_label]
 
-                # Now we have a specified initial_label and initial_vertex
-                from flatsurf.geometry.similarity import SimilarityGroup
+                for label in initial_labels:
+                    if initial_vertex is None:
+                        initial_vertices = range(len(self.polygon(label).vertices()))
+                    else:
+                        initial_vertices = [initial_vertex]
 
-                SG = SimilarityGroup(self.base_ring())
-                start_data = (initial_label, initial_vertex)
-                from flatsurf.geometry.circle import Circle
-
-                circle = Circle(
-                    (0, 0),
-                    squared_length_bound,
-                    base_ring=self.base_ring(),
-                )
-                p = self.polygon(initial_label)
-                v = p.vertex(initial_vertex)
-                last_sim = SG(-v[0], -v[1])
-
-                # First check the edge eminating rightward from the start_vertex.
-                e = p.edge(initial_vertex)
-                if e[0] ** 2 + e[1] ** 2 <= squared_length_bound:
-                    from flatsurf.geometry.surface_objects import SaddleConnection
-
-                    sc_list.append(SaddleConnection(self, start_data, e))
-
-                # Represents the bounds of the beam of trajectories we are sending out.
-                wedge = (
-                    last_sim(p.vertex((initial_vertex + 1) % len(p.vertices()))),
-                    last_sim(
-                        p.vertex(
-                            (initial_vertex + len(p.vertices()) - 1) % len(p.vertices())
-                        )
-                    ),
-                )
-
-                # This will collect the data we need for a depth first search.
-                chain = [
-                    (
-                        last_sim,
-                        initial_label,
-                        wedge,
-                        [
-                            (initial_vertex + len(p.vertices()) - i) % len(p.vertices())
-                            for i in range(2, len(p.vertices()))
-                        ],
-                    )
-                ]
-
-                while len(chain) > 0:
-                    # Should verts really be edges?
-                    sim, label, wedge, verts = chain[-1]
-                    if len(verts) == 0:
-                        chain.pop()
-                        continue
-                    vert = verts.pop()
-                    p = self.polygon(label)
-                    # First check the vertex
-                    vert_position = sim(p.vertex(vert))
-                    from flatsurf.geometry.euclidean import ccw
-
-                    if (
-                        ccw(wedge[0], vert_position) > 0
-                        and ccw(vert_position, wedge[1]) > 0
-                        and vert_position[0] ** 2 + vert_position[1] ** 2
-                        <= squared_length_bound
-                    ):
-                        sc_list.append(
-                            SaddleConnection(
-                                self,
-                                start_data,
-                                vert_position,
-                                end_data=(label, vert),
-                                end_direction=~sim.derivative() * -vert_position,
-                                holonomy=vert_position,
-                                end_holonomy=~sim.derivative() * -vert_position,
-                                check=check,
+                    for vertex in initial_vertices:
+                        connections.extend(
+                            self._saddle_connections_generic_from_vertex_bounded(
+                                squared_length_bound=squared_length_bound,
+                                source=(label, vertex),
                             )
                         )
-                    # Now check if we should develop across the edge
-                    vert_position2 = sim(p.vertex((vert + 1) % len(p.vertices())))
-                    if (
-                        ccw(vert_position, vert_position2) > 0
-                        and ccw(wedge[0], vert_position2) > 0
-                        and ccw(vert_position, wedge[1]) > 0
-                        and circle.line_segment_position(vert_position, vert_position2)
-                        == 1
-                    ):
-                        if ccw(wedge[0], vert_position) > 0:
-                            # First in new_wedge should be vert_position
-                            if ccw(vert_position2, wedge[1]) > 0:
-                                new_wedge = (vert_position, vert_position2)
-                            else:
-                                new_wedge = (vert_position, wedge[1])
-                        else:
-                            if ccw(vert_position2, wedge[1]) > 0:
-                                new_wedge = (wedge[0], vert_position2)
-                            else:
-                                new_wedge = wedge
-                        new_label, new_edge = self.opposite_edge(label, vert)
-                        new_sim = sim * ~self.edge_transformation(label, vert)
-                        p = self.polygon(new_label)
-                        chain.append(
-                            (
-                                new_sim,
-                                new_label,
-                                new_wedge,
-                                [
-                                    (new_edge + len(p.vertices()) - i)
-                                    % len(p.vertices())
-                                    for i in range(1, len(p.vertices()))
-                                ],
-                            )
-                        )
-                return sc_list
+
+                # The connections might contain duplicates because each glued
+                # edge can show up in two different polygons. Note that we
+                # cannot just change _saddle_connections_from_vertex_bounded()
+                # to only consider the edge clockwise from the vertex since we
+                # would then miss saddle connections in surfaces with
+                # self-glued and unglued edges.
+                connections = set(connections)
+
+                return sorted(
+                    connections, key=lambda connection: connection.length_squared()
+                )
 
             def ramified_cover(self, d, data):
                 r"""
@@ -3009,6 +3423,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def subdivide(self):
                 r"""
+                # TODO: Returns a morphism actually.
                 Return a copy of this surface whose polygons have been partitioned into
                 smaller triangles with
                 :meth:`~.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide`.
@@ -3025,7 +3440,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 Subdivision of this surface yields a surface with three triangles::
 
-                    sage: T = S.subdivide()
+                    sage: T = S.subdivide().codomain()
                     sage: T.labels()
                     (('Δ', 0), ('Δ', 1), ('Δ', 2))
 
@@ -3049,7 +3464,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.glue(("Δ", 0), ("□", 2))
                     sage: S.glue(("□", 1), ("□", 3))
 
-                    sage: T = S.subdivide()
+                    sage: T = S.subdivide().codomain()
 
                     sage: T.labels()
                     (('Δ', 0), ('□', 2), ('Δ', 1), ('Δ', 2), ('□', 3), ('□', 1), ('□', 0))
@@ -3074,35 +3489,219 @@ class SimilaritySurfaces(SurfaceCategory):
                      ((('□', 3), 2), (('□', 2), 1))]
 
                 """
-                labels = list(self.labels())
-                polygons = [self.polygon(label) for label in labels]
+                return self.insert_marked_points(
+                    *[
+                        self(label, self.polygon(label).centroid())
+                        for label in self.labels()
+                    ]
+                )
 
-                subdivisions = [p.subdivide() for p in polygons]
+            def insert_marked_points(self, *points):
+                from flatsurf.geometry.morphism import IdentityMorphism
+
+                morphism = IdentityMorphism._create_morphism(self)
+
+                for p in points:
+                    if p.is_vertex():
+                        raise ValueError("cannot insert marked points at vertices")
+
+                edge_points = [p for p in points if p.is_in_edge_interior()]
+                face_points = [p for p in points if p not in edge_points]
+
+                assert len(edge_points) + len(face_points) == len(points)
+
+                if edge_points:
+                    insert_morphism = self._insert_marked_points_edges(*edge_points)
+                    morphism = insert_morphism * morphism
+                    face_points = [insert_morphism(point) for point in face_points]
+                    self = insert_morphism.codomain()
+                if face_points:
+                    insert_morphism = self._insert_marked_points_faces(*face_points)
+                    morphism = insert_morphism * morphism
+
+                return morphism
+
+            def _insert_marked_points_edges(self, *points):
+                assert (
+                    points
+                ), "_insert_marked_points_edges must be called with some points to insert"
+
+                from flatsurf.geometry.euclidean import time_on_ray
+
+                points = {
+                    label: {
+                        # TODO: Sort vertices along edge
+                        edge: sorted(
+                            [
+                                coordinates
+                                for point in points
+                                for (lbl, coordinates) in point.representatives()
+                                if lbl == label
+                                and self.polygon(label)
+                                .get_point_position(coordinates)
+                                .get_edge()
+                                == edge
+                            ],
+                            key=lambda coordinates: time_on_ray(
+                                self.polygon(label).vertex(edge),
+                                self.polygon(label).edge(edge),
+                                coordinates,
+                            ),
+                        )
+                        for edge in range(len(self.polygon(label).edges()))
+                    }
+                    for label in self.labels()
+                }
+
+                from flatsurf import MutableOrientedSimilaritySurface
+
+                surface = MutableOrientedSimilaritySurface(self.base_ring())
+
+                # Add polygons to surface with marked point
+                for label in self.labels():
+                    vertices = []
+                    for v, vertex in enumerate(self.polygon(label).vertices()):
+                        vertices.append(vertex)
+                        vertices.extend(points[label][v])
+
+                    from flatsurf import Polygon
+
+                    surface.add_polygon(Polygon(vertices=vertices), label=label)
+
+                # TODO: Make static on InsertMarkedPointsOnEdgeMorphism
+                def edgenum(label, edge, section):
+                    edgenum = 0
+                    for e in range(edge):
+                        edgenum += len(points[label][e]) + 1
+
+                    edgenum += section
+
+                    return edgenum
+
+                # Glue polygons in surface.
+                for label in self.labels():
+                    for edge in range(len(self.polygon(label).edges())):
+                        opposite = self.opposite_edge(label, edge)
+                        if opposite is None:
+                            continue
+
+                        opposite_label, opposite_edge = opposite
+                        for e in range(len(points[label][edge]) + 1):
+                            surface.glue(
+                                (label, edgenum(label, edge, e)),
+                                (
+                                    opposite_label,
+                                    edgenum(opposite_label, opposite_edge + 1, -1 - e),
+                                ),
+                            )
+
+                surface.set_immutable()
+
+                from flatsurf.geometry.morphism import InsertMarkedPointsOnEdgeMorphism
+
+                return InsertMarkedPointsOnEdgeMorphism._create_morphism(
+                    self, surface, points
+                )
+
+            def _insert_marked_points_faces(self, *points):
+                # Recursively insert points by only inserting at most one point
+                # in each face at a time.
+                first_point = {}
+                more_points = {}
+
+                for point in points:
+                    label, coordinates = point.representative()
+                    if label not in first_point:
+                        first_point[label] = point.coordinates(label)[0]
+                    else:
+                        more_points[label] = more_points.get(label, []) + [point]
+
+                assert (
+                    first_point
+                ), "_insert_marked_points_faces must be called with some points to insert"
+
+                def is_subdivided(label):
+                    return label in first_point
+
+                subdivisions = {
+                    label: self.polygon(label).subdivide(first_point[label])
+                    if is_subdivided(label)
+                    else [self.polygon(label)]
+                    for label in self.labels()
+                }
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
 
                 surface = MutableOrientedSimilaritySurface(self.base())
 
                 # Add subdivided polygons
-                for s, subdivision in enumerate(subdivisions):
-                    label = labels[s]
-                    for p, polygon in enumerate(subdivision):
-                        surface.add_polygon(polygon, label=(label, p))
+                for label in self.labels():
+                    if is_subdivided(label):
+                        for p, polygon in enumerate(subdivisions[label]):
+                            surface.add_polygon(polygon, label=(label, p))
+                    else:
+                        surface.add_polygon(self.polygon(label), label=label)
 
-                surface.set_roots((label, 0) for label in self.roots())
+                surface.set_roots(
+                    (label, 0) if is_subdivided(label) else label
+                    for label in self.roots()
+                )
 
-                # Add gluings between subdivided polygons
-                for s, subdivision in enumerate(subdivisions):
-                    label = labels[s]
-                    for p in range(len(subdivision)):
-                        surface.glue(
-                            ((label, p), 1), ((label, (p + 1) % len(subdivision)), 2)
-                        )
+                # Establish gluings
+                for label in self.labels():
+                    for e in range(len(self.polygon(label).vertices())):
+                        # Reestablish the original gluings
+                        opposite = self.opposite_edge(label, e)
 
-                        # Add gluing from original surface
-                        opposite = self.opposite_edge(label, p)
                         if opposite is not None:
-                            surface.glue(((label, p), 0), (opposite, 0))
+                            opposite_label, opposite_edge = opposite
+                            surface.glue(
+                                (
+                                    (label, e) if is_subdivided(label) else label,
+                                    0 if is_subdivided(label) else e,
+                                ),
+                                (
+                                    (opposite_label, opposite_edge)
+                                    if is_subdivided(opposite_label)
+                                    else opposite_label,
+                                    0
+                                    if is_subdivided(opposite_label)
+                                    else opposite_edge,
+                                ),
+                            )
+
+                        # Glue subdivided polygons internally
+                        if is_subdivided(label):
+                            surface.glue(
+                                ((label, e), 1),
+                                (
+                                    (
+                                        label,
+                                        (e + 1) % len(self.polygon(label).vertices()),
+                                    ),
+                                    2,
+                                ),
+                            )
+
+                surface.set_immutable()
+
+                from flatsurf.geometry.morphism import InsertMarkedPointsInFaceMorphism
+
+                insert_first_point = InsertMarkedPointsInFaceMorphism._create_morphism(
+                    self, surface, subdivisions
+                )
+
+                if more_points:
+                    from itertools import chain
+
+                    more_points = list(chain.from_iterable(more_points.values()))
+                    more_points = [insert_first_point(p) for p in more_points]
+                    return (
+                        insert_first_point.codomain().insert_marked_points(more_points)
+                        * insert_first_point
+                    )
+
+                return insert_first_point
 
                 surface.set_immutable()
 
@@ -3110,6 +3709,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
             def subdivide_edges(self, parts=2):
                 r"""
+                # TODO: Returns a morphism actually.
                 Return a copy of this surface whose edges have been split into
                 ``parts`` equal pieces each.
 
@@ -3131,7 +3731,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 Subdividing this triangle yields a triangle with marked points along
                 the edges::
 
-                    sage: T = S.subdivide_edges()
+                    sage: T = S.subdivide_edges().codomain()
 
                 If we add another polygon to the original surface and glue them, we
                 can see how existing gluings are preserved when subdividing::
@@ -3142,7 +3742,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.glue(("Δ", 0), ("□", 2))
                     sage: S.glue(("□", 1), ("□", 3))
 
-                    sage: T = S.subdivide_edges()
+                    sage: T = S.subdivide_edges().codomain()
                     sage: list(sorted(T.gluings()))
                     [(('Δ', 0), ('□', 5)),
                      (('Δ', 1), ('□', 4)),
@@ -3185,7 +3785,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 surface.set_immutable()
 
-                return surface
+                from flatsurf.geometry.morphism import SubdivideEdgesMorphism
+
+                return SubdivideEdgesMorphism._create_morphism(self, surface, parts)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""
@@ -3518,11 +4120,12 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 def standardize_polygons(self, in_place=False):
                     r"""
-                    Return a surface with each polygon replaced with a new
-                    polygon which differs by translation and reindexing. The
-                    new polygon will have the property that vertex zero is the
-                    origin, and all vertices lie either in the upper half
-                    plane, or on the x-axis with non-negative x-coordinate.
+                    Return a morphism to a surface with each polygon replaced
+                    with a new polygon which differs by translation and
+                    reindexing. The new polygon will have the property that
+                    vertex zero is the origin, and each vertex lies in the
+                    upper half plane or on the x-axis with non-negative
+                    x-coordinate.
 
                     EXAMPLES::
 
@@ -3532,7 +4135,7 @@ class SimilaritySurfaces(SurfaceCategory):
                         Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                         sage: [s.opposite_edge(0,i) for i in range(4)]
                         [(1, 0), (1, 1), (1, 2), (1, 3)]
-                        sage: ss=s.standardize_polygons()
+                        sage: ss = s.standardize_polygons().codomain()
                         sage: ss.polygon(1)
                         Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
                         sage: [ss.opposite_edge(0,i) for i in range(4)]
@@ -3552,9 +4155,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     S = MutableOrientedSimilaritySurface.from_surface(
                         self, category=self.category()
                     )
-                    S.standardize_polygons(in_place=True)
+                    morphism = S.standardize_polygons(in_place=True)
                     S.set_immutable()
-                    return S
+                    return morphism.change(domain=self, codomain=S)
 
                 def fundamental_group(self, base_label=None):
                     r"""

@@ -757,7 +757,8 @@ class EuclideanPolygons(Category_over_base_ring):
                             for i in range(nvertices)
                         ]
                     ),
-                )
+                ),
+                immutable=True,
             )
 
         def get_point_position(self, point, translation=None):
@@ -1215,6 +1216,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     sage: P = Polygon(vertices=[(0,0), (1,0), (1,1), (0,1), (0,2), (-1,2), (-1,1), (-2,1),
                     ....:                    (-2,0), (-1,0), (-1,-1), (0,-1)])
                     sage: P.triangulation()
+                    doctest:warning
+                    ...
+                    UserWarning: triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead.
                     [(0, 2), (2, 8), (3, 5), (6, 8), (8, 3), (3, 6), (9, 11), (0, 9), (2, 9)]
 
                 TESTS::
@@ -1309,6 +1313,12 @@ class EuclideanPolygons(Category_over_base_ring):
                     [(0, 4), (1, 3), (4, 1)]
 
                 """
+                import warnings
+
+                warnings.warn(
+                    "triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead."
+                )
+
                 vertices = self.vertices()
 
                 n = len(vertices)
@@ -1386,6 +1396,76 @@ class EuclideanPolygons(Category_over_base_ring):
                             return [(i, j)] + part0 + part1
 
                 assert False
+
+            def flow_to_exit(self, point, direction):
+                r"""
+                Flow a point in the direction of holonomy until the point
+                hits the boundary of the polygon and return the point on
+                the boundary where the trajectory exits.
+
+                INPUT:
+
+                - ``point`` -- a point in the closure of the polygon (as a vector)
+
+                - ``holonomy`` -- direction of motion (a vector of non-zero length)
+
+                TESTS::
+
+                    sage: from flatsurf import Polygon
+                    sage: P = Polygon(vertices=[(1, 0), (1, -2), (3/2, -5/2), (2, -2), (2, 0), (2, 1), (2, 3), (3/2, 7/2), (1, 3), (1, 1)])
+                    sage: P.flow_to_exit(vector((2, 1)), vector((0, 1)))
+                    (2, 3)
+                    sage: P.flow_to_exit(vector((1, 3)), vector((0, -1)))
+                    (1, 1)
+
+                """
+                if not direction:
+                    raise ValueError("direction must be non-zero")
+
+                vertices = self.vertices()
+
+                first_intersection = None
+
+                for v in range(len(vertices)):
+                    segment = vertices[v], vertices[(v + 1) % len(vertices)]
+
+                    from flatsurf.geometry.euclidean import ray_segment_intersection
+
+                    intersection = ray_segment_intersection(point, direction, segment)
+
+                    if intersection is None:
+                        continue
+
+                    if isinstance(intersection, tuple):
+                        if intersection[0] != point:
+                            # The flow overlaps with this edge but it hits
+                            # a vertex before it gets here.
+                            continue
+
+                        intersection = intersection[1]
+                        assert intersection != point
+
+                    if intersection == point:
+                        continue
+
+                    from flatsurf.geometry.euclidean import time_on_ray
+
+                    if (
+                        first_intersection is None
+                        or time_on_ray(point, direction, first_intersection)[0]
+                        > time_on_ray(point, direction, intersection)[0]
+                    ):
+                        first_intersection = intersection
+
+                if first_intersection is not None:
+                    return first_intersection
+
+                if self.get_point_position(point).is_outside():
+                    raise ValueError("Cannot flow from point outside of polygon")
+
+                raise ValueError(
+                    "Cannot flow from point on boundary if direction points out of the polygon"
+                )
 
             def triangulate(self):
                 r"""
@@ -1749,97 +1829,10 @@ class EuclideanPolygons(Category_over_base_ring):
                     r"""
                     Return whether the point is within the polygon (after the polygon is possibly translated)
                     """
+                    # TODO: Deprecate translation.
                     return self.get_point_position(
                         point, translation=translation
                     ).is_inside()
-
-                def flow_to_exit(self, point, direction):
-                    r"""
-                    Flow a point in the direction of holonomy until the point leaves the
-                    polygon.  Note that ValueErrors may be thrown if the point is not in the
-                    polygon, or if it is on the boundary and the holonomy does not point
-                    into the polygon.
-
-                    INPUT:
-
-                    - ``point`` -- a point in the closure of the polygon (as a vector)
-
-                    - ``holonomy`` -- direction of motion (a vector of non-zero length)
-
-                    OUTPUT:
-
-                    - The point in the boundary of the polygon where the trajectory exits
-
-                    - a PolygonPosition object representing the combinatorial position of the stopping point
-                    """
-                    from flatsurf.geometry.polygon import PolygonPosition
-
-                    V = self.base_ring().fraction_field() ** 2
-                    if direction == V.zero():
-                        raise ValueError("Zero vector provided as direction.")
-                    v0 = self.vertex(0)
-                    for i in range(len(self.vertices())):
-                        e = self.edge(i)
-                        from sage.all import matrix
-
-                        m = matrix([[e[0], -direction[0]], [e[1], -direction[1]]])
-                        try:
-                            ret = m.inverse() * (point - v0)
-                            s = ret[0]
-                            t = ret[1]
-                            # What if the matrix is non-invertible?
-
-                            # Answer: You'll get a ZeroDivisionError which means that the edge is parallel
-                            # to the direction.
-
-                            # s is location it intersects on edge, t is the portion of the direction to reach this intersection
-                            if t > 0 and 0 <= s and s <= 1:
-                                # The ray passes through edge i.
-                                if s == 1:
-                                    # exits through vertex i+1
-                                    v0 = v0 + e
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                if s == 0:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                                    # exits through vertex i
-                                # exits through interior of edge i
-                                prod = t * direction
-                                return point + prod, PolygonPosition(
-                                    PolygonPosition.EDGE_INTERIOR, edge=i
-                                )
-                        except ZeroDivisionError:
-                            # Here we know the edge and the direction are parallel
-                            if ccw(e, point - v0) == 0:
-                                # In this case point lies on the edge.
-                                # We need to work out which direction to move in.
-                                from flatsurf.geometry.euclidean import is_parallel
-
-                                if (point - v0).is_zero() or is_parallel(e, point - v0):
-                                    # exits through vertex i+1
-                                    return self.vertex(i + 1), PolygonPosition(
-                                        PolygonPosition.VERTEX,
-                                        vertex=(i + 1) % len(self.vertices()),
-                                    )
-                                else:
-                                    # exits through vertex i
-                                    return v0, PolygonPosition(
-                                        PolygonPosition.VERTEX, vertex=i
-                                    )
-                            pass
-                        v0 = v0 + e
-                    # Our loop has terminated. This can mean one of several errors...
-                    pos = self.get_point_position(point)
-                    if pos.is_outside():
-                        raise ValueError("Started with point outside polygon")
-                    raise ValueError(
-                        "Point on boundary of polygon and direction not pointed into the polygon."
-                    )
 
                 def flow_map(self, direction):
                     r"""
@@ -1963,6 +1956,7 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: s.flow(p, w)
                         ((1, 1/2), (3/2, 0), point positioned on interior of edge 1 of polygon)
                     """
+                    # TODO: Deprecate translation.
                     from flatsurf.geometry.polygon import PolygonPosition
 
                     V = self.base_ring().fraction_field() ** 2
@@ -2050,7 +2044,8 @@ class EuclideanPolygons(Category_over_base_ring):
                         sage: from flatsurf import Polygon
                         sage: P = Polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
                         sage: P.circumscribing_circle()
-                        Circle((1/2, 3/2), 5/2)
+                        { (x - 1/2)² + (y - 3/2)² = 5/2 }
+
                     """
                     from flatsurf.geometry.circle import circle_from_three_points
 
@@ -2064,8 +2059,10 @@ class EuclideanPolygons(Category_over_base_ring):
                             )
                     return circle
 
-                def subdivide(self):
+                def subdivide(self, center=None):
                     r"""
+                    # TODO: If no point given, takes the centroid.
+
                     Return a list of triangles that partition this polygon.
 
                     For each edge of the polygon one triangle is created that joins this
@@ -2108,7 +2105,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                     """
                     vertices = self.vertices()
-                    center = self.centroid()
+                    center = center or self.centroid()
                     from flatsurf import Polygon
 
                     return [
@@ -2150,7 +2147,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     steps = [e / parts for e in self.edges()]
                     from flatsurf import Polygon
 
-                    return Polygon(edges=[e for e in steps for p in range(parts)])
+                    return Polygon(
+                        edges=[e for e in steps for p in range(parts)]
+                    ).translate(self.vertex(0))
 
                 def j_invariant(self):
                     r"""

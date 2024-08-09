@@ -453,4 +453,5 @@ class HalfTranslationSurfaces(SurfaceCategory):
                         S.glue((relabelling[p1], e1), (relabelling[p2], e2))
 
                     S._refine_category_(self.category())
+                    S.set_immutable()
                     return S, M
