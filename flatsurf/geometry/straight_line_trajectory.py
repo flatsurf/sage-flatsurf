@@ -26,6 +26,7 @@ r"""
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # *********************************************************************
 
+
 def get_linearity_coeff(u, v):
     r"""
     Given the two 2-dimensional vectors ``u`` and ``v``, return ``a`` so that
@@ -493,11 +494,16 @@ class AbstractStraightLineTrajectory:
                 for seg1 in seg_list_1:
                     for seg2 in seg_list_2:
                         from flatsurf.geometry.euclidean import line_intersection
+
                         x = line_intersection(
-                            (seg1.start().point(),
-                            seg1.start().point() + seg1.start().vector()),
-                            (seg2.start().point(),
-                            seg2.start().point() + seg2.start().vector()),
+                            (
+                                seg1.start().point(),
+                                seg1.start().point() + seg1.start().vector(),
+                            ),
+                            (
+                                seg2.start().point(),
+                                seg2.start().point() + seg2.start().vector(),
+                            ),
                         )
                         if x is not None:
                             pos = (
@@ -549,6 +555,7 @@ class StraightLineTrajectory(AbstractStraightLineTrajectory):
 
     def __init__(self, tangent_vector):
         from collections import deque
+
         self._segments = deque()
         seg = SegmentInPolygon(tangent_vector)
         self._segments.append(seg)
@@ -745,6 +752,7 @@ class StraightLineTrajectoryTranslation(AbstractStraightLineTrajectory):
         x *= T.length_bot(i)
 
         from collections import deque
+
         self._points = deque()  # we store triples (lab, edge, rel_pos)
         self._points.append((p, i, x))
 

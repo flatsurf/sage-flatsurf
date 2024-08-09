@@ -3739,7 +3739,9 @@ class HyperbolicExactGeometry(UniqueRepresentation, HyperbolicGeometry, ExactGeo
         return HyperbolicExactGeometry(ring)
 
 
-class HyperbolicEpsilonGeometry(UniqueRepresentation, HyperbolicGeometry, EpsilonGeometry):
+class HyperbolicEpsilonGeometry(
+    UniqueRepresentation, HyperbolicGeometry, EpsilonGeometry
+):
     r"""
     Predicates and primitive geometric constructions over a base ``ring`` with
     "precision" ``epsilon``.

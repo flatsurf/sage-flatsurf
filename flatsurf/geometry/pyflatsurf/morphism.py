@@ -45,16 +45,26 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         return [(1, *self._image_edge(label, edge))]
 
     def _image_saddle_connection(self, connection):
-        from flatsurf.geometry.pyflatsurf.saddle_connection import SaddleConnection_pyflatsurf
-        return SaddleConnection_pyflatsurf(self._pyflatsurf_conversion(connection), self.codomain())
+        from flatsurf.geometry.pyflatsurf.saddle_connection import (
+            SaddleConnection_pyflatsurf,
+        )
+
+        return SaddleConnection_pyflatsurf(
+            self._pyflatsurf_conversion(connection), self.codomain()
+        )
 
     def section(self):
-        return Morphism_from_pyflatsurf._create_morphism(self.codomain(), self.domain(), self._pyflatsurf_conversion)
+        return Morphism_from_pyflatsurf._create_morphism(
+            self.codomain(), self.domain(), self._pyflatsurf_conversion
+        )
 
     def _image_point(self, point):
         from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
+
         # TODO: Category is unset.
-        return SurfacePoint_pyflatsurf(self._pyflatsurf_conversion(point), self.codomain())
+        return SurfacePoint_pyflatsurf(
+            self._pyflatsurf_conversion(point), self.codomain()
+        )
 
     # TODO: Implement __eq__
 
@@ -72,17 +82,21 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
     def _image_point(self, point):
         from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
+
         assert isinstance(point, SurfacePoint_pyflatsurf)
 
         return self._pyflatsurf_conversion.section(point._point)
 
     def _image_saddle_connection(self, connection):
-        return self._pyflatsurf_conversion._preimage_saddle_connection(connection._connection)
+        return self._pyflatsurf_conversion._preimage_saddle_connection(
+            connection._connection
+        )
 
     def _image_homology_edge(self, label, edge):
         half_edge = label[edge]
 
         import pyflatsurf
+
         half_edge = pyflatsurf.flatsurf.HalfEdge(int(half_edge))
 
         return [(1, *self._pyflatsurf_conversion._preimage_half_edge(half_edge))]
@@ -100,13 +114,18 @@ class Morphism_from_Deformation(SurfaceMorphism):
         half_edge = label[edge]
 
         from pyflatsurf import flatsurf
-        saddle_connection = flatsurf.SaddleConnection[type(self.domain()._flat_triangulation)](self.domain()._flat_triangulation, flatsurf.HalfEdge(half_edge))
+
+        saddle_connection = flatsurf.SaddleConnection[
+            type(self.domain()._flat_triangulation)
+        ](self.domain()._flat_triangulation, flatsurf.HalfEdge(half_edge))
         path = flatsurf.Path[type(self.domain()._flat_triangulation)](saddle_connection)
 
         path = self._deformation(path)
 
         if not path:
-            raise NotImplementedError("cannot map edge through this deformation in pyflatsurf yet")
+            raise NotImplementedError(
+                "cannot map edge through this deformation in pyflatsurf yet"
+            )
 
         path = path.value()
 
@@ -115,7 +134,10 @@ class Morphism_from_Deformation(SurfaceMorphism):
             chain = step.chain()
             for edge, coefficient in chain:
                 from flatsurf.geometry.pyflatsurf_conversion import RingConversion
-                coefficient = RingConversion.from_pyflatsurf_from_elements([coefficient]).section(coefficient)
+
+                coefficient = RingConversion.from_pyflatsurf_from_elements(
+                    [coefficient]
+                ).section(coefficient)
 
                 half_edge = edge.positive()
                 if coefficient < 0:
@@ -133,6 +155,7 @@ class Morphism_from_Deformation(SurfaceMorphism):
 
     def _image_point(self, point):
         from flatsurf.geometry.pyflatsurf.surface_point import SurfacePoint_pyflatsurf
+
         assert isinstance(point, SurfacePoint_pyflatsurf)
 
         image = self._deformation(point._point)

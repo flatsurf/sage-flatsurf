@@ -300,11 +300,17 @@ class Similarity(MultiplicativeGroupElement):
                 raise TypeError("similarity must be orientation preserving.")
 
             from flatsurf import Polygon
-            return Polygon(vertices=[self(v, V=V) for v in w.vertices()], base_ring=ring, check=False)
+
+            return Polygon(
+                vertices=[self(v, V=V) for v in w.vertices()],
+                base_ring=ring,
+                check=False,
+            )
 
         v = (
             self._a * w[0] - self._sign * self._b * w[1] + self._s,
-            self._b * w[0] + self._sign * self._a * w[1] + self._t)
+            self._b * w[0] + self._sign * self._a * w[1] + self._t,
+        )
 
         if V is None:
             return vector(v)

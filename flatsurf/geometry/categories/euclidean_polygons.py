@@ -1314,7 +1314,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 """
                 import warnings
-                warnings.warn("triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead.")
+
+                warnings.warn(
+                    "triangulation() has been deprecated and will be removed in a future version of sage-flatsurf. Use triangulate() instead."
+                )
 
                 vertices = self.vertices()
 
@@ -1427,6 +1430,7 @@ class EuclideanPolygons(Category_over_base_ring):
                     segment = vertices[v], vertices[(v + 1) % len(vertices)]
 
                     from flatsurf.geometry.euclidean import ray_segment_intersection
+
                     intersection = ray_segment_intersection(point, direction, segment)
 
                     if intersection is None:
@@ -1445,7 +1449,12 @@ class EuclideanPolygons(Category_over_base_ring):
                         continue
 
                     from flatsurf.geometry.euclidean import time_on_ray
-                    if first_intersection is None or time_on_ray(point, direction, first_intersection)[0] > time_on_ray(point, direction, intersection)[0]:
+
+                    if (
+                        first_intersection is None
+                        or time_on_ray(point, direction, first_intersection)[0]
+                        > time_on_ray(point, direction, intersection)[0]
+                    ):
                         first_intersection = intersection
 
                 if first_intersection is not None:
@@ -1454,7 +1463,9 @@ class EuclideanPolygons(Category_over_base_ring):
                 if self.get_point_position(point).is_outside():
                     raise ValueError("Cannot flow from point outside of polygon")
 
-                raise ValueError("Cannot flow from point on boundary if direction points out of the polygon")
+                raise ValueError(
+                    "Cannot flow from point on boundary if direction points out of the polygon"
+                )
 
             def triangulate(self):
                 r"""
@@ -2136,7 +2147,9 @@ class EuclideanPolygons(Category_over_base_ring):
                     steps = [e / parts for e in self.edges()]
                     from flatsurf import Polygon
 
-                    return Polygon(edges=[e for e in steps for p in range(parts)]).translate(self.vertex(0))
+                    return Polygon(
+                        edges=[e for e in steps for p in range(parts)]
+                    ).translate(self.vertex(0))
 
                 def j_invariant(self):
                     r"""

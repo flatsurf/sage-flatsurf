@@ -339,6 +339,7 @@ class LazyLabels(Labels):
             return False
 
         from sage.all import ZZ
+
         if label[0] not in ZZ:
             return False
 
@@ -346,9 +347,9 @@ class LazyLabels(Labels):
             return False
 
         if label[0] >= 1:
-            return label[1] == -self._surface._alpha**(label[0] - 1)
+            return label[1] == -self._surface._alpha ** (label[0] - 1)
 
-        return label[1] == self._surface._alpha**(-label[0])
+        return label[1] == self._surface._alpha ** (-label[0])
 
 
 def chamanara_surface(alpha, n=None):

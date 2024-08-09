@@ -127,7 +127,13 @@ class Ray(Element):
 
         if op == op_EQ:
             from sage.all import sgn
-            return self._direction[0] * other._direction[1] == other._direction[0] * self._direction[1] and sgn(self._direction[0]) == sgn(other._direction[0]) and sgn(self._direction[1]) == sgn(other._direction[1])
+
+            return (
+                self._direction[0] * other._direction[1]
+                == other._direction[0] * self._direction[1]
+                and sgn(self._direction[0]) == sgn(other._direction[0])
+                and sgn(self._direction[1]) == sgn(other._direction[1])
+            )
 
 
 class Rays(UniqueRepresentation, Parent):

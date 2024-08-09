@@ -1346,6 +1346,7 @@ class PolygonalSurfaces(SurfaceCategory):
                     yield vertex
 
                 from sage.categories.all import Fields
+
                 if self.base_ring() in Fields():
                     for label in self.labels():
                         polygon = self.polygon(label)
@@ -1353,7 +1354,14 @@ class PolygonalSurfaces(SurfaceCategory):
 
                         yield self(label, sum(vertices) / len(vertices))
                         for vertex in range(len(vertices)):
-                            yield self(label, (polygon.vertex(vertex) + 2*polygon.vertex(vertex + 1))/3)
+                            yield self(
+                                label,
+                                (
+                                    polygon.vertex(vertex)
+                                    + 2 * polygon.vertex(vertex + 1)
+                                )
+                                / 3,
+                            )
 
     class InfiniteType(SurfaceCategoryWithAxiom):
         r"""

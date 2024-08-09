@@ -4,6 +4,7 @@ from sage.misc.cachefunc import cached_method
 
 # TODO: SaddleConnection should be an element in the space of SaddleConnections or the space of Paths rather?
 
+
 class SaddleConnection_base(SageObject):
     def __init__(self, surface):
         self._surface = surface
@@ -39,7 +40,7 @@ class SaddleConnection(SaddleConnection_base):
         check=True,
         limit=None,
         start_data=None,
-        end_data=None
+        end_data=None,
     ):
         r"""
         TODO: Cleanup documentation.
@@ -108,12 +109,16 @@ class SaddleConnection(SaddleConnection_base):
 
         """
         from flatsurf.geometry.categories import SimilaritySurfaces
+
         if surface not in SimilaritySurfaces():
             raise TypeError("surface must be a similarity surface")
 
         if start_data is not None:
             import warnings
-            warnings.warn("start_data has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use start instead")
+
+            warnings.warn(
+                "start_data has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use start instead"
+            )
             start = start_data
             del start_data
 
@@ -122,21 +127,31 @@ class SaddleConnection(SaddleConnection_base):
 
         if end_data is not None:
             import warnings
-            warnings.warn("end_data has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use end instead")
+
+            warnings.warn(
+                "end_data has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use end instead"
+            )
             end = end_data
             del end_data
 
         if direction is not None:
             import warnings
+
             if holonomy is None:
-                warnings.warn("direction has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future of sage-flatsurf; if you want to create a SaddleConnection without specifying the holonomy, use SaddleConnection.from_vertex() instead.")
-                c = SaddleConnection.from_vertex(surface, *start, direction, limit=limit)
+                warnings.warn(
+                    "direction has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future of sage-flatsurf; if you want to create a SaddleConnection without specifying the holonomy, use SaddleConnection.from_vertex() instead."
+                )
+                c = SaddleConnection.from_vertex(
+                    surface, *start, direction, limit=limit
+                )
                 start = c._start
                 holonomy = c._holonomy
                 end = c._end
                 end_holonomy = c._end_holonomy
             else:
-                warnings.warn("direction has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future of sage-flatsurf; there is no need to pass this argument anymore when the holonomy is specified.")
+                warnings.warn(
+                    "direction has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future of sage-flatsurf; there is no need to pass this argument anymore when the holonomy is specified."
+                )
             del direction
 
         if holonomy is None:
@@ -144,7 +159,10 @@ class SaddleConnection(SaddleConnection_base):
 
         if end is None or end_holonomy is None:
             import warnings
-            warnings.warn("end and end_holonomy must be provided as a keyword argument for SaddleConnection() in future versions of sage-flatsurf; use SaddleConnection.from_vertex() instead to create a SaddleConnection without specifying these.")
+
+            warnings.warn(
+                "end and end_holonomy must be provided as a keyword argument for SaddleConnection() in future versions of sage-flatsurf; use SaddleConnection.from_vertex() instead to create a SaddleConnection without specifying these."
+            )
             c = SaddleConnection.from_vertex(surface, *start, holonomy, limit=limit)
             start = c._start
             holonomy = c._holonomy
@@ -153,12 +171,18 @@ class SaddleConnection(SaddleConnection_base):
 
         if end_direction is not None:
             import warnings
-            warnings.warn("end_direction has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; the end direction is deduced from the end holonomy automatically")
+
+            warnings.warn(
+                "end_direction has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; the end direction is deduced from the end holonomy automatically"
+            )
             del end_direction
 
         if limit is not None:
             import warnings
-            warnings.warn("limit has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use SaddleConnection.from_vertex() to search with a limit instead")
+
+            warnings.warn(
+                "limit has been deprecated as a keyword argument for SaddleConnection() and will be removed in a future version of sage-flatsurf; use SaddleConnection.from_vertex() to search with a limit instead"
+            )
             del limit
 
         super().__init__(surface)
@@ -226,7 +250,11 @@ class SaddleConnection(SaddleConnection_base):
         if holonomy == -polygon.edge(previous_edge):
             opposite_edge = self._surface.opposite_edge(label, previous_edge)
             if opposite_edge is not None:
-                return opposite_edge, self._surface.edge_transformation(label, previous_edge).derivative() * holonomy
+                return (
+                    opposite_edge,
+                    self._surface.edge_transformation(label, previous_edge).derivative()
+                    * holonomy,
+                )
 
         return start, holonomy
 
@@ -237,7 +265,8 @@ class SaddleConnection(SaddleConnection_base):
             end=self._start,
             holonomy=self._end_holonomy,
             end_holonomy=self._holonomy,
-            check=False)
+            check=False,
+        )
 
     @classmethod
     def from_half_edge(self, surface, label, edge):
@@ -337,24 +366,32 @@ class SaddleConnection(SaddleConnection_base):
 
         """
         from flatsurf.geometry.ray import Rays
+
         R = Rays(surface.base_ring())
         direction = R(direction)
 
-        tangent_vector = surface.tangent_vector(label, surface.polygon(label).vertex(vertex), direction.vector())
+        tangent_vector = surface.tangent_vector(
+            label, surface.polygon(label).vertex(vertex), direction.vector()
+        )
         trajectory = tangent_vector.straight_line_trajectory()
 
         if limit is None:
             from sage.all import infinity
+
             limit = infinity
 
         trajectory.flow(steps=limit)
 
         if not trajectory.is_saddle_connection():
-            raise ValueError("no saddle connection in this direction within the specified limit")
+            raise ValueError(
+                "no saddle connection in this direction within the specified limit"
+            )
 
         end_tangent_vector = trajectory.terminal_tangent_vector()
 
-        assert not trajectory.segments()[0].is_edge() or len(trajectory.segments()) == 1, "when the saddle connection is an edge it must not consist of more than that edge"
+        assert (
+            not trajectory.segments()[0].is_edge() or len(trajectory.segments()) == 1
+        ), "when the saddle connection is an edge it must not consist of more than that edge"
 
         if trajectory.segments()[0].is_edge():
             # When the saddle connection is just an edge, the similarity
@@ -364,17 +401,32 @@ class SaddleConnection(SaddleConnection_base):
             # above, the vertical saddle connection connecting the vertices of
             # polygon 1 at (1, 3) and (2, 1) by going in direction (0, -1) is
             # misinterpreted as the connection going in direction (1, -2).
-            return SaddleConnection.from_half_edge(surface, label, trajectory.segments()[0].edge())
+            return SaddleConnection.from_half_edge(
+                surface, label, trajectory.segments()[0].edge()
+            )
 
         from flatsurf.geometry.similarity import SimilarityGroup
+
         one = SimilarityGroup(surface.base_ring()).one()
         segments = list(trajectory.segments())[1:]
 
         from sage.all import prod
-        similarity = prod([
-            surface.edge_transformation(segment.start().polygon_label(), segment.start().position().get_edge()) for segment in segments], one)
 
-        holonomy = similarity(trajectory.segments()[-1].end().point()) - trajectory.initial_tangent_vector().point()
+        similarity = prod(
+            [
+                surface.edge_transformation(
+                    segment.start().polygon_label(),
+                    segment.start().position().get_edge(),
+                )
+                for segment in segments
+            ],
+            one,
+        )
+
+        holonomy = (
+            similarity(trajectory.segments()[-1].end().point())
+            - trajectory.initial_tangent_vector().point()
+        )
         end_holonomy = (~similarity.derivative()) * holonomy
 
         return SaddleConnection(
@@ -382,7 +434,8 @@ class SaddleConnection(SaddleConnection_base):
             start=(label, vertex),
             holonomy=holonomy,
             end=(end_tangent_vector.polygon_label(), end_tangent_vector.vertex()),
-            end_holonomy=end_holonomy)
+            end_holonomy=end_holonomy,
+        )
 
     @cached_method
     def direction(self):
@@ -390,6 +443,7 @@ class SaddleConnection(SaddleConnection_base):
         Return a ray parallel to the :meth:`holonomy`.
         """
         from flatsurf.geometry.ray import Rays
+
         return Rays(self._holonomy.base_ring())(self._holonomy)
 
     @cached_method
@@ -398,6 +452,7 @@ class SaddleConnection(SaddleConnection_base):
         Return a ray parallel to the :meth:`end_holonomy`.
         """
         from flatsurf.geometry.ray import Rays
+
         return Rays(self._holonomy.base_ring())(self._end_holonomy)
 
     def start_data(self):
@@ -406,7 +461,10 @@ class SaddleConnection(SaddleConnection_base):
         where the saddle connection originates.
         """
         import warnings
-        warnings.warn("start_data() has been deprecated and will be removed from a future version of sage-flatsurf; use start() instead.")
+
+        warnings.warn(
+            "start_data() has been deprecated and will be removed from a future version of sage-flatsurf; use start() instead."
+        )
 
         return self.start()
 
@@ -420,7 +478,10 @@ class SaddleConnection(SaddleConnection_base):
         where the saddle connection terminates.
         """
         import warnings
-        warnings.warn("end_data() has been deprecated and will be removed from a future version of sage-flatsurf; use end() instead.")
+
+        warnings.warn(
+            "end_data() has been deprecated and will be removed from a future version of sage-flatsurf; use end() instead."
+        )
 
         return self.end()
 
@@ -451,11 +512,12 @@ class SaddleConnection(SaddleConnection_base):
             )
 
         from sage.all import vector, AA
+
         return vector(AA, self._holonomy).norm()
 
     def length_squared(self):
         holonomy = self.holonomy()
-        return holonomy[0]**2 + holonomy[1]**2
+        return holonomy[0] ** 2 + holonomy[1] ** 2
 
     def end_holonomy(self):
         r"""
@@ -473,9 +535,7 @@ class SaddleConnection(SaddleConnection_base):
         """
         return self._surface.tangent_vector(
             self._start[0],
-            self._surface.polygon(self._start[0]).vertex(
-                self._start[1]
-            ),
+            self._surface.polygon(self._start[0]).vertex(self._start[1]),
             self.direction().vector(),
         )
 
@@ -666,13 +726,25 @@ class SaddleConnection(SaddleConnection_base):
         # mapped through to_pyflatsurf.section()
         chain = connection._connection.chain()
 
-        chain = {e.positive().id(): chain[e] for e in to_pyflatsurf.codomain()._flat_triangulation.edges()}
+        chain = {
+            e.positive().id(): chain[e]
+            for e in to_pyflatsurf.codomain()._flat_triangulation.edges()
+        }
 
         from sage.all import ZZ
+
         chain = {
-            ([label for label in to_pyflatsurf.codomain().labels() if e in label][0], [label for label in to_pyflatsurf.codomain().labels() if e in label][0].index(e)): ZZ(multiplicity) for (e, multiplicity) in chain.items()}
+            (
+                [label for label in to_pyflatsurf.codomain().labels() if e in label][0],
+                [label for label in to_pyflatsurf.codomain().labels() if e in label][
+                    0
+                ].index(e),
+            ): ZZ(multiplicity)
+            for (e, multiplicity) in chain.items()
+        }
 
         from flatsurf.geometry.homology import SimplicialHomology
+
         homology = SimplicialHomology(to_pyflatsurf.codomain())
 
         chain = sum(multiplicity * homology(e) for (e, multiplicity) in chain.items())

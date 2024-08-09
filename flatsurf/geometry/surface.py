@@ -1248,10 +1248,13 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         vertex_zero = {}
         for label in self.labels():
             vertices = self.polygon(label).vertices()
-            vertex_zero[label] = min(range(len(vertices)), key=lambda v:(vertices[v][1], vertices[v][0]))
-            self.set_vertex_zero(label, vertex_zero[label], in_place=True) 
+            vertex_zero[label] = min(
+                range(len(vertices)), key=lambda v: (vertices[v][1], vertices[v][0])
+            )
+            self.set_vertex_zero(label, vertex_zero[label], in_place=True)
 
         from flatsurf.geometry.morphism import PolygonStandardizationMorphism
+
         return PolygonStandardizationMorphism._create_morphism(None, self, vertex_zero)
 
 
@@ -1761,7 +1764,10 @@ class MutableOrientedSimilaritySurface(
         """
         if in_place is None:
             import warnings
-            warnings.warn("The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly.")
+
+            warnings.warn(
+                "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
+            )
 
             in_place = True
 
@@ -1772,12 +1778,15 @@ class MutableOrientedSimilaritySurface(
             raise ValueError("matrix must not be degenerate")
 
         if m.det() < 0:
-            raise NotImplementedError("apply_matrix(in_place=True) not supported with negative determinant yet")
+            raise NotImplementedError(
+                "apply_matrix(in_place=True) not supported with negative determinant yet"
+            )
 
         for label in self.labels():
             self.replace_polygon(label, m * self.polygon(label))
 
         from flatsurf.geometry.morphism import GL2RMorphism
+
         return GL2RMorphism._create_morphism(None, self, m)
 
     def opposite_edge(self, label, edge=None):
@@ -2171,6 +2180,7 @@ class MutableOrientedSimilaritySurface(
             )
 
         from flatsurf.geometry.morphism import TriangulationMorphism
+
         return TriangulationMorphism._create_morphism(self, self)
 
     @staticmethod

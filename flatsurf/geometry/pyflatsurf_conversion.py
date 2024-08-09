@@ -2111,7 +2111,12 @@ class FlatTriangulationConversion(Conversion):
 
         """
         import pyflatsurf
-        return pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())].inSector(self.codomain(), self._image_half_edge(*saddle_connection.start()), self.vector_space_conversion()(saddle_connection.holonomy()))
+
+        return pyflatsurf.flatsurf.SaddleConnection[type(self.codomain())].inSector(
+            self.codomain(),
+            self._image_half_edge(*saddle_connection.start()),
+            self.vector_space_conversion()(saddle_connection.holonomy()),
+        )
 
     def _preimage_saddle_connection(self, saddle_connection):
         r"""
@@ -2141,11 +2146,13 @@ class FlatTriangulationConversion(Conversion):
 
         """
         from flatsurf.geometry.saddle_connection import SaddleConnection
+
         # TODO: Speed this up!
         return SaddleConnection.from_vertex(
-                self.domain(),
-                *self._preimage_half_edge(saddle_connection.source()),
-                self.vector_space_conversion().section(saddle_connection.vector()))
+            self.domain(),
+            *self._preimage_half_edge(saddle_connection.source()),
+            self.vector_space_conversion().section(saddle_connection.vector()),
+        )
 
 
 def to_pyflatsurf(S):
@@ -2154,9 +2161,14 @@ def to_pyflatsurf(S):
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
     import warnings
-    warnings.warn("to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate()).codomain() instead.")
 
-    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate().codomain()).codomain()
+    warnings.warn(
+        "to_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use FlatTriangulationConversion.to_pyflatsurf(surface.triangulate()).codomain() instead."
+    )
+
+    return FlatTriangulationConversion.to_pyflatsurf(
+        S.triangulate().codomain()
+    ).codomain()
 
 
 def from_pyflatsurf(T):
@@ -2205,6 +2217,9 @@ def from_pyflatsurf(T):
 
     """
     import warnings
-    warnings.warn("from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead.")
+
+    warnings.warn(
+        "from_pyflatsurf() is deprecated and will be removed in a future version of sage-flatsurf. Use TranslationSurface(FlatTriangulationConversion.from_pyflatsurf(surface).domain()) instead."
+    )
 
     return FlatTriangulationConversion.from_pyflatsurf(T).domain()
