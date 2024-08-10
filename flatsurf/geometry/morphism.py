@@ -296,6 +296,25 @@ class SurfaceMorphismSpace(Homset):
         self.__category = category or Objects()
         super().__init__(domain, codomain, category=self.__category)
 
+    def base_ring(self):
+        r"""
+        Return the base ring of this morphism space.
+
+        We throw an exception here since there is probably no good notion of a
+        base ring. In any case, legacy code that uses say
+        ``triangulate().base_ring()`` instead of
+        ``triangulate().codomain().base_ring()`` should fail with a reasonable
+        error instead of silently returning ``None`` (the default.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: S.triangulate().base_ring()
+
+        """
+        raise NotImplementedError("surface morphisms have no notion of base ring yet")
+
     def _an_element_(self):
         if self.is_endomorphism_set():
             return self.identity()
