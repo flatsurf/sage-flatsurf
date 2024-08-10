@@ -10,7 +10,7 @@
 
 **Deprecated:**
 
-* <news item>
+* A polygon's ``circumscribing_circle()`` has been deprecated in favor of ``circumscribed_circle()``.
 
 **Removed:**
 
