@@ -1021,58 +1021,50 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         if not in_place:
             return super().triangle_flip(label=label, edge=edge, in_place=in_place)
 
-        is_with_boundary = self.is_with_boundary()
-
-        polygon = self.polygon(label)
-        l1gluings = (self.opposite_edge(label, edge), self.opposite_edge(label, (edge + 1)%3), self.opposite_edge(label, (edge + 2)%3))
-
         opposite_label, opposite_edge = self.opposite_edge(label, edge)
 
-        if label == opposite_label:
-            raise NotImplementedError
+        label = [label, opposite_label]
+
+        if label[0] == label[1]:
+            raise NotImplementedError("cannot flip an edge attached to the same triangle twice yet")
+
+        diagonal = [edge, opposite_edge]
+
+        P = [self.polygon(lbl) for lbl in label]
+
+        if any(len(p.vertices()) != 3 for p in P):
+            raise ValueError("attached polygon must be a triangle")
 
         from flatsurf import Polygon
-        T = self.edge_transformation(opposite_label, opposite_edge)
-        opposite_polygon = Polygon(vertices=[T(v) for v in self.polygon(opposite_label).vertices()])
-        assert polygon.vertex(edge) == opposite_polygon.vertex(opposite_edge + 1)
-        assert polygon.vertex(edge + 1) == opposite_polygon.vertex(opposite_edge)
-        l2gluings = (self.opposite_edge(opposite_label, opposite_edge), self.opposite_edge(opposite_label, (opposite_edge + 1)%3), self.opposite_edge(opposite_label, (opposite_edge + 2)%3))
+        T = self.edge_transformation(label[1], diagonal[1])
+        P[1] = Polygon(vertices=[T(v) for v in P[1].vertices()])
 
-        
-        q1 = [opposite_polygon.vertex(opposite_edge + 2), polygon.vertex(edge + 2), polygon.vertex(edge)]
-        q1 = Polygon(vertices=q1[3 - edge:] + q1[:3 - edge])
+        gluings = [[self.opposite_edge(lbl, (d + i) % 3) for i in range(3)] for (lbl, d) in zip(label, diagonal)]
 
-        q2 = [polygon.vertex(edge + 2), opposite_polygon.vertex(opposite_edge + 2), opposite_polygon.vertex(opposite_edge)]
-        q2 = Polygon(vertices=q2[3 - opposite_edge:] + q2[:3 - opposite_edge])
+        assert P[0].vertex(diagonal[0]) == P[1].vertex(diagonal[1] + 1)
+        assert P[0].vertex(diagonal[0] + 1) == P[1].vertex(diagonal[1])
 
-        self.replace_polygon(label, q1)
-        self.replace_polygon(opposite_label, q2)
+        Q = [[P[1-i].vertex(diagonal[1-i] + 2), P[i].vertex(diagonal[i] + 2), P[i].vertex(diagonal[i])] for i in range(2)]
+        Q = [Polygon(vertices=Q[i][3 - diagonal[i]:] + Q[i][:3 - diagonal[i]]) for i in range(2)]
 
-        self.glue((label, edge), (opposite_label, opposite_edge))
+        for i in range(2):
+            self.replace_polygon(label[i], Q[i])
 
-        # TODO: Simplify the code by using the symmetries.
+        self.glue((label[0], diagonal[0]), (label[1], diagonal[1]))
 
-        def to_new(label, edge):
-            if label == label:
-                assert edge != edge
-                if edge == (edge + 1) % 3:
-                    return opposite_label, (opposite_edge + 2) % 3
-                assert edge == (edge + 2) % 3
-                return label, (edge + 1) % 3
-            if label == opposite_label:
-                assert edge != opposite_edge
-                if edge == (opposite_edge + 1) % 3:
-                    return label, (edge + 2) % 3
-                assert edge == (opposite_edge + 2) % 3
-                return opposite_label, (opposite_edge + 1) % 3
-            return label, edge
+        def to_new(lbl, edge):
+            for i in range(2):
+                if lbl == label[i]:
+                    assert edge != diagonal[i]
+                    if edge == (diagonal[i] + 1) % 3:
+                        return label[1-i], (diagonal[1-i] + 2) % 3
+                    assert edge == (diagonal[i] + 2) % 3
+                    return label[i], (diagonal[i] + 1) % 3
+            return lbl, edge
 
-        self.glue((label, (edge + 1) % 3), to_new(*l1gluings[2]))
-        self.glue((label, (edge + 2) % 3), to_new(*l2gluings[1]))
-        self.glue((opposite_label, (opposite_edge + 1) % 3), to_new(*l2gluings[2]))
-        self.glue((opposite_label, (opposite_edge + 2) % 3), to_new(*l1gluings[1]))
-
-        assert self.is_with_boundary() == is_with_boundary
+        for i in range(2):
+            self.glue((label[i], (diagonal[i] + 1) % 3), to_new(*gluings[i][2]))
+            self.glue((label[i], (diagonal[i] + 2) % 3), to_new(*gluings[1-i][1]))
 
         return self
 
