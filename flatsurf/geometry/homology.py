@@ -1136,9 +1136,13 @@ class SimplicialHomologyGroup(Parent):
             sage: g = H.hom(f)
 
             sage: g.matrix()
+            [1 0]
+            [2 1]
 
             sage: H.gens()
+            (B[(0, 1)], B[(0, 0)])
             sage: [g(h) for h in H.gens()]
+            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
 
         """
         if f.domain() is self.surface() and f.codomain() is self.surface():
@@ -1281,16 +1285,22 @@ class SimplicialHomologyMorphism_base(Morphism):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
             sage: A = S.affine_automorphism_group()
             sage: M = matrix([[1, 2], [0, 1]])
             sage: f = A.derivative().section()(M, check=False)
 
             sage: from flatsurf import SimplicialHomology
             sage: H = SimplicialHomology(S)
+            sage: H.gens()
+            (B[(0, 1)], B[(0, 0)], B[(1, 1)], B[(2, 0)])
             sage: g = H.hom(f)
 
             sage: g.matrix()
+            [1 0 0 0]
+            [1 1 2 0]
+            [0 0 1 0]
+            [1 0 0 1]
 
         """
         from sage.all import matrix
@@ -1342,6 +1352,7 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
             sage: H.gens()
             (B[(0, 1)], B[(0, 0)])
             sage: [g(h) for h in H.gens()]
+            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
 
         """
         return self._morphism._image_homology(x, codomain=self.codomain())

@@ -1093,7 +1093,16 @@ class LazyMutableOrientedSimilaritySurface(
 
 class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
     r"""
-    Delaunay triangulation of an (infinite type) surface.
+    Delaunay triangulation of a (possibly infinite type) surface.
+
+    ALGORITHM:
+
+    Basically we just flip edges that violate the Delaunay condition until
+    everything is Delaunay. The complication arises because the surface can be
+    infinite. The strategy is therefore, to perform the flips such that more
+    and more triangles do not contain any vertices in their circumscribed
+    circle. These triangles are then actual triangles of the Delaunay
+    triangulation.
 
     EXAMPLES::
 
@@ -1162,18 +1171,12 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         # This surface will converge to the Delaunay Triangulation
         self._surface = LazyMutableOrientedSimilaritySurface(similarity_surface)
 
-        # Set of labels corresponding to known delaunay polygons
+        # Labels of known Delaunay polygons in self._surface
         self._certified_labels = set()
 
-        # Triangle flips (as morphisms) that have been performed so far.
+        # The triangle flips that have been performed so far.
+        # When a flip of (label, edge) happens, we record the pair ((label, edge), (opposite_label, opposite_edge)).
         self._flips = []
-
-        # Triangulate the base polygon
-        root = self._surface.root()
-
-        # Certify the base polygon (or apply flips...)
-        while not self._certify_or_improve(root):
-            pass
 
         OrientedSimilaritySurface.__init__(
             self,
@@ -1252,51 +1255,123 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         if label not in self.labels():
             raise ValueError("no polygon with this label")
 
-        if label not in self._certified_labels:
-            # If the label is not final in this surface, we walk the surface
-            # and thereby certify its polygons until we find that label.
-            # Note that this is somewhat inefficient since we start the walk
-            # from the start every time. However, the certification process is
-            # what consumes time, so unless there are a lot of labels, this
-            # should not impact performance too much.
-            for certified_label in self._walk():
-                if label == certified_label:
-                    assert label in self._certified_labels
-                    break
+        self._certify(label)
 
         return self._surface.polygon(label)
 
-    def _walk(self):
+    def _certify(self, label):
         r"""
-        Return an iterator that walks the labels of the surface in order.
+        Perform flips until ``label`` is final in the underlying partially
+        Delauany triangulated surface.
+
+        ALGORITHM:
+
+        We walk all the labels of the surface and certify each one until we
+        reach ``label``. (On infinite type surfaces that are not connected,
+        this typically doesn't terminate.) To certify a label, we perform edge
+        flips until we can show that no vertices are in the interior of the
+        circumscribed circle of its triangle.
 
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
-
-            sage: from itertools import islice
-            sage: list(islice(S._walk(), 3))
-            [(0, 0), (1, 1), (-1, 1)]
+            sage: S._certify((0, 0))
 
         """
-        visited = set()
-        from collections import deque
+        if label in self._certified_labels:
+            return
 
-        next = deque(
-            [(self.root(), 0), (self.root(), 1), (self.root(), 2)],
-        )
-        while next:
-            label, edge = next.popleft()
-            if label in visited:
-                continue
+        # Ensure that all previous labels are certified so that the shape of
+        # the Delaunay triangulation does not depend on the access pattern on
+        # it. (Removing this would likely make everything faster but it also
+        # adds some strange randomness.)
+        for lbl in self.labels():
+            if lbl == label:
+                break
 
-            yield label
+            self._certify(lbl)
 
-            visited.add(label)
+        # To certify that a polygon is final, we need to make sure that there
+        # are no vertices contained in its circumscribed circle C of radius R.
+        # To that end, we walk the surface from that polygon until we have seen
+        # all the polygons that contain points that are at distance <R from the
+        # center of C. Whenever we see an edge that is not Delaunay, we flip
+        # it. If in this walk we don't come across a vertex that is in the
+        # interior of C, then we are done. Otherwise, we restart the process.
+        # For finite type surfaces this is guaranteed to terminate. For
+        # infinite type surfaces, there is of course no such guarantee.
+        while True:
+            vertices_in_circumcircle, edges_in_circumcircle = self._certify_walk(label)
 
-            for edge in range(3):
-                next.append(self.opposite_edge(label, edge))
+            if not vertices_in_circumcircle:
+                self._certified_labels.add(label)
+                return
+                       
+            # Perfom edge flips to converge towards the Delaunay triangulation
+            flips = 0
+            for edge in edges_in_circumcircle:
+                if self._surface._delaunay_edge_needs_flip(*edge):
+                    self._certify_flip(*edge)
+                    flips += 1
+
+            assert flips, "found vertices in circumcircle but no edge in circumcircle could be flipped"
+
+    def _certify_flip(self, label, edge):
+        self._flips.append(((label, edge), self._surface.opposite_edge(label, edge)))
+        self._surface.triangle_flip(label, edge, in_place=True)
+
+    def _certify_walk(self, label):
+        r"""
+        Return the vertices and edges contained in the circumscribed circle of
+        the polygon with label in the underlying partially Delaunay
+        triangulated surface.
+
+        If the circumscribed circle has center C and radius R, then this
+        returns all the vertices which are at distance <R from C and all edges
+        that contain a point at distance <R from C.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
+            sage: S._certify_walk((0, 0))
+
+            sage: S._certify((0, 0))
+            sage: S._certify_walk((0, 0))
+            
+        """
+        vertices_in_circumcircle = set()
+        edges_in_circumcircle = set()
+        
+        done = set()
+        todo = set([(label, self._surface.polygon(label).circumscribed_circle())])
+
+        while todo:
+            item = todo.pop()
+            done.add(item)
+
+            label, circle = item
+            polygon = self._surface.polygon(label)
+
+            for v in range(3):
+                V = polygon.vertex(v)
+                if circle.point_position(V) == 1:
+                    vertices_in_circumcircle.add((label, v))
+
+            for e in range(3):
+                if circle.line_segment_position(polygon.vertex(e), polygon.vertex(e + 1)) == 1:
+                    (opposite_label, opposite_edge) = self._surface.opposite_edge(label, e)     
+
+                    if (label, e) not in edges_in_circumcircle and (opposite_label, opposite_edge) not in edges_in_circumcircle:
+                        edges_in_circumcircle.add((label, e))
+
+                    item = (opposite_label, self._surface.edge_transformation(opposite_label, opposite_edge) * circle)
+
+                    if item not in done:
+                        todo.add(item)
+
+        return vertices_in_circumcircle, edges_in_circumcircle
 
     @cached_method
     def opposite_edge(self, label, edge):
@@ -1315,114 +1390,13 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             ((1, 1), 1)
 
         """
-        self.polygon(label)
+        self._certify(label)
         while True:
             cross_label, cross_edge = self._surface.opposite_edge(label, edge)
-            if self._certify_or_improve(cross_label):
-                break
+            if cross_label in self._certified_labels:
+                return cross_label, cross_edge
 
-        return self._surface.opposite_edge(label, edge)
-
-    def _certify_or_improve(self, label):
-        r"""
-        This method attempts to develop the circumscribing disk about the polygon
-        with label ``label`` into the surface.
-
-        The method returns True if this is successful. In this case the label
-        is added to the set _certified_labels. It returns False if it failed to
-        develop the disk into the surface. (In this case the original polygon was
-        not a Delaunay triangle.
-
-        The algorithm divides any non-certified polygon in self._s it encounters
-        into triangles. If it encounters a pair of triangles which need a diagonal
-        flip then it does the flip.
-        """
-        if label in self._certified_labels:
-            # Already certified.
-            return True
-        p = self._surface.polygon(label)
-        assert len(p.vertices()) == 3
-
-        c = p.circumscribing_circle()
-
-        # Develop through each of the 3 edges:
-        for e in range(3):
-            edge_certified = False
-            # This keeps track of a chain of polygons the disk develops through:
-            edge_stack = []
-
-            # We repeat this until we can verify that the portion of the circle
-            # that passes through the edge e developes into the surface.
-            while not edge_certified:
-                if len(edge_stack) == 0:
-                    # Start at the beginning with label l and edge e.
-                    # The 3rd coordinate in the tuple represents what edge to develop
-                    # through in the triangle opposite this edge.
-                    edge_stack = [(label, e, 1, c)]
-                ll, ee, step, cc = edge_stack[len(edge_stack) - 1]
-
-                lll, eee = self._surface.opposite_edge(ll, ee)
-
-                if lll not in self._certified_labels:
-                    ppp = self._surface.polygon(lll)
-                    assert len(ppp.vertices()) == 3
-
-                    if self._surface._delaunay_edge_needs_flip(ll, ee):
-                        # Perform the flip
-                        self._surface.triangle_flip(ll, ee, in_place=True)
-
-                        # If we touch the original polygon, then we return False.
-                        if label == ll or label == lll:
-                            return False
-                        # We might have flipped a polygon from earlier in the chain
-                        # In this case we need to trim the stack down so that we recheck
-                        # that polygon.
-                        for index, tup in enumerate(edge_stack):
-                            if tup[0] == ll or tup[0] == lll:
-                                edge_stack = edge_stack[:index]
-                                break
-                        # The following if statement makes sure that we check both subsequent edges of the
-                        # polygon opposite the last edge listed in the stack.
-                        if len(edge_stack) > 0:
-                            ll, ee, step, cc = edge_stack.pop()
-                            edge_stack.append((ll, ee, 1, cc))
-                        continue
-
-                    # If we reach here then we know that no flip was needed.
-                    ccc = self._surface.edge_transformation(ll, ee) * cc
-
-                    # Check if the disk passes through the next edge in the chain.
-                    lp = ccc.line_segment_position(
-                        ppp.vertex((eee + step) % 3), ppp.vertex((eee + step + 1) % 3)
-                    )
-                    if lp == 1:
-                        # disk passes through edge and opposite polygon is not certified.
-                        edge_stack.append((lll, (eee + step) % 3, 1, ccc))
-                        continue
-
-                    # We reach this point if the disk doesn't pass through the edge eee+step of polygon lll.
-
-                # Either lll is already certified or the disk didn't pass
-                # through edge (lll,eee+step)
-
-                # Trim off unnecessary edges off the stack.
-                # prune_count=1
-                ll, ee, step, cc = edge_stack.pop()
-                if step == 1:
-                    # if we have just done step 1 (one edge), move on to checking
-                    # the next edge.
-                    edge_stack.append((ll, ee, 2, cc))
-                # if we have pruned an edge, continue to look at pruning in the same way.
-                while step == 2 and len(edge_stack) > 0:
-                    ll, ee, step, cc = edge_stack.pop()
-                    # prune_count= prune_count+1
-                    if step == 1:
-                        edge_stack.append((ll, ee, 2, cc))
-                if len(edge_stack) == 0:
-                    # We're done with this edge
-                    edge_certified = True
-        self._certified_labels.add(label)
-        return True
+            self._certify(cross_label)
 
     def is_triangulated(self, limit=None):
         r"""
@@ -1662,6 +1636,8 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
             if label in cell:
                 return label
 
+        assert False
+
     @cached_method
     def _normalize_label(self, label):
         r"""
@@ -1684,8 +1660,9 @@ class LazyDelaunaySurface(OrientedSimilaritySurface):
     @cached_method
     def _cell(self, label):
         r"""
-        Return the labels of the Delaunay triangles that contain the Delaunay
-        triangle ``label`` together with the interior edges in that cell.
+        Return the labels of the Delaunay triangles that form the Delaunay cell
+        that contains the Delaunay triangle ``label``, together with the
+        exterior edges in that cell (in a counterclockwise order.)
 
         EXAMPLES::
 

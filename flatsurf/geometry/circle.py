@@ -66,6 +66,7 @@ class Circle:
         self._V3 = VectorSpace(self._base_ring, 3)
 
         self._center = self._V2(center)
+        self._center.set_immutable()
         self._radius_squared = self._base_ring(radius_squared)
 
     def center(self):
@@ -241,3 +242,13 @@ class Circle:
 
     def __repr__(self):
         return "Circle(" + repr(self._center) + ", " + repr(self._radius_squared) + ")"
+
+    def __hash__(self):
+        return hash((self._center, self._radius_squared))
+
+    def __eq__(self, other):
+        if not isinstance(other, Circle):
+            return False
+
+        return self._center == other._center and self._radius_squared == other._radius_squared
+
