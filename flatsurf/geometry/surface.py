@@ -993,7 +993,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
     """
 
-    def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
+    def triangle_flip(self, label, edge, in_place=False, test=None, direction=None):
         r"""
         Overrides
         :meth:`.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip`
@@ -1001,62 +1001,76 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         See that method for details.
         """
-        # TODO: Deprecate test and drop direction.
+        if test is not None:
+            if not test:
+                import warnings
+                warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore")
+            else:
+                import warnings
+                warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.")
+                if len(self.polygon(label).vertices()) != 3:
+                    return False
+                if len(self.polygon(self.opposite_edge(label, edge)[0]).vertices()) != 3:
+                    return False
+                return self.is_convex(label, edge, strict=True)
+
+        if direction is not None:
+            import warnings
+            warnings.warn("the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise")
+
         if not in_place:
-            return super().triangle_flip(
-                l1=l1, e1=e1, in_place=in_place, test=test, direction=direction
-            )
+            return super().triangle_flip(label=label, edge=edge, in_place=in_place)
 
         is_with_boundary = self.is_with_boundary()
 
-        p1 = self.polygon(l1)
-        l1gluings = (self.opposite_edge(l1, e1), self.opposite_edge(l1, (e1 + 1)%3), self.opposite_edge(l1, (e1 + 2)%3))
+        polygon = self.polygon(label)
+        l1gluings = (self.opposite_edge(label, edge), self.opposite_edge(label, (edge + 1)%3), self.opposite_edge(label, (edge + 2)%3))
 
-        l2, e2 = self.opposite_edge(l1, e1)
+        opposite_label, opposite_edge = self.opposite_edge(label, edge)
 
-        if l1 == l2:
+        if label == opposite_label:
             raise NotImplementedError
 
         from flatsurf import Polygon
-        T = self.edge_transformation(l2, e2)
-        p2 = Polygon(vertices=[T(v) for v in self.polygon(l2).vertices()])
-        assert p1.vertex(e1) == p2.vertex(e2 + 1)
-        assert p1.vertex(e1 + 1) == p2.vertex(e2)
-        l2gluings = (self.opposite_edge(l2, e2), self.opposite_edge(l2, (e2 + 1)%3), self.opposite_edge(l2, (e2 + 2)%3))
+        T = self.edge_transformation(opposite_label, opposite_edge)
+        opposite_polygon = Polygon(vertices=[T(v) for v in self.polygon(opposite_label).vertices()])
+        assert polygon.vertex(edge) == opposite_polygon.vertex(opposite_edge + 1)
+        assert polygon.vertex(edge + 1) == opposite_polygon.vertex(opposite_edge)
+        l2gluings = (self.opposite_edge(opposite_label, opposite_edge), self.opposite_edge(opposite_label, (opposite_edge + 1)%3), self.opposite_edge(opposite_label, (opposite_edge + 2)%3))
 
         
-        q1 = [p2.vertex(e2 + 2), p1.vertex(e1 + 2), p1.vertex(e1)]
-        q1 = Polygon(vertices=q1[3 - e1:] + q1[:3 - e1])
+        q1 = [opposite_polygon.vertex(opposite_edge + 2), polygon.vertex(edge + 2), polygon.vertex(edge)]
+        q1 = Polygon(vertices=q1[3 - edge:] + q1[:3 - edge])
 
-        q2 = [p1.vertex(e1 + 2), p2.vertex(e2 + 2), p2.vertex(e2)]
-        q2 = Polygon(vertices=q2[3 - e2:] + q2[:3 - e2])
+        q2 = [polygon.vertex(edge + 2), opposite_polygon.vertex(opposite_edge + 2), opposite_polygon.vertex(opposite_edge)]
+        q2 = Polygon(vertices=q2[3 - opposite_edge:] + q2[:3 - opposite_edge])
 
-        self.replace_polygon(l1, q1)
-        self.replace_polygon(l2, q2)
+        self.replace_polygon(label, q1)
+        self.replace_polygon(opposite_label, q2)
 
-        self.glue((l1, e1), (l2, e2))
+        self.glue((label, edge), (opposite_label, opposite_edge))
 
         # TODO: Simplify the code by using the symmetries.
 
         def to_new(label, edge):
-            if label == l1:
-                assert edge != e1
-                if edge == (e1 + 1) % 3:
-                    return l2, (e2 + 2) % 3
-                assert edge == (e1 + 2) % 3
-                return l1, (e1 + 1) % 3
-            if label == l2:
-                assert edge != e2
-                if edge == (e2 + 1) % 3:
-                    return l1, (e1 + 2) % 3
-                assert edge == (e2 + 2) % 3
-                return l2, (e2 + 1) % 3
+            if label == label:
+                assert edge != edge
+                if edge == (edge + 1) % 3:
+                    return opposite_label, (opposite_edge + 2) % 3
+                assert edge == (edge + 2) % 3
+                return label, (edge + 1) % 3
+            if label == opposite_label:
+                assert edge != opposite_edge
+                if edge == (opposite_edge + 1) % 3:
+                    return label, (edge + 2) % 3
+                assert edge == (opposite_edge + 2) % 3
+                return opposite_label, (opposite_edge + 1) % 3
             return label, edge
 
-        self.glue((l1, (e1 + 1) % 3), to_new(*l1gluings[2]))
-        self.glue((l1, (e1 + 2) % 3), to_new(*l2gluings[1]))
-        self.glue((l2, (e2 + 1) % 3), to_new(*l2gluings[2]))
-        self.glue((l2, (e2 + 2) % 3), to_new(*l1gluings[1]))
+        self.glue((label, (edge + 1) % 3), to_new(*l1gluings[2]))
+        self.glue((label, (edge + 2) % 3), to_new(*l2gluings[1]))
+        self.glue((opposite_label, (opposite_edge + 1) % 3), to_new(*l2gluings[2]))
+        self.glue((opposite_label, (opposite_edge + 2) % 3), to_new(*l1gluings[1]))
 
         assert self.is_with_boundary() == is_with_boundary
 

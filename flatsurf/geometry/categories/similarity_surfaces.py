@@ -122,7 +122,6 @@ from flatsurf.geometry.categories.surface_category import (
 from flatsurf.cache import cached_surface_method
 
 from sage.categories.category_with_axiom import all_axioms
-from sage.misc.cachefunc import cached_method
 from sage.all import QQ, AA
 
 
@@ -1822,51 +1821,52 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return BaseRingChangedSurface(self, ring)
 
-            def triangle_flip(self, l1, e1, in_place=False, test=False, direction=None):
+            def triangle_flip(self, label, edge, in_place=False, test=None, direction=None):
                 r"""
                 Flips the diagonal of the quadrilateral formed by two triangles
-                glued together along the provided edge (l1,e1). This can be broken
-                into two steps: join along the edge to form a convex quadilateral,
-                then cut along the other diagonal. Raises a ValueError if this
-                quadrilateral would be non-convex. In this case no changes to the
-                surface are made.
+                glued together along the provided ``edge`` of the polygon with
+                ``label``.
 
-                The direction parameter defaults to (0,1). This is used to decide how
-                the triangles being glued in are labeled. Let p1 be the triangle
-                associated to label l1, and p2 be the triangle associated to l2
-                but moved by a similarity to share the edge (l1,e1). Each triangle
-                has a exactly one separatrix leaving a vertex which travels in the
-                provided direction or its opposite. (For edges we only count as sepatrices
-                traveling counter-clockwise around the triangle.) This holds for p1
-                and p2 and the separatrices must point in opposite directions.
+                The diagonal is flipped by turning it counterclockwise (from
+                the point of view of the polygon with ``label``.) The ``label``
+                is given to the triangle which has the edge that was previously
+                the edge preceding ``edge`` in the polygon. The diagonal does
+                not change its index in the triangles.
 
-                The above description gives two new triangles t1 and t2 which must be
-                glued in (obtained by flipping the diagonal of the quadrilateral).
-                Up to swapping t1 and t2 we can assume the separatrix in t1 in the
-                provided direction (or its opposite) points in the same direction as
-                that of p1. Further up to cyclic permutation of vertex labels we can
-                assume that the separatrices in p1 and t1 start at the vertex with the
-                same index (an element of {0,1,2}). The same can be done for p2 and t2.
-                We apply the label l1 to t1 and the label l2 to t2. This precisely
-                determines how t1 and t2 should be used to replace p1 and p2.
+                In other words,
+
+                +-----------+       +-----------+
+                |\          |       |          /|
+                | \      L' |       | L'      / |
+                |  \e'      |       |        /  |
+                |   \       |       |       /e  |
+                |e+1 \      |       |      /    |
+                |     \     |       |     /     |
+                |      \    |       |    /      |
+                |       \   |       | e'/   L   |
+                |  L     \  |       |  /        |
+                |        e\ |       | /      e-1|
+                | e-1      \|       |/  e+1     |
+                +-----------+       +-----------+
+
+                where ``L`` is ``label``, ``L'`` is the label of the opposite
+                polygon, ``e`` is ``edge`` and ``e'`` is the edge index of the
+                diagonal in ``L'``.
 
                 INPUT:
 
-                - ``l1`` - label of polygon
+                - ``label`` -- a polygon label
 
-                - ``e1`` - (integer) edge of the polygon
+                - ``edge`` -- an int; the index of an edge of the triangle with
+                  ``label``
 
-                - ``in_place`` (boolean) - If True do the flip to the current surface
-                  which must be mutable. In this case the updated surface will be
-                  returned.  Otherwise a mutable copy is made and then an edge is
-                  flipped, which is then returned.
+                - ``in_place`` -- a bool (default: ``False``) - whether this
+                  surface is modified or a modified copy is produced instead.
 
-                - ``test`` (boolean) - If True we don't actually flip, and we return
-                  True or False depending on whether or not the flip would be
-                  successful.
+                - ``test`` -- a bool (default: ``False``) - whether not to
+                  perform the flip but return whether the flip is possible.
 
-                - ``direction`` (2-dimensional vector) - Defaults to (0,1). The choice
-                  of this vector determines how the newly added triangles are labeled.
+                - ``direction`` -- ignored
 
                 EXAMPLES::
 
@@ -1921,24 +1921,22 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: TestSuite(s).run()
 
                 """
-                # TODO: Deprecate test and drop direction.
-                if test:
-                    # Just test if the flip would be successful
-                    p1 = self.polygon(l1)
-                    if not len(p1.vertices()) == 3:
-                        return False
-                    l2, e2 = self.opposite_edge(l1, e1)
-                    p2 = self.polygon(l2)
-                    if not len(p2.vertices()) == 3:
-                        return False
-                    sim = self.edge_transformation(l2, e2)
-                    hol = sim(p2.vertex((e2 + 2) % 3) - p1.vertex((e1 + 2) % 3))
-                    from flatsurf.geometry.euclidean import ccw
+                if test is not None:
+                    if not test:
+                        import warnings
+                        warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore")
+                    else:
+                        import warnings
+                        warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.")
+                        if len(self.polygon(label).vertices()) != 3:
+                            return False
+                        if len(self.polygon(self.opposite_edge(label, edge)[0]).vertices()) != 3:
+                            return False
+                        return self.is_convex(label, edge, strict=True)
 
-                    return (
-                        ccw(p1.edge((e1 + 2) % 3), hol) > 0
-                        and ccw(p1.edge((e1 + 1) % 3), hol) > 0
-                    )
+                if direction is not None:
+                    import warnings
+                    warnings.warn("the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise")
 
                 if in_place:
                     raise NotImplementedError(
@@ -1950,10 +1948,9 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.triangle_flip(
-                    l1=l1, e1=e1, in_place=True, test=test, direction=direction
-                )
+                s.triangle_flip(label=label, edge=edge, in_place=True)
                 s.set_immutable()
+
                 return s
 
             def is_convex(self, label, edge, strict=False):
