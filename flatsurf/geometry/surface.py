@@ -1007,6 +1007,8 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 l1=l1, e1=e1, in_place=in_place, test=test, direction=direction
             )
 
+        is_with_boundary = self.is_with_boundary()
+
         p1 = self.polygon(l1)
         l1gluings = (self.opposite_edge(l1, e1), self.opposite_edge(l1, (e1 + 1)%3), self.opposite_edge(l1, (e1 + 2)%3))
 
@@ -1048,7 +1050,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 if edge == (e2 + 1) % 3:
                     return l1, (e1 + 2) % 3
                 assert edge == (e2 + 2) % 3
-                return l2, (e1 + 1) % 3
+                return l2, (e2 + 1) % 3
             return label, edge
 
         self.glue((l1, (e1 + 1) % 3), to_new(*l1gluings[2]))
@@ -1056,8 +1058,7 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         self.glue((l2, (e2 + 1) % 3), to_new(*l2gluings[2]))
         self.glue((l2, (e2 + 2) % 3), to_new(*l1gluings[1]))
 
-        # TODO: Assert that this hasn't changed.
-        assert not self.is_with_boundary()
+        assert self.is_with_boundary() == is_with_boundary
 
         return self
 
