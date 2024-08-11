@@ -1301,35 +1301,23 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         # interior of C, then we are done. Otherwise, we restart the process.
         # For finite type surfaces this is guaranteed to terminate. For
         # infinite type surfaces, there is of course no such guarantee.
-        while True:
-            vertices_in_circumcircle, edges_in_circumcircle = self._certify_walk(label)
+        while not self._certify_walk(label):
+            pass
 
-            if not vertices_in_circumcircle:
-                self._certified_labels.add(label)
-                return
-                       
-            # Perfom edge flips to converge towards the Delaunay triangulation
-            flips = 0
-            for edge in edges_in_circumcircle:
-                if self._surface._delaunay_edge_needs_flip(*edge):
-                    self._certify_flip(*edge)
-                    flips += 1
-
-            assert flips, "found vertices in circumcircle but no edge in circumcircle could be flipped"
+        self._certified_labels.add(label)
 
     def _certify_flip(self, label, edge):
+        assert label not in self._certified_labels
+        assert self._surface.opposite_edge(label, edge)[0] not in self._certified_labels
         self._flips.append(((label, edge), self._surface.opposite_edge(label, edge)))
         self._surface.triangle_flip(label, edge, in_place=True)
 
     def _certify_walk(self, label):
         r"""
-        Return the vertices and edges contained in the circumscribed circle of
-        the polygon with label in the underlying partially Delaunay
-        triangulated surface.
+        Return whether there are no vertices contained in the circumscribed
+        circle of the polygon with ``label``.
 
-        If the circumscribed circle has center C and radius R, then this
-        returns all the vertices which are at distance <R from C and all edges
-        that contain a point at distance <R from C.
+        Along the way, we flip any edges that are not Delaunay.
 
         EXAMPLES::
 
@@ -1340,38 +1328,46 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: S._certify((0, 0))
             sage: S._certify_walk((0, 0))
             
-        """
-        vertices_in_circumcircle = set()
-        edges_in_circumcircle = set()
         
+        """
+        vertices_in_circumcircle = False
+
         done = set()
         todo = set([(label, self._surface.polygon(label).circumscribed_circle())])
+
+        modified = set()
 
         while todo:
             item = todo.pop()
             done.add(item)
 
             label, circle = item
+
+            if label in modified:
+                continue
+
             polygon = self._surface.polygon(label)
 
             for v in range(3):
                 V = polygon.vertex(v)
                 if circle.point_position(V) == 1:
-                    vertices_in_circumcircle.add((label, v))
+                    vertices_in_circumcircle = True
 
             for e in range(3):
                 if circle.line_segment_position(polygon.vertex(e), polygon.vertex(e + 1)) == 1:
                     (opposite_label, opposite_edge) = self._surface.opposite_edge(label, e)     
 
-                    if (label, e) not in edges_in_circumcircle and (opposite_label, opposite_edge) not in edges_in_circumcircle:
-                        edges_in_circumcircle.add((label, e))
+                    if self._surface._delaunay_edge_needs_flip(label, e):
+                        modified.add(label)
+                        modified.add(opposite_label)
+                        self._certify_flip(label, e)
+                    else:
+                        item = (opposite_label, self._surface.edge_transformation(label, e) * circle)
 
-                    item = (opposite_label, self._surface.edge_transformation(opposite_label, opposite_edge) * circle)
+                        if item not in done:
+                            todo.add(item)
 
-                    if item not in done:
-                        todo.add(item)
-
-        return vertices_in_circumcircle, edges_in_circumcircle
+        return not vertices_in_circumcircle and not modified
 
     @cached_method
     def opposite_edge(self, label, edge):
