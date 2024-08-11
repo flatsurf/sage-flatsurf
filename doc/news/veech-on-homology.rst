@@ -26,11 +26,11 @@
 
 **Removed:**
 
-* Removed the ``direction`` keyword of ``triangle_flip`` since it was not clear what it actually did in general, instead the diagonal is now always turned counterclockwise.
+* Removed the ``direction`` keyword of ``triangle_flip``, ``veering_triangulation``, ``l_infinity_delaunay_triangulation``, ``delaunay_triangulation``, and ``delaunay_decomposition`` since it was not clear what it actually did in general, instead the diagonal is now always turned counterclockwise.
 
 **Fixed:**
 
-* <news item>
+* Fixed ``is_convex()`` for edges of surfaces. It does now allow this check for self-glued polygons.
 
 **Performance:**
 

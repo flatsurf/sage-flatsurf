@@ -667,8 +667,15 @@ class DilationSurfaces(SurfaceCategory):
                         "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
                     )
 
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of l_infinity_delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
                 return self.veering_triangulation(
-                    l_infinity=True, limit=limit, direction=direction
+                    l_infinity=True, limit=limit
                 )
 
             def veering_triangulation(
@@ -738,6 +745,13 @@ class DilationSurfaces(SurfaceCategory):
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).veering_triangulation()
                     sage: assert t.is_veering_triangulated()
                 """
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of veering_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
                 self = self.triangulate().codomain()
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -745,13 +759,6 @@ class DilationSurfaces(SurfaceCategory):
                 self = MutableOrientedSimilaritySurface.from_surface(
                     self, category=DilationSurfaces()
                 )
-
-                if direction is None:
-                    base_ring = self.base_ring()
-                    direction = (base_ring**2)((base_ring.zero(), base_ring.one()))
-
-                if direction.is_zero():
-                    raise ValueError("direction must be non-zero")
 
                 flip_bound = 1 if l_infinity else 2
 
@@ -769,7 +776,7 @@ class DilationSurfaces(SurfaceCategory):
                         )
                         if needs_flip >= flip_bound:
                             self.triangle_flip(
-                                p1, e1, in_place=True, direction=direction
+                                p1, e1, in_place=True
                             )
                             triangles.add(p1)
                             triangles.add(p2)
