@@ -1835,19 +1835,19 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 In other words,
 
-                +-----------+       +-----------+
-                |\          |       |          /|
+                +<----------+       +<----------+
+                |\          ^       |          /^
                 | \      L' |       | L'      / |
                 |  \e'      |       |        /  |
-                |   \       |       |       /e  |
-                |e+1 \      |       |      /    |
+                |   \|      |       |       /e  |
+                |e+1 \      |       |      /-   |
                 |     \     |       |     /     |
-                |      \    |       |    /      |
+                |      \    |       |   -/      |
                 |       \   |       | e'/   L   |
-                |  L     \  |       |  /        |
+                |  L    |\  |       |  /        |
                 |        e\ |       | /      e-1|
-                | e-1      \|       |/  e+1     |
-                +-----------+       +-----------+
+                v e-1      \|       v/  e+1     |
+                +---------->+       +---------->+
 
                 where ``L`` is ``label``, ``L'`` is the label of the opposite
                 polygon, ``e`` is ``edge`` and ``e'`` is the edge index of the
