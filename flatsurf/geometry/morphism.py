@@ -260,9 +260,9 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
         return "Unknown Surface"
 
 
-class SurfaceMorphismSpace(Homset):
+class MorphismSpace(Homset):
     r"""
-    The set of morphisms from surface ``domain`` to surface ``codomain``.
+    A set of morphisms between structures attached to surfaces.
 
     .. NOTE::
 
@@ -293,8 +293,8 @@ class SurfaceMorphismSpace(Homset):
     def __init__(self, domain, codomain, category=None):
         from sage.categories.all import Objects
 
-        self.__category = category or Objects()
-        super().__init__(domain, codomain, category=self.__category)
+        self._category = category or Objects()
+        super().__init__(domain, codomain, category=self._category)
 
     def base_ring(self):
         r"""
@@ -313,7 +313,7 @@ class SurfaceMorphismSpace(Homset):
             sage: S.triangulate().base_ring()
 
         """
-        raise NotImplementedError("surface morphisms have no notion of base ring yet")
+        raise NotImplementedError("this morphism space has no notion of a base ring yet")
 
     def _an_element_(self):
         if self.is_endomorphism_set():
@@ -323,14 +323,7 @@ class SurfaceMorphismSpace(Homset):
         )
 
     def identity(self):
-        if self.is_endomorphism_set():
-            return IdentityMorphism._create_morphism(self.domain())
-        return super().identity()
-
-    def __repr__(self):
-        if self.domain() is self.codomain():
-            return f"Surface Endomorphisms of {self.domain()}"
-        return f"Surface Morphisms from {self.domain()} to {self.codomain()}"
+        raise NotImplementedError("this morphism space does not implement an identity morphism yet")
 
     # We fail tests for associativity because we do not actually decide whether
     # two morphisms are "equal" but just whether they are indistinguishable.
@@ -346,10 +339,10 @@ class SurfaceMorphismSpace(Homset):
         pass
 
     def __reduce__(self):
-        return SurfaceMorphismSpace, (self.domain(), self.codomain(), self.__category)
+        raise NotImplementedError("this morphism space does not implement pickling yet")
 
     def __eq__(self, other):
-        if not isinstance(other, SurfaceMorphismSpace):
+        if type(self) is not type(other):
             return False
         return (
             self.domain() == other.domain()
@@ -359,6 +352,51 @@ class SurfaceMorphismSpace(Homset):
 
     def __hash__(self):
         return hash((self.domain(), self.codomain()))
+
+
+
+class SurfaceMorphismSpace(MorphismSpace):
+    r"""
+    The set of morphisms from surface ``domain`` to surface ``codomain``.
+
+    .. NOTE::
+
+        Since surfaces are not unique parents, we need to override some
+        functionallity of the SageMath Homset here to make pickling work
+        correctly.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+        sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+        sage: identity = S.erase_marked_points()
+
+        sage: homset = identity.parent()
+        sage: homset
+        Surface Endomorphisms of Translation Surface in H_2(2) built from 3 squares
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import SurfaceMorphismSpace
+        sage: isinstance(homset, SurfaceMorphismSpace)
+        True
+
+        sage: TestSuite(homset).run()
+
+    """
+
+    def identity(self):
+        if self.is_endomorphism_set():
+            return IdentityMorphism._create_morphism(self.domain())
+        return super().identity()
+
+    def __repr__(self):
+        if self.domain() is self.codomain():
+            return f"Surface Endomorphisms of {self.domain()}"
+        return f"Surface Morphisms from {self.domain()} to {self.codomain()}"
+
+    def __reduce__(self):
+        return SurfaceMorphismSpace, (self.domain(), self.codomain(), self._category)
 
 
 class SurfaceMorphism(Morphism):
@@ -988,17 +1026,7 @@ class SurfaceMorphism(Morphism):
 
         assert codomain.surface() is self.codomain(), "codomain must be a homology of the codomain() of this morphism"
 
-        from sage.all import vector
-
-        image = self._image_homology_matrix(domain=g.parent(), codomain=codomain) * vector(g.coefficients())
-
-        homology, to_chain, to_homology = codomain._homology()
-
-        image = sum(
-            coefficient * gen for (coefficient, gen) in zip(image, homology.gens())
-        )
-
-        return codomain(to_chain(image))
+        return g.parent().hom(self._image_homology_matrix(domain=g.parent(), codomain=codomain), codomain=codomain)(g)
 
     def _section_homology(self, h, codomain=None):
         r"""
@@ -1323,13 +1351,13 @@ class SurfaceMorphism(Morphism):
         r"""
         TODO
         """
-        raise NotImplementedError("morphism does not implement __eq__ yet")
+        raise NotImplementedError(f"{type(self).__name__} does not implement __eq__ yet")
 
     def __hash__(self):
         r"""
         TODO
         """
-        return hash((self.domain(), self.codomain()))
+        raise NotImplementedError(f"{type(self).__name__} does not implement __hash__ yet")
 
 
 class SectionMorphism(SurfaceMorphism):

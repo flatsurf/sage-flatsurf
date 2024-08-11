@@ -90,8 +90,9 @@ from typing import List, Tuple
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.categories.morphism import Morphism
-
 from sage.misc.cachefunc import cached_method
+
+from flatsurf.geometry.morphism import MorphismSpace
 
 
 class SimplicialHomologyClass(Element):
@@ -1054,6 +1055,12 @@ class SimplicialHomologyGroup(Parent):
         homology, from_homology, _ = self._homology()
         return tuple(self(from_homology(g)) for g in homology.gens())
 
+    def ngens(self):
+        r"""
+        Return the Betti number of this homology.
+        """
+        return len(self.gens())
+
     def degree(self):
         r"""
         Return the degree `k` for this homology `H_k`.
@@ -1115,13 +1122,15 @@ class SimplicialHomologyGroup(Parent):
 
         return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]
 
-    def hom(self, f):
+    def hom(self, f, codomain=None):
         r"""
         Return the homomorphism of homology induced by ``f``.
 
         INPUT:
 
-        - ``f`` -- an affine automorphism
+        - ``f`` -- a morphism of surfaces or a matrix
+
+        - ``codomain`` -- the simplicial homology this morphism maps into
 
         EXAMPLES::
 
@@ -1145,12 +1154,41 @@ class SimplicialHomologyGroup(Parent):
             [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
 
         """
-        if f.domain() is self.surface() and f.codomain() is self.surface():
-            from sage.all import Hom
-            parent = Hom(self, self)
-            return parent.__make_element_class__(SimplicialHomologyMorphism_induced)(parent, f)
+        from flatsurf.geometry.veech_group import SurfaceMorphism
+        from sage.matrix.matrix0 import Matrix
+        from sage.all import Hom
+
+        if isinstance(f, SurfaceMorphism):
+            if codomain is None:
+                codomain = f.codomain().homology()
+
+            if codomain.surface() is not f.codomain():
+                raise ValueError("codomain must be codomain of morphism or None")
+
+            if f.domain() is self.surface():
+                parent = Hom(self, codomain)
+                return parent.__make_element_class__(SimplicialHomologyMorphism_induced)(parent, f)
+        elif isinstance(f, Matrix):
+            if codomain is None:
+                if f.is_square():
+                    codomain = self
+
+            if codomain is None:
+                raise NotImplementedError("cannot deduce codomain from this matrix")
+
+            if f.ncols() != self.ngens():
+                raise ValueError("matrix must have one column for each generator of homology")
+
+            if f.nrows() != codomain.ngens():
+                raise ValueError("matrix must have one row for each generator of the codomain")
+
+            parent = Hom(self, codomain)
+            return parent.__make_element_class__(SimplicialHomologyMorphism_matrix)(parent, f)
 
         raise NotImplementedError("cannot create a morphism in homology from this data yet")
+
+    def _Hom_(self, Y, category=None):
+        return SimplicialHomologyMorphismSpace(self, Y, category=category)
 
     def _test_symplectic_basis(self, **options):
         r"""
@@ -1255,6 +1293,68 @@ class SimplicialHomologyGroup(Parent):
         )
 
 
+class SimplicialHomologyMorphismSpace(MorphismSpace):
+    r"""
+    The space of homomorphisms from the homology ``domain`` to ``codomain``.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: A = S.affine_automorphism_group()
+        sage: M = matrix([[1, 0], [0, 1]])
+        sage: f = A.derivative().section()(M, check=False)
+
+        sage: from flatsurf import SimplicialHomology
+        sage: H = SimplicialHomology(S)
+        sage: g = H.hom(f)
+        sage: G = g.parent()
+
+    Since these are homomorphisms in homology, they preserve the linear
+    structure of the homology::
+
+        sage: g.category()
+        Category of endsets of modules over Integer Ring
+
+    TESTS::
+
+        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphismSpace
+        sage: isinstance(G, SimplicialHomologyMorphismSpace)
+        True
+
+        sage: TestSuite(G).run()
+
+    """
+    def __init__(self, domain, codomain, category=None):
+        from sage.all import Hom
+        super().__init__(domain, codomain, category=category or Hom(domain, codomain).homset_category())
+
+    def an_element(self):
+        if self.domain() is self.codomain():
+            return self.identity()
+        return self.zero()
+
+    def identity(self):
+        if self.is_endomorphism_set():
+            from sage.all import identity_matrix
+            matrix = identity_matrix(self.codomain().base_ring(), self.domain().ngens(), sparse=True)
+            return self.__make_element_class__(SimplicialHomologyMorphism_matrix)(self, matrix)
+        return super().identity()
+
+    def zero(self):
+        from sage.all import zero_matrix
+        return self.domain().hom(zero_matrix(self.codomain().base_ring(), nrows=self.codomain().ngens(), ncols=self.domain().ngens(), sparse=True), codomain=self.codomain())
+
+    def base_ring(self):
+        if self.domain().base_ring() is self.codomain().base_ring():
+            return self.domain().base_ring()
+
+        return super().base_ring()
+
+    def __reduce__(self):
+        return SimplicialHomologyMorphismSpace, (self.domain(), self.codomain(), self._category)
+
+
 class SimplicialHomologyMorphism_base(Morphism):
     r"""
     Base class for all homomorphisms of homology.
@@ -1264,16 +1364,20 @@ class SimplicialHomologyMorphism_base(Morphism):
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.square_torus()
         sage: A = S.affine_automorphism_group()
-        sage: M = matrix([[1, 2], [0, 1]])
+        sage: M = matrix([[1, 0], [0, 1]])
         sage: f = A.derivative().section()(M, check=False)
 
         sage: from flatsurf import SimplicialHomology
         sage: H = SimplicialHomology(S)
         sage: g = H.hom(f)
 
+    TESTS::
+
         sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_base
         sage: isinstance(g, SimplicialHomologyMorphism_base)
         True
+
+        sage: TestSuite(g).run()
 
     """
     @cached_method
@@ -1306,6 +1410,53 @@ class SimplicialHomologyMorphism_base(Morphism):
         from sage.all import matrix
         return matrix([list(self(gen).coefficients()) for gen in self.domain().gens()]).transpose()
 
+    def _add_(self, other):
+        return self.domain().hom(self.matrix() + other.matrix(), codomain=self.codomain())
+
+    def _composition(self, other):
+        return other.domain().hom(self.matrix() * other.matrix(), codomain=self.codomain())
+
+    def __bool__(self):
+        return bool(self.matrix())
+
+
+class SimplicialHomologyMorphism_matrix(SimplicialHomologyMorphism_base):
+    def __init__(self, parent, matrix):
+        super().__init__(parent)
+
+        self._matrix = matrix
+
+    def _call_(self, g):
+        from sage.all import vector
+
+        image = self._matrix * vector(g.coefficients())
+
+        homology, to_chain, to_homology = self.codomain()._homology()
+
+        image = sum(
+            coefficient * gen for (coefficient, gen) in zip(image, homology.gens())
+        )
+
+        return self.codomain()(to_chain(image))
+
+    def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        .. NOTE::
+        
+            We cannot override ``_richcmp_`` since our non-uniqueness of
+            surfaces breaks the coercion framework in SageMath.
+
+        """
+        if not isinstance(other, SimplicialHomologyMorphism_matrix):
+            return False
+
+        return self.parent() == other.parent() and self._matrix == other._matrix
+
+    def __hash__(self):
+        return hash((self.parent(), self._matrix))
+
 
 class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
     r"""
@@ -1323,9 +1474,13 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
         sage: H = SimplicialHomology(S)
         sage: g = H.hom(f)
 
+    TESTS::
+
         sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_induced
         sage: isinstance(g, SimplicialHomologyMorphism_induced)
         True
+
+        sage: TestSuite(g).run()
 
     """
     def __init__(self, parent, morphism):
@@ -1403,6 +1558,24 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
 
         """
         return f"Induced by {self._morphism!r}"
+
+    def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        .. NOTE::
+        
+            We cannot override ``_richcmp_`` since our non-uniqueness of
+            surfaces breaks the coercion framework in SageMath.
+
+        """
+        if not isinstance(other, SimplicialHomologyMorphism_induced):
+            return False
+
+        return self.parent() == other.parent() and self._morphism == other._morphism
+
+    def __hash__(self):
+        return hash((self.parent(), self._morphism))
 
 
 def SimplicialHomology(

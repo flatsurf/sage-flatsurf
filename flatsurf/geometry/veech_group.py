@@ -45,7 +45,7 @@ from sage.categories.morphism import Morphism
 from sage.categories.homset import Homset
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.morphism import SurfaceMorphism_factorization
+from flatsurf.geometry.morphism import SurfaceMorphism, SurfaceMorphism_factorization
 
 
 class VeechGroup_generic(MatrixGroup_generic):
@@ -267,7 +267,11 @@ class AffineAutomorphismGroup_generic(Homset):
         return self.__make_element_class__(AffineAutomorphism_matrix)(self, matrix)
 
 
-class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
+class AffineAutomorphism_base(SurfaceMorphism):
+    pass
+
+
+class AffineAutomorphism_matrix(AffineAutomorphism_base, SurfaceMorphism_factorization):
     r"""
     An affine automorphism of a surface that is an (arbitrary) lift of an
     element of `GL_2(\mathbb{R})`.
@@ -376,6 +380,15 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
 
         return codomain_normalization.section() * normalization * deformation
 
+    def __eq__(self, other):
+        if not isinstance(other, AffineAutomorphism_matrix):
+            return False
+
+        return self.parent() == other.parent() and self._matrix == other._matrix
+
+    def __hash__(self):
+        return hash((self.parent(), self._matrix))
+ 
 
 class DerivativeMap(Morphism):
     r"""
