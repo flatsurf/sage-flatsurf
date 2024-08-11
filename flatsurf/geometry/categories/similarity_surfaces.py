@@ -1870,55 +1870,66 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 EXAMPLES::
 
-                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface, Polygon
+                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface
 
-                    sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
-                    sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
-                    sage: s.triangle_flip(0, 0, test=True)
-                    False
-                    sage: s.triangle_flip(0, 1, test=True)
-                    True
-                    sage: s.triangle_flip(0, 2, test=True)
-                    False
-
-                    sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
-                    sage: s = MutableOrientedSimilaritySurface.from_surface(s)
-                    sage: s.triangle_flip(0, 0, in_place=True)
+                    sage: S = similarity_surfaces.right_angle_triangle(1, 1)
+                    sage: S.triangle_flip(0, 0)
                     Traceback (most recent call last):
                     ...
-                    ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.
-                    sage: s.triangle_flip(0,1,in_place=True)
-                    Rational Cone Surface built from 2 isosceles triangles
-                    sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 1), (0, 1)])
-                    sage: s.polygon(1)
-                    Polygon(vertices=[(0, 0), (-1, -1), (0, -1)])
-                    sage: s.gluings()
-                    (((0, 0), (1, 0)), ((0, 1), (0, 2)), ((0, 2), (0, 1)), ((1, 0), (0, 0)), ((1, 1), (1, 2)), ((1, 2), (1, 1)))
-                    sage: s.triangle_flip(0,2,in_place=True)
+                    ValueError: cannot flip this edge because the surrounding quadrilateral is not strictly convex
+
+                    sage: S.triangle_flip(0, 1)
+                    Genus 0 Rational Cone Surface built from 2 isosceles triangles
+
+                    sage: S.triangle_flip(0, 2)
                     Traceback (most recent call last):
                     ...
-                    ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.
+                    ValueError: cannot flip this edge because the surrounding quadrilateral is not strictly convex
 
-                    sage: p = Polygon(edges=[(2,0),(-1,3),(-1,-3)])
-                    sage: s = similarity_surfaces.self_glued_polygon(p)
-                    sage: s = MutableOrientedSimilaritySurface.from_surface(s)
-                    sage: s.triangle_flip(0,1,in_place=True)
+                We can flip edges of self-glued polygons::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+
+                    sage: P = Polygon(edges=[(2, 0), (-1, 3), (-1, -3)])
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(similarity_surfaces.self_glued_polygon(P))
+
+                    sage: T.triangle_flip(0, 1, in_place=True)
                     Half-Translation Surface built from a triangle
 
-                    sage: s.set_immutable()
+                    sage: T.set_immutable()
 
                     sage: from flatsurf.geometry.categories import DilationSurfaces
-                    sage: s in DilationSurfaces()
+                    sage: T in DilationSurfaces()
                     True
-                    sage: s.labels()
+                    sage: T.labels()
                     (0,)
-                    sage: s.polygons()
-                    (Polygon(vertices=[(0, 0), (-3, -3), (-1, -3)]),)
-                    sage: s.gluings()
+                    sage: T.polygons()
+                    (Polygon(vertices=[(0, 0), (-1, -3), (2, 0)]),)
+                    sage: T.gluings()
                     (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)))
-                    sage: TestSuite(s).run()
+
+                TESTS::
+
+                    sage: TestSuite(S).run()
+                    sage: TestSuite(T).run()
+
+                The deprecated ``test`` keyword argument::
+
+                    sage: S = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+                    sage: S.polygon(0)
+                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+                    sage: S.triangle_flip(0, 0, test=True)
+                    doctest:warning
+                    ...
+                    UserWarning: the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.
+                    False
+                    sage: S.is_convex(0, 0, strict=True)
+                    False
+
+                    sage: S.triangle_flip(0, 1, test=True)
+                    True
+                    sage: S.triangle_flip(0, 2, test=True)
+                    False
 
                 """
                 if test is not None:
@@ -1948,7 +1959,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.triangle_flip(label=label, edge=edge, in_place=True)
+                s.triangle_flip(label, edge, in_place=True)
                 s.set_immutable()
 
                 return s
@@ -1978,15 +1989,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     False
 
                     sage: S.is_convex(2, 0)
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: edge must be joining two different polygons
+                    True
 
                 """
                 opposite_label, opposite_edge = self.opposite_edge(label, edge)
-
-                if opposite_label == label:
-                    raise ValueError("edge must be joining two different polygons")
 
                 p1 = self.polygon(label)
 
@@ -2035,7 +2041,7 @@ class SimilaritySurfaces(SurfaceCategory):
                 while i < repeat:
                     p1 = choice(labels)
                     e1 = choice(range(3))
-                    if not self.triangle_flip(p1, e1, test=True):
+                    if not self.is_convex(p1, e1, strict=True):
                         continue
                     self.triangle_flip(p1, e1, in_place=True)
                     i += 1
@@ -2435,7 +2441,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: from flatsurf import translation_surfaces
                     sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
                     sage: S.triangulate()
-                    Triangulation of Translation Surface in H_2(2) built from 3 squares
+                    Triangulation morphism:
+                      From: Translation Surface in H_2(2) built from 3 squares
+                      To:   Triangulation of Translation Surface in H_2(2) built from 3 squares
 
                 A non-strictly convex example that caused trouble at some point:
 
@@ -2445,7 +2453,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S
                     Half-Translation Surface in Q_0(0, -1^4) built from a triangle
 
-                    sage: T = S.triangulate()
+                    sage: T = S.triangulate().codomain()
                     sage: len(T.polygon((0, 0)).vertices())
                     3
 
@@ -2474,7 +2482,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S = translation_surfaces.cathedral(1, 1)
                     sage: S
                     Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
-                    sage: S.triangulate(label=1).relabel()
+                    sage: S.triangulate(label=1).codomain().relabel()
                     Translation Surface in H_4(2^3) built from 2 isosceles triangles, 5 triangles, a right triangle, 2 squares and an octagon
 
                 """
@@ -2660,10 +2668,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: m = matrix([[2, 1], [1, 1]])
                     sage: s = m * translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_triangulation()
+                    doctest:warning
+                    ...
+                    UserWarning: delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated()
                     True
@@ -2737,7 +2748,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.root()
                     (0, 0)
                     sage: S.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
 
                     sage: S.is_delaunay_triangulated()
                     True
@@ -2793,8 +2804,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: a = s0.base_ring().gens()[0]
                     sage: m = Matrix([[1,2+a],[0,1]])
                     sage: s = m*s0
-                    sage: s = s.triangulate()
+                    sage: s = s.triangulate().codomain()
                     sage: ss = s.delaunay_decomposition()
+                    doctest:warning
+                    ...
+                    UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead
+
                     sage: len(ss.polygons())
                     3
 
@@ -2806,10 +2821,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
                     sage: ss = s.delaunay_decomposition()
+                    doctest:warning
+                    ...
+                    UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon(ss.root())
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_decomposed()
                     True
@@ -2856,7 +2874,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                self = self.delaunay_triangulation()
+                self = self.delaunay_triangulate().codomain()
 
                 from flatsurf.geometry.lazy import LazyDelaunaySurface
 
@@ -2888,12 +2906,13 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: a = S.base_ring().gens()[0]
                     sage: M = Matrix([[1, 2 + a], [0, 1]])
                     sage: S = M * S
-                    sage: S = S.triangulate()
+                    sage: S = S.triangulate().codomain()
 
                     sage: S = S.delaunay_decompose().codomain()
                     sage: S.is_delaunay_decomposed()
                     True
                     sage: S
+                    Delaunay cell decomposition of Triangulation of Translation Surface in H_3(4) built from 2 quadrilaterals and an octagon
 
                 ::
 
@@ -2901,26 +2920,26 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: P = Polygon(edges=[(4, 0), (-2, 1), (-2, -1)])
                     sage: T = similarity_surfaces.self_glued_polygon(P)
 
-                    sage: T = S.delaunay_decomposition().codomain()
+                    sage: T = T.delaunay_decompose().codomain()
                     sage: T.is_delaunay_decomposed()
                     True
                     sage: T
+                    Delaunay cell decomposition of Half-Translation Surface in Q_0(-1^4) built from an isosceles triangle
 
-                    sage: TestSuite(S).run()
 
                 ::
 
                     sage: M = matrix([[2, 1], [1, 1]])
                     sage: U = M * translation_surfaces.infinite_staircase()
 
-                    sage: U = U.delaunay_decomposition().codomain()
+                    sage: U = U.delaunay_decompose().codomain()
                     sage: U.is_delaunay_decomposed()
                     True
 
                     sage: U.root()
                     (0, 0)
                     sage: U.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
 
                 TESTS::
 

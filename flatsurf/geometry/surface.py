@@ -1025,15 +1025,15 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         label = [label, opposite_label]
 
-        if label[0] == label[1]:
-            raise NotImplementedError("cannot flip an edge attached to the same triangle twice yet")
-
         diagonal = [edge, opposite_edge]
 
         P = [self.polygon(lbl) for lbl in label]
 
         if any(len(p.vertices()) != 3 for p in P):
-            raise ValueError("attached polygon must be a triangle")
+            raise ValueError("attached polygons must be triangles")
+
+        if not self.is_convex(label[0], edge, strict=True):
+            raise ValueError("cannot flip this edge because the surrounding quadrilateral is not strictly convex")
 
         from flatsurf import Polygon
         T = self.edge_transformation(label[1], diagonal[1])
@@ -1046,6 +1046,9 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         Q = [[P[1-i].vertex(diagonal[1-i] + 2), P[i].vertex(diagonal[i] + 2), P[i].vertex(diagonal[i])] for i in range(2)]
         Q = [Polygon(vertices=Q[i][3 - diagonal[i]:] + Q[i][:3 - diagonal[i]]) for i in range(2)]
+        # Shift the new polygons to the origin so things don't seem to wiggle
+        # around randomly.
+        Q = [q.translate(-q.vertex(0)) for q in Q]
 
         for i in range(2):
             self.replace_polygon(label[i], Q[i])
