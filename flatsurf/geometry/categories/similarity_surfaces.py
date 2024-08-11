@@ -1888,7 +1888,7 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 We can flip edges of self-glued polygons::
 
-                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface, similarity_surfaces
 
                     sage: P = Polygon(edges=[(2, 0), (-1, 3), (-1, -3)])
                     sage: T = MutableOrientedSimilaritySurface.from_surface(similarity_surfaces.self_glued_polygon(P))
