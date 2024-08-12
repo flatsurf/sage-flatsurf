@@ -8,6 +8,10 @@
 
 * Added ``delaunay_decompose()`` to similarity surfaces which returns a morphisms to a Delaunay cell decomposition of the surface. This method always has an optional parameter ``codomain`` which can be an existing cell decomposition, this effectively exposes the ``isomorphism()`` function of a ``FlatTriangulation`` in libflatsurf.
 
+* Added ``ngens()`` to homology to get the Betti number of homology.
+
+* Added ``hom()`` for homology to produce the morphism in homology induced by a morphism of a surface or the morphism in homology given by a matrix.
+
 **Changed:**
 
 * Changed ``apply_matrix()``, it now returns a morphism to the deformed surface. To recover the old behavior, use ``apply_matrix().codomain()``.
