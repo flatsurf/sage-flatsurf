@@ -2065,7 +2065,7 @@ def to_pyflatsurf(S):
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
-    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate()).codomain()
+    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate().codomain()).codomain()
 
 
 def sage_ring(surface):
