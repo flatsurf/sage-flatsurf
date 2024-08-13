@@ -13,7 +13,7 @@ Morphisms between Surfaces
 .. NOTE::
 
     Our morphism infrastructure contains quite a few workarounds to make the
-    SageMath machinery work. The fundemantel problem that we are facing is that
+    SageMath machinery work. The fundamental problem that we are facing is that
     our parents (surfaces) are not unique representations. However, surfaces do
     implement equality if they are indistinguishable (and this is a good idea
     to make pickling work.) SageMath has the assumption that if S == T (which
