@@ -12,6 +12,8 @@
 
 * Added ``hom()`` for homology to produce the morphism in homology induced by a morphism of a surface or the morphism in homology given by a matrix.
 
+* Added ``pyflatsurf()`` to translation surfaces to produce an isomorphic surface that is backed by libflatsurf (and exposes the underlying libflatsurf object in its ``flat_triangulation()`` method.)
+
 **Changed:**
 
 * Changed ``apply_matrix()``, it now returns a morphism to the deformed surface. To recover the old behavior, use ``apply_matrix().codomain()``.

@@ -27,7 +27,7 @@ EXAMPLES::
 #
 #        Copyright (C) 2013-2019 Vincent Delecroix
 #                      2013-2019 W. Patrick Hooper
-#                           2023 Julian Rüth
+#                      2023-2024 Julian Rüth
 #
 #  sage-flatsurf is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategoryWithAxi
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,
 )
+from flatsurf.cache import cached_surface_method
 
 
 class TranslationSurfaces(SurfaceCategoryWithAxiom):
@@ -312,6 +313,44 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
             Category of connected without boundary finite type translation surfaces
 
         """
+
+        class ParentMethods:
+            r"""
+            Provides methods available to all translation surfaces built from
+            finitely many polygons.
+
+            If you want to add functionality to such surfaces you most likely
+            want to put it here.
+            """
+
+            @cached_surface_method
+            def pyflatsurf(self):
+                r"""
+                Return an isomorphism to a surface backed by libflatsurf.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+                    0
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+                    1
+
+                    sage: S.glue((0, 0), (1, 1))
+                    sage: S.glue((0, 1), (1, 2))
+                    sage: S.glue((0, 2), (1, 0))
+
+                    sage: S.set_immutable()
+
+                    sage: S.pyflatsurf().codomain()  # optional: pyflatsurf
+                    FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+
+                """
+                from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
+                return Surface_pyflatsurf._from_flatsurf(self)
 
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
