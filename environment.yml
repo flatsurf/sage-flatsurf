@@ -8,6 +8,8 @@ channels:
 dependencies:
   - bidict
   - black >=22,<23
+  # Require a version of cppyythonizations that lets us serialize intrusive-pointers in pyeantic
+  - cppyythonizations >=1.2.4,<2  # optional: pyeantic
   - codespell >=2.2.2,<3
   - gap-defaults
   - ipywidgets
