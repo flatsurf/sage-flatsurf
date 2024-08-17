@@ -2624,7 +2624,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     count += 1
 
                     try:
-                        c1 = p1.circumscribing_circle()
+                        c1 = p1.circumscribed_circle()
                     except ValueError:
                         # p1 is not circumscribed
                         return False
