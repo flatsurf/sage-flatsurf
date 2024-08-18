@@ -87,7 +87,7 @@ A non-singular point::
 
 from sage.categories.homset import Homset
 from sage.misc.cachefunc import cached_method
-from sage.categories.morphism import Morphism
+from sage.categories.morphism import Morphism, IdentityMorphism as IdentityMorphism_sage
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.ring import Ring
 from flatsurf.geometry.surface import OrientedSimilaritySurface
@@ -290,11 +290,11 @@ class MorphismSpace(Homset):
 
     """
 
-    def __init__(self, domain, codomain, category=None):
+    def __init__(self, domain, codomain, category=None, base=None):
         from sage.categories.all import Objects
 
         self._category = category or Objects()
-        super().__init__(domain, codomain, category=self._category)
+        super().__init__(domain, codomain, category=self._category, base=base)
 
     def base_ring(self):
         r"""
@@ -313,7 +313,12 @@ class MorphismSpace(Homset):
             sage: S.triangulate().base_ring()
 
         """
-        raise NotImplementedError("this morphism space has no notion of a base ring yet")
+        base_ring = super().base_ring()
+
+        if base_ring is None:
+            raise NotImplementedError("this morphism space has no notion of a base ring yet")
+
+        return base_ring
 
     def _an_element_(self):
         if self.is_endomorphism_set():
@@ -498,12 +503,12 @@ class SurfaceMorphism(Morphism):
         r"""
         Redirect attribute lookup to the codomain.
 
+        EXAMPLES::
+
         A lot of methods that used to return a surface now return a morphism.
         To make transition of existing code easier, we look up attributes that
         cannot be found on the morphism up on the codomain and issue a
-        deprecation warning.
-
-        EXAMPLES::
+        deprecation warning::
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
@@ -522,6 +527,12 @@ class SurfaceMorphism(Morphism):
             Traceback (most recent call last):
             ...
             AttributeError: ... has no attribute 'is_foo'
+
+        We also allow chaining of morphisms::
+
+        # TODO: That would be cool. But there is probably no good way to achieve this here.
+
+            sage: S.triangulate().apply_matrix(matrix([[1, 2], [0, 1]]))
 
         """
         if name in ["__cached_methods", "_cached_methods"]:
@@ -703,49 +714,16 @@ class SurfaceMorphism(Morphism):
             NotImplementedError: cannot map Integer yet through ...
 
         """
-        from flatsurf.geometry.surface_objects import SurfacePoint_base
+        from flatsurf.geometry.surface_objects import SurfacePoint
 
-        if isinstance(x, SurfacePoint_base):
+        if isinstance(x, SurfacePoint):
             if x.parent() is not self.domain():
                 raise ValueError("point must be in the domain of this morphism")
             image = self._image_point(x)
             assert image.parent() is self.codomain()
             return image
 
-        from flatsurf.geometry.homology import SimplicialHomologyClass
-
-        if isinstance(x, SimplicialHomologyClass):
-            if x.parent().surface() is not self.domain():
-                raise ValueError(
-                    "homology class must be defined over the domain of this morphism"
-                )
-            image = self._image_homology(x)
-            assert image.parent().surface() is self.codomain()
-            return image
-
-        from flatsurf.geometry.saddle_connection import SaddleConnection_base
-
-        if isinstance(x, SaddleConnection_base):
-            if x.surface() is not self.domain():
-                raise ValueError(
-                    "saddle connection must be in the domain of this morphism"
-                )
-            image = self._image_saddle_connection(x)
-            assert image.surface() is self.codomain()
-            return image
-
-        from flatsurf.geometry.tangent_bundle import SimilaritySurfaceTangentVector
-
-        if isinstance(x, SimilaritySurfaceTangentVector):
-            if x.surface() is not self.domain():
-                raise ValueError(
-                    "tangent vector must be on the domain of this morphism"
-                )
-            image = self._image_tangent_vector(x)
-            assert image.surface() is self.codomain()
-            return image
-
-        raise NotImplementedError(f"cannot map {type(x).__name__} yet through {self}")
+        raise NotImplementedError(f"cannot map {type(x).__name__} through {self} yet")
 
     def _image_point(self, p):
         r"""
@@ -817,165 +795,6 @@ class SurfaceMorphism(Morphism):
         identity = self * section
 
         for q in tester.some_elements(self.codomain().some_elements()):
-            tester.assertEqual(identity(q), q)
-
-    def _image_saddle_connection(self, c):
-        r"""
-        Return the image of saddle connection ``c`` under this morphism.
-
-        This is a helper method for :meth:`__call__`.
-
-        Subclasses should implement this method if the morphism is meaningful
-        on the level of saddle connections.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-
-        The image of a saddle connection::
-
-            sage: from flatsurf.geometry.saddle_connection import SaddleConnection
-            sage: c = SaddleConnection.from_vertex(S, 0, 0, (1, 1))
-            sage: c
-            Saddle connection (1, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
-
-            sage: morphism(c)
-            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
-
-        Not all morphisms are meaningful on the level of saddle connections::
-
-            sage: morphism = S.subdivide()
-            sage: morphism(c)
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: a InsertMarkedPointsInFaceMorphism_with_category cannot compute the image of a saddle connection yet
-
-        """
-        raise NotImplementedError(
-            f"a {type(self).__name__} cannot compute the image of a saddle connection yet"
-        )
-
-    def _section_saddle_connection(self, t):
-        r"""
-        Return a preimage of a saddle connection ``t`` under this morphism.
-
-        This is a helper method for :meth:`__call__` of the :meth:`section`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-            sage: T = morphism.codomain()
-
-            sage: from flatsurf.geometry.saddle_connection import SaddleConnection
-            sage: t = SaddleConnection.from_vertex(T, 0, 0, (2, 1)); t
-            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
-            sage: (morphism * morphism.section())(t)
-            Saddle connection (2, 1) from vertex 0 of polygon 0 to vertex 2 of polygon 0
-
-        """
-        raise NotImplementedError(
-            f"a {type(self).__name__} cannot compute a preimage of a saddle connection yet"
-        )
-
-    def _test_section_saddle_connection(self, **options):
-        r"""
-        Verify that :meth:`_section_saddle_connection` actually produces a
-        section.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-            sage: morphism._test_section_saddle_connection()
-
-        """
-        tester = self._tester(**options)
-
-        section = self.section()
-        identity = self * section
-
-        from itertools import islice
-
-        for q in tester.some_elements(islice(self.codomain().saddle_connections(), 16)):
-            tester.assertEqual(identity(q), q)
-
-    def _image_tangent_vector(self, t):
-        r"""
-        Return the image of the tangent vector ``v`` under this morphism.
-
-        This is a helper method for :meth:`__call__`.
-
-        Subclasses should implement this method if the morphism is meaningful
-        on the level of tangent vectors.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-
-        The image of a tangent vector::
-
-            sage: t = S.tangent_vector(0, (0, 0), (1, 1))
-            sage: morphism(t)
-            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
-
-        Not all morphisms are meaningful on the level of tangent vectors::
-
-            # TODO: Add an example of such a morphism
-
-        """
-        raise NotImplementedError(
-            f"a {type(self).__name__} cannot compute the image of a tangent vector yet"
-        )
-
-    def _section_tangent_vector(self, q):
-        r"""
-        Return a preimage of the tangent vector ``q`` under this morphism.
-
-        This is a helper method for :meth:`__call__` of the :meth:`section`.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-            sage: T = morphism.codomain()
-
-            sage: q = T.tangent_vector(0, (0, 0), (2, 1)); q
-            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
-            sage: (morphism * morphism.section())(q)
-            SimilaritySurfaceTangentVector in polygon 0 based at (0, 0) with vector (2, 1)
-
-        """
-        raise NotImplementedError(
-            f"a {type(self).__name__} cannot compute a preimage of a tangent vector yet"
-        )
-
-    def _test_section_tangent_vector(self, **options):
-        r"""
-        Verify that :meth:`_section_tangent_vector` actually produces a
-        section.
-
-        EXAMPLES::
-
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-            sage: morphism._test_section_tangent_vector()
-
-        """
-        tester = self._tester(**options)
-
-        section = self.section()
-        identity = self * section
-
-        for q in tester.some_elements(self.codomain().tangent_bundle().some_elements()):
             tester.assertEqual(identity(q), q)
 
     def _image_homology(self, g, codomain=None):
@@ -1086,7 +905,7 @@ class SurfaceMorphism(Morphism):
         homology = self.codomain().homology()
 
         for q in tester.some_elements(homology.some_elements()):
-            tester.assertEqual(identity(q), q)
+            tester.assertEqual(q.parent().hom(identity)(q), q)
 
     @cached_method
     def _image_homology_matrix(self, domain, codomain):
@@ -1283,7 +1102,7 @@ class SurfaceMorphism(Morphism):
         """
         return SurfaceMorphism._image_homology_edge(self.section(), label, edge, codomain=domain)
 
-    def __mul__(self, other):
+    def _composition(self, other):
         r"""
         Return the composition of this morphism and ``other``.
 
@@ -1528,7 +1347,7 @@ class CompositionMorphism(SurfaceMorphism):
         return "Composite"
 
     def _repr_defn(self):
-        return "  " + "\nthen\n  ".join(str(morphism) for morphism in self._morphisms)
+        return "\nthen ".join(str(morphism) for morphism in self._morphisms)
 
     @cached_method
     def section(self):
@@ -1537,7 +1356,7 @@ class CompositionMorphism(SurfaceMorphism):
         return prod(morphism.section() for morphism in self._morphisms)
 
 
-class IdentityMorphism(SurfaceMorphism):
+class IdentityMorphism(SurfaceMorphism, IdentityMorphism_sage):
     r"""
     The identity morphism from a surface to itself.
 
@@ -1589,35 +1408,35 @@ class IdentityMorphism(SurfaceMorphism):
 
         return codomain((label, edge))
 
-    def __call__(self, x):
-        r"""
-        Return the image of ``x`` under this morphism, i.e., ``x`` itself.
+    ### def __call__(self, x):
+    ###     r"""
+    ###     Return the image of ``x`` under this morphism, i.e., ``x`` itself.
 
-        EXAMPLES::
+    ###     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-            sage: identity = S.erase_marked_points()
-            sage: identity(S(0, 0))
-            Vertex 0 of polygon 0
+    ###         sage: from flatsurf import translation_surfaces
+    ###         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+    ###         sage: identity = S.erase_marked_points()
+    ###         sage: identity(S(0, 0))
+    ###         Vertex 0 of polygon 0
 
-        """
-        return x
+    ###     """
+    ###     return x
 
-    def _repr_type(self):
-        r"""
-        Return a printable representation of this morphism.
+    ### def _repr_type(self):
+    ###     r"""
+    ###     Return a printable representation of this morphism.
 
-        EXAMPLES::
+    ###     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-            sage: identity = S.erase_marked_points()
-            sage: identity
-            Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
+    ###         sage: from flatsurf import translation_surfaces
+    ###         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+    ###         sage: identity = S.erase_marked_points()
+    ###         sage: identity
+    ###         Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
 
-        """
-        return "Identity"
+    ###     """
+    ###     return "Identity"
 
     def __eq__(self, other):
         r"""
@@ -1644,21 +1463,21 @@ class IdentityMorphism(SurfaceMorphism):
             return False
         return self.domain() == other.domain()
 
-    def __rmul__(self, other):
-        r"""
-        Concatenate ``other`` and this morphism.
+    ### def __rmul__(self, other):
+    ###     r"""
+    ###     Concatenate ``other`` and this morphism.
 
-        EXAMPLES::
+    ###     EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-            sage: identity = S.erase_marked_points()
-            sage: identity * identity
-            Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
+    ###         sage: from flatsurf import translation_surfaces
+    ###         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+    ###         sage: identity = S.erase_marked_points()
+    ###         sage: identity * identity
+    ###         Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
 
-        """
-        super().__rmul__(other)
-        return other
+    ###     """
+    ###     super().__rmul__(other)
+    ###     return other
 
 
 class SurfaceMorphism_factorization(SurfaceMorphism):
