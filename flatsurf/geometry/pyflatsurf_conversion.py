@@ -12,7 +12,7 @@ EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
     sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # random output due to deprecation warnings in cppyy
-    sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+    sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
     sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
     sage: conversion  # optional: pyflatsurf
     Conversion from Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons to FlatTriangulationCombinatorial(...) with vectors ...
@@ -64,7 +64,7 @@ class Conversion:
 
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-        sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+        sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
         sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
     TESTS::
@@ -88,7 +88,7 @@ class Conversion:
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
         """
@@ -105,7 +105,7 @@ class Conversion:
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: FlatTriangulationConversion.from_pyflatsurf(conversion.codomain())  # optional: pyflatsurf
             Conversion from ...
@@ -144,7 +144,7 @@ class Conversion:
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion.domain()  # optional: pyflatsurf
             Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons
@@ -165,7 +165,7 @@ class Conversion:
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion.codomain()  # optional: pyflatsurf
             FlatTriangulationCombinatorial(vertices = ...) with vectors {...}
@@ -188,7 +188,7 @@ class Conversion:
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: p = SurfacePoint(S, (0, 2), (0, 1/2))
@@ -212,7 +212,7 @@ class Conversion:
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: p = SurfacePoint(S, (0, 2), (0, 1/2))
@@ -234,7 +234,7 @@ class Conversion:
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             Conversion from Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons to FlatTriangulationCombinatorial(...) with vectors ...
 
@@ -245,6 +245,12 @@ class Conversion:
             codomain = codomain.__cpp_name__
 
         return f"Conversion from {self.domain()} to {codomain}"
+
+    def __eq__(self, other):
+        raise NotImplementedError(f"this {type(self).__name__} does not implement == yet")
+
+    def __hash__(self):
+        raise NotImplementedError(f"this {type(self).__name__} does not implement hashing yet")
 
 
 class RingConversion(Conversion):
@@ -424,7 +430,7 @@ class RingConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion, RingConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: flat_triangulation = FlatTriangulationConversion.to_pyflatsurf(S).codomain()  # optional: pyflatsurf
             sage: conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(flat_triangulation)  # optional: pyflatsurf
 
@@ -1512,7 +1518,7 @@ class FlatTriangulationConversion(Conversion):
 
         sage: from flatsurf import translation_surfaces
         sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-        sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+        sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
         sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
     """
@@ -1523,7 +1529,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.square_torus().triangulate()
+            sage: S = translation_surfaces.square_torus().triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: isinstance(conversion, FlatTriangulationConversion)  # optional: pyflatsurf
@@ -1532,6 +1538,7 @@ class FlatTriangulationConversion(Conversion):
         """
         super().__init__(domain=domain, codomain=codomain)
 
+        # TODO: Use bidict
         self._label_to_half_edge = label_to_half_edge
         self._half_edge_to_label = {
             half_edge: label for (label, half_edge) in label_to_half_edge.items()
@@ -1559,7 +1566,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
         """
@@ -1598,7 +1605,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: FlatTriangulationConversion._pyflatsurf_labels(S)
             {((0, 0), 0): 1,
              ((0, 0), 1): 2,
@@ -1639,7 +1646,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: FlatTriangulationConversion._pyflatsurf_vectors(S)  # optional: pyflatsurf
             [(1, 0),
              ((1/2*a^2 - 3/2 ~ 0.30901699), (1/2*a ~ 0.95105652)),
@@ -1682,7 +1689,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: FlatTriangulationConversion._pyflatsurf_vertex_permutation(S)
             [[1, -3, -6, -9, 8, 6, -5, 4, 2, -1, -4, -7, 9, -8, 7, 5, 3, -2]]
 
@@ -1756,7 +1763,7 @@ class FlatTriangulationConversion(Conversion):
 
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: FlatTriangulationConversion.from_pyflatsurf(conversion.codomain())  # optional: pyflatsurf
             Conversion from ...
@@ -1832,7 +1839,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion.ring_conversion()  # optional: pyflatsurf
             Conversion from Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to NumberField(a^4 - 5*a^2 + 5, [...])
@@ -1851,7 +1858,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion.vector_space_conversion()  # optional: pyflatsurf
             Conversion from Vector space of dimension 2 over Number Field in a with defining polynomial y^4 - 5*y^2 + 5 with a = 1.902113032590308? to flatsurf::Vector<eantic::renf_elem_class>
@@ -1877,7 +1884,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
         We map a point::
@@ -1917,7 +1924,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
         We roundtrip a point::
@@ -1956,7 +1963,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: p = SurfacePoint(S, (0, 2), (0, 1/2))
@@ -1991,7 +1998,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: p = SurfacePoint(S, (0, 2), (0, 1/2))
@@ -2026,7 +2033,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: conversion._image_half_edge((0, 0), 0)  # optional: pyflatsurf
@@ -2049,7 +2056,7 @@ class FlatTriangulationConversion(Conversion):
             sage: from flatsurf import translation_surfaces
             sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
             sage: from flatsurf.geometry.surface_objects import SurfacePoint
-            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate()
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
             sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: import pyflatsurf  # optional: pyflatsurf
@@ -2058,6 +2065,12 @@ class FlatTriangulationConversion(Conversion):
 
         """
         return self._half_edge_to_label[half_edge.id()]
+
+    def __eq__(self, other):
+        if not isinstance(other, FlatTriangulationConversion):
+            return False
+
+        return self.domain() == other.domain() and self._label_to_half_edge == other._label_to_half_edge
 
 
 def to_pyflatsurf(S):
