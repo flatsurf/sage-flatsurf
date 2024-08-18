@@ -300,12 +300,6 @@ class MorphismSpace(Homset):
         r"""
         Return the base ring of this morphism space.
 
-        We throw an exception here since there is probably no good notion of a
-        base ring. In any case, legacy code that uses say
-        ``triangulate().base_ring()`` instead of
-        ``triangulate().codomain().base_ring()`` should fail with a reasonable
-        error instead of silently returning ``None`` (the default.)
-
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
@@ -316,7 +310,12 @@ class MorphismSpace(Homset):
         base_ring = super().base_ring()
 
         if base_ring is None:
-            raise NotImplementedError("this morphism space has no notion of a base ring yet")
+            import warnings
+
+            warnings.warn(
+                f"This morphism set has no base ring. Are you trying to get the base ring of a surface? Use .codomain().base_ring() instead."
+            )
+            return self.codomain().base_ring()
 
         return base_ring
 
