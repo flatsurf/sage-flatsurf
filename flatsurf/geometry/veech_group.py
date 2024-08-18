@@ -42,10 +42,9 @@ We write an element of the Veech group as an action on homology::
 
 from sage.groups.matrix_gps.matrix_group import MatrixGroup_generic
 from sage.categories.morphism import Morphism
-from sage.categories.homset import Homset
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.morphism import SurfaceMorphism, SurfaceMorphism_factorization
+from flatsurf.geometry.morphism import SurfaceMorphism, SurfaceMorphism_factorization, MorphismSpace
 
 
 class VeechGroup_generic(MatrixGroup_generic):
@@ -167,7 +166,7 @@ class VeechGroup_generic(MatrixGroup_generic):
         raise NotImplementedError("cannot decide whether a matrix is in the Veech group yet")
 
 
-class AffineAutomorphismGroup_generic(Homset):
+class AffineAutomorphismGroup_generic(MorphismSpace):
     r"""
     A generic implementation of the group of affine automorphisms of a surface.
 
@@ -179,6 +178,10 @@ class AffineAutomorphismGroup_generic(Homset):
 
         Currently, this group is mostly empty and just a container to hold on
         to the :meth:`derivative` method.
+
+        We do not provide a ``category`` parameter here because it makes
+        serialization overly complicated. (And we do not think that anybody is
+        going to use it.)
 
     EXAMPLES::
 
@@ -193,10 +196,10 @@ class AffineAutomorphismGroup_generic(Homset):
         True
 
     """
-    def __init__(self, surface, category=None):
+    def __init__(self, surface):
         self._surface = surface
 
-        super().__init__(surface, surface, category=category, base=surface.base_ring())
+        super().__init__(surface, surface, base=surface.base_ring())
 
     def surface(self):
         r"""
@@ -265,6 +268,21 @@ class AffineAutomorphismGroup_generic(Homset):
 
         """
         return self.__make_element_class__(AffineAutomorphism_matrix)(self, matrix)
+
+    def __reduce__(self):
+        r"""
+        Return a serializable representation of this space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: loads(dumps(A)) == A
+            True
+
+        """
+        return AffineAutomorphismGroup, (self._surface,)
 
 
 class AffineAutomorphism_base(SurfaceMorphism):
@@ -553,7 +571,7 @@ class SectionDerivativeMap(Morphism):
         return self.codomain()._from_matrix(matrix.matrix())
 
 
-def AffineAutomorphismGroup(surface):
+def AffineAutomorphismGroup(surface, category=None):
     r"""
     Return the group of affine automorphisms of this surface, i.e., the
     group of homeomorphisms that can be locally expressed as affine
