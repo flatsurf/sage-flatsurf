@@ -5,7 +5,7 @@ Ideally, there should be no need to call the functionality in this module
 directly. Interaction with libflatsurf/pyflatsurf should be handled
 transparently by the sage-flatsurf objects. Even for authors of sage-flatsurf
 there should essentially never be a need to use this module directly since
-objects should provide a ``_pyflatsurf()`` method that returns a
+objects should provide a ``pyflatsurf()`` method that returns a
 :class:`Conversion` to libflatsurf/pyflatsurf.
 
 EXAMPLES::
@@ -247,9 +247,41 @@ class Conversion:
         return f"Conversion from {self.domain()} to {codomain}"
 
     def __eq__(self, other):
+        r"""
+        Return whether this conversion is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion1 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+            sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+
+            sage: conversion1 == conversion2
+            True
+
+        """
         raise NotImplementedError(f"this {type(self).__name__} does not implement == yet")
 
     def __hash__(self):
+        r"""
+        Return a hash value for this conversion that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion1 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+            sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+
+            sage: hash(conversion1) == hash(conversion2)
+            True
+        """
         raise NotImplementedError(f"this {type(self).__name__} does not implement hashing yet")
 
 
@@ -1538,7 +1570,7 @@ class FlatTriangulationConversion(Conversion):
         """
         super().__init__(domain=domain, codomain=codomain)
 
-        # TODO: Use bidict
+        # Note that we should probably use a bidict here instead.
         self._label_to_half_edge = label_to_half_edge
         self._half_edge_to_label = {
             half_edge: label for (label, half_edge) in label_to_half_edge.items()
@@ -2067,6 +2099,22 @@ class FlatTriangulationConversion(Conversion):
         return self._half_edge_to_label[half_edge.id()]
 
     def __eq__(self, other):
+        r"""
+        Return whether this conversion is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+            sage: from flatsurf.geometry.surface_objects import SurfacePoint
+            sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
+            sage: conversion1 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+            sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
+
+            sage: conversion1 == conversion2
+            True
+
+        """
         if not isinstance(other, FlatTriangulationConversion):
             return False
 
