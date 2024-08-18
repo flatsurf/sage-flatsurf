@@ -541,7 +541,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     if all(a != 1 for a in self.angles()):
                         # no 2π angle
                         return self
-                    from flatsurf.geometry.pyflatsurf_conversion import (
+                    from flatsurf.geometry.pyflatsurf.conversion import (
                         from_pyflatsurf,
                         to_pyflatsurf,
                     )
@@ -599,7 +599,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             "only triangulated surfaces can be rel-deformed"
                         )
 
-                    from flatsurf.geometry.pyflatsurf_conversion import (
+                    from flatsurf.geometry.pyflatsurf.conversion import (
                         FlatTriangulationConversion,
                     )
 

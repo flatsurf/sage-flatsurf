@@ -30,6 +30,8 @@
 
 * Deprecated ``delaunay_decomposition()`` in favor of ``delaunay_decompose()``.
 
+* Deprecated ``flatsurf.geometry.pyflatsurf_conversion`` module in favor of ``flatsurf.geometry.pyflatsurf.conversion``.
+
 **Removed:**
 
 * Removed the ``direction`` keyword of ``triangle_flip``, ``veering_triangulation``, ``l_infinity_delaunay_triangulation``, ``delaunay_triangulation``, and ``delaunay_decomposition`` since it was not clear what it actually did in general, instead the diagonal is now always turned counterclockwise.

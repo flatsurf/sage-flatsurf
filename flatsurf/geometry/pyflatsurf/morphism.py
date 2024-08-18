@@ -459,7 +459,7 @@ class Morphism_Deformation(SurfaceMorphism):
         for step in path:
             chain = step.chain()
             for edge, coefficient in chain:
-                from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+                from flatsurf.geometry.pyflatsurf.conversion import RingConversion
 
                 coefficient = RingConversion.from_pyflatsurf_from_elements(
                     [coefficient]

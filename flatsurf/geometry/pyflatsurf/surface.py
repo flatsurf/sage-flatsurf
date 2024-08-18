@@ -108,13 +108,13 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     def __init__(self, flat_triangulation):
         self._flat_triangulation = flat_triangulation
 
-        from flatsurf.geometry.pyflatsurf_conversion import RingConversion
+        from flatsurf.geometry.pyflatsurf.conversion import RingConversion
 
         self._ring_conversion = RingConversion.from_pyflatsurf_from_flat_triangulation(
             flat_triangulation
         )
 
-        from flatsurf.geometry.pyflatsurf_conversion import VectorSpaceConversion
+        from flatsurf.geometry.pyflatsurf.conversion import VectorSpaceConversion
 
         self._vector_space_conversion = VectorSpaceConversion.to_pyflatsurf(
             self._ring_conversion.domain() ** 2, ring_conversion=self._ring_conversion
@@ -256,7 +256,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             to_pyflatsurf = cls._from_flatsurf(triangulation.codomain())
             return to_pyflatsurf * triangulation
 
-        from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion
+        from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion
 
         to_pyflatsurf = FlatTriangulationConversion.to_pyflatsurf(surface)
 

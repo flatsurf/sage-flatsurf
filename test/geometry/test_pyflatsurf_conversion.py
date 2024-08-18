@@ -25,7 +25,7 @@ import pytest
 pytest.importorskip("pyflatsurf")  # noqa
 
 from flatsurf import translation_surfaces
-from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+from flatsurf.geometry.pyflatsurf.conversion import to_pyflatsurf
 
 
 def test_origami1():
