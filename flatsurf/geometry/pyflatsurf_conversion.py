@@ -280,7 +280,10 @@ class Conversion:
             sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
             sage: hash(conversion1) == hash(conversion2)  # optional: pyflatsurf
-            True
+            Traceback (most recent call last):
+            ...
+            TypeError: unhashable type: 'FlatTriangulationConversion'
+
         """
         raise NotImplementedError(f"this {type(self).__name__} does not implement hashing yet")
 
