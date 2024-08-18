@@ -432,7 +432,7 @@ class MutablePolygonalSurface(Surface_base):
             Category of connected without boundary finite type translation surfaces
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
-            {'apply_matrix',
+            {'affine_automorphism_group',
              'area',
              'canonicalize',
              'canonicalize_mapping',
@@ -443,8 +443,10 @@ class MutablePolygonalSurface(Surface_base):
              'l_infinity_delaunay_triangulation',
              'minimal_translation_cover',
              'normalized_coordinates',
+             'pyflatsurf',
              'rel_deformation',
              'stratum',
+             'veech_group',
              'veering_triangulation'}
 
         An immutable surface cannot be mutated anymore::
@@ -1966,7 +1968,7 @@ class MutableOrientedSimilaritySurface(
             sage: S1.glue((0, j0), (0, j1))
             sage: S1.set_immutable()
 
-            sage: S1.triangulate()
+            sage: S1.triangulate().codomain()
             Triangulation of Translation Surface in H_3(4, 0) built from a non-convex tridecagon with a marked vertex
 
         """
