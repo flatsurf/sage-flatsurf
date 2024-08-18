@@ -1662,6 +1662,9 @@ class FlatTriangulationConversion(Conversion):
              ((1, 2), 2): -9}
 
         """
+        if domain.is_with_boundary():
+            raise NotImplementedError("cannot convert a surface with boundary to pyflatsurf yet")
+
         labels = {}
         for half_edge, opposite_half_edge in domain.gluings():
             if half_edge in labels:
