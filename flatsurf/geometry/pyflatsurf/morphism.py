@@ -90,7 +90,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
         """
         half_edge = self._pyflatsurf_conversion((label, edge))
-        face = tuple(self.codomain()._flat_triangulation.face(half_edge))
+        face = tuple(self.codomain().flat_triangulation().face(half_edge))
         label = type(self.codomain())._normalize_label(face)
         edge = label.index(half_edge)
         return (label, edge)
@@ -243,7 +243,7 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
             ((1, 2, 3), 0)
 
         """
-        face = tuple(self.domain()._flat_triangulation.face(half_edge))
+        face = tuple(self.domain().flat_triangulation().face(half_edge))
         label = type(self.domain())._normalize_label(face)
         edge = label.index(half_edge)
         return (label, edge)
@@ -442,9 +442,9 @@ class Morphism_Deformation(SurfaceMorphism):
         from pyflatsurf import flatsurf
 
         saddle_connection = flatsurf.SaddleConnection[
-            type(self.domain()._flat_triangulation)
-        ](self.domain()._flat_triangulation, flatsurf.HalfEdge(half_edge))
-        path = flatsurf.Path[type(self.domain()._flat_triangulation)](saddle_connection)
+            type(self.domain().flat_triangulation())
+        ](self.domain().flat_triangulation(), flatsurf.HalfEdge(half_edge))
+        path = flatsurf.Path[type(self.domain().flat_triangulation())](saddle_connection)
 
         path = self._deformation(path)
 
@@ -467,7 +467,7 @@ class Morphism_Deformation(SurfaceMorphism):
 
                 half_edge = edge.positive()
 
-                face = tuple(self.codomain()._flat_triangulation.face(half_edge))
+                face = tuple(self.codomain().flat_triangulation().face(half_edge))
                 label = type(self.codomain())._normalize_label(face)
                 edge = label.index(half_edge)
 
