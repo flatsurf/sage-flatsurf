@@ -2949,7 +2949,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 if codomain is not None:
-                    decomposition = self.delaunay_decompose()
+                    from sage.all import End
+                    decomposition = End(self).identity() if self.is_delaunay_decomposed() else self.delaunay_decompose()
 
                     from flatsurf.geometry.morphism import DelaunayDecompositionIsomorphism
                     isomorphism = DelaunayDecompositionIsomorphism._create_morphism(decomposition.codomain(), codomain)
