@@ -259,7 +259,7 @@ class Conversion:
             sage: conversion1 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
-            sage: conversion1 == conversion2
+            sage: conversion1 == conversion2  # optional: pyflatsurf
             True
 
         """
@@ -279,7 +279,7 @@ class Conversion:
             sage: conversion1 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
-            sage: hash(conversion1) == hash(conversion2)
+            sage: hash(conversion1) == hash(conversion2)  # optional: pyflatsurf
             True
         """
         raise NotImplementedError(f"this {type(self).__name__} does not implement hashing yet")
@@ -2111,7 +2111,7 @@ class FlatTriangulationConversion(Conversion):
             sage: conversion1 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
             sage: conversion2 = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf
 
-            sage: conversion1 == conversion2
+            sage: conversion1 == conversion2  # optional: pyflatsurf
             True
 
         """
