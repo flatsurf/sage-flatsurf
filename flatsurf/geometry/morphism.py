@@ -5,10 +5,11 @@ Morphisms between Surfaces
 
     One should think of these as maps between surfaces. However, they might
     often not be maps on the points of the surface but just on homology, or in
-    some cases, they might not be meaningful as maps anywhere.
+    some cases, they might not be meaningful as maps in any sense.
 
-    Technically, these are at worst morphisms in the category of objects where
-    being a morphism does not really have any mathematical meaning.
+    Technically, this means that these are "morphisms in the category of
+    objects" where being a morphism does not really have any mathematical
+    meaning.
 
 .. NOTE::
 
@@ -141,6 +142,20 @@ class UnknownRing(UniqueRepresentation, Ring):
         super().__init__(ZZ)
 
     def _repr_(self):
+        r"""
+        Return a printable representation of this ring.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+
+            sage: triangulation = S.triangulate(in_place=True)
+            sage: triangulation.domain().base_ring()
+            The Unknown Ring
+
+        """
         return "The Unknown Ring"
 
 
@@ -192,77 +207,219 @@ class UnknownSurface(UniqueRepresentation, OrientedSimilaritySurface):
     """
 
     def is_mutable(self):
+        r"""
+        Return whether this surface can be mutated.
+
+        Since nothing about this surface can be changed, we return that it is immutable.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.is_mutable()
+            False
+
+        """
         return False
 
     def _an_element_(self):
+        r"""
+        Return a point on this surface for testing.
+
+        Since this surface cannot represent any points, we throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S._an_element_()
+
+        """
         raise NotImplementedError("cannot produce points in an unknown surface")
 
     def roots(self):
+        r"""
+        Return the root labels of the connected components of this surface.
+
+        Since this surface doesn't really have any labels, we throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.roots()
+
+        """
         raise NotImplementedError("cannot determine root labels in an unknown surface")
 
     def is_finite_type(self):
+        r"""
+        Return whether this surface is built from a finite number of polygons.
+
+        Since we do not record whether this unknown surface stands in for a
+        surface of finite type, we throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.is_finite_type()
+
+        """
         raise NotImplementedError(
             "cannot determine whether an unknown surface is of finite type"
         )
 
     def is_compact(self):
+        r"""
+        Return whether this surface is compact as a topological space.
+
+        Since we do not record whether this unknown surface stands in for a
+        surface that is compact, we throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.is_compact()
+
+        """
         raise NotImplementedError(
             "cannot determine whether an unknown surface is compact"
         )
 
     def is_with_boundary(self):
+        r"""
+        Return whether this surface has a boundary of unglued edges.
+
+        Since we do not record whether this unknown surface stands in for a
+        surface that has a boundary, we throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.is_with_boundary()
+
+        """
         raise NotImplementedError(
             "cannot determine whether an unknown surface has boundary"
         )
 
     def opposite_edge(self, label, edge):
+        r"""
+        Return the edge that is glued to the ``edge`` of the polygon with
+        ``label``.
+
+        Since we do not know anything about the gluings of this surface, we
+        throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.opposite_edge(0, 0)
+
+        """
         raise NotImplementedError("cannot determine how the unknown surface is glued")
 
     def polygon(self, label):
+        r"""
+        Return the polygon with ``label``.
+
+        Since we do not know the polygons that make up this surface, we throw an error.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S.polygon(0)
+
+        """
         raise NotImplementedError("cannot determine polygons of the unknown surface")
 
-    # Most generic tests do not make sense on the unknown surface and are
-    # therefore disabled.
     def _test_an_element(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_components(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_elements(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_elements_eq_reflexive(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_elements_eq_symmetric(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_elements_eq_transitive(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_elements_neq(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_gluings(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_labels_polygons(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_refined_category(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _test_some_elements(self, **options):
+        # This generic tests does not make sense on the unknown surface and is herefore disabled.
         pass
 
     def _repr_(self):
+        r"""
+        Return a printable representation of this surface.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.square_torus()
+            sage: S = MutableOrientedSimilaritySurface.from_surface(S)
+            sage: S = S.triangulate(in_place=False).domain()
+            sage: S
+
+        """
         return "Unknown Surface"
 
 
 class MorphismSpace(Homset):
     r"""
     A set of morphisms between structures attached to surfaces.
+
+    This is a base class for surface morphisms but also for other structures
+    such as morphisms in homology.
 
     .. NOTE::
 
@@ -274,11 +431,10 @@ class MorphismSpace(Homset):
 
         sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-        sage: identity = S.erase_marked_points()
+        sage: triangulation = S.triangulate()
 
-        sage: homset = identity.parent()
+        sage: homset = triangulate.parent()
         sage: homset
-        Surface Endomorphisms of Translation Surface in H_2(2) built from 3 squares
 
     TESTS::
 
@@ -320,6 +476,16 @@ class MorphismSpace(Homset):
         return base_ring
 
     def _an_element_(self):
+        r"""
+        Return a morphism in this set (for testing.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: End(S).an_element()
+
+        """
         if self.is_endomorphism_set():
             return self.identity()
         raise NotImplementedError(
@@ -327,25 +493,64 @@ class MorphismSpace(Homset):
         )
 
     def identity(self):
+        r"""
+        Return the identical morphism from the domain to the codomain of this
+        space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: End(S).identity()
+
+        """
         raise NotImplementedError("this morphism space does not implement an identity morphism yet")
 
-    # We fail tests for associativity because we do not actually decide whether
-    # two morphisms are "equal" but just whether they are indistinguishable.
-    # Consequently, identity * identity != identity.
-    # We disable tests that fails because of this.
     def _test_associativity(self, **options):
+        # We would fail tests for associativity because we do not actually
+        # decide whether two morphisms are "equal" but just whether they are
+        # indistinguishable. Consequently, identity * identity != identity. We
+        # disable tests that fails because of this.
         pass
 
     def _test_one(self, **options):
+        # We would fail this test because we do not actually decide whether two
+        # morphisms are "equal" but just whether they are indistinguishable.
+        # Consequently, identity * identity != identity. We disable tests that
+        # fails because of this.
         pass
 
-    def _test_prod(self, **options):
-        pass
+    # TODO: Explain why this fails.
+    # def _test_prod(self, **options):
+    #     pass
 
     def __reduce__(self):
+        r"""
+        Return a serializable version of this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: loads(dumps(End(S))) == End(S)
+            True
+
+        """
         raise NotImplementedError("this morphism space does not implement pickling yet")
 
     def __eq__(self, other):
+        r"""
+        Return whether this space is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+            sage: End(S) == End(S)
+            True
+
+        """
         if type(self) is not type(other):
             return False
         return (
@@ -355,8 +560,20 @@ class MorphismSpace(Homset):
         )
 
     def __hash__(self):
-        return hash((self.domain(), self.codomain()))
+        r"""
+        Return a hash value for this space that is compatible with
+        :meth:`__eq__`.
 
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+            sage: hash(End(S)) == hash(End(S))
+            True
+
+        """
+        return hash((self.domain(), self.codomain()))
 
 
 class SurfaceMorphismSpace(MorphismSpace):
@@ -390,16 +607,48 @@ class SurfaceMorphismSpace(MorphismSpace):
     """
 
     def identity(self):
+        r"""
+        Return the identical morphism from the domain to the codomain of this
+        space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: End(S).identity()
+
+        """
         if self.is_endomorphism_set():
             return IdentityMorphism._create_morphism(self.domain())
         return super().identity()
 
     def __repr__(self):
+        r"""
+        Return a printable representation of this space.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: End(S)
+
+        """
         if self.domain() is self.codomain():
             return f"Surface Endomorphisms of {self.domain()}"
         return f"Surface Morphisms from {self.domain()} to {self.codomain()}"
 
     def __reduce__(self):
+        r"""
+        Return a serializable version of this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: loads(dumps(End(S))) == End(S)
+            True
+
+        """
         return SurfaceMorphismSpace, (self.domain(), self.codomain(), self._category)
 
 
@@ -527,12 +776,6 @@ class SurfaceMorphism(Morphism):
             ...
             AttributeError: ... has no attribute 'is_foo'
 
-        We also allow chaining of morphisms::
-
-        # TODO: That would be cool. But there is probably no good way to achieve this here.
-
-            sage: S.triangulate().apply_matrix(matrix([[1, 2], [0, 1]]))
-
         """
         if name in ["__cached_methods", "_cached_methods"]:
             # Do not redirect __cached_methods to the surface since we do not
@@ -572,6 +815,9 @@ class SurfaceMorphism(Morphism):
         return SectionMorphism._create_morphism(self)
 
     def _repr_type(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+        """
         return type(self).__name__
 
     def change(self, domain=None, codomain=None, check=True):
@@ -744,10 +990,6 @@ class SurfaceMorphism(Morphism):
             sage: morphism(S(0, (1/2, 0)))  # indirect doctest
             Point (1, 0) of polygon 0
 
-        Not all morphisms are meaningful on the level of points::
-
-            # TODO: Add an example of such a morphism.
-
         """
         raise NotImplementedError(
             f"a {type(self).__name__} cannot compute the image of a point yet"
@@ -830,10 +1072,6 @@ class SurfaceMorphism(Morphism):
 
             sage: morphism(a)
             B[(0, 1)]
-
-        Not all morphisms are meaningful on the level of homology::
-
-            # TODO: Add an example of such a morphism
 
         """
         if g.parent().surface() is not self.domain():
@@ -1044,7 +1282,16 @@ class SurfaceMorphism(Morphism):
 
         EXAMPLES::
 
-            TODO
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+            sage: from flatsurf import SimplicialHomology
+            sage: H = SimplicialHomology(morphism.codomain())
+            sage: a, b = H.gens()
+
+            sage: morphism._section_homology_gen(a)
+            B[(0, 1)]
 
         """
         return SurfaceMorphism._image_homology_gen(self.section(), gen, codomain=codomain)
@@ -1096,10 +1343,14 @@ class SurfaceMorphism(Morphism):
 
         EXAMPLES::
 
-            TODO
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+            sage: morphism._section_homology_edge(0, 0)
 
         """
-        return SurfaceMorphism._image_homology_edge(self.section(), label, edge, codomain=domain)
+        return SurfaceMorphism._image_homology_edge(self.section(), label, edge, codomain=codomain)
 
     def _composition(self, other):
         r"""
@@ -1141,39 +1392,35 @@ class SurfaceMorphism(Morphism):
 
         return CompositionMorphism._create_morphism(self, other)
 
-    def push_vector_forward(self, tangent_vector):
-        r"""
-        TODO
-        """
-        import warnings
-
-        warnings.warn(
-            "push_vector_forward() has been deprecated and will be removed in a future version of sage-flatsurf; call the morphism with the tangent vector instead, i.e., instead of morphism.push_vector_forward(t) use morphism(t)"
-        )
-
-        return self(tangent_vector)
-
-    def pull_vector_back(self, tangent_vector):
-        r"""
-        TODO
-        """
-        import warnings
-
-        warnings.warn(
-            "pull_vector_back() has been deprecated and will be removed in a future version of sage-flatsurf; call a section of morphism with the tangent vector instead, i.e., instead of morphism.pull_vector_back(t) use morphism.section()(t)"
-        )
-
-        return self.section()(tangent_vector)
-
     def __eq__(self, other):
         r"""
-        TODO
+        Return whether this morphism is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: H = End(S)
+
+            sage: H.identity() == H.identity()
+            True
+
         """
         raise NotImplementedError(f"{type(self).__name__} does not implement __eq__ yet")
 
     def __hash__(self):
         r"""
-        TODO
+        Return a hash value for this morphism that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: H = End(S)
+
+            sage: hash(H.identity()) == hash(H.identity())
+            True
+
         """
         raise NotImplementedError(f"{type(self).__name__} does not implement __hash__ yet")
 
@@ -1251,58 +1498,153 @@ class SectionMorphism(SurfaceMorphism):
             morphism.codomain(), morphism.domain(), morphism
         )
 
-    # Relay evaluating this morphism to asking the original morphism for a section.
-    def _image_point(self, x):
-        return self._morphism._section_point(x)
+    def _image_point(self, p):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_point`, see
+        :meth:`SurfaceMorphism._section_point`.
+        """
+        return self._morphism._section_point(p)
 
-    def _image_homology(self, x, codomain=None):
-        return self._morphism._section_homology(x, codomain=codomain)
+    def _image_homology(self, g, codomain=None):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology`, see
+        :meth:`SurfaceMorphism._section_homology`.
+        """
+        return self._morphism._section_homology(g, codomain=codomain)
 
-    def _image_homology_gen(self, x, codomain):
+    def _image_homology_gen(self, gen, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_gen`, see
+        :meth:`SurfaceMorphism._section_homology_gen`.
+        """
         assert codomain.surface() is self.codomain()
 
-        return self._morphism._section_homology_gen(x, codomain=codomain)
-
-    def _image_saddle_connection(self, x):
-        return self._morphism._section_saddle_connection(x)
-
-    def _image_tangent_vector(self, x):
-        return self._morphism._section_tangent_vector(x)
+        return self._morphism._section_homology_gen(gen, codomain=codomain)
 
     def _image_homology_matrix(self, domain, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_matrix`, see
+        :meth:`SurfaceMorphism._section_homology_matrix`.
+        """
         assert domain.surface() is self.domain()
         assert codomain.surface() is self.codomain()
 
         return self._morphism._section_homology_matrix(domain=domain, codomain=codomain)
 
     def _image_homology_edge(self, label, edge, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: g = f.section()
+
+            sage: g._image_homology_edge((0, 0), 0, S.homology())
+            B[(0, 0)]
+
+        """
         assert codomain.surface() is self.codomain()
 
+        domain = self.domain().homology()
+
         for (l, e) in self.codomain().edges():
-            if self._morphism._image_homology_edge(l, e, codomain=codomain) == codomain((label, edge)):
+            if self._morphism._image_homology_edge(l, e, codomain=domain) == domain((label, edge)):
                 return codomain((l, e))
 
-        raise NotImplementedError  # TODO: What happened now?
+        raise NotImplementedError("not a single edge maps to this edge, cannot implement preimage of this edge yet")
 
     def __eq__(self, other):
+        r"""
+        Return whether this section is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: f.section() == f.section()
+            True
+
+        """
         if not isinstance(other, SectionMorphism):
             return False
 
         return self._morphism == other._morphism
 
+    def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: hash(f.section()) == hash(f.section())
+            True
+
+        """
+        return -hash(self._morphism)
+
     def _repr_type(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: f.section()
+
+        """
         return "Section"
 
     def _repr_defn(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: f.section()
+
+        """
         return f"Section of {self._morphism}"
 
 
 class CompositionMorphism(SurfaceMorphism):
-    # TODO: docstring
+    r"""
+    The formal composition of two morphisms between surfaces.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.octagon()
+        sage: f = S.triangulate()
+        sage: T = f.codomain()
+        sage: g = T.delaunay_triangulate()
+
+        sage: composition = g * f
+        sage: composition
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import CompositionMorphism
+        sage: isinstance(composition, CompositionMorphism)
+        sage: TestSuite(composition).run()
+
+    """
     def __init__(self, parent, lhs, rhs, category=None):
-        # TODO: docstring
         super().__init__(parent, category=category)
 
+        # The morphisms as they are executed (in chronological order.)
         self._morphisms = []
         for morphism in [rhs, lhs]:
             if isinstance(morphism, CompositionMorphism):
@@ -1312,14 +1654,71 @@ class CompositionMorphism(SurfaceMorphism):
 
     @classmethod
     def _create_morphism(cls, lhs, rhs):
+        r"""
+        Create a composition of ``lhs`` to be executed after ``rhs``.
+
+        There should be no need to use this method directly, use ``*`` instead.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+
+            sage: from flatsurf.geometry.morphism import CompositionMorphism
+            sage: CompositionMorphism._create_morphism(g, f) == g * f
+            True
+
+        """
         return super()._create_morphism(rhs.domain(), lhs.codomain(), lhs, rhs)
 
     def __call__(self, x):
+        r"""
+        Evaluate this morphism on the point ``x``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+            sage: h = g * f
+
+            sage: p = S(0, 0)
+
+            sage: q = h(p)
+
+            sage: q == g(f(p))
+            True
+
+        """
         for morphism in self._morphisms:
             x = morphism(x)
         return x
 
     def _image_homology_matrix(self, domain, codomain):
+        r"""
+        Helper method to compute the image of homology under this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+
+            sage: H = S.homology()
+            sage: h.hom(g * f)
+
+            sage: h.matrix()
+
+            sage: (g * f)._image_homology_matrix(H, g.codomain().homology())
+
+        """
         assert domain.surface() is self.domain()
         assert codomain.surface() is self.codomain()
 
@@ -1334,22 +1733,93 @@ class CompositionMorphism(SurfaceMorphism):
         return matrix
 
     def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+
+            sage: g * f == g * f
+            True
+
+        """
         if not isinstance(other, CompositionMorphism):
             return False
 
         return self._parent == other._parent and self._morphisms == other._morphisms
 
     def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible wit :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+
+            sage: hash(g * f) == hash(g * f)
+
+        """
         return hash(tuple(self._morphisms))
 
     def _repr_type(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+            sage: g * f
+
+        """
         return "Composite"
 
     def _repr_defn(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+            sage: g * f
+
+        """
         return "\nthen ".join(str(morphism) for morphism in self._morphisms)
 
     @cached_method
     def section(self):
+        r"""
+        Return a section of this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.octagon()
+            sage: f = S.triangulate()
+            sage: T = f.codomain()
+            sage: g = T.delaunay_triangulate()
+            sage: h = g * f
+            sage: h
+
+            sage: h.section()
+
+        """
         from sage.all import prod
 
         return prod(morphism.section() for morphism in self._morphisms)
@@ -1375,6 +1845,20 @@ class IdentityMorphism(SurfaceMorphism, IdentityMorphism_sage):
 
         sage: TestSuite(identity).run()
 
+    The morphism can be evaluated at points (inherited from the base class)::
+
+        sage: identity(S(0, 0))
+        Vertex 0 of polygon 0
+
+    This is the neutral element for composition::
+
+        sage: triangulation = S.triangulate()
+        sage: triangulation * identity == triangulation
+        True
+
+        sage: End(triangulation.codomain()).identity() * triangulation == triangulation
+        True
+
     """
 
     def __init__(self, parent, category=None):
@@ -1385,6 +1869,17 @@ class IdentityMorphism(SurfaceMorphism, IdentityMorphism_sage):
 
     @classmethod
     def _create_morphism(cls, domain):
+        r"""
+        Return the identity morphism on ``domain``.
+
+        EXAMPLES::
+
+            sage: from flatsurf.geometry.morphism import translation_surfaces, IdentityMorphism
+            sage: S = translation_surfaces.square_torus()
+            sage: f = IdentiyMorphism._create_morphism(S)
+            sage: f == End(S).identity()
+
+        """
         return super()._create_morphism(domain, domain)
 
     def section(self):
@@ -1403,39 +1898,36 @@ class IdentityMorphism(SurfaceMorphism, IdentityMorphism_sage):
         return self
 
     def _image_homology_edge(self, label, edge, codomain):
+        r"""
+        Helper method to compute the image of homology under this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = End(S).identity()
+            sage: f._image_homology_edge(0, 0, codomain=S.homology())
+            B[(0, 0)]
+
+        """
         assert codomain.surface() is self.codomain()
 
         return codomain((label, edge))
 
-    ### def __call__(self, x):
-    ###     r"""
-    ###     Return the image of ``x`` under this morphism, i.e., ``x`` itself.
+    def _repr_type(self):
+        r"""
+        Return a printable representation of this morphism.
 
-    ###     EXAMPLES::
+        EXAMPLES::
 
-    ###         sage: from flatsurf import translation_surfaces
-    ###         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-    ###         sage: identity = S.erase_marked_points()
-    ###         sage: identity(S(0, 0))
-    ###         Vertex 0 of polygon 0
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+            sage: identity = S.erase_marked_points()
+            sage: identity
+            Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
 
-    ###     """
-    ###     return x
-
-    ### def _repr_type(self):
-    ###     r"""
-    ###     Return a printable representation of this morphism.
-
-    ###     EXAMPLES::
-
-    ###         sage: from flatsurf import translation_surfaces
-    ###         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-    ###         sage: identity = S.erase_marked_points()
-    ###         sage: identity
-    ###         Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
-
-    ###     """
-    ###     return "Identity"
+        """
+        return "Identity"
 
     def __eq__(self, other):
         r"""
@@ -1462,48 +1954,269 @@ class IdentityMorphism(SurfaceMorphism, IdentityMorphism_sage):
             return False
         return self.domain() == other.domain()
 
-    ### def __rmul__(self, other):
-    ###     r"""
-    ###     Concatenate ``other`` and this morphism.
-
-    ###     EXAMPLES::
-
-    ###         sage: from flatsurf import translation_surfaces
-    ###         sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-    ###         sage: identity = S.erase_marked_points()
-    ###         sage: identity * identity
-    ###         Identity endomorphism of Translation Surface in H_2(2) built from 3 squares
-
-    ###     """
-    ###     super().__rmul__(other)
-    ###     return other
-
 
 class SurfaceMorphism_factorization(SurfaceMorphism):
+    r"""
+    A morphism between surfaces that is backed by another morphism, usually a
+    :class:`CompositionMorphism`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.pyflatsurf()
+        sage: f
+
+        sage: f._factorization()
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import SurfaceMorphism_factorization
+        sage: isinstance(f, SurfaceMorphism_factorization)
+        True
+
+        sage: TestSuite(f).run()
+
+    """
     def _image_homology(self, g, codomain=None):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology` by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: a, b = S.homology().gens()
+            sage: f._image_homology(a)
+
+        """
         return self._factorization()._image_homology(g, codomain=codomain)
 
+    def _section_homology(self, h, codomain=None):
+        r"""
+        Implements :meth:`SurfaceMorphism._section_homology` by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: a, b = f.codomain().homology().gens()
+            sage: f._section_homology(a)
+
+        """
+        return self._factorization()._section_homology(h, codomain=codomain)
+
     def _image_homology_matrix(self, domain, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_matrix` by invoking
+        the underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: f._image_homology_matrix(S, f.codomain())
+
+        """
         assert domain.surface() is self.domain()
         assert codomain.surface() is self.codomain()
 
         return self._factorization()._image_homology_matrix(domain=domain, codomain=codomain)
 
+    def _section_homology_matrix(self, domain, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_matrix` by invoking
+        the underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: f._section_homology_matrix(f.codomain(), S)
+
+        """
+        assert domain.surface() is self.codomain()
+        assert codomain.surface() is self.domain()
+
+        return self._factorization()._section_homology_matrix(domain=domain, codomain=codomain)
+
     def _image_homology_gen(self, gen, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_gen` by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: a, b = S.homology().gens()
+            sage: f._image_homology_gen(a)
+
+        """
         assert codomain.surface() is self.codomain()
 
         return self._factorization()._image_homology_gen(gen, codomain=codomain)
 
+    def _section_homology_gen(self, gen, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._section_homology_gen` by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: a, b = f.codomain().homology().gens()
+            sage: f._section_homology_gen(a)
+
+        """
+        assert codomain.surface() is self.domain()
+
+        return self._factorization()._section_homology_gen(gen, codomain=codomain)
+
     def _image_homology_edge(self, label, edge, codomain):
+        r"""
+        Implement :meth:`SurfaceMorphism._image_homology_edge` by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: f._image_homology_edge(0, 0, codomain=f.codomain().homology())
+
+        """
         assert codomain.surface() is self.codomain()
 
         return self._factorization()._image_homology_edge(label, edge, codomain)
 
+    def _section_homology_edge(self, label, edge, codomain):
+        r"""
+        Implement :meth:`SurfaceMorphism._section_homology_edge` by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: f._section_homology_edge((1, 2, 3), 0, codomain=f.domain().homology())
+
+        """
+        assert codomain.surface() is self.domain()
+
+        return self._factorization()._image_homology_edge(label, edge, codomain)
+
+    def _image_point(self, p):
+        r"""
+        Return the image of a point under this morphism by invoking the
+        underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+            sage: f(S(0, 0))
+
+        """
+        return self._factorization()._image_point(p)
+
+    def _section_point(self, q):
+        r"""
+        Return a preimage of a point under this morphism by determining a
+        preimage of the underlying morphism of this factorization.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+            sage: f._section_point(f.codomain()((1, 2, 3), 0))
+
+        """
+        return self._factorization()._section_point(q)
+
     def _factorization(self):
-        raise NotImplementedError
+        r"""
+        Return the morphism underlying this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: f._factorization()
+
+        """
+        raise NotImplementedError("this factorization morphism is not functional because it does not implement factorization()")
+
+    def _test_factorization(self, **options):
+        r"""
+        Verify that :meth:`_factorization` has been implemented correctly.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.pyflatsurf()
+
+            sage: f._test_factorization()
+
+        """
+        tester = self._tester(**options)
+
+        tester.assertTrue(self.domain() is self._factorization().domain())
+        tester.assertTrue(self.codomain() is self._factorization().codomain())
 
 
 class NamedFactorizationMorphism(SurfaceMorphism_factorization):
+    r"""
+    A morphism that is implement by another morphism but has a more appealing
+    name when printing.
+
+    This is commonly used when implementing new morphisms that rely on a
+    sequence of existing morphisms while providing a nice interface to the user
+    of sage-flatsurf.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.triangulate()
+        sage: g = f.codomain().apply_matrix(matrix([[1, 2], [0, 1]]), in_place=False)
+
+        sage: from flatsurf.geometry.morphism import NamedFactorizationMorphism
+        sage: h = NamedFactorizationMorphism._create_morphism(S, g.codomain(), "Foo", g * f)
+        sage: h
+
+    TESTS::
+
+        sage: from flatsurf.geometry.
+        sage: isinstance(h, NamedFactorizationMorphism)
+        True
+
+        sage: TestSuite(h).run()
+
+    """
     def __init__(self, parent, name, factorization):
         super().__init__(parent)
 
@@ -1516,31 +2229,88 @@ class NamedFactorizationMorphism(SurfaceMorphism_factorization):
             raise ValueError
 
     def _repr_type(self):
+        r"""
+        Helper method for :meth;`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: g = f.codomain().apply_matrix(matrix([[1, 2], [0, 1]]), in_place=False)
+
+            sage: from flatsurf.geometry.morphism import NamedFactorizationMorphism
+            sage: h = NamedFactorizationMorphism._create_morphism(S, g.codomain(), "Foo", g * f)
+            sage: h
+
+        """
         return self._name
 
     def _factorization(self):
+        r"""
+        Return the morphism underlying this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: g = f.codomain().apply_matrix(matrix([[1, 2], [0, 1]]), in_place=False)
+
+            sage: from flatsurf.geometry.morphism import NamedFactorizationMorphism
+            sage: h = NamedFactorizationMorphism._create_morphism(S, g.codomain(), "Foo", g * f)
+
+            sage: h._factorization()
+
+        """
         return self.__factorization
 
 
 class TriangulationMorphism_base(SurfaceMorphism):
     r"""
-    Morphism from a surface to its triangulation.
+    Abstract base class for morphisms from a surface to its triangulation.
 
     EXAMPLES::
 
-        sage: import flatsurf
+        sage: from flatsurf import translation_surfaces
 
         sage: G = SymmetricGroup(4)
-        sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
-        sage: S.triangulate()
+        sage: S = translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+        sage: f = S.triangulate()
+        sage: f
         Triangulation morphism:
           From: Origami defined by r=(1,2,3,4) and u=(1,4,2,3)
           To:   Triangulation of Origami defined by r=(1,2,3,4) and u=(1,4,2,3)
 
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import TriangulationMorphism_base
+        sage: isinstance(f, TriangulationMorphism_base)
+        True
+
+        sage: TestSuite(f).run()
+
     """
 
     def _image_edge(self, label, edge):
-        raise NotImplementedError
+        r"""
+        Return the image of the ``edge`` of the polygon with ``label`` in the
+        codomain of this triangulation.
+
+        Subclasses must implement this method to make this morphism functional.
+
+        Since this is a triangulation, all edges of the domain are preserved in
+        the codomain.
+
+        EXAMPLES::
+
+            sage: G = SymmetricGroup(4)
+            sage: S = translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: f = S.triangulate()
+            sage: f._image_edge(0, 0)
+
+        """
+        raise NotImplementedError("this triangulation morphism is not functional because it does not implement _image_edge() yet")
 
     def _image_homology_edge(self, label, edge, codomain):
         r"""
@@ -1548,10 +2318,10 @@ class TriangulationMorphism_base(SurfaceMorphism):
 
         EXAMPLES::
 
-            sage: import flatsurf
+            sage: from flatsurf import translation_surfaces
 
             sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S = translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: triangulation = S.triangulate()
             sage: triangulation._image_homology_edge(1, 0)
             [(1, (1, 0), 0)]
@@ -1561,63 +2331,16 @@ class TriangulationMorphism_base(SurfaceMorphism):
 
         return codomain(self._image_edge(label, edge))
 
-    def _image_saddle_connection(self, connection):
-        (label, edge) = connection.start()
-
-        label, edge = self._image_edge(label, edge)
-
-        from flatsurf.geometry.euclidean import ccw
-
-        while (
-            ccw(
-                connection.direction().vector(),
-                -self.codomain()
-                .polygon(label)
-                .edges()[(edge - 1) % len(self.codomain().polygon(label).edges())],
-            )
-            <= 0
-        ):
-            (label, edge) = self.codomain().opposite_edge(
-                label, (edge - 1) % len(self.codomain().polygon(label).edges())
-            )
-
-        # TODO: This is extremely slow.
-        from flatsurf.geometry.saddle_connection import SaddleConnection
-
-        return SaddleConnection.from_vertex(
-            self.codomain(), label, edge, connection.direction().vector()
-        )
-
-    def _section_saddle_connection(self, connection):
-        (label, edge) = connection.start()
-
-        domain_label = self.codomain()._reference_label(label)
-        triangulation = self.codomain()._triangulation(domain_label)[1].inverse
-
-        while (label, edge) not in triangulation:
-            label, edge = self.codomain().opposite_edge(label, edge)
-            edge = (edge + 1) % len(self.codomain().polygon(label).edges())
-
-        # TODO: This is extremely slow.
-        from flatsurf.geometry.saddle_connection import SaddleConnection
-
-        return SaddleConnection.from_vertex(
-            self.domain(),
-            domain_label,
-            triangulation[(label, edge)],
-            connection.direction(),
-        )
-
     def _image_point(self, p):
         r"""
         Implements :class:`SurfaceMorphism._image_point`.
 
         EXAMPLES::
 
-            sage: import flatsurf
+            sage: from flatsurf import translation_surfaces
 
             sage: G = SymmetricGroup(4)
-            sage: S = flatsurf.translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: S = translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
             sage: triangulation = S.triangulate()
             sage: triangulation._image_point(S(1, 0))
             Vertex 0 of polygon (1, 0)
@@ -1643,34 +2366,195 @@ class TriangulationMorphism_base(SurfaceMorphism):
         ), "point must be in one of the polygons that split up the original polygon"
 
     def _repr_type(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: G = SymmetricGroup(4)
+            sage: S = translation_surfaces.origami(G('(1,2,3,4)'), G('(1,4,2,3)'))
+            sage: f = S.triangulate()
+            sage: f
+
+        """
         return "Triangulation"
 
 
 class TriangulationMorphism_LazyTriangulatedSurface(TriangulationMorphism_base):
+    r"""
+    A triangulation that maps a surface into a class :class:`LazyTriangulatedSurface`.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.triangulate()
+        sage: f
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import TriangulationMorphism_lazyTriangulatedSurface
+        sage: isinstance(f, LazyTriangulatedSurface)
+        True
+        sage: TestSuite(f).run()
+
+    """
     def _image_edge(self, label, edge):
+        r"""
+        Implements :meth:`TriangulationMorphism_base._image_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.triangulate()
+            sage: f._image_edge(0, 0)
+            ((0, 0), 0)
+
+        """
         return self.codomain()._image(label)[1][edge]
 
     def __eq__(self, other):
+        r"""
+        Return whether this triangulation is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.triangulate() == S.triangulate()
+            True
+
+        """
         if not isinstance(other, TriangulationMorphism_LazyTriangulatedSurface):
             return False
 
         return self.parent() == other.parent()
 
+    def __hash__(self):
+        r"""
+        Return a hash value for this triangulation that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: hash(S.triangulate()) == hash(S.triangulate())
+            True
+
+        """
+        return hash(self.parent())
+
 
 class DelaunayTriangulationMorphism_delaunay_decomposition(TriangulationMorphism_base):
+    r"""
+    A triangulation that maps a a Delaunay decomposition into the Delaunay
+    triangulation from which it was created.
+
+    This morphism is used internally in :meth:`delaunay_decompose`, the actual
+    delaunay decomposition, is the inverse of this morphism.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.delaunay_decompose()._factorization()._morphisms[1].section()
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import DelaunayTriangulationMorphism_delaunay_decomposition
+        sage: isinstance(f, DelaunayTriangulationMorphism_delaunay_decomposition)
+        True
+
+        sage: TestSuite(f).run()
+
+    """
     def _image_edge(self, label, edge):
+        r"""
+        Implements :meth:`TriangulationMorphism_base._image_edge.`
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_decompose()._factorization()._morphisms[1].section()
+            sage: f._image_edge((0, 0), 0)
+            ((0, 0), 0)
+
+        """
         _, edges = self.domain()._cell(label)
         return edges[edge]
 
     def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_decompose()._factorization()._morphisms[1].section()
+            sage: g = S.delaunay_decompose()._factorization()._morphisms[1].section()
+            sage: f == g
+            True
+
+        """
         if not isinstance(other, DelaunayTriangulationMorphism_delaunay_decomposition):
             return False
 
         return self.parent() == other.parent()
 
+    def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible with
+        :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_decompose()._factorization()._morphisms[1].section()
+            sage: g = S.delaunay_decompose()._factorization()._morphisms[1].section()
+            sage: hash(f) == hash(g)
+            True
+
+        """
+        return hash(self.parent())
+
 
 class DelaunayTriangulationMorphism(SurfaceMorphism):
+    r"""
+    A morphism from a triangulated surface to its Delaunay triangulation.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.delaunay_triangulate()._morphisms[1]
+        sage: f
+
+    TESTS::
+
+        sage: isinstance(f, DelaunayTriangulationMorphism)
+        True
+
+        sage: TestSuite(f).run()
+
+    """
     def _image_homology_edge(self, label, edge, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_triangulate()._morphisms[1]
+
+            sage: f._image_homology_edge((0, 0), 0, codomain=f.codomain().homology())
+
+        """
         gens, chain_matrix = self._image_homology_edge_chain_matrix()
 
         image = chain_matrix.column(gens.index((label, edge)))
@@ -1679,6 +2563,20 @@ class DelaunayTriangulationMorphism(SurfaceMorphism):
 
     @cached_method
     def _image_homology_edge_chain_matrix(self):
+        r"""
+        Return the matrix that describes the action of this morphism in
+        homology on the generators of the chain module.
+
+        Helper method for :meth:`_image_homology_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_triangulate()._morphisms[1]
+            sage: f._image_homology_edge_chain_matrix()
+
+        """
         for label in self.codomain().labels():
             self.codomain()._certify(label)
 
@@ -1693,7 +2591,26 @@ class DelaunayTriangulationMorphism(SurfaceMorphism):
         return gens, chain_matrix
 
     def _image_homology_edge_chain_matrix_flip(self, flip, gens):
-        # TODO: This should live in the flip morphism.
+        r"""
+        Return the matrix that describes the action of a single ``flip`` on
+        homology on the generators ``gens`` of the chain module.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_triangulate()._morphisms[1]
+            sage: f._image_homology_edge_chain_matrix_flip((0, 0), tuple(S.edges()))
+
+        TESTS:
+
+        This method should be migrated into the morphism describing a triangle
+        flip but currently there is no such morphism::
+
+            sage: isinstance(S.triangle_flip(0, 0), SurfaceMorphism)
+            False
+
+        """
         from sage.all import zero_matrix, ZZ
 
         (label, edge), (opposite_label, opposite_edge) = flip
@@ -1726,94 +2643,177 @@ class DelaunayTriangulationMorphism(SurfaceMorphism):
         image((opposite_label, 0), (label, 1), (opposite_label, 2))
         image((opposite_label, 1), (label, 2))
         image((opposite_label, 2), (opposite_label, 1))
-             
+
         return matrix
+
+    def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_triangulate()._morphisms[1]
+            sage: g = S.delaunay_triangulate()._morphisms[1]
+            sage: f == g
+            True
+
+        """
+        if not isinstance(other, DelaunayTriangulationMorphism):
+            return False
+
+        return self.parent() == other.parent()
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_triangulate()._morphisms[1]
+            sage: g = S.delaunay_triangulate()._morphisms[1]
+            sage: hash(f) == hash(g)
+            True
+
+        """
+        return hash(self.parent())
 
 
 class DelaunayDecompositionMorphism(SectionMorphism):
+    r"""
+    A morphism describing the Delaunay decomposition of a Delaunay triangulation.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.delaunay_decompose()._factorization()._morphisms[1]
+        sage: f
+
+    This morphism is implemented as the formal section of a triangulation
+    morphism::
+
+        sage: f.section()
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+        sage: isinstance(DelaunayDecompositionMorphism)
+        True
+
+        sage: TestSuite(f).run()
+
+    """
     def __init__(self, parent, category=None):
         super().__init__(parent, DelaunayTriangulationMorphism_delaunay_decomposition._create_morphism(parent.codomain(), parent.domain()), category=category)
 
+    def _repr_type(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_decompose()._factorization()._morphisms[1]
+            sage: f
+
+        """
+        return "Delaunay decomposition"
+
+    @classmethod
+    def _create_morphism(cls, domain, codomain):
+        r"""
+        Return a morphism from ``domain`` to ``codomain``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus().delaunay_triangulate().codomain()
+            sage: T = S.delaunay_decompose().codomain()
+
+            sage: from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+            sage: DelaunayDecompositionMorphism._create_morphism(S, T)
+
+        """
+        return super()._create_morphism(DelaunayTriangulationMorphism_delaunay_decomposition._create_morphism(codomain, domain))
+
     def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_decompose()._factorization()._morphisms[1]
+            sage: g = S.delaunay_decompose()._factorization()._morphisms[1]
+
+            sage: f == g
+            True
+
+        """
         if not isinstance(other, DelaunayDecompositionMorphism):
             return False
 
         return self.parent() == other.parent()
 
-    def _repr_type(self):
-        return "Delaunay Decomposition"
+    def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible with :meth:`__eq__`.
 
-    @classmethod
-    def _create_morphism(cls, domain, codomain):
-        return super()._create_morphism(DelaunayTriangulationMorphism_delaunay_decomposition._create_morphism(codomain, domain))
+        EXAMPLES::
 
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.delaunay_decompose()._factorization()._morphisms[1]
+            sage: g = S.delaunay_decompose()._factorization()._morphisms[1]
 
-class GL2RMorphism(SurfaceMorphism):
-    def __init__(self, parent, m, category=None):
-        super().__init__(parent, category=category)
+            sage: hash(f) == hash(g)
+            True
 
-        from sage.all import matrix
-
-        self._matrix = matrix(m, immutable=True)
-
-    def change(self, domain=None, codomain=None, check=True):
-        return type(self)._create_morphism(
-            domain=domain or self.domain(),
-            codomain=codomain or self.codomain(),
-            m=self._matrix,
-            category=self.category_for(),
-        )
-
-    def section(self):
-        return self._create_morphism(self.codomain(), self.domain(), ~self._matrix)
-
-    def _image_point(self, point):
-        label, coordinates = point.representative()
-        return self.codomain()(label, self._matrix * coordinates)
-
-    def _image_saddle_connection(self, connection):
-        if self._matrix.det() <= 0:
-            raise NotImplementedError(
-                "cannot compute the image of a saddle connection for this matrix yet"
-            )
-
-        from flatsurf.geometry.saddle_connection import SaddleConnection
-
-        return SaddleConnection(
-            surface=self.codomain(),
-            start=connection.start(),
-            end=connection.end(),
-            holonomy=self._matrix * connection.holonomy(),
-            end_holonomy=self._matrix * connection.end_holonomy(),
-            check=False,
-        )
-
-    def _image_homology_edge(self, label, edge, codomain):
-        assert codomain.surface() is self.codomain()
-
-        return codomain((label, edge))
-
-    def _image_tangent_vector(self, t):
-        return self.codomain().tangent_vector(
-            t.polygon_label(), self._matrix * t.point(), self._matrix * t.vector()
-        )
-
-    def __eq__(self, other):
-        if not isinstance(other, GL2RMorphism):
-            return False
-
-        return self.parent() == other.parent() and self._matrix == other._matrix
-
-    def _repr_type(self):
-        return "Linear"
-
-    def _repr_defn(self):
-        return repr(self._matrix)
+        """
+        return hash(self.parent())
 
 
 class DelaunayDecompositionIsomorphism(SurfaceMorphism_factorization):
+    r"""
+    An isomorphism between Delaunay decompositions.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: T = S.relabel({0: 1})
+        sage: isomorphism = S.delaunay_decompose(codomain=T)
+        sage: isomorphism
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import DelaunayDecompositionIsomorphism
+        sage: isinstance(isomorphism, DelaunayDecompositonIsomorphism)
+        True
+
+        sage: TestSuite(isomorphism).run()
+
+    """
     @cached_method
     def _factorization(self):
+        r"""
+        Return the sequence of morphism that implement this isomorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: T = S.relabel({0: 1})
+            sage: isomorphism = S.delaunay_decompose(codomain=T)
+            sage: isomorphism._factorization()
+
+        """
         from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
 
         domain_to_pyflatsurf = Surface_pyflatsurf._from_flatsurf(self.domain())
@@ -1824,3 +2824,140 @@ class DelaunayDecompositionIsomorphism(SurfaceMorphism_factorization):
 
         from flatsurf.geometry.pyflatsurf.morphism import Morphism_Deformation
         return codomain_to_pyflatsurf.section() * Morphism_Deformation._create_morphism(domain_to_pyflatsurf.codomain(), codomain_to_pyflatsurf.codomain(), deformation) * domain_to_pyflatsurf
+
+
+class GL2RMorphism(SurfaceMorphism):
+    r"""
+    A morphism that describes the application of a matrix in `GL_2(\mathbb{R})`
+    on each polygon of a surface.
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces
+        sage: S = translation_surfaces.square_torus()
+        sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+        sage: f
+
+    TESTS::
+
+        sage: from flatsurf.geometry.morphism import GL2RMorphism
+        sage: isinstance(f, GL2RMorphism)
+        True
+
+        sage: TestSuite(f).run()
+
+    """
+    def __init__(self, parent, m, category=None):
+        super().__init__(parent, category=category)
+
+        from sage.all import matrix
+        self._matrix = matrix(self.domain().base_ring(), m, immutable=True)
+
+    def section(self):
+        r"""
+        Return an inverse of this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: f.section()
+
+        """
+        return self._create_morphism(self.codomain(), self.domain(), ~self._matrix)
+
+    def _image_point(self, point):
+        r"""
+        Return the image of the ``point`` under this morphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: f(S(0, 0))
+            Vertex 0 of polygon 0
+
+        """
+        label, coordinates = point.representative()
+        return self.codomain()(label, self._matrix * coordinates)
+
+    def _image_homology_edge(self, label, edge, codomain):
+        r"""
+        Implements :meth:`SurfaceMorphism._image_homology_edge`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: f._image_homology_edge(0, 0, codomain=f.codomain().homology())
+
+        """
+        assert codomain.surface() is self.codomain()
+
+        return codomain((label, edge))
+
+    def _repr_type(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: f
+
+        """
+        return "Linear"
+
+    def _repr_defn(self):
+        r"""
+        Helper method for :meth:`__repr__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: f
+
+        """
+        return repr(self._matrix)
+
+    def __eq__(self, other):
+        r"""
+        Return whether this morphis is indistinguishable from ``other``
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: g = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: f == g
+            True
+
+        """
+        if not isinstance(other, GL2RMorphism):
+            return False
+
+        return self.parent() == other.parent() and self._matrix == other._matrix
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this morphism that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: f = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: g = S.apply_matrix(matrix([[1, 2], [0, 1]], in_place=False)
+            sage: hash(f) == hash(g)
+            True
+
+        """
+        return hash(self._matrix)
