@@ -76,10 +76,6 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
     r"""
     Adapts the ``sage.misc.cachefunc.CachedMethodCaller`` from SageMath to not
     do any caching if the defining surface is mutable.
-
-    Note that this only handles methods with arguments, for methods without
-    arguments, a caller that customizes
-    ``sage.misc.cachefunc.CachedMethodCallerNoArgs`` must be used.
     """
 
     def __init__(self, cached_caller, *args, **kwargs):
@@ -105,6 +101,30 @@ class CachedSurfaceMethodCaller(CachedMethodCaller):
         return self._cached_caller.__call__(*args, **kwargs)
 
 
+class CachedSurfaceMethodCallerNoArgs(CachedMethodCallerNoArgs):
+    def __init__(self, cached_caller, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._cached_caller = cached_caller
+
+    def __call__(self):
+        r"""
+        Invoke the underlying method with the given arguments.
+
+        The underlying ``sage.misc.cachefunc.CachedMethodCallerNoArgs`` is written in
+        Cython and highly optimized. This method is much slower (by about 250ns
+        per call.) However, once the surface is immutable, this method is
+        replaced with the underlying caching one, so the overhead is only paid
+        once.
+        """
+        if self._instance.is_mutable():
+            return self._instance_call()
+
+        setattr(self._instance, self.__name__, self._cached_caller)
+
+        return self._cached_caller.__call__()
+
+
 class CachedSurfaceMethod(CachedMethod):
     r"""
     Customizes a method in a class so that it conditionally enables caching
@@ -113,29 +133,41 @@ class CachedSurfaceMethod(CachedMethod):
 
     def __init__(self, f, name, key, do_pickle):
         super().__init__(f, name, key, do_pickle)
+        self._f = f
         self._key = key
         self._do_pickle = do_pickle
 
     def __get__(self, inst, cls):
-        caller = super().__get__(inst, cls)
+        try:
+            caller = super().__get__(inst, cls)
 
-        if inst is not None and inst.is_mutable():
-            if isinstance(caller, CachedMethodCallerNoArgs):
-                raise NotImplementedError(
-                    "cannot cache parameterless cached methods yet"
-                )
-            else:
-                caller = CachedSurfaceMethodCaller(
-                    caller,
-                    self,
-                    inst,
-                    cache=self._get_instance_cache(inst),
-                    name=caller.__name__,
-                    key=self._key,
-                    do_pickle=self._do_pickle,
-                )
+            if inst is not None and inst.is_mutable():
+                # If the surface is mutable, we replace the default cached caller
+                # with a caller that considers mutability (since the surface might
+                # later become immutable.)
+                if isinstance(caller, CachedMethodCallerNoArgs):
+                    caller = CachedSurfaceMethodCallerNoArgs(
+                        caller,
+                        inst,
+                        self._f,
+                        name=caller.__name__,
+                        do_pickle=self._do_pickle,
+                    )
+                else:
+                    caller = CachedSurfaceMethodCaller(
+                        caller,
+                        self,
+                        inst,
+                        cache=self._get_instance_cache(inst),
+                        name=caller.__name__,
+                        key=self._key,
+                        do_pickle=self._do_pickle,
+                    )
 
-        if inst is not None:
-            setattr(inst, caller.__name__, caller)
+            if inst is not None:
+                setattr(inst, caller.__name__, caller)
 
-        return caller
+            return caller
+        except Exception:
+            import traceback
+            traceback.print_exc()

@@ -960,15 +960,42 @@ class RingConversion_exactreal(RingConversion):
             sage: RingConversion_exactreal._create_conversion(domain=ExactReals(QQ), codomain=M)  # optional: pyexactreal
             Conversion from Real Numbers as (Rational Field)-Module to ℚ-Module(1)
 
+        TESTS::
+
+            sage: M = QQModule(RealNumber.rational(1))  # optional: pyexactreal
+            sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal
+            Conversion from Real Numbers as (Rational Field)-Module to ℚ-Module(1)
+
+        ::
+
+            sage: M = ZZModule(RealNumber.rational(1))  # optional: pyexactreal
+            sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal  # known bug, this does not work currently but we also are not planning to use this
+
+        ::
+
+            sage: from pyexactreal import ZZModule, RealNumber, NumberField  # optional: pyexactreal
+            sage: M = NumberFieldModule(NumberField("x^2 - 2", "x", "1.4 +/- 1"), RealNumber.rational(1))  # optional: pyexactreal
+            sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal
+            Conversion from Real Numbers as (Real Embedded Number Field in x with defining polynomial x^2 - 2 with x = 1.414213562373095?)-Module to K-Module(1)
+
         """
         if domain is None and codomain is None:
             raise ValueError("at least one of domain and codomain must be set")
 
         if domain is None:
-            # TODO: Does this work when the codomain.ring() is ZZ or QQ?
-            domain_base_conversion = RingConversion.from_pyflatsurf(
-                codomain=codomain.ring().parameters
-            )
+            base_conversion_codomain = codomain.ring()
+            if hasattr(base_conversion_codomain, "parameters"):
+                domain_base_conversion = RingConversion.from_pyflatsurf(
+                    codomain=base_conversion_codomain.parameters
+                )
+            elif type(base_conversion_codomain).__name__ == "IntegerRing":
+                from sage.all import ZZ
+                domain_base_conversion = RingConversion.from_pyflatsurf(domain=ZZ, codomain=None)
+            elif type(base_conversion_codomain).__name__ == "RationalField":
+                from sage.all import QQ
+                domain_base_conversion = RingConversion.from_pyflatsurf(domain=QQ, codomain=None)
+            else:
+                raise NotImplementedError
 
             from pyexactreal import ExactReals
 
