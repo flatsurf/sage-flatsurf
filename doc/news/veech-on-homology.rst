@@ -38,6 +38,8 @@
 
 * Removed the ``direction`` keyword of ``triangle_flip``, ``veering_triangulation``, ``l_infinity_delaunay_triangulation``, ``delaunay_triangulation``, and ``delaunay_decomposition`` since it was not clear what it actually did in general, instead the diagonal is now always turned counterclockwise.
 
+* Removed support for SageMath 9.2 and 9.3. Virtually all of sage-flatsurf should still work with these versions but there are some inconsistencies in some homology outputs and we do not want to worry about it in our automated testing.
+
 **Fixed:**
 
 * Fixed ``is_convex()`` for edges of surfaces. It does now allow this check for self-glued polygons.
