@@ -699,7 +699,6 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, k, coefficients, relative, implementation, category
             )
 
-
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
         The category of oriented surfaces built from Euclidean polygons that
@@ -1821,7 +1820,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 return BaseRingChangedSurface(self, ring)
 
-            def triangle_flip(self, label, edge, in_place=False, test=None, direction=None):
+            def triangle_flip(
+                self, label, edge, in_place=False, test=None, direction=None
+            ):
                 r"""
                 Flips the diagonal of the quadrilateral formed by two triangles
                 glued together along the provided ``edge`` of the polygon with
@@ -1935,19 +1936,35 @@ class SimilaritySurfaces(SurfaceCategory):
                 if test is not None:
                     if not test:
                         import warnings
-                        warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore")
+
+                        warnings.warn(
+                            "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore"
+                        )
                     else:
                         import warnings
-                        warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.")
+
+                        warnings.warn(
+                            "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead."
+                        )
                         if len(self.polygon(label).vertices()) != 3:
                             return False
-                        if len(self.polygon(self.opposite_edge(label, edge)[0]).vertices()) != 3:
+                        if (
+                            len(
+                                self.polygon(
+                                    self.opposite_edge(label, edge)[0]
+                                ).vertices()
+                            )
+                            != 3
+                        ):
                             return False
                         return self.is_convex(label, edge, strict=True)
 
                 if direction is not None:
                     import warnings
-                    warnings.warn("the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise")
+
+                    warnings.warn(
+                        "the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise"
+                    )
 
                 if in_place:
                     raise NotImplementedError(
@@ -2504,14 +2521,19 @@ class SimilaritySurfaces(SurfaceCategory):
                     s = MutableOrientedSimilaritySurface.from_surface(self)
                     s.set_immutable()
                     triangulation = s.triangulate(label=label, relabel=relabel)
-                    
+
                     from flatsurf.geometry.morphism import NamedUnknownMorphism
-                    return NamedUnknownMorphism._create_morphism(self, triangulation.codomain(), "Triangulation")
+
+                    return NamedUnknownMorphism._create_morphism(
+                        self, triangulation.codomain(), "Triangulation"
+                    )
 
                 if label is not None:
                     label = {label}
 
-                from flatsurf.geometry.morphism import TriangulationMorphism_LazyTriangulatedSurface
+                from flatsurf.geometry.morphism import (
+                    TriangulationMorphism_LazyTriangulatedSurface,
+                )
                 from flatsurf.geometry.lazy import LazyTriangulatedSurface
 
                 return TriangulationMorphism_LazyTriangulatedSurface._create_morphism(
@@ -2684,7 +2706,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 import warnings
-                warnings.warn("delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead")
+
+                warnings.warn(
+                    "delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead"
+                )
 
                 if triangulated is not None:
                     import warnings
@@ -2767,13 +2792,21 @@ class SimilaritySurfaces(SurfaceCategory):
                     LazyDelaunayTriangulatedSurface,
                 )
 
-                codomain = LazyDelaunayTriangulatedSurface(triangulation.codomain(), category=self.category())
+                codomain = LazyDelaunayTriangulatedSurface(
+                    triangulation.codomain(), category=self.category()
+                )
 
                 from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
-                delaunay = DelaunayTriangulationMorphism._create_morphism(triangulation.codomain(), codomain)
+
+                delaunay = DelaunayTriangulationMorphism._create_morphism(
+                    triangulation.codomain(), codomain
+                )
 
                 from flatsurf.geometry.morphism import NamedFactorizationMorphism
-                return NamedFactorizationMorphism._create_morphism(self, codomain, "Delaunay triangulation", delaunay * triangulation)
+
+                return NamedFactorizationMorphism._create_morphism(
+                    self, codomain, "Delaunay triangulation", delaunay * triangulation
+                )
 
             def delaunay_decomposition(
                 self,
@@ -2837,7 +2870,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 """
                 import warnings
-                warnings.warn("delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead")
+
+                warnings.warn(
+                    "delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead"
+                )
 
                 if triangulated is not None:
                     import warnings
@@ -2953,27 +2989,55 @@ class SimilaritySurfaces(SurfaceCategory):
                 """
                 if codomain is not None:
                     from sage.all import End
-                    decomposition = End(self).identity() if self.is_delaunay_decomposed() else self.delaunay_decompose()
 
-                    from flatsurf.geometry.morphism import DelaunayDecompositionIsomorphism
-                    isomorphism = DelaunayDecompositionIsomorphism._create_morphism(decomposition.codomain(), codomain)
+                    decomposition = (
+                        End(self).identity()
+                        if self.is_delaunay_decomposed()
+                        else self.delaunay_decompose()
+                    )
+
+                    from flatsurf.geometry.morphism import (
+                        DelaunayDecompositionIsomorphism,
+                    )
+
+                    isomorphism = DelaunayDecompositionIsomorphism._create_morphism(
+                        decomposition.codomain(), codomain
+                    )
 
                     # This will raise an error if no such isomorphism exists.
                     isomorphism._factorization()
 
                     from flatsurf.geometry.morphism import NamedFactorizationMorphism
-                    return NamedFactorizationMorphism._create_morphism(self, codomain, "Delaunay decomposition", isomorphism * decomposition)
+
+                    return NamedFactorizationMorphism._create_morphism(
+                        self,
+                        codomain,
+                        "Delaunay decomposition",
+                        isomorphism * decomposition,
+                    )
 
                 delaunay_triangulation = self.delaunay_triangulate()
 
                 from flatsurf.geometry.lazy import LazyDelaunaySurface
-                decomposed = LazyDelaunaySurface(delaunay_triangulation.codomain(), category=self.category())
+
+                decomposed = LazyDelaunaySurface(
+                    delaunay_triangulation.codomain(), category=self.category()
+                )
 
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-                decomposition = DelaunayDecompositionMorphism._create_morphism(delaunay_triangulation.codomain(), decomposed)
+
+                decomposition = DelaunayDecompositionMorphism._create_morphism(
+                    delaunay_triangulation.codomain(), decomposed
+                )
 
                 from flatsurf.geometry.morphism import NamedFactorizationMorphism
-                return NamedFactorizationMorphism._create_morphism(self, decomposed, "Delaunay decomposition", decomposition * delaunay_triangulation)
+
+                return NamedFactorizationMorphism._create_morphism(
+                    self,
+                    decomposed,
+                    "Delaunay decomposition",
+                    decomposition * delaunay_triangulation,
+                )
 
             def saddle_connections(
                 self,

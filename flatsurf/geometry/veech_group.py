@@ -44,7 +44,11 @@ from sage.groups.matrix_gps.matrix_group import MatrixGroup_generic
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
-from flatsurf.geometry.morphism import SurfaceMorphism, SurfaceMorphism_factorization, MorphismSpace
+from flatsurf.geometry.morphism import (
+    SurfaceMorphism,
+    SurfaceMorphism_factorization,
+    MorphismSpace,
+)
 
 
 class VeechGroup_generic(MatrixGroup_generic):
@@ -74,10 +78,12 @@ class VeechGroup_generic(MatrixGroup_generic):
         sage: TestSuite(V).run()
 
     """
+
     def __init__(self, surface, category=None):
         self._surface = surface
 
         from sage.all import ZZ
+
         super().__init__(ZZ(2), surface.base_ring(), category=category)
 
     def surface(self):
@@ -136,7 +142,6 @@ class VeechGroup_generic(MatrixGroup_generic):
             if x not in self:
                 raise ValueError("this is not an element of the Veech group")
 
-
         return x
 
     def _an_element_(self):
@@ -154,6 +159,7 @@ class VeechGroup_generic(MatrixGroup_generic):
 
         """
         from sage.all import identity_matrix
+
         return self(identity_matrix(2))
 
     def gens(self):
@@ -194,12 +200,15 @@ class VeechGroup_generic(MatrixGroup_generic):
         # GL(2, QQ)(M) != M
 
         from sage.all import GL
+
         x = GL(2, self.base_ring())(x)
 
         if x.is_one():
             return True
 
-        raise NotImplementedError("cannot decide whether a matrix is in the Veech group yet")
+        raise NotImplementedError(
+            "cannot decide whether a matrix is in the Veech group yet"
+        )
 
     def __eq__(self, other):
         r"""
@@ -265,6 +274,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         sage: TestSuite(A).run()
 
     """
+
     def __init__(self, surface):
         self._surface = surface
 
@@ -300,6 +310,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
 
         """
         from sage.all import identity_matrix
+
         return self.derivative().section()(identity_matrix(2))
 
     def __repr__(self):
@@ -334,6 +345,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
 
         """
         from sage.all import GL, Hom
+
         codomain = GL(2, self.base_ring())
         parent = Hom(self, codomain)
         return parent.__make_element_class__(DerivativeMap)(self, codomain)
@@ -408,6 +420,7 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
         sage: TestSuite(f).run()
 
     """
+
     def __init__(self, parent, matrix):
         super().__init__(parent)
 
@@ -489,7 +502,9 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
         """
         deformation = self.domain().apply_matrix(self._matrix, in_place=False)
         codomain_normalization = self.codomain().delaunay_decompose()
-        normalization = deformation.codomain().delaunay_decompose(codomain=codomain_normalization.codomain())
+        normalization = deformation.codomain().delaunay_decompose(
+            codomain=codomain_normalization.codomain()
+        )
 
         return codomain_normalization.section() * normalization * deformation
 
@@ -549,7 +564,7 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
 
         """
         return AffineAutomorphism_matrix, (self.parent(), self._matrix)
- 
+
 
 class DerivativeMap(Morphism):
     r"""
@@ -572,6 +587,7 @@ class DerivativeMap(Morphism):
         sage: TestSuite(d).run()
 
     """
+
     def section(self):
         r"""
         Return a section of this map, i.e., a map that lifts a matrix in
@@ -586,7 +602,9 @@ class DerivativeMap(Morphism):
             sage: s = d.section()
 
         """
-        return self.parent().reversed().__make_element_class__(SectionDerivativeMap)(self)
+        return (
+            self.parent().reversed().__make_element_class__(SectionDerivativeMap)(self)
+        )
 
     def _repr_type(self):
         r"""
@@ -660,6 +678,7 @@ class SectionDerivativeMap(Morphism):
         sage: TestSuite(s).run()
 
     """
+
     def __init__(self, derivative):
         super().__init__(derivative.parent().reversed())
 

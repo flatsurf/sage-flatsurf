@@ -169,6 +169,7 @@ class TopologicalSurfaces(SurfaceCategory):
             """
             if Y in TopologicalSurfaces():
                 from flatsurf.geometry.morphism import SurfaceMorphismSpace
+
                 return SurfaceMorphismSpace(self, Y, category=category)
 
             return super()._Hom_(Y, category=category)

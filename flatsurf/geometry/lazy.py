@@ -1329,7 +1329,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
             sage: S._certify((0, 0))
             sage: S._certify_walk((0, 0))
             True
-        
+
         """
         vertices_in_circumcircle = False
 
@@ -1355,15 +1355,25 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
                     vertices_in_circumcircle = True
 
             for e in range(3):
-                if circle.line_segment_position(polygon.vertex(e), polygon.vertex(e + 1)) == 1:
-                    (opposite_label, opposite_edge) = self._surface.opposite_edge(label, e)     
+                if (
+                    circle.line_segment_position(
+                        polygon.vertex(e), polygon.vertex(e + 1)
+                    )
+                    == 1
+                ):
+                    (opposite_label, opposite_edge) = self._surface.opposite_edge(
+                        label, e
+                    )
 
                     if self._surface._delaunay_edge_needs_flip(label, e):
                         modified.add(label)
                         modified.add(opposite_label)
                         self._certify_flip(label, e)
                     else:
-                        item = (opposite_label, self._surface.edge_transformation(label, e) * circle)
+                        item = (
+                            opposite_label,
+                            self._surface.edge_transformation(label, e) * circle,
+                        )
 
                         if item not in done:
                             todo.add(item)

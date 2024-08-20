@@ -263,7 +263,9 @@ class Conversion:
             True
 
         """
-        raise NotImplementedError(f"this {type(self).__name__} does not implement == yet")
+        raise NotImplementedError(
+            f"this {type(self).__name__} does not implement == yet"
+        )
 
     def __hash__(self):
         r"""
@@ -285,7 +287,9 @@ class Conversion:
             TypeError: unhashable type: 'FlatTriangulationConversion'
 
         """
-        raise NotImplementedError(f"this {type(self).__name__} does not implement hashing yet")
+        raise NotImplementedError(
+            f"this {type(self).__name__} does not implement hashing yet"
+        )
 
 
 class RingConversion(Conversion):
@@ -1663,7 +1667,9 @@ class FlatTriangulationConversion(Conversion):
 
         """
         if domain.is_with_boundary():
-            raise NotImplementedError("cannot convert a surface with boundary to pyflatsurf yet")
+            raise NotImplementedError(
+                "cannot convert a surface with boundary to pyflatsurf yet"
+            )
 
         labels = {}
         for half_edge, opposite_half_edge in domain.gluings():
@@ -2124,7 +2130,10 @@ class FlatTriangulationConversion(Conversion):
         if not isinstance(other, FlatTriangulationConversion):
             return False
 
-        return self.domain() == other.domain() and self._label_to_half_edge == other._label_to_half_edge
+        return (
+            self.domain() == other.domain()
+            and self._label_to_half_edge == other._label_to_half_edge
+        )
 
 
 def to_pyflatsurf(S):
@@ -2132,7 +2141,9 @@ def to_pyflatsurf(S):
     Given S a translation surface from sage-flatsurf return a
     flatsurf::FlatTriangulation from libflatsurf/pyflatsurf.
     """
-    return FlatTriangulationConversion.to_pyflatsurf(S.triangulate().codomain()).codomain()
+    return FlatTriangulationConversion.to_pyflatsurf(
+        S.triangulate().codomain()
+    ).codomain()
 
 
 def sage_ring(surface):

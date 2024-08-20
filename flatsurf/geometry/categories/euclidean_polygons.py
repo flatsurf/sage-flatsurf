@@ -2042,7 +2042,10 @@ class EuclideanPolygons(Category_over_base_ring):
 
                 def circumscribing_circle(self):
                     import warnings
-                    warnings.warn("circumscribing_circle() has been deprecated and will be removed from a future version of sage-flatsurf; use circumscribed_circle() instead")
+
+                    warnings.warn(
+                        "circumscribing_circle() has been deprecated and will be removed from a future version of sage-flatsurf; use circumscribed_circle() instead"
+                    )
 
                     return self.circumscribed_circle()
 

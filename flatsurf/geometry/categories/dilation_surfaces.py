@@ -502,9 +502,12 @@ class DilationSurfaces(SurfaceCategory):
 
             """
             if self.is_mutable():
-                raise NotImplementedError("affine automorphism group only implemented for immutable surfaces")
+                raise NotImplementedError(
+                    "affine automorphism group only implemented for immutable surfaces"
+                )
 
             from flatsurf.geometry.veech_group import AffineAutomorphismGroup_generic
+
             return AffineAutomorphismGroup_generic(self)
 
         @cached_surface_method
@@ -529,11 +532,13 @@ class DilationSurfaces(SurfaceCategory):
 
             """
             if self.is_mutable():
-                raise NotImplementedError("affine automorphism group only implemented for immutable surfaces")
+                raise NotImplementedError(
+                    "affine automorphism group only implemented for immutable surfaces"
+                )
 
             from flatsurf.geometry.veech_group import VeechGroup_generic
-            return VeechGroup_generic(self)
 
+            return VeechGroup_generic(self)
 
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
@@ -674,9 +679,7 @@ class DilationSurfaces(SurfaceCategory):
                         "the direction parameter of l_infinity_delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
                     )
 
-                return self.veering_triangulation(
-                    l_infinity=True, limit=limit
-                )
+                return self.veering_triangulation(l_infinity=True, limit=limit)
 
             def veering_triangulation(
                 self, l_infinity=False, limit=None, direction=None
@@ -775,9 +778,7 @@ class DilationSurfaces(SurfaceCategory):
                             p1, e1, p2, e2
                         )
                         if needs_flip >= flip_bound:
-                            self.triangle_flip(
-                                p1, e1, in_place=True
-                            )
+                            self.triangle_flip(p1, e1, in_place=True)
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1

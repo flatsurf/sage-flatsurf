@@ -304,6 +304,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             return super().apply_matrix(m, in_place=in_place)
 
         from sage.all import matrix
+
         m = matrix(m, ring=self.base_ring())
         m = [self._ring_conversion(x) for x in m.list()]
 
@@ -311,6 +312,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         codomain = Surface_pyflatsurf(deformation.codomain())
 
         from flatsurf.geometry.pyflatsurf.morphism import Morphism_Deformation
+
         return Morphism_Deformation._create_morphism(self, codomain, deformation)
 
     @classmethod

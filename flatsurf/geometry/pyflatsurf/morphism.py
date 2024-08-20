@@ -72,6 +72,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         sage: TestSuite(to_pyflatsurf).run()
 
     """
+
     def __init__(self, parent, pyflatsurf_conversion):
         super().__init__(parent)
         self._pyflatsurf_conversion = pyflatsurf_conversion
@@ -183,7 +184,10 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
         if not isinstance(other, Morphism_to_pyflatsurf):
             return False
 
-        return self.parent() == other.parent() and self._pyflatsurf_conversion == other._pyflatsurf_conversion
+        return (
+            self.parent() == other.parent()
+            and self._pyflatsurf_conversion == other._pyflatsurf_conversion
+        )
 
     def __hash__(self):
         r"""
@@ -226,6 +230,7 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
         sage: TestSuite(from_pyflatsurf).run()
 
     """
+
     def __init__(self, parent, pyflatsurf_conversion):
         super().__init__(parent)
         self._pyflatsurf_conversion = pyflatsurf_conversion
@@ -323,7 +328,10 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
         if not isinstance(other, Morphism_from_pyflatsurf):
             return False
 
-        return self.parent() == other.parent() and self._pyflatsurf_conversion == other._pyflatsurf_conversion
+        return (
+            self.parent() == other.parent()
+            and self._pyflatsurf_conversion == other._pyflatsurf_conversion
+        )
 
     def __hash__(self):
         r"""
@@ -373,6 +381,7 @@ class Morphism_Deformation(SurfaceMorphism):
         sage: TestSuite(deformation).run()
 
     """
+
     def __init__(self, parent, deformation):
         super().__init__(parent)
         self._deformation = deformation
@@ -444,7 +453,9 @@ class Morphism_Deformation(SurfaceMorphism):
         saddle_connection = flatsurf.SaddleConnection[
             type(self.domain().flat_triangulation())
         ](self.domain().flat_triangulation(), flatsurf.HalfEdge(half_edge))
-        path = flatsurf.Path[type(self.domain().flat_triangulation())](saddle_connection)
+        path = flatsurf.Path[type(self.domain().flat_triangulation())](
+            saddle_connection
+        )
 
         path = self._deformation(path)
 

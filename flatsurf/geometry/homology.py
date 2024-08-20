@@ -1106,7 +1106,9 @@ class SimplicialHomologyGroup(Parent):
                 "cannot determine symplectic basis for this homology group over this ring yet"
             )
 
-        return [sum(c * g for (c, g) in zip(row, self.gens())) for row in C]  # pyright: ignore
+        return [
+            sum(c * g for (c, g) in zip(row, self.gens())) for row in C
+        ]  # pyright: ignore
 
     def _test_symplectic_basis(self, **options):
         r"""
@@ -1188,7 +1190,9 @@ class SimplicialHomologyGroup(Parent):
 
             if f.domain() is self.surface():
                 parent = Hom(self, codomain)
-                return parent.__make_element_class__(SimplicialHomologyMorphism_induced)(parent, f)
+                return parent.__make_element_class__(
+                    SimplicialHomologyMorphism_induced
+                )(parent, f)
         elif isinstance(f, Matrix):
             if codomain is None:
                 if f.is_square():
@@ -1198,27 +1202,35 @@ class SimplicialHomologyGroup(Parent):
                 raise NotImplementedError("cannot deduce codomain from this matrix")
 
             if f.ncols() != self.ngens():
-                raise ValueError("matrix must have one column for each generator of homology")
+                raise ValueError(
+                    "matrix must have one column for each generator of homology"
+                )
 
             if f.nrows() != codomain.ngens():
-                raise ValueError("matrix must have one row for each generator of the codomain")
+                raise ValueError(
+                    "matrix must have one row for each generator of the codomain"
+                )
 
             parent = Hom(self, codomain)
-            return parent.__make_element_class__(SimplicialHomologyMorphism_matrix)(parent, f)
+            return parent.__make_element_class__(SimplicialHomologyMorphism_matrix)(
+                parent, f
+            )
 
-        raise NotImplementedError("cannot create a morphism in homology from this data yet")
+        raise NotImplementedError(
+            "cannot create a morphism in homology from this data yet"
+        )
 
     def _Hom_(self, Y, category=None):
         r"""
-        Return the space of morphisms from this homology to ``Y``.
-k        EXAMPLES::
+                Return the space of morphisms from this homology to ``Y``.
+        k        EXAMPLES::
 
-            sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus()
-            sage: H = S.homology()
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.square_torus()
+                    sage: H = S.homology()
 
-            sage: End(H)
-            Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)
+                    sage: End(H)
+                    Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)
 
         """
         if isinstance(Y, SimplicialHomologyGroup):
@@ -1321,9 +1333,15 @@ class SimplicialHomologyMorphismSpace(MorphismSpace):
         sage: TestSuite(G).run()
 
     """
+
     def __init__(self, domain, codomain, category=None):
         from sage.all import Hom
-        super().__init__(domain, codomain, category=category or Hom(domain, codomain).homset_category())
+
+        super().__init__(
+            domain,
+            codomain,
+            category=category or Hom(domain, codomain).homset_category(),
+        )
 
     def an_element(self):
         r"""
@@ -1372,8 +1390,13 @@ class SimplicialHomologyMorphismSpace(MorphismSpace):
         """
         if self.is_endomorphism_set():
             from sage.all import identity_matrix
-            matrix = identity_matrix(self.codomain().base_ring(), self.domain().ngens(), sparse=True)
-            return self.__make_element_class__(SimplicialHomologyMorphism_matrix)(self, matrix)
+
+            matrix = identity_matrix(
+                self.codomain().base_ring(), self.domain().ngens(), sparse=True
+            )
+            return self.__make_element_class__(SimplicialHomologyMorphism_matrix)(
+                self, matrix
+            )
         return super().identity()
 
     def zero(self):
@@ -1392,7 +1415,16 @@ class SimplicialHomologyMorphismSpace(MorphismSpace):
 
         """
         from sage.all import zero_matrix
-        return self.domain().hom(zero_matrix(self.codomain().base_ring(), nrows=self.codomain().ngens(), ncols=self.domain().ngens(), sparse=True), codomain=self.codomain())
+
+        return self.domain().hom(
+            zero_matrix(
+                self.codomain().base_ring(),
+                nrows=self.codomain().ngens(),
+                ncols=self.domain().ngens(),
+                sparse=True,
+            ),
+            codomain=self.codomain(),
+        )
 
     def base_ring(self):
         r"""
@@ -1426,7 +1458,11 @@ class SimplicialHomologyMorphismSpace(MorphismSpace):
             True
 
         """
-        return SimplicialHomologyMorphismSpace, (self.domain(), self.codomain(), self.homset_category())
+        return SimplicialHomologyMorphismSpace, (
+            self.domain(),
+            self.codomain(),
+            self.homset_category(),
+        )
 
     def __repr__(self):
         r"""
@@ -1472,6 +1508,7 @@ class SimplicialHomologyMorphism_base(Morphism):
         sage: TestSuite(g).run()
 
     """
+
     @cached_method
     def matrix(self):
         r"""
@@ -1500,7 +1537,10 @@ class SimplicialHomologyMorphism_base(Morphism):
 
         """
         from sage.all import matrix
-        return matrix([list(self(gen).coefficients()) for gen in self.domain().gens()]).transpose()
+
+        return matrix(
+            [list(self(gen).coefficients()) for gen in self.domain().gens()]
+        ).transpose()
 
     def _add_(self, other):
         r"""
@@ -1527,7 +1567,9 @@ class SimplicialHomologyMorphism_base(Morphism):
                     [1 0 0 2]
 
         """
-        return self.domain().hom(self.matrix() + other.matrix(), codomain=self.codomain())
+        return self.domain().hom(
+            self.matrix() + other.matrix(), codomain=self.codomain()
+        )
 
     def _acted_upon_(self, x, self_on_left):
         r"""
@@ -1601,7 +1643,9 @@ class SimplicialHomologyMorphism_base(Morphism):
                     [0 0 0 6]
 
         """
-        return other.domain().hom(self.matrix() * other.matrix(), codomain=self.codomain())
+        return other.domain().hom(
+            self.matrix() * other.matrix(), codomain=self.codomain()
+        )
 
     def __bool__(self):
         r"""
@@ -1657,11 +1701,13 @@ class SimplicialHomologyMorphism_matrix(SimplicialHomologyMorphism_base):
         sage: TestSuite(f).run()
 
     """
+
     def __init__(self, parent, matrix):
         super().__init__(parent)
 
         if matrix.is_mutable():
             from sage.all import matrix as copy
+
             matrix = copy(matrix)
             matrix.set_immutable()
 
@@ -1796,6 +1842,7 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
         sage: TestSuite(g).run()
 
     """
+
     def __init__(self, parent, morphism):
         super().__init__(parent)
 

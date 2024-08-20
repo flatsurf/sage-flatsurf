@@ -273,5 +273,7 @@ class Circle:
         if not isinstance(other, Circle):
             return False
 
-        return self._center == other._center and self._radius_squared == other._radius_squared
-
+        return (
+            self._center == other._center
+            and self._radius_squared == other._radius_squared
+        )

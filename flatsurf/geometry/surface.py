@@ -1006,19 +1006,31 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
         if test is not None:
             if not test:
                 import warnings
-                warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore")
+
+                warnings.warn(
+                    "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore"
+                )
             else:
                 import warnings
-                warnings.warn("the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.")
+
+                warnings.warn(
+                    "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead."
+                )
                 if len(self.polygon(label).vertices()) != 3:
                     return False
-                if len(self.polygon(self.opposite_edge(label, edge)[0]).vertices()) != 3:
+                if (
+                    len(self.polygon(self.opposite_edge(label, edge)[0]).vertices())
+                    != 3
+                ):
                     return False
                 return self.is_convex(label, edge, strict=True)
 
         if direction is not None:
             import warnings
-            warnings.warn("the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise")
+
+            warnings.warn(
+                "the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise"
+            )
 
         if not in_place:
             return super().triangle_flip(label=label, edge=edge, in_place=in_place)
@@ -1035,19 +1047,35 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
             raise ValueError("attached polygons must be triangles")
 
         if not self.is_convex(label[0], edge, strict=True):
-            raise ValueError("cannot flip this edge because the surrounding quadrilateral is not strictly convex")
+            raise ValueError(
+                "cannot flip this edge because the surrounding quadrilateral is not strictly convex"
+            )
 
         from flatsurf import Polygon
+
         T = self.edge_transformation(label[1], diagonal[1])
         P[1] = Polygon(vertices=[T(v) for v in P[1].vertices()])
 
-        gluings = [[self.opposite_edge(lbl, (d + i) % 3) for i in range(3)] for (lbl, d) in zip(label, diagonal)]
+        gluings = [
+            [self.opposite_edge(lbl, (d + i) % 3) for i in range(3)]
+            for (lbl, d) in zip(label, diagonal)
+        ]
 
         assert P[0].vertex(diagonal[0]) == P[1].vertex(diagonal[1] + 1)
         assert P[0].vertex(diagonal[0] + 1) == P[1].vertex(diagonal[1])
 
-        Q = [[P[1-i].vertex(diagonal[1-i] + 2), P[i].vertex(diagonal[i] + 2), P[i].vertex(diagonal[i])] for i in range(2)]
-        Q = [Polygon(vertices=Q[i][3 - diagonal[i]:] + Q[i][:3 - diagonal[i]]) for i in range(2)]
+        Q = [
+            [
+                P[1 - i].vertex(diagonal[1 - i] + 2),
+                P[i].vertex(diagonal[i] + 2),
+                P[i].vertex(diagonal[i]),
+            ]
+            for i in range(2)
+        ]
+        Q = [
+            Polygon(vertices=Q[i][3 - diagonal[i] :] + Q[i][: 3 - diagonal[i]])
+            for i in range(2)
+        ]
         # Shift the new polygons to the origin so things don't seem to wiggle
         # around randomly.
         Q = [q.translate(-q.vertex(0)) for q in Q]
@@ -1062,14 +1090,14 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
                 if lbl == label[i]:
                     assert edge != diagonal[i]
                     if edge == (diagonal[i] + 1) % 3:
-                        return label[1-i], (diagonal[1-i] + 2) % 3
+                        return label[1 - i], (diagonal[1 - i] + 2) % 3
                     assert edge == (diagonal[i] + 2) % 3
                     return label[i], (diagonal[i] + 1) % 3
             return lbl, edge
 
         for i in range(2):
             self.glue((label[i], (diagonal[i] + 1) % 3), to_new(*gluings[i][2]))
-            self.glue((label[i], (diagonal[i] + 2) % 3), to_new(*gluings[1-i][1]))
+            self.glue((label[i], (diagonal[i] + 2) % 3), to_new(*gluings[1 - i][1]))
 
         return self
 
