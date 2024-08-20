@@ -271,7 +271,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         sage: isinstance(A, AffineAutomorphismGroup_generic)
         True
 
-        sage: TestSuite(A).run()
+        sage: TestSuite(A).run()  # optional: pyflatsurf
 
     """
 
@@ -417,7 +417,7 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
         sage: isinstance(f, AffineAutomorphism_matrix)
         True
 
-        sage: TestSuite(f).run()
+        sage: TestSuite(f).run()  # optional: pyflatsurf
 
     """
 
@@ -480,7 +480,7 @@ class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
             sage: S = translation_surfaces.square_torus()
             sage: A = S.affine_automorphism_group()
             sage: f = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
-            sage: f._factorization()
+            sage: f._factorization()  # optional: pyflatsurf
             Composite endomorphism of Translation Surface in H_1(0) built from a square
               Defn:   Linear morphism:
                       From: Translation Surface in H_1(0) built from a square

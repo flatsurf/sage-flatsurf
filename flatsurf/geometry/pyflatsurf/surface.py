@@ -10,14 +10,14 @@ EXAMPLES::
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.square_torus()
 
-    sage: T = S.pyflatsurf().codomain()
-    sage: T
+    sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf
+    sage: T  # optional: pyflatsurf
     Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
 Ideally, there should be no need to use the underlying ``FlatTriangulation``
 directly, but it can be accessed with :meth:`flat_triangulation`::
 
-    sage: T.flat_triangulation()
+    sage: T.flat_triangulation()  # optional: pyflatsurf
     FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
 """
@@ -68,15 +68,15 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         sage: S.set_immutable()
 
-        sage: T = S.pyflatsurf().codomain()
+        sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
     TESTS::
 
         sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
 
-        sage: isinstance(T, Surface_pyflatsurf)
+        sage: isinstance(T, Surface_pyflatsurf)  # optional: pyflatsurf
         True
-        sage: TestSuite(T).run()
+        sage: TestSuite(T).run()  # optional: pyflatsurf
 
     Disconnected surfaces can be import from pyflatsurf::
 
@@ -93,15 +93,15 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
         sage: S.set_immutable()
 
-        sage: T = S.pyflatsurf().codomain()
+        sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
-        sage: T.is_connected()
+        sage: T.is_connected()  # optional: pyflatsurf
         False
 
-        sage: T.flat_triangulation()
+        sage: T.flat_triangulation()  # optional: pyflatsurf
         FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2)(4, -6, 5, -4, 6, -5), faces = (1, 2, 3)(-1, -2, -3)(4, 5, 6)(-4, -5, -6)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1), 4: (1, 0), 5: (0, 1), 6: (-1, -1)}
 
-        sage: TestSuite(T).run()
+        sage: TestSuite(T).run()  # optional: pyflatsurf
 
     """
 
@@ -150,7 +150,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: S.pyflatsurf().codomain().flat_triangulation()
+            sage: S.pyflatsurf().codomain().flat_triangulation()  # optional: pyflatsurf
             FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """
@@ -172,7 +172,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: S.pyflatsurf().codomain().is_mutable()
+            sage: S.pyflatsurf().codomain().is_mutable()  # optional: pyflatsurf
             False
 
         """
@@ -188,12 +188,12 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: T = S.pyflatsurf().codomain()
+            sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
-            sage: list(T.labels())
+            sage: list(T.labels())  # optional: pyflatsurf
             [(1, 2, 3), (-3, -1, -2)]
 
-            sage: T.roots()
+            sage: T.roots()  # optional: pyflatsurf
             ((1, 2, 3),)
 
         """
@@ -219,9 +219,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: T = S.pyflatsurf().codomain()
+            sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
-            sage: T.pyflatsurf()
+            sage: T.pyflatsurf()  # optional: pyflatsurf
             Identity endomorphism of Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """
@@ -242,7 +242,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: S = translation_surfaces.square_torus().triangulate().codomain()
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
-            sage: Surface_pyflatsurf._from_flatsurf(S)
+            sage: Surface_pyflatsurf._from_flatsurf(S)  # optional: pyflatsurf
             pyflatsurf conversion morphism:
               From: Triangulation of Translation Surface in H_1(0) built from a square
               To:   Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
@@ -279,7 +279,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: S = translation_surfaces.square_torus().triangulate().codomain()
 
             sage: from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
-            sage: S.pyflatsurf().codomain()
+            sage: S.pyflatsurf().codomain()  # optional: pyflatsurf
             Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
         """
@@ -294,7 +294,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()
+            sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()  # optional: pyflatsurf
 
             sage: S.apply_matrix(matrix([[1, 2], [0, 1]])).codomain()
             Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (2, 1), 3: (-3, -1)}
@@ -349,9 +349,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus().triangulate().codomain()
-            sage: S = S.pyflatsurf().codomain()
+            sage: S = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
-            sage: S.polygon((1, 2, 3))
+            sage: S.polygon((1, 2, 3))  # optional: pyflatsurf
             Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
 
         """
@@ -377,7 +377,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus().triangulate().codomain()
-            sage: S = S.pyflatsurf().codomain()
+            sage: S = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
             sage: S.opposite_edge((1, 2, 3), 0)
             ((-3, -1, -2), 1)
@@ -407,9 +407,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()
-            sage: T = translation_surfaces.square_torus().pyflatsurf().codomain()
-            sage: S == T
+            sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()  # optional: pyflatsurf
+            sage: T = translation_surfaces.square_torus().pyflatsurf().codomain()  # optional: pyflatsurf
+            sage: S == T  # optional: pyflatsurf
             True
 
         """
@@ -426,9 +426,9 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()
-            sage: T = translation_surfaces.square_torus().pyflatsurf().codomain()
-            sage: hash(S) == hash(T)
+            sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()  # optional: pyflatsurf
+            sage: T = translation_surfaces.square_torus().pyflatsurf().codomain()  # optional: pyflatsurf
+            sage: hash(S) == hash(T)  # optional: pyflatsurf
             True
 
         """

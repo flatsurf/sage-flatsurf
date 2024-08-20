@@ -8,8 +8,8 @@ EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.veech_double_n_gon(5)
-    sage: to_pyflatsurf = S.pyflatsurf()
-    sage: to_pyflatsurf
+    sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
+    sage: to_pyflatsurf  # optional: pyflatsurf
     Composite morphism:
       From: Translation Surface in H_2(2) built from 2 regular pentagons
       To:   Surface backed by FlatTriangulationCombinatorial(...) with vectors ...
@@ -18,7 +18,7 @@ EXAMPLES::
             then pyflatsurf conversion morphism:
               ...
 
-    sage: to_pyflatsurf.codomain().flat_triangulation()
+    sage: to_pyflatsurf.codomain().flat_triangulation()  # optional: pyflatsurf
     FlatTriangulationCombinatorial(...) with vectors ...
 
 .. SEEALSO:
@@ -61,15 +61,15 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-        sage: to_pyflatsurf = S.pyflatsurf()
+        sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
 
     TESTS::
 
         sage: from flatsurf.geometry.pyflatsurf.morphism import Morphism_to_pyflatsurf
-        sage: isinstance(to_pyflatsurf, Morphism_to_pyflatsurf)
+        sage: isinstance(to_pyflatsurf, Morphism_to_pyflatsurf)  # optional: pyflatsurf
         True
 
-        sage: TestSuite(to_pyflatsurf).run()
+        sage: TestSuite(to_pyflatsurf).run()  # optional: pyflatsurf
 
     """
 
@@ -85,8 +85,8 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: to_pyflatsurf = S.pyflatsurf()
-            sage: to_pyflatsurf._image_edge((0, 0), 0)
+            sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
+            sage: to_pyflatsurf._image_edge((0, 0), 0)  # optional: pyflatsurf
             ((1, 2, 3), 0)
 
         """
@@ -104,8 +104,8 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: to_pyflatsurf = S.pyflatsurf()
-            sage: to_pyflatsurf._image_homology_edge((0, 0), 0, codomain=to_pyflatsurf.codomain().homology())
+            sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
+            sage: to_pyflatsurf._image_homology_edge((0, 0), 0, codomain=to_pyflatsurf.codomain().homology())  # optional: pyflatsurf
             B[((1, 2, 3), 0)]
 
         """
@@ -119,8 +119,8 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: to_pyflatsurf = S.pyflatsurf()
-            sage: to_pyflatsurf.section()
+            sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
+            sage: to_pyflatsurf.section()  # optional: pyflatsurf
             pyflatsurf reconversion morphism:
               From: Surface backed by FlatTriangulationCombinatorial(...) with vectors ...
               To:   Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons
@@ -138,7 +138,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: S.pyflatsurf()
+            sage: S.pyflatsurf()  # optional: pyflatsurf
             pyflatsurf conversion morphism:
               From: Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons
               To:   Surface backed by FlatTriangulationCombinatorial(...) with vectors ...
@@ -157,8 +157,8 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: to_pyflatsurf = S.pyflatsurf()
-            sage: to_pyflatsurf._test_section_point()
+            sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
+            sage: to_pyflatsurf._test_section_point()  # optional: pyflatsurf
 
         """
         try:
@@ -177,7 +177,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: S.pyflatsurf() == S.pyflatsurf()
+            sage: S.pyflatsurf() == S.pyflatsurf()  # optional: pyflatsurf
             True
 
         """
@@ -198,7 +198,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: hash(S.pyflatsurf()) == hash(S.pyflatsurf())
+            sage: hash(S.pyflatsurf()) == hash(S.pyflatsurf())  # optional: pyflatsurf
             True
 
         """
@@ -219,15 +219,15 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-        sage: from_pyflatsurf = S.pyflatsurf().section()
+        sage: from_pyflatsurf = S.pyflatsurf().section()  # optional: pyflatsurf
 
     TESTS::
 
         sage: from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_pyflatsurf
-        sage: isinstance(from_pyflatsurf, Morphism_from_pyflatsurf)
+        sage: isinstance(from_pyflatsurf, Morphism_from_pyflatsurf)  # optional: pyflatsurf
         True
 
-        sage: TestSuite(from_pyflatsurf).run()
+        sage: TestSuite(from_pyflatsurf).run()  # optional: pyflatsurf
 
     """
 
@@ -243,8 +243,8 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: from_pyflatsurf = S.pyflatsurf().section()
-            sage: from_pyflatsurf._image_half_edge(1R)
+            sage: from_pyflatsurf = S.pyflatsurf().section()  # optional: pyflatsurf
+            sage: from_pyflatsurf._image_half_edge(1R)  # optional: pyflatsurf
             ((1, 2, 3), 0)
 
         """
@@ -261,8 +261,8 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: from_pyflatsurf = S.pyflatsurf().section()
-            sage: from_pyflatsurf._image_homology_edge((1, 2, 3), 0, codomain=from_pyflatsurf.codomain().homology())
+            sage: from_pyflatsurf = S.pyflatsurf().section()  # optional: pyflatsurf
+            sage: from_pyflatsurf._image_homology_edge((1, 2, 3), 0, codomain=from_pyflatsurf.codomain().homology())  # optional: pyflatsurf
             B[((0, 0), 0)]
 
         """
@@ -282,7 +282,7 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: S.pyflatsurf().section()
+            sage: S.pyflatsurf().section()  # optional: pyflatsurf
             pyflatsurf reconversion morphism:
               From: Surface backed by FlatTriangulationCombinatorial(...) with vectors ...
               To:   Triangulation of Translation Surface in H_2(2) built from 2 regular pentagons
@@ -301,8 +301,8 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: from_pyflatsurf = S.pyflatsurf().section()
-            sage: from_pyflatsurf._test_section_point()
+            sage: from_pyflatsurf = S.pyflatsurf().section()  # optional: pyflatsurf
+            sage: from_pyflatsurf._test_section_point()  # optional: pyflatsurf
 
         """
         try:
@@ -321,7 +321,7 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: S.pyflatsurf().section() == S.pyflatsurf().section()
+            sage: S.pyflatsurf().section() == S.pyflatsurf().section()  # optional: pyflatsurf
             True
 
         """
@@ -342,7 +342,7 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
-            sage: hash(S.pyflatsurf().section()) == hash(S.pyflatsurf().section())
+            sage: hash(S.pyflatsurf().section()) == hash(S.pyflatsurf().section())  # optional: pyflatsurf
             True
 
         """
@@ -362,11 +362,11 @@ class Morphism_Deformation(SurfaceMorphism):
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.square_torus()
         sage: T = S.relabel({0: 1})
-        sage: isomorphism = S.delaunay_decompose(codomain=T)
+        sage: isomorphism = S.delaunay_decompose(codomain=T)  # optional: pyflatsurf
 
-        sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]
+        sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
 
-        sage: deformation
+        sage: deformation  # optional: pyflatsurf
         pyflatsurf deformation morphism:
           From: Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
           To:   Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
@@ -375,10 +375,10 @@ class Morphism_Deformation(SurfaceMorphism):
     TESTS::
 
         sage: from flatsurf.geometry.pyflatsurf.morphism import Morphism_Deformation
-        sage: isinstance(deformation, Morphism_Deformation)
+        sage: isinstance(deformation, Morphism_Deformation)  # optional: pyflatsurf
         True
 
-        sage: TestSuite(deformation).run()
+        sage: TestSuite(deformation).run()  # optional: pyflatsurf
 
     """
 
@@ -394,11 +394,11 @@ class Morphism_Deformation(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: isomorphism = S.delaunay_decompose(codomain=S)
+            sage: isomorphism = S.delaunay_decompose(codomain=S)  # optional: pyflatsurf
 
-            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]
+            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
 
-            sage: deformation
+            sage: deformation  # optional: pyflatsurf
             pyflatsurf deformation morphism:
               From: ...
               To: ...
@@ -415,11 +415,11 @@ class Morphism_Deformation(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: isomorphism = S.delaunay_decompose(codomain=S)
+            sage: isomorphism = S.delaunay_decompose(codomain=S)  # optional: pyflatsurf
 
-            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]
+            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
 
-            sage: deformation
+            sage: deformation  # optional: pyflatsurf
             pyflatsurf deformation morphism:
               From: ...
               To: ...
@@ -436,12 +436,12 @@ class Morphism_Deformation(SurfaceMorphism):
 
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
-            sage: isomorphism = S.delaunay_decompose(codomain=S)
+            sage: isomorphism = S.delaunay_decompose(codomain=S)  # optional: pyflatsurf
 
-            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]
+            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
 
-            sage: H = deformation.domain().homology()
-            sage: H.hom(deformation).matrix()
+            sage: H = deformation.domain().homology()  # optional: pyflatsurf
+            sage: H.hom(deformation).matrix()  # optional: pyflatsurf
             [1 0]
             [0 1]
 
@@ -498,10 +498,10 @@ class Morphism_Deformation(SurfaceMorphism):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
             sage: T = S.relabel({0: 1})
-            sage: isomorphism = S.delaunay_decompose(codomain=T)
-            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]
+            sage: isomorphism = S.delaunay_decompose(codomain=T)  # optional: pyflatsurf
+            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
 
-            sage: deformation._test_section_point()
+            sage: deformation._test_section_point()  # optional: pyflatsurf
 
         """
         try:
@@ -524,10 +524,10 @@ class Morphism_Deformation(SurfaceMorphism):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
             sage: T = S.relabel({0: 1})
-            sage: isomorphism = S.delaunay_decompose(codomain=T)
-            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]
+            sage: isomorphism = S.delaunay_decompose(codomain=T)  # optional: pyflatsurf
+            sage: deformation = isomorphism._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
 
-            sage: deformation._test_pickling()
+            sage: deformation._test_pickling()  # optional: pyflatsurf
 
         """
         try:
@@ -546,7 +546,7 @@ class Morphism_Deformation(SurfaceMorphism):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
             sage: T = S.relabel({0: 1})
-            sage: S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2] == S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2]
+            sage: S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2] == S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2]  # optional: pyflatsurf
             Traceback (most recent call last):
             ...
             NotImplementedError: deformations do not implement the == operator yet
@@ -574,7 +574,7 @@ class Morphism_Deformation(SurfaceMorphism):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus()
             sage: T = S.relabel({0: 1})
-            sage: hash(S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2]) == hash(S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2])
+            sage: hash(S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2]) == hash(S.delaunay_decompose(codomain=T)._factorization()._factorization()._morphisms[2])  # optional: pyflatsurf
             True
 
         """

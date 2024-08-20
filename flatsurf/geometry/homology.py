@@ -1167,13 +1167,13 @@ class SimplicialHomologyGroup(Parent):
             sage: H = SimplicialHomology(S)
             sage: g = H.hom(f)
 
-            sage: g.matrix()
+            sage: g.matrix()  # optional: pyflatsurf
             [1 0]
             [2 1]
 
             sage: H.gens()
             (B[(0, 1)], B[(0, 0)])
-            sage: [g(h) for h in H.gens()]
+            sage: [g(h) for h in H.gens()]  # optional: pyflatsurf
             [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
 
         """
@@ -1505,7 +1505,7 @@ class SimplicialHomologyMorphism_base(Morphism):
         sage: isinstance(g, SimplicialHomologyMorphism_base)
         True
 
-        sage: TestSuite(g).run()
+        sage: TestSuite(g).run()  # optional: pyflatsurf
 
     """
 
@@ -1529,7 +1529,7 @@ class SimplicialHomologyMorphism_base(Morphism):
             (B[(0, 1)], B[(0, 0)], B[(1, 1)], B[(2, 0)])
             sage: g = H.hom(f)
 
-            sage: g.matrix()
+            sage: g.matrix()  # optional: pyflatsurf
             [1 0 0 0]
             [1 1 2 0]
             [0 0 1 0]
@@ -1559,7 +1559,7 @@ class SimplicialHomologyMorphism_base(Morphism):
             sage: g = H.hom(f)
             sage: h = End(H).one()
 
-            sage: g + h
+            sage: g + h  # optional: pyflatsurf
             Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)
               Defn: [2 0 0 0]
                     [1 2 2 0]
@@ -1587,7 +1587,7 @@ class SimplicialHomologyMorphism_base(Morphism):
             sage: H = SimplicialHomology(S)
             sage: g = H.hom(f)
 
-            sage: (2**1234567 * g).matrix().trace() == 2**1234569
+            sage: (2**1234567 * g).matrix().trace() == 2**1234569  # optional: pyflatsurf
             True
 
         """
@@ -1609,7 +1609,7 @@ class SimplicialHomologyMorphism_base(Morphism):
             sage: H = SimplicialHomology(S)
             sage: g = H.hom(f)
 
-            sage: -g
+            sage: -g  # optional: pyflatsurf
             Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)
               Defn: [-1  0  0  0]
                     [-1 -1 -2  0]
@@ -1663,7 +1663,7 @@ class SimplicialHomologyMorphism_base(Morphism):
             sage: H = SimplicialHomology(S)
             sage: g = H.hom(f)
 
-            sage: bool(g)
+            sage: bool(g)  # optional: pyflatsurf
             True
 
             sage: bool(g.parent().zero())
@@ -1763,14 +1763,14 @@ class SimplicialHomologyMorphism_matrix(SimplicialHomologyMorphism_base):
             sage: from flatsurf import SimplicialHomology
             sage: H = SimplicialHomology(S)
             sage: g = H.hom(f)
-            sage: h = H.hom(g.matrix())
-            sage: h == h
+            sage: h = H.hom(g.matrix())  # optional: pyflatsurf
+            sage: h == h  # optional: pyflatsurf
             True
 
         Note that this determines whether two morphisms are indistinguishable,
         not whether they are pointwise the same::
 
-            sage: h == g
+            sage: h == g  # optional: pyflatsurf
             False
 
         """
@@ -1839,7 +1839,7 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
         sage: isinstance(g, SimplicialHomologyMorphism_induced)
         True
 
-        sage: TestSuite(g).run()
+        sage: TestSuite(g).run()  # optional: pyflatsurf
 
     """
 
@@ -1866,7 +1866,7 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
 
             sage: H.gens()
             (B[(0, 1)], B[(0, 0)])
-            sage: [g(h) for h in H.gens()]
+            sage: [g(h) for h in H.gens()]  # optional: pyflatsurf
             [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]
 
         """
@@ -1946,8 +1946,8 @@ class SimplicialHomologyMorphism_induced(SimplicialHomologyMorphism_base):
 
         Note that this does not compare homomorphisms pointwise::
 
-            sage: h = H.hom(g.matrix())
-            sage: g == h
+            sage: h = H.hom(g.matrix())  # optional: pyflatsurf
+            sage: g == h  # optional: pyflatsurf
             False
 
         """
