@@ -1837,6 +1837,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 In other words,
 
+                .. code-block:: text
+
                 +<----------+       +<----------+
                 |\          ^       |          /^
                 | \      L' |       | L'      / |

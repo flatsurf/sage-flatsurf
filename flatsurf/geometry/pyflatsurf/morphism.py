@@ -215,8 +215,6 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
     EXAMPLES::
 
-    EXAMPLES::
-
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.veech_double_n_gon(5).triangulate().codomain()
         sage: from_pyflatsurf = S.pyflatsurf().section()  # optional: pyflatsurf
@@ -355,7 +353,7 @@ class Morphism_Deformation(SurfaceMorphism):
     libflatsurf ``Deformation``.
 
     These morphisms are usually hidden deep inside the machinery of some
-    complex morphism constructions::
+    complex morphism constructions.
 
     EXAMPLES::
 
