@@ -996,7 +996,7 @@ class SurfaceMorphism(Morphism):
         r"""
         Redirect attribute lookup to the codomain.
 
-        EXAMPLES::
+        EXAMPLES:
 
         A lot of methods that used to return a surface now return a morphism.
         To make transition of existing code easier, we look up attributes that
@@ -3678,7 +3678,7 @@ class DelaunayDecompositionIsomorphism(SurfaceMorphism_factorization):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.delaunay_decompose`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose`
 
     """
 

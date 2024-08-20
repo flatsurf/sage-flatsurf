@@ -1839,19 +1839,19 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 .. code-block:: text
 
-                +<----------+       +<----------+
-                |\          ^       |          /^
-                | \      L' |       | L'      / |
-                |  \e'      |       |        /  |
-                |   \|      |       |       /e  |
-                |e+1 \      |       |      /-   |
-                |     \     |       |     /     |
-                |      \    |       |   -/      |
-                |       \   |       | e'/   L   |
-                |  L    |\  |       |  /        |
-                |        e\ |       | /      e-1|
-                v e-1      \|       v/  e+1     |
-                +---------->+       +---------->+
+                   +<----------+       +<----------+
+                   |\          ^       |          /^
+                   | \      L' |       | L'      / |
+                   |  \e'      |       |        /  |
+                   |   \|      |       |       /e  |
+                   |e+1 \      |       |      /-   |
+                   |     \     |       |     /     |
+                   |      \    |       |   -/      |
+                   |       \   |       | e'/   L   |
+                   |  L    |\  |       |  /        |
+                   |        e\ |       | /      e-1|
+                   v e-1      \|       v/  e+1     |
+                   +---------->+       +---------->+
 
                 where ``L`` is ``label``, ``L'`` is the label of the opposite
                 polygon, ``e`` is ``edge`` and ``e'`` is the edge index of the
