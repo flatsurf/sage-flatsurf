@@ -3064,7 +3064,7 @@ class TriangulationMorphism_base(SurfaceMorphism):
 
 class TriangulationMorphism_LazyTriangulatedSurface(TriangulationMorphism_base):
     r"""
-    A triangulation that maps a surface into a class :class:`LazyTriangulatedSurface`.
+    A triangulation that maps a surface into a class :class:`~flatsurf.geometry.lazy.LazyTriangulatedSurface`.
 
     EXAMPLES::
 
@@ -3085,7 +3085,7 @@ class TriangulationMorphism_LazyTriangulatedSurface(TriangulationMorphism_base):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.triangulate`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate`
 
     """
 
@@ -3142,7 +3142,9 @@ class DelaunayTriangulationMorphism_delaunay_decomposition(TriangulationMorphism
     A triangulation that maps a a Delaunay decomposition into the Delaunay
     triangulation from which it was created.
 
-    This morphism is used internally in :meth:`delaunay_decompose`, the actual
+    This morphism is used internally in
+    :meth:`~flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose`,
+    the actual
     delaunay decomposition, is the inverse of this morphism.
 
     EXAMPLES::
@@ -3165,7 +3167,7 @@ class DelaunayTriangulationMorphism_delaunay_decomposition(TriangulationMorphism
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.delaunay_decompose`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose`,
 
     """
 
@@ -3246,7 +3248,7 @@ class DelaunayTriangulationMorphism(SurfaceMorphism):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.delaunay_triangulate`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulate`
 
     """
 
@@ -3856,7 +3858,7 @@ class GL2RMorphism(SurfaceMorphism):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.apply_matrix`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.apply_matrix`
 
     """
 
@@ -4017,7 +4019,7 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.subdivide_edges`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges`
 
     """
 
