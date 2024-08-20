@@ -968,7 +968,7 @@ class RingConversion_exactreal(RingConversion):
 
         ::
 
-            sage: fram pyxactreal import ZZModule # optional: pyexactreal
+            sage: from pyxactreal import ZZModule # optional: pyexactreal
             sage: M = ZZModule(RealNumber.rational(1))  # optional: pyexactreal
             sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal  # known bug, this does not work currently but we also are not planning to use this
 
