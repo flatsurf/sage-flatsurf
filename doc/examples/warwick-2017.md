@@ -238,7 +238,7 @@ Currently we have to triangulate to do a rel deformation.
 jupyter:
   outputs_hidden: false
 ---
-s = s.triangulate().relabel()
+s = s.triangulate().codomain().relabel()
 ```
 
 A singularity is an equivalence class of vertices of polygons.
