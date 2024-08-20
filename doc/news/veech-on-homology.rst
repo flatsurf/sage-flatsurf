@@ -43,7 +43,3 @@
 * Fixed ``is_convex()`` for edges of surfaces. It does now allow this check for self-glued polygons.
 
 * Fixed ``==`` and hashing for circles. Circles can now be used in dicts and sets.
-
-**Performance:**
-
-* <news item>
