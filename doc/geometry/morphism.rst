@@ -5,4 +5,4 @@
    :members:
    :undoc-members:
    :special-members:
-   :private-members: DelaunayDecompositionIsomorphism._factorization
+   :private-members: _factorization

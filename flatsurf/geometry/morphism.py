@@ -3565,7 +3565,7 @@ class DelaunayDecompositionMorphism(SectionMorphism):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.delaunay_decompose`
+        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose`
 
     """
 
