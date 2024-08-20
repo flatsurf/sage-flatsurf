@@ -147,7 +147,7 @@ v0.5.0
 
 * Deprecated ``add_polygons()`` for mutable surfaces; there is no benefit over adding polygons in a loop with ``add_polygon()``.
 
-* Deprecated ``change_base_label()`` on surfaces; it has been replaced by ``set_root()`` and ``set_roots()`` to also support disonnected surfaces.
+* Deprecated ``change_base_label()`` on surfaces; it has been replaced by ``set_root()`` and ``set_roots()`` to also support disconnected surfaces.
 
 * Deprecated ``set_edge_pairing()`` and ``change_edge_gluing()`` for similarity surfaces; they have been replaced by ``glue()``.
 
@@ -185,7 +185,7 @@ v0.5.0
 
 **Fixed:**
 
-* Fixed automated testing for binder by using a package very closely ressembling the one from conda-forge which will be used by binder.
+* Fixed automated testing for binder by using a package very closely resembling the one from conda-forge which will be used by binder.
 * Fixed non-standard source code formatting in sage-flatsurf.
 * Fixed conversion of surfaces from flipper to sage-flatsurf.
 

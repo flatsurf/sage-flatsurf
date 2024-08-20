@@ -584,7 +584,7 @@ flat_veering = VT._flat_structure_from_train_track_lengths(xy[9:], xy[:9])
 flat_veering.plot()
 ```
 
-We now explore the $L^\infty$-Delaunay of a given linear familiy.
+We now explore the $L^\infty$-Delaunay of a given linear family.
 
 We do it for the ambient stratum, i.e., the tangent space is everything.
 
@@ -612,7 +612,7 @@ A
 
 We could compute everything (until there is nothing more to be explored).
 
-If the compuatation terminates, it proves that `L` was indeed the tangent space to a $GL_2(\mathbb{R})$-orbit closure.
+If the computation terminates, it proves that `L` was indeed the tangent space to a $GL_2(\mathbb{R})$-orbit closure.
 
 +++
 

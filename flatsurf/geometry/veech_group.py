@@ -117,7 +117,7 @@ class VeechGroup_generic(MatrixGroup_generic):
 
     def _element_constructor_(self, x, check=True):
         r"""
-        Create an element of the Veech gorup from ``x``.
+        Create an element of the Veech group from ``x``.
 
         INPUT:
 

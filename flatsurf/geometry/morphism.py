@@ -467,7 +467,7 @@ class MorphismSpace(Homset):
     .. NOTE::
 
         Since surfaces are not unique parents, we need to override some
-        functionallity of the SageMath Homset here to make pickling work
+        functionality of the SageMath Homset here to make pickling work
         correctly.
 
     EXAMPLES::
@@ -746,7 +746,7 @@ class SurfaceMorphismSpace(MorphismSpace):
     .. NOTE::
 
         Since surfaces are not unique parents, we need to override some
-        functionallity of the SageMath Homset here to make pickling work
+        functionality of the SageMath Homset here to make pickling work
         correctly.
 
     EXAMPLES::
@@ -2124,7 +2124,7 @@ class CompositionMorphism(SurfaceMorphism):
 
     def __hash__(self):
         r"""
-        Return a hash value for this morphism that is compatible wit :meth:`__eq__`.
+        Return a hash value for this morphism that is compatible with :meth:`__eq__`.
 
         EXAMPLES::
 
