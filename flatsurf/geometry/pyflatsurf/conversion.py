@@ -1061,10 +1061,12 @@ class RingConversion_exactreal(RingConversion):
             sage: domain = ExactReals(QQ)  # optional: pyexactreal
             sage: M = QQModule(RealNumber.rational(1))  # optional: pyexactreal
             sage: conversion = RingConversion_exactreal._create_conversion(domain=domain, codomain=M)  # optional: pyexactreal
-            sage: conversion._vectors()  # optional: pyexactreal
+            sage: conversion._vectors()  # optional: pyexactreal  # optional: pyflatsurf
             Flatsurf Vectors over Real Numbers as (Rational Field)-Module
 
         """
+        pyflatsurf_feature.require()
+
         from pyflatsurf.vector import Vectors
 
         from pyexactreal.exact_reals import ExactReals
