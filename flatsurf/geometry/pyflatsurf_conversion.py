@@ -6,7 +6,8 @@ EXAMPLES::
     sage: from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
     doctest:warning
     ...
-    UserWarning: the flatsurf.geometry.pyflatsurf_conversion module has been deprecated and will be removed in a future version of sage-flatsurf; use flatsurf.geometry.pyflatsurf.conversion instead. Note that you might also want to call .pyflatsurf().codomain().flat_triangulation() on your surface now to convert a surface to the pyflatsurf FlatTriangulation
+    UserWarning: the flatsurf.geometry.pyflatsurf_conversion module has been deprecated and will be removed in a future version of sage-flatsurf; use flatsurf.geometry.pyflatsurf.conversion instead.
+    Note that you might also want to call .pyflatsurf().codomain().flat_triangulation() on your surface now to convert a surface to the pyflatsurf FlatTriangulation
 
 """
 # ********************************************************************
@@ -27,10 +28,11 @@ EXAMPLES::
 #  You should have received a copy of the GNU General Public License
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ********************************************************************
+from flatsurf.geometry.pyflatsurf.conversion import *
+
 import warnings
 
 warnings.warn(
-    "the flatsurf.geometry.pyflatsurf_conversion module has been deprecated and will be removed in a future version of sage-flatsurf; use flatsurf.geometry.pyflatsurf.conversion instead. Note that you might also want to call .pyflatsurf().codomain().flat_triangulation() on your surface now to convert a surface to the pyflatsurf FlatTriangulation"
+    "the flatsurf.geometry.pyflatsurf_conversion module has been deprecated and will be removed in a future version of sage-flatsurf; use flatsurf.geometry.pyflatsurf.conversion instead. "
+    "Note that you might also want to call .pyflatsurf().codomain().flat_triangulation() on your surface now to convert a surface to the pyflatsurf FlatTriangulation"
 )
-
-from flatsurf.geometry.pyflatsurf.conversion import *

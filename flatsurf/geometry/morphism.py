@@ -3680,13 +3680,13 @@ class DelaunayDecompositionIsomorphism(SurfaceMorphism_factorization):
                       To:   Triangulation of Translation Surface in H_1(0) built from a square
                     then pyflatsurf conversion morphism:
                       From: Triangulation of Translation Surface in H_1(0) built from a square
-                      To:   Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+                      To:   Surface backed by FlatTriangulationCombinatorial...
                     then pyflatsurf deformation morphism:
-                      From: Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
-                      To:   Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
-                      Defn: FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)} → FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)} given by (1, 0, 0, 1)
+                      From: Surface backed by FlatTriangulationCombinatorial...
+                      To:   Surface backed by FlatTriangulationCombinatorial...
+                      Defn: ...
                     then pyflatsurf reconversion morphism:
-                      From: Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+                      From: Surface backed by FlatTriangulationCombinatorial...
                       To:   Triangulation of Translation Surface in H_1(0) built from a square
                     then Section morphism:
                       From: Triangulation of Translation Surface in H_1(0) built from a square
