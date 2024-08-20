@@ -71,6 +71,8 @@ class VeechGroup_generic(MatrixGroup_generic):
         sage: isinstance(V, VeechGroup_generic)
         True
 
+        sage: TestSuite(V).run()
+
     """
     def __init__(self, surface, category=None):
         self._surface = surface
@@ -137,6 +139,40 @@ class VeechGroup_generic(MatrixGroup_generic):
 
         return x
 
+    def _an_element_(self):
+        r"""
+        Return an element of the Veech group (for testing.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: V = S.veech_group()
+            sage: V.an_element()
+            [1 0]
+            [0 1]
+
+        """
+        from sage.all import identity_matrix
+        return self(identity_matrix(2))
+
+    def gens(self):
+        r"""
+        Return generators of this group.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: V = S.veech_group()
+            sage: V.gens()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: cannot compute generators of the Veech group yet
+
+        """
+        raise NotImplementedError("cannot compute generators of the Veech group yet")
+
     def __contains__(self, x):
         r"""
         Return whether ``x`` is contained in the Veech group.
@@ -164,6 +200,23 @@ class VeechGroup_generic(MatrixGroup_generic):
             return True
 
         raise NotImplementedError("cannot decide whether a matrix is in the Veech group yet")
+
+    def __eq__(self, other):
+        r"""
+        Return whether this group is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.veech_group() == S.veech_group()
+            True
+
+        """
+        if not isinstance(other, VeechGroup_generic):
+            return False
+
+        return self._surface == other._surface
 
 
 class AffineAutomorphismGroup_generic(MorphismSpace):
@@ -195,6 +248,8 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         sage: isinstance(A, AffineAutomorphismGroup_generic)
         True
 
+        sage: TestSuite(A).run()
+
     """
     def __init__(self, surface):
         self._surface = surface
@@ -214,6 +269,24 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
 
         """
         return self._surface
+
+    def _an_element_(self):
+        r"""
+        Return a morphism in this group (for testing.)
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: S.affine_automorphism_group().an_element()
+            Affine endomorphism of Translation Surface in H_1(0) built from a square
+              Defn: Lift of linear action given by
+                    [1 0]
+                    [0 1]
+
+        """
+        from sage.all import identity_matrix
+        return self.derivative().section()(identity_matrix(2))
 
     def __repr__(self):
         r"""
@@ -246,8 +319,10 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
               To:   General Linear Group of degree 2 over Rational Field
 
         """
-        from sage.all import GL
-        return DerivativeMap(self, GL(2, self.base_ring()))
+        from sage.all import GL, Hom
+        codomain = GL(2, self.base_ring())
+        parent = Hom(self, codomain)
+        return parent.__make_element_class__(DerivativeMap)(self, codomain)
 
     def _from_matrix(self, matrix):
         r"""
@@ -269,6 +344,14 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         """
         return self.__make_element_class__(AffineAutomorphism_matrix)(self, matrix)
 
+    def _test_one(self, **options):
+        # Disabled, because we have no proper identity morphism yet
+        pass
+
+    def _test_prod(self, **options):
+        # Disabled, because we have no proper identity morphism yet
+        pass
+
     def __reduce__(self):
         r"""
         Return a serializable representation of this space.
@@ -285,11 +368,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
         return AffineAutomorphismGroup, (self._surface,)
 
 
-class AffineAutomorphism_base(SurfaceMorphism):
-    pass
-
-
-class AffineAutomorphism_matrix(AffineAutomorphism_base, SurfaceMorphism_factorization):
+class AffineAutomorphism_matrix(SurfaceMorphism_factorization):
     r"""
     An affine automorphism of a surface that is an (arbitrary) lift of an
     element of `GL_2(\mathbb{R})`.
@@ -311,6 +390,8 @@ class AffineAutomorphism_matrix(AffineAutomorphism_base, SurfaceMorphism_factori
         sage: from flatsurf.geometry.veech_group import AffineAutomorphism_matrix
         sage: isinstance(f, AffineAutomorphism_matrix)
         True
+
+        sage: TestSuite(f).run()
 
     """
     def __init__(self, parent, matrix):
@@ -398,14 +479,62 @@ class AffineAutomorphism_matrix(AffineAutomorphism_base, SurfaceMorphism_factori
 
         return codomain_normalization.section() * normalization * deformation
 
+    def _test_section_point(self, **options):
+        # Disabled, because pyflatsurf backed surfaces cannot have points yet
+        pass
+
     def __eq__(self, other):
+        r"""
+        Return whether this morphism is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: f = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
+            sage: g = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
+            sage: f == g
+            True
+
+        """
         if not isinstance(other, AffineAutomorphism_matrix):
             return False
 
         return self.parent() == other.parent() and self._matrix == other._matrix
 
     def __hash__(self):
+        r"""
+        Return a hash value for this automorphism that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: f = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
+            sage: g = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
+            sage: hash(f) == hash(g)
+            True
+
+        """
         return hash((self.parent(), self._matrix))
+
+    def __reduce__(self):
+        r"""
+        Return a serializable representation of this automorphism.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: f = A.derivative().section()(matrix([[1, 3], [0, 1]]), check=False)
+            sage: loads(dumps(f)) == f
+            True
+
+        """
+        return AffineAutomorphism_matrix, (self.parent(), self._matrix)
  
 
 class DerivativeMap(Morphism):
@@ -426,6 +555,8 @@ class DerivativeMap(Morphism):
         sage: isinstance(d, DerivativeMap)
         True
 
+        sage: TestSuite(d).run()
+
     """
     def section(self):
         r"""
@@ -441,7 +572,7 @@ class DerivativeMap(Morphism):
             sage: s = d.section()
 
         """
-        return SectionDerivativeMap(self)
+        return self.parent().reversed().__make_element_class__(SectionDerivativeMap)(self)
 
     def _repr_type(self):
         r"""
@@ -454,11 +585,43 @@ class DerivativeMap(Morphism):
             sage: A = S.affine_automorphism_group()
             sage: A.derivative()
             Derivative morphism:
-              From: AffineAutomorphismGroup(Translation Surface in H_1(0) built from a square)
-              To:   General Linear Group of degree 2 over Rational Field
+              From: ...
+              To:   ...
 
         """
         return "Derivative"
+
+    def __eq__(self, other):
+        r"""
+        Return whether this derivative is indistinguishable from ``other``.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: A.derivative() == A.derivative()
+            True
+
+        """
+        if not isinstance(other, DerivativeMap):
+            return False
+
+        return self.parent() == other.parent()
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this derivative that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: hash(A.derivative()) == hash(A.derivative())
+
+        """
+        return hash(self.parent())
 
 
 class SectionDerivativeMap(Morphism):
@@ -478,6 +641,8 @@ class SectionDerivativeMap(Morphism):
         sage: from flatsurf.geometry.veech_group import SectionDerivativeMap
         sage: isinstance(s, SectionDerivativeMap)
         True
+
+        sage: TestSuite(s).run()
 
     """
     def __init__(self, derivative):
@@ -570,8 +735,41 @@ class SectionDerivativeMap(Morphism):
 
         return self.codomain()._from_matrix(matrix.matrix())
 
+    def __eq__(self, other):
+        r"""
+        Return whether this section is indistinguishable from ``other``.
 
-def AffineAutomorphismGroup(surface, category=None):
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: A.derivative().section() == A.derivative().section()
+            True
+
+        """
+        if not isinstance(other, SectionDerivativeMap):
+            return False
+
+        return self._derivative == other._derivative
+
+    def __hash__(self):
+        r"""
+        Return a hash value for this section that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: A = S.affine_automorphism_group()
+            sage: hash(A.derivative().section()) == hash(A.derivative().section())
+            True
+
+        """
+        return hash(self._derivative)
+
+
+def AffineAutomorphismGroup(surface):
     r"""
     Return the group of affine automorphisms of this surface, i.e., the
     group of homeomorphisms that can be locally expressed as affine
