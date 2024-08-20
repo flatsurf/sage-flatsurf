@@ -2,8 +2,10 @@ r"""
 Surfaces backed by pyflatsurf.
 
 There should be no need to create such surfaces directly, not even for authors
-of sage-flatsurf. Instead just call :meth:`pyflatsurf` on a surface which
-returns such a surface (or rather, a morphism to such a surface.)
+of sage-flatsurf. Instead just call
+:meth:`~flatsurf.geometry.categories.TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf`
+on a surface which returns such a surface (or rather, a morphism to such a
+surface.)
 
 EXAMPLES::
 
@@ -15,7 +17,8 @@ EXAMPLES::
     Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
 
 Ideally, there should be no need to use the underlying ``FlatTriangulation``
-directly, but it can be accessed with :meth:`flat_triangulation`::
+directly, but it can be accessed with
+:meth:`Surface_pyflatsurf.flat_triangulation`::
 
     sage: T.flat_triangulation()  # optional: pyflatsurf
     FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
@@ -49,8 +52,8 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     A translation surface backed by pyflatsurf.
 
     Most surfaces in sage-flatsurf, such as the
-    :class:`MutableOrientedSimilaritySurface` are implemented in Python
-    instead.
+    :class:`~flatsurf.geometry.surface.MutableOrientedSimilaritySurface` are
+    implemented in Python instead.
 
     EXAMPLES::
 
@@ -288,7 +291,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
     def apply_matrix(self, m, in_place=None):
         r"""
         Overrides the generic
-        :meth:`SimilaritySurfaces.ParentMethods.apply_matrix` for this
+        :meth:`~flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.apply_matrix` for this
         pyflatsurf backed surface.
 
         EXAMPLES::

@@ -55,7 +55,7 @@ class Morphism_to_pyflatsurf(SurfaceMorphism):
 
     You should not create such morphisms directly but rely on the caching
     provided by
-    :meth:`TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf`.
+    :meth:`~flatsurf.geometry.categories.translation_surfaces.TranslationSurfaces.FiniteType.ParentMethods.pyflatsurf`.
 
     EXAMPLES::
 
@@ -349,8 +349,9 @@ class Morphism_from_pyflatsurf(SurfaceMorphism):
 
 class Morphism_Deformation(SurfaceMorphism):
     r"""
-    A morphism of :class:`Surface_pyflatsurf` surfaces that is backed by a
-    libflatsurf ``Deformation``.
+    A morphism of
+    :class:`~flatsurf.geometry.pyflatsurf.surface.Surface_pyflatsurf` surfaces
+    that is backed by a libflatsurf ``Deformation``.
 
     These morphisms are usually hidden deep inside the machinery of some
     complex morphism constructions.

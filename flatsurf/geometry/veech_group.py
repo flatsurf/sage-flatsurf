@@ -248,7 +248,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
 
     You should not create such a group directly. Use
     :func:`AffineAutomorphismGroup` or
-    :meth:`flatsurf.geometry.categories.DilationSurfaces.ParentMethods.affine_automorphism_group`.
+    :meth:`flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.affine_automorphism_group`.
 
     .. NOTE::
 
