@@ -968,12 +968,13 @@ class RingConversion_exactreal(RingConversion):
 
         ::
 
+            sage: fram pyxactreal import ZZModule # optional: pyexactreal
             sage: M = ZZModule(RealNumber.rational(1))  # optional: pyexactreal
             sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal  # known bug, this does not work currently but we also are not planning to use this
 
         ::
 
-            sage: from pyexactreal import ZZModule, RealNumber, NumberField  # optional: pyexactreal
+            sage: from pyexactreal import ZZModule, RealNumber, NumberField, NumberFieldModule  # optional: pyexactreal
             sage: M = NumberFieldModule(NumberField("x^2 - 2", "x", "1.4 +/- 1"), RealNumber.rational(1))  # optional: pyexactreal
             sage: RingConversion_exactreal._create_conversion(codomain=M)  # optional: pyexactreal
             Conversion from Real Numbers as (Real Embedded Number Field in x with defining polynomial x^2 - 2 with x = 1.414213562373095?)-Module to K-Module(1)
