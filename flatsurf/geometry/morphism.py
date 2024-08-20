@@ -2701,11 +2701,31 @@ class NamedUnknownMorphism(SurfaceMorphism):
             True
 
         """
-        return NamedUnknownMorphism._create_morphism, (
+        return unpickle_NamedUnknownMorphism, (
             self.domain(),
             self.codomain(),
             self._name,
         )
+
+
+def unpickle_NamedUnknownMorphism(*args):
+    r"""
+    Unpickle a :class:`NamedUnknownMorphism`.
+
+    This works around a bug in SageMath 9.8 which fails to unpickle through
+    ``NamedUnknownMorphism._create_morphism`` directly with: ``AttributeError:
+    type object 'sage.misc.inherit_comparison.InheritComparisonMeta' has no
+    attribute '_create_morphism'``
+
+    EXAMPLES::
+
+        sage: from flatsurf import translation_surfaces, MutableOrientedSimilaritySurface
+        sage: S = MutableOrientedSimilaritySurface.from_surface(translation_surfaces.square_torus())
+        sage: loads(dumps(S.triangulate())) == S.triangulate()
+        True
+
+    """
+    return NamedUnknownMorphism._create_morphism(*args)
 
 
 class NamedFactorizationMorphism(SurfaceMorphism_factorization):
