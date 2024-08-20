@@ -12,6 +12,6 @@ dependencies:
   - myst-nb
   - tachyon
   - furo
-  - sage-docbuild=10.3
+  - pip
   - pip:
     - sage-docbuild=10.3
