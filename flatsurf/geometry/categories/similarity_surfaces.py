@@ -2503,7 +2503,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     s = MutableOrientedSimilaritySurface.from_surface(self)
                     s.set_immutable()
-                    return s.triangulate(label=label, relabel=relabel)
+                    triangulation = s.triangulate(label=label, relabel=relabel)
+                    
+                    from flatsurf.geometry.morphism import NamedUnknownMorphism
+                    return NamedUnknownMorphism._create_morphism(self, triangulation.codomain(), "Triangulation")
 
                 if label is not None:
                     label = {label}
@@ -2955,6 +2958,9 @@ class SimilaritySurfaces(SurfaceCategory):
                     from flatsurf.geometry.morphism import DelaunayDecompositionIsomorphism
                     isomorphism = DelaunayDecompositionIsomorphism._create_morphism(decomposition.codomain(), codomain)
 
+                    # This will raise an error if no such isomorphism exists.
+                    isomorphism._factorization()
+
                     from flatsurf.geometry.morphism import NamedFactorizationMorphism
                     return NamedFactorizationMorphism._create_morphism(self, codomain, "Delaunay decomposition", isomorphism * decomposition)
 
@@ -3340,7 +3346,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S.glue(("Δ", 0), ("□", 2))
                     sage: S.glue(("□", 1), ("□", 3))
 
-                    sage: T = S.subdivide_edges()
+                    sage: T = S.subdivide_edges().codomain()
                     sage: list(sorted(T.gluings()))
                     [(('Δ', 0), ('□', 5)),
                      (('Δ', 1), ('□', 4)),
@@ -3383,7 +3389,9 @@ class SimilaritySurfaces(SurfaceCategory):
 
                 surface.set_immutable()
 
-                return surface
+                from flatsurf.geometry.morphism import SubdivideEdgesMorphism
+
+                return SubdivideEdgesMorphism._create_morphism(self, surface, parts)
 
     class Rational(SurfaceCategoryWithAxiom):
         r"""

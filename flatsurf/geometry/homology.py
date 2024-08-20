@@ -1426,7 +1426,7 @@ class SimplicialHomologyMorphismSpace(MorphismSpace):
             True
 
         """
-        return SimplicialHomologyMorphismSpace, (self.domain(), self.codomain(), self._category)
+        return SimplicialHomologyMorphismSpace, (self.domain(), self.codomain(), self.homset_category())
 
     def __repr__(self):
         r"""

@@ -20,6 +20,8 @@
 
 * Changed ``triangle_flip()`` to now always turn the diagonal counterclockwise from the perspetive of ``label``.
 
+* Changed ``subdivide_edges()``, it now returns a morphism to the surface with inserted vertices. To recover the old behavior, use ``subdivide_edges().codomain()``.
+
 **Deprecated:**
 
 * Deprecated ``circumscribing_circle()`` of a polygon in favor of ``circumscribed_circle()``.

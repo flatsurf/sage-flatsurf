@@ -1995,7 +1995,9 @@ class MutableOrientedSimilaritySurface(
                 label, *MutableOrientedSimilaritySurface._triangulate(self, label)
             )
 
-        return self
+        from flatsurf.geometry.morphism import NamedUnknownMorphism
+
+        return NamedUnknownMorphism._create_morphism(None, self, "Triangulation")
 
     @staticmethod
     def _triangulate(surface, label):
