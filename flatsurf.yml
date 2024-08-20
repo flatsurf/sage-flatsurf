@@ -20,13 +20,13 @@ dependencies:
   - more-itertools
   - pip
   - pyintervalxt>=3,<4
-  - pyeantic>=1.2.1,<2
-  - pyexactreal>=3.1.0,<4
+  - pyeantic>=2,<3
+  - pyexactreal>=4,<5
   - pyflatsurf>=3.15.0,<4
-  - python=3.10
+  - python=3.11
   - ruamel.yaml
   - sage-flatsurf=0.5.2
-  - sagelib=10.2
+  - sagelib=10.3
   - scipy
   - surface-dynamics>=0.4.7,<0.6
   - veerer>=0.2.0,<0.3.0
