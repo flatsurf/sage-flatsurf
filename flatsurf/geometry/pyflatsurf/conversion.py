@@ -990,10 +990,16 @@ class RingConversion_exactreal(RingConversion):
                 )
             elif type(base_conversion_codomain).__name__ == "IntegerRing":
                 from sage.all import ZZ
-                domain_base_conversion = RingConversion.from_pyflatsurf(domain=ZZ, codomain=None)
+
+                domain_base_conversion = RingConversion.from_pyflatsurf(
+                    domain=ZZ, codomain=None
+                )
             elif type(base_conversion_codomain).__name__ == "RationalField":
                 from sage.all import QQ
-                domain_base_conversion = RingConversion.from_pyflatsurf(domain=QQ, codomain=None)
+
+                domain_base_conversion = RingConversion.from_pyflatsurf(
+                    domain=QQ, codomain=None
+                )
             else:
                 raise NotImplementedError
 

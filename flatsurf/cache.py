@@ -170,4 +170,5 @@ class CachedSurfaceMethod(CachedMethod):
             return caller
         except Exception:
             import traceback
+
             traceback.print_exc()
