@@ -22,7 +22,7 @@ dependencies:
   - pyintervalxt>=3,<4
   - pyeantic>=1.2.1,<2
   - pyexactreal>=3.1.0,<4
-  - pyflatsurf>=3.13.3,<4
+  - pyflatsurf>=3.15.0,<4
   - python=3.10
   - ruamel.yaml
   - sage-flatsurf=0.5.2

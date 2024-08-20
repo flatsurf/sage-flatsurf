@@ -31,6 +31,6 @@ dependencies:
   - gmpxxyy  # optional: gmpxxyy
   - pyeantic>=1,<2  # optional: pyeantic
   - pyexactreal>=3.1.0,<4  # optional: pyexactreal
-  - pyflatsurf>=3.12.0,<4  # optional: pyflatsurf
+  - pyflatsurf>=3.15.0,<4  # optional: pyflatsurf
   - pyintervalxt>=3,<4  # optional: pyflatsurf
   - pip: [flipper]  # optional: flipper
