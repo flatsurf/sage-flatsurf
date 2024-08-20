@@ -218,6 +218,20 @@ class VeechGroup_generic(MatrixGroup_generic):
 
         return self._surface == other._surface
 
+    def __hash__(self):
+        r"""
+        Return a hash value for this group that is compatible with :meth:`__eq__`.
+
+        EXAMPLES::
+
+            sage: from flatsurf import translation_surfaces
+            sage: S = translation_surfaces.square_torus()
+            sage: hash(S.veech_group()) == hash(S.veech_group())
+            True
+
+        """
+        return hash(self._surface)
+
 
 class AffineAutomorphismGroup_generic(MorphismSpace):
     r"""
@@ -619,6 +633,7 @@ class DerivativeMap(Morphism):
             sage: S = translation_surfaces.square_torus()
             sage: A = S.affine_automorphism_group()
             sage: hash(A.derivative()) == hash(A.derivative())
+            True
 
         """
         return hash(self.parent())
