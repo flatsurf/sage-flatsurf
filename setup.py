@@ -36,6 +36,7 @@ setup(
         "flatsurf",
         "flatsurf.geometry",
         "flatsurf.geometry.categories",
+        "flatsurf.geometry.pyflatsurf",
         "flatsurf.graphical",
     ],
     install_requires=["bidict", "surface-dynamics"],
