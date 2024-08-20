@@ -1334,7 +1334,7 @@ class LazyDelaunayTriangulatedSurface(OrientedSimilaritySurface):
         vertices_in_circumcircle = False
 
         done = set()
-        todo = set([(label, self._surface.polygon(label).circumscribed_circle())])
+        todo = {(label, self._surface.polygon(label).circumscribed_circle())}
 
         modified = set()
 
