@@ -56,7 +56,7 @@ class VeechGroup_generic(MatrixGroup_generic):
     A generic (currently essentially empty) implementation of the Veech group.
 
     You should not create such a group directly. Use :func:`VeechGroup` or
-    :meth:`flatsurf.geometry.categories.SimilaritySurfaces.ParentMethods.veech_group`.
+    :meth:`flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.veech_group`.
 
     .. NOTE:
 
@@ -248,7 +248,7 @@ class AffineAutomorphismGroup_generic(MorphismSpace):
 
     You should not create such a group directly. Use
     :func:`AffineAutomorphismGroup` or
-    :meth:`flatsurf.geometry.categories.SimilaritySurfaces.ParentMethods.affine_automorphism_group`.
+    :meth:`flatsurf.geometry.categories.DilationSurfaces.ParentMethods.affine_automorphism_group`.
 
     .. NOTE::
 
@@ -818,7 +818,7 @@ def AffineAutomorphismGroup(surface):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.affine_automorphism_group`
+        :meth:`flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.affine_automorphism_group`
 
     """
     return surface.affine_automorphism_group()
@@ -838,7 +838,7 @@ def VeechGroup(surface):
 
     .. SEEALSO::
 
-        :meth:`SimilaritySurfaces.ParentMethods.veech_group`
+        :meth:`flatsurf.geometry.categories.dilation_surfaces.DilationSurfaces.ParentMethods.veech_group`
 
     """
     return surface.veech_group()

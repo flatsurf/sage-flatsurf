@@ -1067,7 +1067,8 @@ class SimplicialHomologyGroup(Parent):
         Return a symplectic basis of generators of this homology group.
 
         A symplectic basis is a basis of the form `(e_1, \ldots, e_n, f_1,
-        \ldots, f_n)` such that for the :meth:`algebraic_intersection`, `e_i
+        \ldots, f_n)` such that for the
+        :meth:`SimplicialHomologyClass.algebraic_intersection`, `e_i
         \cdot e_j = f_i \cdot f_j = 0` and `e_i \cdot f_j = \delta_{ij}` for
         all `i` and `j`.
 
