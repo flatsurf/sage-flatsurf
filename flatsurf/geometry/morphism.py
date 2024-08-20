@@ -516,7 +516,7 @@ class MorphismSpace(Homset):
         import warnings
 
         warnings.warn(
-            f"This morphism set has no base ring. Are you trying to get the base ring of a surface? Use .codomain().base_ring() instead."
+            "This morphism set has no base ring. Are you trying to get the base ring of a surface? Use .codomain().base_ring() instead."
         )
         return self.codomain().base_ring()
 
@@ -2120,7 +2120,7 @@ class CompositionMorphism(SurfaceMorphism):
         if not isinstance(other, CompositionMorphism):
             return False
 
-        return self._parent == other._parent and self._morphisms == other._morphisms
+        return self.parent() == other.parent() and self._morphisms == other._morphisms
 
     def __hash__(self):
         r"""

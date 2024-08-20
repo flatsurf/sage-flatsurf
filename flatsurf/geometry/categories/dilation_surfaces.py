@@ -44,11 +44,11 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from sage.categories.category_with_axiom import all_axioms
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
 )
-from sage.categories.category_with_axiom import all_axioms
 from flatsurf.cache import cached_surface_method
 
 
