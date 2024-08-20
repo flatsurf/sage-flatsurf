@@ -3649,10 +3649,10 @@ class DelaunayDecompositionIsomorphism(SurfaceMorphism_factorization):
     TESTS::
 
         sage: from flatsurf.geometry.morphism import DelaunayDecompositionIsomorphism
-        sage: isinstance(isomorphism, DelaunayDecompositionIsomorphism)
+        sage: isinstance(isomorphism, DelaunayDecompositionIsomorphism)  # optional: pyflatsurf
         True
 
-        sage: TestSuite(isomorphism).run()
+        sage: TestSuite(isomorphism).run()  # optional: pyflatsurf
 
     .. SEEALSO::
 

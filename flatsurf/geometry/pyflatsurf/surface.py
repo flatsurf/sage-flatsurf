@@ -299,7 +299,7 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: from flatsurf import translation_surfaces
             sage: S = translation_surfaces.square_torus().pyflatsurf().codomain()  # optional: pyflatsurf
 
-            sage: S.apply_matrix(matrix([[1, 2], [0, 1]])).codomain()
+            sage: S.apply_matrix(matrix([[1, 2], [0, 1]])).codomain()  # optional: pyflatsurf
             Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (2, 1), 3: (-3, -1)}
 
         """
@@ -382,11 +382,11 @@ class Surface_pyflatsurf(OrientedSimilaritySurface):
             sage: S = translation_surfaces.square_torus().triangulate().codomain()
             sage: S = S.pyflatsurf().codomain()  # optional: pyflatsurf
 
-            sage: S.opposite_edge((1, 2, 3), 0)
+            sage: S.opposite_edge((1, 2, 3), 0)  # optional: pyflatsurf
             ((-3, -1, -2), 1)
-            sage: S.opposite_edge((1, 2, 3), 1)
+            sage: S.opposite_edge((1, 2, 3), 1)  # optional: pyflatsurf
             ((-3, -1, -2), 2)
-            sage: S.opposite_edge((1, 2, 3), 2)
+            sage: S.opposite_edge((1, 2, 3), 2)  # optional: pyflatsurf
             ((-3, -1, -2), 0)
 
         """
