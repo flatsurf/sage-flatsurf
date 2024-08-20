@@ -29,11 +29,15 @@ The flatsurf.geometry Package
    geometry/mappings
    geometry/mega_wollmilchsau
    geometry/minimal_cover
+   geometry/morphism
    geometry/origami
    geometry/polygon
    geometry/polygonal_surfaces
    geometry/polygons
    geometry/polyhedra
+   geometry/pyflatsurf/conversion
+   geometry/pyflatsurf/morphism
+   geometry/pyflatsurf/surface
    geometry/pyflatsurf_conversion
    geometry/similarity
    geometry/similarity_surface_generators
@@ -48,3 +52,4 @@ The flatsurf.geometry Package
    geometry/thurston_veech
    geometry/topological_surfaces
    geometry/translation_surfaces
+   geometry/veech_group
