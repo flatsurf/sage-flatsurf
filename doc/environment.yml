@@ -14,4 +14,4 @@ dependencies:
   - furo
   - pip
   - pip:
-    - sage-docbuild=10.3
+    - sage-docbuild==10.3
