@@ -3640,8 +3640,8 @@ class DelaunayDecompositionIsomorphism(SurfaceMorphism_factorization):
         sage: from flatsurf import translation_surfaces
         sage: S = translation_surfaces.square_torus()
         sage: T = S.relabel({0: 1})
-        sage: isomorphism = S.delaunay_decompose(codomain=T)._factorization()
-        sage: isomorphism
+        sage: isomorphism = S.delaunay_decompose(codomain=T)._factorization()  # optional: pyflatsurf  # random output due to cppyy deprecation warnings
+        sage: isomorphism  # optional: pyflatsurf
         Delaunay decomposition morphism:
           From: Translation Surface in H_1(0) built from a square
           To:   Translation Surface in H_1(0) built from a square

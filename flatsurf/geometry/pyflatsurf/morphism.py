@@ -8,7 +8,7 @@ EXAMPLES::
 
     sage: from flatsurf import translation_surfaces
     sage: S = translation_surfaces.veech_double_n_gon(5)
-    sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf
+    sage: to_pyflatsurf = S.pyflatsurf()  # optional: pyflatsurf  # random output due to cppyy deprecation warnings
     sage: to_pyflatsurf  # optional: pyflatsurf
     Composite morphism:
       From: Translation Surface in H_2(2) built from 2 regular pentagons
