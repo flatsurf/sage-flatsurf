@@ -28,7 +28,7 @@ dependencies:
   - sage-flatsurf=0.5.2
   - sagelib=10.3
   - scipy
-  - surface-dynamics>=0.4.7,<0.6
+  - surface-dynamics>=0.6.0,<0.7
   - veerer>=0.2.0,<0.3.0
   - pip:
     - jupyter_ui_poll >=0.2.1,<0.3
