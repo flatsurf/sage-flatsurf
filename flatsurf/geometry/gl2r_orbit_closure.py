@@ -267,11 +267,11 @@ class GL2ROrbitClosure:
             sage: O.ambient_stratum() # optional: pyflatsurf
             H_3(4, 0^4)
         """
-        from surface_dynamics import AbelianStratum
+        from surface_dynamics import Stratum
 
         surface = self._surface
         angles = [surface.angle(v) for v in surface.vertices()]
-        return AbelianStratum([a - 1 for a in angles])
+        return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
         r"""

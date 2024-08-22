@@ -503,9 +503,9 @@ We create a Veering triangulation from the stratum $H_2(2)$.
 
 ```{code-cell}
 from veerer import VeeringTriangulation, FlatVeeringTriangulation
-from surface_dynamics import AbelianStratum
+from surface_dynamics import Stratum
 
-H2 = AbelianStratum(2)
+H2 = Stratum([2], 1)
 VT = VeeringTriangulation.from_stratum(H2)
 
 VT

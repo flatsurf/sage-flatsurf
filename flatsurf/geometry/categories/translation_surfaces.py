@@ -390,10 +390,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         H_3(4)
 
                     """
-                    from surface_dynamics import AbelianStratum
+                    from surface_dynamics import Stratum
                     from sage.rings.integer_ring import ZZ
 
-                    return AbelianStratum([ZZ(a - 1) for a in self.angles()])
+                    return Stratum([ZZ(a - 1) for a in self.angles()], 1)
 
                 def canonicalize(self, in_place=None):
                     r"""

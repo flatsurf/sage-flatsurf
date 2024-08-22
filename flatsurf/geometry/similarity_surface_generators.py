@@ -1341,7 +1341,7 @@ class TranslationSurfaceGenerators:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: from surface_dynamics import AbelianStratum
+            sage: from surface_dynamics import Stratum
 
             sage: prototypes = {
             ....:      5: [(1,1,0,-1)],
@@ -1359,7 +1359,7 @@ class TranslationSurfaceGenerators:
             sage: for D in sorted(prototypes):  # long time (.5s)
             ....:     for w,h,t,e in prototypes[D]:
             ....:          T = translation_surfaces.mcmullen_genus2_prototype(w,h,t,e)
-            ....:          assert T.stratum() == AbelianStratum(2)
+            ....:          assert T.stratum() == Stratum([2], 1)
             ....:          assert (D.is_square() and T.base_ring() is QQ) or (T.base_ring().polynomial().discriminant() == D)
 
         An example with some relative homology::
