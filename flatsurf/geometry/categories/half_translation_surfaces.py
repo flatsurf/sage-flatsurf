@@ -202,9 +202,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     if all(x.denominator() == 1 for x in angles):
                         raise NotImplementedError
 
-                    from surface_dynamics import QuadraticStratum
+                    from surface_dynamics import Stratum
 
-                    return QuadraticStratum(*[2 * a - 2 for a in angles])
+                    return Stratum([2 * a - 2 for a in angles], 2)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
