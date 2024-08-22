@@ -86,6 +86,6 @@ from an interactive SageMath session with |help|_.
    cache
    features
    geometry
-   geometry.categories
-   geometry.pyflatsurf
+   geometry/categories
+   geometry/pyflatsurf
    graphical
