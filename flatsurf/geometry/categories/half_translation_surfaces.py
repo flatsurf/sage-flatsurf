@@ -202,9 +202,10 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     if all(x.denominator() == 1 for x in angles):
                         raise NotImplementedError
 
+                    from sage.all import ZZ
                     from surface_dynamics import Stratum
 
-                    return Stratum([2 * a - 2 for a in angles], 2)
+                    return Stratum(sorted([ZZ(2 * a - 2) for a in angles], reverse=True), 2)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
