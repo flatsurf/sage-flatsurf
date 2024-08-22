@@ -1,5 +1,5 @@
-The flatsurf.features Modules
-*****************************
+The flatsurf.features Module
+****************************
 
 .. automodule:: flatsurf.features
    :members:
