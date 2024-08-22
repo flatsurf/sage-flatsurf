@@ -6,6 +6,6 @@ The flatsurf.geometry.pyflatsurf Package
 .. toctree::
    :maxdepth: 1
 
-   geometry/pyflatsurf/conversion
-   geometry/pyflatsurf/morphism
-   geometry/pyflatsurf/surface
+   pyflatsurf/conversion
+   pyflatsurf/morphism
+   pyflatsurf/surface
