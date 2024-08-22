@@ -74,9 +74,14 @@ jobs:
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "${{ matrix.python }}" }
+      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
+      - name: Fix cppyy dependencies on macOS
+        run: |
+          mamba install -y libcxx=16
+          echo "libcxx ==16" >> $CONDA_PREFIX/conda-meta/pinned
+        if: ${{ matrix.on == 'macos-13' }}
       - name: Install dependencies
         run: |
-          mamba upgrade -n base --all --yes  # mamba 1.4.1 segfaults sometimes, make sure we use a later version
           mamba install -n test sagelib=${{ matrix.sagelib }}
           echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
           while read; do
@@ -97,11 +102,6 @@ jobs:
           mamba install -y bidict
           conda list
         if: ${{ matrix.environment == 'flatsurf.yml' }}
-      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
-      - name: Fix cppyy dependencies on macOS
-        run: |
-          mamba install -y libcxx=16
-        if: ${{ matrix.on == 'macos-13' }}
       - name: Install sage-flatsurf
         run: |
           pip install --verbose --no-index .
