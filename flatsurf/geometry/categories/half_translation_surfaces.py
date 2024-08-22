@@ -205,7 +205,9 @@ class HalfTranslationSurfaces(SurfaceCategory):
                     from sage.all import ZZ
                     from surface_dynamics import Stratum
 
-                    return Stratum(sorted([ZZ(2 * a - 2) for a in angles], reverse=True), 2)
+                    return Stratum(
+                        sorted([ZZ(2 * a - 2) for a in angles], reverse=True), 2
+                    )
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
