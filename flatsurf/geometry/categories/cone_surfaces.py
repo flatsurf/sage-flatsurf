@@ -366,7 +366,9 @@ class ConeSurfaces(SurfaceCategory):
 
                         surface = center.parent()
 
-                        for connection in surface.saddle_connections(initial_vertex=center):
+                        for connection in surface.saddle_connections(
+                            initial_vertex=center
+                        ):
                             end = surface(*connection.end())
                             if end.angle() != 1:
                                 return norm.from_vector(connection.holonomy())
@@ -399,7 +401,7 @@ class ConeSurfaces(SurfaceCategory):
                         """
 
                         @cached_method(key=lambda self, distances: None)
-                        def distance_matrix_vertices(self, distance=lambda v,w: None):
+                        def distance_matrix_vertices(self, distance=lambda v, w: None):
                             vertices = list(self.vertices())
 
                             A = [
@@ -410,7 +412,7 @@ class ConeSurfaces(SurfaceCategory):
                                 for m, v in enumerate(vertices)
                             ]
 
-                            done = [[ a != float("inf") for a in row ] for row in A]
+                            done = [[a != float("inf") for a in row] for row in A]
 
                             def floyd():
                                 for k in range(len(vertices)):
@@ -428,28 +430,46 @@ class ConeSurfaces(SurfaceCategory):
                                     end = vertices.index(end)
 
                                     from sage.all import RDF
-                                    A[start][end] = A[end][start] = min(A[start][end], edge.change_ring(RDF).norm())
+
+                                    A[start][end] = A[end][start] = min(
+                                        A[start][end], edge.change_ring(RDF).norm()
+                                    )
 
                             floyd()
 
                             todo = list(range(len(vertices)))
 
                             while todo:
-                                v = max(todo, key=lambda v: (len([not d for d in done[v]]), -max(A[v])))
+                                v = max(
+                                    todo,
+                                    key=lambda v: (
+                                        len([not d for d in done[v]]),
+                                        -max(A[v]),
+                                    ),
+                                )
 
                                 todo.remove(v)
 
-                                if all(d or i not in todo for (i, d) in enumerate(done[v])):
+                                if all(
+                                    d or i not in todo for (i, d) in enumerate(done[v])
+                                ):
                                     continue
 
                                 vertex = vertices[v]
 
-                                for connection in self.saddle_connections(initial_vertex=vertex, squared_length_bound=max(A[v])**2):
+                                for connection in self.saddle_connections(
+                                    initial_vertex=vertex,
+                                    squared_length_bound=max(A[v]) ** 2,
+                                ):
                                     # TODO: Strangely, all this trickery is needed here since otherwise the symbolic machinery is confused.
                                     from sage.all import RDF
 
                                     length = float(
-                                        abs(connection.holonomy().change_ring(RDF).norm())
+                                        abs(
+                                            connection.holonomy()
+                                            .change_ring(RDF)
+                                            .norm()
+                                        )
                                     )
 
                                     if length >= max(A[v]):
@@ -464,9 +484,12 @@ class ConeSurfaces(SurfaceCategory):
                                         floyd()
 
                             from sage.all import matrix
+
                             return matrix(A)
 
-                        def distance_matrix_points(self, points, distance=lambda v, w: None):
+                        def distance_matrix_points(
+                            self, points, distance=lambda v, w: None
+                        ):
                             insertion = self.insert_marked_points(
                                 *[p for p in points if not p.is_vertex()]
                             )
@@ -477,21 +500,26 @@ class ConeSurfaces(SurfaceCategory):
 
                             def inserted_distance(v, w):
                                 if v in inserted_points and w in inserted_points:
-                                    return distance(points[inserted_points.index(v)], points[inserted_points.index(w)])
+                                    return distance(
+                                        points[inserted_points.index(v)],
+                                        points[inserted_points.index(w)],
+                                    )
 
                                 return None
 
-                            D = insertion.codomain().distance_matrix_vertices(distance=inserted_distance)
+                            D = insertion.codomain().distance_matrix_vertices(
+                                distance=inserted_distance
+                            )
 
-                            index = {p: V.index(q) for p, q in zip(points, inserted_points)}
+                            index = {
+                                p: V.index(q) for p, q in zip(points, inserted_points)
+                            }
 
                             from sage.all import matrix
+
                             return matrix(
                                 [
-                                    [
-                                        D[index[p]][index[q]]
-                                        for q in points
-                                    ]
+                                    [D[index[p]][index[q]] for q in points]
                                     for p in points
                                 ]
                             )
@@ -604,8 +632,12 @@ class ConeSurfaces(SurfaceCategory):
                             return next(iter(self.nclosest()))[1]
 
                         def nclosest(self, points, distance=None):
-                            distances = self.parent().distance_matrix_points([self] + list(points), distance=distance)[0][1:]
-                            distances = [(distance, i) for (i, distance) in enumerate(distances)]
+                            distances = self.parent().distance_matrix_points(
+                                [self] + list(points), distance=distance
+                            )[0][1:]
+                            distances = [
+                                (distance, i) for (i, distance) in enumerate(distances)
+                            ]
 
                             for (distance, i) in sorted(distances):
                                 yield distance, points[i]

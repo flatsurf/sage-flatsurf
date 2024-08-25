@@ -681,7 +681,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # Delaunay triangulate: delaunay0 maps delaunay0_domain to delaunay0_codomain.
                     # Since the flips of delaunay() are performed in-place, we create
                     # the mapping using the Tracked[Deformation] feature of pyflatsurf.
-                    delaunay0_codomain = to_pyflatsurf.codomain()._flat_triangulation.clone()
+                    delaunay0_codomain = (
+                        to_pyflatsurf.codomain()._flat_triangulation.clone()
+                    )
 
                     from pyflatsurf import flatsurf
 
@@ -717,7 +719,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
 
                     codomain_pyflatsurf = Surface_pyflatsurf(delaunay1_codomain)
 
-                    from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_Deformation
+                    from flatsurf.geometry.pyflatsurf.morphism import (
+                        Morphism_from_Deformation,
+                    )
 
                     pyflatsurf_morphism = Morphism_from_Deformation._create_morphism(
                         to_pyflatsurf.codomain(),
@@ -733,7 +737,9 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         delaunay1_codomain
                     )
 
-                    from flatsurf.geometry.pyflatsurf.morphism import Morphism_from_pyflatsurf
+                    from flatsurf.geometry.pyflatsurf.morphism import (
+                        Morphism_from_pyflatsurf,
+                    )
 
                     from_pyflatsurf = Morphism_from_pyflatsurf._create_morphism(
                         codomain_pyflatsurf, from_pyflatsurf.domain(), from_pyflatsurf

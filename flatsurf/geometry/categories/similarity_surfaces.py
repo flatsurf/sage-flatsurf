@@ -3413,13 +3413,39 @@ class SimilaritySurfaces(SurfaceCategory):
                             "cannot enumerate saddle connections on surfaces that are built from inifinitely many polygons yet"
                         )
 
-                    initial = [(label, range(len(self.polygon(label).vertices()))) for label in self.labels()]
+                    initial = [
+                        (label, range(len(self.polygon(label).vertices())))
+                        for label in self.labels()
+                    ]
                 elif initial_label is None:
-                    representatives = [(label, self.polygon(label).get_point_position(coordinates).get_vertex()) for (label, coordinates) in initial_vertex.representatives()]
+                    representatives = [
+                        (
+                            label,
+                            self.polygon(label)
+                            .get_point_position(coordinates)
+                            .get_vertex(),
+                        )
+                        for (label, coordinates) in initial_vertex.representatives()
+                    ]
                     labels = {label for (label, _) in representatives}
-                    initial = [(label, [vertex for (lbl, vertex) in representatives if lbl == label]) for label in labels]
+                    initial = [
+                        (
+                            label,
+                            [
+                                vertex
+                                for (lbl, vertex) in representatives
+                                if lbl == label
+                            ],
+                        )
+                        for label in labels
+                    ]
                 elif initial_vertex is None:
-                    initial = [(initial_label, range(len(self.polygon(initial_label).vertices())))]
+                    initial = [
+                        (
+                            initial_label,
+                            range(len(self.polygon(initial_label).vertices())),
+                        )
+                    ]
                 else:
                     initial = [(initial_label, [initial_vertex])]
 

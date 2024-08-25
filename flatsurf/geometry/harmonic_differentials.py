@@ -1270,23 +1270,41 @@ class RationalMap:
             branch_points = self.branch_points()
 
         if base_point is None:
-            raise NotImplementedError("cannot select a monodromy base_point automatically yet")
+            raise NotImplementedError(
+                "cannot select a monodromy base_point automatically yet"
+            )
 
         finite_branch_points = [p for p in branch_points if p[1] != 0]
         infinite_branch_points = [p for p in branch_points if p[1] == 0]
 
         # Sort branch points counterclockwise around the base point
         from sage.all import atan2
-        branch_points = sorted(finite_branch_points, key=lambda p:atan2(*list((p[0] / p[1]) - (base_point[0] / base_point[1]))[::-1])) + infinite_branch_points
+
+        branch_points = (
+            sorted(
+                finite_branch_points,
+                key=lambda p: atan2(
+                    *list((p[0] / p[1]) - (base_point[0] / base_point[1]))[::-1]
+                ),
+            )
+            + infinite_branch_points
+        )
 
         from sage.all import parallel
 
         @parallel
         def monodromy_generator(branch_point):
-             return self.monodromy_generator(base_point=base_point, branch_point=branch_point, steps=steps, branch_points=branch_points)
+            return self.monodromy_generator(
+                base_point=base_point,
+                branch_point=branch_point,
+                steps=steps,
+                branch_points=branch_points,
+            )
 
         permutations = {}
-        for ((branch_point,), kwargs), generator in monodromy_generator([(branch_point,) for branch_point in branch_points]):
+        for ((branch_point,), kwargs), generator in monodromy_generator(
+            [(branch_point,) for branch_point in branch_points]
+        ):
             permutations[branch_point] = generator
 
         generators = [permutations[branch_point] for branch_point in branch_points]
@@ -1295,9 +1313,17 @@ class RationalMap:
 
         from sage.all import Permutation, PermutationGroup
 
-        return PermutationGroup([Permutation([domain.index(gen[x]) + 1 for x in domain]).cycle_string() for gen in generators], canonicalize=False)
+        return PermutationGroup(
+            [
+                Permutation([domain.index(gen[x]) + 1 for x in domain]).cycle_string()
+                for gen in generators
+            ],
+            canonicalize=False,
+        )
 
-    def monodromy_generator(self, base_point, branch_point, steps=None, branch_points=None):
+    def monodromy_generator(
+        self, base_point, branch_point, steps=None, branch_points=None
+    ):
         r"""
         Return the permutation of preimages of ``base_point`` corresponding to
         a loop around ``branch_point``.
@@ -1318,9 +1344,15 @@ class RationalMap:
         if branch_points is None:
             branch_points = self.branch_points()
 
-        loop, paths = self._monodromy_loop(base_point=base_point, branch_point=branch_point, branch_points=branch_points, steps=steps)
+        loop, paths = self._monodromy_loop(
+            base_point=base_point,
+            branch_point=branch_point,
+            branch_points=branch_points,
+            steps=steps,
+        )
 
         from bidict import bidict
+
         return bidict({path[0]: path[-1] for path in paths})
 
     def _monodromy_loop(self, base_point, branch_point, branch_points, steps=None):
@@ -1363,20 +1395,23 @@ class RationalMap:
             if center not in finite_branch_points:
                 raise ValueError("branch_point must be one of branch_points")
 
-            radius = min(abs(center - other) for other in finite_branch_points if other != center) / 2
-        else:
-            center = sum(finite_branch_points) / len(finite_branch_points)
             radius = (
-                max(abs(center - other) for other in finite_branch_points)
-                * 3
+                min(
+                    abs(center - other)
+                    for other in finite_branch_points
+                    if other != center
+                )
                 / 2
             )
+        else:
+            center = sum(finite_branch_points) / len(finite_branch_points)
+            radius = max(abs(center - other) for other in finite_branch_points) * 3 / 2
 
         base_point = base_point[0] / base_point[1]
 
         # First, we move from the base point to the closest point on the circle
         # with "radius" around the center.
-        center_to_base_point = (base_point - center)
+        center_to_base_point = base_point - center
         center_to_base_point /= center_to_base_point.abs()
         circle_base_point = center + radius * center_to_base_point
 
@@ -1405,13 +1440,17 @@ class RationalMap:
                 return None
 
             for preimage in preimages:
-                nclosest = iter(insertion(erasure(preimage)).nclosest(previous, distance=distance))
+                nclosest = iter(
+                    insertion(erasure(preimage)).nclosest(previous, distance=distance)
+                )
                 closest_distance, closest_point = next(nclosest)
                 second_closest_distance, second_closest_point = next(nclosest)
 
                 # TODO: Make 2 configurable.
-                if second_closest_distance < 2*closest_distance:
-                    print(f"Not sure which path preimage continues. Best options were too close at {closest_distance} and {second_closest_distance}")
+                if second_closest_distance < 2 * closest_distance:
+                    print(
+                        f"Not sure which path preimage continues. Best options were too close at {closest_distance} and {second_closest_distance}"
+                    )
                     return None
 
                 aligned_preimages[previous.index(closest_point)] = preimage
@@ -1452,7 +1491,6 @@ class RationalMap:
 
                     break
 
-
         def segment(destination):
             total = destination - loop[0]
 
@@ -1485,9 +1523,11 @@ class RationalMap:
                     return None
 
                 from sage.all import QQ
+
                 angle_delta = QQ((1, steps * (refinements + 1)))
 
                 from sage.all import CDF
+
                 rotation = CDF.zeta(steps * (refinements + 1))
 
                 if angle + angle_delta >= 1:
@@ -1516,8 +1556,9 @@ class RationalMap:
                     path.extend(initial_path[::-1][1:])
                     break
             else:
-                assert False, f"no path in {paths} can be continued with reversed {initial_path}"
-
+                assert (
+                    False
+                ), f"no path in {paths} can be continued with reversed {initial_path}"
 
         return loop, paths
 
@@ -1556,6 +1597,7 @@ class RationalMap:
         from sage.all import oo
 
         from sage.all import point2d, Graphics
+
         P1 = Graphics()
         for branch_point in finite_branch_points + (
             [oo] if infinite_branch_point else []
@@ -1583,11 +1625,21 @@ class RationalMap:
                 if not ccw:
                     rotation = rotation.conjugate()
 
-                start = min(range(steps), key=lambda step: (start - (center + rotation ** step * radius)).abs())
+                start = min(
+                    range(steps),
+                    key=lambda step: (
+                        start - (center + rotation**step * radius)
+                    ).abs(),
+                )
 
-                return sum(plot(center + rotation**(start + step) * radius) for step in range(steps))
+                return sum(
+                    plot(center + rotation ** (start + step) * radius)
+                    for step in range(steps)
+                )
 
-            start = center - (center - base_point) / (center - base_point).abs() * radius
+            start = (
+                center - (center - base_point) / (center - base_point).abs() * radius
+            )
 
             P1 += move(base_point, start)
             P1 += cycle(center, start)
@@ -1625,11 +1677,15 @@ class RationalMap:
             def plot(x, color="orange"):
                 G = GS.plot()
                 try:
-                    G += ramification_points + sum(p.plot(GS, color=color) for p in self.preimages(x))
+                    G += ramification_points + sum(
+                        p.plot(GS, color=color) for p in self.preimages(x)
+                    )
                 except Exception:
                     print("frame missed")
 
-                return G.inset(P1 + point2d([x], color=color), pos=(0.8, 0.8, 0.2, 0.2), fontsize=5)
+                return G.inset(
+                    P1 + point2d([x], color=color), pos=(0.8, 0.8, 0.2, 0.2), fontsize=5
+                )
 
             def move(P, Q):
                 delta = (Q - P) / steps
@@ -1642,13 +1698,21 @@ class RationalMap:
                 if not ccw:
                     rotation = rotation.conjugate()
 
-                start = min(range(steps), key=lambda step: (start - (center + rotation ** step * radius)).abs())
+                start = min(
+                    range(steps),
+                    key=lambda step: (
+                        start - (center + rotation**step * radius)
+                    ).abs(),
+                )
 
                 return [
-                    plot(center + rotation**(start + step) * radius) for step in range(steps)
+                    plot(center + rotation ** (start + step) * radius)
+                    for step in range(steps)
                 ]
 
-            start = center - (center - base_point) / (center - base_point).abs() * radius
+            start = (
+                center - (center - base_point) / (center - base_point).abs() * radius
+            )
 
             frames = [plot(base_point, color="green")]
             print(f"moving from {base_point} to {start}")
@@ -1662,11 +1726,11 @@ class RationalMap:
 
             return animate(frames, dpi=512)
 
-        
         for p in finite_branch_points:
             yield monodromy_plot(p)
         if infinite_branch_point:
             yield monodromy_plot(oo)
+
 
 # TODO: Make these unique for each surface (without using UniqueRepresentation because equal surfaces can be distinct.)
 class HarmonicDifferentialSpace(Parent):
@@ -1864,19 +1928,21 @@ class HarmonicDifferentialSpace(Parent):
         while self._ncoefficients_epsilon_z(center, k) > self._error:
             k += 1
 
-        print(f"{k} coefficients at {center} with degree {center.angle()} for an error of {self._ncoefficients_epsilon_z(center, k)}")
+        print(
+            f"{k} coefficients at {center} with degree {center.angle()} for an error of {self._ncoefficients_epsilon_z(center, k)}"
+        )
         return k
 
     def _ncoefficients_epsilon_z(self, center, k):
         d = center.angle()
         cell = self._cells.cell_at_center(center)
-        rcelly = float(cell.radius()) ** (1/d)
+        rcelly = float(cell.radius()) ** (1 / d)
 
         # TODO: Numerically optimize this pair of values.
-        ry = float(center.radius_of_convergence())**(1/d)
-        mr = 1/d
+        ry = float(center.radius_of_convergence()) ** (1 / d)
+        mr = 1 / d
 
-        return rcelly**(2-d) / (ry - rcelly) / d * (rcelly / ry)**k * mr
+        return rcelly ** (2 - d) / (ry - rcelly) / d * (rcelly / ry) ** k * mr
 
     def dz(self):
         return self(
@@ -1912,7 +1978,9 @@ class HarmonicDifferentialSpace(Parent):
 
         return r / R
 
-    def error_plot(self, graphical_surface=None, cutoff=1.0, plot_points=20, regions=True):
+    def error_plot(
+        self, graphical_surface=None, cutoff=1.0, plot_points=20, regions=True
+    ):
         if graphical_surface is None:
             graphical_surface = self.surface().graphical_surface(
                 polygon_labels=False, edge_labels=False
@@ -2115,9 +2183,7 @@ class HarmonicDifferentialSpace(Parent):
         if "L2" in algorithm:
             print("Adding L2 conditions")
             weight = get_parameter("L2", 1)
-            constraints.optimize(
-                weight * self._L2_consistency_constraints()
-            )
+            constraints.optimize(weight * self._L2_consistency_constraints())
 
         if "squares" in algorithm:
             weight = get_parameter("squares", 1)
@@ -2511,7 +2577,10 @@ class PowerSeriesConstraints:
             start=[],
         )
 
-        return sum(self.symbolic_ring()(cost) for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries))
+        return sum(
+            self.symbolic_ring()(cost)
+            for ((args, kwargs), cost) in L2_cost(polygon_cell_boundaries)
+        )
 
     # TODO: Move to HarmonicDifferentials
     def _gen(self, kind, center, n):
