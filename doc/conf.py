@@ -1,5 +1,5 @@
 from flatsurf.version import version
-import sage_docbuild.conf
+from sage_docbuild.conf import html_theme, html_theme_options, pygments_style, pygments_dark_style, html_css_files, skip_TESTS_block, mathjax3_config, default_role
 
 # -- General configuration ------------------------------------------------
 extensions = [
@@ -44,14 +44,6 @@ exclude_patterns = ["_build", "news"]
 intersphinx_mapping = {"sage": ("https://doc.sagemath.org/html/en/reference", None)}
 
 # -- Options for HTML output ----------------------------------------------
-
-# Imitate the look of the SageMath documentation.
-html_theme = sage_docbuild.conf.html_theme
-html_theme_options = sage_docbuild.conf.html_theme_options
-pygments_style = sage_docbuild.conf.pygments_style
-pygments_dark_style = sage_docbuild.conf.pygments_dark_style
-html_css_files = sage_docbuild.conf.html_css_files
-
 if html_css_files != ["custom-furo.css", "custom-jupyter-sphinx.css", "custom-codemirror-monokai.css"]:
     raise NotImplementedError(
         "CSS customization has changed in SageMath. The configuration of sage-flatsurf documentation build needs to be updated."
@@ -77,4 +69,4 @@ jupyter_execute_default_kernel = "sagemath"
 nb_execution_mode = "cache"
 
 def setup(app):
-    app.connect('autodoc-process-docstring', sage_docbuild.conf.skip_TESTS_block)
+    app.connect('autodoc-process-docstring', skip_TESTS_block)

@@ -432,7 +432,8 @@ class MutablePolygonalSurface(Surface_base):
             Category of connected without boundary finite type translation surfaces
             sage: new_methods = set(method for method in dir(S) if not method.startswith('_'))
             sage: new_methods - old_methods
-            {'area',
+            {'affine_automorphism_group',
+             'area',
              'canonicalize',
              'canonicalize_mapping',
              'cluster_points',
@@ -451,6 +452,7 @@ class MutablePolygonalSurface(Surface_base):
              'rel_deformation',
              'singularities',
              'stratum',
+             'veech_group',
              'veering_triangulation'}
 
         An immutable surface cannot be mutated anymore::
@@ -1010,211 +1012,103 @@ class MutableOrientedSimilaritySurface_base(OrientedSimilaritySurface):
 
         See that method for details.
         """
-        if not in_place:
-            return super().triangle_flip(
-                label=label,
-                edge=edge,
-                in_place=in_place,
-                test=test,
-                direction=direction,
-            )
+        if test is not None:
+            if not test:
+                import warnings
 
-        if test:
-            return super().triangle_flip(
-                label=label,
-                edge=edge,
-                in_place=in_place,
-                test=test,
-                direction=direction,
-            )
+                warnings.warn(
+                    "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore"
+                )
+            else:
+                import warnings
+
+                warnings.warn(
+                    "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead."
+                )
+                if len(self.polygon(label).vertices()) != 3:
+                    return False
+                if (
+                    len(self.polygon(self.opposite_edge(label, edge)[0]).vertices())
+                    != 3
+                ):
+                    return False
+                return self.is_convex(label, edge, strict=True)
 
         if direction is not None:
             import warnings
 
             warnings.warn(
-                "the direction keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf. The direction keyword argument is ignored. The flip is always performed such that the flipped edge rotates counterclockwise."
+                "the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise"
             )
 
-        if len(self.polygon(label).vertices()) != 3:
-            raise ValueError("polygon must be a triangle")
+        if not in_place:
+            return super().triangle_flip(label=label, edge=edge, in_place=in_place)
 
         opposite_label, opposite_edge = self.opposite_edge(label, edge)
 
-        if len(self.polygon(opposite_label).vertices()) != 3:
-            raise ValueError("polygon must be a triangle")
+        label = [label, opposite_label]
 
-        if direction is None:
-            direction = (self.base_ring() ** 2)((0, 1))
+        diagonal = [edge, opposite_edge]
 
-        t1, t2, edge_map = self._triangle_flip_triangles(label=label, edge=edge)
-        gluings = list(
-            self._triangle_flip_gluings(label=label, edge=edge, edge_map=edge_map)
-        )
+        P = [self.polygon(lbl) for lbl in label]
 
-        self.replace_polygon(label, t1)
-        if label != opposite_label:
-            # It would not hurt to replace the polygon we just inserted, but
-            # the coordinates of t1 are normalized such that one vertex is (0,
-            # 0) which looks nicer.
-            self.replace_polygon(opposite_label, t2)
+        if any(len(p.vertices()) != 3 for p in P):
+            raise ValueError("attached polygons must be triangles")
 
-        for gluing in gluings:
-            self.glue(*gluing)
-
-        from flatsurf.geometry.morphism import TriangleFlipMorphism
-
-        return TriangleFlipMorphism._create_morphism(None, self, edge_map)
-
-    def _triangle_flip_triangles(self, label, edge):
-        r"""
-        Return the two triangles that are created when flipping the ``edge`` of
-        the polygon with ``label``. Additionally, return a mapping from the
-        original edges to the edges in new triangles.
-
-        The labeling of the replacement triangles and the ordering of their
-        vertices depends on ``direction``. See :meth:`triangle_flip` for
-        details.
-
-        OUTPUT:
-
-        A triple of two triangles ``t1``, ``t2`` , and a dictionary
-        ``edge_map``.
-
-        """
-        opposite_label, opposite_edge = self.opposite_edge(label, edge)
-        sim = self.edge_transformation(opposite_label, opposite_edge)
-
-        # Construct the triangles p1 and p2 such that they share the diagonal
-        # edge.
-        p1 = self.polygon(label)
-        if not len(p1.vertices()) == 3:
-            raise ValueError("polygon must be a triangle")
-
-        p2 = self.polygon(opposite_label)
-        if not len(p2.vertices()) == 3:
-            raise ValueError("glued polygon must be a triangle")
+        if not self.is_convex(label[0], edge, strict=True):
+            raise ValueError(
+                "cannot flip this edge because the surrounding quadrilateral is not strictly convex"
+            )
 
         from flatsurf import Polygon
 
-        p2 = Polygon(vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring())
+        T = self.edge_transformation(label[1], diagonal[1])
+        P[1] = Polygon(vertices=[T(v) for v in P[1].vertices()])
 
-        assert p1.edge(edge) == -p2.edge(
-            opposite_edge
-        ), "triangles do not share an edge"
-
-        # Construct the triangles that are going to replace p1 and p2.
-        t1 = [p2.vertex(opposite_edge - 1), p1.vertex(edge - 1), p1.vertex(edge)]
-        t1 = t1[-edge % 3 :] + t1[: -edge % 3]
-        assert t1[edge] == p2.vertex(opposite_edge - 1)
-        t1 = Polygon(vertices=t1)
-
-        t2 = [
-            p1.vertex(edge - 1),
-            p2.vertex(opposite_edge - 1),
-            p2.vertex(opposite_edge),
-        ]
-        t2 = t2[-opposite_edge % 3 :] + t2[: -opposite_edge % 3]
-        assert t2[opposite_edge] == p1.vertex(edge - 1)
-        t2 = Polygon(vertices=t2)
-
-        # Normalize polygons so that they don't move through the coordinate
-        # system when performing repeated flips.
-        t2 = t2.translate(-t1.vertex(0))
-        t1 = t1.translate(-t1.vertex(0))
-
-        assert t1.edge(edge) == -t2.edge(
-            opposite_edge
-        ), "triangles do not share an edge after flip"
-
-        # Construct the mapping from the edges of p1 and p2 to the edges of t1
-        # and t2.
-        edge_map = {}
-
-        def find_edge(v):
-            for e in range(3):
-                if t1.edge(e) == v:
-                    return label, e
-                if t2.edge(e) == v:
-                    return opposite_label, e
-
-            assert False, "outer edge is not an edge anymore after flip"
-
-        # Four of the edges are still edges in the new surface.
-        edge_map = {}
-
-        edge_map[(label, (edge + 1) % 3)] = [find_edge(p1.edge(edge + 1))]
-        edge_map[(label, (edge + 2) % 3)] = [find_edge(p1.edge(edge + 2))]
-        edge_map[(opposite_label, (opposite_edge + 1) % 3)] = [
-            find_edge(p2.edge(opposite_edge + 1))
-        ]
-        edge_map[(opposite_label, (opposite_edge + 2) % 3)] = [
-            find_edge(p2.edge(opposite_edge + 2))
+        gluings = [
+            [self.opposite_edge(lbl, (d + i) % 3) for i in range(3)]
+            for (lbl, d) in zip(label, diagonal)
         ]
 
-        # The diagonal "edge" can be equally written as the sum of two non-diagonal edges.
-        edge_map[(label, edge)] = (
-            edge_map[(opposite_label, (opposite_edge + 1) % 3)]
-            + edge_map[(opposite_label, (opposite_edge + 2) % 3)]
-        )
-        edge_map[(opposite_label, opposite_edge)] = (
-            edge_map[(label, (edge + 1) % 3)] + edge_map[(label, (edge + 2) % 3)]
-        )
+        assert P[0].vertex(diagonal[0]) == P[1].vertex(diagonal[1] + 1)
+        assert P[0].vertex(diagonal[0] + 1) == P[1].vertex(diagonal[1])
 
-        for original_label in [label, opposite_label]:
-            for original_edge in range(3):
-                if label != opposite_label:
-                    # Check that the edge_map actually maps edges to edges with
-                    # the same holonomy.
-                    # This check is not careful enough when the polygon is self
-                    # glued across the edge so it is disable in that case.
-                    assert (p1 if original_label == label else p2).edge(
-                        original_edge
-                    ) == sum(
-                        (t1 if lbl == label else t2).edge(e)
-                        for (lbl, e) in edge_map[(original_label, original_edge)]
-                    ), "edge map does not preserve edges in triangle flip"
+        Q = [
+            [
+                P[1 - i].vertex(diagonal[1 - i] + 2),
+                P[i].vertex(diagonal[i] + 2),
+                P[i].vertex(diagonal[i]),
+            ]
+            for i in range(2)
+        ]
+        Q = [
+            Polygon(vertices=Q[i][3 - diagonal[i] :] + Q[i][: 3 - diagonal[i]])
+            for i in range(2)
+        ]
+        # Shift the new polygons to the origin so things don't seem to wiggle
+        # around randomly.
+        Q = [q.translate(-q.vertex(0)) for q in Q]
 
-        return t1, t2, edge_map
+        for i in range(2):
+            self.replace_polygon(label[i], Q[i])
 
-    def _triangle_flip_gluings(self, label, edge, edge_map):
-        r"""
-        Return the gluings that need to happen to restore the surface in which
-        two triangles were removed and replaced with these triangles with an
-        edge flipped.
+        self.glue((label[0], diagonal[0]), (label[1], diagonal[1]))
 
-        """
-        opposite_label, opposite_edge = self.opposite_edge(label, edge)
+        def to_new(lbl, edge):
+            for i in range(2):
+                if lbl == label[i]:
+                    assert edge != diagonal[i]
+                    if edge == (diagonal[i] + 1) % 3:
+                        return label[1 - i], (diagonal[1 - i] + 2) % 3
+                    assert edge == (diagonal[i] + 2) % 3
+                    return label[i], (diagonal[i] + 1) % 3
+            return lbl, edge
 
-        def image_edge(label, edge):
-            image = edge_map.get((label, edge), [(label, edge)])
-            assert (
-                len(image) == 1
-            ), "non-diagonal edges must produce a single edge in the image"
-            return next(iter(image))
+        for i in range(2):
+            self.glue((label[i], (diagonal[i] + 1) % 3), to_new(*gluings[i][2]))
+            self.glue((label[i], (diagonal[i] + 2) % 3), to_new(*gluings[1 - i][1]))
 
-        # Add gluings that glue the outer edges of the quadrilateral formed by
-        # joining the two triangles.
-        for lbl in [label, opposite_label]:
-            for e in range(3):
-                if (lbl == label and e == edge) or (
-                    lbl == opposite_label and e == opposite_edge
-                ):
-                    continue
-                yield (image_edge(lbl, e), image_edge(*self.opposite_edge(lbl, e)))
-
-        # Add gluings that glue the diagonal of the quadrilateral formed by the
-        # two triangles after the flip.
-        diagonals = []
-        for lbl in [label, opposite_label]:
-            for e in range(3):
-                if [(lbl, e)] not in edge_map.values():
-                    diagonals.append((lbl, e))
-
-        assert (
-            len(diagonals) == 2
-        ), "there must be exactly two diagonals before and after the flip"
-
-        yield tuple(diagonals)
+        return self
 
     def standardize_polygons(self, in_place=False):
         r"""
@@ -1885,18 +1779,6 @@ class MutableOrientedSimilaritySurface(
         return self
 
     def relabel(self, relabeling=None, in_place=False):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel`
-        to allow relabeling in-place.
-
-        # TODO: Test that this works for surfaces with boundary.
-
-        # TODO: Remove support for errors.
-        """
-        if not in_place:
-            return super().relabel(relabeling=relabeling, in_place=in_place)
-
         if relabeling is None:
             relabeling = {label: l for (l, label) in enumerate(self.labels())}
 
@@ -1936,7 +1818,7 @@ class MutableOrientedSimilaritySurface(
 
         self.set_roots([relabeling.get(root, root) for root in roots])
 
-        return RelabelingMorphism._create_morphism(self, self, relabeling)
+        return self
 
     def join_polygons(self, p1, e1, test=False, in_place=False):
         r"""
@@ -2199,9 +2081,9 @@ class MutableOrientedSimilaritySurface(
                 label, *MutableOrientedSimilaritySurface._triangulate(self, label)
             )
 
-        from flatsurf.geometry.morphism import TriangulationMorphism
+        from flatsurf.geometry.morphism import NamedUnknownMorphism
 
-        return TriangulationMorphism._create_morphism(None, self)
+        return NamedUnknownMorphism._create_morphism(None, self, "Triangulation")
 
     @staticmethod
     def _triangulate(surface, label):
@@ -2249,135 +2131,6 @@ class MutableOrientedSimilaritySurface(
                 self.triangle_flip(l1, e1, in_place=True)
                 return True
         return False
-
-    def delaunay_triangulation(
-        self,
-        triangulated=False,
-        in_place=False,
-        direction=None,
-        relabel=None,
-    ):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation`
-        to allow triangulating in-place.
-        """
-        if not in_place:
-            return super().delaunay_triangulation(
-                triangulated=triangulated,
-                in_place=in_place,
-                direction=direction,
-                relabel=relabel,
-            )
-
-        if relabel is not None:
-            if relabel:
-                raise NotImplementedError(
-                    "the relabel keyword has been removed from delaunay_triangulation(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
-                )
-            else:
-                import warnings
-
-                warnings.warn(
-                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
-                )
-
-        if triangulated:
-            s = self
-        else:
-            s = self
-            self.triangulate(in_place=True)
-
-        if direction is None:
-            direction = (self.base_ring() ** 2)((0, 1))
-
-        if direction.is_zero():
-            raise ValueError
-
-        from collections import deque
-
-        unchecked_labels = deque(s.labels())
-        checked_labels = set()
-        while unchecked_labels:
-            label = unchecked_labels.popleft()
-            flipped = False
-            for edge in range(3):
-                if s._delaunay_edge_needs_flip(label, edge):
-                    # Record the current opposite edge:
-                    label2, edge2 = s.opposite_edge(label, edge)
-                    # Perform the flip.
-                    s.triangle_flip(label, edge, in_place=True, direction=direction)
-                    # Move the opposite polygon to the list of labels we need to check.
-                    if label2 != label:
-                        try:
-                            checked_labels.remove(label2)
-                            unchecked_labels.append(label2)
-                        except KeyError:
-                            # Occurs if label2 is not in checked_labels
-                            pass
-                    flipped = True
-                    break
-            if flipped:
-                unchecked_labels.append(label)
-            else:
-                checked_labels.add(label)
-
-        from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
-
-        return DelaunayTriangulationMorphism._create_morphism(None, s)
-
-    def delaunay_decomposition(
-        self,
-        triangulated=False,
-        delaunay_triangulated=False,
-        in_place=False,
-        direction=None,
-        relabel=None,
-    ):
-        r"""
-        Overrides
-        :meth:`flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition`
-        to allow normalizing in-place.
-        """
-        if not in_place:
-            return super().delaunay_decomposition(
-                triangulated=triangulated,
-                delaunay_triangulated=delaunay_triangulated,
-                in_place=in_place,
-                direction=direction,
-                relabel=relabel,
-            )
-
-        if relabel is not None:
-            if relabel:
-                raise NotImplementedError(
-                    "the relabel keyword has been removed from delaunay_decomposition(); use relabel({old: new for (new, old) in enumerate(surface.labels())}) to use integer labels instead"
-                )
-            else:
-                import warnings
-
-                warnings.warn(
-                    "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
-                )
-
-        s = self
-        if not delaunay_triangulated:
-            s = s.delaunay_triangulation(
-                triangulated=triangulated,
-                in_place=True,
-                direction=direction,
-                relabel=relabel,
-            )
-
-        while True:
-            for (l1, e1), (l2, e2) in s.gluings():
-                if s._delaunay_edge_needs_join(l1, e1):
-                    s.join_polygons(l1, e1, in_place=True)
-                    break
-            else:
-                from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-
-                return DelaunayDecompositionMorphism._create_morphism(None, s)
 
     def cmp(self, s2, limit=None):
         r"""

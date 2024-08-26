@@ -303,7 +303,6 @@ def chamanara_half_dilation_surface(alpha, n=None):
 class ChamanaraTranslationSurface(LazyRelabeledSurface):
     def __init__(self, alpha):
         super().__init__(MinimalTranslationCover(ChamanaraSurface(alpha)))
-        self._refine_category_(self.category().Compact())
 
     def graphical_surface(self, **kwds):
         label = self.root()

@@ -458,11 +458,61 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, error, cell_decomposition, check, category
             )
 
+        def apply_matrix(self, m, in_place=None):
+            r"""
+            Apply the 2×2 matrix ``m`` to the polygons of this surface and
+            return a morphism from this surface to the deformed surface.
+
+            INPUT:
+
+            - ``m`` -- a 2×2 matrix
+
+            - ``in_place`` -- a boolean (default: ``True``); whether to modify
+              this surface itself or return a modified copy of this surface
+              instead.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
+
+                sage: morphism.domain()
+                Translation Surface in H_1(0) built from a square
+                sage: morphism.codomain()
+                Translation Surface in H_1(0) built from a rectangle
+
+                sage: morphism.codomain().polygon(0)
+                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
+
+            """
+            if in_place is None:
+                import warnings
+
+                warnings.warn(
+                    "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. "
+                    "In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
+                )
+
+                in_place = True
+
+            if in_place:
+                raise NotImplementedError(
+                    "this surface does not support applying a GL(2,R) action in-place yet"
+                )
+
+            from flatsurf.geometry.lazy import GL2RImageSurface
+
+            image = GL2RImageSurface(self, m)
+
+            from flatsurf.geometry.morphism import GL2RMorphism
+
+            return GL2RMorphism._create_morphism(self, image, m)
+
         def homology(
             self,
             k=1,
             coefficients=None,
-            generators="edge",
             relative=None,
             implementation="generic",
             category=None,
@@ -476,11 +526,6 @@ class SimilaritySurfaces(SurfaceCategory):
 
             - ``coefficients`` -- a ring (default: the integer ring); consider
               the homology with coefficients in this ring
-
-            - ``generators`` -- a string (default: ``"edge"``); how the
-              generators of homology are represented. Currently only ``"edge"``
-              is implemented, i.e., the generators are written as formal sums
-              of half edges.
 
             - ``relative`` -- a set (default: the empty set); if non-empty, then
               relative homology with respect to this set is constructed.
@@ -524,26 +569,30 @@ class SimilaritySurfaces(SurfaceCategory):
             return self._homology(
                 k=k,
                 coefficients=coefficients,
-                generators=generators,
                 relative=relative,
                 implementation=implementation,
                 category=category,
             )
 
         @cached_surface_method
-        def _homology(
-            self, k, coefficients, generators, relative, implementation, category
-        ):
+        def _homology(self, k, coefficients, relative, implementation, category):
             r"""
             Return the ``k``-th homology group of this surface.
 
-            This is a helper method for :meth:`homology`. We cannot make
-            :class:`SimplicialHomologyGroup` a unique representation because
-            equal surfaces can be non-identical so the homology of
-            non-identical surfaces could be identical. We work around this
-            issue by attaching the homology to the actual surface so a surface
-            has a unique homology, but it is different from another equal
-            surface's.
+            This is a helper method for :meth:`homology` which passes
+            normalized parameters to us. The approach chosen here is quite
+            non-standard. Usually, one would not use a cached method but make
+            :class:`SimplicialHomologyGroup` a unique representation. But this
+            is not possible because equal surfaces can be non-identical so the
+            homology of non-identical surfaces would be identical. We work
+            around this issue by attaching the homology to the actual surface
+            so a surface has a unique homology, but it is different from
+            another equal surface's.
+
+            A proper fix for the underlying problem could be to change
+            :meth:`MutableOrientedSimilaritySurface.set_immutable` to return an
+            immutable copy of the surface so that all immutable surfaces are
+            unique.
 
             TESTS:
 
@@ -570,11 +619,16 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.homology import SimplicialHomologyGroup
 
             return SimplicialHomologyGroup(
-                self, k, coefficients, generators, relative, implementation, category
+                self, k, coefficients, relative, implementation, category
             )
 
         def cohomology(
-            self, k=1, coefficients=None, implementation="dual", category=None
+            self,
+            k=1,
+            coefficients=None,
+            relative=None,
+            implementation="dual",
+            category=None,
         ):
             r"""
             Return the ``k``-th simplicial cohomology group of this surface.
@@ -586,13 +640,16 @@ class SimilaritySurfaces(SurfaceCategory):
             - ``coefficients`` -- a ring (default: the reals); consider
               cohomology with coefficients in this ring
 
+            - ``relative`` -- a set (default: the empty set); if non-empty, then
+              relative cohomology with respect to this set is constructed.
+
             - ``implementation`` -- a string (default: ``"dual"``); the
               algorithm used to compute the cohomology groups. Currently only
               ``"dual"`` is supported, i.e., the groups are computed as duals
               of the generic homology groups from SageMath.
 
             - ``category`` -- a category; if not specified, a category for the
-              homology group is chosen automatically depending on
+              cohomology group is chosen automatically depending on
               ``coefficients``.
 
             EXAMPLES::
@@ -600,12 +657,12 @@ class SimilaritySurfaces(SurfaceCategory):
                 sage: from flatsurf import dilation_surfaces
                 sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
                 sage: S.cohomology()
-                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon; Real Field with 53 bits of precision)
+                H¹(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
 
             ::
 
                 sage: S.cohomology(0)
-                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon; Real Field with 53 bits of precision)
+                H⁰(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
 
             """
             if self.is_mutable():
@@ -619,6 +676,8 @@ class SimilaritySurfaces(SurfaceCategory):
 
             coefficients = coefficients or RR
 
+            relative = frozenset(relative or {})
+
             if category is None:
                 from sage.categories.all import Modules
 
@@ -627,22 +686,18 @@ class SimilaritySurfaces(SurfaceCategory):
             return self._cohomology(
                 k=k,
                 coefficients=coefficients,
+                relative=relative,
                 implementation=implementation,
                 category=category,
             )
 
         @cached_surface_method
-        def _cohomology(self, k, coefficients, implementation, category):
+        def _cohomology(self, k, coefficients, relative, implementation, category):
             r"""
             Return the ``k``-th cohomology group of this surface.
 
-            This is a helper method for :meth:`cohomology`. We cannot make
-            :class:`SimplicialCohomologyGroup` a unique representation because
-            equal surfaces can be non-identical so the cohomology of
-            non-identical surfaces could be identical. We work around this
-            issue by attaching the cohomology to the actual surface so a
-            surface has a unique cohomology, but it is different from another
-            equal surface's.
+            This is a helper method for :meth:`cohomology`, see
+            :meth:`homology` for details.
 
             TESTS:
 
@@ -669,58 +724,8 @@ class SimilaritySurfaces(SurfaceCategory):
             from flatsurf.geometry.cohomology import SimplicialCohomologyGroup
 
             return SimplicialCohomologyGroup(
-                self, k, coefficients, implementation, category
+                self, k, coefficients, relative, implementation, category
             )
-
-        def apply_matrix(self, m, in_place=None):
-            r"""
-            Apply the 2×2 matrix ``m`` to the polygons of this surface and
-            return a morphism from this surface to the deformed surface.
-
-            INPUT:
-
-            - ``m`` -- a 2×2 matrix
-
-            - ``in_place`` -- a boolean (default: ``True``); whether to modify
-              this surface itself or return a modified copy of this surface
-              instead.
-
-            EXAMPLES::
-
-                sage: from flatsurf import translation_surfaces
-                sage: S = translation_surfaces.square_torus()
-                sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)
-
-                sage: morphism.domain()
-                Translation Surface in H_1(0) built from a square
-                sage: morphism.codomain()
-                Translation Surface in H_1(0) built from a rectangle
-
-                sage: morphism.codomain().polygon(0)
-                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])
-
-            """
-            if in_place is None:
-                import warnings
-
-                warnings.warn(
-                    "The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly."
-                )
-
-                in_place = True
-
-            if in_place:
-                raise NotImplementedError(
-                    "this surface does not support applying a GL(2,R) action in-place yet"
-                )
-
-            from flatsurf.geometry.lazy import GL2RImageSurface
-
-            image = GL2RImageSurface(self, m)
-
-            from flatsurf.geometry.morphism import GL2RMorphism
-
-            return GL2RMorphism._create_morphism(self, image, m)
 
     class Oriented(SurfaceCategoryWithAxiom):
         r"""
@@ -1522,7 +1527,7 @@ class SimilaritySurfaces(SurfaceCategory):
                   non-negative integers.
 
                 - ``in_place`` -- a boolean (default: ``False``); whether to
-                  modify this surface or return a relabeled copy instead.
+                  mutate this surface or return a morphism to an independent copy.
 
                 EXAMPLES::
 
@@ -1848,142 +1853,148 @@ class SimilaritySurfaces(SurfaceCategory):
                 self, label, edge, in_place=False, test=None, direction=None
             ):
                 r"""
-                Flip the diagonal of the quadrilateral formed by two triangles
-                glued together along the ``edge`` of the polygon with
+                Flips the diagonal of the quadrilateral formed by two triangles
+                glued together along the provided ``edge`` of the polygon with
                 ``label``.
 
-                ALGORITHM:
+                The diagonal is flipped by turning it counterclockwise (from
+                the point of view of the polygon with ``label``.) The ``label``
+                is given to the triangle which has the edge that was previously
+                the edge preceding ``edge`` in the polygon. The diagonal does
+                not change its index in the triangles.
 
-                This can be broken into two steps: join along the diagonal
-                ``edge`` to form a convex quadilateral, then cut along the
-                other diagonal.
+                In other words,
 
-                The labels of the new triangles will be the labels of the old
-                triangles, assigned such that the flip turns the diagonal
-                counterclockwise. To make this precise suppose that triangle
-                with the ``label`` has the diagonal ``edge`` followed (in a
-                counterclockwise walk of the triangle edges) by the two edges
-                ``c`` and ``d``, and the triangle across the ``edge`` has the
-                label ``opposite_label`` with the diagonal ``opposite_edge``
-                followed by the edges ``a`` and ``b``. Then the new triangles
-                are going to be labeled ``label`` and ``opposite_label`` and
-                their diagonals are going to be ``edge`` and ``opposite_edge``
-                respectively, and the choice is made such that the ``edge`` is
-                followed by the edges that used to be called ``b`` and ``c``.
-                Note that there is no choice here to be made if ``edge`` is
-                glued to itself.
+                .. code-block:: text
+
+                   +<----------+       +<----------+
+                   |\          ^       |          /^
+                   | \      L' |       | L'      / |
+                   |  \e'      |       |        /  |
+                   |   \|      |       |       /e  |
+                   |e+1 \      |       |      /-   |
+                   |     \     |       |     /     |
+                   |      \    |       |   -/      |
+                   |       \   |       | e'/   L   |
+                   |  L    |\  |       |  /        |
+                   |        e\ |       | /      e-1|
+                   v e-1      \|       v/  e+1     |
+                   +---------->+       +---------->+
+
+                where ``L`` is ``label``, ``L'`` is the label of the opposite
+                polygon, ``e`` is ``edge`` and ``e'`` is the edge index of the
+                diagonal in ``L'``.
 
                 INPUT:
 
-                - ``label`` - label of a polygon
+                - ``label`` -- a polygon label
 
-                - ``edge`` - an integer; the edge of a polygon joining two
-                  triangles such that the quadrilateral formed after gluing
-                  these triangles is strictly convex
+                - ``edge`` -- an int; the index of an edge of the triangle with
+                  ``label``
 
-                - ``in_place`` (boolean) - If True do the flip to the current surface
-                  which must be mutable. In this case the updated surface will be
-                  returned.  Otherwise a mutable copy is made and then an edge is
-                  flipped, which is then returned.
+                - ``in_place`` -- a bool (default: ``False``) - whether this
+                  surface is modified or a modified copy is produced instead.
 
-                - ``test`` (boolean) - If True we don't actually flip, and we return
-                  True or False depending on whether or not the flip would be
-                  successful. (deprecated)
+                - ``test`` -- a bool (default: ``False``) - whether not to
+                  perform the flip but return whether the flip is possible.
 
-                - ``direction`` (ignored and deprecated)
-
-                OUTPUT:
-
-                A morphism from the original surface to the surface with the
-                flipped edge.
+                - ``direction`` -- ignored
 
                 EXAMPLES::
 
-                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface, Polygon
+                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface
 
-                    sage: s = similarity_surfaces.right_angle_triangle(1, 1)
-                    sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
-                    sage: s.triangle_flip(0, 0, test=True)
-                    doctest:warning
-                    ...
-                    UserWarning: triangle_flip(test=True) has been deprecated and will be removed in a future version of sage-flatsurf. Use is_convex(strict=True) instead.
-                    False
-                    sage: s.triangle_flip(0, 1, test=True)
-                    True
-                    sage: s.triangle_flip(0, 2, test=True)
-                    False
-
-                    sage: s = similarity_surfaces.right_angle_triangle(1, 1)
-                    sage: s = MutableOrientedSimilaritySurface.from_surface(s)
-                    sage: s.triangle_flip(0, 0, in_place=True)
+                    sage: S = similarity_surfaces.right_angle_triangle(1, 1)
+                    sage: S.triangle_flip(0, 0)
                     Traceback (most recent call last):
                     ...
-                    ValueError: polygon has zero area
+                    ValueError: cannot flip this edge because the surrounding quadrilateral is not strictly convex
 
-                    sage: s.triangle_flip(0, 1, in_place=True)
-                    Triangle Flip morphism:
-                      From: Unknown Surface
-                      To:   Unknown Surface
-                    sage: s
-                    Rational Cone Surface built from 2 isosceles triangles
-                    sage: s.polygon(0)
-                    Polygon(vertices=[(0, 0), (0, 1), (-1, 0)])
-                    sage: s.polygon(1)
-                    Polygon(vertices=[(-1, 1), (-1, 0), (0, 1)])
-                    sage: s.gluings()
-                    (((0, 0), (0, 2)), ((0, 1), (1, 1)), ((0, 2), (0, 0)), ((1, 0), (1, 2)), ((1, 1), (0, 1)), ((1, 2), (1, 0)))
-                    sage: s.triangle_flip(0, 2, in_place=True)
+                    sage: S.triangle_flip(0, 1)
+                    Genus 0 Rational Cone Surface built from 2 isosceles triangles
+
+                    sage: S.triangle_flip(0, 2)
                     Traceback (most recent call last):
                     ...
-                    ValueError: polygon has zero area
+                    ValueError: cannot flip this edge because the surrounding quadrilateral is not strictly convex
 
-                    sage: p = Polygon(edges=[(2,0),(-1,3),(-1,-3)])
-                    sage: s = similarity_surfaces.self_glued_polygon(p)
-                    sage: s = MutableOrientedSimilaritySurface.from_surface(s)
-                    sage: s.triangle_flip(0, 1, in_place=True)
-                    Triangle Flip morphism:
-                      From: Unknown Surface
-                      To:   Unknown Surface
-                    sage: s
+                We can flip edges of self-glued polygons::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface, similarity_surfaces
+
+                    sage: P = Polygon(edges=[(2, 0), (-1, 3), (-1, -3)])
+                    sage: T = MutableOrientedSimilaritySurface.from_surface(similarity_surfaces.self_glued_polygon(P))
+
+                    sage: T.triangle_flip(0, 1, in_place=True)
                     Half-Translation Surface built from a triangle
 
-                    sage: s.set_immutable()
+                    sage: T.set_immutable()
 
                     sage: from flatsurf.geometry.categories import DilationSurfaces
-                    sage: s in DilationSurfaces()
+                    sage: T in DilationSurfaces()
                     True
-                    sage: s.labels()
+                    sage: T.labels()
                     (0,)
-                    sage: s.polygons()
-                    (Polygon(vertices=[(0, 0), (1, 3), (-2, 0)]),)
-                    sage: s.gluings()
+                    sage: T.polygons()
+                    (Polygon(vertices=[(0, 0), (-1, -3), (2, 0)]),)
+                    sage: T.gluings()
                     (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)))
-                    sage: TestSuite(s).run()
+
+                TESTS::
+
+                    sage: TestSuite(S).run()
+                    sage: TestSuite(T).run()
+
+                The deprecated ``test`` keyword argument::
+
+                    sage: S = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))
+                    sage: S.polygon(0)
+                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])
+                    sage: S.triangle_flip(0, 0, test=True)
+                    doctest:warning
+                    ...
+                    UserWarning: the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.
+                    False
+                    sage: S.is_convex(0, 0, strict=True)
+                    False
+
+                    sage: S.triangle_flip(0, 1, test=True)
+                    True
+                    sage: S.triangle_flip(0, 2, test=True)
+                    False
 
                 """
                 if test is not None:
-                    if test:
+                    if not test:
                         import warnings
 
                         warnings.warn(
-                            "triangle_flip(test=True) has been deprecated and will be removed in a future version of sage-flatsurf. Use is_convex(strict=True) instead."
+                            "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore"
                         )
-                        return self.is_convex(label, edge, strict=True)
                     else:
                         import warnings
 
                         warnings.warn(
-                            "the test keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf."
+                            "the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead."
                         )
+                        if len(self.polygon(label).vertices()) != 3:
+                            return False
+                        if (
+                            len(
+                                self.polygon(
+                                    self.opposite_edge(label, edge)[0]
+                                ).vertices()
+                            )
+                            != 3
+                        ):
+                            return False
+                        return self.is_convex(label, edge, strict=True)
 
                 if direction is not None:
-                    direction = None
-
                     import warnings
 
                     warnings.warn(
-                        "the direction keyword argument of triangle_flip() has been deprecated and will be removed in a future version of sage-flatsurf. The direction keyword argument is ignored. The flip is always performed such that the flipped edge rotates counterclockwise."
+                        "the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise"
                     )
 
                 if in_place:
@@ -1996,42 +2007,10 @@ class SimilaritySurfaces(SurfaceCategory):
                 )
 
                 s = MutableOrientedSimilaritySurface.from_surface(self)
-                morphism = s.triangle_flip(
-                    label=label,
-                    edge=edge,
-                    in_place=True,
-                    test=test,
-                    direction=direction,
-                )
+                s.triangle_flip(label, edge, in_place=True)
                 s.set_immutable()
 
-                from flatsurf.geometry.morphism import TriangleFlipMorphism
-
-                return TriangleFlipMorphism(self, s, morphism._edge_map)
-
-            def is_convex(self, label, edge, strict=False):
-                r"""
-                Return whether the polygon obtained by joining the polygon with
-                ``label`` and the one acress ``edge`` is convex.
-                """
-                opposite_label, opposite_edge = self.opposite_edge(label, edge)
-
-                if opposite_label == label:
-                    raise ValueError("edge must be joining two different polygons")
-
-                p1 = self.polygon(label)
-
-                from flatsurf import Polygon
-
-                sim = self.edge_transformation(opposite_label, opposite_edge)
-                p2 = self.polygon(opposite_label)
-                p2 = Polygon(
-                    vertices=[sim(v) for v in p2.vertices()], base_ring=p1.base_ring()
-                )
-
-                p = p1.join(p2, edge, opposite_edge)
-
-                return p.is_convex(strict=strict)
+                return s
 
             def is_convex(self, label, edge, strict=False):
                 r"""
@@ -2058,15 +2037,10 @@ class SimilaritySurfaces(SurfaceCategory):
                     False
 
                     sage: S.is_convex(2, 0)
-                    Traceback (most recent call last):
-                    ...
-                    ValueError: edge must be joining two different polygons
+                    True
 
                 """
                 opposite_label, opposite_edge = self.opposite_edge(label, edge)
-
-                if opposite_label == label:
-                    raise ValueError("edge must be joining two different polygons")
 
                 p1 = self.polygon(label)
 
@@ -2533,8 +2507,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: from flatsurf import translation_surfaces
                     sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
-                    sage: S.triangulate().codomain()
-                    Triangulation of Translation Surface in H_2(2) built from 3 squares
+                    sage: S.triangulate()
+                    Triangulation morphism:
+                      From: Translation Surface in H_2(2) built from 3 squares
+                      To:   Triangulation of Translation Surface in H_2(2) built from 3 squares
 
                 A non-strictly convex example that caused trouble at some point:
 
@@ -2573,7 +2549,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: S = translation_surfaces.cathedral(1, 1)
                     sage: S
                     Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon
-                    sage: S.triangulate(label=1).relabel()
+                    sage: S.triangulate(label=1).codomain().relabel()
                     Translation Surface in H_4(2^3) built from 2 isosceles triangles, 5 triangles, a right triangle, 2 squares and an octagon
 
                 """
@@ -2594,17 +2570,23 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     s = MutableOrientedSimilaritySurface.from_surface(self)
                     s.set_immutable()
-                    return s.triangulate(label=label, relabel=relabel)
+                    triangulation = s.triangulate(label=label, relabel=relabel)
 
-                from flatsurf.geometry.lazy import LazyTriangulatedSurface
+                    from flatsurf.geometry.morphism import NamedUnknownMorphism
+
+                    return NamedUnknownMorphism._create_morphism(
+                        self, triangulation.codomain(), "Triangulation"
+                    )
 
                 if label is not None:
                     label = {label}
 
-                from flatsurf.geometry.morphism import TriangulationMorphism
+                from flatsurf.geometry.morphism import (
+                    TriangulationMorphism_LazyTriangulatedSurface,
+                )
                 from flatsurf.geometry.lazy import LazyTriangulatedSurface
 
-                return TriangulationMorphism._create_morphism(
+                return TriangulationMorphism_LazyTriangulatedSurface._create_morphism(
                     self, LazyTriangulatedSurface(self, labels=label)
                 )
 
@@ -2718,7 +2700,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     count += 1
 
                     try:
-                        c1 = p1.circumscribing_circle()
+                        c1 = p1.circumscribed_circle()
                     except ValueError:
                         # p1 is not circumscribed
                         return False
@@ -2772,16 +2754,25 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: m = matrix([[2, 1], [1, 1]])
                     sage: s = m * translation_surfaces.infinite_staircase()
-                    sage: ss = s.delaunay_triangulation().codomain()
+                    sage: ss = s.delaunay_triangulation()
+                    doctest:warning
+                    ...
+                    UserWarning: delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon((0, 0))
-                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
                     sage: TestSuite(ss).run()
                     sage: ss.is_delaunay_triangulated()
                     True
 
                 """
+                import warnings
+
+                warnings.warn(
+                    "delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead"
+                )
+
                 if triangulated is not None:
                     import warnings
 
@@ -2813,23 +2804,70 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
                         )
 
-                morphism = self.triangulate()
+                if in_place:
+                    raise NotImplementedError(
+                        "this surface does not implement delaunay_triangulation(in_place=True) yet"
+                    )
+
+                if relabel is not None:
+                    if relabel:
+                        raise NotImplementedError(
+                            "the relabel keyword has been removed from delaunay_triangulation(); use relabel() to use integer labels instead"
+                        )
+                    else:
+                        import warnings
+
+                        warnings.warn(
+                            "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()"
+                        )
+
+                return self.delaunay_triangulate().codomain()
+
+            def delaunay_triangulate(self):
+                r"""
+                Return a Delaunay triangulation of this surface.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+
+                    sage: M = matrix([[2, 1], [1, 1]])
+                    sage: S = M * translation_surfaces.infinite_staircase()
+                    sage: S = S.delaunay_triangulate().codomain()
+
+                    sage: S.root()
+                    (0, 0)
+                    sage: S.polygon((0, 0))
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])
+
+                    sage: S.is_delaunay_triangulated()
+                    True
+
+                TESTS::
+
+                    sage: TestSuite(S).run()
+
+                """
+                triangulation = self.triangulate()
 
                 from flatsurf.geometry.lazy import (
                     LazyDelaunayTriangulatedSurface,
                 )
 
-                s = LazyDelaunayTriangulatedSurface(
-                    morphism.codomain(), direction=direction, category=self.category()
+                codomain = LazyDelaunayTriangulatedSurface(
+                    triangulation.codomain(), category=self.category()
                 )
 
                 from flatsurf.geometry.morphism import DelaunayTriangulationMorphism
 
-                return (
-                    DelaunayTriangulationMorphism._create_morphism(
-                        morphism.codomain(), s
-                    )
-                    * morphism
+                delaunay = DelaunayTriangulationMorphism._create_morphism(
+                    triangulation.codomain(), codomain
+                )
+
+                from flatsurf.geometry.morphism import NamedFactorizationMorphism
+
+                return NamedFactorizationMorphism._create_morphism(
+                    self, codomain, "Delaunay triangulation", delaunay * triangulation
                 )
 
             def delaunay_decomposition(
@@ -2864,8 +2902,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     sage: a = s0.base_ring().gens()[0]
                     sage: m = Matrix([[1,2+a],[0,1]])
                     sage: s = m*s0
-                    sage: s = s.triangulate()
-                    sage: ss = s.delaunay_decomposition().codomain()
+                    sage: s = s.triangulate().codomain()
+                    sage: ss = s.delaunay_decomposition()
+                    doctest:warning
+                    ...
+                    UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead
+
                     sage: len(ss.polygons())
                     3
 
@@ -2876,7 +2918,10 @@ class SimilaritySurfaces(SurfaceCategory):
 
                     sage: m = matrix([[2,1],[1,1]])
                     sage: s = m*translation_surfaces.infinite_staircase()
-                    sage: ss = s.delaunay_decomposition().codomain()
+                    sage: ss = s.delaunay_decomposition()
+                    doctest:warning
+                    ...
+                    UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead
                     sage: ss.root()
                     (0, 0)
                     sage: ss.polygon(ss.root())
@@ -2886,6 +2931,12 @@ class SimilaritySurfaces(SurfaceCategory):
                     True
 
                 """
+                import warnings
+
+                warnings.warn(
+                    "delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead"
+                )
+
                 if triangulated is not None:
                     import warnings
 
@@ -2924,21 +2975,21 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                morphism = self.delaunay_triangulation()
+                self = self.delaunay_triangulate().codomain()
 
-                from flatsurf.geometry.lazy import LazyDelaunaySurface
+                    s = LazyDelaunaySurface(
+                        self, direction=direction, category=self.category()
+                    )
+                    from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
 
-                s = LazyDelaunaySurface(
-                    morphism.codomain(), direction=direction, category=self.category()
+                    return DelaunayDecompositionMorphism._create_morphism(self, s)
+
+                from flatsurf.geometry.surface import (
+                    MutableOrientedSimilaritySurface,
                 )
                 from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
 
-                return (
-                    DelaunayDecompositionMorphism._create_morphism(
-                        morphism.codomain(), s
-                    )
-                    * morphism
-                )
+                return DelaunayDecompositionMorphism._create_morphism(self, s)
 
             def _saddle_connections_unbounded(
                 self, initial_label, initial_vertex, algorithm
@@ -3236,6 +3287,126 @@ class SimilaritySurfaces(SurfaceCategory):
                     squared_length_bound, source, source, similarity, cone
                 )
 
+            def delaunay_decompose(self, codomain=None):
+                r"""
+                Return a Delaunay decomposition of this surface, i.e., a
+                representation of this surface such that the circumscribed disk
+                of each polygon contains exactly the vertices of that polygon.
+
+                ALGORITHM:
+
+                The Delaunay decomposition is obtained by removing ambiguous
+                edges from a Delaunay triangulation. An edge is ambiguous if
+                after its removal the circumscribed disk of each polygon
+                (still) contains no vertices in its interior.
+
+                INPUT:
+
+                - ``codomain`` -- a Delaunay decomposed surface or ``None``
+                  (default: ``None``); if present, the morphism returned goes
+                  from this surface to ``codomain``.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import translation_surfaces
+                    sage: S = translation_surfaces.octagon_and_squares()
+                    sage: a = S.base_ring().gens()[0]
+                    sage: M = Matrix([[1, 2 + a], [0, 1]])
+                    sage: S = M * S
+                    sage: S = S.triangulate().codomain()
+
+                    sage: S = S.delaunay_decompose().codomain()
+                    sage: S.is_delaunay_decomposed()
+                    True
+                    sage: S
+                    Delaunay cell decomposition of Triangulation of Translation Surface in H_3(4) built from 2 quadrilaterals and an octagon
+
+                ::
+
+                    sage: from flatsurf import Polygon, similarity_surfaces
+                    sage: P = Polygon(edges=[(4, 0), (-2, 1), (-2, -1)])
+                    sage: T = similarity_surfaces.self_glued_polygon(P)
+
+                    sage: T = T.delaunay_decompose().codomain()
+                    sage: T.is_delaunay_decomposed()
+                    True
+                    sage: T
+                    Delaunay cell decomposition of Half-Translation Surface in Q_0(-1^4) built from an isosceles triangle
+
+
+                ::
+
+                    sage: M = matrix([[2, 1], [1, 1]])
+                    sage: U = M * translation_surfaces.infinite_staircase()
+
+                    sage: U = U.delaunay_decompose().codomain()
+                    sage: U.is_delaunay_decomposed()
+                    True
+
+                    sage: U.root()
+                    (0, 0)
+                    sage: U.polygon((0, 0))
+                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])
+
+                TESTS::
+
+                    sage: TestSuite(S).run()
+                    sage: TestSuite(T).run()
+                    sage: TestSuite(U).run()
+
+                """
+                if codomain is not None:
+                    from sage.all import End
+
+                    decomposition = (
+                        End(self).identity()
+                        if self.is_delaunay_decomposed()
+                        else self.delaunay_decompose()
+                    )
+
+                    from flatsurf.geometry.morphism import (
+                        DelaunayDecompositionIsomorphism,
+                    )
+
+                    isomorphism = DelaunayDecompositionIsomorphism._create_morphism(
+                        decomposition.codomain(), codomain
+                    )
+
+                    # This will raise an error if no such isomorphism exists.
+                    isomorphism._factorization()
+
+                    from flatsurf.geometry.morphism import NamedFactorizationMorphism
+
+                    return NamedFactorizationMorphism._create_morphism(
+                        self,
+                        codomain,
+                        "Delaunay decomposition",
+                        isomorphism * decomposition,
+                    )
+
+                delaunay_triangulation = self.delaunay_triangulate()
+
+                from flatsurf.geometry.lazy import LazyDelaunaySurface
+
+                decomposed = LazyDelaunaySurface(
+                    delaunay_triangulation.codomain(), category=self.category()
+                )
+
+                from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
+
+                decomposition = DelaunayDecompositionMorphism._create_morphism(
+                    delaunay_triangulation.codomain(), decomposed
+                )
+
+                from flatsurf.geometry.morphism import NamedFactorizationMorphism
+
+                return NamedFactorizationMorphism._create_morphism(
+                    self,
+                    decomposed,
+                    "Delaunay decomposition",
+                    decomposition * delaunay_triangulation,
+                )
+
             def saddle_connections(
                 self,
                 squared_length_bound=None,
@@ -3446,9 +3617,6 @@ class SimilaritySurfaces(SurfaceCategory):
                             range(len(self.polygon(initial_label).vertices())),
                         )
                     ]
-                else:
-                    initial = [(initial_label, [initial_vertex])]
-
                 for label, vertices in initial:
                     for vertex in vertices:
                         connections.extend(
@@ -3646,6 +3814,7 @@ class SimilaritySurfaces(SurfaceCategory):
                     )
                     morphism = insert_morphism * morphism
                     face_points = [insert_morphism(point) for point in face_points]
+                    self = insert_morphism.codomain()
                 if face_points:
                     insert_morphism = morphism.codomain()._insert_marked_points_faces(
                         *face_points
@@ -3830,11 +3999,15 @@ class SimilaritySurfaces(SurfaceCategory):
                     more_points = list(chain.from_iterable(more_points.values()))
                     more_points = [insert_first_point(p) for p in more_points]
                     return (
-                        insert_first_point.codomain().insert_marked_points(*more_points)
+                        insert_first_point.codomain().insert_marked_points(more_points)
                         * insert_first_point
                     )
 
                 return insert_first_point
+
+                surface.set_immutable()
+
+                return surface
 
             def subdivide_edges(self, parts=2):
                 r"""

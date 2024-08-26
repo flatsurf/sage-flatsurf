@@ -2055,6 +2055,15 @@ class EuclideanPolygons(Category_over_base_ring):
                     )
 
                 def circumscribing_circle(self):
+                    import warnings
+
+                    warnings.warn(
+                        "circumscribing_circle() has been deprecated and will be removed from a future version of sage-flatsurf; use circumscribed_circle() instead"
+                    )
+
+                    return self.circumscribed_circle()
+
+                def circumscribed_circle(self):
                     r"""
                     Returns the circle which circumscribes this polygon.
                     Raises a ValueError if the polygon is not circumscribed by a circle.
@@ -2063,7 +2072,7 @@ class EuclideanPolygons(Category_over_base_ring):
 
                         sage: from flatsurf import Polygon
                         sage: P = Polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])
-                        sage: P.circumscribing_circle()
+                        sage: P.circumscribed_circle()
                         { (x - 1/2)² + (y - 3/2)² = 5/2 }
 
                     """

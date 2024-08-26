@@ -108,7 +108,7 @@ class GL2ROrbitClosure:
 
     Computing an orbit closure over an exact real ring with transcendental elements::
 
-        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles, similarity_surfaces, GL2ROrbitClosure
+        sage: from flatsurf import Polygon, EuclideanPolygonsWithAngles
         sage: from pyexactreal import ExactReals  # optional: pyexactreal  # random output due to matplotlib warnings with some combinations of setuptools and matplotlib
 
         sage: E = EuclideanPolygonsWithAngles((1, 5, 5, 5))
@@ -176,10 +176,10 @@ class GL2ROrbitClosure:
         if surface not in TranslationSurfaces():
             raise NotImplementedError("surface must be a translation surface")
 
-        if surface.is_mutable():
-            raise TypeError("surface must be immutable")
-
-        base_ring = surface.base_ring()
+            base_ring = surface.base_ring()
+            self._surface = surface.pyflatsurf().codomain().flat_triangulation()
+        else:
+            from flatsurf.geometry.pyflatsurf.conversion import sage_ring
 
         self._surface = surface
 
@@ -396,11 +396,11 @@ class GL2ROrbitClosure:
             sage: O.ambient_stratum() # optional: pyflatsurf
             H_3(4, 0^4)
         """
-        from surface_dynamics import AbelianStratum
+        from surface_dynamics import Stratum
 
         surface = self._flat_triangulation()
         angles = [surface.angle(v) for v in surface.vertices()]
-        return AbelianStratum([a - 1 for a in angles])
+        return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
         r"""
@@ -429,9 +429,9 @@ class GL2ROrbitClosure:
             sage: T = Polygon(angles=(1, 5, 5, 5), edges=[slopes[0], R.random_element(1/4) * slopes[1]])  # optional: pyexactreal
             sage: S = similarity_surfaces.billiard(T)  # optional: pyexactreal
             sage: S = S.minimal_cover(cover_type="translation")  # optional: pyexactreal
-            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf  # optional: pyexactreal
+            sage: O = GL2ROrbitClosure(S); O  # optional: pyflatsurf, optional: pyexactreal
             GL(2,R)-orbit closure of dimension at least 4 in H_7(4^3, 0) (ambient dimension 17)
-            sage: O.field_of_definition() # optional: pyflatsurf  # optional: pyexactreal
+            sage: O.field_of_definition() # optional: pyflatsurf, optional: pyexactreal
             Number Field in c0 with defining polynomial x^2 - 2 with c0 = 1.414213562373095?
             sage: bound = E.billiard_unfolding_stratum('half-translation', marked_points=True).dimension()
             sage: for decomposition in O.decompositions(1):  # long time, optional: pyflatsurf, optional: pyexactreal
@@ -539,8 +539,8 @@ class GL2ROrbitClosure:
             ....:     if O.dimension() == 4:
             ....:         break
             sage: d1,d2,d3,d4 = [O.lift(b) for b in O.tangent_space_basis()]  # long time (above), optional: pyflatsurf
-            sage: dreal = d1/132 + d2/227 + d3/1280 - d4/13201  # long time (above)  # optional: pyflatsurf
-            sage: dimag = d1/141 - d2/233 + d4/1230 + d4/14250  # long time (above)  # optional: pyflatsurf
+            sage: dreal = d1/132 + d2/227 + d3/1280 - d4/13201  # long time (above), optional: pyflatsurf
+            sage: dimag = d1/141 - d2/233 + d4/1230 + d4/14250  # long time (above), optional: pyflatsurf
             sage: d = [O.V2((x,y)).vector for x,y in zip(dreal,dimag)]  # long time (above), optional: pyflatsurf
             sage: S2 = O._flat_triangulation() + d  # long time (6s), optional: pyflatsurf  # TODO: Support this directly on a surface, i.e., fix the deprecation warning.
 

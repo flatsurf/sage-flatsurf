@@ -25,7 +25,7 @@ import pytest
 pytest.importorskip("pyflatsurf")  # noqa
 
 from flatsurf import translation_surfaces
-from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
+from flatsurf.geometry.pyflatsurf.conversion import to_pyflatsurf
 
 
 def test_origami1():
@@ -52,7 +52,7 @@ def test_origami2():
     assert (
         str(S)
         == "FlatTriangulationCombinatorial(vertices = (1, -3, -6, -8, 9, 6, -5, 4, 2, -1, -4, -7, 8, -9, 7, 5, 3, -2), faces = (1, 2, 3)(-1, -2, 4)(-3, 5, 6)(-4, -5, 7)(-6, 9, 8)(-7, -9, -8)) "
-           "with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (0, 1), 8: (1, 0), 9: (-1, -1)}"
+        "with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1), 4: (1, 1), 5: (-1, 0), 6: (0, -1), 7: (0, 1), 8: (1, 0), 9: (-1, -1)}"
     )
 
 

@@ -792,28 +792,35 @@ class EuclideanPolygonsWithAngles(Category_over_base_ring):
             from sage.all import ZZ
 
             angles = self.billiard_unfolding_angles(cover_type)
-            if all(a.is_integer() for a in angles):
-                from surface_dynamics import AbelianStratum
 
+            from surface_dynamics import Stratum
+
+            if all(a.is_integer() for a in angles):
                 if not marked_points and len(angles) == 1 and 1 in angles:
-                    return AbelianStratum([0])
+                    return Stratum([0], 1)
                 else:
-                    return AbelianStratum(
-                        {
-                            ZZ(a - 1): mult
-                            for a, mult in angles.items()
-                            if marked_points or a != 1
-                        }
+                    return Stratum(
+                        sum(
+                            (
+                                [ZZ(a - 1)] * mult
+                                for a, mult in angles.items()
+                                if marked_points or a != 1
+                            ),
+                            [],
+                        ),
+                        1,
                     )
             else:
-                from surface_dynamics import QuadraticStratum
-
-                return QuadraticStratum(
-                    {
-                        ZZ(2 * (a - 1)): mult
-                        for a, mult in angles.items()
-                        if marked_points or a != 1
-                    }
+                return Stratum(
+                    sum(
+                        (
+                            [ZZ(2 * (a - 1))] * mult
+                            for a, mult in angles.items()
+                            if marked_points or a != 1
+                        ),
+                        [],
+                    ),
+                    2,
                 )
 
         def billiard_unfolding_stratum_dimension(

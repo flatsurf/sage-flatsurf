@@ -44,11 +44,13 @@ EXAMPLES::
 #  along with sage-flatsurf. If not, see <https://www.gnu.org/licenses/>.
 # ####################################################################
 
+from sage.categories.category_with_axiom import all_axioms
+
+from flatsurf.cache import cached_surface_method
 from flatsurf.geometry.categories.surface_category import (
     SurfaceCategory,
     SurfaceCategoryWithAxiom,
 )
-from sage.categories.category_with_axiom import all_axioms
 
 
 class DilationSurfaces(SurfaceCategory):
@@ -478,6 +480,67 @@ class DilationSurfaces(SurfaceCategory):
                 )
             )
 
+        @cached_surface_method
+        def affine_automorphism_group(self):
+            r"""
+            Return the group of affine automorphisms of this surface, i.e., the
+            group of homeomorphisms that can be locally expressed as affine
+            transformations.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: A = S.affine_automorphism_group(); A
+                AffineAutomorphismGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            TESTS:
+
+            This group is uniquely attached to a surface::
+
+                sage: A is S.affine_automorphism_group()
+                True
+
+            """
+            if self.is_mutable():
+                raise NotImplementedError(
+                    "affine automorphism group only implemented for immutable surfaces"
+                )
+
+            from flatsurf.geometry.veech_group import AffineAutomorphismGroup_generic
+
+            return AffineAutomorphismGroup_generic(self)
+
+        @cached_surface_method
+        def veech_group(self):
+            r"""
+            Return the Veech group of this surface, i.e., the group of matrices
+            that fix the vertices of this surface.
+
+            EXAMPLES::
+
+                sage: from flatsurf import dilation_surfaces
+                sage: S = dilation_surfaces.genus_two_square(1/2, 1/3, 1/4, 1/5)
+                sage: V = S.veech_group(); V
+                VeechGroup(Genus 2 Positive Dilation Surface built from 2 right triangles and a hexagon)
+
+            TESTS:
+
+            This group is uniquely attached to a surface::
+
+                sage: V is S.veech_group()
+                True
+
+            """
+            if self.is_mutable():
+                raise NotImplementedError(
+                    "affine automorphism group only implemented for immutable surfaces"
+                )
+
+            from flatsurf.geometry.veech_group import VeechGroup_generic
+
+            return VeechGroup_generic(self)
+
     class FiniteType(SurfaceCategoryWithAxiom):
         r"""
         The category of dilation surfaces built from a finite number of polygons.
@@ -610,9 +673,14 @@ class DilationSurfaces(SurfaceCategory):
                         "The in_place keyword for l_infinity_delaunay_triangulation() is not supported anymore. It did not work correctly in previous versions of sage-flatsurf and will be fully removed in a future version of sage-flatsurf."
                     )
 
-                return self.veering_triangulation(
-                    l_infinity=True, limit=limit, direction=direction
-                )
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of l_infinity_delaunay_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
+                return self.veering_triangulation(l_infinity=True, limit=limit)
 
             def veering_triangulation(
                 self, l_infinity=False, limit=None, direction=None
@@ -681,6 +749,13 @@ class DilationSurfaces(SurfaceCategory):
                     sage: t = (r**4 * p * r**5 * p**2 * r * t0).veering_triangulation()
                     sage: assert t.is_veering_triangulated()
                 """
+                if direction is not None:
+                    import warnings
+
+                    warnings.warn(
+                        "the direction parameter of veering_triangulation() has been removed since it did not work correctly in previous versions of sage-flatsurf"
+                    )
+
                 self = self.triangulate().codomain()
 
                 from flatsurf.geometry.surface import MutableOrientedSimilaritySurface
@@ -688,13 +763,6 @@ class DilationSurfaces(SurfaceCategory):
                 self = MutableOrientedSimilaritySurface.from_surface(
                     self, category=DilationSurfaces()
                 )
-
-                if direction is None:
-                    base_ring = self.base_ring()
-                    direction = (base_ring**2)((base_ring.zero(), base_ring.one()))
-
-                if direction.is_zero():
-                    raise ValueError("direction must be non-zero")
 
                 flip_bound = 1 if l_infinity else 2
 
@@ -711,9 +779,7 @@ class DilationSurfaces(SurfaceCategory):
                             p1, e1, p2, e2
                         )
                         if needs_flip >= flip_bound:
-                            self.triangle_flip(
-                                p1, e1, in_place=True, direction=direction
-                            )
+                            self.triangle_flip(p1, e1, in_place=True)
                             triangles.add(p1)
                             triangles.add(p2)
                             limit -= 1

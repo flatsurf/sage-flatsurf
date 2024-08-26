@@ -36,9 +36,10 @@ setup(
         "flatsurf",
         "flatsurf.geometry",
         "flatsurf.geometry.categories",
+        "flatsurf.geometry.pyflatsurf",
         "flatsurf.graphical",
     ],
-    install_requires=["bidict", "surface-dynamics"],
+    install_requires=["bidict", "surface-dynamics>=0.6.0,<0.7.0"],
     setup_requires=["wheel"],
     include_package_data=True,
     classifiers=[
