@@ -1,21 +1,21 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.surface_objects - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -76,7 +76,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -91,22 +91,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -119,6 +160,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -137,7 +180,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -184,52 +228,80 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry/pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -237,8 +309,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -261,7 +331,8 @@
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -271,7 +342,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for flatsurf.geometry.surface_objects</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Geometric objects on surfaces.</span>
@@ -316,7 +387,9 @@
 <span class="kn">from</span> <span class="nn">flatsurf.geometry.similarity</span> <span class="kn">import</span> <span class="n">SimilarityGroup</span>
 
 
-<div class="viewcode-block" id="Singularity"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">[docs]</a><span class="k">def</span> <span class="nf">Singularity</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Singularity">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Singularity">[docs]</a>
+<span class="k">def</span> <span class="nf">Singularity</span><span class="p">(</span><span class="n">similarity_surface</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the point of ``similarity_surface`` at the ``v``-th vertex of the</span>
 <span class="sd">    polygon ``label``.</span>
@@ -349,7 +422,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SurfacePoint"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint">[docs]</a><span class="k">class</span> <span class="nc">SurfacePoint</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint">[docs]</a>
+<span class="k">class</span> <span class="nc">SurfacePoint</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A point on ``surface``.</span>
 
@@ -532,7 +608,9 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SurfacePoint.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SurfacePoint.surface">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.surface">[docs]</a>
+    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface containing this point.</span>
 
@@ -549,7 +627,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.is_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">is_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.is_vertex">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.is_vertex">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this point is a singularity of the surface.</span>
 
@@ -569,7 +650,10 @@
         <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">get_point_position</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">position</span><span class="o">.</span><span class="n">is_vertex</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.one_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">one_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.one_vertex">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.one_vertex">[docs]</a>
+    <span class="k">def</span> <span class="nf">one_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a pair (l, v) from the equivalence class of this singularity.</span>
 
@@ -598,7 +682,10 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">label</span><span class="p">,</span> <span class="n">vertex</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.representatives"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representatives">[docs]</a>    <span class="k">def</span> <span class="nf">representatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.representatives">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representatives">[docs]</a>
+    <span class="k">def</span> <span class="nf">representatives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the representatives of this point as pairs of polygon labels and</span>
 <span class="sd">        coordinates.</span>
@@ -616,7 +703,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.representative"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representative">[docs]</a>    <span class="k">def</span> <span class="nf">representative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.representative">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.representative">[docs]</a>
+    <span class="k">def</span> <span class="nf">representative</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a representative of this point, i.e., the first of</span>
 <span class="sd">        :meth:`representatives`.</span>
@@ -634,7 +724,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">representatives</span><span class="p">()))</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.vertex_set"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set">[docs]</a>    <span class="k">def</span> <span class="nf">vertex_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.vertex_set">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.vertex_set">[docs]</a>
+    <span class="k">def</span> <span class="nf">vertex_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the list of pairs (l, v) in the equivalence class of this singularity.</span>
 
@@ -669,7 +762,10 @@
             <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">coordinates</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">representatives</span><span class="p">()</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.contains_vertex"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">contains_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.contains_vertex">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.contains_vertex">[docs]</a>
+    <span class="k">def</span> <span class="nf">contains_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the pair ``(label, v)`` is in the equivalence class returning</span>
 <span class="sd">        true or false. If ``v`` is ``None``, the both the pair ``(label, v)``</span>
@@ -705,7 +801,10 @@
 
         <span class="k">return</span> <span class="n">Singularity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">(),</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.num_coordinates"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">num_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.num_coordinates">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.num_coordinates">[docs]</a>
+    <span class="k">def</span> <span class="nf">num_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of different coordinate representations of the point.</span>
 
@@ -731,7 +830,10 @@
 
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.labels"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.labels">[docs]</a>    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.labels">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.labels">[docs]</a>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the labels of polygons containing the point.</span>
 
@@ -762,7 +864,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">label</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.coordinates"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.coordinates">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.coordinates">[docs]</a>
+    <span class="k">def</span> <span class="nf">coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return coordinates for the point in the in the polygon ``label``.</span>
 
@@ -780,7 +885,10 @@
             <span class="n">coordinates</span> <span class="k">for</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_representatives</span> <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="n">label</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.graphical_surface_point"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.graphical_surface_point">[docs]</a>    <span class="k">def</span> <span class="nf">graphical_surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.graphical_surface_point">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.graphical_surface_point">[docs]</a>
+    <span class="k">def</span> <span class="nf">graphical_surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a</span>
 <span class="sd">        :class:`flatsurf.graphical.surface_point.GraphicalSurfacePoint` to</span>
@@ -798,7 +906,10 @@
 
         <span class="k">return</span> <span class="n">GraphicalSurfacePoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphical_surface</span><span class="o">=</span><span class="n">graphical_surface</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SurfacePoint.plot"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SurfacePoint.plot">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SurfacePoint.plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a plot of this point.</span>
 
@@ -827,6 +938,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graphical_surface_point</span><span class="p">(</span><span class="n">graphical_surface</span><span class="o">=</span><span class="n">graphical_surface</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
             <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -949,7 +1061,10 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SaddleConnection"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection">[docs]</a><span class="k">class</span> <span class="nc">SaddleConnection</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection">[docs]</a>
+<span class="k">class</span> <span class="nc">SaddleConnection</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a saddle connection on a SimilaritySurface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1186,10 +1301,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
-<div class="viewcode-block" id="SaddleConnection.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SaddleConnection.surface">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.surface">[docs]</a>
+    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.direction"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.direction">[docs]</a>    <span class="k">def</span> <span class="nf">direction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.direction">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.direction">[docs]</a>
+    <span class="k">def</span> <span class="nf">direction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a vector parallel to the saddle connection pointing from the start point.</span>
 
@@ -1197,7 +1317,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.end_direction"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_direction">[docs]</a>    <span class="k">def</span> <span class="nf">end_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.end_direction">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_direction">[docs]</a>
+    <span class="k">def</span> <span class="nf">end_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a vector parallel to the saddle connection pointing from the end point.</span>
 
@@ -1205,21 +1328,30 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_direction</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.start_data"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.start_data">[docs]</a>    <span class="k">def</span> <span class="nf">start_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.start_data">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.start_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">start_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pair (l, v) representing the label and vertex of the corresponding polygon</span>
 <span class="sd">        where the saddle connection originates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfacetart_data</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.end_data"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_data">[docs]</a>    <span class="k">def</span> <span class="nf">end_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.end_data">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">end_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the pair (l, v) representing the label and vertex of the corresponding polygon</span>
 <span class="sd">        where the saddle connection terminates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_data</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.holonomy"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.holonomy">[docs]</a>    <span class="k">def</span> <span class="nf">holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.holonomy">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.holonomy">[docs]</a>
+    <span class="k">def</span> <span class="nf">holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the holonomy vector of the saddle connection (measured from the start).</span>
 
@@ -1228,7 +1360,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.length"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.length">[docs]</a>    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.length">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.length">[docs]</a>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In a cone surface, return the length of this saddle connection. Since</span>
 <span class="sd">        this may not lie in the field of definition of the surface, it is</span>
@@ -1243,7 +1378,10 @@
 
         <span class="k">return</span> <span class="n">vector</span><span class="p">(</span><span class="n">AA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holonomy</span><span class="p">)</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.end_holonomy"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_holonomy">[docs]</a>    <span class="k">def</span> <span class="nf">end_holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.end_holonomy">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_holonomy">[docs]</a>
+    <span class="k">def</span> <span class="nf">end_holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the holonomy vector of the saddle connection (measured from the end).</span>
 
@@ -1252,7 +1390,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_holonomy</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.start_tangent_vector"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.start_tangent_vector">[docs]</a>    <span class="k">def</span> <span class="nf">start_tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.start_tangent_vector">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.start_tangent_vector">[docs]</a>
+    <span class="k">def</span> <span class="nf">start_tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a tangent vector to the saddle connection based at its start.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1264,7 +1405,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.trajectory"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.trajectory">[docs]</a>    <span class="nd">@cached_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SaddleConnection.trajectory">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.trajectory">[docs]</a>
+    <span class="nd">@cached_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a straight line trajectory representing this saddle connection.</span>
@@ -1288,13 +1432,19 @@
 
         <span class="k">return</span> <span class="n">traj</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.plot"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.plot">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Equivalent to ``.trajectory().plot(*args, **options)``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.end_tangent_vector"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_tangent_vector">[docs]</a>    <span class="k">def</span> <span class="nf">end_tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.end_tangent_vector">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.end_tangent_vector">[docs]</a>
+    <span class="k">def</span> <span class="nf">end_tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a tangent vector to the saddle connection based at its start.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1304,7 +1454,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_end_direction</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.invert"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.invert">[docs]</a>    <span class="k">def</span> <span class="nf">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.invert">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.invert">[docs]</a>
+    <span class="k">def</span> <span class="nf">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return this saddle connection but with opposite orientation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1319,7 +1472,10 @@
             <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.intersections"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.intersections">[docs]</a>    <span class="k">def</span> <span class="nf">intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.intersections">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.intersections">[docs]</a>
+    <span class="k">def</span> <span class="nf">intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_segments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See documentation of :meth:`~.straight_line_trajectory.AbstractStraightLineTrajectory.intersections`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1327,13 +1483,17 @@
             <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="p">,</span> <span class="n">include_segments</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SaddleConnection.intersects"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.intersects">[docs]</a>    <span class="k">def</span> <span class="nf">intersects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SaddleConnection.intersects">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.SaddleConnection.intersects">[docs]</a>
+    <span class="k">def</span> <span class="nf">intersects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See documentation of :meth:`~.straight_line_trajectory.AbstractStraightLineTrajectory.intersects`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span>
             <span class="n">traj</span><span class="p">,</span> <span class="n">count_singularities</span><span class="o">=</span><span class="n">count_singularities</span>
         <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1419,7 +1579,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Cylinder"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder">[docs]</a><span class="k">class</span> <span class="nc">Cylinder</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder">[docs]</a>
+<span class="k">class</span> <span class="nc">Cylinder</span><span class="p">(</span><span class="n">SageObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a cylinder in a SimilaritySurface. A cylinder for these purposes is a</span>
 <span class="sd">    topological annulus in a surface bounded by a finite collection of saddle connections</span>
@@ -1642,16 +1805,24 @@
             <span class="n">e1</span> <span class="o">=</span> <span class="n">e2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">polygons</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Cylinder.surface"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Cylinder.surface">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.surface">[docs]</a>
+    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
-<div class="viewcode-block" id="Cylinder.initial_label"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.initial_label">[docs]</a>    <span class="k">def</span> <span class="nf">initial_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.initial_label">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.initial_label">[docs]</a>
+    <span class="k">def</span> <span class="nf">initial_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return one label on the surface that the cylinder passes through.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label0</span></div>
 
-<div class="viewcode-block" id="Cylinder.edges"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.edges">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.edges">[docs]</a>
+    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a tuple of edge numbers representing the edges crossed</span>
 <span class="sd">        when the cylinder leaves the polygon with `initial_label` until</span>
@@ -1659,14 +1830,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span></div>
 
-<div class="viewcode-block" id="Cylinder.boundary"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.boundary">[docs]</a>    <span class="k">def</span> <span class="nf">boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.boundary">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.boundary">[docs]</a>
+    <span class="k">def</span> <span class="nf">boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the set of saddle connections in the boundary, oriented so that</span>
 <span class="sd">        the surface is on the left.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary</span></div>
 
-<div class="viewcode-block" id="Cylinder.polygons"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.polygons">[docs]</a>    <span class="k">def</span> <span class="nf">polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.polygons">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.polygons">[docs]</a>
+    <span class="k">def</span> <span class="nf">polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of pairs each consisting of a label and a polygon.</span>
 <span class="sd">        Each polygon represents a sub-polygon of the polygon on the surface</span>
@@ -1675,7 +1852,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_polygons</span></div>
 
-<div class="viewcode-block" id="Cylinder.area"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.area">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="Cylinder.area">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.area">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the area of this cylinder if it is contained in a ConeSurface.</span>
@@ -1690,7 +1870,10 @@
             <span class="n">area</span> <span class="o">+=</span> <span class="n">p</span><span class="o">.</span><span class="n">area</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">area</span></div>
 
-<div class="viewcode-block" id="Cylinder.plot"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.plot">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.plot">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot this cylinder in coordinates used by a graphical surface. This</span>
 <span class="sd">        plots this cylinder as a union of subpolygons. Only the intersections</span>
@@ -1722,7 +1905,10 @@
                 <span class="n">plt</span> <span class="o">+=</span> <span class="n">poly</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">plt</span></div>
 
-<div class="viewcode-block" id="Cylinder.labels"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.labels">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="Cylinder.labels">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.labels">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the set of labels that this cylinder passes through.</span>
@@ -1730,7 +1916,10 @@
         <span class="n">polygons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygons</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">polygons</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Cylinder.boundary_components"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.boundary_components">[docs]</a>    <span class="k">def</span> <span class="nf">boundary_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.boundary_components">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.boundary_components">[docs]</a>
+    <span class="k">def</span> <span class="nf">boundary_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a set of two elements: the set of saddle connections on</span>
 <span class="sd">        the right and left sides. Saddle connections are oriented so that</span>
@@ -1738,7 +1927,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_boundary1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary2</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Cylinder.next"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.next">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.next">[docs]</a>
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the next saddle connection as you move around the cylinder boundary</span>
 <span class="sd">        moving from sc in the direction of its orientation.</span>
@@ -1758,7 +1950,10 @@
                 <span class="k">return</span> <span class="n">sc2</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find next saddle connection in boundary set.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cylinder.previous"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.previous">[docs]</a>    <span class="k">def</span> <span class="nf">previous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cylinder.previous">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.previous">[docs]</a>
+    <span class="k">def</span> <span class="nf">previous</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the previous saddle connection as you move around the cylinder boundary</span>
 <span class="sd">        moving from sc in the direction opposite its orientation.</span>
@@ -1776,7 +1971,10 @@
                 <span class="k">return</span> <span class="n">sc2</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Failed to find previous saddle connection in boundary set.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cylinder.holonomy"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.holonomy">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="Cylinder.holonomy">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.holonomy">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">holonomy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In a translation surface, return one of the two holonomy vectors of the cylinder,</span>
@@ -1804,7 +2002,10 @@
 
         <span class="k">return</span> <span class="n">total</span></div>
 
-<div class="viewcode-block" id="Cylinder.circumference"><a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.circumference">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="Cylinder.circumference">
+<a class="viewcode-back" href="../../../geometry/surface_objects.html#flatsurf.geometry.surface_objects.Cylinder.circumference">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">circumference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In a cone surface, return the circumference, i.e., the length</span>
@@ -1822,7 +2023,9 @@
         <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary1</span><span class="p">:</span>
             <span class="n">total</span> <span class="o">+=</span> <span class="n">sc</span><span class="o">.</span><span class="n">length</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">total</span></div></div>
+        <span class="k">return</span> <span class="n">total</span></div>
+</div>
+
 </pre></div>
         </article>
       </div>
@@ -1855,13 +2058,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/scripts/furo.js"></script>
+</div><script src="../../../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>

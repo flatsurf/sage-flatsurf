@@ -1,22 +1,22 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Defining Surfaces" href="defining_surfaces.html" /><link rel="prev" title="The Developer’s Guide for sage-flatsurf" href="../developer.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>A Tour of the flatsurf Suite - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -77,7 +77,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -92,22 +92,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -120,6 +161,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -138,7 +181,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -185,52 +229,80 @@
 <li class="toctree-l1"><a class="reference internal" href="boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geometry/pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -238,8 +310,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -259,11 +329,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/examples/tour.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -273,13 +349,13 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="a-tour-of-the-flatsurf-suite">
-<h1>A Tour of the flatsurf Suite<a class="headerlink" href="#a-tour-of-the-flatsurf-suite" title="Permalink to this heading">#</a></h1>
+<h1>A Tour of the flatsurf Suite<a class="headerlink" href="#a-tour-of-the-flatsurf-suite" title="Link to this heading">¶</a></h1>
 <p>The <a class="reference external" href="https://flatsurf.github.io">flatsurf software suite</a> is a collection of mathematical software libraries to study translation surfaces and related objects.</p>
 <p>The <a class="reference external" href="https://sagemath.org">SageMath</a> library <a class="reference external" href="https://github.com/flatsurf/sage-flatsurf"><code class="docutils literal notranslate"><span class="pre">sage-flatsurf</span></code></a> provides the most convenient interface to the flatsurf suite. Here, we showcase some of its major features.</p>
 <section id="defining-surfaces">
-<h2>Defining Surfaces<a class="headerlink" href="#defining-surfaces" title="Permalink to this heading">#</a></h2>
+<h2>Defining Surfaces<a class="headerlink" href="#defining-surfaces" title="Link to this heading">¶</a></h2>
 <p>Many surfaces that have been studied in the literature are readily available in sage-flatsurf.</p>
 <p>You can find predefined translation surfaces in the collection <a class="reference internal" href="../geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators" title="flatsurf.geometry.similarity_surface_generators.TranslationSurfaceGenerators"><code class="xref py py-class docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a>.</p>
 <div class="cell docutils container">
@@ -292,7 +368,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9d6061a7bd9464a35c38d2b4c7f649f460b38af03505f5c0b0806a93b39ec387.png" src="../_images/9d6061a7bd9464a35c38d2b4c7f649f460b38af03505f5c0b0806a93b39ec387.png" />
+<img alt="../_images/9dc92886fc9fe08576397a6b2ebc75d48ecc4d68828d9614998218a5ece1460c.png" src="../_images/9dc92886fc9fe08576397a6b2ebc75d48ecc4d68828d9614998218a5ece1460c.png" />
 </div>
 </div>
 <p>There are also infinite type surfaces (built from an infinite number of polygons) in that collection.</p>
@@ -306,7 +382,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db3dc1ec6fbabd2813cbc28a8aa6e6625f7713733234fc5a6edc92337c0cfece.png" src="../_images/db3dc1ec6fbabd2813cbc28a8aa6e6625f7713733234fc5a6edc92337c0cfece.png" />
+<img alt="../_images/4b9122bc72ffd4d2f9fc25ce5faa3c76f6a8e94f9b8c7896abdfef0361488ec7.png" src="../_images/4b9122bc72ffd4d2f9fc25ce5faa3c76f6a8e94f9b8c7896abdfef0361488ec7.png" />
 </div>
 </div>
 <p>Some more general surfaces where the gluings are dilations are defined in the collection <a class="reference internal" href="../geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators" title="flatsurf.geometry.similarity_surface_generators.DilationSurfaceGenerators"><code class="xref py py-class docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a>.</p>
@@ -320,7 +396,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f97c3138330b3aede47ee8a179cd3404473e6e97cf5b87dce693b69cae8f3010.png" src="../_images/f97c3138330b3aede47ee8a179cd3404473e6e97cf5b87dce693b69cae8f3010.png" />
+<img alt="../_images/ae62484ff10a032f1cef0344e2481d026b29305c9eb5e800b02c71e9a6a5dd1e.png" src="../_images/ae62484ff10a032f1cef0344e2481d026b29305c9eb5e800b02c71e9a6a5dd1e.png" />
 </div>
 </div>
 <p>Even more generality can be found in the collection <a class="reference internal" href="../geometry/similarity_surface_generators.html#flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators" title="flatsurf.geometry.similarity_surface_generators.SimilaritySurfaceGenerators"><code class="xref py py-class docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a>.</p>
@@ -335,11 +411,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/48ea514042f2c1a16ad5883c305d033fa3bdc6975d535d8416d8fe33450f5c84.png" src="../_images/48ea514042f2c1a16ad5883c305d033fa3bdc6975d535d8416d8fe33450f5c84.png" />
+<img alt="../_images/80c78145903692ed20639b422c66c3dcd925e14fe3ea63dac600dae52adde2ca.png" src="../_images/80c78145903692ed20639b422c66c3dcd925e14fe3ea63dac600dae52adde2ca.png" />
 </div>
 </div>
 <section id="building-surfaces-from-polygons">
-<h3>Building Surfaces from Polygons<a class="headerlink" href="#building-surfaces-from-polygons" title="Permalink to this heading">#</a></h3>
+<h3>Building Surfaces from Polygons<a class="headerlink" href="#building-surfaces-from-polygons" title="Link to this heading">¶</a></h3>
 <p>Surfaces can also be built from scratch by specifying a (finite) set of polygons and gluings between the sides of the polygons.</p>
 <p>Once you call <code class="docutils literal notranslate"><span class="pre">set_immutable()</span></code>, the type of the surface is determined, here a translation surface:</p>
 <div class="cell docutils container">
@@ -370,7 +446,7 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Translation Surface in H_2(2) built from a square and a rectangle
 </pre></div>
 </div>
-<img alt="../_images/3c5f6cd8898acfa078ddcbd40b0135620ba9e627bd4606ef89c152cb57654aa7.png" src="../_images/3c5f6cd8898acfa078ddcbd40b0135620ba9e627bd4606ef89c152cb57654aa7.png" />
+<img alt="../_images/17889f4618311ee91fb7efe6f4bc85634ff419c85df730ee3b8c5d7f1c6d839a.png" src="../_images/17889f4618311ee91fb7efe6f4bc85634ff419c85df730ee3b8c5d7f1c6d839a.png" />
 </div>
 </div>
 <p>We can also create a half-translation surface:</p>
@@ -391,7 +467,7 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Half-Translation Surface in Q_1(2, -1^2) built from a square and a rectangle
 </pre></div>
 </div>
-<img alt="../_images/d1ceda2cf0b71fc56fa7d52afb4f21bdbe98acbf0825dec70a7512053e2f84c1.png" src="../_images/d1ceda2cf0b71fc56fa7d52afb4f21bdbe98acbf0825dec70a7512053e2f84c1.png" />
+<img alt="../_images/34f2d26038e31926e6338434bc5de96647611521fe318c9e72097a8b1812b2ea.png" src="../_images/34f2d26038e31926e6338434bc5de96647611521fe318c9e72097a8b1812b2ea.png" />
 </div>
 </div>
 <p>Or anything that can be built by gluing with similarities…</p>
@@ -412,13 +488,13 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Genus 2 Surface built from a square and a rectangle
 </pre></div>
 </div>
-<img alt="../_images/374f857bb4f84ea6c535b07423552d47312198d8c7030f4409de6581c912f2cb.png" src="../_images/374f857bb4f84ea6c535b07423552d47312198d8c7030f4409de6581c912f2cb.png" />
+<img alt="../_images/135e89ec8f0bfdeb0a0f215b205338e90b8ea3be55362cb9fce63eafca382cfe.png" src="../_images/135e89ec8f0bfdeb0a0f215b205338e90b8ea3be55362cb9fce63eafca382cfe.png" />
 </div>
 </div>
 <p>There is a relatively small contract that a surface needs to implement, things such as “what is on the other side of this edge?”, “is this surface compact?”, … so it is not too hard to implement infinite type surfaces from scratch.</p>
 </section>
 <section id="further-reading">
-<h3>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="defining_surfaces.html"><span class="doc std std-doc">Defining Surfaces</span></a></p></li>
 <li><p><a class="reference internal" href="../geometry/similarity_surface_generators.html#module-flatsurf.geometry.similarity_surface_generators" title="flatsurf.geometry.similarity_surface_generators"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flatsurf.geometry.similarity_surface_generators</span></code></a></p></li>
@@ -426,7 +502,7 @@
 </section>
 </section>
 <section id="trajectories-saddle-connections">
-<h2>Trajectories &amp; Saddle Connections<a class="headerlink" href="#trajectories-saddle-connections" title="Permalink to this heading">#</a></h2>
+<h2>Trajectories &amp; Saddle Connections<a class="headerlink" href="#trajectories-saddle-connections" title="Link to this heading">¶</a></h2>
 <p>Starting from a tangent vector, we can shoot a trajectory along that tangent vector. The trajectory will stop when it hits a singularity of the surface or after some (combinatorial) limit has been reached.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -440,7 +516,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/56bb27c21db658eff653bd94f2a28a316fed390e11a1ec25edca470b463ae5ed.png" src="../_images/56bb27c21db658eff653bd94f2a28a316fed390e11a1ec25edca470b463ae5ed.png" />
+<img alt="../_images/39d65a391e8835033b4b36c53ed7f925e21fc98fb92901df32f067a77a24687f.png" src="../_images/39d65a391e8835033b4b36c53ed7f925e21fc98fb92901df32f067a77a24687f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -453,7 +529,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/11a5e970b585e4125e1c31634bf70cdecdb532803a1e55a9be0845caf194b262.png" src="../_images/11a5e970b585e4125e1c31634bf70cdecdb532803a1e55a9be0845caf194b262.png" />
+<img alt="../_images/1817bdd95310f535a39fde207f84f14a20c6e703e346d5cc8931f47644cc7f33.png" src="../_images/1817bdd95310f535a39fde207f84f14a20c6e703e346d5cc8931f47644cc7f33.png" />
 </div>
 </div>
 <p>Note that on a finite type surface, we can compute a <code class="docutils literal notranslate"><span class="pre">FlowDecomposition</span></code> (see below) to determine how a surface decomposes in a direction into areas with periodic and dense trajectories.</p>
@@ -474,11 +550,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/dc240d8043d5a8ae9f16e72a118b6a7a16dafc3b211e63505a24195c6b7228bd.png" src="../_images/dc240d8043d5a8ae9f16e72a118b6a7a16dafc3b211e63505a24195c6b7228bd.png" />
+<img alt="../_images/f6369c5986b555363707fe3fcafb3c6f283c186a09b6112de9fe7f7b23011eb7.png" src="../_images/f6369c5986b555363707fe3fcafb3c6f283c186a09b6112de9fe7f7b23011eb7.png" />
 </div>
 </div>
 <section id="id1">
-<h3>Further Reading<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="straight_line_flow.html"><span class="doc std std-doc">Straight Line Flows</span></a></p></li>
 <li><p><a class="reference internal" href="saddle_connections.html"><span class="doc std std-doc">Saddle Connections</span></a></p></li>
@@ -487,7 +563,7 @@
 </section>
 </section>
 <section id="supported-base-rings">
-<h2>Supported Base Rings<a class="headerlink" href="#supported-base-rings" title="Permalink to this heading">#</a></h2>
+<h2>Supported Base Rings<a class="headerlink" href="#supported-base-rings" title="Link to this heading">¶</a></h2>
 <p>Surfaces can be defined over most <strong>exact</strong> subrings of the reals from SageMath.</p>
 <p>Here is an example defined over a number field:</p>
 <div class="cell docutils container">
@@ -506,7 +582,7 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number Field in c with defining polynomial x^2 - 3 with c = 1.732050807568878?
 </pre></div>
 </div>
-<img alt="../_images/e2b929de12c71c238c499d9faa7e2c7ad7a11b6b93aa78d30f103da025096998.png" src="../_images/e2b929de12c71c238c499d9faa7e2c7ad7a11b6b93aa78d30f103da025096998.png" />
+<img alt="../_images/8cc74732dae609434b7ea89d848aed1619b0cfa0f5c4311983390e7506b70980.png" src="../_images/8cc74732dae609434b7ea89d848aed1619b0cfa0f5c4311983390e7506b70980.png" />
 </div>
 </div>
 <p>Here is a surface with a transcendental coordinate, supported through <a class="reference external" href="https://github.com/flatsurf/exact-real">exact-real</a>.</p>
@@ -522,7 +598,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/cppyy/__init__.py:319: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.11/site-packages/cppyy/__init__.py:341: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
   import pkg_resources as pr
 </pre></div>
 </div>
@@ -547,12 +623,12 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Real Numbers as (Real Embedded Number Field in a with defining polynomial x^2 - 3 with a = 1.732050807568878?)-Module
 </pre></div>
 </div>
-<img alt="../_images/73cd39d29be4e1cb8a49d3e08ee1d96ec6aa65c6f363580e4bc90f8b6e365996.png" src="../_images/73cd39d29be4e1cb8a49d3e08ee1d96ec6aa65c6f363580e4bc90f8b6e365996.png" />
+<img alt="../_images/51cb842b42f07c03b8513efb957577a13a647614db4a0b6dd403318901cd61a0.png" src="../_images/51cb842b42f07c03b8513efb957577a13a647614db4a0b6dd403318901cd61a0.png" />
 </div>
 </div>
 </section>
 <section id="flow-decompositions">
-<h2>Flow Decompositions<a class="headerlink" href="#flow-decompositions" title="Permalink to this heading">#</a></h2>
+<h2>Flow Decompositions<a class="headerlink" href="#flow-decompositions" title="Link to this heading">¶</a></h2>
 <p>We compute flow decompositions on the unfolding of the (2, 2, 5) triangle. We pick some direction coming from a saddle connection and decompose the surface into cylinders and minimal components in that direction.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -574,7 +650,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5459c0b16e5d89e06932ef2bed2b674844e0016bca13113a46f6cfc2a0d5d697.png" src="../_images/5459c0b16e5d89e06932ef2bed2b674844e0016bca13113a46f6cfc2a0d5d697.png" />
+<img alt="../_images/05d4d995ebbcd2fe11ef581ebf53100bf42b053f696a94f52f1a82771957d1d8.png" src="../_images/05d4d995ebbcd2fe11ef581ebf53100bf42b053f696a94f52f1a82771957d1d8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -632,7 +708,7 @@
 </div>
 </div>
 <section id="id2">
-<h3>Further Reading<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="siegel_veech.html"><span class="doc std std-doc">Siegel-Veech constants</span></a></p></li>
 <li><p>the <a class="reference internal" href="../geometry/gl2r_orbit_closure.html#module-flatsurf.geometry.gl2r_orbit_closure" title="flatsurf.geometry.gl2r_orbit_closure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">module</span> <span class="pre">reference</span></code></a> for computations related to the <span class="math notranslate nohighlight">\(GL_2(\mathbb{R})\)</span>-orbit closure</p></li>
@@ -640,7 +716,7 @@
 </section>
 </section>
 <section id="sl-2-mathbb-z-orbits-of-square-tiled-surfaces">
-<h2><span class="math notranslate nohighlight">\(SL_2(\mathbb{Z})\)</span> orbits of square-tiled Surfaces<a class="headerlink" href="#sl-2-mathbb-z-orbits-of-square-tiled-surfaces" title="Permalink to this heading">#</a></h2>
+<h2><span class="math notranslate nohighlight">\(SL_2(\mathbb{Z})\)</span> orbits of square-tiled Surfaces<a class="headerlink" href="#sl-2-mathbb-z-orbits-of-square-tiled-surfaces" title="Link to this heading">¶</a></h2>
 <p>Square-tiled surfaces (also called origamis) are translation surfaces built from unit squares. Many properties of their <span class="math notranslate nohighlight">\(GL_2(\mathbb{R})\)</span>-orbit closures can be computed easily.</p>
 <p>Note that the <code class="docutils literal notranslate"><span class="pre">Origami</span></code> object that we manipulate below are different from all other translation surfaces that were built above (that were using <code class="docutils literal notranslate"><span class="pre">sage-flatsurf</span></code>.)</p>
 <div class="cell docutils container">
@@ -654,7 +730,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/70f3be233203486f2fcf6ca6a071984c6b12cbdf094307dc1f0d343d84f51572.png" src="../_images/70f3be233203486f2fcf6ca6a071984c6b12cbdf094307dc1f0d343d84f51572.png" />
+<img alt="../_images/8a978c449fcf824d2a36902353e83fa1009d66fc92c53242e0a42ac6ecbfe04b.png" src="../_images/8a978c449fcf824d2a36902353e83fa1009d66fc92c53242e0a42ac6ecbfe04b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -683,7 +759,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.332481464268061]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.332540345776004]
 </pre></div>
 </div>
 </div>
@@ -702,7 +778,7 @@
 </div>
 </div>
 <section id="a-database-of-arithmetic-teichmuller-curves">
-<h3>A Database of Arithmetic Teichmüller Curves<a class="headerlink" href="#a-database-of-arithmetic-teichmuller-curves" title="Permalink to this heading">#</a></h3>
+<h3>A Database of Arithmetic Teichmüller Curves<a class="headerlink" href="#a-database-of-arithmetic-teichmuller-curves" title="Link to this heading">¶</a></h3>
 <p>There is a relatively big database of pre-computed arithmetic Teichmüller curves that can be queried.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -838,7 +914,7 @@ Total: 4688 Teichmueller curves
 </div>
 </div>
 <section id="some-sample-queries">
-<h4>Some sample queries<a class="headerlink" href="#some-sample-queries" title="Permalink to this heading">#</a></h4>
+<h4>Some sample queries<a class="headerlink" href="#some-sample-queries" title="Link to this heading">¶</a></h4>
 <p>The Teichmüller curves in genus <span class="math notranslate nohighlight">\(g\)</span> such that in any direction we have at least <span class="math notranslate nohighlight">\(g\)</span> cylinders.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -872,7 +948,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{H_3(2, 1^2), H_3(1^4), H_3(2^2)}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{H_3(2^2), H_3(1^4), H_3(2, 1^2)}
 </pre></div>
 </div>
 </div>
@@ -889,8 +965,8 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1)(2)(3)(4)(5,6,7)(8)(9)(10,11,12)(13,14)(15,16)
-(1,2,3,4,5,8,9,10)(6,13,15,12)(7,14,16,11)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1,2)(3,4)(5,6,7,8)(9,10,11,12)
+(1,3,5,9)(2,10)(4,8,12,6)(7,11)
 </pre></div>
 </div>
 </div>
@@ -898,14 +974,14 @@ g=6: 0
 </section>
 </section>
 <section id="id3">
-<h3>Further Reading<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>the <a class="reference external" href="https://flatsurf.github.io/surface-dynamics/">surface-dynamics documentation</a></p></li>
 </ul>
 </section>
 </section>
 <section id="combinatorial-graphs-up-to-isomorphism">
-<h2>Combinatorial Graphs up to Isomorphism<a class="headerlink" href="#combinatorial-graphs-up-to-isomorphism" title="Permalink to this heading">#</a></h2>
+<h2>Combinatorial Graphs up to Isomorphism<a class="headerlink" href="#combinatorial-graphs-up-to-isomorphism" title="Link to this heading">¶</a></h2>
 <p>We list the graphs of genus 2 with 2 faces and vertex degree at least 3.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -937,14 +1013,14 @@ g=6: 0
 </div>
 </div>
 <section id="id4">
-<h3>Further Reading<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>the <a class="reference external" href="https://flatsurf.github.io/surface-dynamics/">surface-dynamics documentation</a></p></li>
 </ul>
 </section>
 </section>
 <section id="hyperbolic-geometry">
-<h2>Hyperbolic Geometry<a class="headerlink" href="#hyperbolic-geometry" title="Permalink to this heading">#</a></h2>
+<h2>Hyperbolic Geometry<a class="headerlink" href="#hyperbolic-geometry" title="Link to this heading">¶</a></h2>
 <p>sage-flatsurf provides an implementation of hyperbolic geometry that unlike the one in SageMath does not rely on the symbolic ring.</p>
 <p>We define the hyperbolic plane over a number field containing a third root of 2.</p>
 <div class="cell docutils container">
@@ -969,7 +1045,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/10d16214066d05d39476ee0e9066236b3d838a89b2831812631d64cd9f446a06.png" src="../_images/10d16214066d05d39476ee0e9066236b3d838a89b2831812631d64cd9f446a06.png" />
+<img alt="../_images/4f68ba97ebd9ba4c8456dba4ae7eebb54f2ed92a758904c334c7a6decc8501e1.png" src="../_images/4f68ba97ebd9ba4c8456dba4ae7eebb54f2ed92a758904c334c7a6decc8501e1.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -979,7 +1055,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/0ebc1d44519af171e2dc7e97ae2ab8a3baca5f9fd7d9081807ac399f95e9979e.png" src="../_images/0ebc1d44519af171e2dc7e97ae2ab8a3baca5f9fd7d9081807ac399f95e9979e.png" />
+<img alt="../_images/637d15b41a82cc4f5d0952b5623bba08f132a80fe1c287d770aef3297c215a4c.png" src="../_images/637d15b41a82cc4f5d0952b5623bba08f132a80fe1c287d770aef3297c215a4c.png" />
 </div>
 </div>
 <p>We determine the point of intersection of these geodesics. Note that that point has no coordinates in the upper half plane (without going to a quadratic extension.)</p>
@@ -1017,18 +1093,18 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f1ad4f14536bc822e9e1bfb31e5f0ac6c1483fb9aec1c024299f28efa020bcd7.png" src="../_images/f1ad4f14536bc822e9e1bfb31e5f0ac6c1483fb9aec1c024299f28efa020bcd7.png" />
+<img alt="../_images/0576beb64ff786cbd22c1bf106e14eb825318461e935c26105cc730b1adb810e.png" src="../_images/0576beb64ff786cbd22c1bf106e14eb825318461e935c26105cc730b1adb810e.png" />
 </div>
 </div>
 <section id="id5">
-<h3>Further Reading<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>the <a class="reference internal" href="../geometry/hyperbolic.html#module-flatsurf.geometry.hyperbolic" title="flatsurf.geometry.hyperbolic"><code class="xref py py-mod docutils literal notranslate"><span class="pre">module</span> <span class="pre">reference</span></code></a> for hyperbolic geometry</p></li>
 </ul>
 </section>
 </section>
 <section id="veech-surfaces">
-<h2>Veech Surfaces<a class="headerlink" href="#veech-surfaces" title="Permalink to this heading">#</a></h2>
+<h2>Veech Surfaces<a class="headerlink" href="#veech-surfaces" title="Link to this heading">¶</a></h2>
 <p>We can explore how a Veech surfaces decomposes into cylinders.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1043,7 +1119,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/1c99aba31fbda79590d99fb21fc41ab3e8bf2bf41189d2d6e069917b199629d5.png" src="../_images/1c99aba31fbda79590d99fb21fc41ab3e8bf2bf41189d2d6e069917b199629d5.png" />
+<img alt="../_images/eca379c3ebed5b95472be2a757adbd89c5654f1024cfdd3f3313135f6d0bf01d.png" src="../_images/eca379c3ebed5b95472be2a757adbd89c5654f1024cfdd3f3313135f6d0bf01d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1074,14 +1150,14 @@ g=6: 0
 </div>
 </div>
 <section id="id6">
-<h3>Further Reading<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>the <a class="reference internal" href="../geometry/gl2r_orbit_closure.html#module-flatsurf.geometry.gl2r_orbit_closure" title="flatsurf.geometry.gl2r_orbit_closure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">module</span> <span class="pre">reference</span></code></a> related to the <span class="math notranslate nohighlight">\(GL_2(\mathbb{R})\)</span>-orbit closure</p></li>
 </ul>
 </section>
 </section>
 <section id="strata-orbit-closures">
-<h2>Strata &amp; Orbit Closures<a class="headerlink" href="#strata-orbit-closures" title="Permalink to this heading">#</a></h2>
+<h2>Strata &amp; Orbit Closures<a class="headerlink" href="#strata-orbit-closures" title="Link to this heading">¶</a></h2>
 <p>We can query the stratum a surface belongs to, and then (often) determine whether the surface has dense orbit closure.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1133,7 +1209,7 @@ g=6: 0
 </div>
 </div>
 <section id="id7">
-<h3>Further Reading<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>the <a class="reference internal" href="../geometry/gl2r_orbit_closure.html#module-flatsurf.geometry.gl2r_orbit_closure" title="flatsurf.geometry.gl2r_orbit_closure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">module</span> <span class="pre">reference</span></code></a> related to the <span class="math notranslate nohighlight">\(GL_2(\mathbb{R})\)</span>-orbit closure</p></li>
 <li><p><a class="reference internal" href="apisa_wright.html"><span class="doc std std-doc">Exploring Orbit Closures</span></a></p></li>
@@ -1141,14 +1217,14 @@ g=6: 0
 </section>
 </section>
 <section id="veering-triangulations">
-<h2>Veering Triangulations<a class="headerlink" href="#veering-triangulations" title="Permalink to this heading">#</a></h2>
+<h2>Veering Triangulations<a class="headerlink" href="#veering-triangulations" title="Link to this heading">¶</a></h2>
 <p>We create a Veering triangulation from the stratum <span class="math notranslate nohighlight">\(H_2(2)\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">veerer</span> <span class="kn">import</span> <span class="n">VeeringTriangulation</span><span class="p">,</span> <span class="n">FlatVeeringTriangulation</span>
-<span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">AbelianStratum</span>
+<span class="kn">from</span> <span class="nn">surface_dynamics</span> <span class="kn">import</span> <span class="n">Stratum</span>
 
-<span class="n">H2</span> <span class="o">=</span> <span class="n">AbelianStratum</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">H2</span> <span class="o">=</span> <span class="n">Stratum</span><span class="p">([</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">VT</span> <span class="o">=</span> <span class="n">VeeringTriangulation</span><span class="o">.</span><span class="n">from_stratum</span><span class="p">(</span><span class="n">H2</span><span class="p">)</span>
 
 <span class="n">VT</span>
@@ -1185,6 +1261,10 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.11/site-packages/surface_dynamics/flat_surfaces/abelian_strata.py:238: UserWarning: AbelianStratum has changed its arguments in order to handle meromorphic and higher-order differentials; use Stratum instead
+  warnings.warn(&#39;AbelianStratum has changed its arguments in order to handle meromorphic and higher-order differentials; use Stratum instead&#39;)
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>H_2(2)
 </pre></div>
 </div>
@@ -1199,7 +1279,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c14054d3e247bf92a09ccfdabcc4073d89b211b8a45b57fd4984c71238ba1a96.png" src="../_images/c14054d3e247bf92a09ccfdabcc4073d89b211b8a45b57fd4984c71238ba1a96.png" />
+<img alt="../_images/54990901055f2bf36867107dfa1bb1cd505097b89b64655a60ae6359c7a14715.png" src="../_images/54990901055f2bf36867107dfa1bb1cd505097b89b64655a60ae6359c7a14715.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1210,7 +1290,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/560e620ab696285998f7d17d8a0c7e5b950bba9a8f1ce02d8908dfdd4293a536.png" src="../_images/560e620ab696285998f7d17d8a0c7e5b950bba9a8f1ce02d8908dfdd4293a536.png" />
+<img alt="../_images/23209c198aa8a5e19a488fdbf401cce67cbe75b1f5876278479afc9ed49244c0.png" src="../_images/23209c198aa8a5e19a488fdbf401cce67cbe75b1f5876278479afc9ed49244c0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1221,7 +1301,7 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5323294736e33a1e67846ee5acdbbbfb90fbb049cae1e93453837a23c3b01128.png" src="../_images/5323294736e33a1e67846ee5acdbbbfb90fbb049cae1e93453837a23c3b01128.png" />
+<img alt="../_images/83acb48ad4cc63a523deecb754e84185ef051eae538164b408e8e76dc8d3a574.png" src="../_images/83acb48ad4cc63a523deecb754e84185ef051eae538164b408e8e76dc8d3a574.png" />
 </div>
 </div>
 <p>We can work with <span class="math notranslate nohighlight">\(L^{\infty}\)</span>-Delaunay flat structures. These are also called <em>geometry</em> flat structures in <code class="docutils literal notranslate"><span class="pre">veerer</span></code>.</p>
@@ -1288,10 +1368,10 @@ g=6: 0
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e3ed868c50e068eaa6a03260f64538ea6da8ed1c9dfcdc31cbf18456d9b39686.png" src="../_images/e3ed868c50e068eaa6a03260f64538ea6da8ed1c9dfcdc31cbf18456d9b39686.png" />
+<img alt="../_images/e98c0bef33ba6bf2b5371e10b884a5341277cfb6e4e93bdb502a236c8be14522.png" src="../_images/e98c0bef33ba6bf2b5371e10b884a5341277cfb6e4e93bdb502a236c8be14522.png" />
 </div>
 </div>
-<p>We now explore the <span class="math notranslate nohighlight">\(L^\infty\)</span>-Delaunay of a given linear familiy.</p>
+<p>We now explore the <span class="math notranslate nohighlight">\(L^\infty\)</span>-Delaunay of a given linear family.</p>
 <p>We do it for the ambient stratum, i.e., the tangent space is everything.</p>
 <p>The object one needs to start from is a pair of a Veering triangulation and a linear subspace.</p>
 <div class="cell docutils container">
@@ -1332,9 +1412,9 @@ g=6: 0
 </div>
 </div>
 <p>We could compute everything (until there is nothing more to be explored).</p>
-<p>If the compuatation terminates, it proves that <code class="docutils literal notranslate"><span class="pre">L</span></code> was indeed the tangent space to a <span class="math notranslate nohighlight">\(GL_2(\mathbb{R})\)</span>-orbit closure.</p>
+<p>If the computation terminates, it proves that <code class="docutils literal notranslate"><span class="pre">L</span></code> was indeed the tangent space to a <span class="math notranslate nohighlight">\(GL_2(\mathbb{R})\)</span>-orbit closure.</p>
 <section id="id8">
-<h3>Further Reading<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<h3>Further Reading<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://arxiv.org/abs/1909.00890">M. Bell, V. Delecroix, V. Gadre, R. Gutiérrez-Romo, Saul Schleimer  arXiv:1909.00890</a></p></li>
 <li><p><a class="reference external" href="https://arxiv.org/abs/2206.04143">B. Zykoski arXiv:2206.04143</a></p></li>
@@ -1452,17 +1532,14 @@ g=6: 0
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
+</div><script src="../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "dist": "\\mathrm{dist}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

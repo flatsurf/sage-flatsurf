@@ -1,22 +1,22 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="hyperbolic" href="hyperbolic.html" /><link rel="prev" title="half_translation_surfaces" href="half_translation_surfaces.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="hyperbolic" href="hyperbolic.html" /><link rel="prev" title="gl2r_orbit_closure" href="gl2r_orbit_closure.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>homology - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -77,7 +77,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -92,22 +92,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -120,6 +161,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -138,7 +181,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -185,52 +229,80 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -238,8 +310,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -259,11 +329,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/geometry/homology.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -273,9 +349,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="module-flatsurf.geometry.homology">
-<span id="homology"></span><h1><code class="docutils literal notranslate"><span class="pre">homology</span></code><a class="headerlink" href="#module-flatsurf.geometry.homology" title="Permalink to this heading">#</a></h1>
+<span id="homology"></span><h1><code class="docutils literal notranslate"><span class="pre">homology</span></code><a class="headerlink" href="#module-flatsurf.geometry.homology" title="Link to this heading">¶</a></h1>
 <p>Absolute and relative (simplicial) homology of surfaces.</p>
 <p>EXAMPLES:</p>
 <p>The absolute homology of the regular octagon:</p>
@@ -324,9 +400,9 @@ interface here is terrible at the moment, see
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">similarity_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span><span class="p">,</span> <span class="n">GL2ROrbitClosure</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">P</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">13</span><span class="p">])</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">similarity_surfaces</span><span class="o">.</span><span class="n">billiard</span><span class="p">(</span><span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">minimal_cover</span><span class="p">(</span><span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">FlatTriangulationConversion</span>  <span class="c1"># optional: pyflatsurf</span>
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf.conversion</span> <span class="kn">import</span> <span class="n">FlatTriangulationConversion</span>  <span class="c1"># optional: pyflatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">conversion</span> <span class="o">=</span> <span class="n">FlatTriangulationConversion</span><span class="o">.</span><span class="n">to_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>  <span class="c1"># optional: pyflatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">conversion</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>  <span class="c1"># optional: pyflatsurf</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">O</span> <span class="o">=</span> <span class="n">GL2ROrbitClosure</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># optional: pyflatsurf</span>
@@ -342,7 +418,7 @@ interface here is terrible at the moment, see
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomology">
-<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomology" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'generic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomology" title="Link to this definition">¶</a></dt>
 <dd><p>Return the <code class="docutils literal notranslate"><span class="pre">k</span></code>-th simplicial homology group of <code class="docutils literal notranslate"><span class="pre">surface</span></code>.</p>
 <p>INPUT:</p>
 <ul class="simple">
@@ -365,7 +441,7 @@ the homology group is chosen automatically depending on
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass" title="Link to this definition">¶</a></dt>
 <dd><p>An element of a homology group.</p>
 <p>INPUT:</p>
 <ul class="simple">
@@ -393,7 +469,7 @@ the homology group is chosen automatically depending on
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection">
-<span class="sig-name descname"><span class="pre">algebraic_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.algebraic_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">algebraic_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.algebraic_intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection" title="Link to this definition">¶</a></dt>
 <dd><p>Return the algebraic intersection of this class of a closed curve with
 <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
 <p>INPUT:</p>
@@ -435,12 +511,11 @@ the homology group is chosen automatically depending on
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">
-<span class="sig-name descname"><span class="pre">coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient" title="Link to this definition">¶</a></dt>
 <dd><p>Return the multiplicity of this class at a generator of homology.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">coefficient</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -453,12 +528,11 @@ the homology group is chosen automatically depending on
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass.coefficients">
-<span class="sig-name descname"><span class="pre">coefficients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.coefficients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">coefficients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.coefficients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients" title="Link to this definition">¶</a></dt>
 <dd><p>Return the coefficients of this element in terms of the generators of homology.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span>
 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -470,12 +544,11 @@ the homology group is chosen automatically depending on
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyClass.surface">
-<span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.surface" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyClass.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyClass.surface" title="Link to this definition">¶</a></dt>
 <dd><p>Return the surface on which this homology class in defined.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">h</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">h</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span>
@@ -488,7 +561,7 @@ the homology group is chosen automatically depending on
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implementation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup" title="Link to this definition">¶</a></dt>
 <dd><p>The <code class="docutils literal notranslate"><span class="pre">k</span></code>-th simplicial homology group of the <code class="docutils literal notranslate"><span class="pre">surface</span></code> with
 <code class="docutils literal notranslate"><span class="pre">coefficients</span></code>.</p>
 <p>INPUT:</p>
@@ -521,13 +594,13 @@ H₁(Translation Surface in H_1(0) built from a square)
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.Element">
-<span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.Element" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.Element" title="Link to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass" title="flatsurf.geometry.homology.SimplicialHomologyClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimplicialHomologyClass</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.boundary">
-<span class="sig-name descname"><span class="pre">boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.boundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.boundary" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.boundary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.boundary" title="Link to this definition">¶</a></dt>
 <dd><p>Return the boundary of <code class="docutils literal notranslate"><span class="pre">chain</span></code> as an element of the
 <a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module" title="flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">chain_module()</span></code></a> in lower dimension.</p>
 <p>INPUT:</p>
@@ -537,7 +610,6 @@ H₁(Translation Surface in H_1(0) built from a square)
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -565,13 +637,12 @@ H₁(Translation Surface in H_1(0) built from a square)
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module">
-<span class="sig-name descname"><span class="pre">chain_module</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.chain_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">chain_module</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.chain_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module" title="Link to this definition">¶</a></dt>
 <dd><p>Return the free module of simplicial chains of the surface i.e., formal
 sums of simplicies, e.g., formal sums of edges of the surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span>
 <span class="n">Free</span> <span class="n">module</span> <span class="n">generated</span> <span class="n">by</span> <span class="p">{(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span> <span class="n">over</span> <span class="n">Integer</span> <span class="n">Ring</span>
@@ -581,12 +652,11 @@ sums of simplicies, e.g., formal sums of edges of the surface.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.change">
-<span class="sig-name descname"><span class="pre">change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.change" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.change" title="Link to this definition">¶</a></dt>
 <dd><p>Return this homology but in dimension <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces, SimplicialHomology
 sage: T = translation_surfaces.square_torus()
-sage: T.set_immutable()
 sage: H = SimplicialHomology(T)
 sage: H
 H₁(Translation Surface in H_1(0) built from a square)
@@ -599,12 +669,11 @@ H₀(Translation Surface in H_1(0) built from a square)
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.degree">
-<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.degree" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.degree" title="Link to this definition">¶</a></dt>
 <dd><p>Return the degree <span class="math notranslate nohighlight">\(k\)</span> for this homology <span class="math notranslate nohighlight">\(H_k\)</span>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
@@ -615,12 +684,11 @@ H₀(Translation Surface in H_1(0) built from a square)
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.gens">
-<span class="sig-name descname"><span class="pre">gens</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.gens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.gens" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">gens</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.gens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.gens" title="Link to this definition">¶</a></dt>
 <dd><p>Return generators of homology.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
@@ -641,14 +709,45 @@ H₀(Translation Surface in H_1(0) built from a square)
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.hom">
+<span class="sig-name descname"><span class="pre">hom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codomain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.hom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.hom" title="Link to this definition">¶</a></dt>
+<dd><p>Return the homomorphism of homology induced by <code class="docutils literal notranslate"><span class="pre">f</span></code>.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code> – a morphism of surfaces or a matrix</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">codomain</span></code> – the simplicial homology this morphism maps into</p></li>
+</ul>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">A</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">affine_automorphism_group</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">()(</span><span class="n">M</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">SimplicialHomology</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span>  <span class="c1"># optional: pyflatsurf</span>
+<span class="p">[</span><span class="mi">1</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">2</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
+<span class="p">(</span><span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="p">[</span><span class="n">g</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()]</span>  <span class="c1"># optional: pyflatsurf</span>
+<span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">+</span> <span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute">
-<span class="sig-name descname"><span class="pre">is_absolute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.is_absolute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_absolute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.is_absolute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this is absolute homology (and not relative to some set
 of points.)</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -657,13 +756,27 @@ of points.)</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.ngens">
+<span class="sig-name descname"><span class="pre">ngens</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.ngens"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.ngens" title="Link to this definition">¶</a></dt>
+<dd><p>Return the Betti number of this homology.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">homology</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">ngens</span><span class="p">()</span>
+<span class="mi">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.simplices">
-<span class="sig-name descname"><span class="pre">simplices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.simplices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">simplices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.simplices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices" title="Link to this definition">¶</a></dt>
 <dd><p>Return the simplices that form the generators of <a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module" title="flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module"><code class="xref py py-meth docutils literal notranslate"><span class="pre">chain_module()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>In dimension 1, this is the set of edges:</p>
@@ -694,12 +807,11 @@ of points.)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements">
-<span class="sig-name descname"><span class="pre">some_elements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.some_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">some_elements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.some_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements" title="Link to this definition">¶</a></dt>
 <dd><p>Return some typical homology classes (for testing.)</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">some_elements</span><span class="p">()</span>
 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
@@ -709,12 +821,11 @@ of points.)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.surface">
-<span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.surface" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">surface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.surface" title="Link to this definition">¶</a></dt>
 <dd><p>Return the surface of which this is the homology.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span> <span class="o">==</span> <span class="n">T</span>
 <span class="kc">True</span>
@@ -724,13 +835,16 @@ of points.)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis">
-<span class="sig-name descname"><span class="pre">symplectic_basis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.symplectic_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">symplectic_basis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.symplectic_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis" title="Link to this definition">¶</a></dt>
 <dd><p>Return a symplectic basis of generators of this homology group.</p>
-<p>TODO: Add a reference and a definition.</p>
+<p>A symplectic basis is a basis of the form <span class="math notranslate nohighlight">\((e_1, \ldots, e_n, f_1,
+\ldots, f_n)\)</span> such that for the
+<a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection" title="flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SimplicialHomologyClass.algebraic_intersection()</span></code></a>, <span class="math notranslate nohighlight">\(e_i
+\cdot e_j = f_i \cdot f_j = 0\)</span> and <span class="math notranslate nohighlight">\(e_i \cdot f_j = \delta_{ij}\)</span> for
+all <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
@@ -742,12 +856,11 @@ of points.)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyGroup.zero">
-<span class="sig-name descname"><span class="pre">zero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.zero" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">zero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyGroup.zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.zero" title="Link to this definition">¶</a></dt>
 <dd><p>Return the zero homology class.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span><span class="p">,</span> <span class="n">SimplicialHomology</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">T</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span>
 <span class="mi">0</span>
@@ -755,6 +868,188 @@ of points.)</p>
 </div>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphismSpace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyMorphismSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codomain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphismSpace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace" title="Link to this definition">¶</a></dt>
+<dd><p>The space of homomorphisms from the homology <code class="docutils literal notranslate"><span class="pre">domain</span></code> to <code class="docutils literal notranslate"><span class="pre">codomain</span></code>.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">A</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">affine_automorphism_group</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">()(</span><span class="n">M</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">SimplicialHomology</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">G</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Since these are homomorphisms in homology, they preserve the linear
+structure of the homology:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+<span class="n">Category</span> <span class="n">of</span> <span class="n">endsets</span> <span class="n">of</span> <span class="n">modules</span> <span class="n">over</span> <span class="n">Integer</span> <span class="n">Ring</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.an_element">
+<span class="sig-name descname"><span class="pre">an_element</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphismSpace.an_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.an_element" title="Link to this definition">¶</a></dt>
+<dd><p>Return some homomorphism in homology.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.square_torus()
+sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+sage: End(S.homology()).an_element()
+Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)
+  Defn: [1 0]
+        [0 1]
+
+sage: Hom(S.homology(), T.homology()).an_element()
+Generic morphism:
+  From: H₁(Translation Surface in H_1(0) built from a square)
+  To:   H₁(Translation Surface in H_2(2) built from 3 squares)
+  Defn: [0 0]
+        [0 0]
+        [0 0]
+        [0 0]
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.base_ring">
+<span class="sig-name descname"><span class="pre">base_ring</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphismSpace.base_ring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.base_ring" title="Link to this definition">¶</a></dt>
+<dd><p>Return the ring over which these homomorphisms are defined.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">End</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">homology</span><span class="p">())</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+<span class="n">Integer</span> <span class="n">Ring</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.identity">
+<span class="sig-name descname"><span class="pre">identity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphismSpace.identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.identity" title="Link to this definition">¶</a></dt>
+<dd><p>Return the identity homomorphism in this space (if it exists.)</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.square_torus()
+sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+
+sage: End(S.homology()).identity()
+Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)
+  Defn: [1 0]
+        [0 1]
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.zero">
+<span class="sig-name descname"><span class="pre">zero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphismSpace.zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.zero" title="Link to this definition">¶</a></dt>
+<dd><p>Return the zero homomorphism.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.square_torus()
+
+sage: End(S.homology()).zero()
+Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)
+  Defn: [0 0]
+        [0 0]
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphism_base">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyMorphism_base</span></span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphism_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_base" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for all homomorphisms in homology.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">A</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">affine_automorphism_group</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">()(</span><span class="n">M</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">SimplicialHomology</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphism_base.matrix">
+<span class="sig-name descname"><span class="pre">matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphism_base.matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_base.matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Return the matrix describing this homomorphism on the generators of
+homology (as a multiplication from the left.)</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">mcmullen_L</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">A</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">affine_automorphism_group</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">()(</span><span class="n">M</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">SimplicialHomology</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span><span class="o">.</span><span class="n">gens</span><span class="p">()</span>
+<span class="p">(</span><span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">B</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">B</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">B</span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span>  <span class="c1"># optional: pyflatsurf</span>
+<span class="p">[</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphism_induced">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyMorphism_induced</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morphism</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphism_induced"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_induced" title="Link to this definition">¶</a></dt>
+<dd><p>A homomorphism of homology induced by a morphism of surfaces.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">square_torus</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">A</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">affine_automorphism_group</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">M</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span><span class="o">.</span><span class="n">section</span><span class="p">()(</span><span class="n">M</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">SimplicialHomology</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">H</span> <span class="o">=</span> <span class="n">SimplicialHomology</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">g</span> <span class="o">=</span> <span class="n">H</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flatsurf.geometry.homology.SimplicialHomologyMorphism_matrix">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.homology.</span></span><span class="sig-name descname"><span class="pre">SimplicialHomologyMorphism_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/homology.html#SimplicialHomologyMorphism_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>A homomorphism of homology that is given by a matrix that describes the
+homomorphism on the generators.</p>
+<p>EXAMPLES:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
+sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)
+sage: T = translation_surfaces.square_torus()
+
+sage: f = S.homology().hom(matrix([[1, 2, 3, 4], [5, 6, 7, 8]]), codomain=T.homology())
+sage: f
+Generic morphism:
+  From: H₁(Translation Surface in H_2(2) built from 3 squares)
+  To:   H₁(Translation Surface in H_1(0) built from a square)
+  Defn: [1 2 3 4]
+        [5 6 7 8]
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -773,14 +1068,14 @@ of points.)</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="half_translation_surfaces.html">
+          <a class="prev-page" href="gl2r_orbit_closure.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></div>
+                <div class="title"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></div>
                 
               </div>
             </a>
@@ -830,7 +1125,9 @@ of points.)</p>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.change"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.change()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.degree"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.degree()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.gens"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.gens()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.hom"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.hom()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.is_absolute()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.ngens"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.ngens()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.simplices()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.some_elements()</span></code></a></li>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.surface"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.surface()</span></code></a></li>
@@ -838,6 +1135,19 @@ of points.)</p>
 <li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyGroup.zero"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyGroup.zero()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphismSpace</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.an_element"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphismSpace.an_element()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.base_ring"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphismSpace.base_ring()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.identity"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphismSpace.identity()</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.zero"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphismSpace.zero()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_base"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphism_base</span></code></a><ul>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_base.matrix"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphism_base.matrix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_induced"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphism_induced</span></code></a></li>
+<li><a class="reference internal" href="#flatsurf.geometry.homology.SimplicialHomologyMorphism_matrix"><code class="docutils literal notranslate"><span class="pre">SimplicialHomologyMorphism_matrix</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -849,17 +1159,14 @@ of points.)</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
+</div><script src="../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "dist": "\\mathrm{dist}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

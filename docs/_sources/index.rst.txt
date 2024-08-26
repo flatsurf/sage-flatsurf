@@ -83,7 +83,9 @@ from an interactive SageMath session with |help|_.
 .. toctree::
    :maxdepth: 1
 
-   geometry
-   graphical
-   features
    cache
+   features
+   geometry
+   geometry/categories
+   geometry/pyflatsurf
+   graphical

@@ -1,22 +1,22 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="mappings" href="mappings.html" /><link rel="prev" title="l_infinity_delaunay_cells" href="l_infinity_delaunay_cells.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>lazy - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -77,7 +77,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -92,22 +92,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -120,6 +161,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -138,7 +181,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -185,52 +229,80 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -238,8 +310,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -259,11 +329,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/geometry/lazy.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -273,29 +349,29 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="module-flatsurf.geometry.lazy">
-<span id="lazy"></span><h1><code class="docutils literal notranslate"><span class="pre">lazy</span></code><a class="headerlink" href="#module-flatsurf.geometry.lazy" title="Permalink to this heading">#</a></h1>
+<span id="lazy"></span><h1><code class="docutils literal notranslate"><span class="pre">lazy</span></code><a class="headerlink" href="#module-flatsurf.geometry.lazy" title="Link to this heading">¶</a></h1>
 <p>Triangulations, Delaunay triangulations, and Delaunay decompositions of
-infinite surfaces.</p>
+(possibly infinite) surfaces.</p>
 <p>EXAMPLES:</p>
 <p>Typically, you don’t need to create these surfaces directly, they are created
 by invoking methods on the underlying surfaces:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">Triangulation</span> <span class="n">of</span> <span class="n">The</span> <span class="n">infinite</span> <span class="n">staircase</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">Delaunay</span> <span class="n">triangulation</span> <span class="n">of</span> <span class="n">The</span> <span class="n">infinite</span> <span class="n">staircase</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">Delaunay</span> <span class="n">cell</span> <span class="n">decomposition</span> <span class="n">of</span> <span class="n">The</span> <span class="n">infinite</span> <span class="n">staircase</span>
 </pre></div>
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.GL2RImageSurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">GL2RImageSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">GL2RImageSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface" title="Link to this definition">¶</a></dt>
 <dd><p>The GL(2,R) image of an oriented similarity surface obtained by applying a
 matrix to each polygon while keeping the gluings intact.</p>
 <p>EXAMPLE:</p>
@@ -310,10 +386,10 @@ matrix to each polygon while keeping the gluings intact.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.GL2RImageSurface.is_mutable">
-<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.is_mutable" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.is_mutable" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is mutable, i.e., return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
@@ -328,7 +404,7 @@ matrix to each polygon while keeping the gluings intact.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.GL2RImageSurface.is_triangulated">
-<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.is_triangulated" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.is_triangulated" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is triangulated.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
@@ -342,11 +418,11 @@ matrix to each polygon while keeping the gluings intact.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.GL2RImageSurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and edge index when crossing over the <code class="docutils literal notranslate"><span class="pre">edge</span></code>
 of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
@@ -361,10 +437,10 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.GL2RImageSurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#GL2RImageSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.GL2RImageSurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
@@ -381,16 +457,16 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyDelaunaySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyDelaunaySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface" title="Link to this definition">¶</a></dt>
 <dd><p>Delaunay cell decomposition of a (possibly infinite type) surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">root</span><span class="p">())</span>
-<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])</span>
 
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_delaunay_decomposed</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -405,7 +481,7 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.chamanara</span> <span class="kn">import</span> <span class="n">chamanara_surface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">chamanara_surface</span><span class="p">(</span><span class="n">QQ</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span> <span class="o">*</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">]])</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_delaunay_decomposed</span><span class="p">()</span>
 <span class="kc">True</span>
 
@@ -418,13 +494,13 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface.is_compact">
-<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.is_compact" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.is_compact" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is compact as a topological space.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_compact</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
@@ -433,13 +509,13 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface.is_delaunay_decomposed">
-<span class="sig-name descname"><span class="pre">is_delaunay_decomposed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.is_delaunay_decomposed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.is_delaunay_decomposed" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_delaunay_decomposed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.is_delaunay_decomposed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.is_delaunay_decomposed" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is decomposed into Delaunay cells, which it
 naturally is.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span><span class="o">.</span><span class="n">is_delaunay_decomposed</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">is_delaunay_decomposed</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
 </div>
@@ -447,13 +523,13 @@ naturally is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface.is_mutable">
-<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.is_mutable" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.is_mutable" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is mutable, i.e., return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
@@ -462,14 +538,14 @@ naturally is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and edge index when crossing over the <code class="docutils literal notranslate"><span class="pre">edge</span></code>
 of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
@@ -478,13 +554,13 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 </pre></div>
@@ -493,14 +569,14 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunaySurface.roots">
-<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.roots" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunaySurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunaySurface.roots" title="Link to this definition">¶</a></dt>
 <dd><p>Return root labels for the polygons forming the connected
 components of this surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decomposition</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
 <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),)</span>
 </pre></div>
@@ -511,11 +587,18 @@ components of this surface.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyDelaunayTriangulatedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface" title="Permalink to this definition">#</a></dt>
-<dd><p>Delaunay triangulation of an (infinite type) surface.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyDelaunayTriangulatedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">similarity_surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface" title="Link to this definition">¶</a></dt>
+<dd><p>Delaunay triangulation of a (possibly infinite type) surface.</p>
+<p>ALGORITHM:</p>
+<p>Basically we just flip edges that violate the Delaunay condition until
+everything is Delaunay. The complication arises because the surface can be
+infinite. The strategy is therefore, to perform the flips such that more
+and more triangles do not contain any vertices in their circumscribed
+circle. These triangles are then actual triangles of the Delaunay
+triangulation.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="n">root</span><span class="p">())</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span>
 <span class="mi">3</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># long time (.8s)</span>
@@ -530,7 +613,7 @@ components of this surface.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.chamanara</span> <span class="kn">import</span> <span class="n">chamanara_surface</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">chamanara_surface</span><span class="p">(</span><span class="n">QQ</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span><span class="o">**</span><span class="mi">4</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">TestSuite</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># long time (1s)</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_delaunay_triangulated</span><span class="p">()</span>
 <span class="kc">True</span>
@@ -543,13 +626,13 @@ components of this surface.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_compact">
-<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_compact" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_compact" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is compact as a topological space.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_compact</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
@@ -558,12 +641,12 @@ components of this surface.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_delaunay_triangulated">
-<span class="sig-name descname"><span class="pre">is_delaunay_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_delaunay_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_delaunay_triangulated" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_delaunay_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_delaunay_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_delaunay_triangulated" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is Delaunay triangulated, which it
 naturally is.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_delaunay_triangulated</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -572,13 +655,13 @@ naturally is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_mutable">
-<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_mutable" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_mutable" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is mutable, i.e., return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
@@ -587,11 +670,11 @@ naturally is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_triangulated">
-<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_triangulated" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.is_triangulated" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is triangulated, which it naturally is.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_triangulated</span><span class="p">()</span>
 <span class="kc">True</span>
 </pre></div>
@@ -600,13 +683,13 @@ naturally is.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.labels">
-<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.labels" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of this surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
-sage: S = translation_surfaces.infinite_staircase().delaunay_triangulation()
+sage: S = translation_surfaces.infinite_staircase().delaunay_triangulate().codomain()
 sage: S.labels()
 ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 </pre></div>
@@ -615,14 +698,14 @@ sage: S.labels()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and edge index when crossing over the <code class="docutils literal notranslate"><span class="pre">edge</span></code>
 of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
@@ -631,13 +714,13 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 </pre></div>
@@ -646,14 +729,14 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.roots">
-<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.roots" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyDelaunayTriangulatedSurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface.roots" title="Link to this definition">¶</a></dt>
 <dd><p>Return root labels for the polygons forming the connected
 components of this surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
 <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),)</span>
 </pre></div>
@@ -664,7 +747,7 @@ components of this surface.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyMutableOrientedSimilaritySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyMutableOrientedSimilaritySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface" title="Link to this definition">¶</a></dt>
 <dd><p>A helper surface for <a class="reference internal" href="#flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface" title="flatsurf.geometry.lazy.LazyDelaunayTriangulatedSurface"><code class="xref py py-class docutils literal notranslate"><span class="pre">LazyDelaunayTriangulatedSurface</span></code></a>.</p>
 <p>A mutable wrapper of an (infinite) reference surface. When a polygon is not
 present in this wrapper yet, it is taken from the reference surface and can
@@ -698,7 +781,7 @@ make <a class="reference internal" href="#flatsurf.geometry.lazy.LazyDelaunayTri
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.glue">
-<span class="sig-name descname"><span class="pre">glue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.glue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.glue" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">glue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.glue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.glue" title="Link to this definition">¶</a></dt>
 <dd><p>Glue the (label, edge) pair <code class="docutils literal notranslate"><span class="pre">x</span></code> with the pair <code class="docutils literal notranslate"><span class="pre">y</span></code> in this surface.</p>
 <p>This unglues any existing gluings of these edges.</p>
 <div class="admonition note">
@@ -727,10 +810,10 @@ sage: T.gluings()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.is_mutable">
-<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.is_mutable" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.is_mutable" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is mutable, i.e., return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
@@ -745,11 +828,11 @@ sage: T.gluings()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and edge index when crossing over the <code class="docutils literal notranslate"><span class="pre">edge</span></code>
 of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
@@ -764,10 +847,10 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
@@ -782,7 +865,7 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.replace_polygon">
-<span class="sig-name descname"><span class="pre">replace_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.replace_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.replace_polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">replace_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyMutableOrientedSimilaritySurface.replace_polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyMutableOrientedSimilaritySurface.replace_polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Swap out the polygon with the label <code class="docutils literal notranslate"><span class="pre">label</span></code> with <code class="docutils literal notranslate"><span class="pre">polygon</span></code>.</p>
 <p>The polygons must have the same number of sides since gluings are kept.</p>
 <p>EXAMPLES:</p>
@@ -800,7 +883,7 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyOrientedSimilaritySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyOrientedSimilaritySurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_ring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface" title="Link to this definition">¶</a></dt>
 <dd><p>A surface that forwards all queries to an underlying reference surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
@@ -814,10 +897,10 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_compact">
-<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_compact" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_compact" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is compact as a topological space.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
@@ -832,7 +915,7 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_mutable">
-<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_mutable" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_mutable" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface could be changing.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
@@ -846,11 +929,11 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_translation_surface">
-<span class="sig-name descname"><span class="pre">is_translation_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.is_translation_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_translation_surface" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_translation_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.is_translation_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.is_translation_surface" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is a translation surface, i.e., glued
 edges can be transformed into each other by translations.</p>
 <p>This implements
-<a class="reference internal" href="similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface()</span></code></a>.</p>
+<a class="reference internal" href="categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface" title="flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">octagon_and_squares</span><span class="p">()</span>
@@ -865,11 +948,11 @@ edges can be transformed into each other by translations.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.labels">
-<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.labels" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of this surface which are just the labels of the
 underlying reference surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
 sage: S = translation_surfaces.infinite_staircase()
@@ -884,11 +967,11 @@ sage: T.labels()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and edge index when crossing over the <code class="docutils literal notranslate"><span class="pre">edge</span></code>
 of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
@@ -901,10 +984,10 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
@@ -917,11 +1000,11 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.roots">
-<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.roots" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyOrientedSimilaritySurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyOrientedSimilaritySurface.roots" title="Link to this definition">¶</a></dt>
 <dd><p>Return root labels for the polygons forming the connected
 components of this surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
@@ -938,7 +1021,7 @@ components of this surface.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyRelabeledSurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyRelabeledSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyRelabeledSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface" title="Link to this definition">¶</a></dt>
 <dd><p>A relabeled surface which forwards all requests to an underlying reference
 surface after translation of labels.</p>
 <p>Subclasses may override <code class="docutils literal notranslate"><span class="pre">_to_reference_label</span></code> and
@@ -951,7 +1034,7 @@ Otherwise, labels are mapped to the non-negative integers in order.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyRelabeledSurface.labels">
-<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.labels" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of this surface after renaming.</p>
 <blockquote>
 <div><p>sage: from flatsurf.geometry.chamanara import chamanara_surface
@@ -963,7 +1046,7 @@ sage: S.labels()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyRelabeledSurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and its edge that is across from the polygon
 with <code class="docutils literal notranslate"><span class="pre">label</span></code> and its <code class="docutils literal notranslate"><span class="pre">edge</span></code>.</p>
 <p>Return <code class="docutils literal notranslate"><span class="pre">None</span></code> if there is no polygon glued to that edge.</p>
@@ -980,7 +1063,7 @@ with <code class="docutils literal notranslate"><span class="pre">label</span></
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyRelabeledSurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code> in this surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.chamanara</span> <span class="kn">import</span> <span class="n">chamanara_surface</span>
@@ -993,7 +1076,7 @@ with <code class="docutils literal notranslate"><span class="pre">label</span></
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyRelabeledSurface.roots">
-<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.roots" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyRelabeledSurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyRelabeledSurface.roots" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of the roots of the components of this surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf.geometry.chamanara</span> <span class="kn">import</span> <span class="n">chamanara_surface</span>
@@ -1008,25 +1091,25 @@ with <code class="docutils literal notranslate"><span class="pre">label</span></
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyTriangulatedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">LazyTriangulatedSurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface" title="Link to this definition">¶</a></dt>
 <dd><p>A triangulated surface whose structure is computed on demand.</p>
 <p>Used to triangulate surfaces when in-place-triangulation is not requested.
 In particular, this is used to triangulate infinite type surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.is_compact">
-<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.is_compact" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_compact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.is_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.is_compact" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is compact as a topological space.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_compact()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_compact</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
@@ -1035,13 +1118,13 @@ In particular, this is used to triangulate infinite type surface.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.is_mutable">
-<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.is_mutable" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_mutable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.is_mutable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.is_mutable" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is mutable, i.e., return <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
+<a class="reference internal" href="categories/topological_surfaces.html#flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable" title="flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.topological_surfaces.TopologicalSurfaces.ParentMethods.is_mutable()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">()</span>
 <span class="kc">False</span>
 </pre></div>
@@ -1050,15 +1133,15 @@ In particular, this is used to triangulate infinite type surface.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.is_triangulated">
-<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.is_triangulated" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_triangulated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.is_triangulated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.is_triangulated" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether this surface is triangulated.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_triangulated</span><span class="p">()</span>
 <span class="kc">True</span>
 
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">is_triangulated</span><span class="p">()</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
 <span class="o">...</span>
@@ -1069,13 +1152,13 @@ In particular, this is used to triangulate infinite type surface.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.labels">
-<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.labels" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.labels" title="Link to this definition">¶</a></dt>
 <dd><p>Return the labels of this surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.labels()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sage: from flatsurf import translation_surfaces
-sage: S = translation_surfaces.infinite_staircase().triangulate()
+sage: S = translation_surfaces.infinite_staircase().triangulate().codomain()
 sage: S.labels()
 ((0, 0), (1, 1), (-1, 1), (0, 1), (1, 0), (2, 0), (-1, 0), (-2, 0), (2, 1), (3, 1), (-2, 1), (-3, 1), (3, 0), (4, 0), (-3, 0), (-4, 0), …)
 </pre></div>
@@ -1084,14 +1167,14 @@ sage: S.labels()
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.opposite_edge">
-<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.opposite_edge" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">opposite_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.opposite_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.opposite_edge" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon label and edge index when crossing over the <code class="docutils literal notranslate"><span class="pre">edge</span></code>
 of the polygon <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.opposite_edge()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 <span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
@@ -1100,13 +1183,13 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.polygon">
-<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.polygon" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.polygon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.polygon" title="Link to this definition">¶</a></dt>
 <dd><p>Return the polygon with <code class="docutils literal notranslate"><span class="pre">label</span></code>.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.polygon()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">polygon</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 </pre></div>
@@ -1115,14 +1198,14 @@ of the polygon <code class="docutils literal notranslate"><span class="pre">labe
 
 <dl class="py method">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.LazyTriangulatedSurface.roots">
-<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.roots" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#LazyTriangulatedSurface.roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.LazyTriangulatedSurface.roots" title="Link to this definition">¶</a></dt>
 <dd><p>Return root labels for the polygons forming the connected
 components of this surface.</p>
 <p>This implements
-<a class="reference internal" href="polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
+<a class="reference internal" href="categories/polygonal_surfaces.html#flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots" title="flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flatsurf.geometry.categories.polygonal_surfaces.PolygonalSurfaces.ParentMethods.roots()</span></code></a>.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">roots</span><span class="p">()</span>
 <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),)</span>
 </pre></div>
@@ -1133,11 +1216,11 @@ components of this surface.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="flatsurf.geometry.lazy.TriangulationLabels">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">TriangulationLabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#TriangulationLabels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.TriangulationLabels" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flatsurf.geometry.lazy.</span></span><span class="sig-name descname"><span class="pre">TriangulationLabels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/flatsurf/geometry/lazy.html#TriangulationLabels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#flatsurf.geometry.lazy.TriangulationLabels" title="Link to this definition">¶</a></dt>
 <dd><p>The labels of a triangulation of a (possibly infinite) surface.</p>
 <p>EXAMPLES:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sage</span><span class="p">:</span> <span class="kn">from</span> <span class="nn">flatsurf</span> <span class="kn">import</span> <span class="n">translation_surfaces</span>
-<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+<span class="n">sage</span><span class="p">:</span> <span class="n">S</span> <span class="o">=</span> <span class="n">translation_surfaces</span><span class="o">.</span><span class="n">infinite_staircase</span><span class="p">()</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
 <span class="n">sage</span><span class="p">:</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">labels</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1275,13 +1358,10 @@ components of this surface.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
+</div><script src="../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>

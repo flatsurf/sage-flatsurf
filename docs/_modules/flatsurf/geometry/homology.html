@@ -1,21 +1,21 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.homology - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -76,7 +76,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -91,22 +91,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -119,6 +160,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -137,7 +180,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -184,52 +228,80 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../geometry/pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -237,8 +309,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -261,7 +331,8 @@
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -271,7 +342,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for flatsurf.geometry.homology</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Absolute and relative (simplicial) homology of surfaces.</span>
@@ -325,9 +396,9 @@
 <span class="sd">    sage: from flatsurf import Polygon, similarity_surfaces, SimplicialHomology, GL2ROrbitClosure</span>
 
 <span class="sd">    sage: P = Polygon(angles=[3, 4, 13])</span>
-<span class="sd">    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type=&quot;translation&quot;).triangulate()</span>
+<span class="sd">    sage: S = similarity_surfaces.billiard(P).minimal_cover(cover_type=&quot;translation&quot;).triangulate().codomain()</span>
 
-<span class="sd">    sage: from flatsurf.geometry.pyflatsurf_conversion import FlatTriangulationConversion  # optional: pyflatsurf</span>
+<span class="sd">    sage: from flatsurf.geometry.pyflatsurf.conversion import FlatTriangulationConversion  # optional: pyflatsurf</span>
 <span class="sd">    sage: conversion = FlatTriangulationConversion.to_pyflatsurf(S)  # optional: pyflatsurf</span>
 <span class="sd">    sage: T = conversion.codomain()  # optional: pyflatsurf</span>
 <span class="sd">    sage: O = GL2ROrbitClosure(T)  # optional: pyflatsurf</span>
@@ -364,11 +435,15 @@
 
 <span class="kn">from</span> <span class="nn">sage.structure.parent</span> <span class="kn">import</span> <span class="n">Parent</span>
 <span class="kn">from</span> <span class="nn">sage.structure.element</span> <span class="kn">import</span> <span class="n">Element</span>
-
+<span class="kn">from</span> <span class="nn">sage.categories.morphism</span> <span class="kn">import</span> <span class="n">Morphism</span>
 <span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
 
+<span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">MorphismSpace</span>
 
-<div class="viewcode-block" id="SimplicialHomologyClass"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass">[docs]</a><span class="k">class</span> <span class="nc">SimplicialHomologyClass</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimplicialHomologyClass">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass">[docs]</a>
+<span class="k">class</span> <span class="nc">SimplicialHomologyClass</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An element of a homology group.</span>
 
@@ -416,7 +491,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span> <span class="o">=</span> <span class="n">chain</span>
 
-<div class="viewcode-block" id="SimplicialHomologyClass.algebraic_intersection"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection">[docs]</a>    <span class="k">def</span> <span class="nf">algebraic_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="SimplicialHomologyClass.algebraic_intersection">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.algebraic_intersection">[docs]</a>
+    <span class="k">def</span> <span class="nf">algebraic_intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the algebraic intersection of this class of a closed curve with</span>
 <span class="sd">        ``other``.</span>
@@ -496,6 +573,7 @@
 
         <span class="k">return</span> <span class="n">intersection</span></div>
 
+
     <span class="k">def</span> <span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">self_on_left</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return this homology class scaled by ``c``.</span>
@@ -508,7 +586,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: 3 * H.gens()[0]</span>
 <span class="sd">            3*B[(0, 1)]</span>
@@ -519,7 +596,9 @@
         <span class="k">del</span> <span class="n">self_on_left</span>  <span class="c1"># parameter intentionally ignored, the side does not matter</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="n">c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimplicialHomologyClass.coefficients"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients">[docs]</a>    <span class="nd">@cached_method</span>
+<div class="viewcode-block" id="SimplicialHomologyClass.coefficients">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficients">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the coefficients of this element in terms of the generators of homology.</span>
@@ -528,7 +607,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.gens()[0].coefficients()</span>
 <span class="sd">            (1, 0)</span>
@@ -539,6 +617,7 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">to_homology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_homology</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">to_homology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">))</span></div>
 
+
     <span class="k">def</span> <span class="nf">_richcmp_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return how this class compares to ``other`` with respect to the binary</span>
@@ -548,7 +627,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.gens()[0] == H.gens()[0]</span>
 <span class="sd">            True</span>
@@ -581,7 +659,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: hash(H.gens()[0]) == hash(H.gens()[0])</span>
 <span class="sd">            True</span>
@@ -597,7 +674,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.gens()[0]</span>
 <span class="sd">            B[(0, 1)]</span>
@@ -605,7 +681,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimplicialHomologyClass.coefficient"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">[docs]</a>    <span class="k">def</span> <span class="nf">coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
+<div class="viewcode-block" id="SimplicialHomologyClass.coefficient">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.coefficient">[docs]</a>
+    <span class="k">def</span> <span class="nf">coefficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the multiplicity of this class at a generator of homology.</span>
 
@@ -613,7 +691,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: a,b = H.gens()</span>
 <span class="sd">            sage: a.coefficient(a)</span>
@@ -639,6 +716,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span></div>
 
+
     <span class="k">def</span> <span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the formal sum of this class and ``other``.</span>
@@ -647,7 +725,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: a, b = H.gens()</span>
 <span class="sd">            sage: a + b</span>
@@ -664,7 +741,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: a, b = H.gens()</span>
 <span class="sd">            sage: a - b</span>
@@ -681,7 +757,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: a, b = H.gens()</span>
 <span class="sd">            sage: a + b</span>
@@ -692,7 +767,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimplicialHomologyClass.surface"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimplicialHomologyClass.surface">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyClass.surface">[docs]</a>
+    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface on which this homology class in defined.</span>
 
@@ -700,7 +777,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: h = H.gens()[0]</span>
 <span class="sd">            sage: h.surface()</span>
@@ -708,6 +784,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -717,7 +794,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: h = H.gens()[0]</span>
 <span class="sd">            sage: bool(h)</span>
@@ -729,7 +805,10 @@
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chain</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SimplicialHomologyGroup"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup">[docs]</a><span class="k">class</span> <span class="nc">SimplicialHomologyGroup</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup">[docs]</a>
+<span class="k">class</span> <span class="nc">SimplicialHomologyGroup</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ``k``-th simplicial homology group of the ``surface`` with</span>
 <span class="sd">    ``coefficients``.</span>
@@ -826,7 +905,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_relative</span> <span class="o">=</span> <span class="n">relative</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_implementation</span> <span class="o">=</span> <span class="n">implementation</span>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.is_absolute"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute">[docs]</a>    <span class="k">def</span> <span class="nf">is_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimplicialHomologyGroup.is_absolute">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.is_absolute">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this is absolute homology (and not relative to some set</span>
 <span class="sd">        of points.)</span>
@@ -835,7 +916,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.is_absolute()</span>
 <span class="sd">            True</span>
@@ -843,7 +923,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relative</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.some_elements"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements">[docs]</a>    <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.some_elements">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.some_elements">[docs]</a>
+    <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return some typical homology classes (for testing.)</span>
 
@@ -851,7 +934,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.some_elements()</span>
 <span class="sd">            [0, B[(0, 1)], B[(0, 0)]]</span>
@@ -859,7 +941,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">zero</span><span class="p">()]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.surface"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.surface">[docs]</a>    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.surface">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.surface">[docs]</a>
+    <span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the surface of which this is the homology.</span>
 
@@ -867,7 +952,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.surface() == T</span>
 <span class="sd">            True</span>
@@ -875,7 +959,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.chain_module"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.chain_module">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.chain_module">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">chain_module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the free module of simplicial chains of the surface i.e., formal</span>
@@ -885,7 +972,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.chain_module()</span>
 <span class="sd">            Free module generated by {(0, 1), (0, 0)} over Integer Ring</span>
@@ -895,7 +981,10 @@
 
         <span class="k">return</span> <span class="n">FreeModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coefficients</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">simplices</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.simplices"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.simplices">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.simplices">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">simplices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the simplices that form the generators of :meth:`chain_module`.</span>
@@ -904,7 +993,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 
 <span class="sd">        In dimension 1, this is the set of edges::</span>
 
@@ -948,7 +1036,10 @@
 
         <span class="k">return</span> <span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.change"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.change">[docs]</a>    <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.change">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.change">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return this homology but in dimension ``k``.</span>
@@ -957,7 +1048,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H</span>
 <span class="sd">            H₁(Translation Surface in H_1(0) built from a square)</span>
@@ -975,7 +1065,10 @@
             <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">(),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.boundary"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.boundary">[docs]</a>    <span class="k">def</span> <span class="nf">boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.boundary">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.boundary">[docs]</a>
+    <span class="k">def</span> <span class="nf">boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chain</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the boundary of ``chain`` as an element of the</span>
 <span class="sd">        :meth:`chain_module` in lower dimension.</span>
@@ -988,7 +1081,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 
 <span class="sd">        ::</span>
 
@@ -1048,6 +1140,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span></div>
 
+
     <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">_chain_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1058,7 +1151,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H._chain_complex()</span>
 <span class="sd">            Chain complex with at most 3 nonzero terms over Integer Ring</span>
@@ -1094,7 +1186,9 @@
             <span class="n">degree</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.zero"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.zero">[docs]</a>    <span class="k">def</span> <span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimplicialHomologyClass</span><span class="p">:</span>
+<div class="viewcode-block" id="SimplicialHomologyGroup.zero">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.zero">[docs]</a>
+    <span class="k">def</span> <span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimplicialHomologyClass</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the zero homology class.</span>
 
@@ -1102,13 +1196,13 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.zero()</span>
 <span class="sd">            0</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chain_module</span><span class="p">()</span><span class="o">.</span><span class="n">zero</span><span class="p">())</span></div>
+
 
     <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1120,7 +1214,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H._homology()</span>
 <span class="sd">            (Finitely generated module V/W over Integer Ring with invariants (0, 0),</span>
@@ -1180,7 +1273,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H._test_homology()</span>
 
@@ -1206,7 +1298,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H</span>
 <span class="sd">            H₁(Translation Surface in H_1(0) built from a square)</span>
@@ -1244,7 +1335,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 
 <span class="sd">        ::</span>
@@ -1292,7 +1382,9 @@
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot convert this element to a homology class yet&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.gens"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.gens">[docs]</a>    <span class="nd">@cached_method</span>
+<div class="viewcode-block" id="SimplicialHomologyGroup.gens">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.gens">[docs]</a>
+    <span class="nd">@cached_method</span>
     <span class="k">def</span> <span class="nf">gens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return generators of homology.</span>
@@ -1301,7 +1393,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 
 <span class="sd">        ::</span>
 
@@ -1328,7 +1419,29 @@
         <span class="n">homology</span><span class="p">,</span> <span class="n">from_homology</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_homology</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">from_homology</span><span class="p">(</span><span class="n">g</span><span class="p">))</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">homology</span><span class="o">.</span><span class="n">gens</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.degree"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.degree">[docs]</a>    <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.ngens">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.ngens">[docs]</a>
+    <span class="k">def</span> <span class="nf">ngens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Betti number of this homology.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: T = translation_surfaces.square_torus()</span>
+
+<span class="sd">            sage: H = T.homology()</span>
+<span class="sd">            sage: H.ngens()</span>
+<span class="sd">            2</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.degree">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.degree">[docs]</a>
+    <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the degree `k` for this homology `H_k`.</span>
 
@@ -1336,7 +1449,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H.degree()</span>
@@ -1345,17 +1457,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_k</span></div>
 
-<div class="viewcode-block" id="SimplicialHomologyGroup.symplectic_basis"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis">[docs]</a>    <span class="k">def</span> <span class="nf">symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="SimplicialHomologyGroup.symplectic_basis">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.symplectic_basis">[docs]</a>
+    <span class="k">def</span> <span class="nf">symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SimplicialHomologyClass</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a symplectic basis of generators of this homology group.</span>
 
-<span class="sd">        TODO: Add a reference and a definition.</span>
+<span class="sd">        A symplectic basis is a basis of the form `(e_1, \ldots, e_n, f_1,</span>
+<span class="sd">        \ldots, f_n)` such that for the</span>
+<span class="sd">        :meth:`SimplicialHomologyClass.algebraic_intersection`, `e_i</span>
+<span class="sd">        \cdot e_j = f_i \cdot f_j = 0` and `e_i \cdot f_j = \delta_{ij}` for</span>
+<span class="sd">        all `i` and `j`.</span>
 
 <span class="sd">        EXAMPLES::</span>
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 
 <span class="sd">        ::</span>
 
@@ -1387,7 +1505,10 @@
                 <span class="s2">&quot;cannot determine symplectic basis for this homology group over this ring yet&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="nb">sum</span><span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">g</span> <span class="k">for</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">()))</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">C</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="nb">sum</span><span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">g</span> <span class="k">for</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gens</span><span class="p">()))</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">C</span>
+        <span class="p">]</span>  <span class="c1"># pyright: ignore</span></div>
+
 
     <span class="k">def</span> <span class="nf">_test_symplectic_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1397,7 +1518,6 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 <span class="sd">            sage: H._test_symplectic_basis()</span>
 
@@ -1425,6 +1545,102 @@
             <span class="k">for</span> <span class="n">bb</span> <span class="ow">in</span> <span class="n">B</span><span class="p">:</span>
                 <span class="n">tester</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">algebraic_intersection</span><span class="p">(</span><span class="n">bb</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 
+<div class="viewcode-block" id="SimplicialHomologyGroup.hom">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyGroup.hom">[docs]</a>
+    <span class="k">def</span> <span class="nf">hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the homomorphism of homology induced by ``f``.</span>
+
+<span class="sd">        INPUT:</span>
+
+<span class="sd">        - ``f`` -- a morphism of surfaces or a matrix</span>
+
+<span class="sd">        - ``codomain`` -- the simplicial homology this morphism maps into</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+
+<span class="sd">            sage: g.matrix()  # optional: pyflatsurf</span>
+<span class="sd">            [1 0]</span>
+<span class="sd">            [2 1]</span>
+
+<span class="sd">            sage: H.gens()</span>
+<span class="sd">            (B[(0, 1)], B[(0, 0)])</span>
+<span class="sd">            sage: [g(h) for h in H.gens()]  # optional: pyflatsurf</span>
+<span class="sd">            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">flatsurf.geometry.veech_group</span> <span class="kn">import</span> <span class="n">SurfaceMorphism</span>
+        <span class="kn">from</span> <span class="nn">sage.matrix.matrix0</span> <span class="kn">import</span> <span class="n">Matrix</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Hom</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">SurfaceMorphism</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">codomain</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">homology</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">codomain</span><span class="o">.</span><span class="n">surface</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">f</span><span class="o">.</span><span class="n">codomain</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;codomain must be codomain of morphism or None&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">():</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">__make_element_class__</span><span class="p">(</span>
+                    <span class="n">SimplicialHomologyMorphism_induced</span>
+                <span class="p">)(</span><span class="n">parent</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_square</span><span class="p">():</span>
+                    <span class="n">codomain</span> <span class="o">=</span> <span class="bp">self</span>
+
+            <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;cannot deduce codomain from this matrix&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">ncols</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ngens</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;matrix must have one column for each generator of homology&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">nrows</span><span class="p">()</span> <span class="o">!=</span> <span class="n">codomain</span><span class="o">.</span><span class="n">ngens</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;matrix must have one row for each generator of the codomain&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">Hom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">__make_element_class__</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_matrix</span><span class="p">)(</span>
+                <span class="n">parent</span><span class="p">,</span> <span class="n">f</span>
+            <span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot create a morphism in homology from this data yet&quot;</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_Hom_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return the space of morphisms from this homology to ``Y``.</span>
+<span class="sd">        k        EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                    sage: H = S.homology()</span>
+
+<span class="sd">                    sage: End(H)</span>
+<span class="sd">                    Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">SimplicialHomologyGroup</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">SimplicialHomologyMorphismSpace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_Hom_</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return whether this homology is indistinguishable from ``other``.</span>
@@ -1439,11 +1655,9 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: HH = SimplicialHomology(T)</span>
 
 <span class="sd">            sage: H == HH</span>
@@ -1470,11 +1684,9 @@
 
 <span class="sd">            sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: H = SimplicialHomology(T)</span>
 
 <span class="sd">            sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">            sage: T.set_immutable()</span>
 <span class="sd">            sage: HH = SimplicialHomology(T)</span>
 
 <span class="sd">            sage: hash(H) == hash(HH)</span>
@@ -1492,7 +1704,716 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SimplicialHomology"><a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomology">[docs]</a><span class="k">def</span> <span class="nf">SimplicialHomology</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SimplicialHomologyMorphismSpace">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace">[docs]</a>
+<span class="k">class</span> <span class="nc">SimplicialHomologyMorphismSpace</span><span class="p">(</span><span class="n">MorphismSpace</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The space of homomorphisms from the homology ``domain`` to ``codomain``.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">        sage: A = S.affine_automorphism_group()</span>
+<span class="sd">        sage: M = matrix([[1, 0], [0, 1]])</span>
+<span class="sd">        sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">        sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">        sage: H = SimplicialHomology(S)</span>
+<span class="sd">        sage: g = H.hom(f)</span>
+<span class="sd">        sage: G = g.parent()</span>
+
+<span class="sd">    Since these are homomorphisms in homology, they preserve the linear</span>
+<span class="sd">    structure of the homology::</span>
+
+<span class="sd">        sage: g.category()</span>
+<span class="sd">        Category of endsets of modules over Integer Ring</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphismSpace</span>
+<span class="sd">        sage: isinstance(G, SimplicialHomologyMorphismSpace)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: TestSuite(G).run()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">Hom</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">domain</span><span class="p">,</span>
+            <span class="n">codomain</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">category</span> <span class="ow">or</span> <span class="n">Hom</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="n">codomain</span><span class="p">)</span><span class="o">.</span><span class="n">homset_category</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="SimplicialHomologyMorphismSpace.an_element">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.an_element">[docs]</a>
+    <span class="k">def</span> <span class="nf">an_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return some homomorphism in homology.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+
+<span class="sd">            sage: End(S.homology()).an_element()</span>
+<span class="sd">            Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)</span>
+<span class="sd">              Defn: [1 0]</span>
+<span class="sd">                    [0 1]</span>
+
+<span class="sd">            sage: Hom(S.homology(), T.homology()).an_element()</span>
+<span class="sd">            Generic morphism:</span>
+<span class="sd">              From: H₁(Translation Surface in H_1(0) built from a square)</span>
+<span class="sd">              To:   H₁(Translation Surface in H_2(2) built from 3 squares)</span>
+<span class="sd">              Defn: [0 0]</span>
+<span class="sd">                    [0 0]</span>
+<span class="sd">                    [0 0]</span>
+<span class="sd">                    [0 0]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SimplicialHomologyMorphismSpace.identity">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.identity">[docs]</a>
+    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the identity homomorphism in this space (if it exists.)</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+
+<span class="sd">            sage: End(S.homology()).identity()</span>
+<span class="sd">            Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)</span>
+<span class="sd">              Defn: [1 0]</span>
+<span class="sd">                    [0 1]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_endomorphism_set</span><span class="p">():</span>
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">identity_matrix</span>
+
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">identity_matrix</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">ngens</span><span class="p">(),</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_element_class__</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_matrix</span><span class="p">)(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">identity</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SimplicialHomologyMorphismSpace.zero">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.zero">[docs]</a>
+    <span class="k">def</span> <span class="nf">zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the zero homomorphism.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+
+<span class="sd">            sage: End(S.homology()).zero()</span>
+<span class="sd">            Generic endomorphism of H₁(Translation Surface in H_1(0) built from a square)</span>
+<span class="sd">              Defn: [0 0]</span>
+<span class="sd">                    [0 0]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">zero_matrix</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span>
+            <span class="n">zero_matrix</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span>
+                <span class="n">nrows</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">ngens</span><span class="p">(),</span>
+                <span class="n">ncols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">ngens</span><span class="p">(),</span>
+                <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimplicialHomologyMorphismSpace.base_ring">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphismSpace.base_ring">[docs]</a>
+    <span class="k">def</span> <span class="nf">base_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the ring over which these homomorphisms are defined.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+
+<span class="sd">            sage: End(S.homology()).base_ring()</span>
+<span class="sd">            Integer Ring</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a picklable version of this space.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+
+<span class="sd">            sage: H = End(S.homology()).base_ring()</span>
+<span class="sd">            sage: loads(dumps(H)) == H</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SimplicialHomologyMorphismSpace</span><span class="p">,</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">homset_category</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a printable representation of this space of homomorphisms.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+
+<span class="sd">            sage: H = End(S.homology())</span>
+<span class="sd">            sage: H</span>
+<span class="sd">            Endomorphisms of H₁(Translation Surface in H_1(0) built from a square)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">():</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Endomorphisms of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Homomorphisms from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="si">!r}</span><span class="s2"> to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="si">!r}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="SimplicialHomologyMorphism_base">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_base">[docs]</a>
+<span class="k">class</span> <span class="nc">SimplicialHomologyMorphism_base</span><span class="p">(</span><span class="n">Morphism</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all homomorphisms in homology.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">        sage: A = S.affine_automorphism_group()</span>
+<span class="sd">        sage: M = matrix([[1, 0], [0, 1]])</span>
+<span class="sd">        sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">        sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">        sage: H = SimplicialHomology(S)</span>
+<span class="sd">        sage: g = H.hom(f)</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_base</span>
+<span class="sd">        sage: isinstance(g, SimplicialHomologyMorphism_base)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: TestSuite(g).run()  # optional: pyflatsurf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimplicialHomologyMorphism_base.matrix">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_base.matrix">[docs]</a>
+    <span class="nd">@cached_method</span>
+    <span class="k">def</span> <span class="nf">matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the matrix describing this homomorphism on the generators of</span>
+<span class="sd">        homology (as a multiplication from the left.)</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: H.gens()</span>
+<span class="sd">            (B[(0, 1)], B[(0, 0)], B[(1, 1)], B[(2, 0)])</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+
+<span class="sd">            sage: g.matrix()  # optional: pyflatsurf</span>
+<span class="sd">            [1 0 0 0]</span>
+<span class="sd">            [1 1 2 0]</span>
+<span class="sd">            [0 0 1 0]</span>
+<span class="sd">            [1 0 0 1]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span>
+
+        <span class="k">return</span> <span class="n">matrix</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span><span class="o">.</span><span class="n">coefficients</span><span class="p">())</span> <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">gens</span><span class="p">()]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the pointwise sum of this morphism and ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+<span class="sd">            sage: h = End(H).one()</span>
+
+<span class="sd">            sage: g + h  # optional: pyflatsurf</span>
+<span class="sd">            Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)</span>
+<span class="sd">              Defn: [2 0 0 0]</span>
+<span class="sd">                    [1 2 2 0]</span>
+<span class="sd">                    [0 0 2 0]</span>
+<span class="sd">                    [1 0 0 2]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_acted_upon_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">self_on_left</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the morphism given by pointwise multiplying with ``x``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+
+<span class="sd">            sage: (2**1234567 * g).matrix().trace() == 2**1234569  # optional: pyflatsurf</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_neg_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the pointwise negative of this homomorphism.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+
+<span class="sd">            sage: -g  # optional: pyflatsurf</span>
+<span class="sd">            Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)</span>
+<span class="sd">              Defn: [-1  0  0  0]</span>
+<span class="sd">                    [-1 -1 -2  0]</span>
+<span class="sd">                    [ 0  0 -1  0]</span>
+<span class="sd">                    [-1  0  0 -1]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the composition of this homomorphism and ``other``.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: T = translation_surfaces.mcmullen_L(1, 1, 1, 2)</span>
+<span class="sd">            sage: U = translation_surfaces.mcmullen_L(1, 1, 1, 3)</span>
+
+<span class="sd">            sage: f = S.homology().hom(2 * identity_matrix(4), codomain=T.homology())</span>
+<span class="sd">            sage: g = T.homology().hom(3 * identity_matrix(4), codomain=U.homology())</span>
+
+<span class="sd">            sage: g * f</span>
+<span class="sd">            Generic morphism:</span>
+<span class="sd">              From: H₁(Translation Surface in H_2(2) built from 3 squares)</span>
+<span class="sd">              To:   H₁(Translation Surface in H_2(2) built from 2 squares and a rectangle)</span>
+<span class="sd">              Defn: [6 0 0 0]</span>
+<span class="sd">                    [0 6 0 0]</span>
+<span class="sd">                    [0 0 6 0]</span>
+<span class="sd">                    [0 0 0 6]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span><span class="o">.</span><span class="n">hom</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">()</span> <span class="o">*</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span><span class="p">(),</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this is not the homommorphism that is zero everywhere.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+
+<span class="sd">            sage: bool(g)  # optional: pyflatsurf</span>
+<span class="sd">            True</span>
+
+<span class="sd">            sage: bool(g.parent().zero())</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="SimplicialHomologyMorphism_matrix">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_matrix">[docs]</a>
+<span class="k">class</span> <span class="nc">SimplicialHomologyMorphism_matrix</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_base</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A homomorphism of homology that is given by a matrix that describes the</span>
+<span class="sd">    homomorphism on the generators.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">        sage: T = translation_surfaces.square_torus()</span>
+
+<span class="sd">        sage: f = S.homology().hom(matrix([[1, 2, 3, 4], [5, 6, 7, 8]]), codomain=T.homology())</span>
+<span class="sd">        sage: f</span>
+<span class="sd">        Generic morphism:</span>
+<span class="sd">          From: H₁(Translation Surface in H_2(2) built from 3 squares)</span>
+<span class="sd">          To:   H₁(Translation Surface in H_1(0) built from a square)</span>
+<span class="sd">          Defn: [1 2 3 4]</span>
+<span class="sd">                [5 6 7 8]</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_matrix</span>
+<span class="sd">        sage: isinstance(f, SimplicialHomologyMorphism_matrix)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: TestSuite(f).run()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">is_mutable</span><span class="p">():</span>
+            <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">matrix</span> <span class="k">as</span> <span class="n">copy</span>
+
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">=</span> <span class="n">matrix</span>
+
+    <span class="k">def</span> <span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the image of ``g`` under this homomorphism.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: T = translation_surfaces.square_torus()</span>
+
+<span class="sd">            sage: f = S.homology().hom(matrix([[1, 2, 3, 4], [5, 6, 7, 8]]), codomain=T.homology())</span>
+<span class="sd">            sage: [f(gen) for gen in S.homology().gens()]</span>
+<span class="sd">            [5*B[(0, 0)] + B[(0, 1)],</span>
+<span class="sd">             6*B[(0, 0)] + 2*B[(0, 1)],</span>
+<span class="sd">             7*B[(0, 0)] + 3*B[(0, 1)],</span>
+<span class="sd">             8*B[(0, 0)] + 4*B[(0, 1)]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">vector</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">*</span> <span class="n">vector</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">coefficients</span><span class="p">())</span>
+
+        <span class="n">homology</span><span class="p">,</span> <span class="n">to_chain</span><span class="p">,</span> <span class="n">to_homology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">_homology</span><span class="p">()</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="n">coefficient</span> <span class="o">*</span> <span class="n">gen</span> <span class="k">for</span> <span class="p">(</span><span class="n">coefficient</span><span class="p">,</span> <span class="n">gen</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">homology</span><span class="o">.</span><span class="n">gens</span><span class="p">())</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">()(</span><span class="n">to_chain</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
+
+<span class="sd">        .. NOTE::</span>
+
+<span class="sd">            We cannot override ``_richcmp_`` since our non-uniqueness of</span>
+<span class="sd">            surfaces breaks the coercion framework in SageMath.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+<span class="sd">            sage: h = H.hom(g.matrix())  # optional: pyflatsurf</span>
+<span class="sd">            sage: h == h  # optional: pyflatsurf</span>
+<span class="sd">            True</span>
+
+<span class="sd">        Note that this determines whether two morphisms are indistinguishable,</span>
+<span class="sd">        not whether they are pointwise the same::</span>
+
+<span class="sd">            sage: h == g  # optional: pyflatsurf</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SimplicialHomologyMorphism_matrix</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_matrix</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a hash value for this morphism that is compatible with</span>
+<span class="sd">        :meth:`__eq__`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: f = End(S.homology()).one()</span>
+<span class="sd">            sage: g = End(S.homology()).one()</span>
+
+<span class="sd">            sage: hash(f) == hash(g)</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method for :meth:`_repr_`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
+<span class="sd">            sage: f = End(S.homology()).one()</span>
+<span class="sd">            sage: f</span>
+<span class="sd">            Generic endomorphism of H₁(Translation Surface in H_2(2) built from 3 squares)</span>
+<span class="sd">              Defn: [1 0 0 0]</span>
+<span class="sd">                    [0 1 0 0]</span>
+<span class="sd">                    [0 0 1 0]</span>
+<span class="sd">                    [0 0 0 1]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matrix</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SimplicialHomologyMorphism_induced">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomologyMorphism_induced">[docs]</a>
+<span class="k">class</span> <span class="nc">SimplicialHomologyMorphism_induced</span><span class="p">(</span><span class="n">SimplicialHomologyMorphism_base</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A homomorphism of homology induced by a morphism of surfaces.</span>
+
+<span class="sd">    EXAMPLES::</span>
+
+<span class="sd">        sage: from flatsurf import translation_surfaces</span>
+<span class="sd">        sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">        sage: A = S.affine_automorphism_group()</span>
+<span class="sd">        sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">        sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">        sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">        sage: H = SimplicialHomology(S)</span>
+<span class="sd">        sage: g = H.hom(f)</span>
+
+<span class="sd">    TESTS::</span>
+
+<span class="sd">        sage: from flatsurf.geometry.homology import SimplicialHomologyMorphism_induced</span>
+<span class="sd">        sage: isinstance(g, SimplicialHomologyMorphism_induced)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        sage: TestSuite(g).run()  # optional: pyflatsurf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">morphism</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span> <span class="o">=</span> <span class="n">morphism</span>
+
+    <span class="k">def</span> <span class="nf">_call_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the image of the homology class ``x`` under this morphism.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+
+<span class="sd">            sage: H.gens()</span>
+<span class="sd">            (B[(0, 1)], B[(0, 0)])</span>
+<span class="sd">            sage: [g(h) for h in H.gens()]  # optional: pyflatsurf</span>
+<span class="sd">            [2*B[(0, 0)] + B[(0, 1)], B[(0, 0)]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="o">.</span><span class="n">_image_homology</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">codomain</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_repr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method for :meth:`_repr_` to produce a printable representation</span>
+<span class="sd">        of this homomorphism.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+<span class="sd">            sage: g._repr_type()</span>
+<span class="sd">            &#39;Induced&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Induced&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_repr_defn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method for :meth:`_repr_` to produce a printable representation</span>
+<span class="sd">        of this homomorphism.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+<span class="sd">            sage: print(g._repr_defn())</span>
+<span class="sd">            Induced by Affine endomorphism of Translation Surface in H_1(0) built from a square</span>
+<span class="sd">              Defn: Lift of linear action given by</span>
+<span class="sd">                    [1 2]</span>
+<span class="sd">                    [0 1]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Induced by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="si">!r}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return whether this morphism is indistinguishable from ``other``.</span>
+
+<span class="sd">        .. NOTE::</span>
+
+<span class="sd">            We cannot override ``_richcmp_`` since our non-uniqueness of</span>
+<span class="sd">            surfaces breaks the coercion framework in SageMath.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+<span class="sd">            sage: h = H.hom(f)</span>
+
+<span class="sd">            sage: g == h</span>
+<span class="sd">            True</span>
+
+<span class="sd">        Note that this does not compare homomorphisms pointwise::</span>
+
+<span class="sd">            sage: h = H.hom(g.matrix())  # optional: pyflatsurf</span>
+<span class="sd">            sage: g == h  # optional: pyflatsurf</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SimplicialHomologyMorphism_induced</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_morphism</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a hash value for this homomorphism that is compatible with</span>
+<span class="sd">        :meth:`__eq__`.</span>
+
+<span class="sd">        EXAMPLES::</span>
+
+<span class="sd">            sage: from flatsurf import translation_surfaces</span>
+<span class="sd">            sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">            sage: A = S.affine_automorphism_group()</span>
+<span class="sd">            sage: M = matrix([[1, 2], [0, 1]])</span>
+<span class="sd">            sage: f = A.derivative().section()(M, check=False)</span>
+
+<span class="sd">            sage: from flatsurf import SimplicialHomology</span>
+<span class="sd">            sage: H = SimplicialHomology(S)</span>
+<span class="sd">            sage: g = H.hom(f)</span>
+<span class="sd">            sage: h = H.hom(f)</span>
+<span class="sd">            sage: hash(g) == hash(h)</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphism</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="SimplicialHomology">
+<a class="viewcode-back" href="../../../geometry/homology.html#flatsurf.geometry.homology.SimplicialHomology">[docs]</a>
+<span class="k">def</span> <span class="nf">SimplicialHomology</span><span class="p">(</span>
     <span class="n">surface</span><span class="p">,</span>
     <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1531,12 +2452,12 @@
 
 <span class="sd">        sage: from flatsurf import translation_surfaces, SimplicialHomology</span>
 <span class="sd">        sage: T = translation_surfaces.square_torus()</span>
-<span class="sd">        sage: T.set_immutable()</span>
 <span class="sd">        sage: SimplicialHomology(T) is SimplicialHomology(T)</span>
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">homology</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
+
 </pre></div>
         </article>
       </div>
@@ -1569,13 +2490,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/scripts/furo.js"></script>
+</div><script src="../../../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>

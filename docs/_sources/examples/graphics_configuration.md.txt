@@ -189,7 +189,7 @@ gs.plot() + spt.plot(gs, color="red") + traj.plot(gs, color="orange")
 ## Multiple graphical surfaces
 
 It is possible to have more than one graphical surface. Maybe you want to have one where things look better.
-To get a new suface, you can call `s.graphical_surface()` again.
+To get a new surface, you can call `s.graphical_surface()` again.
 
 ```{code-cell}
 pretty_gs = s.graphical_surface(polygon_labels=False, edge_labels=False)

@@ -1,21 +1,21 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../../../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.similarity_surfaces - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -76,7 +76,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -91,22 +91,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -119,6 +160,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -137,7 +180,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -184,52 +228,80 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry/pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -237,8 +309,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -261,7 +331,8 @@
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -271,7 +342,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for flatsurf.geometry.categories.similarity_surfaces</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The category of similarity surfaces.</span>
@@ -397,11 +468,12 @@
 <span class="kn">from</span> <span class="nn">flatsurf.cache</span> <span class="kn">import</span> <span class="n">cached_surface_method</span>
 
 <span class="kn">from</span> <span class="nn">sage.categories.category_with_axiom</span> <span class="kn">import</span> <span class="n">all_axioms</span>
-<span class="kn">from</span> <span class="nn">sage.misc.cachefunc</span> <span class="kn">import</span> <span class="n">cached_method</span>
 <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">QQ</span><span class="p">,</span> <span class="n">AA</span>
 
 
-<div class="viewcode-block" id="SimilaritySurfaces"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces">[docs]</a><span class="k">class</span> <span class="nc">SimilaritySurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces">[docs]</a>
+<span class="k">class</span> <span class="nc">SimilaritySurfaces</span><span class="p">(</span><span class="n">SurfaceCategory</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of surfaces built from polygons with edges identified by</span>
 <span class="sd">    similarities.</span>
@@ -414,7 +486,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.super_categories"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.super_categories">[docs]</a>    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.super_categories">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.super_categories">[docs]</a>
+    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories that a similarity surface is also a member of,</span>
 <span class="sd">        namely the surfaces formed by Euclidean polygons.</span>
@@ -432,7 +506,10 @@
 
         <span class="k">return</span> <span class="p">[</span><span class="n">EuclideanPolygonalSurfaces</span><span class="p">()]</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods">[docs]</a>    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods">[docs]</a>
+    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all surfaces that are built from</span>
 <span class="sd">        Euclidean polygons that are glued by similarities.</span>
@@ -441,7 +518,9 @@
 <span class="sd">        want to put it here.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.refined_category"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.refined_category">[docs]</a>        <span class="k">def</span> <span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.refined_category">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.refined_category">[docs]</a>
+        <span class="k">def</span> <span class="nf">refined_category</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the smallest subcategory that this surface is in by consulting</span>
 <span class="sd">            how its edges are glued.</span>
@@ -517,7 +596,10 @@
 
             <span class="k">return</span> <span class="n">category</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_cone_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface">[docs]</a>        <span class="k">def</span> <span class="nf">is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_cone_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_cone_surface">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a cone surface, i.e., glued edges</span>
 <span class="sd">            can be transformed into each other with isometries.</span>
@@ -552,7 +634,10 @@
 
             <span class="k">return</span> <span class="n">ConeSurfaces</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_cone_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_dilation_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface">[docs]</a>        <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_dilation_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_dilation_surface">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_dilation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a dilation surface, i.e., whether</span>
 <span class="sd">            glued edges can be transformed into each other by translation</span>
@@ -593,7 +678,10 @@
                 <span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_translation_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface">[docs]</a>        <span class="k">def</span> <span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_translation_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_translation_surface">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_translation_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a translation surface, i.e., glued</span>
 <span class="sd">            edges can be transformed into each other by translations.</span>
@@ -641,7 +729,10 @@
                 <span class="bp">self</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="n">positive</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_rational_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_rational_surface">[docs]</a>        <span class="k">def</span> <span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.is_rational_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.is_rational_surface">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this surface is a rational surface, i.e., the</span>
 <span class="sd">            rotational part of all gluings is a rational multiple of π.</span>
@@ -667,6 +758,7 @@
                 <span class="k">return</span> <span class="kc">True</span>
 
             <span class="k">return</span> <span class="n">SimilaritySurfaces</span><span class="o">.</span><span class="n">Rational</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
 
         <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">switch_sides</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -707,7 +799,63 @@
 
             <span class="k">return</span> <span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.homology"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology">[docs]</a>        <span class="k">def</span> <span class="nf">homology</span><span class="p">(</span>
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.apply_matrix">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.apply_matrix">[docs]</a>
+        <span class="k">def</span> <span class="nf">apply_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Apply the 2×2 matrix ``m`` to the polygons of this surface and</span>
+<span class="sd">            return a morphism from this surface to the deformed surface.</span>
+
+<span class="sd">            INPUT:</span>
+
+<span class="sd">            - ``m`` -- a 2×2 matrix</span>
+
+<span class="sd">            - ``in_place`` -- a boolean (default: ``True``); whether to modify</span>
+<span class="sd">              this surface itself or return a modified copy of this surface</span>
+<span class="sd">              instead.</span>
+
+<span class="sd">            EXAMPLES::</span>
+
+<span class="sd">                sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                sage: S = translation_surfaces.square_torus()</span>
+<span class="sd">                sage: morphism = S.apply_matrix(matrix([[2, 0], [0, 1]]), in_place=False)</span>
+
+<span class="sd">                sage: morphism.domain()</span>
+<span class="sd">                Translation Surface in H_1(0) built from a square</span>
+<span class="sd">                sage: morphism.codomain()</span>
+<span class="sd">                Translation Surface in H_1(0) built from a rectangle</span>
+
+<span class="sd">                sage: morphism.codomain().polygon(0)</span>
+<span class="sd">                Polygon(vertices=[(0, 0), (2, 0), (2, 1), (0, 1)])</span>
+
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">in_place</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">warnings</span>
+
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;The defaults for apply_matrix() are going to change in a future version of sage-flatsurf; previously, apply_matrix() was performed in_place=True. &quot;</span>
+                    <span class="s2">&quot;In a future version of sage-flatsurf the default is going to change to in_place=False. In the meantime, please pass in_place=True/False explicitly.&quot;</span>
+                <span class="p">)</span>
+
+                <span class="n">in_place</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s2">&quot;this surface does not support applying a GL(2,R) action in-place yet&quot;</span>
+                <span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">GL2RImageSurface</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="n">GL2RImageSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">GL2RMorphism</span>
+
+            <span class="k">return</span> <span class="n">GL2RMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.homology">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.homology">[docs]</a>
+        <span class="k">def</span> <span class="nf">homology</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -772,6 +920,7 @@
                 <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
             <span class="p">)</span></div>
 
+
         <span class="nd">@cached_surface_method</span>
         <span class="k">def</span> <span class="nf">_homology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -820,7 +969,9 @@
                 <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.cohomology"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology">[docs]</a>        <span class="k">def</span> <span class="nf">cohomology</span><span class="p">(</span>
+<div class="viewcode-block" id="SimilaritySurfaces.ParentMethods.cohomology">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.ParentMethods.cohomology">[docs]</a>
+        <span class="k">def</span> <span class="nf">cohomology</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -889,6 +1040,7 @@
                 <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
             <span class="p">)</span></div>
 
+
         <span class="nd">@cached_surface_method</span>
         <span class="k">def</span> <span class="nf">_cohomology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -925,7 +1077,10 @@
                 <span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">,</span> <span class="n">relative</span><span class="p">,</span> <span class="n">implementation</span><span class="p">,</span> <span class="n">category</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented">[docs]</a>    <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented">[docs]</a>
+    <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of oriented surfaces built from Euclidean polygons that</span>
 <span class="sd">        are glued by similarities with the orientation compatible with the</span>
@@ -939,7 +1094,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ElementMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods">[docs]</a>
+        <span class="k">class</span> <span class="nc">ElementMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all points of oriented similarity</span>
 <span class="sd">            surfaces.</span>
@@ -948,7 +1105,9 @@
 <span class="sd">            want to put it here.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.angle"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.angle">[docs]</a>            <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.angle">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.angle">[docs]</a>
+            <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the total angle at this point as a multiple of 2π.</span>
 
@@ -1016,7 +1175,10 @@
 
                 <span class="k">return</span> <span class="n">ring</span><span class="o">.</span><span class="n">one</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.turns"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns">[docs]</a>            <span class="k">def</span> <span class="nf">turns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.turns">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.turns">[docs]</a>
+            <span class="k">def</span> <span class="nf">turns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the number of total 2π turns at this vertex.</span>
 
@@ -1106,7 +1268,10 @@
 
                 <span class="k">return</span> <span class="p">(</span><span class="n">half_turns</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges">[docs]</a>            <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges">[docs]</a>
+            <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the edges of the polygons that contain this point.</span>
 
@@ -1117,7 +1282,10 @@
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">return</span> <span class="p">{</span><span class="n">edge</span> <span class="k">for</span> <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">holonomy</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_ccw</span><span class="p">()}</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges_ccw"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">[docs]</a>            <span class="k">def</span> <span class="nf">edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ElementMethods.edges_ccw">[docs]</a>
+            <span class="k">def</span> <span class="nf">edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_edge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the edges of the polygons that are crossed when walking</span>
 <span class="sd">                around this point in counterclockwise direction.</span>
@@ -1194,6 +1362,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_ccw_vertex</span><span class="p">(</span>
                     <span class="n">start_edge</span><span class="o">=</span><span class="n">start_edge</span><span class="p">,</span> <span class="n">start_holonomy</span><span class="o">=</span><span class="n">start_holonomy</span>
                 <span class="p">)</span></div>
+
 
             <span class="k">def</span> <span class="nf">_test_edges_ccw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1341,7 +1510,10 @@
 
                 <span class="k">return</span> <span class="n">edges</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods">[docs]</a>
+        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all oriented surfaces that are built</span>
 <span class="sd">            from Euclidean polygons that are glued by similarities.</span>
@@ -1350,7 +1522,9 @@
 <span class="sd">            want to put it here.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.some_elements"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.some_elements">[docs]</a>            <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.some_elements">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.some_elements">[docs]</a>
+            <span class="k">def</span> <span class="nf">some_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return some typical points of this surface (for testing).</span>
 
@@ -1383,7 +1557,10 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_finite_type</span><span class="p">():</span>
                     <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.angles"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.angles">[docs]</a>            <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_adjacent_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.angles">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.angles">[docs]</a>
+            <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_adjacent_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the angles around the vertices of the surface as</span>
 <span class="sd">                multiples of 2π.</span>
@@ -1519,6 +1696,7 @@
 
                 <span class="k">return</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()]</span></div>
 
+
             <span class="nd">@cached_surface_method</span>
             <span class="k">def</span> <span class="nf">_angle_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertex</span><span class="p">,</span> <span class="n">numerical</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1544,7 +1722,9 @@
 
                 <span class="k">return</span> <span class="n">turns</span> <span class="o">+</span> <span class="n">angle</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_matrix"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">[docs]</a>            <span class="nd">@cached_surface_method</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_matrix">[docs]</a>
+            <span class="nd">@cached_surface_method</span>
             <span class="k">def</span> <span class="nf">edge_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Returns the 2x2 matrix representing a similarity which when</span>
@@ -1590,7 +1770,10 @@
 
                 <span class="k">return</span> <span class="n">similarity_from_vectors</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="n">MatrixSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.underlying_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.underlying_surface">[docs]</a>            <span class="k">def</span> <span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.underlying_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.underlying_surface">[docs]</a>
+            <span class="k">def</span> <span class="nf">underlying_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return this surface.</span>
 
@@ -1613,7 +1796,10 @@
 
                 <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_transformation"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_transformation">[docs]</a>            <span class="k">def</span> <span class="nf">edge_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.edge_transformation">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.edge_transformation">[docs]</a>
+            <span class="k">def</span> <span class="nf">edge_transformation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the similarity bringing the provided edge to the opposite edge.</span>
 
@@ -1654,7 +1840,10 @@
                 <span class="c1"># This is the similarity carrying (a,b) to (aa,bb):</span>
                 <span class="k">return</span> <span class="n">gg</span> <span class="o">/</span> <span class="n">g</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero">[docs]</a>            <span class="k">def</span> <span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.set_vertex_zero">[docs]</a>
+            <span class="k">def</span> <span class="nf">set_vertex_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Applies a combinatorial rotation to the polygon with the provided label.</span>
 
@@ -1711,7 +1900,10 @@
                 <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                 <span class="k">return</span> <span class="n">s</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.relabel"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel">[docs]</a>            <span class="k">def</span> <span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.relabel">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.relabel">[docs]</a>
+            <span class="k">def</span> <span class="nf">relabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relabeling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a surface whose polygons have been relabeled according</span>
 <span class="sd">                to ``relabeling``.</span>
@@ -1807,7 +1999,10 @@
 
                 <span class="k">return</span> <span class="n">S</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.copy"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.copy">[docs]</a>            <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.copy">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.copy">[docs]</a>
+            <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">relabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">mutable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2028,7 +2223,10 @@
                             <span class="n">deprecation_warning</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.change_ring"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring">[docs]</a>            <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.change_ring">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.change_ring">[docs]</a>
+            <span class="k">def</span> <span class="nf">change_ring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a copy of this surface whose polygons are defined over</span>
 <span class="sd">                ``ring``.</span>
@@ -2046,121 +2244,155 @@
 
                 <span class="k">return</span> <span class="n">BaseRingChangedSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangle_flip"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip">[docs]</a>            <span class="k">def</span> <span class="nf">triangle_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangle_flip">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangle_flip">[docs]</a>
+            <span class="k">def</span> <span class="nf">triangle_flip</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span>
+            <span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Flips the diagonal of the quadrilateral formed by two triangles</span>
-<span class="sd">                glued together along the provided edge (l1,e1). This can be broken</span>
-<span class="sd">                into two steps: join along the edge to form a convex quadilateral,</span>
-<span class="sd">                then cut along the other diagonal. Raises a ValueError if this</span>
-<span class="sd">                quadrilateral would be non-convex. In this case no changes to the</span>
-<span class="sd">                surface are made.</span>
+<span class="sd">                glued together along the provided ``edge`` of the polygon with</span>
+<span class="sd">                ``label``.</span>
 
-<span class="sd">                The direction parameter defaults to (0,1). This is used to decide how</span>
-<span class="sd">                the triangles being glued in are labeled. Let p1 be the triangle</span>
-<span class="sd">                associated to label l1, and p2 be the triangle associated to l2</span>
-<span class="sd">                but moved by a similarity to share the edge (l1,e1). Each triangle</span>
-<span class="sd">                has a exactly one separatrix leaving a vertex which travels in the</span>
-<span class="sd">                provided direction or its opposite. (For edges we only count as sepatrices</span>
-<span class="sd">                traveling counter-clockwise around the triangle.) This holds for p1</span>
-<span class="sd">                and p2 and the separatrices must point in opposite directions.</span>
+<span class="sd">                The diagonal is flipped by turning it counterclockwise (from</span>
+<span class="sd">                the point of view of the polygon with ``label``.) The ``label``</span>
+<span class="sd">                is given to the triangle which has the edge that was previously</span>
+<span class="sd">                the edge preceding ``edge`` in the polygon. The diagonal does</span>
+<span class="sd">                not change its index in the triangles.</span>
 
-<span class="sd">                The above description gives two new triangles t1 and t2 which must be</span>
-<span class="sd">                glued in (obtained by flipping the diagonal of the quadrilateral).</span>
-<span class="sd">                Up to swapping t1 and t2 we can assume the separatrix in t1 in the</span>
-<span class="sd">                provided direction (or its opposite) points in the same direction as</span>
-<span class="sd">                that of p1. Further up to cyclic permutation of vertex labels we can</span>
-<span class="sd">                assume that the separatrices in p1 and t1 start at the vertex with the</span>
-<span class="sd">                same index (an element of {0,1,2}). The same can be done for p2 and t2.</span>
-<span class="sd">                We apply the label l1 to t1 and the label l2 to t2. This precisely</span>
-<span class="sd">                determines how t1 and t2 should be used to replace p1 and p2.</span>
+<span class="sd">                In other words,</span>
+
+<span class="sd">                .. code-block:: text</span>
+
+<span class="sd">                   +&lt;----------+       +&lt;----------+</span>
+<span class="sd">                   |\          ^       |          /^</span>
+<span class="sd">                   | \      L&#39; |       | L&#39;      / |</span>
+<span class="sd">                   |  \e&#39;      |       |        /  |</span>
+<span class="sd">                   |   \|      |       |       /e  |</span>
+<span class="sd">                   |e+1 \      |       |      /-   |</span>
+<span class="sd">                   |     \     |       |     /     |</span>
+<span class="sd">                   |      \    |       |   -/      |</span>
+<span class="sd">                   |       \   |       | e&#39;/   L   |</span>
+<span class="sd">                   |  L    |\  |       |  /        |</span>
+<span class="sd">                   |        e\ |       | /      e-1|</span>
+<span class="sd">                   v e-1      \|       v/  e+1     |</span>
+<span class="sd">                   +----------&gt;+       +----------&gt;+</span>
+
+<span class="sd">                where ``L`` is ``label``, ``L&#39;`` is the label of the opposite</span>
+<span class="sd">                polygon, ``e`` is ``edge`` and ``e&#39;`` is the edge index of the</span>
+<span class="sd">                diagonal in ``L&#39;``.</span>
 
 <span class="sd">                INPUT:</span>
 
-<span class="sd">                - ``l1`` - label of polygon</span>
+<span class="sd">                - ``label`` -- a polygon label</span>
 
-<span class="sd">                - ``e1`` - (integer) edge of the polygon</span>
+<span class="sd">                - ``edge`` -- an int; the index of an edge of the triangle with</span>
+<span class="sd">                  ``label``</span>
 
-<span class="sd">                - ``in_place`` (boolean) - If True do the flip to the current surface</span>
-<span class="sd">                  which must be mutable. In this case the updated surface will be</span>
-<span class="sd">                  returned.  Otherwise a mutable copy is made and then an edge is</span>
-<span class="sd">                  flipped, which is then returned.</span>
+<span class="sd">                - ``in_place`` -- a bool (default: ``False``) - whether this</span>
+<span class="sd">                  surface is modified or a modified copy is produced instead.</span>
 
-<span class="sd">                - ``test`` (boolean) - If True we don&#39;t actually flip, and we return</span>
-<span class="sd">                  True or False depending on whether or not the flip would be</span>
-<span class="sd">                  successful.</span>
+<span class="sd">                - ``test`` -- a bool (default: ``False``) - whether not to</span>
+<span class="sd">                  perform the flip but return whether the flip is possible.</span>
 
-<span class="sd">                - ``direction`` (2-dimensional vector) - Defaults to (0,1). The choice</span>
-<span class="sd">                  of this vector determines how the newly added triangles are labeled.</span>
+<span class="sd">                - ``direction`` -- ignored</span>
 
 <span class="sd">                EXAMPLES::</span>
 
-<span class="sd">                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface, Polygon</span>
+<span class="sd">                    sage: from flatsurf import similarity_surfaces, MutableOrientedSimilaritySurface</span>
 
-<span class="sd">                    sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))</span>
-<span class="sd">                    sage: s.polygon(0)</span>
-<span class="sd">                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])</span>
-<span class="sd">                    sage: s.triangle_flip(0, 0, test=True)</span>
-<span class="sd">                    False</span>
-<span class="sd">                    sage: s.triangle_flip(0, 1, test=True)</span>
-<span class="sd">                    True</span>
-<span class="sd">                    sage: s.triangle_flip(0, 2, test=True)</span>
-<span class="sd">                    False</span>
-
-<span class="sd">                    sage: s = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))</span>
-<span class="sd">                    sage: s = MutableOrientedSimilaritySurface.from_surface(s)</span>
-<span class="sd">                    sage: s.triangle_flip(0, 0, in_place=True)</span>
+<span class="sd">                    sage: S = similarity_surfaces.right_angle_triangle(1, 1)</span>
+<span class="sd">                    sage: S.triangle_flip(0, 0)</span>
 <span class="sd">                    Traceback (most recent call last):</span>
 <span class="sd">                    ...</span>
-<span class="sd">                    ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.</span>
-<span class="sd">                    sage: s.triangle_flip(0,1,in_place=True)</span>
-<span class="sd">                    Rational Cone Surface built from 2 isosceles triangles</span>
-<span class="sd">                    sage: s.polygon(0)</span>
-<span class="sd">                    Polygon(vertices=[(0, 0), (1, 1), (0, 1)])</span>
-<span class="sd">                    sage: s.polygon(1)</span>
-<span class="sd">                    Polygon(vertices=[(0, 0), (-1, -1), (0, -1)])</span>
-<span class="sd">                    sage: s.gluings()</span>
-<span class="sd">                    (((0, 0), (1, 0)), ((0, 1), (0, 2)), ((0, 2), (0, 1)), ((1, 0), (0, 0)), ((1, 1), (1, 2)), ((1, 2), (1, 1)))</span>
-<span class="sd">                    sage: s.triangle_flip(0,2,in_place=True)</span>
+<span class="sd">                    ValueError: cannot flip this edge because the surrounding quadrilateral is not strictly convex</span>
+
+<span class="sd">                    sage: S.triangle_flip(0, 1)</span>
+<span class="sd">                    Genus 0 Rational Cone Surface built from 2 isosceles triangles</span>
+
+<span class="sd">                    sage: S.triangle_flip(0, 2)</span>
 <span class="sd">                    Traceback (most recent call last):</span>
 <span class="sd">                    ...</span>
-<span class="sd">                    ValueError: Gluing triangles along this edge yields a non-convex quadrilateral.</span>
+<span class="sd">                    ValueError: cannot flip this edge because the surrounding quadrilateral is not strictly convex</span>
 
-<span class="sd">                    sage: p = Polygon(edges=[(2,0),(-1,3),(-1,-3)])</span>
-<span class="sd">                    sage: s = similarity_surfaces.self_glued_polygon(p)</span>
-<span class="sd">                    sage: s = MutableOrientedSimilaritySurface.from_surface(s)</span>
-<span class="sd">                    sage: s.triangle_flip(0,1,in_place=True)</span>
+<span class="sd">                We can flip edges of self-glued polygons::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface, similarity_surfaces</span>
+
+<span class="sd">                    sage: P = Polygon(edges=[(2, 0), (-1, 3), (-1, -3)])</span>
+<span class="sd">                    sage: T = MutableOrientedSimilaritySurface.from_surface(similarity_surfaces.self_glued_polygon(P))</span>
+
+<span class="sd">                    sage: T.triangle_flip(0, 1, in_place=True)</span>
 <span class="sd">                    Half-Translation Surface built from a triangle</span>
 
-<span class="sd">                    sage: s.set_immutable()</span>
+<span class="sd">                    sage: T.set_immutable()</span>
 
 <span class="sd">                    sage: from flatsurf.geometry.categories import DilationSurfaces</span>
-<span class="sd">                    sage: s in DilationSurfaces()</span>
+<span class="sd">                    sage: T in DilationSurfaces()</span>
 <span class="sd">                    True</span>
-<span class="sd">                    sage: s.labels()</span>
+<span class="sd">                    sage: T.labels()</span>
 <span class="sd">                    (0,)</span>
-<span class="sd">                    sage: s.polygons()</span>
-<span class="sd">                    (Polygon(vertices=[(0, 0), (-3, -3), (-1, -3)]),)</span>
-<span class="sd">                    sage: s.gluings()</span>
+<span class="sd">                    sage: T.polygons()</span>
+<span class="sd">                    (Polygon(vertices=[(0, 0), (-1, -3), (2, 0)]),)</span>
+<span class="sd">                    sage: T.gluings()</span>
 <span class="sd">                    (((0, 0), (0, 0)), ((0, 1), (0, 1)), ((0, 2), (0, 2)))</span>
-<span class="sd">                    sage: TestSuite(s).run()</span>
+
+<span class="sd">                TESTS::</span>
+
+<span class="sd">                    sage: TestSuite(S).run()</span>
+<span class="sd">                    sage: TestSuite(T).run()</span>
+
+<span class="sd">                The deprecated ``test`` keyword argument::</span>
+
+<span class="sd">                    sage: S = similarity_surfaces.right_angle_triangle(ZZ(1),ZZ(1))</span>
+<span class="sd">                    sage: S.polygon(0)</span>
+<span class="sd">                    Polygon(vertices=[(0, 0), (1, 0), (0, 1)])</span>
+<span class="sd">                    sage: S.triangle_flip(0, 0, test=True)</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.</span>
+<span class="sd">                    False</span>
+<span class="sd">                    sage: S.is_convex(0, 0, strict=True)</span>
+<span class="sd">                    False</span>
+
+<span class="sd">                    sage: S.triangle_flip(0, 1, test=True)</span>
+<span class="sd">                    True</span>
+<span class="sd">                    sage: S.triangle_flip(0, 2, test=True)</span>
+<span class="sd">                    False</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
-                    <span class="c1"># Just test if the flip would be successful</span>
-                    <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">l1</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="kc">False</span>
-                    <span class="n">l2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
-                    <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">l2</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="kc">False</span>
-                    <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_transformation</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span> <span class="n">e2</span><span class="p">)</span>
-                    <span class="n">hol</span> <span class="o">=</span> <span class="n">sim</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">vertex</span><span class="p">((</span><span class="n">e2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">p1</span><span class="o">.</span><span class="n">vertex</span><span class="p">((</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">))</span>
-                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.euclidean</span> <span class="kn">import</span> <span class="n">ccw</span>
+                <span class="k">if</span> <span class="n">test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
+                        <span class="kn">import</span> <span class="nn">warnings</span>
 
-                    <span class="k">return</span> <span class="p">(</span>
-                        <span class="n">ccw</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">),</span> <span class="n">hol</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                        <span class="ow">and</span> <span class="n">ccw</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">edge</span><span class="p">((</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">),</span> <span class="n">hol</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                            <span class="s2">&quot;the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; it should not be passed in anymore&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="kn">import</span> <span class="nn">warnings</span>
+
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                            <span class="s2">&quot;the test keyword has been deprecated in triangle_flip and will be removed in a future version of sage-flatsurf; is is_convex(strict=True) instead.&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
+                            <span class="p">)</span>
+                            <span class="o">!=</span> <span class="mi">3</span>
+                        <span class="p">):</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+                        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="kn">import</span> <span class="nn">warnings</span>
+
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">&quot;the direction keyword has been removed from triangle_flip(); the diagonal of the quadrilateral is now always turned counterclockwise&quot;</span>
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
@@ -2173,13 +2405,15 @@
                 <span class="p">)</span>
 
                 <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                <span class="n">s</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span>
-                    <span class="n">l1</span><span class="o">=</span><span class="n">l1</span><span class="p">,</span> <span class="n">e1</span><span class="o">=</span><span class="n">e1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span>
-                <span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
+
                 <span class="k">return</span> <span class="n">s</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_convex"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_convex">[docs]</a>            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_convex">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_convex">[docs]</a>
+            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether the polygon with ``label`` is convex after it</span>
 <span class="sd">                has been glued with the polygon across its ``edge``.</span>
@@ -2204,15 +2438,10 @@
 <span class="sd">                    False</span>
 
 <span class="sd">                    sage: S.is_convex(2, 0)</span>
-<span class="sd">                    Traceback (most recent call last):</span>
-<span class="sd">                    ...</span>
-<span class="sd">                    ValueError: edge must be joining two different polygons</span>
+<span class="sd">                    True</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="n">opposite_label</span><span class="p">,</span> <span class="n">opposite_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposite_edge</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">opposite_label</span> <span class="o">==</span> <span class="n">label</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;edge must be joining two different polygons&quot;</span><span class="p">)</span>
 
                 <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
@@ -2228,7 +2457,10 @@
 
                 <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.random_flip"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.random_flip">[docs]</a>            <span class="k">def</span> <span class="nf">random_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.random_flip">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.random_flip">[docs]</a>
+            <span class="k">def</span> <span class="nf">random_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Perform random edge flip on a triangulated surface.</span>
 
@@ -2261,7 +2493,7 @@
                 <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">repeat</span><span class="p">:</span>
                     <span class="n">p1</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
                     <span class="n">e1</span> <span class="o">=</span> <span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                         <span class="k">continue</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">triangle_flip</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -2269,7 +2501,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                 <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.join_polygons"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.join_polygons">[docs]</a>            <span class="k">def</span> <span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.join_polygons">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.join_polygons">[docs]</a>
+            <span class="k">def</span> <span class="nf">join_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Join polygons across the provided edge (p1,e1). By default,</span>
 <span class="sd">                it returns the surface obtained by joining the two polygons</span>
@@ -2351,7 +2586,10 @@
                 <span class="c1"># Gluing would be successful</span>
                 <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon">[docs]</a>            <span class="k">def</span> <span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_polygon">[docs]</a>
+            <span class="k">def</span> <span class="nf">subdivide_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">new_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Cut the polygon with label p along the diagonal joining vertex</span>
 <span class="sd">                v1 to vertex v2. This cuts p into two polygons, one will keep the same</span>
@@ -2380,7 +2618,10 @@
 
                 <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.singularity"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.singularity">[docs]</a>            <span class="k">def</span> <span class="nf">singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.singularity">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.singularity">[docs]</a>
+            <span class="k">def</span> <span class="nf">singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Represents the Singularity associated to the v-th vertex of the polygon</span>
 <span class="sd">                with label ``label``.</span>
@@ -2409,7 +2650,10 @@
 
                 <span class="k">return</span> <span class="n">Singularity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.point"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.point">[docs]</a>            <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.point">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.point">[docs]</a>
+            <span class="k">def</span> <span class="nf">point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a point in this surface.</span>
 
@@ -2461,7 +2705,10 @@
                 <span class="c1"># pylint: disable-next=not-callable</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.surface_point"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.surface_point">[docs]</a>            <span class="k">def</span> <span class="nf">surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.surface_point">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.surface_point">[docs]</a>
+            <span class="k">def</span> <span class="nf">surface_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a point in this surface.</span>
 
@@ -2475,7 +2722,10 @@
 
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.minimal_cover"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.minimal_cover">[docs]</a>            <span class="k">def</span> <span class="nf">minimal_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.minimal_cover">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.minimal_cover">[docs]</a>
+            <span class="k">def</span> <span class="nf">minimal_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cover_type</span><span class="o">=</span><span class="s2">&quot;translation&quot;</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the minimal translation or half-translation cover of the surface.</span>
 
@@ -2546,7 +2796,10 @@
 
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided cover_type is not supported.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.vector_space"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.vector_space">[docs]</a>            <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.vector_space">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.vector_space">[docs]</a>
+            <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the vector space in which self naturally embeds.</span>
 
@@ -2574,7 +2827,10 @@
 
                 <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">[docs]</a>            <span class="nd">@cached_surface_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">:</span> <span class="n">ring</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_bundle">[docs]</a>
+            <span class="nd">@cached_surface_method</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">:</span> <span class="n">ring</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())</span>
             <span class="k">def</span> <span class="nf">tangent_bundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return the tangent bundle</span>
@@ -2598,7 +2854,10 @@
 
                 <span class="k">return</span> <span class="n">SimilaritySurfaceTangentBundle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ring</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_vector"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_vector">[docs]</a>            <span class="k">def</span> <span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.tangent_vector">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.tangent_vector">[docs]</a>
+            <span class="k">def</span> <span class="nf">tangent_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">ring</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a tangent vector.</span>
 
@@ -2632,7 +2891,10 @@
 
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tangent_bundle</span><span class="p">(</span><span class="n">ring</span><span class="o">=</span><span class="n">ring</span><span class="p">)(</span><span class="n">lab</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangulation_mapping"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulation_mapping">[docs]</a>            <span class="k">def</span> <span class="nf">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangulation_mapping">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulation_mapping">[docs]</a>
+            <span class="k">def</span> <span class="nf">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a ``SurfaceMapping`` triangulating the surface</span>
 <span class="sd">                or ``None`` if the surface is already triangulated.</span>
@@ -2641,7 +2903,10 @@
 
                 <span class="k">return</span> <span class="n">triangulation_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangulate"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate">[docs]</a>            <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.triangulate">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.triangulate">[docs]</a>
+            <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a triangulated version of this surface. (This may be mutable</span>
 <span class="sd">                or not depending on the input.)</span>
@@ -2661,7 +2926,9 @@
 <span class="sd">                    sage: from flatsurf import translation_surfaces</span>
 <span class="sd">                    sage: S = translation_surfaces.mcmullen_L(1, 1, 1, 1)</span>
 <span class="sd">                    sage: S.triangulate()</span>
-<span class="sd">                    Triangulation of Translation Surface in H_2(2) built from 3 squares</span>
+<span class="sd">                    Triangulation morphism:</span>
+<span class="sd">                      From: Translation Surface in H_2(2) built from 3 squares</span>
+<span class="sd">                      To:   Triangulation of Translation Surface in H_2(2) built from 3 squares</span>
 
 <span class="sd">                A non-strictly convex example that caused trouble at some point:</span>
 
@@ -2671,7 +2938,7 @@
 <span class="sd">                    sage: S</span>
 <span class="sd">                    Half-Translation Surface in Q_0(0, -1^4) built from a triangle</span>
 
-<span class="sd">                    sage: T = S.triangulate()</span>
+<span class="sd">                    sage: T = S.triangulate().codomain()</span>
 <span class="sd">                    sage: len(T.polygon((0, 0)).vertices())</span>
 <span class="sd">                    3</span>
 
@@ -2700,7 +2967,7 @@
 <span class="sd">                    sage: S = translation_surfaces.cathedral(1, 1)</span>
 <span class="sd">                    sage: S</span>
 <span class="sd">                    Translation Surface in H_4(2^3) built from 2 squares, a hexagon with 4 marked vertices and an octagon</span>
-<span class="sd">                    sage: S.triangulate(label=1).relabel()</span>
+<span class="sd">                    sage: S.triangulate(label=1).codomain().relabel()</span>
 <span class="sd">                    Translation Surface in H_4(2^3) built from 2 isosceles triangles, 5 triangles, a right triangle, 2 squares and an octagon</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
@@ -2721,14 +2988,26 @@
 
                     <span class="n">s</span> <span class="o">=</span> <span class="n">MutableOrientedSimilaritySurface</span><span class="o">.</span><span class="n">from_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                     <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
-                    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="n">relabel</span><span class="p">)</span>
+                    <span class="n">triangulation</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="n">relabel</span><span class="p">)</span>
 
-                <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyTriangulatedSurface</span>
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedUnknownMorphism</span>
+
+                    <span class="k">return</span> <span class="n">NamedUnknownMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="p">,</span> <span class="n">triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="s2">&quot;Triangulation&quot;</span>
+                    <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">label</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">}</span>
 
-                <span class="k">return</span> <span class="n">LazyTriangulatedSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span></div>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="p">(</span>
+                    <span class="n">TriangulationMorphism_LazyTriangulatedSurface</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyTriangulatedSurface</span>
+
+                <span class="k">return</span> <span class="n">TriangulationMorphism_LazyTriangulatedSurface</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">LazyTriangulatedSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+                <span class="p">)</span></div>
+
 
             <span class="k">def</span> <span class="nf">_delaunay_edge_needs_flip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">e1</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2768,7 +3047,9 @@
 
                 <span class="k">return</span> <span class="n">sim</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated">[docs]</a>            <span class="k">def</span> <span class="nf">is_delaunay_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_triangulated">[docs]</a>
+            <span class="k">def</span> <span class="nf">is_delaunay_triangulated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether the surface is triangulated and the</span>
 <span class="sd">                triangulation is Delaunay.</span>
@@ -2807,7 +3088,10 @@
 
                 <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed">[docs]</a>            <span class="k">def</span> <span class="nf">is_delaunay_decomposed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.is_delaunay_decomposed">[docs]</a>
+            <span class="k">def</span> <span class="nf">is_delaunay_decomposed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return if the decomposition of the surface into polygons is Delaunay.</span>
 
@@ -2839,7 +3123,7 @@
                     <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">c1</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">circumscribing_circle</span><span class="p">()</span>
+                        <span class="n">c1</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">circumscribed_circle</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                         <span class="c1"># p1 is not circumscribed</span>
                         <span class="k">return</span> <span class="kc">False</span>
@@ -2854,7 +3138,10 @@
 
                 <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation">[docs]</a>            <span class="k">def</span> <span class="nf">delaunay_triangulation</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulation">[docs]</a>
+            <span class="k">def</span> <span class="nf">delaunay_triangulation</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2883,15 +3170,24 @@
 <span class="sd">                    sage: m = matrix([[2, 1], [1, 1]])</span>
 <span class="sd">                    sage: s = m * translation_surfaces.infinite_staircase()</span>
 <span class="sd">                    sage: ss = s.delaunay_triangulation()</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead</span>
 <span class="sd">                    sage: ss.root()</span>
 <span class="sd">                    (0, 0)</span>
 <span class="sd">                    sage: ss.polygon((0, 0))</span>
-<span class="sd">                    Polygon(vertices=[(0, 0), (1, 0), (1, 1)])</span>
+<span class="sd">                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])</span>
 <span class="sd">                    sage: TestSuite(ss).run()</span>
 <span class="sd">                    sage: ss.is_delaunay_triangulated()</span>
 <span class="sd">                    True</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
+                <span class="kn">import</span> <span class="nn">warnings</span>
+
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;delaunay_triangulation() is deprecated and will be removed in a future version of sage-flatsurf; use delaunay_triangulate().codomain() instead&quot;</span>
+                <span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="kn">import</span> <span class="nn">warnings</span>
 
@@ -2940,15 +3236,62 @@
                             <span class="s2">&quot;the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_triangulation()&quot;</span>
                         <span class="p">)</span>
 
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulate">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_triangulate">[docs]</a>
+            <span class="k">def</span> <span class="nf">delaunay_triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return a Delaunay triangulation of this surface.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+
+<span class="sd">                    sage: M = matrix([[2, 1], [1, 1]])</span>
+<span class="sd">                    sage: S = M * translation_surfaces.infinite_staircase()</span>
+<span class="sd">                    sage: S = S.delaunay_triangulate().codomain()</span>
+
+<span class="sd">                    sage: S.root()</span>
+<span class="sd">                    (0, 0)</span>
+<span class="sd">                    sage: S.polygon((0, 0))</span>
+<span class="sd">                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1)])</span>
+
+<span class="sd">                    sage: S.is_delaunay_triangulated()</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                TESTS::</span>
+
+<span class="sd">                    sage: TestSuite(S).run()</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="n">triangulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">()</span>
+
                 <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="p">(</span>
                     <span class="n">LazyDelaunayTriangulatedSurface</span><span class="p">,</span>
                 <span class="p">)</span>
 
-                <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">codomain</span> <span class="o">=</span> <span class="n">LazyDelaunayTriangulatedSurface</span><span class="p">(</span>
+                    <span class="n">triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+                <span class="p">)</span>
 
-                <span class="k">return</span> <span class="n">LazyDelaunayTriangulatedSurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">())</span></div>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">DelaunayTriangulationMorphism</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition">[docs]</a>            <span class="k">def</span> <span class="nf">delaunay_decomposition</span><span class="p">(</span>
+                <span class="n">delaunay</span> <span class="o">=</span> <span class="n">DelaunayTriangulationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                    <span class="n">triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">codomain</span>
+                <span class="p">)</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
+
+                <span class="k">return</span> <span class="n">NamedFactorizationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="p">,</span> <span class="s2">&quot;Delaunay triangulation&quot;</span><span class="p">,</span> <span class="n">delaunay</span> <span class="o">*</span> <span class="n">triangulation</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decomposition">[docs]</a>
+            <span class="k">def</span> <span class="nf">delaunay_decomposition</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">delaunay_triangulated</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2980,8 +3323,12 @@
 <span class="sd">                    sage: a = s0.base_ring().gens()[0]</span>
 <span class="sd">                    sage: m = Matrix([[1,2+a],[0,1]])</span>
 <span class="sd">                    sage: s = m*s0</span>
-<span class="sd">                    sage: s = s.triangulate()</span>
+<span class="sd">                    sage: s = s.triangulate().codomain()</span>
 <span class="sd">                    sage: ss = s.delaunay_decomposition()</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead</span>
+
 <span class="sd">                    sage: len(ss.polygons())</span>
 <span class="sd">                    3</span>
 
@@ -2993,15 +3340,24 @@
 <span class="sd">                    sage: m = matrix([[2,1],[1,1]])</span>
 <span class="sd">                    sage: s = m*translation_surfaces.infinite_staircase()</span>
 <span class="sd">                    sage: ss = s.delaunay_decomposition()</span>
+<span class="sd">                    doctest:warning</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    UserWarning: delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead</span>
 <span class="sd">                    sage: ss.root()</span>
 <span class="sd">                    (0, 0)</span>
 <span class="sd">                    sage: ss.polygon(ss.root())</span>
-<span class="sd">                    Polygon(vertices=[(0, 0), (1, 0), (1, 1), (0, 1)])</span>
+<span class="sd">                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])</span>
 <span class="sd">                    sage: TestSuite(ss).run()</span>
 <span class="sd">                    sage: ss.is_delaunay_decomposed()</span>
 <span class="sd">                    True</span>
 
 <span class="sd">                &quot;&quot;&quot;</span>
+                <span class="kn">import</span> <span class="nn">warnings</span>
+
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;delaunay_decomposition() has been deprecated and will be removed in a future version of sage-flatsurf; use delaunay_decompose().codomain() instead&quot;</span>
+                <span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">triangulated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="kn">import</span> <span class="nn">warnings</span>
 
@@ -3040,13 +3396,135 @@
                             <span class="s2">&quot;the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()&quot;</span>
                         <span class="p">)</span>
 
-                <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_triangulation</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.delaunay_decompose">[docs]</a>
+            <span class="k">def</span> <span class="nf">delaunay_decompose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codomain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Return a Delaunay decomposition of this surface, i.e., a</span>
+<span class="sd">                representation of this surface such that the circumscribed disk</span>
+<span class="sd">                of each polygon contains exactly the vertices of that polygon.</span>
+
+<span class="sd">                ALGORITHM:</span>
+
+<span class="sd">                The Delaunay decomposition is obtained by removing ambiguous</span>
+<span class="sd">                edges from a Delaunay triangulation. An edge is ambiguous if</span>
+<span class="sd">                after its removal the circumscribed disk of each polygon</span>
+<span class="sd">                (still) contains no vertices in its interior.</span>
+
+<span class="sd">                INPUT:</span>
+
+<span class="sd">                - ``codomain`` -- a Delaunay decomposed surface or ``None``</span>
+<span class="sd">                  (default: ``None``); if present, the morphism returned goes</span>
+<span class="sd">                  from this surface to ``codomain``.</span>
+
+<span class="sd">                EXAMPLES::</span>
+
+<span class="sd">                    sage: from flatsurf import translation_surfaces</span>
+<span class="sd">                    sage: S = translation_surfaces.octagon_and_squares()</span>
+<span class="sd">                    sage: a = S.base_ring().gens()[0]</span>
+<span class="sd">                    sage: M = Matrix([[1, 2 + a], [0, 1]])</span>
+<span class="sd">                    sage: S = M * S</span>
+<span class="sd">                    sage: S = S.triangulate().codomain()</span>
+
+<span class="sd">                    sage: S = S.delaunay_decompose().codomain()</span>
+<span class="sd">                    sage: S.is_delaunay_decomposed()</span>
+<span class="sd">                    True</span>
+<span class="sd">                    sage: S</span>
+<span class="sd">                    Delaunay cell decomposition of Triangulation of Translation Surface in H_3(4) built from 2 quadrilaterals and an octagon</span>
+
+<span class="sd">                ::</span>
+
+<span class="sd">                    sage: from flatsurf import Polygon, similarity_surfaces</span>
+<span class="sd">                    sage: P = Polygon(edges=[(4, 0), (-2, 1), (-2, -1)])</span>
+<span class="sd">                    sage: T = similarity_surfaces.self_glued_polygon(P)</span>
+
+<span class="sd">                    sage: T = T.delaunay_decompose().codomain()</span>
+<span class="sd">                    sage: T.is_delaunay_decomposed()</span>
+<span class="sd">                    True</span>
+<span class="sd">                    sage: T</span>
+<span class="sd">                    Delaunay cell decomposition of Half-Translation Surface in Q_0(-1^4) built from an isosceles triangle</span>
+
+
+<span class="sd">                ::</span>
+
+<span class="sd">                    sage: M = matrix([[2, 1], [1, 1]])</span>
+<span class="sd">                    sage: U = M * translation_surfaces.infinite_staircase()</span>
+
+<span class="sd">                    sage: U = U.delaunay_decompose().codomain()</span>
+<span class="sd">                    sage: U.is_delaunay_decomposed()</span>
+<span class="sd">                    True</span>
+
+<span class="sd">                    sage: U.root()</span>
+<span class="sd">                    (0, 0)</span>
+<span class="sd">                    sage: U.polygon((0, 0))</span>
+<span class="sd">                    Polygon(vertices=[(0, 0), (-1, 0), (-1, -1), (0, -1)])</span>
+
+<span class="sd">                TESTS::</span>
+
+<span class="sd">                    sage: TestSuite(S).run()</span>
+<span class="sd">                    sage: TestSuite(T).run()</span>
+<span class="sd">                    sage: TestSuite(U).run()</span>
+
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">codomain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">sage.all</span> <span class="kn">import</span> <span class="n">End</span>
+
+                    <span class="n">decomposition</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">End</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">identity</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_delaunay_decomposed</span><span class="p">()</span>
+                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_decompose</span><span class="p">()</span>
+                    <span class="p">)</span>
+
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="p">(</span>
+                        <span class="n">DelaunayDecompositionIsomorphism</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">isomorphism</span> <span class="o">=</span> <span class="n">DelaunayDecompositionIsomorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                        <span class="n">decomposition</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">codomain</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># This will raise an error if no such isomorphism exists.</span>
+                    <span class="n">isomorphism</span><span class="o">.</span><span class="n">_factorization</span><span class="p">()</span>
+
+                    <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
+
+                    <span class="k">return</span> <span class="n">NamedFactorizationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="p">,</span>
+                        <span class="n">codomain</span><span class="p">,</span>
+                        <span class="s2">&quot;Delaunay decomposition&quot;</span><span class="p">,</span>
+                        <span class="n">isomorphism</span> <span class="o">*</span> <span class="n">decomposition</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="n">delaunay_triangulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delaunay_triangulate</span><span class="p">()</span>
 
                 <span class="kn">from</span> <span class="nn">flatsurf.geometry.lazy</span> <span class="kn">import</span> <span class="n">LazyDelaunaySurface</span>
 
-                <span class="k">return</span> <span class="n">LazyDelaunaySurface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">())</span></div>
+                <span class="n">decomposed</span> <span class="o">=</span> <span class="n">LazyDelaunaySurface</span><span class="p">(</span>
+                    <span class="n">delaunay_triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">()</span>
+                <span class="p">)</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.saddle_connections"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.saddle_connections">[docs]</a>            <span class="k">def</span> <span class="nf">saddle_connections</span><span class="p">(</span>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">DelaunayDecompositionMorphism</span>
+
+                <span class="n">decomposition</span> <span class="o">=</span> <span class="n">DelaunayDecompositionMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                    <span class="n">delaunay_triangulation</span><span class="o">.</span><span class="n">codomain</span><span class="p">(),</span> <span class="n">decomposed</span>
+                <span class="p">)</span>
+
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">NamedFactorizationMorphism</span>
+
+                <span class="k">return</span> <span class="n">NamedFactorizationMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">decomposed</span><span class="p">,</span>
+                    <span class="s2">&quot;Delaunay decomposition&quot;</span><span class="p">,</span>
+                    <span class="n">decomposition</span> <span class="o">*</span> <span class="n">delaunay_triangulation</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.saddle_connections">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.saddle_connections">[docs]</a>
+            <span class="k">def</span> <span class="nf">saddle_connections</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">squared_length_bound</span><span class="p">,</span>
                 <span class="n">initial_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3215,7 +3693,10 @@
                         <span class="p">)</span>
                 <span class="k">return</span> <span class="n">sc_list</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.ramified_cover"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.ramified_cover">[docs]</a>            <span class="k">def</span> <span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.ramified_cover">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.ramified_cover">[docs]</a>
+            <span class="k">def</span> <span class="nf">ramified_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a ramified cover of this surface.</span>
 
@@ -3282,7 +3763,10 @@
                 <span class="n">cover</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                 <span class="k">return</span> <span class="n">cover</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide">[docs]</a>            <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide">[docs]</a>
+            <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a copy of this surface whose polygons have been partitioned into</span>
 <span class="sd">                smaller triangles with</span>
@@ -3383,7 +3867,10 @@
 
                 <span class="k">return</span> <span class="n">surface</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges">[docs]</a>            <span class="k">def</span> <span class="nf">subdivide_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Oriented.ParentMethods.subdivide_edges">[docs]</a>
+            <span class="k">def</span> <span class="nf">subdivide_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a copy of this surface whose edges have been split into</span>
 <span class="sd">                ``parts`` equal pieces each.</span>
@@ -3417,7 +3904,7 @@
 <span class="sd">                    sage: S.glue((&quot;Δ&quot;, 0), (&quot;□&quot;, 2))</span>
 <span class="sd">                    sage: S.glue((&quot;□&quot;, 1), (&quot;□&quot;, 3))</span>
 
-<span class="sd">                    sage: T = S.subdivide_edges()</span>
+<span class="sd">                    sage: T = S.subdivide_edges().codomain()</span>
 <span class="sd">                    sage: list(sorted(T.gluings()))</span>
 <span class="sd">                    [((&#39;Δ&#39;, 0), (&#39;□&#39;, 5)),</span>
 <span class="sd">                     ((&#39;Δ&#39;, 1), (&#39;□&#39;, 4)),</span>
@@ -3460,9 +3947,16 @@
 
                 <span class="n">surface</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
 
-                <span class="k">return</span> <span class="n">surface</span></div></div></div>
+                <span class="kn">from</span> <span class="nn">flatsurf.geometry.morphism</span> <span class="kn">import</span> <span class="n">SubdivideEdgesMorphism</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Rational"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational">[docs]</a>    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">SubdivideEdgesMorphism</span><span class="o">.</span><span class="n">_create_morphism</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">,</span> <span class="n">parts</span><span class="p">)</span></div>
+</div>
+</div>
+
+
+<div class="viewcode-block" id="SimilaritySurfaces.Rational">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational">[docs]</a>
+    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The axiom satisfied by similarity surfaces where all similarities that</span>
 <span class="sd">        describe how edges are glued only use rational rotations, i.e.,</span>
@@ -3482,7 +3976,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Rational.ParentMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Rational.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational.ParentMethods">[docs]</a>
+        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all surfaces built from Euclidean</span>
 <span class="sd">            polygons glued by similarities that have rational monodromy, i.e.,</span>
@@ -3583,7 +4079,9 @@
 
                 <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.Rational.ParentMethods.is_rational_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational.ParentMethods.is_rational_surface">[docs]</a>            <span class="k">def</span> <span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.Rational.ParentMethods.is_rational_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.Rational.ParentMethods.is_rational_surface">[docs]</a>
+            <span class="k">def</span> <span class="nf">is_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether all edges of this surface are glued with</span>
 <span class="sd">                similarities whose rotational part is by a rational multiple of</span>
@@ -3598,6 +4096,7 @@
 
 <span class="sd">                &quot;&quot;&quot;</span>
                 <span class="k">return</span> <span class="kc">True</span></div>
+
 
             <span class="k">def</span> <span class="nf">_test_rational_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -3625,9 +4124,13 @@
                     <span class="n">SimilaritySurfaces</span><span class="o">.</span><span class="n">Rational</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">_is_rational_surface</span><span class="p">(</span>
                         <span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span>
                     <span class="p">)</span>
-                <span class="p">)</span></div></div>
+                <span class="p">)</span></div>
+</div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType">[docs]</a>    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType">[docs]</a>
+    <span class="k">class</span> <span class="nc">FiniteType</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of surfaces built by gluing a finite number of Euclidean</span>
 <span class="sd">        polygons with similarities.</span>
@@ -3642,7 +4145,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods">[docs]</a>
+        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all surfaces that are built from</span>
 <span class="sd">            finitely many polygons in the real plane glued with similarities.</span>
@@ -3651,7 +4156,9 @@
 <span class="sd">            want to put it here.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods.num_singularities"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods.num_singularities">[docs]</a>            <span class="k">def</span> <span class="nf">num_singularities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods.num_singularities">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods.num_singularities">[docs]</a>
+            <span class="k">def</span> <span class="nf">num_singularities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                EXAMPLES::</span>
 
@@ -3683,7 +4190,10 @@
 
                 <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface">[docs]</a>            <span class="k">def</span> <span class="nf">_test_eq_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.ParentMethods._test_eq_surface">[docs]</a>
+            <span class="k">def</span> <span class="nf">_test_eq_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Verify that this surface follows our standards for equality of</span>
 <span class="sd">                surfaces.</span>
@@ -3735,9 +4245,13 @@
                     <span class="n">tester</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="bp">self</span> <span class="o">!=</span> <span class="n">copy</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">tester</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span>
-                    <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span> <span class="o">!=</span> <span class="n">copy</span><span class="p">)</span></div></div>
+                    <span class="n">tester</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span> <span class="o">!=</span> <span class="n">copy</span><span class="p">)</span></div>
+</div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented">[docs]</a>        <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented">[docs]</a>
+        <span class="k">class</span> <span class="nc">Oriented</span><span class="p">(</span><span class="n">SurfaceCategoryWithAxiom</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            The category of surfaces built from finitely many Euclidean</span>
 <span class="sd">            polygons glued with singularities with an orientation that is</span>
@@ -3754,7 +4268,9 @@
 
 <span class="sd">            &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods">[docs]</a>            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods">[docs]</a>
+            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Provides methods available to all surfaces that are built from</span>
 <span class="sd">                finitely many Euclidean polygons that are glued by similarities</span>
@@ -3765,7 +4281,9 @@
 <span class="sd">                want to put it here.</span>
 <span class="sd">                &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons">[docs]</a>                <span class="k">def</span> <span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.reposition_polygons">[docs]</a>
+                <span class="k">def</span> <span class="nf">reposition_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">relabel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    We choose a maximal tree in the dual graph of the decomposition into</span>
 <span class="sd">                    polygons, and ensure that the gluings between two polygons joined by</span>
@@ -3791,7 +4309,10 @@
                     <span class="n">s</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                     <span class="k">return</span> <span class="n">s</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons">[docs]</a>                <span class="k">def</span> <span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.standardize_polygons">[docs]</a>
+                <span class="k">def</span> <span class="nf">standardize_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a surface with each polygon replaced with a new</span>
 <span class="sd">                    polygon which differs by translation and reindexing. The</span>
@@ -3831,7 +4352,10 @@
                     <span class="n">S</span><span class="o">.</span><span class="n">set_immutable</span><span class="p">()</span>
                     <span class="k">return</span> <span class="n">S</span></div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.fundamental_group"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.fundamental_group">[docs]</a>                <span class="k">def</span> <span class="nf">fundamental_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.FiniteType.Oriented.ParentMethods.fundamental_group">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.FiniteType.Oriented.ParentMethods.fundamental_group">[docs]</a>
+                <span class="k">def</span> <span class="nf">fundamental_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return the fundamental group of this surface.</span>
 <span class="sd">                    &quot;&quot;&quot;</span>
@@ -3840,10 +4364,18 @@
 
                     <span class="kn">from</span> <span class="nn">flatsurf.geometry.fundamental_group</span> <span class="kn">import</span> <span class="n">FundamentalGroup</span>
 
-                    <span class="k">return</span> <span class="n">FundamentalGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="p">)</span></div></div></div></div>
+                    <span class="k">return</span> <span class="n">FundamentalGroup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_label</span><span class="p">)</span></div>
+</div>
+</div>
+</div>
 
-<div class="viewcode-block" id="SimilaritySurfaces.SubcategoryMethods"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.SubcategoryMethods">[docs]</a>    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
-<div class="viewcode-block" id="SimilaritySurfaces.SubcategoryMethods.Rational"><a class="viewcode-back" href="../../../../geometry/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.SubcategoryMethods.Rational">[docs]</a>        <span class="k">def</span> <span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SimilaritySurfaces.SubcategoryMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.SubcategoryMethods">[docs]</a>
+    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="SimilaritySurfaces.SubcategoryMethods.Rational">
+<a class="viewcode-back" href="../../../../geometry/categories/similarity_surfaces.html#flatsurf.geometry.categories.similarity_surfaces.SimilaritySurfaces.SubcategoryMethods.Rational">[docs]</a>
+        <span class="k">def</span> <span class="nf">Rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of surfaces with rational monodromy, see</span>
 <span class="sd">            :class:`~.SimilaritySurfaces.Rational`.</span>
@@ -3856,7 +4388,10 @@
 <span class="sd">                Category of rational similarity surfaces</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Rational&quot;</span><span class="p">)</span></div></div></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_axiom</span><span class="p">(</span><span class="s2">&quot;Rational&quot;</span><span class="p">)</span></div>
+</div>
+</div>
+
 
 
 <span class="c1"># Currently, there is no &quot;Rational&quot; axiom in SageMath so we make it known to</span>
@@ -3894,13 +4429,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
-    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../../_static/scripts/furo.js"></script>
+</div><script src="../../../../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>

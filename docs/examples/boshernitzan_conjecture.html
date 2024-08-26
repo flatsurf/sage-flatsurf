@@ -1,22 +1,22 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The flatsurf.geometry Package" href="../geometry.html" /><link rel="prev" title="Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”" href="warwick-2017.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The flatsurf.cache Module" href="../cache.html" /><link rel="prev" title="Notes from the Warwick EPSRC Symposium on “Computation in geometric topology”" href="warwick-2017.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Boshernitzan’s Conjectures - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -77,7 +77,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -92,22 +92,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -120,6 +161,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -138,7 +181,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -185,52 +229,80 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../geometry/pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -238,8 +310,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -259,11 +329,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/examples/boshernitzan_conjecture.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -273,9 +349,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="boshernitzan-s-conjectures">
-<h1>Boshernitzan’s Conjectures<a class="headerlink" href="#boshernitzan-s-conjectures" title="Permalink to this heading">#</a></h1>
+<h1>Boshernitzan’s Conjectures<a class="headerlink" href="#boshernitzan-s-conjectures" title="Link to this heading">¶</a></h1>
 <p>Let <span class="math notranslate nohighlight">\(\Delta\)</span> be a rational triangle and let <span class="math notranslate nohighlight">\(P_0:=P_0(\Delta)\)</span> be the directions for which the flow on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders. Let <span class="math notranslate nohighlight">\(E:=E(\Delta)\)</span> be the exceptional directions of <span class="math notranslate nohighlight">\(\Delta\)</span>, i.e., the directions for which there exists a generalized diagonal, i.e., a billiard trajectory connecting two vertices.</p>
 <p>In <em>Billiards and Rational Periodic Directions in Polygons</em>, Boshernitzan states the following conjecture:</p>
 <blockquote>
@@ -295,7 +371,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 ❌ (d) does not hold,
 ❌ (e) does not hold.</p>
 <section id="a-cylinder-periodic-directions-of-even-triangles">
-<h2>(a) Cylinder Periodic Directions of Even Triangles<a class="headerlink" href="#a-cylinder-periodic-directions-of-even-triangles" title="Permalink to this heading">#</a></h2>
+<h2>(a) Cylinder Periodic Directions of Even Triangles<a class="headerlink" href="#a-cylinder-periodic-directions-of-even-triangles" title="Link to this heading">¶</a></h2>
 <p>Let us first state assertion (a) again:</p>
 <blockquote>
 <div><p>Let <span class="math notranslate nohighlight">\(d\)</span> be even and let <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> be a partition into coprime positive integers. Consider the triangle <span class="math notranslate nohighlight">\(\Delta = (α, β, γ)\)</span>, i.e., the triangle with angles <span class="math notranslate nohighlight">\((απ/d, βπ/d, γπ/d)\)</span>, embedded into the complex plane such that one of its sides is horizontal. Let <span class="math notranslate nohighlight">\(z\in S^1\)</span> be such that <span class="math notranslate nohighlight">\(z^{2d}=1\)</span>. Then the flow in direction <span class="math notranslate nohighlight">\(z\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders.</p>
@@ -330,7 +406,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/c70821634c064b89b0c20a7188855fd0f3112bd915ca1c943b353821812cc258.png" src="../_images/c70821634c064b89b0c20a7188855fd0f3112bd915ca1c943b353821812cc258.png" />
+<img alt="../_images/293326f857c86d28f6e1c53ae89359b67f4b8fdf7bbaff0114752178a0133843.png" src="../_images/293326f857c86d28f6e1c53ae89359b67f4b8fdf7bbaff0114752178a0133843.png" />
 </div>
 </div>
 <p>We construct the flow decomposition in direction (0, 1), orthogonal to one of the sides of the triangle.</p>
@@ -344,10 +420,6 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.10/site-packages/cppyy/__init__.py:319: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
-  import pkg_resources as pr
-</pre></div>
-</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FlowDecomposition with 6 cylinders, 4 minimal components and 0 undetermined components
 </pre></div>
 </div>
@@ -362,7 +434,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </section>
 <section id="b-cylinder-periodic-directions-of-odd-triangles">
-<h2>(b) Cylinder Periodic Directions of Odd Triangles<a class="headerlink" href="#b-cylinder-periodic-directions-of-odd-triangles" title="Permalink to this heading">#</a></h2>
+<h2>(b) Cylinder Periodic Directions of Odd Triangles<a class="headerlink" href="#b-cylinder-periodic-directions-of-odd-triangles" title="Link to this heading">¶</a></h2>
 <p>Assertion (b) can be phrased as follows:</p>
 <blockquote>
 <div><p>Let <span class="math notranslate nohighlight">\(d\)</span> be odd and let <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> be a partition into coprime positive integers. Consider the triangle <span class="math notranslate nohighlight">\(\Delta=(α,β,γ)\)</span>, i.e., the triangle with angles <span class="math notranslate nohighlight">\((α\pi/d, β\pi/d, γ\pi/d)\)</span>, embedded into the complex plane such that one of its sides is horizontal. Let <span class="math notranslate nohighlight">\(z\in S^1\)</span> be such that <span class="math notranslate nohighlight">\(z^{2d}=-1\)</span>. Then the flow in direction <span class="math notranslate nohighlight">\(z\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders.</p>
@@ -371,7 +443,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 <p>We performed such a search systematically with <a class="reference external" href="https://github.com/flatsurf/flatsurvey">flatsurvey</a> which is built upon sage-flatsurf. An exhaustive search up to d=189 found no counterexamples to the conjecture.</p>
 </section>
 <section id="c-cylinder-periodic-directions-of-most-small-triangles">
-<h2>(c) Cylinder Periodic Directions of Most Small Triangles<a class="headerlink" href="#c-cylinder-periodic-directions-of-most-small-triangles" title="Permalink to this heading">#</a></h2>
+<h2>(c) Cylinder Periodic Directions of Most Small Triangles<a class="headerlink" href="#c-cylinder-periodic-directions-of-most-small-triangles" title="Link to this heading">¶</a></h2>
 <p>Assertion (c) is a finite variant of (a) and (b), namely it asserts that:</p>
 <ul class="simple">
 <li><p>(a) holds for all <span class="math notranslate nohighlight">\(d\le 12\)</span> and</p></li>
@@ -412,10 +484,10 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </pre></div>
 </div>
 <section id="the-2-3-6-triangle">
-<h3>The (2, 3, 6) Triangle<a class="headerlink" href="#the-2-3-6-triangle" title="Permalink to this heading">#</a></h3>
+<h3>The (2, 3, 6) Triangle<a class="headerlink" href="#the-2-3-6-triangle" title="Link to this heading">¶</a></h3>
 <p>As indicated in the conjecture, (2, 3, 6) is exceptional, i.e., there is such a direction for which the flow decomposition does not fully decompose into cylinders.</p>
 <section id="computing-a-flow-decomposition-for-the-2-3-6-triangle">
-<h4>Computing a Flow Decomposition for the (2, 3, 6) Triangle<a class="headerlink" href="#computing-a-flow-decomposition-for-the-2-3-6-triangle" title="Permalink to this heading">#</a></h4>
+<h4>Computing a Flow Decomposition for the (2, 3, 6) Triangle<a class="headerlink" href="#computing-a-flow-decomposition-for-the-2-3-6-triangle" title="Link to this heading">¶</a></h4>
 <p>Again, we can ask sage-flatsurf to compute the flow decomposition of the unfolding of the (2, 3, 6) triangle. It turns out that in vertical direction (1, 0), it does not fully decompose into cylinders:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -463,20 +535,18 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </section>
 <section id="asserting-minimality-on-the-level-of-the-interval-exchange-transformation">
-<h4>Asserting Minimality on the Level of the Interval Exchange Transformation<a class="headerlink" href="#asserting-minimality-on-the-level-of-the-interval-exchange-transformation" title="Permalink to this heading">#</a></h4>
+<h4>Asserting Minimality on the Level of the Interval Exchange Transformation<a class="headerlink" href="#asserting-minimality-on-the-level-of-the-interval-exchange-transformation" title="Link to this heading">¶</a></h4>
 <p>Internally, the preceding computation is performed on Interval Exchange Transformations describing this translation surface. We are now getting that same result by going through (some of) these underlying steps explicitly with more low-level interfaces.</p>
 <p>Currently, the only way to work with such low-level objects is by invoking functions in the C++ libraries <a class="reference external" href="https://github.com/flatsurf/flatsurf">libflatsurf</a> and <a class="reference external" href="https://github.com/flatsurf/intervalxt">libintervalxt</a> directly. We start by passing from our translation surface to the corresponding surface in libflatsurf. (Note that these operations are not considered part of the stable interface of sage-flatsurf and subject to change.)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flatsurf.geometry.pyflatsurf_conversion</span> <span class="kn">import</span> <span class="n">to_pyflatsurf</span>
-
-<span class="n">F</span> <span class="o">=</span> <span class="n">to_pyflatsurf</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">pyflatsurf</span><span class="p">()</span><span class="o">.</span><span class="n">codomain</span><span class="p">()</span><span class="o">.</span><span class="n">flat_triangulation</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
 <section id="a-unique-large-edge">
-<h5>A Unique Large Edge<a class="headerlink" href="#a-unique-large-edge" title="Permalink to this heading">#</a></h5>
+<h5>A Unique Large Edge<a class="headerlink" href="#a-unique-large-edge" title="Link to this heading">¶</a></h5>
 <p>We start by retriangulating our surface. Namely, we want to obtain a single <em>large edge</em> for the flow direction, i.e., a unique edge that is wider (perpendicular to the flow direction) than all the other edges.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -509,7 +579,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </section>
 <section id="flowing-from-the-large-edge-to-construct-an-interval-exchange-transformation">
-<h5>Flowing from the Large Edge to Construct an Interval Exchange Transformation<a class="headerlink" href="#flowing-from-the-large-edge-to-construct-an-interval-exchange-transformation" title="Permalink to this heading">#</a></h5>
+<h5>Flowing from the Large Edge to Construct an Interval Exchange Transformation<a class="headerlink" href="#flowing-from-the-large-edge-to-construct-an-interval-exchange-transformation" title="Link to this heading">¶</a></h5>
 <p>We (unfortunately do not) see in the above plot how the half edges on the left get shuffled to be become the half edges on the right if we follow the flow across the <code class="docutils literal notranslate"><span class="pre">large</span></code> edge.</p>
 <p>This defines an Interval Exchange Transformation.</p>
 <div class="cell docutils container">
@@ -524,14 +594,14 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-18/11*c^9 + 171/11*c^7 - 558/11*c^5 + 720/11*c^3 - 27*c ~ 0.21445875)] [b: (9/11*c^9 - 81/11*c^7 + 252/11*c^5 - 324/11*c^3 + 153/11*c ~ 0.20920931)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [d: (-18/11*c^9 + 180/11*c^7 - 639/11*c^5 + 945/11*c^3 - 477/11*c ~ 0.11427020)] [e: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 81*c^3 + 405/11*c ~ 0.13753740)] [f: (9/11*c^9 - 81/11*c^7 + 252/11*c^5 - 324/11*c^3 + 153/11*c ~ 0.20920931)] [g: (-9/11*c^7 + 72/11*c^5 - 171/11*c^3 + 108/11*c ~ 0.35199615)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [i: (-9/11*c^3 + 36/11*c ~ 0.13121909)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-c^9 + 19/2*c^7 - 31*c^5 + 40*c^3 - 33/2*c ~ 0.13105812)] [b: (1/2*c^9 - 9/2*c^7 + 14*c^5 - 18*c^3 + 17/2*c ~ 0.12785014)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [d: (-c^9 + 10*c^7 - 71/2*c^5 + 105/2*c^3 - 53/2*c ~ 0.069831789)] [e: (c^9 - 10*c^7 + 35*c^5 - 99/2*c^3 + 45/2*c ~ 0.084050632)] [f: (1/2*c^9 - 9/2*c^7 + 14*c^5 - 18*c^3 + 17/2*c ~ 0.12785014)] [g: (-1/2*c^7 + 4*c^5 - 19/2*c^3 + 6*c ~ 0.21510876)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [i: (-1/2*c^3 + 2*c ~ 0.080189447)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="zorich-induction-on-the-interval-exchange-transformation">
-<h5>Zorich Induction on the Interval Exchange Transformation<a class="headerlink" href="#zorich-induction-on-the-interval-exchange-transformation" title="Permalink to this heading">#</a></h5>
+<h5>Zorich Induction on the Interval Exchange Transformation<a class="headerlink" href="#zorich-induction-on-the-interval-exchange-transformation" title="Link to this heading">¶</a></h5>
 <p>We now attempt to decompose the Interval Exchange Transformation by performing some Zorich induction steps.</p>
 <p>Namely, we begin by subtracting <code class="docutils literal notranslate"><span class="pre">a</span></code> at the top from <code class="docutils literal notranslate"><span class="pre">g</span></code> at the bottom.</p>
 <div class="cell docutils container">
@@ -544,7 +614,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (9/11*c^9 - 81/11*c^7 + 252/11*c^5 - 324/11*c^3 + 153/11*c ~ 0.20920931)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [d: (-18/11*c^9 + 180/11*c^7 - 639/11*c^5 + 945/11*c^3 - 477/11*c ~ 0.11427020)] [e: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 81*c^3 + 405/11*c ~ 0.13753740)] [f: (9/11*c^9 - 81/11*c^7 + 252/11*c^5 - 324/11*c^3 + 153/11*c ~ 0.20920931)] [a: (-18/11*c^9 + 171/11*c^7 - 558/11*c^5 + 720/11*c^3 - 27*c ~ 0.21445875)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 81*c^3 + 405/11*c ~ 0.13753740)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [i: (-9/11*c^3 + 36/11*c ~ 0.13121909)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (1/2*c^9 - 9/2*c^7 + 14*c^5 - 18*c^3 + 17/2*c ~ 0.12785014)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [d: (-c^9 + 10*c^7 - 71/2*c^5 + 105/2*c^3 - 53/2*c ~ 0.069831789)] [e: (c^9 - 10*c^7 + 35*c^5 - 99/2*c^3 + 45/2*c ~ 0.084050632)] [f: (1/2*c^9 - 9/2*c^7 + 14*c^5 - 18*c^3 + 17/2*c ~ 0.12785014)] [a: (-c^9 + 19/2*c^7 - 31*c^5 + 40*c^3 - 33/2*c ~ 0.13105812)] [g: (c^9 - 10*c^7 + 35*c^5 - 99/2*c^3 + 45/2*c ~ 0.084050632)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [i: (-1/2*c^3 + 2*c ~ 0.080189447)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -558,7 +628,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-9/11*c^9 + 9*c^7 - 378/11*c^5 + 567/11*c^3 - 252/11*c ~ 0.071671915)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [d: (-18/11*c^9 + 180/11*c^7 - 639/11*c^5 + 945/11*c^3 - 477/11*c ~ 0.11427020)] [e: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 81*c^3 + 405/11*c ~ 0.13753740)] [f: (9/11*c^9 - 81/11*c^7 + 252/11*c^5 - 324/11*c^3 + 153/11*c ~ 0.20920931)] [a: (-18/11*c^9 + 171/11*c^7 - 558/11*c^5 + 720/11*c^3 - 27*c ~ 0.21445875)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 81*c^3 + 405/11*c ~ 0.13753740)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [i: (-9/11*c^3 + 36/11*c ~ 0.13121909)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[b: (-1/2*c^9 + 11/2*c^7 - 21*c^5 + 63/2*c^3 - 14*c ~ 0.043799504)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [d: (-c^9 + 10*c^7 - 71/2*c^5 + 105/2*c^3 - 53/2*c ~ 0.069831789)] [e: (c^9 - 10*c^7 + 35*c^5 - 99/2*c^3 + 45/2*c ~ 0.084050632)] [f: (1/2*c^9 - 9/2*c^7 + 14*c^5 - 18*c^3 + 17/2*c ~ 0.12785014)] [a: (-c^9 + 19/2*c^7 - 31*c^5 + 40*c^3 - 33/2*c ~ 0.13105812)] [g: (c^9 - 10*c^7 + 35*c^5 - 99/2*c^3 + 45/2*c ~ 0.084050632)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [i: (-1/2*c^3 + 2*c ~ 0.080189447)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -574,7 +644,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-18/11*c^9 + 180/11*c^7 - 639/11*c^5 + 945/11*c^3 - 477/11*c ~ 0.11427020)] [e: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 81*c^3 + 405/11*c ~ 0.13753740)] [f: (9/11*c^9 - 81/11*c^7 + 252/11*c^5 - 324/11*c^3 + 153/11*c ~ 0.20920931)] [a: (-18/11*c^9 + 171/11*c^7 - 558/11*c^5 + 720/11*c^3 - 27*c ~ 0.21445875)] [b: (-9/11*c^9 + 9*c^7 - 378/11*c^5 + 567/11*c^3 - 252/11*c ~ 0.071671915)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [i: (-9/11*c^3 + 36/11*c ~ 0.13121909)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-c^9 + 10*c^7 - 71/2*c^5 + 105/2*c^3 - 53/2*c ~ 0.069831789)] [e: (c^9 - 10*c^7 + 35*c^5 - 99/2*c^3 + 45/2*c ~ 0.084050632)] [f: (1/2*c^9 - 9/2*c^7 + 14*c^5 - 18*c^3 + 17/2*c ~ 0.12785014)] [a: (-c^9 + 19/2*c^7 - 31*c^5 + 40*c^3 - 33/2*c ~ 0.13105812)] [b: (-1/2*c^9 + 11/2*c^7 - 21*c^5 + 63/2*c^3 - 14*c ~ 0.043799504)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [g: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [i: (-1/2*c^3 + 2*c ~ 0.080189447)] / [g] [b] [d] [i] [e] [a] [c] [h] [f]
 </pre></div>
 </div>
 </div>
@@ -596,7 +666,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [a: (-18/11*c^9 + 171/11*c^7 - 558/11*c^5 + 720/11*c^3 - 27*c ~ 0.21445875)] [d: (-45/11*c^9 + 441/11*c^7 - 1521/11*c^5 + 2142/11*c^3 - 963/11*c ~ 0.029961677)] [b: (36/11*c^9 - 342/11*c^7 + 1143/11*c^5 - 1575/11*c^3 + 711/11*c ~ 0.041710238)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [e: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [i: (-9/11*c^9 + 9*c^7 - 378/11*c^5 + 567/11*c^3 - 252/11*c ~ 0.071671915)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[f: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [a: (-c^9 + 19/2*c^7 - 31*c^5 + 40*c^3 - 33/2*c ~ 0.13105812)] [d: (-5/2*c^9 + 49/2*c^7 - 169/2*c^5 + 119*c^3 - 107/2*c ~ 0.018309914)] [b: (2*c^9 - 19*c^7 + 127/2*c^5 - 175/2*c^3 + 79/2*c ~ 0.025489590)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [g: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [e: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [i: (-1/2*c^9 + 11/2*c^7 - 21*c^5 + 63/2*c^3 - 14*c ~ 0.043799504)] / [e] [a] [c] [h] [i] [b] [g] [d] [f]
 </pre></div>
 </div>
 </div>
@@ -610,7 +680,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-18/11*c^9 + 171/11*c^7 - 558/11*c^5 + 720/11*c^3 - 27*c ~ 0.21445875)] [d: (-45/11*c^9 + 441/11*c^7 - 1521/11*c^5 + 2142/11*c^3 - 963/11*c ~ 0.029961677)] [b: (36/11*c^9 - 342/11*c^7 + 1143/11*c^5 - 1575/11*c^3 + 711/11*c ~ 0.041710238)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [e: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [i: (-9/11*c^9 + 9*c^7 - 378/11*c^5 + 567/11*c^3 - 252/11*c ~ 0.071671915)] / [a] [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[a: (-c^9 + 19/2*c^7 - 31*c^5 + 40*c^3 - 33/2*c ~ 0.13105812)] [d: (-5/2*c^9 + 49/2*c^7 - 169/2*c^5 + 119*c^3 - 107/2*c ~ 0.018309914)] [b: (2*c^9 - 19*c^7 + 127/2*c^5 - 175/2*c^3 + 79/2*c ~ 0.025489590)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [g: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [e: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [i: (-1/2*c^9 + 11/2*c^7 - 21*c^5 + 63/2*c^3 - 14*c ~ 0.043799504)] / [a] [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -625,7 +695,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-45/11*c^9 + 441/11*c^7 - 1521/11*c^5 + 2142/11*c^3 - 963/11*c ~ 0.029961677)] [b: (36/11*c^9 - 342/11*c^7 + 1143/11*c^5 - 1575/11*c^3 + 711/11*c ~ 0.041710238)] [c: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] [h: (-9/11*c^9 + 9*c^7 - 387/11*c^5 + 630/11*c^3 - 360/11*c ~ 0.19226042)] [e: (9/11*c^9 - 9*c^7 + 378/11*c^5 - 576/11*c^3 + 288/11*c ~ 0.059547179)] [i: (-9/11*c^9 + 9*c^7 - 378/11*c^5 + 567/11*c^3 - 252/11*c ~ 0.071671915)] / [c] [h] [i] [b] [g] [d] [e]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-5/2*c^9 + 49/2*c^7 - 169/2*c^5 + 119*c^3 - 107/2*c ~ 0.018309914)] [b: (2*c^9 - 19*c^7 + 127/2*c^5 - 175/2*c^3 + 79/2*c ~ 0.025489590)] [c: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [g: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] [h: (-1/2*c^9 + 11/2*c^7 - 43/2*c^5 + 35*c^3 - 20*c ~ 0.11749248)] [e: (1/2*c^9 - 11/2*c^7 + 21*c^5 - 32*c^3 + 16*c ~ 0.036389943)] [i: (-1/2*c^9 + 11/2*c^7 - 21*c^5 + 63/2*c^3 - 14*c ~ 0.043799504)] / [c] [h] [i] [b] [g] [d] [e]
 </pre></div>
 </div>
 </div>
@@ -639,7 +709,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-36/11*c^9 + 378/11*c^7 - 126*c^5 + 2025/11*c^3 - 909/11*c ~ 0.0058064323)] [h: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] [c: (36/11*c^9 - 360/11*c^7 + 1269/11*c^5 - 1836/11*c^3 + 882/11*c ~ 0.023267198)] [g: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] [b: (-18/11*c^9 + 18*c^7 - 756/11*c^5 + 1143/11*c^3 - 540/11*c ~ 0.012124736)] [i: (-27/11*c^9 + 243/11*c^7 - 765/11*c^5 + 999/11*c^3 - 423/11*c ~ 0.017836941)] / [h] [d] [c] [b] [g] [i]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-2*c^9 + 21*c^7 - 77*c^5 + 225/2*c^3 - 101/2*c ~ 0.0035483753)] [h: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] [c: (2*c^9 - 20*c^7 + 141/2*c^5 - 102*c^3 + 49*c ~ 0.014218843)] [g: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] [b: (-c^9 + 11*c^7 - 42*c^5 + 127/2*c^3 - 30*c ~ 0.0074095609)] [i: (-3/2*c^9 + 27/2*c^7 - 85/2*c^5 + 111/2*c^3 - 47/2*c ~ 0.010900353)] / [h] [d] [c] [b] [g] [i]
 </pre></div>
 </div>
 </div>
@@ -654,7 +724,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-36/11*c^9 + 378/11*c^7 - 126*c^5 + 2025/11*c^3 - 909/11*c ~ 0.0058064323)] [h: (18/11*c^9 - 180/11*c^7 + 630/11*c^5 - 882/11*c^3 + 369/11*c ~ 0.0063183037)] / [h] [d]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[d: (-2*c^9 + 21*c^7 - 77*c^5 + 225/2*c^3 - 101/2*c ~ 0.0035483753)] [h: (c^9 - 10*c^7 + 35*c^5 - 49*c^3 + 41/2*c ~ 0.0038611856)] / [h] [d]
 </pre></div>
 </div>
 </div>
@@ -678,7 +748,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </section>
 </section>
 <section id="d-most-small-triangles-are-completely-cylinder-periodic">
-<h2>(d) Most Small Triangles are Completely Cylinder Periodic<a class="headerlink" href="#d-most-small-triangles-are-completely-cylinder-periodic" title="Permalink to this heading">#</a></h2>
+<h2>(d) Most Small Triangles are Completely Cylinder Periodic<a class="headerlink" href="#d-most-small-triangles-are-completely-cylinder-periodic" title="Link to this heading">¶</a></h2>
 <p>Assertion (d) can be phrased as</p>
 <blockquote>
 <div><p>Let <span class="math notranslate nohighlight">\(d\le 12\)</span> with a partition <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> into positive coprime integers with <span class="math notranslate nohighlight">\((α,β,γ)\ne(2,3,6)\)</span> and <span class="math notranslate nohighlight">\((α,β,γ)\ne(3,4,4)\)</span>. Consider a triangle <span class="math notranslate nohighlight">\(\Delta=(α,β,γ)\)</span>, i.e., the triangle with angles <span class="math notranslate nohighlight">\((α\pi/d, β\pi/d, γ\pi/d)\)</span>. Then <span class="math notranslate nohighlight">\(\Delta\)</span> is completely cylinder periodic, i.e., the flow in direction <span class="math notranslate nohighlight">\(v\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> decomposes into cylinders for any direction <span class="math notranslate nohighlight">\(v\)</span> given by a saddle connection.</p>
@@ -732,7 +802,7 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
 </div>
 </section>
 <section id="e-cylinder-periodic-directions-of-isosceles-and-right-triangles">
-<h2>(e) Cylinder Periodic Directions of Isosceles and Right Triangles<a class="headerlink" href="#e-cylinder-periodic-directions-of-isosceles-and-right-triangles" title="Permalink to this heading">#</a></h2>
+<h2>(e) Cylinder Periodic Directions of Isosceles and Right Triangles<a class="headerlink" href="#e-cylinder-periodic-directions-of-isosceles-and-right-triangles" title="Link to this heading">¶</a></h2>
 <p>Assertion (e) can be phrased as</p>
 <blockquote>
 <div><p>Let <span class="math notranslate nohighlight">\(d=α+β+γ\)</span> be a sum of positive coprime integers with <span class="math notranslate nohighlight">\(γ=α+β\)</span> or <span class="math notranslate nohighlight">\(α=β\)</span>. Consider the (right) triangle <span class="math notranslate nohighlight">\(\Delta=(α,β,γ)\)</span> embedded into the complex plane such that one of its sides is horizontal. Let <span class="math notranslate nohighlight">\(z\in S^1\)</span> be such that <span class="math notranslate nohighlight">\(z^{2\mathrm{lcm}(2,d)}=1\)</span>. Then the flow in direction <span class="math notranslate nohighlight">\(z\)</span> on the unfolding of <span class="math notranslate nohighlight">\(\Delta\)</span> completely decomposes into cylinders.</p>
@@ -776,12 +846,12 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../geometry.html">
+          <a class="next-page" href="../cache.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">The flatsurf.geometry Package</div>
+                <div class="title">The flatsurf.cache Module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -855,17 +925,14 @@ Assume that a rational triangle <span class="math notranslate nohighlight">\(\De
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
+</div><script src="../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"macros": {"ZZ": "\\Bold{Z}", "NN": "\\Bold{N}", "RR": "\\Bold{R}", "CC": "\\Bold{C}", "QQ": "\\Bold{Q}", "QQbar": "\\overline{\\QQ}", "GF": ["\\Bold{F}_{#1}", 1], "Zp": ["\\Bold{Z}_{#1}", 1], "Qp": ["\\Bold{Q}_{#1}", 1], "Zmod": ["\\ZZ/#1\\ZZ", 1], "CDF": "\\Bold{C}", "CIF": "\\Bold{C}", "CLF": "\\Bold{C}", "RDF": "\\Bold{R}", "RIF": "\\Bold{I} \\Bold{R}", "RLF": "\\Bold{R}", "SL": "\\mathrm{SL}", "PSL": "\\mathrm{PSL}", "lcm": "\\mathop{\\operatorname{lcm}}", "dist": "\\mathrm{dist}", "Bold": ["\\mathbf{#1}", 1]}, "inlineMath": [["$", "$"], ["\\(", "\\)"]], "maxBuffer": 51200, "autoload": {"color": [], "colorv2": ["color"]}}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

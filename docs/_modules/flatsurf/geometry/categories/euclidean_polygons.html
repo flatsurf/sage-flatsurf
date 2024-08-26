@@ -1,21 +1,21 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../../../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>flatsurf.geometry.categories.euclidean_polygons - sage-flatsurf 0.5.2 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/thebelab.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-furo.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-jupyter-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="https://doc.sagemath.org/html/en/reference/_static/custom-codemirror-monokai.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter_execute.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/jupyter_execute.css?v=1d0c7212" />
     
     
 
@@ -76,7 +76,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -91,22 +91,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -119,6 +160,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -137,7 +180,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -184,52 +228,80 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/boshernitzan_conjecture.html">Boshernitzan’s Conjectures</a></li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cache.html">The flatsurf.cache Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">The flatsurf.features Module</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry.html">The flatsurf.geometry Package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories.html"><code class="docutils literal notranslate"><span class="pre">categories</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/chamanara.html"><code class="docutils literal notranslate"><span class="pre">chamanara</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/circle.html"><code class="docutils literal notranslate"><span class="pre">circle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cohomology.html"><code class="docutils literal notranslate"><span class="pre">cohomology</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean.html"><code class="docutils literal notranslate"><span class="pre">euclidean</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/finitely_generated_matrix_group.html"><code class="docutils literal notranslate"><span class="pre">finitely_generated_matrix_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/fundamental_group.html"><code class="docutils literal notranslate"><span class="pre">fundamental_group</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/gl2r_orbit_closure.html"><code class="docutils literal notranslate"><span class="pre">gl2r_orbit_closure</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/homology.html"><code class="docutils literal notranslate"><span class="pre">homology</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/interval_exchange_transformation.html"><code class="docutils literal notranslate"><span class="pre">interval_exchange_transformation</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/l_infinity_delaunay_cells.html"><code class="docutils literal notranslate"><span class="pre">l_infinity_delaunay_cells</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/lazy.html"><code class="docutils literal notranslate"><span class="pre">lazy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mappings.html"><code class="docutils literal notranslate"><span class="pre">mappings</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/mega_wollmilchsau.html"><code class="docutils literal notranslate"><span class="pre">mega_wollmilchsau</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/minimal_cover.html"><code class="docutils literal notranslate"><span class="pre">minimal_cover</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/origami.html"><code class="docutils literal notranslate"><span class="pre">origami</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/polyhedra.html"><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf_conversion.html"><code class="docutils literal notranslate"><span class="pre">pyflatsurf_conversion</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity.html"><code class="docutils literal notranslate"><span class="pre">similarity</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surface_generators.html"><code class="docutils literal notranslate"><span class="pre">similarity_surface_generators</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/subfield.html"><code class="docutils literal notranslate"><span class="pre">subfield</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_legacy.html"><code class="docutils literal notranslate"><span class="pre">surface_legacy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/surface_objects.html"><code class="docutils literal notranslate"><span class="pre">surface_objects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/tangent_bundle.html"><code class="docutils literal notranslate"><span class="pre">tangent_bundle</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../geometry/thurston_veech.html"><code class="docutils literal notranslate"><span class="pre">thurston_veech</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/veech_group.html"><code class="docutils literal notranslate"><span class="pre">veech_group</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry/categories.html">The flatsurf.geometry.categories Package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.categories Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/cone_surfaces.html"><code class="docutils literal notranslate"><span class="pre">cone_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/dilation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">dilation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/euclidean_polygons_with_angles.html"><code class="docutils literal notranslate"><span class="pre">euclidean_polygons_with_angles</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/half_translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">half_translation_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/hyperbolic_polygons.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic_polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/polygonal_surfaces.html"><code class="docutils literal notranslate"><span class="pre">polygonal_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/polygons.html"><code class="docutils literal notranslate"><span class="pre">polygons</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/similarity_surfaces.html"><code class="docutils literal notranslate"><span class="pre">similarity_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/surface_category.html"><code class="docutils literal notranslate"><span class="pre">surface_category</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/topological_surfaces.html"><code class="docutils literal notranslate"><span class="pre">topological_surfaces</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/categories/translation_surfaces.html"><code class="docutils literal notranslate"><span class="pre">translation_surfaces</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../geometry/pyflatsurf.html">The flatsurf.geometry.pyflatsurf Package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of The flatsurf.geometry.pyflatsurf Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf/conversion.html"><code class="docutils literal notranslate"><span class="pre">conversion</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf/morphism.html"><code class="docutils literal notranslate"><span class="pre">morphism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../geometry/pyflatsurf/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../graphical.html">The flatsurf.graphical Package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of The flatsurf.graphical Package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/hyperbolic.html"><code class="docutils literal notranslate"><span class="pre">hyperbolic</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/polygon.html"><code class="docutils literal notranslate"><span class="pre">polygon</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/straight_line_trajectory.html"><code class="docutils literal notranslate"><span class="pre">straight_line_trajectory</span></code></a></li>
@@ -237,8 +309,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../graphical/surface.html"><code class="docutils literal notranslate"><span class="pre">surface</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../features.html">The flatsurf.features Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../cache.html">The flatsurf.cache Modules</a></li>
 </ul>
 
 </div>
@@ -261,7 +331,8 @@
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -271,7 +342,7 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <h1>Source code for flatsurf.geometry.categories.euclidean_polygons</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The category of Euclidean polygons defined in the real plane.</span>
@@ -330,7 +401,9 @@
 <span class="n">cm</span> <span class="o">=</span> <span class="n">get_coercion_model</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="EuclideanPolygons"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons">[docs]</a><span class="k">class</span> <span class="nc">EuclideanPolygons</span><span class="p">(</span><span class="n">Category_over_base_ring</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons">[docs]</a>
+<span class="k">class</span> <span class="nc">EuclideanPolygons</span><span class="p">(</span><span class="n">Category_over_base_ring</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The category of Euclidean polygons defined in the real plane</span>
 <span class="sd">    over a fixed base ring.</span>
@@ -343,7 +416,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.super_categories"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.super_categories">[docs]</a>    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.super_categories">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.super_categories">[docs]</a>
+    <span class="k">def</span> <span class="nf">super_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the categories Euclidean polygons are also contained in, namely</span>
 <span class="sd">        the polygons.</span>
@@ -357,7 +432,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">Polygons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">())]</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods">[docs]</a>    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods">[docs]</a>
+    <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Provides methods available to all Euclidean polygons in the real plane.</span>
 
@@ -365,7 +443,9 @@
 <span class="sd">        put it here.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.vector_space"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.vector_space">[docs]</a>        <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.vector_space">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.vector_space">[docs]</a>
+        <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the vector space of dimension 2 in which this polygon embeds.</span>
 
@@ -388,7 +468,10 @@
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.module"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.module">[docs]</a>        <span class="k">def</span> <span class="nf">module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.module">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.module">[docs]</a>
+        <span class="k">def</span> <span class="nf">module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the free module of rank 2 in which this polygon embeds.</span>
 
@@ -411,7 +494,10 @@
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.field"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.field">[docs]</a>        <span class="k">def</span> <span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.field">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.field">[docs]</a>
+        <span class="k">def</span> <span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            EXAMPLES::</span>
 
@@ -431,6 +517,7 @@
             <span class="p">)</span>
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">()</span></div>
+
 
         <span class="k">def</span> <span class="nf">_mul_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">switch_sides</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -481,7 +568,9 @@
                 <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">category</span><span class="p">(),</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_rational"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_rational">[docs]</a>        <span class="nd">@cached_method</span>
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_rational">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_rational">[docs]</a>
+        <span class="nd">@cached_method</span>
         <span class="k">def</span> <span class="nf">is_rational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this is a rational polygon, i.e., all its</span>
@@ -522,7 +611,10 @@
 
             <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_simple"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_simple">[docs]</a>        <span class="k">def</span> <span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_simple">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_simple">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this is a simple polygon, i.e., without</span>
 <span class="sd">            self-intersection.</span>
@@ -551,7 +643,10 @@
 
             <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.vertices"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.vertices">[docs]</a>        <span class="nd">@abstract_method</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.vertices">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.vertices">[docs]</a>
+        <span class="nd">@abstract_method</span>
         <span class="k">def</span> <span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">marked_vertices</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the vertices of this polygon in counterclockwise order as</span>
@@ -572,7 +667,10 @@
 
 <span class="sd">            &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.vertex"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.vertex">[docs]</a>        <span class="k">def</span> <span class="nf">vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.vertex">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.vertex">[docs]</a>
+        <span class="k">def</span> <span class="nf">vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return coordinates for the ``i``-th vertex of this polygon.</span>
 
@@ -600,7 +698,10 @@
             <span class="n">vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">vertices</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.edges"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.edges">[docs]</a>        <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.edges">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.edges">[docs]</a>
+        <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the edges of this polygon as vectors in the plane going from</span>
 <span class="sd">            one vertex to the next one.</span>
@@ -615,7 +716,10 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()))]</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.edge"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.edge">[docs]</a>        <span class="k">def</span> <span class="nf">edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.edge">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.edge">[docs]</a>
+        <span class="k">def</span> <span class="nf">edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the vector going from vertex ``i`` to the following vertex</span>
 <span class="sd">            in counter-clockwise order.</span>
@@ -643,7 +747,10 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertex</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_convex"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_convex">[docs]</a>        <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_convex">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_convex">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this is a convex polygon.</span>
 
@@ -675,6 +782,7 @@
 
             <span class="k">return</span> <span class="kc">True</span></div>
 
+
         <span class="k">def</span> <span class="nf">_test_marked_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Verify that :meth:`vertices` and :meth:`is_convex` are compatible.</span>
@@ -694,7 +802,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">(</span><span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
                 <span class="p">)</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_degenerate"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_degenerate">[docs]</a>        <span class="k">def</span> <span class="nf">is_degenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_degenerate">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_degenerate">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_degenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether this polygon is considered degenerate.</span>
 
@@ -726,7 +836,10 @@
 
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.slopes"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.slopes">[docs]</a>        <span class="k">def</span> <span class="nf">slopes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.slopes">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.slopes">[docs]</a>
+        <span class="k">def</span> <span class="nf">slopes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the slopes of this polygon as vectors in the plane.</span>
 
@@ -772,7 +885,10 @@
 
             <span class="k">return</span> <span class="p">[</span><span class="n">vector</span><span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.erase_marked_vertices"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.erase_marked_vertices">[docs]</a>        <span class="k">def</span> <span class="nf">erase_marked_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.erase_marked_vertices">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.erase_marked_vertices">[docs]</a>
+        <span class="k">def</span> <span class="nf">erase_marked_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a copy of this polygon without marked vertices.</span>
 
@@ -788,7 +904,10 @@
 
             <span class="k">return</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">(</span><span class="n">marked_vertices</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_equilateral"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_equilateral">[docs]</a>        <span class="k">def</span> <span class="nf">is_equilateral</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_equilateral">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_equilateral">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_equilateral</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether all sides of this polygon have the same length.</span>
 
@@ -802,7 +921,10 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">({</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">()})</span> <span class="o">==</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_equiangular"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_equiangular">[docs]</a>        <span class="k">def</span> <span class="nf">is_equiangular</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.is_equiangular">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.is_equiangular">[docs]</a>
+        <span class="k">def</span> <span class="nf">is_equiangular</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return whether all sides of this polygon meet at the same angle.</span>
 
@@ -822,7 +944,10 @@
                 <span class="n">is_parallel</span><span class="p">(</span><span class="n">slopes</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">slopes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">slopes</span><span class="p">))</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.plot"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.plot">[docs]</a>        <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.plot">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.plot">[docs]</a>
+        <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">polygon_options</span><span class="o">=</span><span class="p">{},</span>
@@ -874,7 +999,10 @@
                 <span class="o">+</span> <span class="n">point2d</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="o">**</span><span class="n">vertex_options</span><span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.angles"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.angles">[docs]</a>        <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">assume_rational</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.angles">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.angles">[docs]</a>
+        <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">assume_rational</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the list of angles of this polygon (divided by `2 \pi`).</span>
 
@@ -906,7 +1034,10 @@
 
             <span class="k">return</span> <span class="n">angles</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.angle"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.angle">[docs]</a>        <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">assume_rational</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.angle">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.angle">[docs]</a>
+        <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">numerical</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">assume_rational</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the angle at the beginning of the start point of the edge ``e``.</span>
 
@@ -950,7 +1081,10 @@
                 <span class="n">numerical</span><span class="o">=</span><span class="n">numerical</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.area"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.area">[docs]</a>        <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.area">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.area">[docs]</a>
+        <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the area of this polygon.</span>
 
@@ -980,7 +1114,10 @@
 
             <span class="k">return</span> <span class="n">total</span> <span class="o">/</span> <span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.centroid"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.centroid">[docs]</a>        <span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.centroid">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.centroid">[docs]</a>
+        <span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the coordinates of the centroid of this polygon.</span>
 
@@ -1035,7 +1172,10 @@
                 <span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.get_point_position"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.get_point_position">[docs]</a>        <span class="k">def</span> <span class="nf">get_point_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.get_point_position">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.get_point_position">[docs]</a>
+        <span class="k">def</span> <span class="nf">get_point_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the combinatorial classification of a point and a polygon.</span>
 
@@ -1127,7 +1267,10 @@
 
             <span class="k">return</span> <span class="n">PolygonPosition</span><span class="p">(</span><span class="n">PolygonPosition</span><span class="o">.</span><span class="n">OUTSIDE</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.join"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.join">[docs]</a>        <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">other_edge</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.ParentMethods.join">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.ParentMethods.join">[docs]</a>
+        <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">other_edge</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the polygon obtained by gluing this polygon and ``other``</span>
 <span class="sd">            along their ``edge`` and ``other_edge``, respectively.</span>
@@ -1193,9 +1336,13 @@
                 <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[</span><span class="n">other_edge</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
                 <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[:</span><span class="n">other_edge</span><span class="p">]</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">()[</span><span class="n">edge</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:],</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+</div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Rational"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Rational">[docs]</a>    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Rational">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Rational">[docs]</a>
+    <span class="k">class</span> <span class="nc">Rational</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The category of rational Euclidean polygons.</span>
 
@@ -1209,8 +1356,13 @@
 
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods">[docs]</a>    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
-<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods.module"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods.module">[docs]</a>        <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods">[docs]</a>
+    <span class="k">class</span> <span class="nc">SubcategoryMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods.module">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods.module">[docs]</a>
+        <span class="nd">@cached_method</span>
         <span class="k">def</span> <span class="nf">module</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the free module of rank 2 in which these polygons embed.</span>
@@ -1241,7 +1393,10 @@
 
             <span class="k">return</span> <span class="n">FreeModule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods.vector_space"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods.vector_space">[docs]</a>        <span class="nd">@cached_method</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods.vector_space">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods.vector_space">[docs]</a>
+        <span class="nd">@cached_method</span>
         <span class="k">def</span> <span class="nf">vector_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the vector space of dimension 2 in which these polygons embed.</span>
@@ -1274,7 +1429,10 @@
 
             <span class="k">return</span> <span class="n">VectorSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">()</span><span class="o">.</span><span class="n">fraction_field</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods.WithAngles"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods.WithAngles">[docs]</a>        <span class="k">def</span> <span class="nf">WithAngles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angles</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.SubcategoryMethods.WithAngles">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.SubcategoryMethods.WithAngles">[docs]</a>
+        <span class="k">def</span> <span class="nf">WithAngles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angles</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return the subcategory of polygons with fixed ``angles``.</span>
 
@@ -1296,7 +1454,9 @@
             <span class="p">)</span>
 
             <span class="n">angles</span> <span class="o">=</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="o">.</span><span class="n">_normalize_angles</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">angles</span><span class="p">)</span> <span class="o">&amp;</span> <span class="bp">self</span></div></div>
+            <span class="k">return</span> <span class="n">EuclideanPolygonsWithAngles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_ring</span><span class="p">(),</span> <span class="n">angles</span><span class="p">)</span> <span class="o">&amp;</span> <span class="bp">self</span></div>
+</div>
+
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -1387,7 +1547,9 @@
             <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">(),</span> <span class="n">vertices</span><span class="o">=</span><span class="n">vertices</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">check</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Convex"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Convex">[docs]</a>    <span class="k">class</span> <span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.Convex">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Convex">[docs]</a>
+    <span class="k">class</span> <span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The subcategory of convex Euclidean polygons in the real plane.</span>
 
@@ -1423,7 +1585,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Convex.ParentMethods"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Convex.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="EuclideanPolygons.Convex.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Convex.ParentMethods">[docs]</a>
+        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all convex Euclidean polygons in the</span>
 <span class="sd">            real plane.</span>
@@ -1432,7 +1596,9 @@
 <span class="sd">            want to put it here.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Convex.ParentMethods.is_convex"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Convex.ParentMethods.is_convex">[docs]</a>            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.Convex.ParentMethods.is_convex">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Convex.ParentMethods.is_convex">[docs]</a>
+            <span class="k">def</span> <span class="nf">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return whether this is a convex polygon.</span>
 
@@ -1454,9 +1620,14 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">strict</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">True</span>
 
-                <span class="k">return</span> <span class="n">EuclideanPolygons</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span></div></div></div>
+                <span class="k">return</span> <span class="n">EuclideanPolygons</span><span class="o">.</span><span class="n">ParentMethods</span><span class="o">.</span><span class="n">is_convex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span></div>
+</div>
+</div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple">[docs]</a>    <span class="k">class</span> <span class="nc">Simple</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple">[docs]</a>
+    <span class="k">class</span> <span class="nc">Simple</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The subcategory of Euclidean polygons without self-intersection in the</span>
 <span class="sd">        real plane.</span>
@@ -1469,7 +1640,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.ParentMethods"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods">[docs]</a>        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="EuclideanPolygons.Simple.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods">[docs]</a>
+        <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Provides methods available to all simple Euclidean polygons.</span>
 
@@ -1477,7 +1650,9 @@
 <span class="sd">            implementation, you probably want to put it here.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.ParentMethods.triangulation"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation">[docs]</a>            <span class="k">def</span> <span class="nf">triangulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.Simple.ParentMethods.triangulation">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulation">[docs]</a>
+            <span class="k">def</span> <span class="nf">triangulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a list of pairs of indices of vertices that together with the boundary</span>
 <span class="sd">                form a triangulation.</span>
@@ -1662,7 +1837,10 @@
 
                 <span class="k">assert</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.ParentMethods.triangulate"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulate">[docs]</a>            <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.ParentMethods.triangulate">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.ParentMethods.triangulate">[docs]</a>
+            <span class="k">def</span> <span class="nf">triangulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Return a triangulation of this polygon.</span>
 
@@ -1862,9 +2040,13 @@
 
                 <span class="kn">from</span> <span class="nn">bidict</span> <span class="kn">import</span> <span class="n">bidict</span>
 
-                <span class="k">return</span> <span class="n">triangulation</span><span class="p">,</span> <span class="n">bidict</span><span class="p">(</span><span class="n">outer_edges</span><span class="p">)</span></div></div>
+                <span class="k">return</span> <span class="n">triangulation</span><span class="p">,</span> <span class="n">bidict</span><span class="p">(</span><span class="n">outer_edges</span><span class="p">)</span></div>
+</div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex">[docs]</a>        <span class="k">class</span> <span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex">[docs]</a>
+        <span class="k">class</span> <span class="nc">Convex</span><span class="p">(</span><span class="n">CategoryWithAxiom_over_base_ring</span><span class="p">):</span>
 <span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            The subcategory of the simple convex Euclidean polygons.</span>
 
@@ -1960,7 +2142,9 @@
                     <span class="n">base_ring</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">(),</span> <span class="n">vertices</span><span class="o">=</span><span class="n">vertices</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">check</span>
                 <span class="p">)</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods">[docs]</a>            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods">[docs]</a>
+            <span class="k">class</span> <span class="nc">ParentMethods</span><span class="p">:</span>
 <span class="w">                </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                Provides methods available to all simple convex Euclidean polygons.</span>
 
@@ -1968,7 +2152,9 @@
 <span class="sd">                implementation, you probably want to put it here.</span>
 <span class="sd">                &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.find_separatrix"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.find_separatrix">[docs]</a>                <span class="k">def</span> <span class="nf">find_separatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_vertex</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.find_separatrix">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.find_separatrix">[docs]</a>
+                <span class="k">def</span> <span class="nf">find_separatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_vertex</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Returns a pair (v,same) where v is a vertex and same is a boolean.</span>
 <span class="sd">                    The provided parameter &quot;direction&quot; should be a non-zero vector with</span>
@@ -2020,7 +2206,10 @@
                         <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">%</span> <span class="n">n</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to find a separatrix&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.contains_point"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.contains_point">[docs]</a>                <span class="k">def</span> <span class="nf">contains_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.contains_point">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.contains_point">[docs]</a>
+                <span class="k">def</span> <span class="nf">contains_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return whether the point is within the polygon (after the polygon is possibly translated)</span>
 <span class="sd">                    &quot;&quot;&quot;</span>
@@ -2028,7 +2217,10 @@
                         <span class="n">point</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="n">translation</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">is_inside</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit">[docs]</a>                <span class="k">def</span> <span class="nf">flow_to_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_to_exit">[docs]</a>
+                <span class="k">def</span> <span class="nf">flow_to_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Flow a point in the direction of holonomy until the point leaves the</span>
 <span class="sd">                    polygon.  Note that ValueErrors may be thrown if the point is not in the</span>
@@ -2116,7 +2308,10 @@
                         <span class="s2">&quot;Point on boundary of polygon and direction not pointed into the polygon.&quot;</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.flow_map"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_map">[docs]</a>                <span class="k">def</span> <span class="nf">flow_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.flow_map">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow_map">[docs]</a>
+                <span class="k">def</span> <span class="nf">flow_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a polygonal map associated to the flow in ``direction`` in this</span>
 <span class="sd">                    polygon.</span>
@@ -2205,7 +2400,10 @@
                         <span class="n">ring</span><span class="p">,</span> <span class="n">bot_labels</span><span class="p">,</span> <span class="n">bot_lengths</span><span class="p">,</span> <span class="n">top_labels</span><span class="p">,</span> <span class="n">top_lengths</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.flow"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow">[docs]</a>                <span class="k">def</span> <span class="nf">flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">holonomy</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.flow">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.flow">[docs]</a>
+                <span class="k">def</span> <span class="nf">flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">holonomy</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Flow a point in the direction of holonomy for the length of the</span>
 <span class="sd">                    holonomy, or until the point leaves the polygon.  Note that ValueErrors</span>
@@ -2315,7 +2513,22 @@
                         <span class="s2">&quot;Point on boundary of polygon and holonomy not pointed into the polygon.&quot;</span>
                     <span class="p">)</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.circumscribing_circle"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.circumscribing_circle">[docs]</a>                <span class="k">def</span> <span class="nf">circumscribing_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.circumscribing_circle">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.circumscribing_circle">[docs]</a>
+                <span class="k">def</span> <span class="nf">circumscribing_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="kn">import</span> <span class="nn">warnings</span>
+
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="s2">&quot;circumscribing_circle() has been deprecated and will be removed from a future version of sage-flatsurf; use circumscribed_circle() instead&quot;</span>
+                    <span class="p">)</span>
+
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">circumscribed_circle</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.circumscribed_circle">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.circumscribed_circle">[docs]</a>
+                <span class="k">def</span> <span class="nf">circumscribed_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Returns the circle which circumscribes this polygon.</span>
 <span class="sd">                    Raises a ValueError if the polygon is not circumscribed by a circle.</span>
@@ -2324,7 +2537,7 @@
 
 <span class="sd">                        sage: from flatsurf import Polygon</span>
 <span class="sd">                        sage: P = Polygon(vertices=[(0,0),(1,0),(2,1),(-1,1)])</span>
-<span class="sd">                        sage: P.circumscribing_circle()</span>
+<span class="sd">                        sage: P.circumscribed_circle()</span>
 <span class="sd">                        Circle((1/2, 3/2), 5/2)</span>
 <span class="sd">                    &quot;&quot;&quot;</span>
                     <span class="kn">from</span> <span class="nn">flatsurf.geometry.circle</span> <span class="kn">import</span> <span class="n">circle_from_three_points</span>
@@ -2339,7 +2552,10 @@
                             <span class="p">)</span>
                     <span class="k">return</span> <span class="n">circle</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.subdivide"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide">[docs]</a>                <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.subdivide">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide">[docs]</a>
+                <span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a list of triangles that partition this polygon.</span>
 
@@ -2397,7 +2613,10 @@
                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span>
                     <span class="p">]</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.subdivide_edges"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide_edges">[docs]</a>                <span class="k">def</span> <span class="nf">subdivide_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.subdivide_edges">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.subdivide_edges">[docs]</a>
+                <span class="k">def</span> <span class="nf">subdivide_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return a copy of this polygon whose edges have been split into</span>
 <span class="sd">                    ``parts`` equal parts each.</span>
@@ -2427,7 +2646,10 @@
 
                     <span class="k">return</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">steps</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">parts</span><span class="p">)])</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.j_invariant"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.j_invariant">[docs]</a>                <span class="k">def</span> <span class="nf">j_invariant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.j_invariant">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.j_invariant">[docs]</a>
+                <span class="k">def</span> <span class="nf">j_invariant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return the Kenyon-Smille J-invariant of this polygon.</span>
 
@@ -2511,6 +2733,7 @@
 
                     <span class="k">return</span> <span class="p">(</span><span class="n">Jxx</span><span class="p">,</span> <span class="n">Jyy</span><span class="p">,</span> <span class="n">Jxy</span><span class="p">)</span></div>
 
+
                 <span class="nd">@staticmethod</span>
                 <span class="k">def</span> <span class="nf">_wedge_product</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -2580,7 +2803,9 @@
                         <span class="n">R</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="p">[</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
                     <span class="p">)</span>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric">[docs]</a>                <span class="k">def</span> <span class="nf">is_isometric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_isometric">[docs]</a>
+                <span class="k">def</span> <span class="nf">is_isometric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return whether ``self`` and ``other`` are isometric convex polygons via an orientation</span>
 <span class="sd">                    preserving isometry.</span>
@@ -2671,7 +2896,10 @@
                         <span class="n">oedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oedges</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
                     <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.is_translate"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_translate">[docs]</a>                <span class="k">def</span> <span class="nf">is_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.is_translate">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_translate">[docs]</a>
+                <span class="k">def</span> <span class="nf">is_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return whether ``other`` is a translate of ``self``.</span>
 
@@ -2710,7 +2938,10 @@
                         <span class="n">oedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oedges</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
                     <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate"><a class="viewcode-back" href="../../../../geometry/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate">[docs]</a>                <span class="k">def</span> <span class="nf">is_half_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate">
+<a class="viewcode-back" href="../../../../geometry/categories/euclidean_polygons.html#flatsurf.geometry.categories.euclidean_polygons.EuclideanPolygons.Simple.Convex.ParentMethods.is_half_translate">[docs]</a>
+                <span class="k">def</span> <span class="nf">is_half_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">certificate</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">                    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                    Return whether ``other`` is a translate or half-translate of ``self``.</span>
 
@@ -2765,7 +2996,12 @@
                             <span class="p">)</span>
                         <span class="n">oedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oedges</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 
-                    <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">False</span></div></div></div></div></div>
+                    <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">certificate</span> <span class="k">else</span> <span class="kc">False</span></div>
+</div>
+</div>
+</div>
+</div>
+
 </pre></div>
         </article>
       </div>
@@ -2798,13 +3034,10 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
-    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../../_static/scripts/furo.js"></script>
+</div><script src="../../../../_static/documentation_options.js?v=8e576371"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=5fa4622c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
