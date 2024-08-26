@@ -2975,32 +2975,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                self = self.delaunay_triangulate().codomain()
-
-                    s = LazyDelaunaySurface(
-                        self, direction=direction, category=self.category()
-                    )
-                    from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-
-                    return DelaunayDecompositionMorphism._create_morphism(self, s)
-
-                from flatsurf.geometry.surface import (
-                    MutableOrientedSimilaritySurface,
-                )
-
-                s = MutableOrientedSimilaritySurface.from_surface(self)
-                s.delaunay_decomposition(
-                    triangulated=triangulated,
-                    delaunay_triangulated=delaunay_triangulated,
-                    in_place=True,
-                    direction=direction,
-                    relabel=relabel,
-                )
-                s.set_immutable()
-
-                from flatsurf.geometry.morphism import DelaunayDecompositionMorphism
-
-                return DelaunayDecompositionMorphism._create_morphism(self, s)
+                return self.delaunay_decompose().codomain()
 
             def _saddle_connections_unbounded(
                 self, initial_label, initial_vertex, algorithm
