@@ -1382,6 +1382,18 @@ class EuclideanCircle(EuclideanFacade):
         self._center = center
         self._radius_squared = radius_squared
 
+    def __eq__(self, other):
+        if not isinstance(other, EuclideanCircle):
+            return False
+
+        if self.parent() is not other.parent():
+            return False
+
+        return self._center == other._center and self._radius_squared == other._radius_squared
+
+    def __hash__(self):
+        return hash((self._center, self._radius_squared))
+
     def _repr_(self):
         r"""
         Return a printable representation of this circle.
@@ -1837,6 +1849,9 @@ class EuclideanPoint(EuclideanSet, Element):
         line = self.parent().line(self, end)
 
         return self.parent().segment(line, start=self, end=end)
+
+    def __hash__(self):
+        return hash((self._x, self._y))
 
 
 class EuclideanLine(EuclideanFacade):
