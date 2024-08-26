@@ -1786,7 +1786,7 @@ class ApproximateWeightedVoronoiCellDecomposition_delaunay(CellDecomposition):
 class MappedBoundarySegment(BoundarySegment):
     def __init__(self, cell, boundary):
         super().__init__(
-            cell, cell._decomposition._isomorphism.section()(boundary.segment())
+            cell, cell._decomposition._isomorphism.section()._image_line_segment(boundary.segment())
         )
         self._codomain_boundary = boundary
 

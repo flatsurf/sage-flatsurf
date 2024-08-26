@@ -1516,6 +1516,15 @@ class SurfaceMorphism(Morphism):
             "not a single edge maps to this edge, cannot implement preimage of this edge yet"
         )
 
+    def _image_line_segment(self, s):
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute the image of a line segment yet")
+
+    def _section_line_segment(self, t):
+        raise NotImplementedError(f"a {type(self).__name__} cannot compute a preimage of a line segment yet")
+
+    def _test_section_line_segment(self, **options):
+        raise NotImplementedError
+
     def _composition(self, other):
         r"""
         Return the composition of this morphism and ``other``.
@@ -2012,6 +2021,9 @@ class SectionMorphism(SurfaceMorphism):
         """
         return self._morphism._image_homology_edge(label, edge, codomain=codomain)
 
+    def _image_line_segment(self, x): return self._morphism._section_line_segment(x)
+    def _section_line_segment(self, y): return self._morphism._image_line_segment(y)
+
     def __eq__(self, other):
         r"""
         Return whether this section is indistinguishable from ``other``.
@@ -2272,6 +2284,16 @@ class CompositionMorphism(SurfaceMorphism):
         return self._image_homology(
             self.domain().homology()((label, edge)), codomain=codomain
         )
+
+    def _image_line_segment(self, x):
+        for morphism in self._morphisms:
+            x = morphism._image_line_segment(x)
+        return x
+
+    def _section_line_segment(self, y):
+        for morphism in self._morphisms[::-1]:
+            y = morphism._section_line_segment(y)
+        return y
 
     def _repr_type(self):
         r"""
@@ -2790,6 +2812,12 @@ class SurfaceMorphism_factorization(SurfaceMorphism):
         """
         return self._factorization()._section_point(q)
 
+    def _image_line_segment(self, x):
+        return self._factorization()._image_line_segment(x)
+
+    def _section_line_segment(self, y):
+        return self._factorization()._section_line_segment(y)
+
     def _factorization(self):
         r"""
         Return the morphism underlying this morphism.
@@ -3118,7 +3146,27 @@ class NamedFactorizationMorphism(SurfaceMorphism_factorization):
         return hash((self.__factorization, self._name))
 
 
-class TriangulationMorphism_base(SurfaceMorphism):
+class RepolygonizationMorphism(SurfaceMorphism):
+    def _image_line_segment(self, s):
+        raise NotImplementedError
+
+    def _section_line_segment(self, t):
+        from flatsurf.geometry.voronoi import SurfaceLineSegment
+
+        if not self.domain().is_translation_surface():
+            raise NotImplementedError
+
+        if t.start().angle() != 1:
+            raise NotImplementedError
+
+        start = self.section()(t.start())
+
+        assert start.angle() == 1, "preimage of a regular point must be regular"
+
+        return SurfaceLineSegment(self.domain(), *start.representative(), t.holonomy())
+
+
+class TriangulationMorphism_base(RepolygonizationMorphism):
     r"""
     Abstract base class for morphisms from a surface to its triangulation.
 
@@ -3519,7 +3567,7 @@ class DelaunayTriangulationMorphism_delaunay_decomposition(TriangulationMorphism
         return hash(self.parent())
 
 
-class DelaunayTriangulationMorphism(SurfaceMorphism):
+class DelaunayTriangulationMorphism(RepolygonizationMorphism):
     r"""
     A morphism from a triangulated surface to its Delaunay triangulation.
 
@@ -4501,26 +4549,6 @@ class SubdivideEdgesMorphism(SurfaceMorphism):
 
     def _section_tangent_vector(self, t):
         return self.domain().tangent_vector(t.polygon_label(), t.point(), t.vector())
-
-
-class RepolygonizationMorphism(SurfaceMorphism):
-    def _image_line_segment(self, s):
-        raise NotImplementedError
-
-    def _section_line_segment(self, t):
-        from flatsurf.geometry.voronoi import SurfaceLineSegment
-
-        if not self.domain().is_translation_surface():
-            raise NotImplementedError
-
-        if t.start().angle() != 1:
-            raise NotImplementedError
-
-        start = self.section()(t.start())
-
-        assert start.angle() == 1, "preimage of a regular point must be regular"
-
-        return SurfaceLineSegment(self.domain(), *start.representative(), t.holonomy())
 
 
 # TODO: Can we use some generic machinery from RepolygonizationMorphism here?
