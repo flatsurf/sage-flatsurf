@@ -658,7 +658,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         Jxy += xy
                     return (Jxx, Jyy, Jxy)
 
-                @cached_method
+                @cached_surface_method
                 def erase_marked_points(self):
                     r"""
                     Return an isomorphism to a surface with a minimal regular vertices
