@@ -32,7 +32,7 @@ The harmonic differential that integrates as 1 on the vertical and 0 on the hori
 A less trivial example, the regular octagon::
 
     sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
-    sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulation()
+    sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulate().codomain()
 
     sage: H = SimplicialCohomology(S)
     sage: a, b, c, d = H.homology().gens()
@@ -96,25 +96,25 @@ A deformed L::
     sage: ### from flatsurf import translation_surfaces, HarmonicDifferentials, ApproximateWeightedVoronoiCellDecomposition, GL2ROrbitClosure
     sage: ### L = translation_surfaces.mcmullen_genus2_prototype(1, 1, 0, -1)
     sage: ### L = GL2ROrbitClosure(L).deform()
-    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.delaunay_triangulate().codomain()
     sage: ### L = L.subdivide_edges(4).codomain()
     sage: ### L = L.subdivide().codomain()
     sage: ### # L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
     sage: ### # L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [3]]).codomain()
-    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.delaunay_triangulate().codomain()
     sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
     sage: ### L.plot(edge_labels=False)
     sage: ### V = ApproximateWeightedVoronoiCellDecomposition(L)
     sage: ### Omega = HarmonicDifferentials(L, error=1e-3, cell_decomposition=V, check=False)
     sage: ### Omega.error_plot(cutoff=.5)
 
-    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.delaunay_triangulate().codomain()
     sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
     sage: ### L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [8, 12]]).codomain()
-    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.delaunay_triangulate().codomain()
     sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
     sage: ### L = L.insert_marked_points(*[L(label, L.polygon(label).centroid()) for label in [1, 16]]).codomain()
-    sage: ### L = L.delaunay_triangulation()
+    sage: ### L = L.delaunay_triangulate().codomain()
     sage: ### L = L.relabel({label: l for (l, label) in enumerate(L.labels())}).codomain()
     sage: ### V = ApproximateWeightedVoronoiCellDecomposition(L)
     sage: ### V.plot()
@@ -126,7 +126,7 @@ Much more complicated, the unfolding of the (3, 4, 13) triangle::
     sage: from flatsurf import similarity_surfaces, Polygon
 
     sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation")
-    sage: S = S.erase_marked_points().codomain().delaunay_triangulation()
+    sage: S = S.erase_marked_points().codomain().delaunay_triangulate().codomain()
     sage: S = S.relabel().codomain()
 
 If we develop power series at the vertices, not all of the surface is covered
@@ -144,7 +144,7 @@ We add marked points in the centers of some polygons::
     sage: Omega = HarmonicDifferentials(S, error=1e-1, cell_decomposition=V, check=False)
     sage: # Omega.error_plot()
     sage: S = S.insert_marked_points(*[S(label, S.polygon(label).centroid()) for label in (2, 18, 26, 31)]).codomain()
-    sage: S = S.delaunay_triangulation()
+    sage: S = S.delaunay_triangulate().codomain()
     sage: S = S.relabel().codomain()
 
     sage: V = ApproximateWeightedVoronoiCellDecomposition(S)
@@ -651,7 +651,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulation()
+            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulate().codomain()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)

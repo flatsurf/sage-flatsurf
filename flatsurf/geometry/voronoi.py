@@ -1341,7 +1341,7 @@ class VoronoiCellDecomposition_delaunay(CellDecomposition):
 
         sage: from flatsurf import translation_surfaces, VoronoiCellDecomposition
 
-        sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulation()
+        sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulate().codomain()
         sage: V = VoronoiCellDecomposition(S)
 
         sage: V.plot()
@@ -1350,7 +1350,7 @@ class VoronoiCellDecomposition_delaunay(CellDecomposition):
 
         sage: from flatsurf import Polygon, similarity_surfaces, VoronoiCellDecomposition
 
-        sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation").erase_marked_points().codomain().delaunay_triangulation()
+        sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation").erase_marked_points().codomain().delaunay_triangulate().codomain()
         sage: V = VoronoiCellDecomposition(S)
 
         sage: V.plot()
@@ -1474,7 +1474,7 @@ class ApproximateWeightedVoronoiCellDecomposition_delaunay(CellDecomposition):
 
         sage: from flatsurf import translation_surfaces, ApproximateWeightedVoronoiCellDecomposition
 
-        sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulation()
+        sage: S = translation_surfaces.regular_octagon().subdivide().codomain().delaunay_triangulate().codomain()
         sage: V = ApproximateWeightedVoronoiCellDecomposition(S)
 
         sage: V.plot()
@@ -1483,7 +1483,7 @@ class ApproximateWeightedVoronoiCellDecomposition_delaunay(CellDecomposition):
 
         sage: from flatsurf import Polygon, similarity_surfaces, ApproximateWeightedVoronoiCellDecomposition
 
-        sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation").erase_marked_points().codomain().delaunay_triangulation()
+        sage: S = similarity_surfaces.billiard(Polygon(angles=[3, 4, 13])).minimal_cover("translation").erase_marked_points().codomain().delaunay_triangulate().codomain()
         sage: V = ApproximateWeightedVoronoiCellDecomposition(S)
 
         sage: V.plot()
@@ -2103,7 +2103,7 @@ def VoronoiCellDecomposition(surface):
     if surface.is_delaunay_triangulated():
         return VoronoiCellDecomposition_delaunay(surface)
 
-    delaunay_triangulation = surface.delaunay_triangulation()
+    delaunay_triangulation = surface.delaunay_triangulate()
     return MappedCellDecomposition(
         VoronoiCellDecomposition(delaunay_triangulation.codomain()),
         delaunay_triangulation,
@@ -2114,7 +2114,7 @@ def ApproximateWeightedVoronoiCellDecomposition(surface):
     if surface.is_delaunay_triangulated():
         return ApproximateWeightedVoronoiCellDecomposition_delaunay(surface)
 
-    delaunay_triangulation = surface.delaunay_triangulation()
+    delaunay_triangulation = surface.delaunay_triangulate()
     return MappedCellDecomposition(
         ApproximateWeightedVoronoiCellDecomposition(delaunay_triangulation.codomain()),
         delaunay_triangulation,
