@@ -2916,11 +2916,7 @@ class SimilaritySurfaces(SurfaceCategory):
                             "the relabel keyword will be removed in a future version of sage-flatsurf; do not pass it explicitly anymore to delaunay_decomposition()"
                         )
 
-                self = self.delaunay_triangulate().codomain()
-
-                from flatsurf.geometry.lazy import LazyDelaunaySurface
-
-                return LazyDelaunaySurface(self, category=self.category())
+                return self.delaunay_decompose().codomain()
 
             def delaunay_decompose(self, codomain=None):
                 r"""
