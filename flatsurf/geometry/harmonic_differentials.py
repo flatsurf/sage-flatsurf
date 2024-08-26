@@ -8,7 +8,7 @@ EXAMPLES:
 We compute harmonic differentials on the square torus::
 
     sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
-    sage: T = translation_surfaces.torus((1, 0), (0, 1))
+    sage: T = translation_surfaces.square_torus()
     sage: T.set_immutable()
 
     sage: H = SimplicialCohomology(T)
@@ -651,7 +651,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1)).delaunay_triangulate().codomain()
+            sage: T = translation_surfaces.square_torus().delaunay_triangulate().codomain()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -691,7 +691,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -797,7 +797,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -873,7 +873,7 @@ class HarmonicDifferential(Element):
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialHomology, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -1740,7 +1740,7 @@ class HarmonicDifferentialSpace(Parent):
     EXAMPLES::
 
         sage: from flatsurf import translation_surfaces, HarmonicDifferentials, SimplicialCohomology
-        sage: T = translation_surfaces.torus((1, 0), (0, 1))
+        sage: T = translation_surfaces.square_torus()
         sage: T.set_immutable()
 
         sage: Ω = HarmonicDifferentials(T); Ω
@@ -1928,9 +1928,9 @@ class HarmonicDifferentialSpace(Parent):
         while self._ncoefficients_epsilon_z(center, k) > self._error:
             k += 1
 
-        print(
-            f"{k} coefficients at {center} with degree {center.angle()} for an error of {self._ncoefficients_epsilon_z(center, k)}"
-        )
+        # print(
+        #     f"{k} coefficients at {center} with degree {center.angle()} for an error of {self._ncoefficients_epsilon_z(center, k)}"
+        # )
         return k
 
     def _ncoefficients_epsilon_z(self, center, k):
@@ -2264,7 +2264,7 @@ class PowerSeriesConstraints:
 
             sage: from flatsurf import translation_surfaces, HarmonicDifferentials
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: Ω = HarmonicDifferentials(T)
@@ -2346,7 +2346,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -2430,7 +2430,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialHomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialHomology(T)
@@ -2959,7 +2959,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
@@ -3027,7 +3027,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology, HarmonicDifferentials
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
@@ -3063,7 +3063,7 @@ class PowerSeriesConstraints:
         TODO: All these examples are a bit pointless::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
@@ -3138,7 +3138,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialCohomology(T)
@@ -3192,7 +3192,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces, SimplicialCohomology
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: H = SimplicialCohomology(T)
@@ -3281,7 +3281,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
@@ -3310,7 +3310,7 @@ class PowerSeriesConstraints:
         EXAMPLES::
 
             sage: from flatsurf import translation_surfaces
-            sage: T = translation_surfaces.torus((1, 0), (0, 1))
+            sage: T = translation_surfaces.square_torus()
             sage: T.set_immutable()
 
             sage: from flatsurf.geometry.harmonic_differentials import PowerSeriesConstraints, HarmonicDifferentials
