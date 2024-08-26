@@ -2980,7 +2980,7 @@ class PowerSeriesConstraints:
         iy = self.complex_field().zero()
 
         polygon = self._differentials.surface().polygon(label)
-        center = polygon.circumscribing_circle().center()
+        center = polygon.circumscribed_circle().center()
 
         for v, e in zip(polygon.vertices(), polygon.edges()):
             Δx, Δy = e
