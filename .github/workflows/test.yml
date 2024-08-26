@@ -17,16 +17,6 @@ jobs:
       matrix:
         include:
           - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy"
-            sagelib: "9.2"
-            environment: "environment.yml"
-            python: "3.9.15"
-          - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic"
-            sagelib: "9.3"
-            environment: "environment.yml"
-            python: "3.9.15"
-          - on: ubuntu-22.04
             optionals: "sage,flipper,gmpxxyy,pyeantic"
             sagelib: "9.4"
             environment: "environment.yml"
@@ -37,20 +27,40 @@ jobs:
             environment: "environment.yml"
             python: "3.9.15"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
             sagelib: "9.6"
             environment: "environment.yml"
             python: "3.10.8"
           - on: ubuntu-22.04
-            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
             sagelib: "9.7"
             environment: "environment.yml"
             python: "3.10.8"
-          # surface-dynamics is not available for SageMath 9.8 on conda-forge, see https://github.com/conda-forge/surface-dynamics-feedstock/pull/17
-          # - optionals: "sage,flipper,pyeantic,pyexactreal,pyflatsurf"
-          #   sagelib: "9.8"
-          #   environment: "environment.yml"
-          #   python: "3.10.8"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
+            sagelib: "9.8"
+            environment: "environment.yml"
+            python: "3.10.8"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
+            sagelib: "10.0"
+            environment: "environment.yml"
+            python: "3.10.8"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
+            sagelib: "10.1"
+            environment: "environment.yml"
+            python: "3.10.8"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal"
+            sagelib: "10.2"
+            environment: "environment.yml"
+            python: "3.11"
+          - on: ubuntu-22.04
+            optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
+            sagelib: "10.3"
+            environment: "environment.yml"
+            python: "3.10.8"
           - on: ubuntu-22.04
             optionals: "sage,flipper,gmpxxyy,pyeantic,pyexactreal,pyflatsurf"
             environment: "flatsurf.yml"
@@ -64,9 +74,14 @@ jobs:
         with: { submodules: recursive }
       - uses: conda-incubator/setup-miniconda@v2
         with: { miniforge-variant: "Mambaforge", miniforge-version: "latest", python-version: "${{ matrix.python }}" }
+      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
+      - name: Fix cppyy dependencies on macOS
+        run: |
+          mamba install -y libcxx=16
+          echo "libcxx ==16" >> $CONDA_PREFIX/conda-meta/pinned
+        if: ${{ matrix.on == 'macos-13' }}
       - name: Install dependencies
         run: |
-          mamba upgrade -n base --all --yes  # mamba 1.4.1 segfaults sometimes, make sure we use a later version
           mamba install -n test sagelib=${{ matrix.sagelib }}
           echo "sagelib ==${{ matrix.sagelib }}" >> $CONDA_PREFIX/conda-meta/pinned
           while read; do
@@ -87,11 +102,6 @@ jobs:
           mamba install -y bidict
           conda list
         if: ${{ matrix.environment == 'flatsurf.yml' }}
-      # Work around https://github.com/conda-forge/cppyy-feedstock/issues/78
-      - name: Fix cppyy dependencies on macOS
-        run: |
-          mamba install -y libcxx=16
-        if: ${{ matrix.on == 'macos-13' }}
       - name: Install sage-flatsurf
         run: |
           pip install --verbose --no-index .

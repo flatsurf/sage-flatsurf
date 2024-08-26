@@ -176,10 +176,10 @@ class GL2ROrbitClosure:
         if surface not in TranslationSurfaces():
             raise NotImplementedError("surface must be a translation surface")
 
-        if surface.is_mutable():
-            raise TypeError("surface must be immutable")
-
-        base_ring = surface.base_ring()
+            base_ring = surface.base_ring()
+            self._surface = surface.pyflatsurf().codomain().flat_triangulation()
+        else:
+            from flatsurf.geometry.pyflatsurf.conversion import sage_ring
 
         self._surface = surface
 
@@ -287,11 +287,11 @@ class GL2ROrbitClosure:
             sage: O.ambient_stratum() # optional: pyflatsurf
             H_3(4, 0^4)
         """
-        from surface_dynamics import AbelianStratum
+        from surface_dynamics import Stratum
 
         surface = self._flat_triangulation()
         angles = [surface.angle(v) for v in surface.vertices()]
-        return AbelianStratum([a - 1 for a in angles])
+        return Stratum([a - 1 for a in angles], 1)
 
     def base_ring(self):
         r"""

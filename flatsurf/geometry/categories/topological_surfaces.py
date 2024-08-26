@@ -155,6 +155,25 @@ class TopologicalSurfaces(SurfaceCategory):
 
             tester.assertTrue(self.category().is_subcategory(self.refined_category()))
 
+        def _Hom_(self, Y, category=None):
+            r"""
+            Return the space of morphisms from this surface to ``Y``.
+
+            EXAMPLES::
+
+                sage: from flatsurf import translation_surfaces
+                sage: S = translation_surfaces.square_torus()
+                sage: End(S)
+                Surface Endomorphisms of Translation Surface in H_1(0) built from a square
+
+            """
+            if Y in TopologicalSurfaces():
+                from flatsurf.geometry.morphism import SurfaceMorphismSpace
+
+                return SurfaceMorphismSpace(self, Y, category=category)
+
+            return super()._Hom_(Y, category=category)
+
         @abstract_method
         def is_mutable(self):
             r"""

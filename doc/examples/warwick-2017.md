@@ -238,7 +238,7 @@ Currently we have to triangulate to do a rel deformation.
 jupyter:
   outputs_hidden: false
 ---
-s = s.triangulate().relabel()
+s = s.triangulate().codomain().relabel()
 ```
 
 A singularity is an equivalence class of vertices of polygons.
@@ -289,7 +289,7 @@ from flatsurf.geometry.straight_line_trajectory import StraightLineTrajectory
 
 
 class SurfaceToSpaceMapping(SageObject):
-    def __init__(self, similarity_surface, tranformation):
+    def __init__(self, similarity_surface, transformation):
         self._s = similarity_surface
         from types import FunctionType
 
@@ -300,7 +300,7 @@ class SurfaceToSpaceMapping(SageObject):
         r"""
         Return a pair (m, t) where m is a 3x2 matrix and t is a vector with 3 entries.
 
-        The associated tranformation from the polygon with the given label
+        The associated transformation from the polygon with the given label
         is v mapsto m*v + t where v is a point in the polygon.
         """
         return self._t[label]

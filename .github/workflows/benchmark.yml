@@ -50,4 +50,4 @@ jobs:
         if: ${{ github.event_name == 'push' }}
 
 env:
-  MAKEFLAGS: -j2
+  MAKEFLAGS: -j4

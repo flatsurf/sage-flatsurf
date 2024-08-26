@@ -47,6 +47,7 @@ from flatsurf.geometry.categories.surface_category import SurfaceCategoryWithAxi
 from flatsurf.geometry.categories.half_translation_surfaces import (
     HalfTranslationSurfaces,
 )
+from flatsurf.cache import cached_surface_method
 
 
 class TranslationSurfaces(SurfaceCategoryWithAxiom):
@@ -416,6 +417,36 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             break
                     yield connection
 
+            @cached_surface_method
+            def pyflatsurf(self):
+                r"""
+                Return an isomorphism to a surface backed by libflatsurf.
+
+                EXAMPLES::
+
+                    sage: from flatsurf import Polygon, MutableOrientedSimilaritySurface
+
+                    sage: S = MutableOrientedSimilaritySurface(QQ)
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 0), (1, 1)]), label=0)
+                    0
+                    sage: S.add_polygon(Polygon(vertices=[(0, 0), (1, 1), (0, 1)]), label=1)
+                    1
+
+                    sage: S.glue((0, 0), (1, 1))
+                    sage: S.glue((0, 1), (1, 2))
+                    sage: S.glue((0, 2), (1, 0))
+
+                    sage: S.set_immutable()
+
+                    sage: T = S.pyflatsurf().codomain()  # optional: pyflatsurf  # random output due to cppyy deprecation warnings
+                    sage: T  # optional: pyflatsurf
+                    Surface backed by FlatTriangulationCombinatorial(vertices = (1, -3, 2, -1, 3, -2), faces = (1, 2, 3)(-1, -2, -3)) with vectors {1: (1, 0), 2: (0, 1), 3: (-1, -1)}
+
+                """
+                from flatsurf.geometry.pyflatsurf.surface import Surface_pyflatsurf
+
+                return Surface_pyflatsurf._from_flatsurf(self)
+
         class WithoutBoundary(SurfaceCategoryWithAxiom):
             r"""
             The category of translation surfaces without boundary built from
@@ -453,10 +484,10 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         H_3(4)
 
                     """
-                    from surface_dynamics import AbelianStratum
+                    from surface_dynamics import Stratum
                     from sage.rings.integer_ring import ZZ
 
-                    return AbelianStratum([ZZ(a - 1) for a in self.angles()])
+                    return Stratum([ZZ(a - 1) for a in self.angles()], 1)
 
                 def canonicalize_mapping(self):
                     r"""
@@ -533,7 +564,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                             "the in_place keyword of canonicalize() has been deprecated and will be removed in a future version of sage-flatsurf"
                         )
 
-                    delaunay_decomposition = self.delaunay_decomposition()
+                    delaunay_decomposition = self.delaunay_decompose()
 
                     standardization = (
                         delaunay_decomposition.codomain().standardize_polygons()
@@ -713,7 +744,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                     # Since the flips of delaunay() are performed in-place, we create
                     # the mapping using the Tracked[Deformation] feature of pyflatsurf.
                     delaunay0_codomain = (
-                        to_pyflatsurf.codomain()._flat_triangulation.clone()
+                        to_pyflatsurf.codomain().flat_triangulation().clone()
                     )
 
                     from pyflatsurf import flatsurf
@@ -760,7 +791,7 @@ class TranslationSurfaces(SurfaceCategoryWithAxiom):
                         delaunay1.value() * elimination * delaunay0.value(),
                     )
 
-                    from flatsurf.geometry.pyflatsurf_conversion import (
+                    from flatsurf.geometry.pyflatsurf.conversion import (
                         FlatTriangulationConversion,
                     )
 

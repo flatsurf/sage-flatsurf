@@ -36,9 +36,7 @@ S.plot()
 Decomposition of a surface into cylinders is implemented in [pyflatsurf](https://github.com/flatsurf/flatsurf). We triangulate our surface and make sure that its vertices are singularities.
 
 ```{code-cell}
-from flatsurf.geometry.pyflatsurf_conversion import to_pyflatsurf
-
-S = to_pyflatsurf(S)
+S = S.pyflatsurf().codomain().flat_triangulation()
 S = S.eliminateMarkedPoints().surface()
 ```
 

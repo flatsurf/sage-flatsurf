@@ -28,7 +28,7 @@ pytest.importorskip("pyflatsurf")  # noqa
 
 from sage.all import QQ, AA, NumberField, polygen
 from flatsurf import translation_surfaces, GL2ROrbitClosure
-from surface_dynamics import AbelianStratum
+from surface_dynamics import Stratum
 
 
 def test_gothic_generic():
@@ -37,7 +37,7 @@ def test_gothic_generic():
     a = K.gen()
     S = translation_surfaces.cathedral(a, a**2)
     orbit_closure = GL2ROrbitClosure(S)
-    assert orbit_closure.ambient_stratum() == AbelianStratum(2, 2, 2)
+    assert orbit_closure.ambient_stratum() == Stratum([2, 2, 2], 1)
     for d in orbit_closure.decompositions(4, 50):
         orbit_closure.update_tangent_space_from_flow_decomposition(d)
     assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 4
@@ -54,7 +54,7 @@ def test_gothic_exact_reals():
     R = ExactReals(K)
     S = translation_surfaces.cathedral(K.gen(), R.random_element([0.1, 0.2]))
     orbit_closure = GL2ROrbitClosure(S)
-    assert orbit_closure.ambient_stratum() == AbelianStratum(2, 2, 2)
+    assert orbit_closure.ambient_stratum() == Stratum([2, 2, 2], 1)
     for d in orbit_closure.decompositions(4, 50):
         orbit_closure.update_tangent_space_from_flow_decomposition(d)
     assert orbit_closure.dimension() == orbit_closure.absolute_dimension() == 4
@@ -70,7 +70,7 @@ def test_gothic_veech():
     b = -3 * x - QQ((3, 2)) + 3 * y * sqrt2
     S = translation_surfaces.cathedral(a, b)
     orbit_closure = GL2ROrbitClosure(S)
-    assert orbit_closure.ambient_stratum() == AbelianStratum(2, 2, 2)
+    assert orbit_closure.ambient_stratum() == Stratum([2, 2, 2], 1)
     for d in orbit_closure.decompositions(4, 50):
         assert d.parabolic()
         orbit_closure.update_tangent_space_from_flow_decomposition(d)
