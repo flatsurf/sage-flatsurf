@@ -2124,7 +2124,7 @@ class CompositionMorphism(SurfaceMorphism):
 
         # The morphisms as they are executed (in chronological order.)
         self._morphisms = []
-        for morphism in morphisms:
+        for morphism in [rhs, lhs]:
             if isinstance(morphism, CompositionMorphism):
                 self._morphisms.extend(morphism._morphisms)
             else:
